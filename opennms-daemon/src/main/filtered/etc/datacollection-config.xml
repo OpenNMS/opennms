@@ -1750,6 +1750,15 @@
         <mibObj oid=".1.3.6.1.4.1.2021.9.1.10" instance="dskIndex" alias="ns-dskPercentNode" type="gauge" />
       </group>
 
+      <group name="net-snmp-disk-highlow" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.11" instance="dskIndex" alias="ns-dskTotalLow"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.12" instance="dskIndex" alias="ns-dskTotalHigh" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.13" instance="dskIndex" alias="ns-dskAvailLow"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.14" instance="dskIndex" alias="ns-dskAvailHigh" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.15" instance="dskIndex" alias="ns-dskUsedLow"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.16" instance="dskIndex" alias="ns-dskUsedHigh"  type="gauge" />
+      </group>
+
       <group name="ucd-loadavg" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="1" alias="loadavg1"  type="integer" />
         <mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="2" alias="loadavg5"  type="integer" />
@@ -2625,6 +2634,8 @@
 	  <includeGroup>mib2-host-resources-system</includeGroup>
 	  <includeGroup>mib2-host-resources-memory</includeGroup>
 	  <includeGroup>net-snmp-disk</includeGroup>
+	  <includeGroup>net-snmp-disk-more</includeGroup>
+	  <includeGroup>net-snmp-disk-highlow</includeGroup>
 	  <includeGroup>ucd-loadavg</includeGroup>
 	  <includeGroup>ucd-memory</includeGroup>
 	  <includeGroup>ucd-sysstat</includeGroup>
@@ -3437,6 +3448,8 @@
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>mib2-host-resources-storage</includeGroup>
           <includeGroup>net-snmp-disk</includeGroup>
+	  <includeGroup>net-snmp-disk-more</includeGroup>
+	  <includeGroup>net-snmp-disk-highlow</includeGroup>
           <includeGroup>ucd-loadavg</includeGroup>
           <includeGroup>ucd-memory</includeGroup>
           <includeGroup>ucd-sysstat</includeGroup>
@@ -3452,6 +3465,8 @@
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>net-snmp-disk</includeGroup>
+	  <includeGroup>net-snmp-disk-more</includeGroup>
+	  <includeGroup>net-snmp-disk-highlow</includeGroup>
           <includeGroup>openmanage-coolingdevices</includeGroup>
           <includeGroup>openmanage-temperatureprobe</includeGroup>
           <includeGroup>openmanage-powerusage</includeGroup>
