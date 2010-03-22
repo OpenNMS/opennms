@@ -44,7 +44,7 @@ public class LocationPanel extends Composite {
 		
 	    if (cell != null) {
 	    	final int row = cell.getRowIndex();
-	    	final String locationName = m_locations.getText(row, 0);
+	    	final String locationName = m_locations.getText(row, 1);
 	    	styleRow(row);
 	    	selectLocation(locationName);
 	    }
