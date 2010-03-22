@@ -5,3 +5,7 @@
 /usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/applicationContext-spring-security.xml
 /usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/configuration.properties
 /usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/web.xml
+/usr/share/opennms/jetty-webapps/opennms-remote-monitor-ui/WEB-INF/applicationContext-remote-poller.xml
+/usr/share/opennms/jetty-webapps/opennms-remote-monitor-ui/WEB-INF/configuration.properties
+/usr/share/opennms/jetty-webapps/opennms-remote-monitor-ui/WEB-INF/version.properties
+/usr/share/opennms/jetty-webapps/opennms-remote-monitor-ui/WEB-INF/web.xml
