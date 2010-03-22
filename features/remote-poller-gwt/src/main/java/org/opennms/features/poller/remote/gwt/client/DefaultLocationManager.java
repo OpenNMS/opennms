@@ -13,6 +13,7 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.event.MapDragEndHandler;
+import com.google.gwt.maps.client.event.MapMoveEndHandler;
 import com.google.gwt.maps.client.event.MapZoomEndHandler;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
 import com.google.gwt.maps.client.geocode.Geocoder;
@@ -57,7 +58,7 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
         m_mapWidget.addMapDragEndHandler(new MapDragEndHandler() {
 
             public void onDragEnd(MapDragEndEvent event) {
-                checkVisibleLocations();
+                checkAllVisibleLocations();
             }
 
             
@@ -66,17 +67,24 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
         m_mapWidget.addMapZoomEndHandler(new MapZoomEndHandler() {
 
             public void onZoomEnd(MapZoomEndEvent event) {
-                checkVisibleLocations();
+                checkAllVisibleLocations();
+            }
+            
+        });
+        
+        m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
+
+            public void onMoveEnd(MapMoveEndEvent event) {
+                checkAllVisibleLocations();
             }
             
         });
         
     }
 	
-	private void checkVisibleLocations() {
+	private void checkAllVisibleLocations() {
 	    for(Location location : getAllLocations()) {
 	        if(checkIfLocationIsVisibleOnMap(location)) {
-	            placeMarker(location);
 	            m_visibleLocations.put(location.getName(), location);
 	        }else {
 	            if(m_visibleLocations.containsKey(location.getName())) {
@@ -88,6 +96,14 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 	    m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
 	    
 	}
+	
+	private void checkIfLocationIsVisibleAndUpdate(Location location) {
+	    if(checkIfLocationIsVisibleOnMap(location)) {
+	        m_visibleLocations.put(location.getName(), location);
+	    }
+	    
+	    m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
+	}
 
 	@Override
     public void updateLocations(final List<Location> locations) {
@@ -97,17 +113,13 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 			}
 
 			if (location.getLatLng() != null) {
-		        placeMarker(location);
+		        updateMarker(location);
 			} else {
 				m_geocoder.getLatLng(location.getGeolocation(), new LatLngMarkerPlacer(location));
 			}
 		}
 		
 	}
-
-    private boolean checkIfLocationIsVisibleOnMap(final Location location) {
-        return m_mapWidget.getBounds().containsLatLng(location.getLatLng());
-    }
 
 	@Override
 	public void removeLocations(final List<Location> locations) {
@@ -123,9 +135,13 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 				m_geocoder.getLatLng(location.getGeolocation(), new LatLngMarkerRemover(location));
 			}
 			m_locations.remove(location.getName());
+			
+			if(m_visibleLocations.containsKey(location.getName())) {
+			    m_visibleLocations.remove(location.getName());
+			}
 		}
 		
-//		getEventBus().fireEvent(new LocationsUpdatedEvent(this));
+		getEventBus().fireEvent(new LocationsUpdatedEvent(this));
 	}
 
 	@Override
@@ -192,35 +208,37 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 	private int checkOutOfBounds(int size, int maxRows) {
 		return maxRows > size? size : maxRows;
     }
-
+	
+	private void updateMarker(final Location location) {
+	    if (location == null) {
+            return;
+        }
+	    
+	    LatLng latLng = location.getLatLng();
+        if (latLng == null) {
+            return;
+        }
+	    
+	    Location oldLocation = m_locations.get(location.getName());
+        if (oldLocation == null) {
+            placeMarker(location);
+        }
+        if (oldLocation != null && !oldLocation.getLocationMonitorState().getStatus().equals(location.getLocationMonitorState().getStatus())) {
+            placeMarker(location);
+        }
+        
+        addAndMergeLocation(location, oldLocation);
+        
+        checkIfLocationIsVisibleAndUpdate(location);
+	}
+	
 	private void placeMarker(final Location location) {
-		if (location == null) {
-			return;
-		}
-		LatLng latLng = location.getLatLng();
-		if (latLng == null) {
-			return;
-		}
+	    LatLng latLng = location.getLatLng();
 
-		boolean replaceMarker = false;
-		
-		Location oldLocation = m_locations.get(location.getName());
-		if (oldLocation == null) {
-			replaceMarker = true;
-		}
-		if (oldLocation != null && !oldLocation.getLocationMonitorState().getStatus().equals(location.getLocationMonitorState().getStatus())) {
-			replaceMarker = true;
-		}
+	    final Marker m = createMarker(location);
+	    m_markerManager.removeMarker(m_markerManager.getMarker(latLng.getLatitude(), latLng.getLongitude(), MARKER_MAX_ZOOM));
+	    m_markerManager.addMarker(m, 0, MARKER_MAX_ZOOM);
 
-		if (replaceMarker) {
-			final Marker m = createMarker(location);
-			m_markerManager.removeMarker(m_markerManager.getMarker(latLng.getLatitude(), latLng.getLongitude(), MARKER_MAX_ZOOM));
-			m_markerManager.addMarker(m, 0, MARKER_MAX_ZOOM);
-		}
-
-		addAndMergeLocation(location, oldLocation);
-
-		//getEventBus().fireEvent(new LocationsUpdatedEvent(this));
 	}
 
     private void addAndMergeLocation(final Location newLocation, Location oldLocation) {
@@ -280,6 +298,10 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 	public void reportError(final String errorMessage, final Throwable throwable) {
 		// FIXME: implement error reporting in UI
 	}
+	
+	private boolean checkIfLocationIsVisibleOnMap(final Location location) {
+        return m_mapWidget.getBounds().containsLatLng(location.getLatLng());
+    }
 
 	private final class LatLngMarkerPlacer implements LatLngCallback {
 		private final Location m_location;
@@ -290,13 +312,13 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 
 		public void onSuccess(final LatLng point) {
 			m_location.setLatLng(point);
-			placeMarker(m_location);
+			updateMarker(m_location);
 		}
 
 		public void onFailure() {
 			m_location.setLatLng(DefaultLocationManager.DEFAULT_LATLNG);
 			reportError("unable to retrieve latitude and longitude for " + m_location.getName(), null);
-			placeMarker(m_location);
+			updateMarker(m_location);
 		}
 	}
 
@@ -325,5 +347,4 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 		}
 	}
 	
-
 }
