@@ -57,13 +57,11 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
 import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
@@ -286,7 +284,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
      */
     @Test
     public final void testGetAutomations() {
-        assertEquals(7, VacuumdConfigFactory.getInstance().getAutomations().size());
+        assertEquals(19, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
     @Test
@@ -299,7 +297,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
      */
     @Test
     public final void testGetTriggers() {
-        assertEquals(6,VacuumdConfigFactory.getInstance().getTriggers().size());
+        assertEquals(14,VacuumdConfigFactory.getInstance().getTriggers().size());
     }
     
     /**
@@ -309,7 +307,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
     public final void testGetActions() {
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         
-        assertEquals(6,VacuumdConfigFactory.getInstance().getActions().size());
+        assertEquals(18,VacuumdConfigFactory.getInstance().getActions().size());
         assertEquals(2, ap.getAction().getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
     
@@ -349,10 +347,6 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
      */
     @Test
     public final void testRunTrigger() throws InterruptedException {
-        // Get all the triggers defined in the config
-        Collection<Trigger> triggers = VacuumdConfigFactory.getInstance().getTriggers();
-        assertEquals(6, triggers.size());
-
         Trigger trigger = VacuumdConfigFactory.getInstance().getTrigger("selectAll");
         String triggerSql = trigger.getStatement().getContent();
         MockUtil.println("Running trigger query: "+triggerSql);
@@ -462,11 +456,12 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
         // create node down events with severity 6
         bringNodeDownCreatingEventWithReason(1, "Testing node1");
         Thread.sleep(1000);
-        AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("escalate"));
-        ap.run();
+        new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("escalate")).run();
         Thread.sleep(1000);
         Map<String, Object> queryResult = m_jdbcTemplate.queryForMap("SELECT eventuei, eventparms FROM events WHERE eventuei = 'uei.opennms.org/vacuumd/alarmEscalated'");
-        assertEquals("Parameter list sent from action event doesn't match", "eventReason=Testing node1(string,text);alarmId=1(string,text)", queryResult.get("eventParms"));
+        // If the add-all-parms="true" is set on the action-event, the parms will turn out like this
+        // assertEquals("Parameter list sent from action event doesn't match", "eventReason=Testing node1(string,text);alarmId=1(string,text);alarmEventUei=uei.opennms.org/nodes/nodeDown(string,text)", queryResult.get("eventParms"));
+        assertEquals("Parameter list sent from action event doesn't match", "alarmId=1(string,text);alarmEventUei=uei.opennms.org/nodes/nodeDown(string,text)", queryResult.get("eventParms"));
     }
     
     /**
