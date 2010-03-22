@@ -182,7 +182,7 @@
       </annotation>
       <simpleType>
         <restriction base="string">
-          <pattern value="^([Oo][Rr])|([Aa][Nn][Dd])$"/>
+          <pattern value="([Oo][Rr])|([Aa][Nn][Dd])"/>
         </restriction>
       </simpleType>
     </attribute>

@@ -119,6 +119,7 @@ public class ThresholdingVisitorTest {
         CollectionResourceWrapper.s_cache.clear();
         
         m_defaultErrorLevelToCheck = Level.WARN;
+        System.setProperty("mock.logLevel", "INFO");
         MockLogAppender.setupLogging();
 
         m_filterDao = EasyMock.createMock(FilterDao.class);

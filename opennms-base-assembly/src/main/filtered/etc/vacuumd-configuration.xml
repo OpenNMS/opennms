@@ -367,6 +367,13 @@
 
   </actions>
 
+  <!--  Deprecating this element... see the new <action-events> element -->    
+  <auto-events>
+    <auto-event name="escalationEvent" >
+      <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
+    </auto-event>
+  </auto-events>
+
   <!-- Note: action events that have tokens require the for-each-result attribute to be set to true -->
   <action-events>
   
