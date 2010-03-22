@@ -2,7 +2,7 @@ Source: opennms
 Section: contrib/net
 Priority: optional
 Maintainer: Jeff Gehlbach <jeffg@opennms.org>
-Build-Depends: sun-java6-jdk | sun-java5-jdk | openjdk-6-jdk (>= 6b11-9.1), debhelper (>= 5.0.42), po-debconf (>= 1.0.5)
+Build-Depends: sun-java6-jdk | sun-java5-jdk | openjdk-6-jdk (>= 6b11-9.1), debhelper (>= 5.0.42), po-debconf (>= 1.0.5), rsync
 Standards-Version: 3.7.3
 
 Package: opennms
