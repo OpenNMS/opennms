@@ -23,7 +23,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Full Inst
 
 Package: opennms-db
 Architecture: all
-Depends: postgresql-8.4 (>= 8.4.1) | postgresql-8.3 | postgresql-8.2 | postgresql-8.1 | postgresql-7.4, iplike-pgsql83 (>= 1.0.8) | iplike-pgsql82 (>= 1.0.8) | iplike-pgsql81 (>= 1.0.8) | iplike-pgsql74 (>= 1.0.8), debconf
+Depends: postgresql-8.4 (>= 8.4.1) | postgresql-8.3 | postgresql-8.2 | postgresql-8.1 | postgresql-7.4, iplike-pgsql84 (>= 1.0.8) | iplike-pgsql83 (>= 1.0.8) | iplike-pgsql82 (>= 1.0.8) | iplike-pgsql81 (>= 1.0.8) | iplike-pgsql74 (>= 1.0.8), debconf
 Description: Enterprise-grade Open-source Network Management Platform (Database)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
