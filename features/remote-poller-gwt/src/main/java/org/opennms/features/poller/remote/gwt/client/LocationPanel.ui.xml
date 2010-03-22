@@ -52,7 +52,7 @@
   </ui:style>
 
   <g:ScrollPanel styleName="{style.scrollPanel}">
-    <g:FlexTable ui:field='locations' styleName="{style.flexTable}" />
+    <g:FlexTable ui:field='m_locations' styleName="{style.flexTable}" />
   </g:ScrollPanel>
 
 </ui:UiBinder>

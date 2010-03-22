@@ -13,6 +13,7 @@ public abstract class AbstractLocationManager implements LocationManager {
 	public abstract Location getLocation(int index);
 	public abstract List<Location> getAllLocations();
 	public abstract List<Location> getLocations(int startIndex, int maxRows);
+	public abstract List<Location> getVisibleLocations();
 	public abstract void selectLocation(String locationName);
 	public abstract void fitToMap();
 

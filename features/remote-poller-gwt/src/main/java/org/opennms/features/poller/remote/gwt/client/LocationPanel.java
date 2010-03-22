@@ -30,7 +30,7 @@ public class LocationPanel extends Composite {
 	private int startIndex = 0;
 	private transient HandlerManager m_eventBus;
 	
-	@UiField FlexTable locations;
+	@UiField FlexTable m_locations;
 	@UiField SelectionStyle selectionStyle;
 
 	public LocationPanel() {
@@ -38,13 +38,13 @@ public class LocationPanel extends Composite {
 		initWidget(BINDER.createAndBindUi(this));
 	}
 
-	@UiHandler("locations")
+	@UiHandler("m_locations")
 	void onTableClicked(final ClickEvent event) {
-		final Cell cell = locations.getCellForEvent(event);
+		final Cell cell = m_locations.getCellForEvent(event);
 		
 	    if (cell != null) {
 	    	final int row = cell.getRowIndex();
-	    	final String locationName = locations.getText(row, 0);
+	    	final String locationName = m_locations.getText(row, 0);
 	    	styleRow(row);
 	    	selectLocation(locationName);
 	    }
@@ -58,11 +58,11 @@ public class LocationPanel extends Composite {
 		if (row != -1) {
 			final String style = selectionStyle.selectedRow();
 			
-			for(int i = 0; i < locations.getRowCount(); i++) {
+			for(int i = 0; i < m_locations.getRowCount(); i++) {
 			    if(i == row) {
-			        locations.getRowFormatter().addStyleName(i, style);
+			        m_locations.getRowFormatter().addStyleName(i, style);
 			    }else {
-			        locations.getRowFormatter().removeStyleName(i, style);
+			        m_locations.getRowFormatter().removeStyleName(i, style);
 			    }
 			}
 			
@@ -76,23 +76,23 @@ public class LocationPanel extends Composite {
 		}
 		
 		int count = 0;
-		for (Location location : locationManager.getLocations(startIndex, MAX_ROWS)) {
+		for (Location location : locationManager.getVisibleLocations()) {
 		    Image icon = new Image();
             icon.setUrl(location.getMarker().getIcon().getImageURL());
             
-            locations.setWidget(count, 0, icon);
-            locations.setText(count, 1, location.getName());
-		    locations.setText(count, 2, location.getArea());
+            m_locations.setWidget(count, 0, icon);
+            m_locations.setText(count, 1, location.getName());
+		    m_locations.setText(count, 2, location.getArea());
 		    
 		    if(count %2 != 0) {
-		        locations.getRowFormatter().addStyleName(count, selectionStyle.alternateRow());
+		        m_locations.getRowFormatter().addStyleName(count, selectionStyle.alternateRow());
 		    }
 		    
 			count++;
 		}
 
-		while (locations.getRowCount() > count) {
-			locations.removeRow(locations.getRowCount() - 1);
+		while (m_locations.getRowCount() > count) {
+			m_locations.removeRow(m_locations.getRowCount() - 1);
 		}
 		
 	}

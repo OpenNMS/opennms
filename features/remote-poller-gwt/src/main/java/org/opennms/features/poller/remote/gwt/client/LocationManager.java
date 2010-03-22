@@ -14,6 +14,7 @@ public interface LocationManager {
 	public Location getLocation(int index);
 	public List<Location> getAllLocations();
 	public List<Location> getLocations(int startIndex, int maxRows);
+	public List<Location> getVisibleLocations();
 	public void selectLocation(String locationName);
 	public void fitToMap();
 

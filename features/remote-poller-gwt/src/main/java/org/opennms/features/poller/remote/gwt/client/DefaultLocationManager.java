@@ -12,6 +12,8 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.maps.client.MapWidget;
+import com.google.gwt.maps.client.event.MapDragEndHandler;
+import com.google.gwt.maps.client.event.MapZoomEndHandler;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
 import com.google.gwt.maps.client.geocode.Geocoder;
 import com.google.gwt.maps.client.geocode.LatLngCallback;
@@ -33,12 +35,15 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 	private final Geocoder m_geocoder = new Geocoder();
 	private transient HandlerManager m_eventBus;
 	private boolean updated = false;
+	private final HashMap<String, Location> m_visibleLocations = new HashMap<String, Location>();
 
-	public DefaultLocationManager(final HandlerManager eventBus, final MapWidget mapWidget, final MarkerManager markerManager) {
+
+    public DefaultLocationManager(final HandlerManager eventBus, final MapWidget mapWidget, final MarkerManager markerManager) {
 		m_eventBus = eventBus;
-		setupEventHandlers();
 		m_mapWidget = mapWidget;
 		m_markerManager = markerManager;
+		
+		setupEventHandlers();
 	}
 
 	private void setupEventHandlers() {
@@ -49,7 +54,40 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
             }
         });
         
+        m_mapWidget.addMapDragEndHandler(new MapDragEndHandler() {
+
+            public void onDragEnd(MapDragEndEvent event) {
+                checkVisibleLocations();
+            }
+
+            
+        });
+        
+        m_mapWidget.addMapZoomEndHandler(new MapZoomEndHandler() {
+
+            public void onZoomEnd(MapZoomEndEvent event) {
+                checkVisibleLocations();
+            }
+            
+        });
+        
     }
+	
+	private void checkVisibleLocations() {
+	    for(Location location : getAllLocations()) {
+	        if(checkIfLocationIsVisibleOnMap(location)) {
+	            placeMarker(location);
+	            m_visibleLocations.put(location.getName(), location);
+	        }else {
+	            if(m_visibleLocations.containsKey(location.getName())) {
+	                m_visibleLocations.remove(location.getName());
+	            }
+	        }
+	    }
+	    
+	    m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
+	    
+	}
 
 	@Override
     public void updateLocations(final List<Location> locations) {
@@ -59,13 +97,17 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 			}
 
 			if (location.getLatLng() != null) {
-				placeMarker(location);
+		        placeMarker(location);
 			} else {
 				m_geocoder.getLatLng(location.getGeolocation(), new LatLngMarkerPlacer(location));
 			}
 		}
 		
 	}
+
+    private boolean checkIfLocationIsVisibleOnMap(final Location location) {
+        return m_mapWidget.getBounds().containsLatLng(location.getLatLng());
+    }
 
 	@Override
 	public void removeLocations(final List<Location> locations) {
@@ -83,7 +125,7 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 			m_locations.remove(location.getName());
 		}
 		
-		getEventBus().fireEvent(new LocationsUpdatedEvent(this));
+//		getEventBus().fireEvent(new LocationsUpdatedEvent(this));
 	}
 
 	@Override
@@ -104,7 +146,7 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 	public List<Location> getAllLocations() {
 		return new ArrayList<Location>(m_locations.values());
 	}
-
+	
 	@Override
 	public List<Location> getLocations(final int startIndex, final int maxRows) {
 		final List<String> keys = Arrays.asList(m_locations.keySet().toArray(new String[0]));
@@ -114,6 +156,11 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 		}
 		return locations;
 	}
+	
+	@Override
+    public List<Location> getVisibleLocations() {
+        return new ArrayList<Location>(m_visibleLocations.values());
+    }
 
 	@Override
     public void selectLocation(String locationName) {
@@ -171,10 +218,19 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 			m_markerManager.addMarker(m, 0, MARKER_MAX_ZOOM);
 		}
 
-		m_locations.put(location.getName(), mergeLocations(oldLocation, location));
+		addAndMergeLocation(location, oldLocation);
 
-		getEventBus().fireEvent(new LocationsUpdatedEvent(this));
+		//getEventBus().fireEvent(new LocationsUpdatedEvent(this));
 	}
+
+    private void addAndMergeLocation(final Location newLocation, Location oldLocation) {
+        if(oldLocation != null) {
+            m_locations.put(newLocation.getName(), mergeLocations(oldLocation, newLocation));
+        }else {
+            m_locations.put(newLocation.getName(), newLocation);
+        }
+        
+    }
 
 	private Location mergeLocations(final Location oldLocation, final Location newLocation) {
 		if (newLocation.getLocationMonitorState() == null)
@@ -268,5 +324,6 @@ public class DefaultLocationManager extends AbstractLocationManager implements L
 			selectLocation(m_locationName);
 		}
 	}
+	
 
 }
