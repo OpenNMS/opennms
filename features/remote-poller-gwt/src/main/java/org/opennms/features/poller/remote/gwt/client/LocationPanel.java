@@ -3,6 +3,7 @@ package org.opennms.features.poller.remote.gwt.client;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
+import org.opennms.features.poller.remote.gwt.client.events.SortOrderUpdateEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -11,6 +12,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
@@ -23,6 +25,8 @@ public class LocationPanel extends Composite {
 	interface SelectionStyle extends CssResource {
 		String selectedRow();
 		String alternateRow();
+		String flexTableHeader();
+		String sortSelected();
 	}
 
 	private static final Binder BINDER = GWT.create(Binder.class);
@@ -36,6 +40,10 @@ public class LocationPanel extends Composite {
 	public LocationPanel() {
 		super();
 		initWidget(BINDER.createAndBindUi(this));
+		m_locations.setText(0, 0, "Status");
+		m_locations.setText(0, 1, "Name");
+		m_locations.setText(0, 2, "Area");
+		m_locations.getRowFormatter().addStyleName(0, selectionStyle.flexTableHeader());
 	}
 
 	@UiHandler("m_locations")
@@ -44,16 +52,36 @@ public class LocationPanel extends Composite {
 		
 	    if (cell != null) {
 	    	final int row = cell.getRowIndex();
-	    	final String locationName = m_locations.getText(row, 1);
-	    	styleRow(row);
-	    	selectLocation(locationName);
+	    	
+	    	if(row != 0) {
+	    	    final String locationName = m_locations.getText(row, 1);
+	            styleRow(row);
+	            selectLocation(locationName);
+	    	}else {
+	    	    final String cellName = m_locations.getText(row, cell.getCellIndex());
+	    	    m_eventBus.fireEvent(new SortOrderUpdateEvent(cellName));
+	    	    styleSorted(row, cellName);
+	    	}
+	    	
 	    }
 	}
 
-	private void selectLocation(final String locationName) {
+    private void selectLocation(final String locationName) {
 	    m_eventBus.fireEvent(new LocationPanelSelectEvent(locationName));
     }
-
+    
+    private void styleSorted(int row, String cellName) {
+        Window.alert("cell name: " + cellName);
+        for(int i = 0; i < m_locations.getCellCount(row); i++) {
+            String currentCellName = m_locations.getText(row, i);
+            if(currentCellName.equals(cellName)) {
+                m_locations.getCellFormatter().addStyleName(row, i, selectionStyle.sortSelected());
+            }else {
+                m_locations.getCellFormatter().removeStyleName(row, i, selectionStyle.sortSelected());
+            }
+        }
+    }
+        
 	private void styleRow(final int row) {
 		if (row != -1) {
 			final String style = selectionStyle.selectedRow();
@@ -75,7 +103,7 @@ public class LocationPanel extends Composite {
 			return;
 		}
 		
-		int count = 0;
+		int count = 1;
 		for (Location location : locationManager.getVisibleLocations()) {
 		    Image icon = new Image();
             icon.setUrl(location.getMarker().getIcon().getImageURL());

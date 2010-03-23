@@ -30,25 +30,18 @@
         background-color: #c8e1fe;
     }
     
-    .upStatus{
-        background-color:  #00ff00;
-        color: white;    	
+    .flexTableHeader{
+        font-weight: bold;
+        cursor: pointer;	
     }
     
-    .downStatus{
-    	background-color: #ffff00;
-    	color: white;
+    .sortSelected{
+        background-color: gray;
+        background-image: url( "images/sort_desc.gif" ) ;
+        background-position: 10px right 40% top ;
+        background-repeat: no-repeat;	
     }
     
-    .marginalStatus{
-    	background-color: #ff0000;
-    	color: white;
-    }
-    
-    .unknownStatus{
-        background-color: #0000ff;
-        color: white;
-    }
   </ui:style>
 
   <g:ScrollPanel styleName="{style.scrollPanel}">
