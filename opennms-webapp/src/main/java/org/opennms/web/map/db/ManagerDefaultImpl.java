@@ -1260,7 +1260,8 @@ public class ManagerDefaultImpl implements Manager {
                     }
                     VLink vlink = new VLink(first.getId(), first.getType(),
                                             second.getId(), second.getType());
-                    vlink.setLinkStatus(getLinkStatus(linfo));
+                    int status=getLinkStatus(linfo);
+                    vlink.setLinkStatusString(getLinkStatusString(status));
                     vlink.setLinkTypeId(getLinkTypeId(linfo));
                     vlink.setFirstNodeid(linfo.nodeid);
                     vlink.setSecondNodeid(linfo.nodeparentid);
@@ -1269,28 +1270,28 @@ public class ManagerDefaultImpl implements Manager {
                         VLink alreadyIn = links.get(index);
                         if (alreadyIn.equals(vlink)) {
                             if (multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS)) {
-                                if (vlink.getLinkOperStatus() < alreadyIn.getLinkOperStatus()) {
+                                if (status < getLinkStatusInt(alreadyIn.getLinkStatusString())) {
                                     log.debug("removing to the array link "
                                             + alreadyIn.toString()
                                             + " with status "
-                                            + alreadyIn.getLinkOperStatus());
+                                            + alreadyIn.getLinkStatusString());
                                     links.remove(index);
                                     links.add(vlink);
                                     log.debug("adding to the array link "
                                             + vlink.toString()
                                             + " with status "
-                                            + vlink.getLinkOperStatus());
+                                            + vlink.getLinkStatusString());
                                 }
-                            } else if (vlink.getLinkOperStatus() > alreadyIn.getLinkOperStatus()) {
+                            } else if (status > getLinkStatusInt(alreadyIn.getLinkStatusString())) {
                                 log.debug("removing to the array link "
                                         + alreadyIn.toString()
                                         + " with status "
-                                        + alreadyIn.getLinkOperStatus());
+                                        + alreadyIn.getLinkStatusString());
                                 links.remove(index);
                                 links.add(vlink);
                                 log.debug("adding to the array link "
                                         + vlink.toString() + " with status "
-                                        + vlink.getLinkOperStatus());
+                                        + vlink.getLinkStatusString());
                             }
                         }
                     } else {
@@ -1304,13 +1305,34 @@ public class ManagerDefaultImpl implements Manager {
         return links;
     }
 
+    private String getLinkStatusString(int linkStatus) {
+        if (linkStatus == 0 ) return "up";
+        else if (linkStatus == 1 ) return "down";
+        else if (linkStatus == 2 ) return "admindown";
+        else if (linkStatus == 3 ) return "testing";
+        else if (linkStatus == -100 ) return "good";
+        else if (linkStatus == -99 ) return "bad";
+        else if (linkStatus == 1004 ) return "unknown";
+        else return "unknown";
+    }
+
+    public int getLinkStatusInt(String linkStatus) {
+        if (linkStatus.equals("up") ) return 0;
+        else if (linkStatus.equals("down")) return 1;
+        else if (linkStatus.equals("admindown")) return 2;
+        else if (linkStatus.equals("testing") ) return 3;
+        else if (linkStatus.equals("good") ) return 1001;
+        else if (linkStatus.equals("bad") ) return 1002;
+        else return 1004;
+    }
+
     private int getLinkStatus(LinkInfo linfo) {
         if (linfo.status.equalsIgnoreCase("G"))
-            return 1001;
+            return -100;
         if (linfo.status.equalsIgnoreCase("B"))
-            return 1002;
+            return -99;
         if (linfo.status.equalsIgnoreCase("X"))
-            return 1003;
+            return 2;
         if (linfo.status.equalsIgnoreCase("U"))
             return 1004;
         if (linfo.snmpifoperstatus == 1 && linfo.snmpifadminstatus == 1)

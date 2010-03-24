@@ -53,10 +53,10 @@ final public class VLink {
 	private int nodeid2;
     //the link typology defined in the map properties file
 	private int linkTypeId;
-
-	private int linkStatus;
 	
-	private String id;
+	private String linkStatusString;
+	
+    private String id;
 	
 	public VLink(int elem1Id, String elem1Type, int elem2Id, String elem2Type) {
 		this.elem1Type = elem1Type;
@@ -67,18 +67,14 @@ final public class VLink {
 	}
 	
 	public String getLinkStatusString() {
-		if (linkStatus == 0 ) return "up";
-		else if (linkStatus == 1 ) return "down";
-		else if (linkStatus == 2 ) return "admindown";
-        else if (linkStatus == 3 ) return "testing";
-        else if (linkStatus == 1001 ) return "good";
-        else if (linkStatus == 1002 ) return "bad";
-        else if (linkStatus == 1003 ) return "admindown";
-        else if (linkStatus == 1004 ) return "unknown";
-		else return "unknown";
+	    return linkStatusString;
 	}
 
-	/**
+    public void setLinkStatusString(String linkStatusString) {
+        this.linkStatusString = linkStatusString;
+    }
+
+    /**
 	 * Asserts if the links are linking the same elements without considering their statuses
 	 */
 	public boolean equals(Object otherLink) {
@@ -115,16 +111,8 @@ final public class VLink {
 		linkTypeId = typeId;
 	}
 
-	public int getLinkOperStatus() {
-		return linkStatus;
-	}
-	
-	public void setLinkStatus(int operStatus) {
-		linkStatus = operStatus;
-	}
-	
 	public String toString() {
-			return ""+getFirst()+"-"+getSecond()+"-"+linkTypeId+"-"+linkStatus+" hashCode:"+this.hashCode();
+			return ""+getFirst()+"-"+getSecond()+"-"+linkTypeId+"-"+linkStatusString+" hashCode:"+this.hashCode();
 	}
 	
     //like client function
