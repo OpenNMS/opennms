@@ -86,7 +86,7 @@ public class LoadDefaultMapController implements Controller {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
 		try {
 		    VMapInfo mapInfo  = manager.getDefaultMapsMenu(user);
-			bw.write(ResponseAssembler.getMapsResponse(MapsConstants.LOADDEFAULTMAP_ACTION,mapInfo));
+			bw.write(ResponseAssembler.getLoadDeafultMapResponse(MapsConstants.LOADDEFAULTMAP_ACTION,mapInfo));
 		} catch (Exception e) {
 			log.error("Error while loading default map for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADDEFAULTMAP_ACTION));
