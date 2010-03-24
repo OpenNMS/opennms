@@ -10,6 +10,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
   <packaging>war</packaging>
+  <name>OpenNMS Remote Poller GWT UI</name>
 
   <properties>
     <moduleName>org.opennms.features.poller.remote.gwt.client.Application</moduleName>
@@ -144,6 +145,11 @@
       <groupId>com.google.code</groupId>
       <artifactId>gwt-maps-utility</artifactId>
       <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gwt-log</groupId>
+      <artifactId>gwt-log</artifactId>
+      <version>3.0.1</version>
     </dependency>
 
     <!-- technically for testing (making a full war)... -->

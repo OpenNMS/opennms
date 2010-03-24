@@ -9,9 +9,23 @@
   <!--  inherit css based theme -->
   <inherits name='com.google.gwt.user.theme.standard.Standard'/>
 
-  <!-- Google Maps -->  
+  <!-- Loading Maps -->  
   <inherits name='com.google.gwt.ajaxloader.AjaxLoader' />
+  <inherits name='com.google.gwt.maps.GoogleMaps' />
   <inherits name='com.google.gwt.maps.utility.GoogleMapsUtility' />
+
+  <!-- Logging -->
+  <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />
+  <set-property name="compiler.emulatedStack" value="false" />
+  <set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="false"/>
+  <set-configuration-property name="compiler.emulatedStack.recordFileNames" value="false"/>
+  <set-property name="log_ConsoleLogger" value="DISABLED" />
+  <set-property name="log_DivLogger" value="DISABLED" />
+  <set-property name="log_FirebugLogger" value="DISABLED" />
+  <set-property name="log_GWTLogger" value="DISABLED" />
+  <set-property name="log_RemoteLogger" value="ENABLED" />
+  <set-property name="log_SystemLogger" value="DISABLED" />
+  <set-property name="log_WindowLogger" value="ENABLED" />
 
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='Application.css' />

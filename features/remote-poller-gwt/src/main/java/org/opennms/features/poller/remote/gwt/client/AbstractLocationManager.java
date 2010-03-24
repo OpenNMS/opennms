@@ -1,12 +1,32 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class AbstractLocationManager implements LocationManager {
 
-	public abstract void removeLocations(List<Location> location);
-	public abstract void updateLocations(List<Location> location);
+	public enum State {
+		UNINITIALIZED,
+		APIKEY_LOADING,
+		APIKEY_LOADED,
+		MAP_API_LOADING,
+		MAP_API_LOADED,
+		MAP_API_CONFIGURED,
+		MARKER_API_LOADING,
+		MARKER_API_LOADED,
+		ICON_API_LOADING,
+		ICON_API_LOADED,
+		EVENT_BACKEND_LOADING,
+		EVENT_BACKEND_FAILED,
+		EVENT_BACKEND_LOADED,
+		FINISHED
+	}
+
+	public abstract void initialize();
+
+	public abstract void removeLocations(Collection<Location> location);
+	public abstract void updateLocations(Collection<Location> location);
 
 	public abstract void updateComplete();
 

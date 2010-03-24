@@ -5,7 +5,7 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import de.novanic.eventservice.client.event.Event;
 
-public class DeleteLocation extends Location implements Event {
+public class DeleteLocation extends BaseLocation implements Event {
 	private static final long serialVersionUID = 1L;
 
 	public DeleteLocation() {}

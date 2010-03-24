@@ -41,6 +41,11 @@
     <servlet-class>org.opennms.features.poller.remote.gwt.server.LocationStatusServiceImpl</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>gwt-log-remote-logger-servlet</servlet-name>
+    <servlet-class>com.allen_sauer.gwt.log.server.RemoteLoggerServiceImpl</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>EventService</servlet-name>
     <url-pattern>/org.opennms.features.poller.remote.gwt.Application/gwteventservice</url-pattern>
@@ -49,6 +54,11 @@
   <servlet-mapping>
     <servlet-name>LocationStatusService</servlet-name>
     <url-pattern>/org.opennms.features.poller.remote.gwt.Application/locationStatus</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>gwt-log-remote-logger-servlet</servlet-name>
+    <url-pattern>/org.opennms.features.poller.remote.gwt.Application/gwt-log</url-pattern>
   </servlet-mapping>
 
   <welcome-file-list>

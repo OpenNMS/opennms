@@ -6,7 +6,7 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import de.novanic.eventservice.client.event.Event;
 
-public class UpdateLocation extends Location implements Event {
+public class UpdateLocation extends BaseLocation implements Event {
 	private static final long serialVersionUID = 1L;
 	public UpdateLocation() {
 		super();

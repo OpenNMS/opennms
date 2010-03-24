@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$OPENNMS_ROOT" ]; then
-	OPENNMS_ROOT=`ls -d ../../target/opennms-*-SNAPSHOT | sort -u | tail -n 1`
+	OPENNMS_ROOT=`ls -d ../../target/opennms-*-SNAPSHOT 2>/dev/null | sort -u | tail -n 1`
 	OPENNMS_ROOT=`cd $OPENNMS_ROOT; pwd`
 fi
 
