@@ -5,6 +5,180 @@
         <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
         <mstation>master.nmanage.com</mstation>
     </header>
+    <command binary="false">
+        <name>javaPagerEmail</name>
+        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>
+        <comment>class for sending pager email notifications</comment>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-pemail</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>javaEmail</name>
+        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>
+        <comment>class for sending email notifications</comment>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-email</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+    <command binary="true">
+        <name>textPage</name>
+        <execute>/usr/bin/qpage</execute>
+        <comment>text paging program</comment>
+        <argument streamed="false">
+            <switch>-p</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-t</switch>
+        </argument>
+    </command>
+    <command binary="true">
+        <name>numericPage</name>
+        <execute>/usr/bin/qpage</execute>
+        <comment>numeric paging program</comment>
+        <argument streamed="false">
+            <substitution>-p</substitution>
+            <switch>-d</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-nm</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>xmppMessage</name>
+        <execute>org.opennms.netmgt.notifd.XMPPNotificationStrategy</execute>
+        <comment>class for sending XMPP notifications</comment>
+        <argument streamed="false">
+            <switch>-xmpp</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>xmppGroupMessage</name>
+        <execute>org.opennms.netmgt.notifd.XMPPGroupNotificationStrategy</execute>
+        <comment>class for sending XMPP Group Chat notifications</comment>
+        <argument streamed="false">
+            <switch>-xmpp</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>ircCat</name>
+        <execute>org.opennms.netmgt.notifd.IrcCatNotificationStrategy</execute>
+        <comment>class for sending IRC notifications via an IRCcat bot</comment>
+        <argument streamed="false">
+            <switch>-email</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>callWorkPhone</name>
+        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <comment>class for calling via Asterisk for notifications</comment>
+        <argument streamed="false">
+            <switch>-d</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-nodeid</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-interface</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-service</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-wphone</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tuipin</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>callMobilePhone</name>
+        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <comment>class for calling via Asterisk for notifications</comment>
+        <argument streamed="false">
+            <switch>-d</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-nodeid</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-interface</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-service</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-mphone</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tuipin</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>callHomePhone</name>
+        <execute>org.opennms.netmgt.notifd.AsteriskOriginateNotificationStrategy</execute>
+        <comment>class for calling via Asterisk for notifications</comment>
+        <argument streamed="false">
+            <switch>-d</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-nodeid</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-interface</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-service</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-mphone</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tuipin</switch>
+        </argument>
+    </command>
+
+    <!-- The following notification mechanisms are optional add-ons that you can use -->
+
     <!-- Use this notificationCommand to send an HTTP Get/Post as a notification (See notifications.xml example)
     Note: If there are no arguments specified prefixed with "post-", then an HTTP GET will be issued
     with the provided URL (URL is a required argument, of course).  Otherwise, an HTTP POST will be
@@ -74,34 +248,6 @@
     		<switch>trapVarbind</switch>
     	</argument>
     </command>
-    <command binary="false">
-        <name>javaPagerEmail</name>
-        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>
-        <comment>class for sending pager email notifications</comment>
-        <argument streamed="false">
-            <switch>-subject</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-pemail</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-tm</switch>
-        </argument>
-    </command>
-    <command binary="false">
-        <name>javaEmail</name>
-        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>
-        <comment>class for sending email notifications</comment>
-        <argument streamed="false">
-            <switch>-subject</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-email</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-tm</switch>
-        </argument>
-    </command>
 	<command binary="true">
 		<name>syslog</name>
 		<execute>/usr/bin/logger</execute>
@@ -122,29 +268,6 @@
 			<switch>-tm</switch>
 		</argument>
 	</command>
-    <command binary="true">
-        <name>textPage</name>
-        <execute>/usr/bin/qpage</execute>
-        <comment>text paging program</comment>
-        <argument streamed="false">
-            <switch>-p</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-t</switch>
-        </argument>
-    </command>
-    <command binary="true">
-        <name>numericPage</name>
-        <execute>/usr/bin/qpage</execute>
-        <comment>numeric paging program</comment>
-        <argument streamed="false">
-            <substitution>-p</substitution>
-            <switch>-d</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-nm</switch>
-        </argument>
-    </command>
     <command binary="true">
         <name>email</name>
         <execute>/bin/mail</execute>
@@ -172,28 +295,6 @@
             <switch>-pemail</switch>
         </argument>
         <argument streamed="true">
-            <switch>-tm</switch>
-        </argument>
-    </command>
-    <command binary="false">
-        <name>xmppMessage</name>
-        <execute>org.opennms.netmgt.notifd.XMPPNotificationStrategy</execute>
-        <comment>class for sending XMPP notifications</comment>
-        <argument streamed="false">
-            <switch>-xmpp</switch>
-        </argument>
-        <argument streamed="false">
-            <switch>-tm</switch>
-        </argument>
-    </command>
-    <command binary="false">
-        <name>xmppGroupMessage</name>
-        <execute>org.opennms.netmgt.notifd.XMPPGroupNotificationStrategy</execute>
-        <comment>class for sending XMPP Group Chat notifications</comment>
-        <argument streamed="false">
-            <switch>-xmpp</switch>
-        </argument>
-        <argument streamed="false">
             <switch>-tm</switch>
         </argument>
     </command>
