@@ -1,5 +1,40 @@
 <VacuumdConfiguration period="86400000" >
   <statement>
+    <!-- removes references in topo maps to nodes that have been marked as deleted - cascading deletes cannot work here -->
+    DELETE FROM element
+     WHERE element.elementtype = 'N'
+       AND element.elementid IN
+           (SELECT nodeid
+              FROM node
+             WHERE nodetype = 'D');
+  </statement>
+
+  <statement>
+    <!-- this deletes all entries in atInterface that have been marked as deleted -->
+    DELETE FROM atInterface WHERE atInterface.status = 'D';
+  </statement>
+
+  <statement>
+    <!-- this deletes all entries in datalinkInterface that have been marked as deleted -->
+    DELETE FROM datalinkInterface WHERE datalinkInterface.status = 'D';
+  </statement>
+
+  <statement>
+    <!-- this deletes all entries in ipRouteInterface that have been marked as deleted -->
+    DELETE FROM ipRouteInterface WHERE ipRouteInterface.status = 'D';
+  </statement>
+
+  <statement>
+    <!-- this deletes all entries in stpInterface that have been marked as deleted -->
+    DELETE FROM stpInterface WHERE stpInterface.status = 'D';
+  </statement>
+   
+  <statement>
+    <!-- this deletes all the snmpInterfaces that have been marked as deleted -->
+    DELETE FROM snmpInterface WHERE snmpInterface.snmpCollect = 'D';
+  </statement>
+
+  <statement>
     <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
     DELETE FROM node WHERE node.nodeType = 'D';
   </statement>
@@ -31,7 +66,7 @@
                 trigger-name="selectResolvers" 
                 action-name="clearProblems" />
                 
-    <automation name="cleanUp" interval="30000" active="true"
+    <automation name="cleanUp" interval="60000" active="true"
                 action-name="deletePastClearedAlarms" />
                 
     <automation name="fullCleanUp" interval="300000" active="true" 
@@ -188,7 +223,7 @@
             FROM alarms a
            WHERE a.tticketstate = 3
              AND a.severity &gt; 2
-             AND a.alarmType = 1 
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
       </statement>
     </trigger>
   
@@ -202,7 +237,7 @@
                  now() AS _ts
             FROM alarms a
            WHERE a.severity &gt; 2 
-             AND a.alarmType = 1 
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
              AND a.alarmAckUser is NULL 
              AND a.tticketState IS NULL
              AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
@@ -221,7 +256,7 @@
                  now() AS _ts
             FROM alarms a
            WHERE a.severity = 7 
-             AND a.alarmType = 1 
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
              AND a.alarmAckUser is NULL 
              AND a.tticketState IS NULL
              AND lasteventtime &lt; now() - interval '5 minutes'
@@ -238,7 +273,7 @@
                  now() AS _ts
             FROM alarms a
            WHERE a.severity &gt; 2 
-             AND a.alarmType = 1 
+             AND ( a.alarmType = 1 OR a.alarmType = 3 )
              AND a.tticketState IS NOT NULL
              AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
       </statement>
@@ -272,7 +307,7 @@
             FROM alarms a
  LEFT OUTER JOIN service s
               ON s.serviceid = a.serviceid
-           WHERE alarmType = 1
+           WHERE ( a.alarmType = 1 OR a.alarmType = 3 )
              AND severity &gt; 3
              AND severity &lt; 7
              AND alarmacktime IS NULL
@@ -389,21 +424,13 @@
       <statement>
         DELETE FROM alarms
          WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '2 minutes'
+           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '5 minutes'
            AND (alarmacktime IS NULL AND (tticketstate IS NULL OR tticketState = 3))
       </statement>
     </action>
     
-<!--  May need to add a check for Open ticket state and wait for the state to be closed based on
-      update ticket action-event -->
-    <!-- action name="deleteAllPastClearedAlarms" >
-      <statement>
-        DELETE from alarms
-         WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
-           AND (alarmacktime IS NULL OR tticketState = 3)
-      </statement>
-    </action-->
+    <!-- May need to add a check for Open ticket state and wait for the state to be closed based on
+         update ticket action-event -->
     <action name="deleteAllPastClearedAlarms" >
       <statement>
         DELETE from alarms
