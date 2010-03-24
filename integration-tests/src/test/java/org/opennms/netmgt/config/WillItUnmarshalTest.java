@@ -484,10 +484,6 @@ public class WillItUnmarshalTest {
         unmarshal("translator-configuration.xml", EventTranslatorConfiguration.class);
     }
     @Test
-    public void testExampleTranslatorConfiguration() throws Exception {
-        unmarshalExample("translator-configuration.xml", EventTranslatorConfiguration.class);
-    }
-    @Test
     public void testTrapdonfiguration() throws Exception {
         unmarshal("trapd-configuration.xml", TrapdConfiguration.class);
     }
