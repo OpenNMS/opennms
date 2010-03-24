@@ -20,6 +20,13 @@ public class DefaultLocationListener extends BaseLocationListener {
 		m_locationManager.removeLocation(location);
 	}
 
+	public void onLocationUpdate(final UpdateLocations locations) {
+		if (locations == null) {
+			return;
+		}
+		m_locationManager.updateLocations(locations.getLocations());
+	}
+
 	public void onLocationUpdate(final UpdateLocation location) {
 		if (location == null) {
 			return;

@@ -1,0 +1,52 @@
+package org.opennms.features.poller.remote.gwt.client;
+
+import com.google.gwt.maps.client.overlay.Marker;
+
+public class GoogleMapsLocation extends BaseLocation {
+	private static final long serialVersionUID = 1L;
+	private Marker m_marker;
+	private GWTLatLng m_latLng;
+
+	public GoogleMapsLocation() {
+		super();
+	}
+
+	public GoogleMapsLocation(Location location) {
+		super(location.getName(), location.getPollingPackageName(), location.getArea(), location.getGeolocation(), location.getLocationMonitorState());
+	}
+
+	public GoogleMapsLocation(final String name, final String pollingPackageName, final String area, final String geolocation) {
+		super(name, pollingPackageName, area, geolocation);
+	}
+	
+	public GoogleMapsLocation(String name, String pollingPackageName, String area, String geolocation, LocationMonitorState lms) {
+		super(name, pollingPackageName, area, geolocation, lms);
+	}
+
+
+	@Override
+	public String getImageURL() {
+		if (m_marker != null) {
+			return m_marker.getIcon().getImageURL();
+		}
+		return super.getImageURL();
+	}
+
+	public GWTLatLng getLatLng() {
+		return m_latLng;
+	}
+
+	public void setLatLng(GWTLatLng latLng) {
+		m_latLng = latLng;
+	}
+	
+	public Marker getMarker() {
+		return m_marker;
+	}
+
+	public void setMarker(Marker marker) {
+		m_marker = marker;
+		m_latLng = new GWTLatLng(marker.getLatLng().getLatitude(), marker.getLatLng().getLongitude());
+	}
+
+}

@@ -13,6 +13,8 @@ public class BaseLocationListener implements LocationListener {
 			onLocationDelete((DeleteLocation)event);
 		} else if (event instanceof UpdateComplete) {
 			onUpdateComplete((UpdateComplete)event);
+		} else if (event instanceof UpdateLocations) {
+			onLocationUpdate((UpdateLocations)event);
 		} else {
 			onEvent((Event)event);
 		}
@@ -23,6 +25,12 @@ public class BaseLocationListener implements LocationListener {
 	 * @param event the event
 	 */
 	public void onLocationUpdate(final UpdateLocation event) {}
+
+	/**
+	 * Called when a location update collection comes from the backend.
+	 * @param event the event
+	 */
+	public void onLocationUpdate(final UpdateLocations event) {}
 
 	/**
 	 * Called when a location delete comes from the backend.
@@ -41,4 +49,5 @@ public class BaseLocationListener implements LocationListener {
 	 * @param event the event
 	 */
 	public void onEvent(final Event event) {}
+
 }

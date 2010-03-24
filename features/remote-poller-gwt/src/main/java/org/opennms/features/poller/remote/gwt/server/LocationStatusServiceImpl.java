@@ -20,6 +20,7 @@ import org.opennms.features.poller.remote.gwt.client.LocationMonitorState;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
 import org.opennms.features.poller.remote.gwt.client.UpdateComplete;
 import org.opennms.features.poller.remote.gwt.client.UpdateLocation;
+import org.opennms.features.poller.remote.gwt.client.UpdateLocations;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -82,12 +83,15 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		public void run() {
 			LogUtils.debugf(this, "pushing initial data");
 			lastUpdated = new Date();
+			
+			final Collection<Location> locations = new ArrayList<Location>();
 			for (OnmsMonitoringLocationDefinition def : m_locationDao.findAllMonitoringLocationDefinitions()) {
+				locations.add(getLocation(def));
 				LogUtils.debugf(this, "pushing location: %s", def.getName());
 //				addEventUserSpecific(getLocation(def));
-				addEvent(Location.LOCATION_EVENT_DOMAIN, getLocation(def));
+//				addEvent(Location.LOCATION_EVENT_DOMAIN, getLocation(def));
 			}
-
+			addEvent(Location.LOCATION_EVENT_DOMAIN, new UpdateLocations(locations));
 			addEvent(Location.LOCATION_EVENT_DOMAIN, new UpdateComplete());
 		}
 		
@@ -121,11 +125,14 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 				}
 			}
 
+			final Collection<Location> locations = new ArrayList<Location>();
 			for (final OnmsMonitoringLocationDefinition def : definitions.values()) {
 				final Location location = getLocation(def);
 				LogUtils.debugf(this, "pushing location update: %s", location.getName());
-				addEvent(Location.LOCATION_EVENT_DOMAIN, location);
+				locations.add(location);
+//				addEvent(Location.LOCATION_EVENT_DOMAIN, location);
 			}
+			addEvent(Location.LOCATION_EVENT_DOMAIN, new UpdateLocations(locations));
 
 			lastUpdated = endDate;
 		}

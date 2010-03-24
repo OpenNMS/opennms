@@ -8,9 +8,11 @@
 		<g:west size="250">
 			<me:LocationPanel ui:field='locationPanel' />
 		</g:west>
+		<!-- 
  		<g:center>
 			<maps:MapWidget ui:field='mapWidget' />
 		</g:center>
+		-->
 	</g:SplitLayoutPanel>
 
 </ui:UiBinder>

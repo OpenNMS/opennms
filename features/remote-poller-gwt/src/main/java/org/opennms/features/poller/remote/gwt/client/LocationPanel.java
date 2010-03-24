@@ -78,8 +78,8 @@ public class LocationPanel extends Composite {
 		int count = 0;
 		for (Location location : locationManager.getVisibleLocations()) {
 		    Image icon = new Image();
-            icon.setUrl(location.getMarker().getIcon().getImageURL());
-            
+            icon.setUrl(location.getImageURL());
+
             m_locations.setWidget(count, 0, icon);
             m_locations.setText(count, 1, location.getName());
 		    m_locations.setText(count, 2, location.getArea());

@@ -9,6 +9,7 @@ import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 public interface LocationListener extends RemoteEventListener
 {
 	void onLocationUpdate(UpdateLocation event);
+	void onLocationUpdate(UpdateLocations event);
 	void onLocationDelete(DeleteLocation event);
 	void onUpdateComplete(UpdateComplete event);
 	void onEvent(Event event);
