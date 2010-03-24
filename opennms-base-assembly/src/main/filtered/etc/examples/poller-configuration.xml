@@ -1,619 +1,624 @@
 <?xml version="1.0"?>
 <?castor class-name="org.opennms.netmgt.poller.PollerConfiguration"?>
 <poller-configuration threads="30" 
-        serviceUnresponsiveEnabled="false"
-        nextOutageId="SELECT nextval('outageNxtId')"
-        xmlrpc="false">
-	<node-outage status="on" 
-	             pollAllIfNoCriticalServiceDefined="true">
-		<critical-service name="ICMP"/>
-	</node-outage>
-	<package name="example1">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<specific>0.0.0.0</specific>
-		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-url>file:${install.etc.dir}/include</include-url>
-                <rrd step = "300">
-                        <rra>RRA:AVERAGE:0.5:1:2016</rra>
-                        <rra>RRA:AVERAGE:0.5:12:4464</rra>
-                        <rra>RRA:MIN:0.5:12:4464</rra>
-                        <rra>RRA:MAX:0.5:12:4464</rra>
-                </rrd>
-		<service name="DominoIIOP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="ior-port" value="80"/>
-			<parameter key="port" value="63148"/>
-		</service>
-		<service name="Citrix" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-		</service>
-		<service name="LDAP" interval="300000" user-defined="false" status="on">
-			<parameter key="port" value="389"/>
-			<parameter key="version" value="3"/>
-			<parameter key="searchbase" value="DC=example,DC=org,OU=users"/>
-			<parameter key="searchfilter" value="CN=testuser"/>
-			<parameter key="dn" value="DN=example,DN=org,OU=users,CN=opennms"/>
-			<parameter key="password" value="passwordforopennmsuser"/>
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-		</service>
-		<service name="Memcached" interval="300000" user-defined="false" status="on">
-			<parameter key="port" value="11211"/>
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="memcached"/>
-			<parameter key="rrd-base-name" value="memcached" />
-		</service>
-		<service name="ICMP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="icmp"/>
-		</service>
-		<service name="DNS" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="5000"/>
-			<parameter key="port" value="53"/>
-			<parameter key="lookup" value="localhost"/>
-			<parameter key="fatal-response-codes" value="2,3,5" /><!-- ServFail, NXDomain, Refused -->
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="dns"/>
-		</service>
-		<service name="NTP" interval="300000" user-defined="false" status="off">
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="5000"/>
-			<parameter key="port" value="123"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="ntp"/>
-		</service>
-		<service name="SMTP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="port" value="25"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="smtp"/>
-		</service>
-		<service name="FTP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="port" value="21"/>
-			<parameter key="userid" value=""/>
-			<parameter key="password" value=""/>
-		</service>
-		<service name="SNMP" interval="300000" user-defined="false" status="off">
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="port" value="161"/>
-			<parameter key="oid" value=".1.3.6.1.2.1.1.2.0"/>
-		</service>
-		<service name="HTTP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-                        <parameter key="timeout" value="3000"/>
-                        <parameter key="port" value="80"/>
-                        <parameter key="url" value="/"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="http"/>
-                </service>
-		<service name="HTTP-MGMT" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-                        <parameter key="timeout" value="3000"/>
-                        <parameter key="port" value="280"/>
-                        <parameter key="url" value="/"/>
-                </service>
-                <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-                        <parameter key="timeout" value="3000"/>
-                        <parameter key="port" value="8080"/>
-                        <parameter key="url" value="/"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="http-8080"/>
-                </service>
-                <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-                        <parameter key="timeout" value="3000"/>
-                        <parameter key="port" value="8000"/>
-                        <parameter key="url" value="/"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="http-8000"/>
-        </service>
-        <service name="HTTPS" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="timeout" value="5000"/>
-			<parameter key="port" value="443"/>
-			<parameter key="url" value="/"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<!--  an example of using a different dsName and rrd file name -->
-			<parameter key="rrd-base-name" value="https" />
-			<parameter key="ds-name" value="responseTime"/>
-		</service>
-		<service name="MySQL" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="port" value="3306"/>
-			<parameter key="banner" value="*"/>
-		</service>
-		<service name="Sybase" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="port" value="1498"/>
-			<parameter key="banner" value="*"/>
-		</service>
-		<service name="Informix" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="port" value="1536"/>
-			<parameter key="banner" value="*"/>
-		</service>
-		<service name="SQLServer" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="port" value="1433"/>
-			<parameter key="banner" value="*"/>
-		</service>
-		<service name="Oracle" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="port" value="1521"/>
-			<parameter key="banner" value="*"/>
-		</service>
-		<service name="Postgres" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="banner" value="*"/>
-			<parameter key="port" value="5432"/>
-			<parameter key="timeout" value="3000"/>
-		</service>
-		<service name="SSH" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="banner" value="SSH"/>
-			<parameter key="port" value="22"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="ssh"/>
-		</service>
-		<service name="DHCP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="dhcp"/>
-		</service>
-		<service name="IMAP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="port" value="143"/>
-			<parameter key="timeout" value="3000"/>
-		</service>
-		<service name="POP3" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="1"/>
-			<parameter key="port" value="110"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="pop3"/>
-		</service>
-		<service name="RadiusAuth" interval="300000" user-defined="false" status="on">
-             		<parameter key="retry" value="3"/>
-             		<parameter key="timeout" value="3000"/>
-             		<parameter key="user" value="TEST"/>
-             		<parameter key="password" value="test"/>
-             		<parameter key="secret" value="opennms"/>
-             		<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-             		<parameter key="ds-name" value="radiusauth"/>
-		</service>
-		<service name="JBoss4" interval="300000" user-defined="false" status="on">
-			<parameter key="version" value="4"/>
-			<parameter key="port" value="1099"/>
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="factory" value="RMI"/>
-                        <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
-                             need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
-                             <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
-                             The default port is 8080
-                        -->
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="jboss"/>
-		</service>
-		<service name="JBoss32" interval="300000" user-defined="false" status="on">
-			<parameter key="port" value="1099"/>
-			<parameter key="version" value="32"/>
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="factory" value="RMI"/>
-                        <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
-                             need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
-                             <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
-                             The default port is 8080
-                        -->
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="jboss"/>
-		</service>
-		<service name="JVM" interval="300000" user-defined="false" status="on">
-			<parameter key="port" value="9003"/>
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-			<parameter key="ds-name" value="jmx"/>
-			<parameter key="friendly-name" value="jvm"/>
-		</service>
-		<service name="NRPE" interval="300000" user-defined="false" status="on">
-             		<parameter key="retry" value="3"/>
-             		<parameter key="timeout" value="3000"/>
-             		<parameter key="port" value="5666"/>
-             		<parameter key="command" value="_NRPE_CHECK"/>
-             		<parameter key="usessl" value="true"/>
-             		<parameter key="padding" value="2"/>
-             		<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-             		<parameter key="ds-name" value="nrpe"/>
-		</service>
-		<service name="DbTestExample" interval="300000" user-defined="false" status="on">
-             		<parameter key="retry" value="3"/>
-             		<parameter key="timeout" value="3000"/>
-             		<parameter key="user" value="dbtest"/>
-             		<parameter key="password" value="onetwothree"/>
-			<parameter key="stored-procedure" value="is_db_consistent"/>
-			<parameter key="schema" value="test"/>
-			<parameter key="url" value="jdbc:postgresql://dbserver.example.com/dbname"/>
-             		<parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-             		<parameter key="ds-name" value="dbtransaction"/>
-		</service>
-		<service name="DiskUsage-root" interval="300000" user-defined="false" status="on">
-             		<parameter key="timeout" value="3000"/>
-             		<parameter key="retry" value="2"/>
-             		<parameter key="disk" value="/"/>
-             		<parameter key="match-type" value="exact"/><!-- This is the default if "match-type" is omitted -->
-             		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
-		</service>
-		<service name="DiskUsage-home" interval="300000" user-defined="false" status="on">
-             		<parameter key="timeout" value="3000"/>
-             		<parameter key="retry" value="2"/>
-             		<parameter key="disk" value="/home"/>
-             		<parameter key="match-type" value="endsWith" /><!-- Would catch either "/home" or "/export/home" -->
-             		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
-		</service>
-		<service name="DiskUsage-CDrive" interval="300000" user-defined="false" status="on">
-             		<parameter key="timeout" value="3000"/>
-             		<parameter key="retry" value="2"/>
-             		<parameter key="disk" value="C:"/>
-             		<parameter key="match-type" value="startsWith" /><!-- Needed for Windows SNMP service, which appends label and serial number -->
-             		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
-		</service>
-		<service name="DiskUsage-BootDisk" interval="300000" user-defined="false" status="on">
-             		<parameter key="timeout" value="3000"/>
-             		<parameter key="retry" value="2"/>
-             		<parameter key="disk" value="Label:Boot Disk"/>
-             		<parameter key="match-type" value="regex" /><!-- For finding a Windows drive with a given label regardless of letter -->
-             		<parameter key="free" value="15"/><!-- At least 15% of space must be free -->
-		</service>
-		<service name="UnixTime" interval="300000" user-defined="false" status="on">
-             		<parameter key="timeout" value="3000"/>
-             		<parameter key="retry" value="1"/>
-             		<parameter key="protocol" value="tcp"/><!-- UDP also supported -->
-             		<parameter key="port" value="37"/>
-             		<parameter key="allowed-skew" value="300"/><!-- Seconds, i.e. 5 minutes -->
-             		<parameter key="persist-skew" value="true"/><!-- If true, return a multi-valued PollStatus with skew included -->
-		</service>
-		<!--
-		Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
-		<service name="LOOP-BACK" interval="300000" user-defined="false" status="on">
-			<parameter key="ip-match" value="169.254.*.*"/>
-			<parameter key="is-supported" value="true"/>
-		</service>
-		-->
-		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+                      serviceUnresponsiveEnabled="false"
+                      nextOutageId="SELECT nextval('outageNxtId')"
+                      xmlrpc="false">
+  <node-outage status="on" pollAllIfNoCriticalServiceDefined="true">
+    <critical-service name="ICMP" />
+  </node-outage>
+  <package name="example1">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <specific>0.0.0.0</specific>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-url>file:${install.etc.dir}/include</include-url>
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:4464</rra>
+      <rra>RRA:MIN:0.5:12:4464</rra>
+      <rra>RRA:MAX:0.5:12:4464</rra>
+    </rrd>
+    <service name="DominoIIOP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="ior-port" value="80" />
+      <parameter key="port" value="63148" />
+    </service>
+    <service name="Citrix" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+    </service>
+    <service name="LDAP" interval="300000" user-defined="false" status="on">
+      <parameter key="port" value="389" />
+      <parameter key="version" value="3" />
+      <parameter key="searchbase" value="DC=example,DC=org,OU=users" />
+      <parameter key="searchfilter" value="CN=testuser" />
+      <parameter key="dn" value="DN=example,DN=org,OU=users,CN=opennms" />
+      <parameter key="password" value="passwordforopennmsuser" />
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+    </service>
+    <service name="Memcached" interval="300000" user-defined="false" status="on">
+      <parameter key="port" value="11211" />
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="memcached" />
+      <parameter key="rrd-base-name" value="memcached" />
+    </service>
+    <service name="ICMP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="icmp" />
+      <parameter key="ds-name" value="icmp" />
+    </service>
+    <service name="DNS" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="5000" />
+      <parameter key="port" value="53" />
+      <parameter key="lookup" value="localhost" />
+      <parameter key="fatal-response-codes" value="2,3,5" /><!-- ServFail, NXDomain, Refused -->
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="dns" />
+      <parameter key="ds-name" value="dns" />
+    </service>
+    <service name="NTP" interval="300000" user-defined="false" status="off">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="5000" />
+      <parameter key="port" value="123" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="ntp" />
+    </service>
+    <service name="SMTP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="25" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="smtp" />
+      <parameter key="ds-name" value="smtp" />
+    </service>
+    <service name="FTP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="21" />
+      <parameter key="userid" value="" />
+      <parameter key="password" value="" />
+    </service>
+    <service name="SNMP" interval="300000" user-defined="false" status="off">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="161" />
+      <parameter key="oid" value=".1.3.6.1.2.1.1.2.0" />
+    </service>
+    <service name="HTTP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="80" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="http" />
+      <parameter key="ds-name" value="http" />
+    </service>
+    <service name="HTTP-MGMT" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="280" />
+      <parameter key="url" value="/" />
+    </service>
+    <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="8080" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="http-8080" />
+      <parameter key="ds-name" value="http-8080" />
+    </service>
+    <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="8000" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="http-8000" />
+      <parameter key="ds-name" value="http-8000" />
+    </service>
+    <service name="HTTPS" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="5000" />
+      <parameter key="port" value="443" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <!--  an example of using a different dsName and rrd file name -->
+      <parameter key="rrd-base-name" value="https" />
+      <parameter key="ds-name" value="responseTime" />
+    </service>
+    <service name="MySQL" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="3306" />
+      <parameter key="banner" value="*" />
+    </service>
+    <service name="Sybase" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="1498" />
+      <parameter key="banner" value="*" />
+    </service>
+    <service name="Informix" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="1536" />
+      <parameter key="banner" value="*" />
+    </service>
+    <service name="SQLServer" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="1433" />
+      <parameter key="banner" value="*" />
+    </service>
+    <service name="Oracle" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="1521" />
+      <parameter key="banner" value="*" />
+    </service>
+    <service name="Postgres" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="banner" value="*" />
+      <parameter key="port" value="5432" />
+      <parameter key="timeout" value="3000" />
+    </service>
+    <service name="SSH" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="banner" value="SSH" />
+      <parameter key="port" value="22" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="ssh" />
+      <parameter key="ds-name" value="ssh" />
+    </service>
+    <service name="DHCP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="dhcp" />
+      <parameter key="ds-name" value="dhcp" />
+    </service>
+    <service name="IMAP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="port" value="143" />
+      <parameter key="timeout" value="3000" />
+    </service>
+    <service name="POP3" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="port" value="110" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="pop3" />
+      <parameter key="ds-name" value="pop3" />
+    </service>
+    <service name="RadiusAuth" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="3" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="user" value="TEST" />
+      <parameter key="password" value="test" />
+      <parameter key="secret" value="opennms" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="radiusauth" />
+    </service>
+    <service name="JBoss4" interval="300000" user-defined="false" status="on">
+      <parameter key="version" value="4" />
+      <parameter key="port" value="1099" />
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="factory" value="RMI" />
+      <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
+          need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
+          <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
+          The default port is 8080
+      -->
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="jboss" />
+    </service>
+    <service name="JBoss32" interval="300000" user-defined="false" status="on">
+      <parameter key="port" value="1099" />
+      <parameter key="version" value="32" />
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="factory" value="RMI" />
+      <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
+          need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
+          <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
+          The default port is 8080
+      -->
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="jboss" />
+    </service>
+    <service name="JVM" interval="300000" user-defined="false" status="on">
+      <parameter key="port" value="9003" />
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="jmx" />
+      <parameter key="friendly-name" value="jvm" />
+    </service>
+    <service name="NRPE" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="3" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="5666" />
+      <parameter key="command" value="_NRPE_CHECK" />
+      <parameter key="usessl" value="true" />
+      <parameter key="padding" value="2" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="nrpe" />
+    </service>
+    <service name="DbTestExample" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="3" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="user" value="dbtest" />
+      <parameter key="password" value="onetwothree" />
+      <parameter key="stored-procedure" value="is_db_consistent" />
+      <parameter key="schema" value="test" />
+      <parameter key="url" value="jdbc:postgresql://dbserver.example.com/dbname" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="dbtransaction" />
+    </service>
+    <service name="DiskUsage-root" interval="300000" user-defined="false" status="on">
+      <parameter key="timeout" value="3000" />
+      <parameter key="retry" value="2" />
+      <parameter key="disk" value="/" />
+      <parameter key="match-type" value="exact" /><!-- This is the default if "match-type" is omitted -->
+      <parameter key="free" value="15" /><!-- At least 15% of space must be free -->
+    </service>
+    <service name="DiskUsage-home" interval="300000" user-defined="false" status="on">
+      <parameter key="timeout" value="3000" />
+      <parameter key="retry" value="2" />
+      <parameter key="disk" value="/home" />
+      <parameter key="match-type" value="endsWith" /><!-- Would catch either "/home" or "/export/home" -->
+      <parameter key="free" value="15" /><!-- At least 15% of space must be free -->
+    </service>
+    <service name="DiskUsage-CDrive" interval="300000" user-defined="false" status="on">
+      <parameter key="timeout" value="3000" />
+      <parameter key="retry" value="2" />
+      <parameter key="disk" value="C:" />
+      <parameter key="match-type" value="startsWith" /><!-- Needed for Windows SNMP service, which appends label and serial number -->
+      <parameter key="free" value="15" /><!-- At least 15% of space must be free -->
+    </service>
+    <service name="DiskUsage-BootDisk" interval="300000" user-defined="false" status="on">
+      <parameter key="timeout" value="3000" />
+      <parameter key="retry" value="2" />
+      <parameter key="disk" value="Label:Boot Disk" />
+      <parameter key="match-type" value="regex" /><!-- For finding a Windows drive with a given label regardless of letter -->
+      <parameter key="free" value="15" /><!-- At least 15% of space must be free -->
+    </service>
+    <service name="UnixTime" interval="300000" user-defined="false" status="on">
+      <parameter key="timeout" value="3000" />
+      <parameter key="retry" value="1" />
+      <parameter key="protocol" value="tcp" /><!-- UDP also supported -->
+      <parameter key="port" value="37" />
+      <parameter key="allowed-skew" value="300" /><!-- Seconds, i.e. 5 minutes -->
+      <parameter key="persist-skew" value="true" /><!-- If true, return a multi-valued PollStatus with skew included -->
+    </service>
+    <!--
+    Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
+    <service name="LOOP-BACK" interval="300000" user-defined="false" status="on">
+    <parameter key="ip-match" value="169.254.*.*" />
+    <parameter key="is-supported" value="true" />
+    </service>
+    -->
+    <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 
-		<downtime interval="30000" begin="0" end="300000"/>		<!-- 30s, 0, 5m -->
-		<downtime interval="300000" begin="300000" end="43200000"/>	<!-- 5m, 5m, 12h -->
-		<downtime interval="600000" begin="43200000" end="432000000"/>	<!-- 10m, 12h, 5d -->
-		<downtime begin="432000000" delete="true"/>			<!-- anything after 5 days delete -->
+    <downtime interval="30000" begin="0" end="300000" />		<!-- 30s, 0, 5m -->
+    <downtime interval="300000" begin="300000" end="43200000" />	<!-- 5m, 5m, 12h -->
+    <downtime interval="600000" begin="43200000" end="432000000" />	<!-- 10m, 12h, 5d -->
+    <downtime begin="432000000" delete="true" />			<!-- anything after 5 days delete -->
 
-	</package>
-	<package name="passive-service-example1">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<rrd step = "300">
-			<rra>RRA:AVERAGE:0.5:1:2016</rra>
-			<rra>RRA:AVERAGE:0.5:12:4464</rra>
-			<rra>RRA:MIN:0.5:12:4464</rra>
-			<rra>RRA:MAX:0.5:12:4464</rra>
-		</rrd>
-		<service name="NON-IP" interval="30000" user-defined="false" status="on" />
-		<downtime interval="15000" begin="0" end="300000"/>		<!-- 15s, 0, 5m -->
-		<downtime interval="30000" begin="300000" end="43200000"/>	<!-- 30s, 5m, 12h -->
-		<downtime interval="300000" begin="43200000" end="432000000"/>	<!-- 5m, 12h, 5d -->
-		<downtime begin="432000000" delete="true"/>			<!-- anything after 5 days delete -->
-	</package>
-        <package name="raleigh" remote="true">
-                <filter>IPADDR != '0.0.0.0'</filter>
-                <include-range begin="1.1.1.1" end="254.254.254.254"/>
-        <rrd step = "300">
-            <rra>RRA:AVERAGE:0.5:1:2016</rra>
-            <rra>RRA:AVERAGE:0.5:12:4464</rra>
-            <rra>RRA:MIN:0.5:12:4464</rra>
-            <rra>RRA:MAX:0.5:12:4464</rra>
-        </rrd>
-                <service name="HTTP" interval="30000" user-defined="false" status="on">
-                        <parameter key="retry" value="1"/>
-            <parameter key="timeout" value="3000"/>
-            <parameter key="port" value="80"/>
-            <parameter key="url" value="/"/>
-                        <parameter key="rrd-repository" value="${install.share.dir}/rrd/response"/>
-                        <parameter key="ds-name" value="http"/>
-        </service>
-                <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+  </package>
+  <package name="passive-service-example1">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254" />
+      <rrd step = "300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:4464</rra>
+      <rra>RRA:MIN:0.5:12:4464</rra>
+      <rra>RRA:MAX:0.5:12:4464</rra>
+      </rrd>
+      <service name="NON-IP" interval="30000" user-defined="false" status="on" />
+      <downtime interval="15000" begin="0" end="300000" />		<!-- 15s, 0, 5m -->
+      <downtime interval="30000" begin="300000" end="43200000" />	<!-- 30s, 5m, 12h -->
+      <downtime interval="300000" begin="43200000" end="432000000" />	<!-- 5m, 12h, 5d -->
+      <downtime begin="432000000" delete="true" />			<!-- anything after 5 days delete -->
+  </package>
+  <package name="raleigh" remote="true">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <rrd step = "300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:4464</rra>
+      <rra>RRA:MIN:0.5:12:4464</rra>
+      <rra>RRA:MAX:0.5:12:4464</rra>
+    </rrd>
+    <service name="HTTP" interval="30000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="80" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="ds-name" value="http" />
+    </service>
 
-                <downtime interval="30000" begin="0" end="300000"/>             <!-- 30s, 0, 5m -->
-                <downtime interval="300000" begin="300000" end="43200000"/>     <!-- 5m, 5m, 12h -->
-                <downtime interval="600000" begin="43200000" end="432000000"/>  <!-- 10m, 12h, 5d -->
-                <downtime begin="432000000" delete="true"/>                     <!-- anything after 5 days delete -->
+    <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 
-        </package>
-        
-    <package name="GoogleMailTest">
-        <filter>IPADDR != '0.0.0.0'</filter>
-        <specific>66.249.83.107</specific>
-        <rrd step = "300">
-            <rra>RRA:AVERAGE:0.5:1:2016</rra>
-            <rra>RRA:AVERAGE:0.5:12:4464</rra>
-            <rra>RRA:MIN:0.5:12:4464</rra>
-            <rra>RRA:MAX:0.5:12:4464</rra>
-        </rrd>
-        <service name="MAIL" interval="30000" user-defined="false" status="on">
-          <parameter key="mail-transport-test">
-            <mail-transport-test>
-              <mail-test>
-                <sendmail-test attempt-interval="3000" debug="true" use-authentication="false" use-jmta="false">
-                  <!-- These 2 properties are passed directly to the javamailer class.  The will
-                    be overridden if they are the same properties that are derived based on the
-                    other configuration elements.  Mainly here for convenience allowing properties
-                    to be set that don't get set by the configuration. -->
-                  <javamail-property name="mail.smtp.userset" value="false" />
-                  <javamail-property name="mail.smtp.ehlo" value="true" />
+    <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
+    <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
+    <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
+    <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+  </package>
+  <package name="GoogleMailTest">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <specific>66.249.83.107</specific>
+    <rrd step = "300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:4464</rra>
+      <rra>RRA:MIN:0.5:12:4464</rra>
+      <rra>RRA:MAX:0.5:12:4464</rra>
+    </rrd>
+    <service name="MAIL" interval="30000" user-defined="false" status="on">
+    <parameter key="mail-transport-test">
+      <mail-transport-test>
+        <mail-test>
+          <sendmail-test attempt-interval="3000" debug="true" use-authentication="false" use-jmta="false">
+            <!-- These 2 properties are passed directly to the javamailer class.  The will
+                be overridden if they are the same properties that are derived based on the
+                other configuration elements.  Mainly here for convenience allowing properties
+                to be set that don't get set by the configuration. -->
+            <javamail-property name="mail.smtp.userset" value="false" />
+            <javamail-property name="mail.smtp.ehlo" value="true" />
 
-                  <!-- Connect to local MTA and send... no auth required but the configuration
-                    requires auth be configured.  Disable with use-authentication attribute above. -->
-                  <sendmail-host host="127.0.0.1" port="25" />
-                  <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit"
-                    quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp" />
-                  <sendmail-message to="foo@gmail.com" from="root@[127.0.0.1]" subject="OpenNMS Test Message "
-                    body="This is an OpenNMS test message." />
-                  <user-auth user-name="opennms" password="rulz" />
-                </sendmail-test>
+            <!-- Connect to local MTA and send... no auth required but the configuration
+                requires auth be configured.  Disable with use-authentication attribute above. -->
+            <sendmail-host host="127.0.0.1" port="25" />
+            <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit"
+                quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp" />
+            <sendmail-message to="foo@gmail.com" from="root@[127.0.0.1]" subject="OpenNMS Test Message "
+                body="This is an OpenNMS test message." />
+            <user-auth user-name="opennms" password="rulz" />
+          </sendmail-test>
 
-                <!-- Read portion of the test.  Check to see if local MTA has delivered mail to Google Gmail account.  The
-                  attempt interval gives a delay between send and read test as well as between each retry. -->
-                <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX" subject-match="OpenNMS Test Message"
-                  delete-all-mail="true">
+          <!-- Read portion of the test.  Check to see if local MTA has delivered mail to Google Gmail account.  The
+          attempt interval gives a delay between send and read test as well as between each retry. -->
+          <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX" subject-match="OpenNMS Test Message" delete-all-mail="true">
+            <!-- Sample properties that you may want to set... these examples are the javamail defaults. -->
+            <javamail-property name="mail.pop3.apop.enable" value="false" />
+            <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
 
-                  <!-- Sample properties that you may want to set... these examples are the javamail defaults. -->
-                  <javamail-property name="mail.pop3.apop.enable" value="false" />
-                  <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
+            <readmail-host host="pop.gmail.com" port="995">
+              <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
+            </readmail-host>
+            <user-auth user-name="bar" password="foo" />
+          </readmail-test>
+        </mail-test>
+      </mail-transport-test>
+    </parameter>
+    </service>
 
-                  <readmail-host host="pop.gmail.com" port="995">
-                    <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
-                  </readmail-host>
-                  <user-auth user-name="bar" password="foo" />
-                </readmail-test>
-              </mail-test>
-            </mail-transport-test>
-          </parameter>
-        </service>
+    <downtime interval="15000" begin="0" end="300000" /> <!-- 15s, 0, 5m -->
+    <downtime interval="30000" begin="300000" end="43200000" /> <!-- 30s, 5m, 12h -->
+    <downtime interval="300000" begin="43200000" end="432000000" /> <!-- 5m, 12h, 5d -->
+    <downtime begin="432000000" delete="true" /> <!-- anything after 5 days delete -->
+  </package>
 
-        <downtime interval="15000" begin="0" end="300000"/>     <!-- 15s, 0, 5m -->
-        <downtime interval="30000" begin="300000" end="43200000"/>  <!-- 30s, 5m, 12h -->
-        <downtime interval="300000" begin="43200000" end="432000000"/>  <!-- 5m, 12h, 5d -->
-        <downtime begin="432000000" delete="true"/>         <!-- anything after 5 days delete -->
-    </package>
+  <package name="end2endSameServer">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <rrd step = "300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:4464</rra>
+      <rra>RRA:MIN:0.5:12:4464</rra>
+      <rra>RRA:MAX:0.5:12:4464</rra>
+    </rrd>
+    <service name="MAIL" interval="30000" user-defined="false" status="on">
+    <parameter key="mail-transport-test">
+      <mail-transport-test>
+      <mail-test>
+        <sendmail-test attempt-interval="3000" debug="true" use-authentication="false" use-jmta="false">
+        <!-- These 2 properties are passed directly to the javamailer class.  The will
+          be overridden if they are the same properties that are derived based on the
+          other configuration elements.  Mainly here for convenience allowing properties
+          to be set that don't get set by the configuration. -->
+        <javamail-property name="mail.smtp.userset" value="false" />
+        <javamail-property name="mail.smtp.ehlo" value="true" />
 
-    <package name="end2endSameServer">
-        <filter>IPADDR != '0.0.0.0'</filter>
-        <include-range begin="1.1.1.1" end="254.254.254.254"/>
-        <rrd step = "300">
-            <rra>RRA:AVERAGE:0.5:1:2016</rra>
-            <rra>RRA:AVERAGE:0.5:12:4464</rra>
-            <rra>RRA:MIN:0.5:12:4464</rra>
-            <rra>RRA:MAX:0.5:12:4464</rra>
-        </rrd>
-        <service name="MAIL" interval="30000" user-defined="false" status="on">
-          <parameter key="mail-transport-test">
-            <mail-transport-test>
-              <mail-test>
-                <sendmail-test attempt-interval="3000" debug="true" use-authentication="false" use-jmta="false">
-                  <!-- These 2 properties are passed directly to the javamailer class.  The will
-                    be overridden if they are the same properties that are derived based on the
-                    other configuration elements.  Mainly here for convenience allowing properties
-                    to be set that don't get set by the configuration. -->
-                  <javamail-property name="mail.smtp.userset" value="false" />
-                  <javamail-property name="mail.smtp.ehlo" value="true" />
+        <!-- Connect to local MTA and send... no auth required but the configuration
+          requires auth be configured.  Disable with use-authentication attribute above. -->
+        <sendmail-host host="${ipaddr}" port="25" />
+        <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit"
+          quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp" />
+        <sendmail-message to="root" from="root@[127.0.0.1]" subject="OpenNMS Test Message "
+          body="This is an OpenNMS test message." />
+        <user-auth user-name="opennms" password="rulz" />
+        </sendmail-test>
 
-                  <!-- Connect to local MTA and send... no auth required but the configuration
-                    requires auth be configured.  Disable with use-authentication attribute above. -->
-                  <sendmail-host host="${ipaddr}" port="25" />
-                  <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit"
-                    quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp" />
-                  <sendmail-message to="root" from="root@[127.0.0.1]" subject="OpenNMS Test Message "
-                    body="This is an OpenNMS test message." />
-                  <user-auth user-name="opennms" password="rulz" />
-                </sendmail-test>
+        <!-- Read portion of the test.  Check to see if local MTA has delivered mail to root's account on ${ipaddr}.  The
+        attempt interval gives a delay between send and read test as well as between each retry. -->
+        <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX" subject-match="OpenNMS Test Message"
+        delete-all-mail="true">
 
-                <!-- Read portion of the test.  Check to see if local MTA has delivered mail to root's account on ${ipaddr}.  The
-                  attempt interval gives a delay between send and read test as well as between each retry. -->
-                <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX" subject-match="OpenNMS Test Message"
-                  delete-all-mail="true">
+        <!-- Sample properties that you may want to set... these examples are the javamail defaults. -->
+        <javamail-property name="mail.pop3.apop.enable" value="false" />
+        <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
 
-                  <!-- Sample properties that you may want to set... these examples are the javamail defaults. -->
-                  <javamail-property name="mail.pop3.apop.enable" value="false" />
-                  <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
+        <readmail-host host="${ipaddr}" port="995">
+          <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
+        </readmail-host>
+        <user-auth user-name="bar" password="foo" />
+        </readmail-test>
+      </mail-test>
+      </mail-transport-test>
+    </parameter>
+    </service>
 
-                  <readmail-host host="${ipaddr}" port="995">
-                    <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s" />
-                  </readmail-host>
-                  <user-auth user-name="bar" password="foo" />
-                </readmail-test>
-              </mail-test>
-            </mail-transport-test>
-          </parameter>
-        </service>
+    <downtime interval="15000" begin="0" end="300000" />     <!-- 15s, 0, 5m -->
+    <downtime interval="30000" begin="300000" end="43200000" />  <!-- 30s, 5m, 12h -->
+    <downtime interval="300000" begin="43200000" end="432000000" />  <!-- 5m, 12h, 5d -->
+    <downtime begin="432000000" delete="true" />         <!-- anything after 5 days delete -->
+  </package>
+  <package name="Windows Services">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <specific>0.0.0.0</specific>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-url>file:${install.etc.dir}/include</include-url>
+    <rrd step = "300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:4464</rra>
+      <rra>RRA:MIN:0.5:12:4464</rra>
+      <rra>RRA:MAX:0.5:12:4464</rra>
+    </rrd>
+    <service name="MSExchangeSA" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeSA" />
+    </service>
+    <service name="MSExchangeIS" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeIS" />
+    </service>
+    <service name="MSExchangeMailboxAssistants" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeMailboxAssistants" />
+    </service>
+    <service name="MSExchangeMailSubmission" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeMailSubmission" />
+    </service>
+    <service name="MSExchangeADTopology" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeADTopology" />
+    </service>
+    <service name="MSExchangeAntispamUpdate" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeAntispamUpdate" />
+    </service>
+    <service name="MSExchangeEdgeSync" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeEdgeSync" />
+    </service>
+    <service name="MSExchangeFDS" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeFDS" />
+    </service>
+    <service name="MSExchangeServiceHost" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeServiceHost" />
+    </service>
+    <service name="MSExchangeTransport" interval="3000000"
+      user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="30000" />
+      <parameter key="port" value="161" />
+      <parameter key="service-name" value="MSExchangeTransport" />
+    </service>
+    <service name="XMP" interval="300000" user-defined="false" status="off">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+    </service>
+    <!-- XMP/Cartographer plugin: see http://www.krupczak.org/index.php/Cartographer for more information -->
+    <service name="WMI" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="matchType" value="all" />
+      <parameter key="wmiClass" value="Win32_ComputerSystem" />
+      <parameter key="wmiObject" value="Status" />
+      <parameter key="compareOp" value="EQ" />
+      <parameter key="compareValue" value="OK" />
+      <parameter key="service-name" value="WMI" />
+    </service>
 
-        <downtime interval="15000" begin="0" end="300000"/>     <!-- 15s, 0, 5m -->
-        <downtime interval="30000" begin="300000" end="43200000"/>  <!-- 30s, 5m, 12h -->
-        <downtime interval="300000" begin="43200000" end="432000000"/>  <!-- 5m, 12h, 5d -->
-        <downtime begin="432000000" delete="true"/>         <!-- anything after 5 days delete -->
-    </package>
-	<package name="Windows Services">
-		<filter>IPADDR != '0.0.0.0'</filter>
-		<specific>0.0.0.0</specific>
-		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-url>file:${install.etc.dir}/include</include-url>
-                <rrd step = "300">
-                        <rra>RRA:AVERAGE:0.5:1:2016</rra>
-                        <rra>RRA:AVERAGE:0.5:12:4464</rra>
-                        <rra>RRA:MIN:0.5:12:4464</rra>
-                        <rra>RRA:MAX:0.5:12:4464</rra>
-                </rrd>
-	<service name="MSExchangeSA" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeSA"/>
-        </service>
-        <service name="MSExchangeIS" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeIS"/>
-        </service>
-        <service name="MSExchangeMailboxAssistants" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeMailboxAssistants"/>
-        </service>
-        <service name="MSExchangeMailSubmission" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeMailSubmission"/>
-        </service>
-        <service name="MSExchangeADTopology" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeADTopology"/>
-        </service>
-        <service name="MSExchangeAntispamUpdate" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeAntispamUpdate"/>
-        </service>
-	<service name="MSExchangeEdgeSync" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeEdgeSync"/>
-        </service>
-        <service name="MSExchangeFDS" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeFDS"/>
-        </service>
-        <service name="MSExchangeServiceHost" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeServiceHost"/>
-        </service>
-        <service name="MSExchangeTransport" interval="3000000"
-            user-defined="false" status="on">
-            <parameter key="retry" value="2"/>
-            <parameter key="timeout" value="30000"/>
-            <parameter key="port" value="161"/>
-            <parameter key="service-name" value="MSExchangeTransport"/>
-        </service>
-    	<service name="XMP" interval="300000" user-defined="false" status="off">
-      		<parameter key="retry" value="1" />
-      		<parameter key="timeout" value="3000" />
-    	</service>
-    	<!-- XMP/Cartographer plugin: see http://www.krupczak.org/index.php/Cartographer for more information -->
-    	<service name="WMI" interval="300000" user-defined="false" status="on">
-      		<parameter key="retry" value="2" />
-      		<parameter key="timeout" value="3000" />
-      		<parameter key="matchType" value="all"/>
-      		<parameter key="wmiClass" value="Win32_ComputerSystem" />
-      		<parameter key="wmiObject" value="Status" />
-      		<parameter key="compareOp" value="EQ" />
-      		<parameter key="compareValue" value="OK" />
-      		<parameter key="service-name" value="WMI" />
-    	</service>
+    <downtime interval="15000" begin="0" end="300000" />     <!-- 15s, 0, 5m -->
+    <downtime interval="30000" begin="300000" end="43200000" />  <!-- 30s, 5m, 12h -->
+    <downtime interval="300000" begin="43200000" end="432000000" />  <!-- 5m, 12h, 5d -->
+    <downtime begin="432000000" delete="true" />         <!-- anything after 5 days delete -->
+  </package>
 
-        <downtime interval="15000" begin="0" end="300000"/>     <!-- 15s, 0, 5m -->
-        <downtime interval="30000" begin="300000" end="43200000"/>  <!-- 30s, 5m, 12h -->
-        <downtime interval="300000" begin="43200000" end="432000000"/>  <!-- 5m, 12h, 5d -->
-        <downtime begin="432000000" delete="true"/>         <!-- anything after 5 days delete -->
-    </package>
-    
-	<monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor"/>
-	<monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
-	<monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor"/>
-	<monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
-	<monitor service="Memcached" 	class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor"/>
-	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-	<monitor service="HTTP-MGMT" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-	<monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
-	<monitor service="HTTPS" 	class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor"/>
-	<monitor service="SMTP" 	class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor"/>
-	<monitor service="DHCP" 	class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
-	<monitor service="DNS"  	class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
-	<monitor service="JBoss4"  	class-name="org.opennms.netmgt.poller.monitors.JBossMonitor" />
-	<monitor service="JBoss32"  	class-name="org.opennms.netmgt.poller.monitors.JBossMonitor" />
-	<monitor service="JVM"  	class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
-	<monitor service="NTP"  	class-name="org.opennms.netmgt.poller.monitors.NtpMonitor" />
-	<monitor service="FTP"  	class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
-	<monitor service="SNMP"         class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
-	<monitor service="Oracle" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="Postgres" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="MySQL" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="Sybase" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="Informix" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="SQLServer" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.monitors.SshMonitor"/>
-	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.monitors.ImapMonitor"/>
-	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
-	<monitor service="RadiusAuth"	class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor"/>
-	<monitor service="NRPE"		class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
-	<monitor service="DbTestExample" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/>
-	<monitor service="DiskUsage-root" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor"/>
-	<monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor"/>
-	<monitor service="UnixTime" 	class-name="org.opennms.netmgt.poller.monitors.TrivialTimeMonitor"/>
-	<!-- 
-	<monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
-	 -->
-	<monitor service="NON-IP" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
-	<monitor service="MAIL" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" />
-	<!-- Windows Exchange Services -->
-	<monitor service="MSExchangeSA" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeIS" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeMailboxAssistants" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeMailSubmission" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeADTopology" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeAntispamUpdate" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeEdgeSync" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeFDS"  class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeServiceHost" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="MSExchangeTransport"  class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-	<monitor service="XMP" class-name="org.opennms.netmgt.poller.monitors.XmpMonitor" />
-	<monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
+  <monitor service="DominoIIOP" class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor" />
+  <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
+  <monitor service="Citrix" class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor" />
+  <monitor service="LDAP" class-name="org.opennms.netmgt.poller.monitors.LdapMonitor" />
+  <monitor service="Memcached" class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
+  <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTP-MGMT" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTP-8080" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTP-8000" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+  <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
+  <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor" />
+  <monitor service="DNS" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+  <monitor service="JBoss4" class-name="org.opennms.netmgt.poller.monitors.JBossMonitor" />
+  <monitor service="JBoss32" class-name="org.opennms.netmgt.poller.monitors.JBossMonitor" />
+  <monitor service="JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+  <monitor service="NTP" class-name="org.opennms.netmgt.poller.monitors.NtpMonitor" />
+  <monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor" />
+  <monitor service="SNMP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+  <monitor service="Oracle" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="Postgres" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="MySQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="Sybase" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="Informix" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="SQLServer" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor" />
+  <monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
+  <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
+  <monitor service="RadiusAuth" class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor" />
+  <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
+  <monitor service="DbTestExample" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor" />
+  <monitor service="DiskUsage-root" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+  <monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+  <monitor service="UnixTime" class-name="org.opennms.netmgt.poller.monitors.TrivialTimeMonitor" />
+  <!-- 
+  <monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
+  -->
+  <monitor service="NON-IP" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
+  <monitor service="MAIL" class-name="org.opennms.netmgt.poller.monitors.MailTransportMonitor" />
+  <!-- Windows Exchange Services -->
+  <monitor service="MSExchangeSA" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeIS" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeMailboxAssistants" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeMailSubmission" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeADTopology" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeAntispamUpdate" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeEdgeSync" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeFDS" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeServiceHost" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="MSExchangeTransport" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="XMP" class-name="org.opennms.netmgt.poller.monitors.XmpMonitor" />
+  <monitor service="WMI" class-name="org.opennms.netmgt.poller.monitors.WmiMonitor" />
 
 </poller-configuration>
