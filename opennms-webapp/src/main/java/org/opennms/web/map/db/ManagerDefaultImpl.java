@@ -902,10 +902,6 @@ public class ManagerDefaultImpl implements Manager {
         return map;
     }
 
-    public List<VLink> refreshLinks(VLink[] mapLinks) throws MapsException {
-        throw new MapsException();
-    }
-
     public boolean foundLoopOnMaps(VMap parentMap, int mapId)
             throws MapsException {
 
