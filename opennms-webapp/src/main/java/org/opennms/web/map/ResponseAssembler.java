@@ -164,7 +164,7 @@ public class ResponseAssembler {
 	        return strToSend;
 	    }
 
-	   protected static String getLoadDeafultMapResponse(String action, VMapInfo map) {
+	   protected static String getLoadDefaultMapResponse(String action, VMapInfo map) {
 	        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 	        log = ThreadCategory.getInstance(ResponseAssembler.class);
 	        
