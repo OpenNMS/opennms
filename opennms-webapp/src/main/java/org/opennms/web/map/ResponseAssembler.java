@@ -140,6 +140,30 @@ public class ResponseAssembler {
 		return strToSend;
 	}
 	
+	   protected static String getLoadMapsResponse(String action, List<VMapInfo> maps) {
+	        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+	        log = ThreadCategory.getInstance(ResponseAssembler.class);
+	        
+	        String strToSend=getActionOKMapResponse(action);
+	                
+	        if(maps!=null){
+	            // create the string containing the main informations about maps
+	            // the string will have the form:
+	            // mapid1+mapname1+mapowner1&mapid2+mapname2+mapowner2...
+	            for (int i = 0; i < maps.size(); i++) {
+	                if (i > 0) {
+	                    strToSend += "&";
+	                }
+	                VMapInfo map = (VMapInfo) maps.get(i);
+	                strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
+	            }
+	        } else {
+	            strToSend=getMapErrorResponse(action);
+	        }
+	        log.debug("getMapsResponse: String assembled: "+strToSend);
+	        return strToSend;
+	    }
+
 	protected static String getSaveMapResponse(String action,VMap map){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -181,30 +205,6 @@ public class ResponseAssembler {
         return JSONSerializer.toJSON(map).toString(); 
 	}
 	
-	protected static String getMapsResponse(String action, List<VMapInfo> maps) {
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		
-		String strToSend=getActionOKMapResponse(action);
-				
-		if(maps!=null){
-			// create the string containing the main informations about maps
-			// the string will have the form:
-			// mapid1+mapname1+mapowner1&mapid2+mapname2+mapowner2...
-			for (int i = 0; i < maps.size(); i++) {
-				if (i > 0) {
-					strToSend += "&";
-				}
-				VMapInfo map = (VMapInfo) maps.get(i);
-				strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
-			}
-		} else {
-			strToSend=getMapErrorResponse(action);
-		}
-		log.debug("getMapsResponse: String assembled: "+strToSend);
-		return strToSend;
-	}
-
    protected static String getMapsResponse(String action, VMapInfo map) {
         ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(ResponseAssembler.class);
