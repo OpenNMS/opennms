@@ -117,6 +117,16 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     public ReportParameters getParameters(String reportId) {
         return getReportService(reportId).getParameters(reportId);
     }
+    
+    public Boolean hasParameters(String reportId) {
+       
+        Map<String, Object> reportParms = getParameters(reportId).getReportParms();
+        if ((reportParms == null)||(reportParms.isEmpty())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     public void render(String reportId, String location, ReportFormat format,
             OutputStream outputStream) {

@@ -111,6 +111,15 @@ public interface ReportWrapperService {
      */
     public abstract void render(String ReportId, String location, ReportFormat format, OutputStream outputStream);
     
+    
+    /**
+     * This method is used to determine whether the report takes any parameters
+     * 
+     *  @param reportId
+     *  @return true if the report takes parameters, false if not.
+     */
+    public abstract Boolean hasParameters(String ReportId);
+    
     /**
      * This method retrieves the runtime parameters taken by the report
      * 
