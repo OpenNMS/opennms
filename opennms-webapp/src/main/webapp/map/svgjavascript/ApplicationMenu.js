@@ -953,7 +953,7 @@ MEIconsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal
         iconPreview.setAttributeNS(null,"y", 87);
         iconPreview.setAttributeNS(null,"width", 20);
         iconPreview.setAttributeNS(null,"height", 25);
-        iconPreview.setAttributeNS(xlinkNS, "xlink:href",IMAGES_ELEMENTS_FOLDER+MEIconsSortAss[arrayVal].fileName );
+        iconPreview.setAttributeNS(xlinkNS, "xlink:href",MEIconsSortAss[arrayVal]);
         iconPreviewGroup.appendChild(iconPreviewRect);
         iconPreviewGroup.appendChild(iconPreview);
         selMEIcons.parentGroup.appendChild(iconPreviewGroup);

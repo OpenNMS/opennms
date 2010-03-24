@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.opennms.web.map.config.Avail;
 import org.opennms.web.map.config.ContextMenu;
-import org.opennms.web.map.config.Icon;
 import org.opennms.web.map.config.Link;
 import org.opennms.web.map.config.LinkStatus;
 import org.opennms.web.map.config.Severity;
@@ -39,7 +38,7 @@ public class VProperties {
 	
     int defaultMapElementDimension;
 
-    java.util.Map<String,Icon> icons;
+    java.util.Map<String,String> icons;
 	java.util.Map<String,String> backgroundImages;
 	java.util.Map<String, String> mapElementDimensions;
     
@@ -146,11 +145,11 @@ public class VProperties {
         this.avails = avails;
     }
 
-    public java.util.Map<String, Icon> getIcons() {
+    public java.util.Map<String, String> getIcons() {
         return icons;
     }
 
-    public void setIcons(java.util.Map<String, Icon> icons) {
+    public void setIcons(java.util.Map<String, String> icons) {
         this.icons = icons;
     }
 

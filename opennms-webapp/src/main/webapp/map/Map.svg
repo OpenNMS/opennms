@@ -150,7 +150,7 @@ function handleInit(data) {
 		for(var icon in mapsPropertiesFactory.icons)
 		{
             MEIcons.push(icon);
-		    MEIconsSorts.push(mapsPropertiesFactory.icons[icon]);
+		    MEIconsSorts.push(IMAGES_ELEMENTS_FOLDER+mapsPropertiesFactory.icons[icon]);
         }
               
 		for (var image in mapsPropertiesFactory.backgroundImages)
