@@ -732,7 +732,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
 			return success;
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	Transaction.rollbackOnly();
             log().warn("runAutomation: Could not execute automation: "+m_automation.getName(), e);
             return false;

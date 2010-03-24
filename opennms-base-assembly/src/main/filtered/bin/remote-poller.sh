@@ -34,7 +34,7 @@ printHelp() {
 	echo "	-g start the remote poller GUI"
 	echo "	-j override Java executable"
 	echo "	-n the userName to connect as"
-	echo "	-P the Password to connect with"
+	echo "	-p the Password to connect with"
 	echo ""
 }
 

@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.log4j.Category;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
 
 
@@ -91,27 +90,10 @@ public class InsServerListener extends InsServerAbstractListener {
 	 */
 	public void flushEvent(Event event){
 	      Category log = getLog();
-	      log.debug("Flushing "+event.getUei());
-	      int nodeid = 0;
-	      if (event.hasNodeid())
-	          nodeid = (int) event.getNodeid();
-
-          if (event.hasIfIndex() && event.getIfIndex() > 0 ) {
-              event.setIfAlias(getIfAlias(nodeid,event.getIfIndex()));
-          } else if (event.getInterface() != null && !event.getInterface().equals("0.0.0.0")) {
-              OnmsSnmpInterface iface = getIfAlias(nodeid,event.getInterface()); 
-              if (iface != null ) {
-                  event.setIfIndex(iface.getIfIndex());
-                  event.setIfAlias(iface.getIfAlias());
-              } else {
-                  event.setIfIndex(-1);
-                  event.setIfAlias("-1");
-              }
-          } else {
-              event.setIfIndex(-1);
-              event.setIfAlias("-1");
-          }
-	         
+	      log.debug("Flushing uei: "+event.getUei());
+	      log.debug("Flushing ifindex: " + event.getIfIndex());
+	      log.debug("Flushing ifAlias: " + event.getIfAlias());
+	      
 		synchronized (activeSessions){
 			cleanActiveSessions();
 			Iterator<InsSession> it = activeSessions.iterator();

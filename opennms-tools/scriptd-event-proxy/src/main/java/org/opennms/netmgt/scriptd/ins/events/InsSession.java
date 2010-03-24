@@ -311,15 +311,6 @@ class InsSession extends InsAbstractSession {
           if (ev.getIfIndex() != null) {
               e.setIfIndex(ev.getIfIndex());
               e.setIfAlias(getIfAlias(ev.getNode().getId(),ev.getIfIndex()));
-          } else if (ev.getIpAddr() != null && !ev.getIpAddr().equals("0.0.0.0")) {
-              OnmsSnmpInterface iface = getIfAlias(ev.getNode().getId(), ev.getIpAddr());
-              if (iface != null) {
-                  e.setIfIndex(iface.getIfIndex());
-                  e.setIfAlias(iface.getIfAlias());
-              } else {
-                  e.setIfIndex(-1);
-                  e.setIfAlias("-1");
-              }
           } else {
               e.setIfIndex(-1);
               e.setIfAlias("-1");
@@ -370,7 +361,8 @@ class InsSession extends InsAbstractSession {
         return e;
     }
 	
-	private void getEventsByCriteria() {
+	@SuppressWarnings("unchecked")
+    private void getEventsByCriteria() {
         Category log = getLog();
         log.debug("Entering getEventsByCriteria.....");
         log.debug("clearing events");
