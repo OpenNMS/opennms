@@ -291,8 +291,10 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
 
     public void deleteProvisioningGroup(String groupName) {
         Requisition r = getProvisioningGroup(groupName);
-        m_pendingForeignSourceRepository.delete(r);
-        m_deployedForeignSourceRepository.delete(r);
+        if (r != null) {
+            m_pendingForeignSourceRepository.delete(r);
+            m_deployedForeignSourceRepository.delete(r);
+        }
     }
 
     public void deleteAllNodes(String groupName) {
