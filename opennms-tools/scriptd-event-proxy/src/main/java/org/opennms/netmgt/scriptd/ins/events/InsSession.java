@@ -24,7 +24,6 @@ import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -308,7 +307,7 @@ class InsSession extends InsAbstractSession {
             log.info("No Event severity found.");
         }
 
-          if (ev.getIfIndex() != null) {
+          if (ev.getIfIndex() != null && ev.getIfIndex() > 0 ) {
               e.setIfIndex(ev.getIfIndex());
               e.setIfAlias(getIfAlias(ev.getNode().getId(),ev.getIfIndex()));
           } else {
