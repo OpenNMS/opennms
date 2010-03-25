@@ -126,40 +126,30 @@ function loadNodes(){
 }
 
 function handleLoadNodesResponse(data) {
-	var str = '';
-	var failed = true;
-	
-	if(data.success || data.status==200) {
-		str = data.content;
-		if(testResponse(LOADNODES_ACTION, str)){
-			str=str.substring(LOADNODES_ACTION.length+2,str.length);
-			failed = false;
-		}
-	}
-	
-	if (failed) {
+	var currNodes;
+    var failed = false;
+    var content = data.content;
+	if((data.success || data.status==200) 
+	&& content.indexOf(LOADNODES_ACTION+failed_string) == -1 ) {
+		currNodes=eval("("+content+")");
+	} else {
 	     alert('Load Nodes failed');
 		 loading--;	
 	     assertLoading();		
 		return;
 	}
-	var st = str.split("&");
 	nodeLabels = [" "];
     var nodeSorts = [null];
     var nodeids = [null];
-	if(str.indexOf("+")>=0){
-		for(var k=0;k<st.length;k++){
-			var nodeToken = st[k];
-			var nodeST = nodeToken.split("+");
-			var id =nodeST[0];
-			var label = nodeST[1];
-			// the second label should be the ip address but for the moment we are still using the FQDN
-			var tmpNode = new Node(id,label,label);
-			
-			nodeids.push(id);
-			nodeLabels.push(label);
-			nodeSorts.push(tmpNode);
-		}
+	for(var n in currNodes){
+		var id =currNodes[n].id;
+		var label = currNodes[n].label;
+		// the second label should be the ip address but for the moment we are still using the FQDN
+		var tmpNode = new Node(id,label,label);
+		
+		nodeids.push(id);
+		nodeLabels.push(label);
+		nodeSorts.push(tmpNode);
 	}
 		
 	nodeSortAss = assArrayPopulate(nodeLabels,nodeSorts);	
@@ -374,8 +364,7 @@ function handleAddElementResponse(data) {
 	for(nd in nodesToAdd){	
 		var point = freePoints[index++];
 
-		var iconName = nodesToAdd[nd].icon;
-		var icon = new Icon(iconName,MEIconsSortAss[iconName]);
+		var icon = nodesToAdd[nd].icon;
 		
 		var me = new MapElement(nodesToAdd[nd].id, icon, nodesToAdd[nd].label.text, nodesToAdd[nd].semaphore.svgNode.getAttribute("fill"), getSemaphoreFlash(nodesToAdd[nd].severity,nodesToAdd[nd].avail), point.x, point.y, mapElemDimension, nodesToAdd[nd].status, nodesToAdd[nd].avail, nodesToAdd[nd].severity);
 		map.addMapElement(me);

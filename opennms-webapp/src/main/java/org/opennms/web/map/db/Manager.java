@@ -57,7 +57,7 @@ public abstract class Manager {
 		
 	}
 	
-	public abstract void saveMap(DbMap m, Collection<DbElement> e) throws MapsException ;
+	public abstract int saveMap(DbMap m, Collection<DbElement> e) throws MapsException ;
 	
 	/**
 	 * delete the map with id in input

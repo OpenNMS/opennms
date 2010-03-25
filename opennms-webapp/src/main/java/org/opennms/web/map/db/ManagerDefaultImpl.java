@@ -836,12 +836,12 @@ public class ManagerDefaultImpl implements Manager {
      *            to save
      * @throws MapsException
      */
-    synchronized public void save(VMap map) throws MapsException {
+    synchronized public int save(VMap map) throws MapsException {
         Collection<DbElement> dbe = new ArrayList<DbElement>();
         for (VElement velem : map.getElements().values()) {
             dbe.add(new DbElement(velem));
         }
-        dbManager.saveMap(map, dbe);
+        return dbManager.saveMap(map, dbe);
 
     }
 

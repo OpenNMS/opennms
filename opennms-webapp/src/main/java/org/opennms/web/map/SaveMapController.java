@@ -177,9 +177,12 @@ public class SaveMapController implements Controller {
                 log.debug("Map is Automated Map, saving as Static");
                 map.setType(MapsConstants.AUTOMATIC_SAVED_MAP);
 			}
-			manager.save(map);
-				
-			log.info(map.getName() + " Map saved");
+			int mapId = manager.save(map);
+
+	        log.info(map.getName() + " Map saved. " + "With map id: " + mapId);
+
+			if (map.isNew()) 
+			    map.setId(mapId);
 
 			bw.write(ResponseAssembler.getSaveMapResponse(MapsConstants.SAVEMAP_ACTION, map));
 		} catch (Exception e) {

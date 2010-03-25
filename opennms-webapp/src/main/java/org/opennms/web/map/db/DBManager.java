@@ -188,7 +188,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public synchronized void saveMap(DbMap m, Collection<DbElement> e) throws MapsException {
+    public synchronized int saveMap(DbMap m, Collection<DbElement> e) throws MapsException {
         log.debug("saving map...");
         Connection conn = startSession();
         final String sqlGetCurrentTimestamp = "SELECT CURRENT_TIMESTAMP";
@@ -278,7 +278,9 @@ public class DBManager extends Manager {
         } finally {
             endSession(conn);
         }
-        
+        if (m.isNew())
+                return nxtid;
+        else return m.getId();
     }
 
     private synchronized void saveElementInSession(DbElement e, Connection conn)

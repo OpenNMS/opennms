@@ -146,7 +146,7 @@ public interface Manager {
      *            to save
      * @throws MapsException
      */
-    public void save(VMap map) throws MapsException ;
+    public int save(VMap map) throws MapsException ;
         
     public VMap refreshMap(VMap map) throws MapsException;
         

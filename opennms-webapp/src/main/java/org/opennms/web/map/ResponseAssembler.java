@@ -126,43 +126,32 @@ public class ResponseAssembler {
 		
 	protected static String getLoadNodesResponse(String action, List<VElementInfo> elemInfos){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		String strToSend =getActionOKMapResponse(action);
-		boolean first = true;
-		for (VElementInfo n: elemInfos) {
-			if (!first) {
-				strToSend += "&";
-			}
-			first = false;
-			strToSend += n.getId() + "+" + n.getLabel();
-		}
-		log.debug("getLoadNodesResponse: String assembled: "+strToSend);
-		return strToSend;
+		return JSONSerializer.toJSON(elemInfos).toString();
 	}
 	
-	   protected static String getLoadMapsResponse(String action, List<VMapInfo> maps) {
-	        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-	        log = ThreadCategory.getInstance(ResponseAssembler.class);
-	        
-	        String strToSend=getActionOKMapResponse(action);
-	                
-	        if(maps!=null){
-	            // create the string containing the main informations about maps
-	            // the string will have the form:
-	            // mapid1+mapname1+mapowner1&mapid2+mapname2+mapowner2...
-	            for (int i = 0; i < maps.size(); i++) {
-	                if (i > 0) {
-	                    strToSend += "&";
-	                }
-	                VMapInfo map = (VMapInfo) maps.get(i);
-	                strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
-	            }
-	        } else {
-	            strToSend=getMapErrorResponse(action);
-	        }
-	        log.debug("getMapsResponse: String assembled: "+strToSend);
-	        return strToSend;
-	    }
+   protected static String getLoadMapsResponse(String action, List<VMapInfo> maps) {
+        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
+        log = ThreadCategory.getInstance(ResponseAssembler.class);
+        
+        String strToSend=getActionOKMapResponse(action);
+                
+        if(maps!=null){
+            // create the string containing the main informations about maps
+            // the string will have the form:
+            // mapid1+mapname1+mapowner1&mapid2+mapname2+mapowner2...
+            for (int i = 0; i < maps.size(); i++) {
+                if (i > 0) {
+                    strToSend += "&";
+                }
+                VMapInfo map = (VMapInfo) maps.get(i);
+                strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
+            }
+        } else {
+            strToSend=getMapErrorResponse(action);
+        }
+        log.debug("getMapsResponse: String assembled: "+strToSend);
+        return strToSend;
+    }
 
 	   protected static String getLoadDefaultMapResponse(String action, VMapInfo map) {
 	        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
