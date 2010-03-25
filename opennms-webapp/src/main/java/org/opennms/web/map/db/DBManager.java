@@ -48,7 +48,6 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.config.MapPropertiesFactory;
 
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VMapInfo;
