@@ -1,8 +1,8 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.io.Serializable;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTLocationSpecificStatus implements Serializable {
+public class GWTLocationSpecificStatus implements IsSerializable {
 	private static final long serialVersionUID = 1L;
 
     private Integer m_id;

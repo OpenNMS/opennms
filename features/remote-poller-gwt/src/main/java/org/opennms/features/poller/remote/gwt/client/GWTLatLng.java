@@ -3,28 +3,28 @@
  */
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.io.Serializable;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTLatLng implements Serializable {
+public class GWTLatLng implements IsSerializable {
 	private static final long serialVersionUID = 1L;
 
-	private double m_latitude;
-	private double m_longitude;
+	private Double m_latitude;
+	private Double m_longitude;
 
-	public GWTLatLng(double latitude, double longitude) {
+	public final static GWTLatLng getDefault() {
+		return new GWTLatLng(35.7174,-79.1619);
+	}
+
+	public GWTLatLng() {}
+	
+	public GWTLatLng(Double latitude, Double longitude) {
 		m_latitude = latitude;
 		m_longitude = longitude;
 	}
-	double getLatitude() {
+	Double getLatitude() {
 		return m_latitude;
 	}
-	void setLatitude(double latitude) {
-		m_latitude = latitude;
-	}
-	double getLongitude() {
+	Double getLongitude() {
 		return m_longitude;
-	}
-	void setLongitude(double longitude) {
-		m_longitude = longitude;
 	}
 }

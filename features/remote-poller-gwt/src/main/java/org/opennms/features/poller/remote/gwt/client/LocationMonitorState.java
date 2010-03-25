@@ -3,14 +3,15 @@
  */
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class LocationMonitorState implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class LocationMonitorState implements IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private Set<GWTLocationMonitor> m_monitorsStarted = new HashSet<GWTLocationMonitor>();
 	private Set<GWTLocationMonitor> m_monitorsStopped = new HashSet<GWTLocationMonitor>();

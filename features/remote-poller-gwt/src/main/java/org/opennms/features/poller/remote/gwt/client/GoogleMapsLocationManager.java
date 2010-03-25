@@ -2,13 +2,10 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
@@ -16,7 +13,6 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.ajaxloader.client.AjaxLoader;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
@@ -46,10 +42,8 @@ import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 
 public class GoogleMapsLocationManager extends AbstractLocationManager implements LocationManager {
 //	private static final int MARKER_MAX_ZOOM = 18;
-	private final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 
 	private final Application m_application;
-	private final HandlerManager m_eventBus;
 	private final SplitLayoutPanel m_panel;
 
 	private MapWidget m_mapWidget;
@@ -58,23 +52,18 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	private LocationManager m_locationManager;
 	private Geocoder m_geocoder;
 
-	private final Set<String> m_locationsUpdating = new HashSet<String>();
-
-	private final Map<String,GWTLatLng> m_geolocations = new HashMap<String,GWTLatLng>();
 	private final Map<String,GoogleMapsLocation> m_locations = new HashMap<String,GoogleMapsLocation>();
 	private boolean updated = false;
 	private final HashMap<String, Location> m_visibleLocations = new HashMap<String, Location>();
 
-	private String m_apiKey;
-
-    public GoogleMapsLocationManager(Application application, final HandlerManager eventBus, final SplitLayoutPanel panel) {
+	public GoogleMapsLocationManager(Application application, final HandlerManager eventBus, final SplitLayoutPanel panel) {
+		super(eventBus);
     	m_application = application;
-		m_eventBus = eventBus;
 		m_panel = panel;
 		m_locationManager = this;
 	}
 
-	private void setupEventHandlers() {
+    private void setupEventHandlers() {
         m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, new LocationPanelSelectEventHandler() {
             
             public void onLocationSelected(final LocationPanelSelectEvent event) {
@@ -122,168 +111,140 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	    m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
 	}
 
-	public final class InitializationCommand implements IncrementalCommand {
-		private State m_currentState = State.UNINITIALIZED;
-		public InitializationCommand() {
-		}
-
-		public boolean execute() {
-			Log.debug("current state = " + m_currentState);
-			switch (m_currentState) {
-				case UNINITIALIZED:
-					m_currentState = State.APIKEY_LOADING;
-					m_remoteService.getApiKey(new AsyncCallback<String>() {
-						public void onFailure(Throwable throwable) {
-							Log.debug("failed to get API key", throwable);
-						}
-	
-						public void onSuccess(String key) {
-							Log.debug("got API key: " + key);
-							m_apiKey = key;
-							m_currentState = State.APIKEY_LOADED;
-						}
-					});
-					return true;
-				case APIKEY_LOADING:
-					return true;
-				case APIKEY_LOADED:
-					m_currentState = State.MAP_API_LOADING;
-					AjaxLoader.init(m_apiKey);
-					AjaxLoader.loadApi("maps", "2.x", new Runnable() {
-						public void run() {
-							m_currentState = State.MAP_API_LOADED;
-						}
-						
-					}, null);
-					return true;
-				case MAP_API_LOADING:
-					return true;
-				case MAP_API_LOADED:
-					m_currentState = State.MAP_API_CONFIGURED;
-
-					m_mapWidget = new MapWidget();
-					m_mapWidget.setSize("100%", "100%");
-					m_mapWidget.setUIToDefault();
-					m_mapWidget.addControl(new LargeMapControl());
-//					m_mapWidget.setZoomLevel(10);
-					m_mapWidget.setContinuousZoom(true);
-					m_mapWidget.setScrollWheelZoomEnabled(true);
-
-					m_panel.add(m_mapWidget);
-
-					m_geocoder = new GoogleMapsGeocoder();
-					
-					Window.enableScrolling(false);
-					Window.setMargin("0px");
-					Window.addResizeHandler(new ResizeHandler() {
-						public void onResize(final ResizeEvent resizeEvent) {
-							if (m_mapWidget != null) {
-								m_mapWidget.checkResizeAndCenter();
-							}
-						}
-					});
-					return true;
-				case MAP_API_CONFIGURED:
-					m_currentState = State.MARKER_API_LOADING;
-					GoogleMapsUtility.loadUtilityApi(new Runnable() {
-						public void run() {
-							m_currentState = State.MARKER_API_LOADED;
-						}
-						
-					}, DefaultPackage.MARKER_MANAGER);
-					return true;
-				case MARKER_API_LOADING:
-					return true;
-				case MARKER_API_LOADED:
-					m_currentState = State.ICON_API_LOADING;
-//					m_markerManager = MarkerManager.newInstance(m_mapWidget);
-					GoogleMapsUtility.loadUtilityApi(new Runnable() {
-						public void run() {
-							m_currentState = State.ICON_API_LOADED;
-						}
-						
-					}, DefaultPackage.MAP_ICON_MAKER);
-					return true;
-				case ICON_API_LOADING:
-					return true;
-				case ICON_API_LOADED:
-					m_currentState = State.EVENT_BACKEND_LOADING;
-					
-					m_locationListener = new DefaultLocationListener(m_locationManager);
-					final RemoteEventService eventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
-					eventService.addListener(BaseLocation.LOCATION_EVENT_DOMAIN, m_locationListener);
-
-					setupEventHandlers();
-
-					m_remoteService.start(new AsyncCallback<Void>() {
-						public void onFailure(Throwable throwable) {
-							m_currentState = State.EVENT_BACKEND_FAILED;
-							Log.debug("unable to start location even service backend", throwable);
-						}
-	
-						public void onSuccess(Void voidArg) {
-							m_currentState = State.EVENT_BACKEND_LOADED;
-						}
-					});
-					return true;
-				case EVENT_BACKEND_LOADING:
-					return true;
-				case EVENT_BACKEND_LOADED:
-					m_currentState = State.FINISHED;
-					return true;
-				case FINISHED:
-					m_application.finished();
-					return false;
-			}
-
-			return false;
-		}
-	}
-
 	@Override
 	public void initialize() {
-		DeferredCommand.addCommand(new InitializationCommand());
-	}
+		DeferredCommand.addCommand(new InitializationCommand() {
+			private boolean m_inProgress = false;
 
-	@Override
-    public void updateLocations(final Collection<Location> locations) {
-		for (final Location location : locations) {
-			if (location == null) continue;
-			m_locationsUpdating.add(location.getName());
-		}
+			@Override
+			protected void loadMapApi() throws InitializationException {
+				m_inProgress = true;
+				AjaxLoader.init(getApiKey());
+				AjaxLoader.loadApi("maps", "2.x", new Runnable() {
+					public void run() {
+						m_inProgress = false;
+					}
+					
+				}, null);
+			}
 
-		for (final Location location : locations) {
-			if (location == null) continue;
-			GWTLatLng latLng = m_geolocations.get(location.getGeolocation());
-			if (latLng != null) {
-				GoogleMapsLocation loc = new GoogleMapsLocation(location);
-				loc.setLatLng(latLng);
-				updateMarker(loc);
-			} else {
-				m_geocoder.getLatLng(location.getGeolocation(), new LatLngMarkerPlacer(location));
-			}
-		}
-		
-	}
+			@Override
+			protected boolean mapApiLoaded() throws InitializationException {
+				if (m_inProgress) {
+					return false;
+				}
 
-	@Override
-	public void removeLocations(final Collection<Location> locations) {
-		for (Location location : locations) {
-			if (location == null) {
-				continue;
+				m_mapWidget = new MapWidget();
+				m_mapWidget.setSize("100%", "100%");
+				m_mapWidget.setUIToDefault();
+				m_mapWidget.addControl(new LargeMapControl());
+//				m_mapWidget.setZoomLevel(10);
+				m_mapWidget.setContinuousZoom(true);
+				m_mapWidget.setScrollWheelZoomEnabled(true);
+
+				m_panel.add(m_mapWidget);
+
+				m_geocoder = new GoogleMapsGeocoder();
+				
+				Window.addResizeHandler(new ResizeHandler() {
+					public void onResize(final ResizeEvent resizeEvent) {
+						if (m_mapWidget != null) {
+							m_mapWidget.checkResizeAndCenter();
+						}
+					}
+				});
+
+				return true;
 			}
-			GoogleMapsLocation loc = m_locations.get(location.getName());
-			if (loc.getMarker() != null) {
-				m_mapWidget.removeOverlay(loc.getMarker());
+
+			@Override
+			protected void loadMarkerApi() throws InitializationException {
+				m_inProgress = true;
+				GoogleMapsUtility.loadUtilityApi(new Runnable() {
+					public void run() {
+						m_inProgress = false;
+					}
+				}, DefaultPackage.MARKER_MANAGER);
 			}
-			m_locations.remove(location.getName());
+
+			@Override
+			protected boolean markerApiLoaded() throws InitializationException {
+				return (!m_inProgress);
+			}
 			
-			if(m_visibleLocations.containsKey(location.getName())) {
-			    m_visibleLocations.remove(location.getName());
+			@Override
+			protected void loadIconApi() throws InitializationException {
+				m_inProgress = true;
+				GoogleMapsUtility.loadUtilityApi(new Runnable() {
+					public void run() {
+						m_inProgress = false;
+					}
+				}, DefaultPackage.MAP_ICON_MAKER);
 			}
+
+			@Override
+			protected boolean iconApiLoaded() throws InitializationException {
+				return (!m_inProgress);
+			}
+
+			@Override
+			protected void loadEventBackend() throws InitializationException {
+				m_inProgress = true;
+				m_locationListener = new DefaultLocationListener(m_locationManager);
+				final RemoteEventService eventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
+				eventService.addListener(LocationManager.LOCATION_EVENT_DOMAIN, m_locationListener);
+
+				setupEventHandlers();
+
+				m_remoteService.start(new AsyncCallback<Void>() {
+					public void onFailure(Throwable throwable) {
+						Log.debug("unable to start location even service backend", throwable);
+						throw new InitializationException("remote service start failed", throwable);
+					}
+
+					public void onSuccess(Void voidArg) {
+						m_inProgress = false;
+					}
+				});
+			}
+
+			@Override
+			protected boolean eventBackendLoaded() throws InitializationException {
+				return (!m_inProgress);
+			}
+
+			@Override
+			protected void finished() throws InitializationException {
+				m_application.finished();
+			}
+		});
+	}
+
+	@Override
+	public void updateLocation(final Location location) {
+		if (location == null) return;
+		GWTLatLng latLng = getGeolocation(location);
+		if (latLng != null) {
+			GoogleMapsLocation loc = new GoogleMapsLocation(location);
+			loc.setLatLng(latLng);
+			updateMarker(loc);
+		} else {
+			m_geocoder.getLatLng(location.getGeolocation(), new LatLngMarkerPlacer(location));
 		}
+	}
+	
+	@Override
+	public void removeLocation(final Location location) {
+		if (location == null) return;
+		GoogleMapsLocation loc = m_locations.get(location.getName());
+		if (loc.getMarker() != null) {
+			m_mapWidget.removeOverlay(loc.getMarker());
+		}
+		m_locations.remove(location.getName());
 		
-		m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
+		if(m_visibleLocations.containsKey(location.getName())) {
+		    m_visibleLocations.remove(location.getName());
+		}
 	}
 
 	@Override
@@ -292,9 +253,8 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 			DeferredCommand.addPause();
 			DeferredCommand.addCommand(new IncrementalCommand() {
 				public boolean execute() {
-					if (m_locationsUpdating.size() > 0) {
+					if (isLocationUpdateInProgress())
 						return true;
-					}
 					fitToMap();
 					updated = true;
 					return false;
@@ -389,12 +349,12 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
             placeMarker(m_locations.get(location.getName()));
         }
 
-        m_locationsUpdating.remove(location.getName());
-        if (m_locationsUpdating.size() == 0) {
+        locationUpdateComplete(location);
+        if (!isLocationUpdateInProgress()) {
         	checkAllVisibleLocations();
         }
 	}
-	
+
 	private void placeMarker(final GoogleMapsLocation location) {
 	    final Marker oldMarker = location.getMarker();
 	    final Marker newMarker = createMarker(location);
@@ -418,9 +378,9 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 		if (newLocation.getLocationMonitorState() == null)
 			newLocation.setLocationMonitorState(oldLocation.getLocationMonitorState());
 		if (newLocation.getLatLng() == null)
-			newLocation.setLatLng(((GoogleMapsLocation)oldLocation).getLatLng());
+			newLocation.setLatLng(oldLocation.getLatLng());
 		if (newLocation.getMarker() == null)
-			newLocation.setMarker(((GoogleMapsLocation)oldLocation).getMarker());
+			newLocation.setMarker(oldLocation.getMarker());
 		return newLocation;
 	}
 
@@ -467,14 +427,14 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 		}
 
 		public void onSuccess(final GWTLatLng point) {
+			cacheGeolocation(m_location.getGeolocation(), point);
 			m_location.setLatLng(point);
 			updateMarker(m_location);
 		}
 
 		public void onFailure(Throwable throwable) {
-			final LatLng latLng = LatLng.fromUrlValue("35.7174,-79.1619");
-			m_location.setLatLng(new GWTLatLng(latLng.getLatitude(), latLng.getLongitude()));
-			reportError("unable to retrieve latitude and longitude for " + m_location.getName(), null);
+			m_location.setLatLng(GWTLatLng.getDefault());
+			reportError("unable to retrieve latitude and longitude for " + m_location.getName(), throwable);
 			updateMarker(m_location);
 		}
 	}

@@ -9,8 +9,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -43,18 +45,22 @@ public class Application implements EntryPoint
 	}
 
 	public void initialize() {
-		Window.setTitle("OpenNMS - Remote Monitor");
 		BINDER.createAndBindUi(this);
+
+		Window.setTitle("OpenNMS - Remote Monitor");
+		Window.enableScrolling(false);
+		Window.setMargin("0px");
 
 		locationPanel.setEventBus(m_eventBus);
 
+//		m_locationManager = new MapquestLocationManager(this, m_eventBus, splitPanel);
 		m_locationManager = new GoogleMapsLocationManager(this, m_eventBus, splitPanel);
 		m_locationManager.initialize();
 	}
 
 	public void finished() {
-		splitPanel.setSize("100%", "100%");
 		splitPanel.setWidgetMinSize(locationPanel, 200);
+		splitPanel.setSize("100%", "100%");
 		RootPanel.get("remotePollerMap").add(splitPanel);
 	}
 }

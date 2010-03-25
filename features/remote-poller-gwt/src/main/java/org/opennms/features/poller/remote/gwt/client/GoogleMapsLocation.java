@@ -5,8 +5,6 @@ import com.google.gwt.maps.client.overlay.Marker;
 public class GoogleMapsLocation extends BaseLocation {
 	private static final long serialVersionUID = 1L;
 	private Marker m_marker;
-	private GWTLatLng m_latLng;
-
 	public GoogleMapsLocation() {
 		super();
 	}
@@ -32,21 +30,13 @@ public class GoogleMapsLocation extends BaseLocation {
 		return super.getImageURL();
 	}
 
-	public GWTLatLng getLatLng() {
-		return m_latLng;
-	}
-
-	public void setLatLng(GWTLatLng latLng) {
-		m_latLng = latLng;
-	}
-	
 	public Marker getMarker() {
 		return m_marker;
 	}
 
 	public void setMarker(Marker marker) {
 		m_marker = marker;
-		m_latLng = new GWTLatLng(marker.getLatLng().getLatitude(), marker.getLatLng().getLongitude());
+		setLatLng(new GWTLatLng(marker.getLatLng().getLatitude(), marker.getLatLng().getLongitude()));
 	}
 
 }
