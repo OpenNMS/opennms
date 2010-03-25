@@ -169,6 +169,9 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     public void delete(Requisition requisition) throws ForeignSourceRepositoryException {
+        if (requisition == null) {
+            throw new ForeignSourceRepositoryException("can't delete a null requisition!");
+        }
         File deleteFile = getOutputFileForRequisition(requisition);
         if (deleteFile.exists()) {
             if (!deleteFile.delete()) {
@@ -212,19 +215,19 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
-    private File encodeFileName(String path, String foreignSourceName) throws ForeignSourceRepositoryException {
+    private File encodeFileName(String path, String foreignSourceName) {
 //        return new File(path, java.net.URLEncoder.encode(foreignSourceName, "UTF-8") + ".xml");
           return new File(path, foreignSourceName + ".xml");
     }
 
-    private File getOutputFileForForeignSource(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    private File getOutputFileForForeignSource(ForeignSource foreignSource) {
         File fsPath = new File(m_foreignSourcePath);
         createPath(fsPath);
         File outputFile = encodeFileName(m_foreignSourcePath, foreignSource.getName());
         return outputFile;
     }
 
-    private File getOutputFileForRequisition(Requisition requisition) throws ForeignSourceRepositoryException {
+    private File getOutputFileForRequisition(Requisition requisition) {
         File reqPath = new File(m_requisitionPath);
         createPath(reqPath);
         File outputFile = encodeFileName(m_requisitionPath, requisition.getForeignSource());

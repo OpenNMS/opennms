@@ -69,13 +69,10 @@ import org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
@@ -182,8 +179,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
                 doRegister(location);
                 setState(new Running());
             } catch(Exception e) {
-                log().fatal("Unexpected exception occurred loading the configs", e);
-                setState(new FatalExceptionOccurred());
+                log().warn("Unable to register", e);
+                setState(new Disconnected());
             }
         }
     }

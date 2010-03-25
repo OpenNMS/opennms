@@ -132,6 +132,7 @@ import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 /**
@@ -168,7 +169,9 @@ public class WillItUnmarshalTest {
     public void testGoodOrdering() throws Exception {
         LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
 
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml"));
+        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml");
+        System.out.println("Unmarshalling: " + resource.getURI());
+        CastorUtils.unmarshal(Events.class, resource);
     }
 
     /**
@@ -179,7 +182,9 @@ public class WillItUnmarshalTest {
     public void testLenientOrdering() throws Exception {
         LocalConfiguration.getInstance().getProperties().put(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY, "true");
 
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml"));
+        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
+        System.out.println("Unmarshalling: " + resource.getURI());
+        CastorUtils.unmarshal(Events.class, resource);
     }
 
     /**
@@ -188,7 +193,9 @@ public class WillItUnmarshalTest {
      */
     @Test
     public void testLenientOrderingAsDefault() throws Exception {
-        CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml"));
+        Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
+        System.out.println("Unmarshalling: " + resource.getURI());
+        CastorUtils.unmarshal(Events.class, resource);
     }
     
     /**
@@ -231,10 +238,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testExampleCapsdConfiguration() throws Exception {
         unmarshalExample("capsd-configuration.xml", CapsdConfiguration.class);
-    }
-    @Test
-    public void testExampleHypericCapsdConfiguration() throws Exception {
-        unmarshalExample("hyperic-integration/capsd-configuration.xml", CapsdConfiguration.class);
     }
     @Test
     public void testCategories() throws Exception {
@@ -287,14 +290,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testEventconf() throws Exception {
         unmarshal("eventconf.xml", Events.class);
-    }
-    @Test
-    public void testExampleHypericEventconf() throws Exception {
-        unmarshalExample("hyperic-integration/eventconf.xml", Events.class);
-    }
-    @Test
-    public void testExampleHypericEvents() throws Exception {
-        unmarshalExample("hyperic-integration/Hyperic.events.xml", Events.class);
     }
     @Test
     public void testEventsArchiverConfiguration() throws Exception {
@@ -409,10 +404,6 @@ public class WillItUnmarshalTest {
         unmarshalExample("poller-configuration.xml", PollerConfiguration.class);
     }
     @Test
-    public void testExampleHypericPollerConfiguration() throws Exception {
-        unmarshalExample("hyperic-integration/poller-configuration.xml", PollerConfiguration.class);
-    }
-    @Test
     public void testRtcConfiguration() throws Exception {
         unmarshal("rtc-configuration.xml", RTCConfiguration.class);
     }
@@ -491,14 +482,6 @@ public class WillItUnmarshalTest {
     @Test
     public void testTranslatorConfiguration() throws Exception {
         unmarshal("translator-configuration.xml", EventTranslatorConfiguration.class);
-    }
-    @Test
-    public void testExampleTranslatorConfiguration() throws Exception {
-        unmarshalExample("translator-configuration.xml", EventTranslatorConfiguration.class);
-    }
-    @Test
-    public void testExampleHypericTranslatorConfiguration() throws Exception {
-        unmarshalExample("hyperic-integration/translator-configuration.xml", EventTranslatorConfiguration.class);
     }
     @Test
     public void testTrapdonfiguration() throws Exception {
@@ -681,7 +664,9 @@ public class WillItUnmarshalTest {
             try {
                 // Be conservative about what we ship, so don't be lenient
                 LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
-                CastorUtils.unmarshal(Events.class, new FileSystemResource(includedEventFile));
+                Resource resource = new FileSystemResource(includedEventFile);
+                System.out.println("Unmarshalling: " + resource.getURI());
+                CastorUtils.unmarshal(Events.class, resource);
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to unmarshal " + includedEventFile + ": " + t, t);
             }
@@ -722,7 +707,9 @@ public class WillItUnmarshalTest {
         // Be conservative about what we ship, so don't be lenient
         LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
         
-        T config = CastorUtils.unmarshal(clazz, new FileSystemResource(file));
+        Resource resource = new FileSystemResource(file);
+        System.out.println("Unmarshalling: " + resource.getURI());
+        T config = CastorUtils.unmarshal(clazz, resource);
         
         assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), config);
         testedSet.add(fileName);
