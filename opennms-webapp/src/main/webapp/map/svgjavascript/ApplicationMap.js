@@ -324,8 +324,8 @@ function handleAddElementResponse(data) {
 			var index = labelText.indexOf('.');
 			if (index > 0)
 				labelText=labelText.substr(0,index);
-			
-			newElem= new MapElement(id,MEIconsSortAss[iconName], labelText, semaphoreColor, semaphoreFlash, 0, 0, mapElemDimension, status, avail,severity)
+			var icon = new Icon(iconName,MEIconsSortAss[iconName]);
+			newElem= new MapElement(id,icon, labelText, semaphoreColor, semaphoreFlash, 0, 0, mapElemDimension, status, avail,severity)
 			nodesToAdd.push(newElem);
 
 		}
@@ -374,7 +374,10 @@ function handleAddElementResponse(data) {
 	for(nd in nodesToAdd){	
 		var point = freePoints[index++];
 
-		var me = new MapElement(nodesToAdd[nd].id, MEIconsSortAss[nodesToAdd[nd].icon], nodesToAdd[nd].label.text, nodesToAdd[nd].semaphore.svgNode.getAttribute("fill"), getSemaphoreFlash(nodesToAdd[nd].severity,nodesToAdd[nd].avail), point.x, point.y, mapElemDimension, nodesToAdd[nd].status, nodesToAdd[nd].avail, nodesToAdd[nd].severity);
+		var iconName = nodesToAdd[nd].icon;
+		var icon = new Icon(iconName,MEIconsSortAss[iconName]);
+		
+		var me = new MapElement(nodesToAdd[nd].id, icon, nodesToAdd[nd].label.text, nodesToAdd[nd].semaphore.svgNode.getAttribute("fill"), getSemaphoreFlash(nodesToAdd[nd].severity,nodesToAdd[nd].avail), point.x, point.y, mapElemDimension, nodesToAdd[nd].status, nodesToAdd[nd].avail, nodesToAdd[nd].severity);
 		map.addMapElement(me);
 	}				
 
@@ -631,7 +634,11 @@ function handleLoadingMap(data) {
 			var severity=velem.severity;
  		    var semaphoreColor=getSemaphoreColorForNode(severity,avail,status);
 		    var semaphoreFlash = getSemaphoreFlash(severity,avail);
-		    map.addMapElement(new MapElement(elem,MEIconsSortAss[velem.icon], velem.label, semaphoreColor, semaphoreFlash, velem.x, velem.y, mapElemDimension, status, avail,severity));
+
+		    var iconName = velem.icon;
+    		var icon = new Icon(iconName,MEIconsSortAss[iconName]);
+		    
+		    map.addMapElement(new MapElement(elem,icon, velem.label, semaphoreColor, semaphoreFlash, velem.x, velem.y, mapElemDimension, status, avail,severity));
 		} else if (velem.hideNode ) {
 			if (hideNodesIds == "")
 				hideNodesIds=velem.id;
@@ -705,7 +712,7 @@ function saveMap() {
 			id = elem.getNodeId();
 		}
 
-		data+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon+","+type;
+		data+= id+","+parseInt(elem.x)+","+parseInt(elem.y)+","+elem.icon.name+","+type;
 		
 	}
 
@@ -976,17 +983,19 @@ function handleRefreshNodesResponse(data) {
 			var testHideMap = id.indexOf('W');
 			if ( testHideNode == -1 && testHideMap == -1 ) {
 
+	    		var icon = new Icon(iconName,MEIconsSortAss[iconName]);
+
 				if(reloadMap){
 					posx=nodeST[6];
 					posy=nodeST[7];
-					map.addMapElement(new MapElement(id,MEIconsSortAss[iconName], labelText, semaphoreColor, semaphoreFlash, posx, posy, mapElemDimension, status, avail,severity));
+					map.addMapElement(new MapElement(id,icon, labelText, semaphoreColor, semaphoreFlash, posx, posy, mapElemDimension, status, avail,severity));
 				}else{
 					var mapElem = map.mapElements[id];
 					var x=mapElem.x;
 					var y=mapElem.y;
 					var deleted = map.deleteMapElement(id);
 					if (deleted){
-						map.addMapElement(new MapElement(id,MEIconsSortAss[iconName], labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
+						map.addMapElement(new MapElement(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, mapElemDimension, status, avail,severity));
 					}
 				}
 			} else if (testHideMap == -1 ){

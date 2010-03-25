@@ -27,6 +27,7 @@
 	<script type="text/ecmascript" xlink:href="svgjavascript/Node.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Label.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Link.js"/>
+	<script type="text/ecmascript" xlink:href="svgjavascript/Icon.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/MapElement.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Semaphore.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ElemMap.js"/>

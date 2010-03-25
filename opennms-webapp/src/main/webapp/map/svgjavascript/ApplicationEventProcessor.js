@@ -141,8 +141,7 @@ function onMouseDownOnMapElement(evt)
 
 		//set the icon selected into the relative selection list to the selected element
 		if(settingMapElemIcon==true){
-			mapElement.icon=selectedMEIconInList;
-			mapElement.image.setAttributeNS(xlinkNS, "xlink:href", MEIconsSortAss[selectedMEIconInList]);
+			mapElement.setIcon(new Icon(selectedMEIconInList,MEIconsSortAss[selectedMEIconInList]));
 			map.render();
 			setIconSetUp();
 		}

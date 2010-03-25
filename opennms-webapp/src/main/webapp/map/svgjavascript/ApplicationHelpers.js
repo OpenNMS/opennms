@@ -105,7 +105,7 @@ function getMapString()
 			if(count>0)
 				query+="-";
 			var elem = map.mapElements[elemId];
-			query+= elemId+","+elem.x+","+elem.y+","+elem.icon;
+			query+= elemId+","+elem.x+","+elem.y+","+elem.icon.name;
 			count++;
 		}
 	}
