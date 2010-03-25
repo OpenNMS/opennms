@@ -51,19 +51,36 @@ final public class VLink {
     private int elem2Id;	
 	private int nodeid1;
 	private int nodeid2;
-    //the link typology defined in the map properties file
+    //the link type defined in the map properties file
 	private int linkTypeId;
 	
 	private String linkStatusString;
 	
     private String id;
 	
-	public VLink(int elem1Id, String elem1Type, int elem2Id, String elem2Type) {
+	public VLink(int elem1Id, String elem1Type, int elem2Id, String elem2Type, int linkTypeId) {
 		this.elem1Type = elem1Type;
 		this.elem2Type = elem2Type;
         this.elem1Id = elem1Id;
         this.elem2Id = elem2Id;
-		id = getLinkId();
+        this.linkTypeId = linkTypeId;
+
+ //       int id1=elem1Id;
+ //       int id2=elem2Id;
+//        String type1=elem1Type;
+ //       String type2=elem2Type;
+        String  a = elem1Id+elem1Type;
+        String  b = elem2Id+elem2Type;
+        String id = a + "-" + b;
+        
+        if (elem1Id > elem2Id) {
+            id = b + "-" + a;
+        }
+        
+        if (elem1Id == elem2Id && elem2Type.equals(MapsConstants.MAP_TYPE)) {
+            id = b + "-" + a;
+        }
+		id = id+"-"+linkTypeId;
 	}
 	
 	public String getLinkStatusString() {
@@ -80,7 +97,7 @@ final public class VLink {
 	public boolean equals(Object otherLink) {
 		if (!(otherLink instanceof VLink)) return false;
 		VLink link = (VLink) otherLink;
-		return ( getLinkId().equals(link.getLinkId()));
+		return ( getId().equals(link.getId()));
 	}
 	
 		
@@ -115,28 +132,6 @@ final public class VLink {
 			return ""+getFirst()+"-"+getSecond()+"-"+linkTypeId+"-"+linkStatusString+" hashCode:"+this.hashCode();
 	}
 	
-    //like client function
-    public String getLinkId() {
-    	int id1=elem1Id;
-    	int id2=elem2Id;
-    	String type1=elem1Type;
-    	String type2=elem2Type;
-    	String  a = id1+type1;
-    	String  b = id2+type2;
-    	String id = a + "-" + b;
-    	int  na = id1;
-    	int  nb = id2;
-    	
-    	if (na > nb) {
-    		id = b + "-" + a;
-    	}
-    	
-    	if (na == nb && type2.equals(MapsConstants.MAP_TYPE)) {
-    		id = b + "-" + a;
-    	}
-    	return id+"-"+linkTypeId;    	
-    }
-    
     public String getId() {
 		return id;
 	}

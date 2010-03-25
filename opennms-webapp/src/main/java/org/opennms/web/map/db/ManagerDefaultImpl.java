@@ -1252,20 +1252,23 @@ public class ManagerDefaultImpl implements Manager {
                 continue;
             if (!node2Element.containsKey(linfo.nodeparentid))
                 continue;
+            
             for (VElement first : node2Element.get(linfo.nodeid)) {
                 log.debug("Getting linkinfo for nodeid " + linfo.nodeparentid);
                 for (VElement second : node2Element.get(linfo.nodeparentid)) {
                     if (first.hasSameIdentifier(second)) {
                         continue;
                     }
+                    
                     VLink vlink = new VLink(first.getId(), first.getType(),
-                                            second.getId(), second.getType());
+                                            second.getId(), second.getType(), getLinkTypeId(linfo));
                     int status=getLinkStatus(linfo);
                     vlink.setLinkStatusString(getLinkStatusString(status));
-                    vlink.setLinkTypeId(getLinkTypeId(linfo));
                     vlink.setFirstNodeid(linfo.nodeid);
                     vlink.setSecondNodeid(linfo.nodeparentid);
+                    
                     int index = links.indexOf(vlink);
+                    
                     if (index != -1) {
                         VLink alreadyIn = links.get(index);
                         if (alreadyIn.equals(vlink)) {
