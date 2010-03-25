@@ -1,9 +1,10 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class GWTPollResult implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class GWTPollResult implements IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	private String m_status;

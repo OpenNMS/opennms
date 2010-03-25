@@ -3,7 +3,12 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.util.Collection;
 import java.util.List;
 
+import de.novanic.eventservice.client.event.domain.Domain;
+import de.novanic.eventservice.client.event.domain.DomainFactory;
+
 public interface LocationManager {
+	public static final Domain LOCATION_EVENT_DOMAIN = DomainFactory.getDomain("location_event");
+
 	public void initialize();
 
 	public void updateLocation(Location location);

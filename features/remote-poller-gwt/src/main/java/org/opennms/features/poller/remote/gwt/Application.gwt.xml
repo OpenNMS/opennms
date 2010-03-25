@@ -1,10 +1,12 @@
 <!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.2/distro-source/core/src/gwt-module.dtd">
 <module>
 
-  <!-- Inherit the core Web Toolkit stuff. -->
+  <!-- Various core dependencies -->
   <inherits name='com.google.gwt.user.User'/>
   <inherits name="com.google.gwt.uibinder.UiBinder" />
   <inherits name="de.novanic.eventservice.GWTEventService"/>
+  <inherits name="com.google.gwt.http.HTTP"/>
+  <inherits name="com.google.gwt.json.JSON" />
 
   <!--  inherit css based theme -->
   <inherits name='com.google.gwt.user.theme.standard.Standard'/>
@@ -13,6 +15,7 @@
   <inherits name='com.google.gwt.ajaxloader.AjaxLoader' />
   <inherits name='com.google.gwt.maps.GoogleMaps' />
   <inherits name='com.google.gwt.maps.utility.GoogleMapsUtility' />
+  <inherits name='com.googlecode.gwtmapquest.GWTMapquest' />
 
   <!-- Logging -->
   <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />

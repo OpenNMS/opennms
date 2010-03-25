@@ -16,6 +16,7 @@ import org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus;
 import org.opennms.features.poller.remote.gwt.client.GWTMonitoredService;
 import org.opennms.features.poller.remote.gwt.client.GWTPollResult;
 import org.opennms.features.poller.remote.gwt.client.Location;
+import org.opennms.features.poller.remote.gwt.client.LocationManager;
 import org.opennms.features.poller.remote.gwt.client.LocationMonitorState;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
 import org.opennms.features.poller.remote.gwt.client.UpdateComplete;
@@ -36,6 +37,7 @@ import de.novanic.eventservice.service.RemoteEventServiceServlet;
 public class LocationStatusServiceImpl extends RemoteEventServiceServlet implements LocationStatusService {
 	private static final long serialVersionUID = 1L;
 	private static final int UPDATE_PERIOD = 1000 * 60; // 1 minute
+	private static final int MAX_LOCATIONS_PER_EVENT = 500;
 
 	private volatile Map<String,MonitorStatus> m_monitorStatuses = new HashMap<String,MonitorStatus>(); // NOPMD by ranger on 3/18/10 9:39 AM
 
@@ -77,6 +79,10 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		return m_apiKey;
 	}
 
+	public Location getLocation(final String locationName) {
+		return getLocation(m_locationDao.findMonitoringLocationDefinition(locationName));
+	}
+
 	private class InitialSenderTimerTask extends TimerTask {
 
 		@Override
@@ -90,9 +96,15 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 				LogUtils.debugf(this, "pushing location: %s", def.getName());
 //				addEventUserSpecific(getLocation(def));
 //				addEvent(Location.LOCATION_EVENT_DOMAIN, getLocation(def));
+				if (locations.size() >= MAX_LOCATIONS_PER_EVENT) {
+					addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new UpdateLocations(new ArrayList<Location>(locations)));
+					locations.clear();
+				}
 			}
-			addEvent(Location.LOCATION_EVENT_DOMAIN, new UpdateLocations(locations));
-			addEvent(Location.LOCATION_EVENT_DOMAIN, new UpdateComplete());
+			if (locations.size() > 0) {
+				addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new UpdateLocations(locations));
+			}
+			addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new UpdateComplete());
 		}
 		
 	}
@@ -132,14 +144,10 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 				locations.add(location);
 //				addEvent(Location.LOCATION_EVENT_DOMAIN, location);
 			}
-			addEvent(Location.LOCATION_EVENT_DOMAIN, new UpdateLocations(locations));
+			addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new UpdateLocations(locations));
 
 			lastUpdated = endDate;
 		}
-	}
-
-	public Location getLocation(final String locationName) {
-		return getLocation(m_locationDao.findMonitoringLocationDefinition(locationName));
 	}
 
 	private Location getLocation(final OnmsMonitoringLocationDefinition def) {
