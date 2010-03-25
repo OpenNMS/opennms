@@ -65,10 +65,6 @@ final public class VLink {
         this.elem2Id = elem2Id;
         this.linkTypeId = linkTypeId;
 
- //       int id1=elem1Id;
- //       int id2=elem2Id;
-//        String type1=elem1Type;
- //       String type2=elem2Type;
         String  a = elem1Id+elem1Type;
         String  b = elem2Id+elem2Type;
         String id = a + "-" + b;
@@ -81,6 +77,7 @@ final public class VLink {
             id = b + "-" + a;
         }
 		id = id+"-"+linkTypeId;
+		this.id = id;
 	}
 	
 	public String getLinkStatusString() {
