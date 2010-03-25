@@ -46,18 +46,18 @@ import org.springframework.core.io.Resource;
 
 public interface ReportRenderer {
 
-    public void render() throws ReportRenderException;
+    void render() throws ReportRenderException;
 
-    public void setOutputFileName(String outputFileName);
+    void setOutputFileName(String outputFileName);
     
-    public String getOutputFileName();
+    String getOutputFileName();
     
-    public void setInputFileName(String inputFileName);
+    void setInputFileName(String inputFileName);
 
-    public void setXsltResource(Resource xsltResource);
+    void setXsltResource(Resource xsltResource);
     
-    public void setBaseDir(String baseDir);
+    void setBaseDir(String baseDir);
     
-    public String getBaseDir();
+    String getBaseDir();
 
 }

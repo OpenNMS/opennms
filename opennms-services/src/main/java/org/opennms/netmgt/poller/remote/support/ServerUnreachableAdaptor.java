@@ -47,7 +47,7 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
-import org.springframework.remoting.RemoteLookupFailureException;
+import org.springframework.remoting.RemoteAccessException;
 
 /**
  * 
@@ -84,7 +84,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         }
         try {
             return m_remoteBackEnd.getPollerConfiguration(locationMonitorId);
-        } catch (RemoteLookupFailureException e) {
+        } catch (RemoteAccessException e) {
             m_serverUnresponsive = true;
             return new EmptyPollerConfiguration();
         }
@@ -96,7 +96,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             MonitorStatus result = m_remoteBackEnd.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
             m_serverUnresponsive = false;
             return result;
-        } catch (RemoteLookupFailureException e) {
+        } catch (RemoteAccessException e) {
             // we have failed to check in properly with the server
             m_serverUnresponsive = true;
             return MonitorStatus.DISCONNECTED;
@@ -114,7 +114,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             m_serverUnresponsive = false;
             return pollerStarting;
             
-        } catch (RemoteLookupFailureException e) {
+        } catch (RemoteAccessException e) {
             m_serverUnresponsive = true;
             return true;
         }
@@ -126,14 +126,14 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
 
     public int registerLocationMonitor(String monitoringLocationId) {
         // leave this method as it is a 'before registration' method and we want errors to occur?
-        return m_remoteBackEnd.registerLocationMonitor(monitoringLocationId);
+    	return m_remoteBackEnd.registerLocationMonitor(monitoringLocationId);
     }
 
     public void reportResult(int locationMonitorID, int serviceId, PollStatus status) {
         if (!m_serverUnresponsive) {
             try {
                 m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);
-            } catch (RemoteLookupFailureException e) {
+            } catch (RemoteAccessException e) {
                 m_serverUnresponsive = true;
             }
         }
@@ -143,7 +143,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
         try {
             return m_remoteBackEnd.getServiceMonitorLocators(context);
-        } catch (RemoteLookupFailureException e) {
+        } catch (RemoteAccessException e) {
             m_serverUnresponsive = true;
             return Collections.emptyList();
         }
@@ -153,7 +153,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     public String getMonitorName(int locationMonitorId) {
         try {
             return m_remoteBackEnd.getMonitorName(locationMonitorId);
-        } catch (RemoteLookupFailureException e) {
+        } catch (RemoteAccessException e) {
             return (m_monitorName == null ? ""+locationMonitorId : m_monitorName);
         }
     }
