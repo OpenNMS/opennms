@@ -1,5 +1,5 @@
 // you must create an instance of a map object in onLoad event of svg node root
-// Map map = new Map("#bbbbbb", "Background", 600, 400, 0, 0);
+// Map map = new Map("#bbbbbb", "Background", 600, 400, 0, 0, 3);
 
 Map.prototype = new SVGElement;
 Map.superclass = SVGElement.prototype;
@@ -10,22 +10,23 @@ Map.superclass = SVGElement.prototype;
 // width  == map width in pixel
 // height == map height in pixel
 // x      == x coord of map's "centre" 
-// y      == y coord of map's "centre" 
+// y      == y coord of map's "centre"
+// maxLinks == the max number of links between 2 mapElement 
 // mapElements  == array of MapElement Objects
 // mapLinks   == array of Link Object
 // linksBetweenElements == array containing the number of links existing between 2 element the key of the array 
 //                         is like 'idElem1-idElem2' and the value is an integer representing the number of 
 //                         links between elem1 and elem2
 
-function Map(defaultcolor, id, width, height, x, y)
+function Map(defaultcolor, id, width, height, x, y, maxlinks)
 {
- 	if ( arguments.length == 6 )
-		this.init(defaultcolor, id, width, height, x, y);
+ 	if ( arguments.length == 7 )
+		this.init(defaultcolor, id, width, height, x, y, maxlinks);
 	else
 		alert("Map constructor call error");
 }
 
-Map.prototype.init = function(color, id, width, height, x, y)
+Map.prototype.init = function(color, id, width, height, x, y, maxlinks)
 {
 	//following attributes are the starting and the ending SVGPoints of the rectangle 
 	//for the selection of the nodes on the map.
@@ -37,6 +38,7 @@ Map.prototype.init = function(color, id, width, height, x, y)
 	this.height = height;
 	this.x = x;
 	this.y = y;
+	this.maxlinks = maxlinks;
 	
 	this.startSelectionRectangle = null;
 	this.endSelectionRectangle = null;
@@ -255,10 +257,12 @@ Map.prototype.addLink = function(id1, id2, typology, status, stroke, stroke_widt
 	var id = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[id]==null){
 		// check parameter
-		var linkAdded = false;
 
 		var first = null;
 		var second = null;
+
+		var idSplitted = id.split("-");
+		var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
 
 		//remove the element from the svg view	
 		if(this.mapElements !=null && id1 != null && id2 != null )
@@ -266,12 +270,12 @@ Map.prototype.addLink = function(id1, id2, typology, status, stroke, stroke_widt
 			first = this.mapElements[id1];
 			second = this.mapElements[id2];
 		} else {
-			return linkAdded;
+			return false;
 		}
 
 		if (first == undefined || second == undefined) {
 			//alert("Paramater id1 error: map doesn't contain mapnode with id=" + id1);
-			return linkAdded;
+			return false;
 		}
 
 		
@@ -279,27 +283,29 @@ Map.prototype.addLink = function(id1, id2, typology, status, stroke, stroke_widt
 		if( (this.mapLinks[id] != undefined) ){
 			//alertDebug("Map already contains the element");
 			this.deleteLink(id1,id2,typology);
+			this.linksBetweenElements[idWithoutTypology]--;
 		}
 
 		//calculate and mantains the number of links between the elements
-		var idSplitted = id.split("-");
-		var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
 		if(this.linksBetweenElements[idWithoutTypology]==undefined){
 			this.linksBetweenElements[idWithoutTypology]=1;
 		}else{
 			this.linksBetweenElements[idWithoutTypology]++;
 		}
 
+		if (this.maxlinks < this.linksBetweenElements[idWithoutTypology]) {
+			this.linksBetweenElements[idWithoutTypology]--;
+			return false;
+		}
 
 		var link = new Link(id, typology, status, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology]-1, deltaLink,nodeid1,nodeid2);
 //		alert("first: "+first.getLabel()+" nodeid1:" + nodeid1 +"---second: " + second.getLabel() + "nodeid2:" + nodeid2);
 		
 		this.mapLinks[id] = link;
 		this.mapLinkSize++;
-		linkAdded = true;
 		//alert('link with id '+id+' added');
 	}
-	return linkAdded;
+	return true;
 }
 
 // delete the link with the id in input

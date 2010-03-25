@@ -26,6 +26,15 @@ public class VProperties {
     
 
     int unknownstatusid;
+    int maxLinks;
+
+    public int getMaxLinks() {
+        return maxLinks;
+    }
+
+    public void setMaxLinks(int maxLinks) {
+        this.maxLinks = maxLinks;
+    }
 
     ContextMenu contextMenu;
 

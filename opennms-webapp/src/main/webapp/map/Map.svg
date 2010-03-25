@@ -44,7 +44,7 @@ var MAPS_STARTUP_ACTION = "MapStartUp";
 
 function startUp() {
 	// Instantiate the default map
-	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0);
+	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0, maxLinks);
 	mapSvgElement.appendChild(map.getSvgNode());
 
 	defaultMap = new ElemMap(-2, null, null);
@@ -86,6 +86,7 @@ function handleInit(data) {
 		doubleClickEnabled = mapsPropertiesFactory.doubleClickEnabled;
 		UNKNOWN_STATUS = mapsPropertiesFactory.unknownstatusid;
 		mapElemDimension = mapsPropertiesFactory.defaultMapElementDimension;
+		maxLinks = mapsPropertiesFactory.maxLinks;
 		
 		
 		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;

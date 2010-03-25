@@ -195,3 +195,6 @@ var x_picker,pick_begin,pick_color,pick_appui,comp_rouge=128,comp_vert=128,comp_
 
 // Context menu height
 var cmheight;
+
+// Max number of links between two mapElements
+var maxLinks;

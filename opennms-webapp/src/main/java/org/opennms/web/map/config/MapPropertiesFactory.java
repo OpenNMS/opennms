@@ -114,12 +114,20 @@ public class MapPropertiesFactory extends Object {
 	protected  String defaultMapIcon = null;
 	
     protected  int defaultMapElementDimension = 25;
+    
+    protected int maxLinks = 3;
 
-	public static final  String MULTILINK_BEST_STATUS ="best"; 
+	public int getMaxLinks() {
+        return maxLinks;
+    }
+
+    public static final  String MULTILINK_BEST_STATUS ="best"; 
 	
 	public static final  String MULTILINK_WORST_STATUS ="worst";
 	
-	protected  String multilinkStatus = MULTILINK_BEST_STATUS;
+    public static final  String MULTILINK_IGNORE_STATUS ="ignore";
+
+    protected  String multilinkStatus = MULTILINK_BEST_STATUS;
 	
 	protected  int defaultLink = -1;
 
@@ -591,13 +599,18 @@ public class MapPropertiesFactory extends Object {
 			LinkStatus ls = new LinkStatus(linkStatuses[i],color,flashBool);
 			linkStatusesMap.put(linkStatuses[i], ls);
 		}		
-		
+
+	      if(props.getProperty("max.links")!=null){
+	            maxLinks = WebSecurityUtils.safeParseInt(props.getProperty("max.links"));    
+	        }
+	      log.debug("found max.links: "+maxLinks);
+
 		
 		if(props.getProperty("multilink.status")!=null){
 			multilinkStatus = props.getProperty("multilink.status"); 	
 		}
-		if(!multilinkStatus.equals("best") && !multilinkStatus.equals("worst")){
-			log.error("multilink.status property must be 'best' or 'worst'... using default ('best')");
+		if(!multilinkStatus.equals(MULTILINK_BEST_STATUS) && !multilinkStatus.equals(MULTILINK_IGNORE_STATUS) && !multilinkStatus.equals(MULTILINK_WORST_STATUS)){
+			log.error("multilink.status property must be 'best' or 'worst' or 'ignore' ... using default ('best')");
 			multilinkStatus=MULTILINK_BEST_STATUS;
 		}
 		log.debug("found multilink.status:"+multilinkStatus);

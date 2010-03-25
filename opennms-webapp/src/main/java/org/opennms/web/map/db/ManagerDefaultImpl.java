@@ -1437,6 +1437,7 @@ public class ManagerDefaultImpl implements Manager {
         inObj.setCategories(getCategories());
         inObj.setUnknownstatusid(mapsPropertiesFactory.getUnknownStatusId());
         inObj.setDefaultMapElementDimension(mapsPropertiesFactory.getDefaultMapElementDimension());
+        inObj.setMaxLinks(mapsPropertiesFactory.getMaxLinks());
         return inObj;
     }
 
