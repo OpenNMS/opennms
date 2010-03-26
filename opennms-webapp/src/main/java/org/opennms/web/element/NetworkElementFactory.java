@@ -2568,9 +2568,9 @@ public class NetworkElementFactory {
 
 
     public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final boolean onlyNodesWithDownAggregateStatus) {
-    	return (Node[])transTemplate.execute(new TransactionCallback() {
+    	return transTemplate.execute(new TransactionCallback<Node[]>() {
 
-			public Object doInTransaction(TransactionStatus arg0) {
+			public Node[] doInTransaction(TransactionStatus arg0) {
 				return getNodesWithCategories(nodeDao, categoryDao, categories1, onlyNodesWithDownAggregateStatus);	
 			}
     		
@@ -2602,9 +2602,9 @@ public class NetworkElementFactory {
     }
 
     public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
-    	return (Node[])transTemplate.execute(new TransactionCallback() {
+    	return transTemplate.execute(new TransactionCallback<Node[]>() {
 
-			public Object doInTransaction(TransactionStatus arg0) {
+			public Node[] doInTransaction(TransactionStatus arg0) {
 				return getNodesWithCategories(nodeDao, categoryDao, categories1, categories2, onlyNodesWithDownAggregateStatus);	
 			}
     		
