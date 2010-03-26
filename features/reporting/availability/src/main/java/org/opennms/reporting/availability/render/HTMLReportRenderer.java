@@ -38,13 +38,16 @@
 package org.opennms.reporting.availability.render;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -57,8 +60,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.Resource;
 
 /**
- * HTMLReportRenderer will transform its input.xml into html using the
- * supplied xslt resource.
+ * HTMLReportRenderer will transform its input XML into HTML using the
+ * supplied XSLT resource.
  * 
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  */
@@ -67,160 +70,149 @@ public class HTMLReportRenderer implements ReportRenderer {
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
     private String m_outputFileName;
-    
+
     private String m_inputFileName;
-    
-    private String m_baseDir;
 
     private Resource m_xsltResource;
-    
+
+    private String m_baseDir;
+
     private Category log;
-    
+
     public HTMLReportRenderer() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(HTMLReportRenderer.class);
     }
 
     public void render() throws ReportRenderException {
-        render(m_inputFileName, m_outputFileName, m_xsltResource);  
+        render(m_inputFileName, m_outputFileName, m_xsltResource);
     }
-    
+
     public byte[] render(String inputFileName, Resource xsltResource) throws ReportRenderException {
-        
+
+        if (log.isDebugEnabled())
+            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to byte array");
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        
-        try {
-            
-            log.debug("XSL File " + xsltResource.getDescription());
+        this.render(inputFileName, outputStream, xsltResource);
 
-            Reader xsl = new FileReader(xsltResource.getFile());
-
-            log.debug("file to render" + inputFileName);
-
-            Reader xml = new FileReader(inputFileName);
-
-
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer processor = tfact.newTransformer(new StreamSource(xsl));
-            processor.transform(new StreamSource(xml),
-                                new StreamResult(outputStream));
-
-            xsl.close();
-            xml.close();
-
-        } catch (IOException ioe) {
-            log.fatal("IOException ", ioe);
-            throw new ReportRenderException(ioe);
-        } catch (TransformerConfigurationException tce) {
-            log.fatal("ransformerConfigurationException ", tce);
-            throw new ReportRenderException(tce);
-        } catch (TransformerException te) {
-            log.fatal("TransformerException ", te);
-            throw new ReportRenderException(te);
-        }
-        
         return outputStream.toByteArray();
     }
-        
-    
+
     public void render(String inputFileName, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
-        
+        if (log.isDebugEnabled())
+            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to OutputStream");
+
+        FileInputStream in = null, xslt = null;
         try {
-            
-            log.debug("XSL File " + xsltResource.getDescription());
+            in = new FileInputStream(xsltResource.getFile());
+            Reader xsl = new InputStreamReader(in, "UTF-8");
+            xslt = new FileInputStream(inputFileName);
+            Reader xml = new InputStreamReader(xslt, "UTF-8");
 
-            Reader xsl = new FileReader(xsltResource.getFile());
-
-            log.debug("file to render" + inputFileName);
-
-            Reader xml = new FileReader(inputFileName);
-
-
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer processor = tfact.newTransformer(new StreamSource(xsl));
-            processor.transform(new StreamSource(xml),
-                                new StreamResult(outputStream));
-
-            xsl.close();
-            xml.close();
-
+            this.render(xml, outputStream, xsl);
         } catch (IOException ioe) {
             log.fatal("IOException ", ioe);
             throw new ReportRenderException(ioe);
-        } catch (TransformerConfigurationException tce) {
-            log.fatal("ransformerConfigurationException ", tce);
-            throw new ReportRenderException(tce);
-        } catch (TransformerException te) {
-            log.fatal("TransformerException ", te);
-            throw new ReportRenderException(te);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XML stream: " + e.getMessage());
+                }
+            }
+            if (xslt != null) {
+                try {
+                    xslt.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                }
+            }
         }
     }
-    
+
     public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
-        
+        if (log.isDebugEnabled())
+            log.debug("Rendering InputStream with XSL File " + xsltResource.getDescription() + " to OutputStream");
+
+        FileInputStream xslt = null;
         try {
-            
-            log.debug("XSL File " + xsltResource.getDescription());
+            xslt = new FileInputStream(xsltResource.getFile());
+            Reader xsl = new InputStreamReader(xslt, "UTF-8");
+            Reader xml = new InputStreamReader(inputStream, "UTF-8");
 
-            Reader xsl = new FileReader(xsltResource.getFile());
-
-            log.debug("rendering input stream");
-
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer processor = tfact.newTransformer(new StreamSource(xsl));
-            processor.transform(new StreamSource(inputStream),
-                                new StreamResult(outputStream));
-
-            xsl.close();
-            inputStream.close();
-
+            this.render(xml, outputStream, xsl);
         } catch (IOException ioe) {
             log.fatal("IOException ", ioe);
             throw new ReportRenderException(ioe);
-        } catch (TransformerConfigurationException tce) {
-            log.fatal("ransformerConfigurationException ", tce);
-            throw new ReportRenderException(tce);
-        } catch (TransformerException te) {
-            log.fatal("TransformerException ", te);
-            throw new ReportRenderException(te);
+        } finally {
+            if (xslt != null) {
+                try {
+                    xslt.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                }
+            }
         }
     }
 
     public void render(String inputFileName, String outputFileName, Resource xsltResource) throws ReportRenderException {
+        if (log.isDebugEnabled())
+            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to " + outputFileName + " with base directory of " + m_baseDir);
 
-        // TODO this needs to be passed the absolute path for the input file (maybe)?
-        
+        FileInputStream in = null, xslt = null;
+        FileOutputStream out = null;
         try {
+
+            xslt = new FileInputStream(xsltResource.getFile());
+            Reader xsl = new InputStreamReader(xslt, "UTF-8");
+            in = new FileInputStream(m_baseDir + "/" + inputFileName);
+            Reader xml = new InputStreamReader(in, "UTF-8");
+
+            out = new FileOutputStream(new File(m_baseDir + "/" + outputFileName));
             
-            log.debug("XSL File " + xsltResource.getDescription());
-
-            Reader xsl = new FileReader(xsltResource.getFile());
-
-            log.debug("file to render" + inputFileName);
-
-            Reader xml = new FileReader(m_baseDir + "/" + inputFileName);
-
-            log.debug("ouput File " + outputFileName);
-
-            FileWriter htmlWriter = new FileWriter(m_baseDir + "/" + outputFileName);
-
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer processor = tfact.newTransformer(new StreamSource(xsl));
-            processor.transform(new StreamSource(xml),
-                                new StreamResult(htmlWriter));
-
-            htmlWriter.close();
-            xsl.close();
-            xml.close();
+            this.render(xml, out, xsl);
 
         } catch (IOException ioe) {
             log.fatal("IOException ", ioe);
             throw new ReportRenderException(ioe);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XML stream: " + e.getMessage());
+                }
+            }
+            if (xslt != null) {
+                try {
+                    xslt.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing PDF stream: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void render(Reader in, OutputStream out, Reader xslt) throws ReportRenderException {
+        try {
+            TransformerFactory tfact = TransformerFactory.newInstance();
+            Transformer transformer = tfact.newTransformer(new StreamSource(xslt));
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.transform(new StreamSource(in), new StreamResult(out));
         } catch (TransformerConfigurationException tce) {
-            log.fatal("ransformerConfigurationException ", tce);
+            log.fatal("TransformerConfigurationException", tce);
             throw new ReportRenderException(tce);
         } catch (TransformerException te) {
-            log.fatal("TransformerException ", te);
+            log.fatal("TransformerException", te);
             throw new ReportRenderException(te);
         }
     }
@@ -232,22 +224,20 @@ public class HTMLReportRenderer implements ReportRenderer {
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
-    
+
     public String getOutputFileName() {
         return m_outputFileName;
     }
 
-    public void setInputFileName(String intputFileName) {
-        this.m_inputFileName = intputFileName;
+    public void setInputFileName(String inputFileName) {
+        this.m_inputFileName = inputFileName;
     }
-    
-    public void setBaseDir(String baseDir){
+
+    public void setBaseDir(String baseDir) {
         this.m_baseDir = baseDir;
     }
-    
-    public String getBaseDir(){
-       return m_baseDir;
+
+    public String getBaseDir() {
+        return m_baseDir;
     }
-
-
 }
