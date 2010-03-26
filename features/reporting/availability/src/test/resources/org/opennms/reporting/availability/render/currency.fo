@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Statement: SELECT Country, Currency FROM Country ORDER BY Country
+     Driver:    interbase.interclient.Driver
+     URL:       jdbc:interbase://localhost/c:\mxreports\employee.gdb
+     User:      SYSDBA
+     Password:  masterkey
+-->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="sample" 
+                           page-height="297mm"
+                           page-width="210mm"
+                           margin-left="25mm"
+                           margin-right="25mm"
+                           margin-top="27mm"
+                           margin-bottom="20mm">
+      <fo:region-body margin-top="0mm"
+                      margin-bottom="0mm" />
+      <fo:region-before extent="3cm" />
+      <fo:region-after extent="1.5cm" />
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:page-sequence master-reference="sample">
+    <fo:flow flow-name="xsl-region-body">
+       <fo:table>
+         <fo:table-column column-width = "90mm" />
+         <fo:table-column column-width = "90mm" />
+         <fo:table-body>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Australia</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >ADollar</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Austria</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Schilling</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Belgium</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >BFranc</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Canada</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >CdnDlr</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >England</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Pound</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Fiji</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >FDollar</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >France</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >FFranc</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Germany</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >D-Mark</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Hong Kong</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >HKDollar</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Italy</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Lira</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Japan</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Yen</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Netherlands</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Guilder</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Switzerland</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >SFranc</fo:block></fo:table-cell>
+           </fo:table-row>
+           <fo:table-row>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >USA</fo:block></fo:table-cell>
+             <fo:table-cell><fo:block font-family="Arial" font-style="Regular" >Dollar</fo:block></fo:table-cell>
+           </fo:table-row>
+         </fo:table-body>
+       </fo:table>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

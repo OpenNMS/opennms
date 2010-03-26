@@ -3,14 +3,11 @@ package org.opennms.report.inventory;
 import java.io.IOException;
 import java.util.Date;
 
-
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-
-
 import org.opennms.report.ReportMailer;
-import org.opennms.report.render.ReportRenderException;
-import org.opennms.report.render.ReportRenderer;
+import org.opennms.reporting.availability.render.ReportRenderException;
+import org.opennms.reporting.availability.render.ReportRenderer;
 
 public class InventoryReportRunner implements Runnable {
         
@@ -23,7 +20,7 @@ public class InventoryReportRunner implements Runnable {
 
     InventoryReportCalculator calculator;
 
-    ReportRenderer m_htmlReportRenderer;    
+    ReportRenderer m_htmlReportRenderer;
     ReportRenderer m_nullReportRenderer;
     
     public ReportRenderer getNullReportRenderer() {

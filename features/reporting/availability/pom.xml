@@ -149,9 +149,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>fop</groupId>
+      <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>fop</artifactId>
-      <version>0.20.5</version>
+      <version>0.95-1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
