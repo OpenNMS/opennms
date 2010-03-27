@@ -64,16 +64,12 @@ function loadMaps(){
 }
 
 function handleLoadMapsResponse(data) {
-	var str = '';
-	var failed = true;
-	if(data.success || data.status==200) {
-		str = data.content;
-		if(testResponse(LOADMAPS_ACTION, str)){
-			str=str.substring(LOADMAPS_ACTION.length+2,str.length);
-			failed = false;
-		}
-	}
-	if (failed) {
+	var currMaps;
+    var content = data.content;
+	if((data.success || data.status==200) 
+	&& content.indexOf(LOADMAPS_ACTION+failed_string) == -1 ) {
+		currMaps=eval("("+content+")");
+	} else {
 		alert('Loading Maps failed');
 		loading--;	
 		assertLoading();			
@@ -83,31 +79,25 @@ function handleLoadMapsResponse(data) {
 	var labels = [" "];
     var mapSorts = [null];
     var mapids = [null];
-    var st = str.split("&");
-	if(str.indexOf("+")>=0){
-		for(var k=0;k<st.length;k++){
-			var nodeToken = st[k];
-			var nodeST = nodeToken.split("+");
-			var name,id,owner;
-				id=nodeST[0];
-			name=nodeST[1];
-			owner=nodeST[2];
-			var tempStr = mapLabels.join(".");
-			while(	tempStr.indexOf(name) != -1 ){
-				name=name+" ";
-			}
-			var tmpMap = new ElemMap(id, name, owner);
-			mapids.push(id);
-			mapLabels.push(name);
-			labels.push(name)
-			mapSorts.push(tmpMap);
+	for(var n in currMaps){
+		var mapInfo = currMaps[n];
+		var name,id,owner;
+			id=mapInfo.id;
+		name=mapInfo.name;
+		owner=mapInfo.owner;
+		var tempStr = mapLabels.join(".");
+		while(	tempStr.indexOf(name) != -1 ){
+			name=name+" ";
 		}
+		mapids.push(id);
+		mapLabels.push(name);
+		labels.push(name)
+		mapSorts.push(new ElemMap(id, name, owner));
 	}
-	var searchMap = new ElemMap(SEARCH_MAP,SEARCH_MAP_NAME,"admin");
 
 	mapids.push(SEARCH_MAP);	
 	labels.push(SEARCH_MAP_NAME);
-	mapSorts.push(searchMap);
+	mapSorts.push(new ElemMap(SEARCH_MAP,SEARCH_MAP_NAME,"admin"));
 
 	mapSortAss = assArrayPopulate(labels,mapSorts);	
 	mapidSortAss = assArrayPopulate(mapids,labels);	
@@ -127,7 +117,6 @@ function loadNodes(){
 
 function handleLoadNodesResponse(data) {
 	var currNodes;
-    var failed = false;
     var content = data.content;
 	if((data.success || data.status==200) 
 	&& content.indexOf(LOADNODES_ACTION+failed_string) == -1 ) {
@@ -571,7 +560,6 @@ function searchMap(mapIds){
 
 function handleLoadingMap(data) {
 	var openingMap;
-    var failed = false;
     var content = data.content;
 	if((data.success || data.status==200) 
 	&& content.indexOf(OPENMAP_ACTION+failed_string) == -1 
@@ -710,32 +698,27 @@ function saveMap() {
 }
 
 function handleSaveResponse(data) {
-	var failed = true;
-	if(data.success || data.status==200) {
-		var str=data.content;
-		if(testResponse(SAVEMAP_ACTION, str)){
-			str=str.substring(SAVEMAP_ACTION.length+2,str.length);
-			failed = false;
-		}
-	}
-	
-	if (failed) {			
+	var savingMap;
+    var content = data.content;
+	if((data.success || data.status==200) 
+	&& content.indexOf(SAVEMAP_ACTION+failed_string) == -1
+	) {
+		savingMap=eval("("+content+")");
+	} else {
 		alert('Failed to save map');	
 		showHistory();
 		clearDownInfo();
 		enableMenu();
 		return;
-	}		
-	var answerST = str.split("+");
+	}
 
-	currentMapId=parseInt(answerST[0]);
-	currentMapBackGround=answerST[1];
-	currentMapAccess=answerST[2];
-	currentMapName=answerST[3];
-	currentMapOwner=answerST[4];
-	currentMapUserlast=answerST[5];
-	currentMapCreatetime=answerST[6];
-	currentMapLastmodtime=answerST[7];
+	currentMapId=savingMap.id;
+	currentMapAccess=savingMap.accessMode;
+	currentMapOwner=savingMap.owner;
+	currentMapUserlast=savingMap.userLastModifies;
+	currentMapCreatetime=savingMap.createTimeString;
+	currentMapLastmodtime=savingMap.lastModifiedTimeString;
+
 	if (currentMapType == "A")
 		currentMapType="S";
 

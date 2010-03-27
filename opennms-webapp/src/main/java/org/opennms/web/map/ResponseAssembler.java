@@ -40,9 +40,10 @@
 package org.opennms.web.map;
 
 import java.text.SimpleDateFormat;
-//import java.util.Iterator;
+
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,7 @@ import java.util.Set;
 import net.sf.json.JSONSerializer;
 
 import org.apache.log4j.Category;
+
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
@@ -125,32 +127,11 @@ public class ResponseAssembler {
 	}
 		
 	protected static String getLoadNodesResponse(String action, List<VElementInfo> elemInfos){
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		return JSONSerializer.toJSON(elemInfos).toString();
 	}
 	
    protected static String getLoadMapsResponse(String action, List<VMapInfo> maps) {
-        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-        log = ThreadCategory.getInstance(ResponseAssembler.class);
-        
-        String strToSend=getActionOKMapResponse(action);
-                
-        if(maps!=null){
-            // create the string containing the main informations about maps
-            // the string will have the form:
-            // mapid1+mapname1+mapowner1&mapid2+mapname2+mapowner2...
-            for (int i = 0; i < maps.size(); i++) {
-                if (i > 0) {
-                    strToSend += "&";
-                }
-                VMapInfo map = (VMapInfo) maps.get(i);
-                strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
-            }
-        } else {
-            strToSend=getMapErrorResponse(action);
-        }
-        log.debug("getMapsResponse: String assembled: "+strToSend);
-        return strToSend;
+       return JSONSerializer.toJSON(maps).toString();
     }
 
 	   protected static String getLoadDefaultMapResponse(String action, VMapInfo map) {
@@ -168,29 +149,29 @@ public class ResponseAssembler {
 	        return strToSend;
 	    }
 
-	protected static String getSaveMapResponse(String action,VMap map){
+	@SuppressWarnings("unchecked")
+    protected static String getSaveMapResponse(String action,VMap map){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		SimpleDateFormat formatter = new SimpleDateFormat("HH.mm.ss dd/MM/yy");
-	 String strToSend =getActionOKMapResponse(action)+map.getId()
-		+ "+"
-		+ map.getBackground()
-		+ "+"
-		+ map.getAccessMode()
-		+ "+"
-		+ map.getName()
-		+ "+"
-		+ map.getOwner()
-		+ "+"
-		+ map.getUserLastModifies()
-		+ "+"
-		+ ((map.getCreateTime() != null) ? formatter.format(map
-				.getCreateTime()) : "")
-		+ "+"
-		+ ((map.getLastModifiedTime() != null) ? formatter
-				.format(map.getLastModifiedTime()) : "");
-		log.debug("getSaveMapResponse: String assembled: "+strToSend);
-	 return strToSend;
+		Map saveMapResponse = new HashMap();
+		saveMapResponse.put("id", map.getId());
+		saveMapResponse.put("accessMode",map.getAccessMode());
+        saveMapResponse.put("owner",map.getOwner());
+        saveMapResponse.put("userLastModifies",map.getUserLastModifies());
+
+        SimpleDateFormat formatter = new SimpleDateFormat("HH.mm.ss dd/MM/yy");
+        Date now = new Date();
+        if (map.getLastModifiedTime() != null)
+            saveMapResponse.put("lastModifiedTimeString", formatter.format(map.getLastModifiedTime()));
+        else
+            saveMapResponse.put("lastModifiedTimeString", formatter.format(now));
+
+
+        if (map.getCreateTime() != null)
+            saveMapResponse.put("createTimeString",formatter.format(map.getCreateTime()));
+        else 
+            saveMapResponse.put("createTimeString",formatter.format(now));
+        
+        return JSONSerializer.toJSON(saveMapResponse).toString(); 
 	}
 	
 	protected static String getMapResponse(VMap map) {
