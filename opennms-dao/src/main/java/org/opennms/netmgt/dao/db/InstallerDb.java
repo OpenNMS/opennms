@@ -49,7 +49,7 @@ package org.opennms.netmgt.dao.db;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -166,7 +166,7 @@ public class InstallerDb {
     }
     
     public void readTables() throws Exception {
-        readTables(new FileReader(m_createSqlLocation));
+        readTables(new InputStreamReader(new FileInputStream(m_createSqlLocation), "UTF-8"));
     }
 
     public void readTables(Reader reader) throws Exception {
@@ -574,7 +574,7 @@ public class InstallerDb {
 
             m_out.print("\n  - " + element.getName() + "... ");
 
-            BufferedReader r = new BufferedReader(new FileReader(element));
+            BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(element), "UTF-8"));
             while ((line = r.readLine()) != null) {
                 line = line.trim();
 

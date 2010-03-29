@@ -5,8 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 
@@ -253,7 +254,7 @@ public class SequenceXmlTest {
         File xmlFile = new File(ClassLoader.getSystemResource("ussd-balance-sequence.xml").getFile());
         assertTrue("ussd-balance-sequence.xml is readable", xmlFile.canRead());
 
-        BufferedReader reader = new BufferedReader(new FileReader(xmlFile));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(xmlFile), "UTF-8"));
         String line;
         while (true) {
             line = reader.readLine();
@@ -267,7 +268,7 @@ public class SequenceXmlTest {
     }
 
     private void printFile(File file) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(file));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
         StringBuilder sb = new StringBuilder();
         String line = null;
 

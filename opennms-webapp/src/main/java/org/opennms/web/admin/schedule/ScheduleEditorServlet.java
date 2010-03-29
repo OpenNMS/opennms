@@ -35,10 +35,12 @@
 //
 package org.opennms.web.admin.schedule;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +93,7 @@ public class ScheduleEditorServlet extends HttpServlet {
                 throw new ServletException("Loading from outage factory not implemented yet!");
             } else {
                 try {
-                    FileReader reader = new FileReader(m_fileName);
+                    Reader reader = new InputStreamReader(new FileInputStream(m_fileName), "UTF-8");
                     m_outages = CastorUtils.unmarshal(Outages.class, reader);
                     reader.close();
                 } catch (MarshalException e) {

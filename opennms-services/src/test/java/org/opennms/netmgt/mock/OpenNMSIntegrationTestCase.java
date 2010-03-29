@@ -37,10 +37,10 @@ package org.opennms.netmgt.mock;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.InetAddress;
@@ -329,7 +329,7 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
     private String readFileContents(File srcFile) throws IOException {
         Reader reader = null;
         try {
-            reader = new FileReader(srcFile);
+            reader = new InputStreamReader(new FileInputStream(srcFile), "UTF-8");
             return IOUtils.toString(reader);
         } finally {
             IOUtils.closeQuietly(reader);

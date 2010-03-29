@@ -31,9 +31,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
@@ -100,7 +101,7 @@ public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_SERVER_CONFIG_FILE_NAME);
 
-        FileReader cfgIn = new FileReader(cfgFile);
+        Reader cfgIn = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
         m_singleton = new OpennmsServerConfigFactory(cfgIn);
         cfgIn.close();
 

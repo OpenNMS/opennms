@@ -33,10 +33,11 @@ package org.opennms.web.springframework.security;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import junit.framework.TestCase;
 
@@ -364,7 +365,7 @@ public class UserDaoImplTest extends TestCase {
     }
 
     private String getFileContents(File file) throws FileNotFoundException, IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
         
         StringBuffer contents = new StringBuffer();
         String line;
