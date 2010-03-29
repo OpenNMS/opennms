@@ -80,7 +80,7 @@ public class SaveMapController implements Controller {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 		if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
 			log.warn("User is not in Admin mode, cannot save");
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SAVEMAP_ACTION));

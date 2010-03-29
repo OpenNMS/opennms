@@ -326,7 +326,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
     private void marshal(OutputStream outputStream) 
             throws AvailabilityCalculationException {
         try {
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
             Marshaller marshaller = new Marshaller(writer);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);

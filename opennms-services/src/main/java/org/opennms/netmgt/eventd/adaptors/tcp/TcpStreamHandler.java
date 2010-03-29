@@ -41,6 +41,7 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -401,7 +402,7 @@ final class TcpStreamHandler implements Runnable {
                 if (hasReceipt) {
                     // Transform it to XML and send it to the socket in one call
                     try {
-                        OutputStreamWriter writer = new OutputStreamWriter(new BufferedOutputStream(m_connection.getOutputStream()));
+                        Writer writer = new BufferedWriter(new OutputStreamWriter(m_connection.getOutputStream(), "UTF-8"));
                         Marshaller.marshal(receipt, writer);
                         writer.flush();
 
