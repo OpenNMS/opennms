@@ -103,6 +103,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             onmsDef.setName(def.getLocationName());
             onmsDef.setPollingPackageName(def.getPollingPackageName());
             onmsDef.setGeolocation(def.getGeolocation());
+            onmsDef.setCoordinates(def.getCoordinates());
             onmsDefs.add(onmsDef);
         }
         return onmsDefs;
@@ -119,6 +120,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                     def.setMonitoringArea(onmsDef.getArea());
                     def.setPollingPackageName(onmsDef.getArea());
                     def.setGeolocation(onmsDef.getGeolocation());
+                    def.setCoordinates(onmsDef.getCoordinates());
                 }
             }
         }
@@ -132,6 +134,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                 def.setMonitoringArea(onmsDef.getArea());
                 def.setPollingPackageName(onmsDef.getPollingPackageName());
                 def.setGeolocation(onmsDef.getGeolocation());
+                def.setCoordinates(onmsDef.getCoordinates());
             }
         }
         saveMonitoringConfig();
@@ -235,6 +238,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         eDef.setName(def.getLocationName());
         eDef.setPollingPackageName(def.getPollingPackageName());
         eDef.setGeolocation(def.getGeolocation());
+        eDef.setCoordinates(def.getCoordinates());
         return eDef;
     }
 

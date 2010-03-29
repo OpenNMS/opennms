@@ -14,6 +14,8 @@ public interface Location extends Event, IsSerializable {
 
 	public abstract String getGeolocation();
 
+	public abstract GWTLatLng getLatLng();
+
 	public abstract LocationMonitorState getLocationMonitorState();
 
 	public abstract String getImageURL();

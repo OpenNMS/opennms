@@ -1,10 +1,8 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
@@ -165,7 +163,6 @@ public abstract class AbstractLocationManager implements LocationManager {
 	
 	private String m_apiKey;
 	private static final Set<String> m_locationsUpdating = new HashSet<String>();
-	private static final Map<String,GWTLatLng> m_geolocations = new HashMap<String,GWTLatLng>();
 
 	protected final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 
@@ -246,14 +243,6 @@ public abstract class AbstractLocationManager implements LocationManager {
 
 	protected boolean isLocationUpdateInProgress() {
 		return m_locationsUpdating.size() > 0;
-	}
-	
-	protected void cacheGeolocation(final String geolocation, final GWTLatLng point) {
-		m_geolocations.put(geolocation, point);
-	}
-
-	protected GWTLatLng getGeolocation(final Location location) {
-		return m_geolocations.get(location.getGeolocation());
 	}
 	
 }

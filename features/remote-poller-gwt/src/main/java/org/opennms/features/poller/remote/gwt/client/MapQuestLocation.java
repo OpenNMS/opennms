@@ -11,15 +11,11 @@ public class MapQuestLocation extends BaseLocation implements Location {
 	}
 
 	public MapQuestLocation(Location location) {
-		super(location.getName(), location.getPollingPackageName(), location.getArea(), location.getGeolocation(), location.getLocationMonitorState());
+		super(location.getName(), location.getPollingPackageName(), location.getArea(), location.getGeolocation(), location.getLatLng(), location.getLocationMonitorState());
 	}
 
 	public MapQuestLocation(String name, String pollingPackageName, String area, String geolocation) {
 		super(name, pollingPackageName, area, geolocation);
-	}
-
-	public MapQuestLocation(String name, String pollingPackageName, String area, String geolocation, LocationMonitorState lms) {
-		super(name, pollingPackageName, area, geolocation, lms);
 	}
 
 	public MQAPoi getMarker() {

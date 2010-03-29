@@ -162,6 +162,30 @@
       <artifactId>gwt-log</artifactId>
       <version>3.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>net.sourceforge.geo-google</groupId>
+      <artifactId>geo-google</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+    <!-- used by geo-google -->
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.mapquest</groupId>
+      <artifactId>mq</artifactId>
+      <version>5.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>net.simon04.jelementtree</groupId>
+      <artifactId>jelementtree</artifactId>
+      <version>20100325</version>
+    </dependency>
 
     <!-- technically for testing (making a full war)... -->
     <dependency>

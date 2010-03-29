@@ -3,6 +3,7 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.util.Collection;
 import java.util.List;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
@@ -80,32 +81,13 @@ public class MapquestLocationManager extends AbstractLocationManager implements 
 	@Override
 	public void removeLocation(final Location location) {
 		if (location == null) return;
-		GWTLatLng latLng = getGeolocation(location);
-		if (latLng != null) {
-			MapQuestLocation loc = new MapQuestLocation(location);
-			loc.setLatLng(latLng);
-			updateMarker(loc);
-		} else {
-			RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, GEOCODER_URL + "&key=" + getApiKey());
-			rb.setCallback(new RequestCallback() {
-				public void onError(Request req, Throwable throwable) {
-					final MapQuestLocation mql;
-					if (location instanceof MapQuestLocation) {
-						mql = (MapQuestLocation)location;
-					} else {
-						mql = new MapQuestLocation(location);
-					}
-					mql.setLatLng(GWTLatLng.getDefault());
-					updateMarker(mql);
-				}
-
-				public void onResponseReceived(Request req, Response resp) {
-					resp.getText();
-					JSONValue value = JSONParser.parse(resp.getText());
-				}
-				
-			});
+		GWTLatLng latLng = location.getLatLng();
+		if (latLng == null) {
+			Log.warn("no lat/long for location " + location.getName());
+			return;
 		}
+		MapQuestLocation loc = new MapQuestLocation(location);
+		updateMarker(loc);
 	}
 
 	private void updateMarker(final Location location) {

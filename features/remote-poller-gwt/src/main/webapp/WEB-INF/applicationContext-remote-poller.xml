@@ -4,6 +4,11 @@
 <beans>
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <property name="properties">
+      <props>
+        <prop key="gwt.geocoder.class">org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder</prop>
+      </props>
+    </property>
     <property name="locations">
       <list>
         <value>WEB-INF/configuration.properties</value>
@@ -14,4 +19,7 @@
   <bean id="apiKey" class="java.lang.String">
     <constructor-arg value="${gwt.apikey}" />
   </bean>
+
+  <bean id="geocoder" class="${gwt.geocoder.class}" />
+
 </beans>

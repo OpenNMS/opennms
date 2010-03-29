@@ -9,9 +9,9 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	private String m_name;
 	private String m_area;
 	private String m_pollingPackage;
+	private GWTLatLng m_latLng;
 	private String m_geolocation;
 	private LocationMonitorState m_locationMonitorState;
-	private GWTLatLng m_latLng;
 
 	public BaseLocation() {
 	}
@@ -23,8 +23,9 @@ public class BaseLocation implements Event, IsSerializable, Location {
 		m_geolocation = geolocation;
 	}
 
-	public BaseLocation(String name, String pollingPackageName, String area, String geolocation, LocationMonitorState lms) {
+	public BaseLocation(String name, String pollingPackageName, String area, String geolocation, GWTLatLng latLng, LocationMonitorState lms) {
 		this(name, pollingPackageName, area, geolocation);
+		m_latLng = latLng;
 		m_locationMonitorState = lms;
 	}
 

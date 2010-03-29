@@ -35,8 +35,13 @@
 //
 package org.opennms.report.render;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.reporting.availability.render.ReportRenderException;
+import org.opennms.reporting.availability.render.ReportRenderer;
 import org.springframework.core.io.Resource;
 
 /**
@@ -86,6 +91,26 @@ public class NullReportRenderer implements ReportRenderer {
     
     public String getBaseDir(){
        return m_baseDir;
+    }
+
+    public void render(String inputFileName, String outputFileName,
+            Resource xlstResource)
+            throws org.opennms.reporting.availability.render.ReportRenderException {
+    }
+
+    public void render(String inputFileName, OutputStream outputStream,
+            Resource xsltResource)
+            throws org.opennms.reporting.availability.render.ReportRenderException {
+    }
+
+    public void render(InputStream inputStream, OutputStream outputStream,
+            Resource xsltResource)
+            throws org.opennms.reporting.availability.render.ReportRenderException {
+    }
+
+    public byte[] render(String inputFileName, Resource xsltResource)
+            throws org.opennms.reporting.availability.render.ReportRenderException {
+        return new byte[0];
     }
 
 }

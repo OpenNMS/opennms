@@ -46,10 +46,12 @@
 package org.opennms.reporting.availability;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -70,7 +72,8 @@ import org.opennms.reporting.availability.Categories;
 import org.opennms.reporting.availability.Created;
 import org.opennms.reporting.availability.Report;
 import org.opennms.reporting.availability.ViewInfo;
-import org.opennms.reporting.datablock.PDFWriter;
+import org.opennms.reporting.availability.render.HTMLReportRenderer;
+import org.opennms.reporting.availability.render.PDFReportRenderer;
 import org.springframework.util.StringUtils;
 
 /**
@@ -239,7 +242,7 @@ public class AvailabilityReport extends Object {
     /**
      * Generate PDF from castor classes.
      */
-    public void generatePDF(String pdfFileName, OutputStream out,
+    public void generatePDF(String xsltFileName, OutputStream out,
             String format) throws Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         if (log().isDebugEnabled()) {
@@ -255,16 +258,10 @@ public class AvailabilityReport extends Object {
                                     + "/share/reports/AvailReport.xml");
             }
             FileReader fileReader = new FileReader(file);
-            PDFWriter pdfWriter = new PDFWriter(pdfFileName);
-            Calendar calendar = new GregorianCalendar();
-            long timeMillis = calendar.getTime().getTime();
             if (!format.equals("HTML")) {
-                pdfWriter.generatePDF(fileReader, out,
-                                      ConfigFileConstants.getHome()
-                                              + "/share/reports/avail-"
-                                              + timeMillis + ".fot");
+                new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
             } else {
-                pdfWriter.generateHTML(fileReader, out);
+                new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
             }
         } catch (Exception e) {
             log().fatal("Exception: " + e, e);

@@ -10,18 +10,13 @@ public class GoogleMapsLocation extends BaseLocation {
 	}
 
 	public GoogleMapsLocation(Location location) {
-		super(location.getName(), location.getPollingPackageName(), location.getArea(), location.getGeolocation(), location.getLocationMonitorState());
+		super(location.getName(), location.getPollingPackageName(), location.getArea(), location.getGeolocation(), location.getLatLng(), location.getLocationMonitorState());
 	}
 
 	public GoogleMapsLocation(final String name, final String pollingPackageName, final String area, final String geolocation) {
 		super(name, pollingPackageName, area, geolocation);
 	}
 	
-	public GoogleMapsLocation(String name, String pollingPackageName, String area, String geolocation, LocationMonitorState lms) {
-		super(name, pollingPackageName, area, geolocation, lms);
-	}
-
-
 	@Override
 	public String getImageURL() {
 		if (m_marker != null) {

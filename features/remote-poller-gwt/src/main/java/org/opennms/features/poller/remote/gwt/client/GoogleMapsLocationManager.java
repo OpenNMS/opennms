@@ -50,7 +50,6 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 //	private MarkerManager m_markerManager;
 	private LocationListener m_locationListener;
 	private LocationManager m_locationManager;
-	private Geocoder m_geocoder;
 
 	private final Map<String,GoogleMapsLocation> m_locations = new HashMap<String,GoogleMapsLocation>();
 	private boolean updated = false;
@@ -144,8 +143,6 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 
 				m_panel.add(m_mapWidget);
 
-				m_geocoder = new GoogleMapsGeocoder();
-				
 				Window.addResizeHandler(new ResizeHandler() {
 					public void onResize(final ResizeEvent resizeEvent) {
 						if (m_mapWidget != null) {
@@ -223,13 +220,12 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	@Override
 	public void updateLocation(final Location location) {
 		if (location == null) return;
-		GWTLatLng latLng = getGeolocation(location);
-		if (latLng != null) {
-			GoogleMapsLocation loc = new GoogleMapsLocation(location);
-			loc.setLatLng(latLng);
-			updateMarker(loc);
+		GWTLatLng latLng = location.getLatLng();
+		if (latLng == null) {
+			Log.warn("no lat/lng for this location");
 		} else {
-			m_geocoder.getLatLng(location.getGeolocation(), new LatLngMarkerPlacer(location));
+			GoogleMapsLocation loc = new GoogleMapsLocation(location);
+			updateMarker(loc);
 		}
 	}
 	
@@ -414,30 +410,6 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	private boolean checkIfLocationIsVisibleOnMap(GoogleMapsLocation location) {
         return m_mapWidget.getBounds().containsLatLng(transformLatLng(location.getLatLng()));
     }
-
-	private final class LatLngMarkerPlacer implements AsyncCallback<GWTLatLng> {
-		private final GoogleMapsLocation m_location;
-
-		private LatLngMarkerPlacer(final Location location) {
-			if (location instanceof GoogleMapsLocation) {
-				m_location = (GoogleMapsLocation)location;
-			} else {
-				m_location = new GoogleMapsLocation(location);
-			}
-		}
-
-		public void onSuccess(final GWTLatLng point) {
-			cacheGeolocation(m_location.getGeolocation(), point);
-			m_location.setLatLng(point);
-			updateMarker(m_location);
-		}
-
-		public void onFailure(Throwable throwable) {
-			m_location.setLatLng(GWTLatLng.getDefault());
-			reportError("unable to retrieve latitude and longitude for " + m_location.getName(), throwable);
-			updateMarker(m_location);
-		}
-	}
 
 	private final class DefaultMarkerClickHandler implements MarkerClickHandler {
 		private final String m_locationName;

@@ -11,6 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus;
 import org.opennms.features.poller.remote.gwt.client.GWTMonitoredService;
@@ -22,6 +23,8 @@ import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
 import org.opennms.features.poller.remote.gwt.client.UpdateComplete;
 import org.opennms.features.poller.remote.gwt.client.UpdateLocation;
 import org.opennms.features.poller.remote.gwt.client.UpdateLocations;
+import org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder;
+import org.opennms.features.poller.remote.gwt.server.geocoding.GeocoderLookupException;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -38,38 +41,53 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	private static final long serialVersionUID = 1L;
 	private static final int UPDATE_PERIOD = 1000 * 60; // 1 minute
 	private static final int MAX_LOCATIONS_PER_EVENT = 500;
+	private WebApplicationContext m_context;
+	
+	private volatile Map<String,GWTLatLng> m_coordinates = new HashMap<String,GWTLatLng>();
+	private volatile Map<String,MonitorStatus> m_monitorStatuses = new HashMap<String,MonitorStatus>();
+	private volatile Geocoder m_geocoder;
 
-	private volatile Map<String,MonitorStatus> m_monitorStatuses = new HashMap<String,MonitorStatus>(); // NOPMD by ranger on 3/18/10 9:39 AM
-
-	private static volatile Timer myLocationTimer; // NOPMD by ranger on 3/18/10 9:40 AM
-	private static volatile Date lastUpdated; // NOPMD by ranger on 3/18/10 9:40 AM
-	private static volatile LocationMonitorDao m_locationDao; // NOPMD by ranger on 3/18/10 9:40 AM
+	private static volatile Timer myLocationTimer;
+	private static volatile Date lastUpdated;
+	private static volatile LocationMonitorDao m_locationDao;
 	private static volatile String m_apiKey = null;
 
+	private void initializeContext() {
+		if (m_context == null) {
+			m_context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+		}
+	}
+	
 	private void initializeLocationDao() {
 		if (m_locationDao == null) {
-			final WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-			m_locationDao = context.getBean(LocationMonitorDao.class);
+			m_locationDao = m_context.getBean(LocationMonitorDao.class);
 		}
 	}
 
 	private void initializeApiKey() {
+		initializeContext();
 		if (m_apiKey == null) {
-			final WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-			m_apiKey = context.getBean("apiKey", String.class);
+			m_apiKey = m_context.getBean("apiKey", String.class);
+		}
+	}
+
+	private void initializeGeocoder() {
+		if (m_geocoder == null) {
+			m_geocoder = m_context.getBean("geocoder", Geocoder.class);
 		}
 	}
 
 	public void start() {
 		LogUtils.debugf(this, "starting location status service");
+		initializeContext();
 		initializeLocationDao();
+		initializeGeocoder();
 
 		if (myLocationTimer == null) {
 			LogUtils.debugf(this, "starting update timer");
 			myLocationTimer = new Timer();
 			myLocationTimer.schedule(new LocationUpdateSenderTimerTask(), UPDATE_PERIOD, UPDATE_PERIOD);
 		}
-		
 		myLocationTimer.schedule(new InitialSenderTimerTask(), 1000);
 	}
 
@@ -80,6 +98,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	}
 
 	public Location getLocation(final String locationName) {
+		initializeGeocoder();
 		return getLocation(m_locationDao.findMonitoringLocationDefinition(locationName));
 	}
 
@@ -91,8 +110,11 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			lastUpdated = new Date();
 			
 			final Collection<Location> locations = new ArrayList<Location>();
-			for (OnmsMonitoringLocationDefinition def : m_locationDao.findAllMonitoringLocationDefinitions()) {
-				locations.add(getLocation(def));
+			final Collection<OnmsMonitoringLocationDefinition> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
+			for (OnmsMonitoringLocationDefinition def : definitions) {
+				final Location location = getLocation(def);
+				locations.add(location);
+				def.setCoordinates(location.getLatLng().getCoordinates());
 				LogUtils.debugf(this, "pushing location: %s", def.getName());
 //				addEventUserSpecific(getLocation(def));
 //				addEvent(Location.LOCATION_EVENT_DOMAIN, getLocation(def));
@@ -104,6 +126,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			if (locations.size() > 0) {
 				addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new UpdateLocations(locations));
 			}
+			m_locationDao.saveMonitoringLocationDefinitions(definitions);
 			addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new UpdateComplete());
 		}
 		
@@ -170,7 +193,17 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			def.setGeolocation("35.715751,-79.16262");
 		}
 
-		final Location loc = new UpdateLocation(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), lms);
+		GWTLatLng latLng = m_coordinates.get(def.getGeolocation());
+		if (latLng == null) {
+			try {
+				latLng = m_geocoder.geocode(def.getGeolocation());
+				m_coordinates.put(def.getGeolocation(), latLng);
+			} catch (GeocoderLookupException e) {
+				LogUtils.warnf(this, e, "unable to geocode %s", def.getGeolocation());
+			}
+		}
+
+		final Location loc = new UpdateLocation(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), latLng, lms);
 		LogUtils.debugf(this, "getLocation(OnmsMonitoringLocationDefinition) returning %s", loc.toString());
 		return loc;
 	}
@@ -257,6 +290,4 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			return statuses;
 		}
 	}
-
-
 }

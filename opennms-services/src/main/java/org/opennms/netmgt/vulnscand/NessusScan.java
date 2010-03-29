@@ -172,7 +172,7 @@ class NessusScan implements Runnable {
     /**
      * List of the open vulnerabilities on an IP address
      */
-    private Set openVulnerabilities = new HashSet();
+    private Set<Integer> openVulnerabilities = new HashSet<Integer>();
 
     /**
      * Array that holds the plugin lists for each scanning level.
@@ -230,7 +230,7 @@ class NessusScan implements Runnable {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Queue of the lines that are read from the Nessus socket
-        FifoQueue lines = null;
+        FifoQueue<String> lines = null;
         // Flag that lets us know if we've found what we're looking for
         boolean found = false;
         // DB connection; is connected and disconnected as necessary
@@ -479,7 +479,7 @@ class NessusScan implements Runnable {
 
                     Timestamp currentTime = new Timestamp(new java.util.Date().getTime());
 
-                    Iterator vuln = openVulnerabilities.iterator();
+                    Iterator<Integer> vuln = openVulnerabilities.iterator();
                     while (vuln.hasNext()) {
                         stmt.setTimestamp(1, currentTime);
 
@@ -1026,13 +1026,13 @@ class NessusScan implements Runnable {
         }
     }
 
-    public FifoQueue readLines(InputStream in) {
+    public FifoQueue<String> readLines(InputStream in) {
         Category log = ThreadCategory.getInstance(getClass());
         String EOL = "\n";
 
         String alreadyRecdData = null;
 
-        FifoQueue retval = new FifoQueueImpl();
+        FifoQueue<String> retval = new FifoQueueImpl<String>();
 
         ByteArrayOutputStream xmlStr = new ByteArrayOutputStream();
         int bytesInThisRead = 0;

@@ -14,8 +14,8 @@ public class UpdateLocation extends BaseLocation implements Event {
 	public UpdateLocation(final String name, final String pollingPackageName, final String area, final String geolocation) {
 		super(name, pollingPackageName, area, geolocation);
 	}
-	public UpdateLocation(final String name, final String pollingPackageName, final String area, final String geolocation, final LocationMonitorState lms) {
-		super(name, pollingPackageName, area, geolocation, lms);
+	public UpdateLocation(final String name, final String pollingPackageName, final String area, final String geolocation, final GWTLatLng latLng, final LocationMonitorState lms) {
+		super(name, pollingPackageName, area, geolocation, latLng, lms);
 	}
 	
 	public String toString() {

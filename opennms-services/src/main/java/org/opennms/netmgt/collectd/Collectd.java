@@ -661,7 +661,7 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     public void onEvent(final Event event) {
 
-        m_transTemplate.execute(new TransactionCallback() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
                 onEventInTransaction(event);

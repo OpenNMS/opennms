@@ -145,7 +145,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         
         getRancidCategories();
         
-        m_template.execute(new TransactionCallback() {
+        m_template.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus arg0) {
                 buildRancidNodeMap();
                 return null;
@@ -203,8 +203,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         final OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
         Assert.notNull(node, "doAdd: failed to return node for given nodeId:"+nodeId);
 
-        String ipaddress = (String) m_template.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus arg0) {
+        String ipaddress = m_template.execute(new TransactionCallback<String>() {
+            public String doInTransaction(TransactionStatus arg0) {
                 return getSuitableIpForRancid(node);
             }
         });
@@ -251,8 +251,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         final OnmsNode node = m_nodeDao.get(nodeId);
         Assert.notNull(node, "doAdd: failed to return node for given nodeId:"+nodeId);
  
-        String ipaddress = (String) m_template.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus arg0) {
+        String ipaddress = m_template.execute(new TransactionCallback<String>() {
+            public String doInTransaction(TransactionStatus arg0) {
                 return getSuitableIpForRancid(node);
             }
         });
@@ -560,28 +560,28 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         log().debug("processPendingOperationForNode: " + op.getType() + " for node: " + op.getNodeId() );
         if (op.getType() == AdapterOperationType.ADD) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doAdd(op.getNodeId(),m_cp,true);
                     return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.UPDATE) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doUpdate(op.getNodeId(),m_cp,true);
                     return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.DELETE) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doDelete(op.getNodeId(),m_cp,true);
                     return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doNodeConfigChanged(op.getNodeId(),m_cp,true);
                     return null;
@@ -596,7 +596,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             LogUtils.debugf(this, "reloading the rancid adapter configuration");
             try {
                 RancidAdapterConfigFactory.reload();
-                m_template.execute(new TransactionCallback() {
+                m_template.execute(new TransactionCallback<Object>() {
                     public Object doInTransaction(TransactionStatus arg0) {
                         buildRancidNodeMap();
                         return null;

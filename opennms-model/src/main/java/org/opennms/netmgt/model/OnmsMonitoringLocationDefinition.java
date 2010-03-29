@@ -38,33 +38,39 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
     private static final long serialVersionUID = 2L;
 
     private String m_area;
-
     private String m_name;
-
     private String m_pollingPackageName;
-
-	private String m_geolocation;
+    private String m_geolocation;
+    private String m_coordinates;
     
     public OnmsMonitoringLocationDefinition() {
         
     }
     
-    public OnmsMonitoringLocationDefinition(String name, String pollingPackageName) {
+    public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName) {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
     }
     
-    public OnmsMonitoringLocationDefinition(String name, String pollingPackageName, String area) {
+    public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area) {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
         m_area = area;
     }
 
-    public OnmsMonitoringLocationDefinition(String name, String pollingPackageName, String area, String geolocation) {
+    public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area, final String geolocation) {
     	m_name = name;
     	m_pollingPackageName = pollingPackageName;
     	m_area = area;
     	m_geolocation = geolocation;
+    }
+
+    public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates) {
+    	m_name = name;
+    	m_pollingPackageName = pollingPackageName;
+    	m_area = area;
+    	m_geolocation = geolocation;
+    	m_coordinates = coordinates;
     }
 
     public String getArea() {
@@ -99,8 +105,16 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
 		return m_geolocation;
 	}
 
+	public void setCoordinates(String coordinates) {
+		m_coordinates = coordinates;
+	}
+	
+	public String getCoordinates() {
+		return m_coordinates;
+	}
+
     @Override
     public String toString() {
-        return "OnmsMonitoringLocationDefinition@" + Integer.toHexString(hashCode()) + ": Name \"" + m_name + "\", polling package name \"" + m_pollingPackageName + "\", area \"" + m_area + "\", geolocation \"" + m_geolocation + "\"";
+        return "OnmsMonitoringLocationDefinition@" + Integer.toHexString(hashCode()) + ": Name \"" + m_name + "\", polling package name \"" + m_pollingPackageName + "\", area \"" + m_area + "\", geolocation \"" + m_geolocation + "\", coordinates \"" + m_coordinates + "\"";
     }
 }
