@@ -48,11 +48,12 @@ package org.opennms.reporting.availability;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -219,7 +220,7 @@ public class AvailabilityReport extends Object {
         File file = new File(ConfigFileConstants.getHome()
                 + "/share/reports/AvailReport.xml");
         try {
-            FileWriter fileWriter = new FileWriter(file);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);

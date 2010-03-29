@@ -42,10 +42,12 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Category;
@@ -167,7 +169,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
             long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);
             logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
-            FileWriter fileWriter = new FileWriter(cfgFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();

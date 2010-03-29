@@ -39,9 +39,11 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -356,7 +358,7 @@ public class ViewFactory {
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(vinfo, stringWriter);
         if (stringWriter.toString() != null) {
-            FileWriter fileWriter = new FileWriter(ofile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ofile), "UTF-8");
             fileWriter.write(stringWriter.toString());
             fileWriter.flush();
             fileWriter.close();

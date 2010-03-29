@@ -43,9 +43,10 @@
 package org.opennms.netmgt.dao.castor;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -115,7 +116,7 @@ public class CastorUtils {
             StringWriter writer = new StringWriter();
             marshal(obj, writer);
             
-            fileWriter= new FileWriter(resource.getFile());
+            fileWriter= new OutputStreamWriter(new FileOutputStream(resource.getFile()), "UTF-8");
             fileWriter.write(writer.toString());
             fileWriter.flush();
             
@@ -352,7 +353,7 @@ public class CastorUtils {
         
         marshal(config, stringWriter);
 
-        FileWriter fileWriter = new FileWriter(cfgFile);
+        Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
         fileWriter.write(stringWriter.toString());
         fileWriter.flush();
         fileWriter.close();

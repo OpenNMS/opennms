@@ -2,10 +2,12 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -102,7 +104,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
             long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MAPS_ADAPTER_CONFIG_FILE_NAME);
             logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
-            FileWriter fileWriter = new FileWriter(cfgFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();

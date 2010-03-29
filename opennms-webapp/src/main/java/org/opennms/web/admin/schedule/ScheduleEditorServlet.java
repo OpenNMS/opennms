@@ -37,10 +37,12 @@ package org.opennms.web.admin.schedule;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +115,7 @@ public class ScheduleEditorServlet extends HttpServlet {
                 throw new ServletException("Saving to outage factory not implemented yet!");
             } else {
                 try {
-                    FileWriter writer = new FileWriter(m_fileName);
+                    Writer writer = new OutputStreamWriter(new FileOutputStream(m_fileName), "UTF-8");
                     Marshaller.marshal(m_outages, writer);
                     writer.close();
                 } catch (MarshalException e) {

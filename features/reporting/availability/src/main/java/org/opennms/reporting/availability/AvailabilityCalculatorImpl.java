@@ -39,10 +39,11 @@
 package org.opennms.reporting.availability;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -303,7 +304,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
     public void marshal(File outputFile)
             throws AvailabilityCalculationException {
         try {
-            FileWriter fileWriter = new FileWriter(outputFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);
