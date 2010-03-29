@@ -13,5 +13,6 @@
     <module>api</module>
     <module>core</module>
     <module>availability</module>
+    <module>jasper-reports</module>
   </modules>
 </project>

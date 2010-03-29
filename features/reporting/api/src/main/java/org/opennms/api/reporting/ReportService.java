@@ -55,59 +55,78 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 public interface ReportService {
 
     /**
-     * This method validates that the map of report parameters matches the report
-     * parameters accepted by the report. Used by the web interface.
+     * This method validates that the map of report parameters matches the
+     * report parameters accepted by the report. Used by the web interface.
      * 
-     * @param reportParms hashmap of parameters to be provided at runtime
-     * @param reportId reportId as defined in database-reports.xml
-     * @return true if the reportParms supplied match those in the report definition.
+     * @param reportParms
+     *            hashmap of parameters to be provided at runtime
+     * @param reportId
+     *            reportId as defined in database-reports.xml
+     * @return true if the reportParms supplied match those in the report
+     *         definition.
      */
     public abstract boolean validate(HashMap<String, Object> reportParms,
             String reportId);
-    
+
     /**
      * This method runs the report
      * 
-     * @param reportParms hashmap of parameters to be provided at runtime
-     * @param options delivery options for the report
-     * @param reportId reportId as defined in database-reports.xml
+     * @param reportParms
+     *            hashmap of parameters to be provided at runtime
+     * @param options
+     *            delivery options for the report
+     * @param reportId
+     *            reportId as defined in database-reports.xml
      */
     public abstract String run(HashMap<String, Object> reportParms,
-            String reportId);
+            String reportId) throws ReportException;
 
     /**
      * This method provides a list of formats supported by the report
      * 
-     * @param reportId reportId as defined in database-reports.xml
+     * @param reportId
+     *            reportId as defined in database-reports.xml
      * @return a list of supported formats
      */
     public abstract List<ReportFormat> getFormats(String reportId);
-    
+
     /**
      * This method renders the report into a given output stream.
      * 
-     * @param ReportId reportId as defined in database-reports.xml
-     * @param location location of the report on disk
-     * @param format format to render the report
-     * @param outputStream stream to render the resulting report
+     * @param ReportId
+     *            reportId as defined in database-reports.xml
+     * @param location
+     *            location of the report on disk
+     * @param format
+     *            format to render the report
+     * @param outputStream
+     *            stream to render the resulting report
      */
-    public abstract void render(String ReportId, String location, ReportFormat format, OutputStream outputStream);
-    
+    public abstract void render(String ReportId, String location,
+            ReportFormat format, OutputStream outputStream)
+            throws ReportException;
+
     /**
      * This method runs the report and renders in into the given output stream
      * with no intermediate steps
-     *
-     * @param ReportId reportId as defined in database-reports.xml
-     * @param format format to render the report
-     * @param outputStream stream to render the resulting report
+     * 
+     * @param ReportId
+     *            reportId as defined in database-reports.xml
+     * @param format
+     *            format to render the report
+     * @param outputStream
+     *            stream to render the resulting report
      */
-    public abstract void runAndRender(HashMap<String, Object> reportParms, String ReportId, ReportFormat format, OutputStream outputStream);
-    
+    public abstract void runAndRender(HashMap<String, Object> reportParms,
+            String ReportId, ReportFormat format, OutputStream outputStream)
+            throws ReportException;
+
     /**
      * This method retrieves the runtime parameters taken by the report
      * 
      * @param reportId
-     * @return a ReportParameters object containing the parameters taken by the report
+     * @return a ReportParameters object containing the parameters taken by
+     *         the report
      */
     public abstract ReportParameters getParameters(String ReportId);
     

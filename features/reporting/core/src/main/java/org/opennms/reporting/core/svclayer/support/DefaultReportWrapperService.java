@@ -47,6 +47,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
@@ -130,8 +131,12 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     public void render(String reportId, String location, ReportFormat format,
             OutputStream outputStream) {
-        getReportService(reportId).render(reportId, location, format,
-                                          outputStream);
+        try {
+            getReportService(reportId).render(reportId, location, format,
+                                              outputStream);
+        } catch (ReportException e) {
+            log.error("failed to render report", e);
+        }
 
     }
 
@@ -140,33 +145,41 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         if (!deliveryOptions.getPersist()) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             BufferedOutputStream bout = new BufferedOutputStream(out);
-            getReportService(reportId).runAndRender(
-                                                    parameters.getReportParms(),
-                                                    reportId,
-                                                    deliveryOptions.getFormat(),
-                                                    bout);
+            try {
+                getReportService(reportId).runAndRender(
+                                                        parameters.getReportParms(),
+                                                        reportId,
+                                                        deliveryOptions.getFormat(),
+                                                        bout);
+            } catch (ReportException reportException) {
+                log.error("failed to run or render report: " + reportId, reportException);
+            }
             mailReport(deliveryOptions, out);
         } else {
-            String outputPath = getReportService(reportId).run(
-                                                               parameters.getReportParms(),
-                                                               reportId);
-            ReportCatalogEntry catalogEntry = new ReportCatalogEntry();
-            catalogEntry.setReportId(reportId);
-            catalogEntry.setTitle(deliveryOptions.getInstanceId());
-            catalogEntry.setLocation(outputPath);
-            catalogEntry.setDate(new Date());
-            m_reportStoreService.save(catalogEntry);
-            if (deliveryOptions.getMailTo().length() != 0) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                BufferedOutputStream bout = new BufferedOutputStream(out);
-                getReportService(reportId).render(
-                                                  reportId,
-                                                  outputPath,
-                                                  deliveryOptions.getFormat(),
-                                                  bout);
-                mailReport(deliveryOptions, out);
+            String outputPath;
+            try {
+                outputPath = getReportService(reportId).run(
+                                                                   parameters.getReportParms(),
+                                                                   reportId);
+                ReportCatalogEntry catalogEntry = new ReportCatalogEntry();
+                catalogEntry.setReportId(reportId);
+                catalogEntry.setTitle(deliveryOptions.getInstanceId());
+                catalogEntry.setLocation(outputPath);
+                catalogEntry.setDate(new Date());
+                m_reportStoreService.save(catalogEntry);
+                if (deliveryOptions.getMailTo().length() != 0) {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    BufferedOutputStream bout = new BufferedOutputStream(out);
+                    getReportService(reportId).render(
+                                                      reportId,
+                                                      outputPath,
+                                                      deliveryOptions.getFormat(),
+                                                      bout);
+                    mailReport(deliveryOptions, out);
+                }
+            } catch (ReportException reportException) {
+                log.error("failed to run or render report: " + reportId, reportException);
             }
-
         }
 
     }
@@ -224,10 +237,11 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         m_reportStoreService = reportStoreService;
     }
 
-    public void runAndRender(ReportParameters parameters, OutputStream outputStream) {
+    public void runAndRender(ReportParameters parameters,
+            OutputStream outputStream) {
 
-        //TODO remove this debug code
-        Map <String, Object> reportParms = parameters.getReportParms();
+        // TODO remove this debug code
+        Map<String, Object> reportParms = parameters.getReportParms();
         for (String key : reportParms.keySet()) {
             String value;
             if (reportParms.get(key) == null) {
@@ -238,8 +252,16 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             log.debug("param " + key + " set " + value);
         }
 
-        getReportService(parameters.getReportId()).runAndRender(parameters.getReportParms(), parameters.getReportId(),
-                                                parameters.getFormat(), outputStream);
+        try {
+            getReportService(parameters.getReportId()).runAndRender(
+                                                                    parameters.getReportParms(),
+                                                                    parameters.getReportId(),
+                                                                    parameters.getFormat(),
+                                                                    outputStream);
+        } catch (ReportException reportException) {
+            log.error("failed to run or render report: "
+                    + parameters.getReportId(), reportException);
+        }
 
     }
 
