@@ -511,7 +511,7 @@ public class InstallerDb {
         		throw new Exception(message);
         	}
         	
-        	BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile));
+        	BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, "UTF-8"));
         	StringBuffer createFunction = new StringBuffer();
         	String line;
         	while ((line = in.readLine()) != null) {

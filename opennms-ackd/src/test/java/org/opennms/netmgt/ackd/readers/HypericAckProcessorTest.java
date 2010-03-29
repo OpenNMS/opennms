@@ -259,7 +259,7 @@ public class HypericAckProcessorTest {
 
     @Test
     public void testParseHypericAlerts() throws Exception {
-        LineNumberReader reader = new LineNumberReader(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("hqu/opennms/alertStatus/list.hqu")));
+        LineNumberReader reader = new LineNumberReader(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("hqu/opennms/alertStatus/list.hqu"), "UTF-8"));
         reader.mark(4000);
         try {
             while(true) {

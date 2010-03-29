@@ -114,7 +114,7 @@ public class AmiPeerFactory extends PeerFactory {
     private AmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
         super();
         InputStream cfgIn = new FileInputStream(configFile);
-        m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, new InputStreamReader(cfgIn));
+        m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, new InputStreamReader(cfgIn, "UTF-8"));
         cfgIn.close();
     }
 

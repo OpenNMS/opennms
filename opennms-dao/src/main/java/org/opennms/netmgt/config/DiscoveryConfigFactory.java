@@ -252,7 +252,7 @@ public final class DiscoveryConfigFactory {
     
             // check to see if the file exists
             if (is != null) {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(is, "UTF-8"));
     
                 String ipLine = null;
                 String specIP = null;
