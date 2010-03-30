@@ -50,9 +50,7 @@ import java.util.Set;
 
 import net.sf.json.JSONSerializer;
 
-import org.apache.log4j.Category;
-
-import org.opennms.core.utils.ThreadCategory;
+//import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VLink;
@@ -61,69 +59,29 @@ import org.opennms.web.map.view.VMapInfo;
 import org.opennms.web.map.view.VProperties;
 
 public class ResponseAssembler {
-	private static Category log;
 	
-	protected static String getRefreshResponse(String action, VMap map){
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		
-		
-		//checks for only changed velements 
-		String response=getActionOKMapResponse(action);
-		for(VElement ve: map.getElements().values()){
-			response += "&" + ve.getId() + ve.getType() + "+"
-					+ ve.getIcon() + "+" + ve.getLabel();
-			response += "+" + ve.getAvail() + "+"
-					+ ve.getStatus() + "+" + ve.getSeverity()+ "+" + ve.getX()+ "+" + ve.getY();
-		}
-		// construct string response considering links also
-		for(VLink vl : map.getLinks().values()){
-			response += "&" + vl.getFirst()+"+"
-			+ vl.getSecond()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
-			+ "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();
-		} 
-		log.debug("getRefreshResponse: String assembled: "+response);
-		return response;
+	//TODO change the ApplicationMap
+	@SuppressWarnings("unchecked")
+    protected static String getRefreshResponse(String action, VMap map){		
+		Map refreshResponseMap = new HashMap();
+		refreshResponseMap.put("elems",map.getElements().values());
+		refreshResponseMap.put("links", map.getLinks().values());
+		return JSONSerializer.toJSON(refreshResponseMap).toString();
 	}
 
+    //TODO change the ApplicationMap
+    @SuppressWarnings("unchecked")
 	protected static String getAddElementResponse(String action,  List<Integer> mapsWithLoopInfo, Collection<VElement> elems, Collection<VLink> links){
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		String response = getActionOKMapResponse(action);
-		
-
-		if (mapsWithLoopInfo != null) {
-    		for (Integer entry: mapsWithLoopInfo) {
-    			response += "&loopfound" + entry;
-    			log.debug("found loop for map "+entry);
-    		}
-		}
-		for (VElement ve : elems) {
-			response += "&" + ve.getId() + ve.getType() + "+"
-			+ ve.getIcon() + "+" + ve.getLabel();
-			response += "+" + ve.getAvail() + "+"
-			+ ve.getStatus() + "+" + ve.getSeverity() + "+" + "ADDED";
-		}
-		
-		// add String to return containing Links
-	    for (VLink vl: links) {
-			response += "&" + vl.getFirst()+ "+"
-					+ vl.getSecond()+"+"+vl.getLinkTypeId()+"+"+vl.getLinkStatusString()
-                    + "+" + vl.getFirstNodeid()+"+"+vl.getSecondNodeid();			
-		}
-		log.debug("getAddMapsResponse: String assembled: "+response);
-		return response;		
+		Map addElementResponseMap = new HashMap();
+        addElementResponseMap.put("mapsWithLoop",mapsWithLoopInfo);
+        addElementResponseMap.put("elems",elems);
+        addElementResponseMap.put("links", links);
+        return JSONSerializer.toJSON(addElementResponseMap).toString();		
 	}
 	
+    //TODO change the ApplicationMap
 	protected static String getDeleteElementsResponse(String action, List<VElement> velems){
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ResponseAssembler.class);
-		String response = getActionOKMapResponse(action);
-		for(VElement ve: velems) {
-			response += "&" + ve.getId() + ve.getType();
-		}
-		log.debug("getDeleteElementsResponse: String assembled: "+response);
-		return response;
+        return JSONSerializer.toJSON(velems).toString();     
 	}
 		
 	protected static String getLoadNodesResponse(String action, List<VElementInfo> elemInfos){
@@ -134,24 +92,13 @@ public class ResponseAssembler {
        return JSONSerializer.toJSON(maps).toString();
     }
 
-	   protected static String getLoadDefaultMapResponse(String action, VMapInfo map) {
-	        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-	        log = ThreadCategory.getInstance(ResponseAssembler.class);
-	        
-	        String strToSend=getActionOKMapResponse(action);
-	                
-	        if(map!=null){
-	            strToSend += map.getId() + "+" + map.getName() + "+" + map.getOwner();
-	        } else {
-	            strToSend=getMapErrorResponse(action);
-	        }
-	        log.debug("getMapsResponse: String assembled: "+strToSend);
-	        return strToSend;
-	    }
+   //TODO change the ApplicationMap
+   protected static String getLoadDefaultMapResponse(String action, VMapInfo map) {
+       return JSONSerializer.toJSON(map).toString();
+    }
 
 	@SuppressWarnings("unchecked")
     protected static String getSaveMapResponse(String action,VMap map){
-		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		Map saveMapResponse = new HashMap();
 		saveMapResponse.put("id", map.getId());
 		saveMapResponse.put("accessMode",map.getAccessMode());
@@ -199,9 +146,7 @@ public class ResponseAssembler {
     }
 
 	protected static String getActionOKMapResponse(String action) {
-
 		return action+"OK";
-		
 	}
 
 	protected static String getMapErrorResponse(String action) {
