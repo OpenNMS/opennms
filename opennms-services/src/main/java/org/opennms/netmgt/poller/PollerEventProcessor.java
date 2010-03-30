@@ -171,6 +171,9 @@ final class PollerEventProcessor implements EventListener {
         
         // demand poll
         ueiList.add(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI);
+        
+        // update threshold configuration
+        ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 
         // Subscribe to eventd
         getEventManager().addEventListener(this, ueiList);
@@ -661,14 +664,6 @@ final class PollerEventProcessor implements EventListener {
     }
     
     private void thresholdsConfigChangeHandler(Category log) {
-        // FIXME Is this really necessary ?
-        try {
-            ThresholdingConfigFactory.reload();
-            ThreshdConfigFactory.reload();
-        } catch (Exception e) {
-            log.error("thresholdsConfigChangeHandler: Failed to reload threshold configuration because "+e.getMessage(), e);
-            return;
-        }
         getPoller().refreshServiceThresholds();
     }
 

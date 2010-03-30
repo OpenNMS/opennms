@@ -74,11 +74,13 @@ import org.opennms.netmgt.collectd.SnmpAttributeType;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -119,7 +121,7 @@ public class ThresholdingVisitorTest {
         CollectionResourceWrapper.s_cache.clear();
         
         m_defaultErrorLevelToCheck = Level.WARN;
-        System.setProperty("mock.logLevel", "INFO");
+        System.setProperty("mock.logLevel", "DEBUG");
         MockLogAppender.setupLogging();
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
@@ -209,6 +211,7 @@ public class ThresholdingVisitorTest {
     }
 
     private void initFactories(String threshd, String thresholds) throws Exception {
+        log().info("Initialize Threshold Factories");
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
         ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd),"127.0.0.1", false));
     }
@@ -779,44 +782,89 @@ public class ThresholdingVisitorTest {
      * - thresd-configuration-bug3554.xml
      * - test-thresholds-bug3554.xml
      * 
-     * TODO not sure how to emulate a big installation yet.
-     * TODO ThresholdingVisitor.create doesn't look like a complex method that could take too much time
+     * The problem is that every time we create a ThresholdingVisitor instance, the method
+     * ThreshdConfigFactory.interfaceInPackage is called. This methods uses JdbcFilterDao
+     * to evaluate node filter.
+     * 
+     * This filter evaluation is the reason of why collectd take too much to initialize on
+     * large networks when in-line thresholding is enabled.
+     * 
+     * From test log, you can see that JdbcFilterDao is invoked on each visitor creation
+     * iteration.
      */
     @Test
     public void testBug3554_withDBFilterDao() throws Exception {
-        
-        String ipAddress = "10.0.0.1";
-        
+        MockLogAppender.resetEvents();
+        System.err.println("----------------------------------------------------------------------------------- begin test");
+
+        String baseIpAddress = "10.0.0.";
+        int numOfNodes = 5;
+
+        // Initialize Mock Network
+
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
-        network.addNode(1, "testNode");
-        network.addInterface(ipAddress);
-        network.setIfAlias("eth0");
-        network.addService("ICMP");
-        network.addService("SNMP");
+
+        for (int i=1; i<=numOfNodes; i++) {
+            String ipAddress = baseIpAddress + i;
+            network.addNode(i, "testNode-" + ipAddress);
+            network.addInterface(ipAddress);
+            network.setIfAlias("eth0");
+            network.addService("ICMP");
+            network.addService("SNMP");
+        }
+
         MockDatabase db = new MockDatabase();
         db.populate(network);
-        db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
-        db.update("update node set nodesysoid=? where nodeid=?", ".1.3.6.1.4.1.9.1.222", 1);
         db.update("insert into categories (categoryid, categoryname) values (?, ?)", 10, "IPRA");
         db.update("insert into categories (categoryid, categoryname) values (?, ?)", 11, "NAS");
-        db.update("insert into category_node values (?, ?)", 10, 1);
-        db.update("insert into category_node values (?, ?)", 11, 1);
+        for (int i=1; i<=numOfNodes; i++) {
+            db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", i);
+            db.update("update node set nodesysoid=? where nodeid=?", ".1.3.6.1.4.1.9.1.222", i);
+            db.update("insert into category_node values (?, ?)", 10, i);
+            db.update("insert into category_node values (?, ?)", 11, i);
+        }
         DataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
-        
-        initFactories("/threshd-configuration-bug3554.xml","/test-thresholds-bug3554.xml");
+
+        // Initialize Filter DAO
+
         System.setProperty("opennms.home", "src/test/resources");
-        FilterDaoFactory.setInstance(null);
-        FilterDao filterDao = FilterDaoFactory.getInstance();
-        assertNotNull(filterDao);
-        
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(db);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+
+        // Initialize Factories
+
+        initFactories("/threshd-configuration-bug3554.xml","/test-thresholds-bug3554.xml");
+
+        // Initialize Thresholding Visitors
+
         Map<String,String> params = new HashMap<String,String>();
         params.put("thresholding-enabled", "true");
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), params, 300000);
-        
-        assertNotNull(visitor);
-        assertEquals(4, visitor.getThresholdGroups().size()); // mib2, cisco, ciscoIPRA, ciscoNAS
+
+        for (int i=1; i<=numOfNodes; i++) {
+            System.err.println("----------------------------------------------------------------------------------- visitor #" + i);
+            String ipAddress = baseIpAddress + i;
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), params, 300000);
+            assertNotNull(visitor);
+            assertEquals(4, visitor.getThresholdGroups().size()); // mib2, cisco, ciscoIPRA, ciscoNAS
+        }
+        System.err.println("----------------------------------------------------------------------------------- end");
+
+        // Validate FilterDao Calls
+
+        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
+        int count = 0;
+        String expectedMsgHeader = "createPackageIpMap: package ";
+        for (LoggingEvent e : events) {
+            if (e.getMessage().toString().startsWith(expectedMsgHeader))
+                count++;
+        }
+        assertEquals("expecting " + numOfPackages + " events", numOfPackages, count);
     }
 
     /*
