@@ -65,6 +65,7 @@
 		<column name="snmpIfAlias"/>
 		<column name="snmpIfAdminStatus"/>
 		<column name="snmpIfOperStatus"/>
+		<column name="snmpcollect"/>
 	</table>
 
 	<table name="service">
