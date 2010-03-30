@@ -190,14 +190,6 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             }
             boolean foundInPkg = s_threshdConfig.interfaceInPackage(hostAddress, pkg);
             if (!foundInPkg) {
-                // The interface might be a newly added one, rebuild the package
-                // to ipList mapping and again to verify if the interface is in
-                // the package.
-                //
-                s_threshdConfig.rebuildPackageIpListMap();
-                foundInPkg = s_threshdConfig.interfaceInPackage(hostAddress, pkg);
-            }
-            if (!foundInPkg) {
                 if (log.isDebugEnabled())
                     log.debug("createThresholdingVisitor: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;

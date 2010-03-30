@@ -67,6 +67,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
@@ -74,6 +75,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -1029,7 +1031,17 @@ public class Collectd extends AbstractServiceDaemon implements
     private void handleThresholdConfigurationChanged(Event event) {
         log().debug("handleThresholdConfigurationChanged: Reloading thresholding configuration in collectd");
         try {
-            ThresholdingConfigFactory.reload();
+            String thresholdsFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
+            String threshdFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+            String targetFile = thresholdsFile; // Default
+            for (Parm parm : event.getParms().getParmCollection()) {
+                if ("configFile".equals(parm.getParmName()) && threshdFile.equalsIgnoreCase(parm.getValue().getContent()))
+                    targetFile = threshdFile;
+            }
+            if (targetFile.equals(thresholdsFile))
+                ThresholdingConfigFactory.reload();
+            if (targetFile.equals(threshdFile))
+                ThreshdConfigFactory.reload();
         } catch (Exception e) {
             log().error("handleThresholdConfigurationChanged: Failed to reload threshold configuration because "+e.getMessage(), e);
             return; //Do nothing else - the config is borked, so we carry on with what we've got which should still be relatively ok
