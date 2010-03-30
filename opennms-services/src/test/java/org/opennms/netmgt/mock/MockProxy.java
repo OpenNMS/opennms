@@ -167,6 +167,7 @@ public class MockProxy implements CommandResponder {
      * @param request
      * @return
      */
+    @SuppressWarnings("unchecked")
     private PDU processGet(PDU request) {
         PDU response = request;
         response.setErrorIndex(0);
@@ -198,6 +199,7 @@ public class MockProxy implements CommandResponder {
      * @param request
      * @return
      */
+    @SuppressWarnings("unchecked")
     private PDU processGetNext(PDU request) {
         PDU response = request;
         response.setErrorIndex(0);
