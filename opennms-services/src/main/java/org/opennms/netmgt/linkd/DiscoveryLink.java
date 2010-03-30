@@ -478,7 +478,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 									+ " and with stp designated port "
 									+ stpPortDesignatedPort);
 
-						if (stpPortDesignatedBridge.equals("0000000000000000")) {
+						if (stpPortDesignatedBridge.equals("0000000000000000")
+						        || stpPortDesignatedBridge.equals("")) {
 							log().warn("run: designated bridge is invalid "
 									+ stpPortDesignatedBridge);
 							continue;
