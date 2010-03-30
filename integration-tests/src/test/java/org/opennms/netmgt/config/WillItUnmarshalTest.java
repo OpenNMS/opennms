@@ -99,6 +99,7 @@ import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
+import org.opennms.netmgt.config.reporting.jasperReports.JasperReports;
 import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
 import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
@@ -315,6 +316,10 @@ public class WillItUnmarshalTest {
     @Test
     public void testExampleHttpDataCollectionConfiguration() throws Exception {
         unmarshalExample("devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class);
+    }
+    @Test
+    public void testJasperReportsConfiguration() throws Exception {
+        unmarshal("jasper-reports.xml", JasperReports.class);
     }
     @Test
     public void testJmxDataCollectionConfiguration() throws Exception {
