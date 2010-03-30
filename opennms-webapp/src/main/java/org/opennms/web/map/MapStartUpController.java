@@ -76,7 +76,7 @@ public class MapStartUpController extends SimpleFormController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 		

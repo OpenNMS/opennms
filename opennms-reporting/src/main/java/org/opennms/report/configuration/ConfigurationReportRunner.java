@@ -8,8 +8,8 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 import org.opennms.report.ReportMailer;
-import org.opennms.report.render.ReportRenderException;
-import org.opennms.report.render.ReportRenderer;
+import org.opennms.reporting.availability.render.ReportRenderException;
+import org.opennms.reporting.availability.render.ReportRenderer;
 
 public class ConfigurationReportRunner implements Runnable {
         

@@ -82,7 +82,7 @@ public class LoadNodesController implements Controller {
 		log.debug("Loading Nodes" );
 		
 		String user = request.getRemoteUser();
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
 			bw.write(ResponseAssembler.getLoadNodesResponse(MapsConstants.LOADNODES_ACTION, manager.getElementInfo()));
 		} catch (Exception e) {

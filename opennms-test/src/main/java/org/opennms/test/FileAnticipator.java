@@ -38,8 +38,9 @@
 package org.opennms.test;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -298,7 +299,7 @@ public class FileAnticipator extends Assert {
 
     private File internalTempFile(File parent, String name, String contents) throws IOException {
         File f = internalTempFile(parent, name);
-        PrintWriter w = new PrintWriter(new FileWriter(f));
+        PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f), "UTF-8"));
         w.print(contents);
         w.close();
         return f;

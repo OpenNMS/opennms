@@ -148,7 +148,7 @@ public class StatusGetter {
             connection.connect();
             reader = new BufferedReader(
                                         new InputStreamReader(
-                                                              connection.getInputStream()));
+                                                              connection.getInputStream(), "UTF-8"));
         } catch (ConnectException e) {
             if (isVerbose()) {
                 System.out.println("Could not connect to "

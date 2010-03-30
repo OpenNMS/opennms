@@ -38,12 +38,11 @@ package org.opennms.web.admin.config;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -51,7 +50,6 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -60,8 +58,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.BundleLists;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -228,8 +224,8 @@ public class PollerConfigServlet extends HttpServlet {
             adjustNonChecked(checkedList);
             deleteThese(deleteList);
 
-            FileWriter poller_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME));
-            FileWriter capsd_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME));
+            Writer poller_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME)), "UTF-8");
+            Writer capsd_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME)), "UTF-8");
             try {
                 Marshaller.marshal(pollerConfig, poller_fileWriter);
                 Marshaller.marshal(capsdConfig, capsd_fileWriter);

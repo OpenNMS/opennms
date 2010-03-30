@@ -33,10 +33,13 @@ package org.opennms.web.springframework.security;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import junit.framework.TestCase;
 
@@ -350,7 +353,7 @@ public class UserDaoImplTest extends TestCase {
         }
     }
     private void writeTemporaryFile(File file, String content) throws IOException {
-        FileWriter writer = new FileWriter(file);
+        Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
         writer.write(content);
         writer.close();
     }
@@ -364,7 +367,7 @@ public class UserDaoImplTest extends TestCase {
     }
 
     private String getFileContents(File file) throws FileNotFoundException, IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
         
         StringBuffer contents = new StringBuffer();
         String line;

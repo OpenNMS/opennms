@@ -39,10 +39,12 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
@@ -212,7 +214,7 @@ public final class VulnscandConfigFactory {
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         if (stringWriter.toString() != null) {
-            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.VULNSCAND_CONFIG_FILE_NAME));
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.VULNSCAND_CONFIG_FILE_NAME)), "UTF-8");
             fileWriter.write(stringWriter.toString());
             fileWriter.flush();
             fileWriter.close();

@@ -81,7 +81,7 @@ public class SwitchRoleController implements Controller {
 		String adminModeStr = request.getParameter("adminMode");
 		boolean adminMode = false;
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 		try {
 			
 			if(adminModeStr!=null ){

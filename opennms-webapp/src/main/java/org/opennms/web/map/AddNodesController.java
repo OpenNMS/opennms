@@ -93,7 +93,7 @@ public class AddNodesController implements Controller {
 		String elems = request.getParameter("elems");
 		log.debug("Adding Nodes action:"+action+", elems="+elems );
 		
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
 			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
 	            if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {

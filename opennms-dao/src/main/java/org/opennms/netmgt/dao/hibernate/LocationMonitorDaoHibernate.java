@@ -30,9 +30,11 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -164,7 +166,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
-            FileWriter fileWriter = new FileWriter(m_monitoringLocationConfigResource.getFile());
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_monitoringLocationConfigResource.getFile()), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();

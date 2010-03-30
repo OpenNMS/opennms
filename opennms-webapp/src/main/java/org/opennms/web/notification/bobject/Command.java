@@ -300,8 +300,8 @@ public class Command {
 
             // see if we need to build a streamed argument buffer
             if (m_useStream) {
-                // make sure the output we are writting is buffered
-                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream()));
+                // make sure the output we are writing is buffered
+                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), "UTF-8"));
 
                 StringBuffer buffer = new StringBuffer();
 

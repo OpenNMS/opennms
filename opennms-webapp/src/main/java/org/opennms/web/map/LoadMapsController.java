@@ -84,7 +84,7 @@ public class LoadMapsController implements Controller {
 		log.debug("Loading Maps");
 		
 		String user = request.getRemoteUser();
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
 			bw.write(ResponseAssembler.getLoadMapsResponse(MapsConstants.LOADMAPS_ACTION,manager.getVisibleMapsMenu(user)));
 		} catch (Exception e) {

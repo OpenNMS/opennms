@@ -48,9 +48,11 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.sql.SQLException;
 
 import org.apache.commons.io.IOUtils;
@@ -139,7 +141,7 @@ public class NotificationFactory extends NotificationManager {
      */
     protected void saveXML(String xmlString) throws IOException {
         if (xmlString != null) {
-            FileWriter fileWriter = new FileWriter(m_noticeConfFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_noticeConfFile), "UTF-8");
             fileWriter.write(xmlString);
             fileWriter.flush();
             fileWriter.close();

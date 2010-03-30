@@ -1,10 +1,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -70,7 +73,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
 
         logStatic().debug("init: config file path: " + cfgFile.getPath());
 
-        FileReader reader = new FileReader(cfgFile);
+        Reader reader = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
         MapsAdapterConfigFactory config = new MapsAdapterConfigFactory(cfgFile.lastModified(), reader,onmsSvrConfig.getServerName(),onmsSvrConfig.verifyServer());
         reader.close();
         setInstance(config);
@@ -101,7 +104,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
             long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MAPS_ADAPTER_CONFIG_FILE_NAME);
             logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
-            FileWriter fileWriter = new FileWriter(cfgFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
@@ -135,7 +138,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             logStatic().debug("init: config file path: " + cfgFile.getPath());
-            reloadXML(new FileReader(cfgFile));
+            reloadXML(new InputStreamReader(new FileInputStream(cfgFile), "UTF-8"));
             logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }

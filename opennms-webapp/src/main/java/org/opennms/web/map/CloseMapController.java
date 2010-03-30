@@ -79,7 +79,7 @@ public class CloseMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		
 		BufferedWriter  bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 
 		try {
 			

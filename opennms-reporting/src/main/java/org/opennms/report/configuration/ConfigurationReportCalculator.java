@@ -1,8 +1,10 @@
 package org.opennms.report.configuration;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,9 +23,6 @@ import org.opennms.rancid.InventoryNode;
 import org.opennms.rancid.RWSClientApi;
 import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
-import org.opennms.report.configuration.GroupXSet;
-import org.opennms.report.configuration.NodeSet;
-import org.opennms.report.configuration.RwsRancidlistreport;
 import org.springframework.beans.factory.InitializingBean;
 
 public class ConfigurationReportCalculator implements InitializingBean {
@@ -267,7 +266,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
     public void marshal(File outputFile)
     throws ConfigurationCalculationException {
         try {
-            FileWriter fileWriter = new FileWriter(outputFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(rlist);

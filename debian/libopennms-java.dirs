@@ -1,7 +1,7 @@
 usr/share/java/opennms
 usr/share/java/opennms/endorsed
-usr/share/java/opennms/linux32
-usr/share/java/opennms/linux64
-usr/share/java/opennms/mac
+usr/share/java/opennms/i686-pc-linux-gnu
+usr/share/java/opennms/x86_64-unknown-linux-gnu
+usr/share/java/opennms/mac-10.5
 usr/share/java/opennms/win32
 usr/share/java/opennms/win64

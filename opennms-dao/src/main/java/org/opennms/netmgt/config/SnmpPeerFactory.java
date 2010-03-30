@@ -40,11 +40,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -190,7 +192,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
         // isn't lost if the XML from the marshall is hosed.
         String marshalledConfig = marshallConfig();
         if (marshalledConfig != null) {
-            FileWriter fileWriter = new FileWriter(getFile());
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(getFile()), "UTF-8");
             fileWriter.write(marshalledConfig);
             fileWriter.flush();
             fileWriter.close();

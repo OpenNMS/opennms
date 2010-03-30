@@ -1,7 +1,9 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
@@ -90,12 +92,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             return;
         }
         File outputFile = getOutputFileForForeignSource(foreignSource);
-        FileWriter writer = null;
+        Writer writer = null;
         try {
             if (m_updateDateStamps) {
                 foreignSource.updateDateStamp();
             }
-            writer = new FileWriter(outputFile);
+            writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
@@ -154,12 +156,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
         }
         File outputFile = getOutputFileForRequisition(requisition);
-        FileWriter writer = null;
+        Writer writer = null;
         try {
             if (m_updateDateStamps) {
                 requisition.updateDateStamp();
             }
-            writer = new FileWriter(outputFile);
+            writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             getMarshaller(Requisition.class).marshal(requisition, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);

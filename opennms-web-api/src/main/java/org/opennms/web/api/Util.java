@@ -290,11 +290,11 @@ public abstract class Util extends Object {
         }
 
         // Add the additions in
-        Set keySet = additions.keySet();
-        Iterator keys = keySet.iterator();
+        Set<String> keySet = additions.keySet();
+        Iterator<String> keys = keySet.iterator();
 
         while (keys.hasNext()) {
-            String name = (String) keys.next();
+            String name = keys.next();
 
             // handle both a String value or a String[] value
             Object tmp = additions.get(name);
@@ -411,11 +411,11 @@ public abstract class Util extends Object {
             }
         }
 
-        Set keySet = additions.keySet();
-        Iterator keys = keySet.iterator();
+        Set<String> keySet = additions.keySet();
+        Iterator<String> keys = keySet.iterator();
 
         while (keys.hasNext()) {
-            String name = (String) keys.next();
+            String name = keys.next();
 
             // handle both a String value or a String[] value
             Object tmp = additions.get(name);

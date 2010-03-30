@@ -97,7 +97,7 @@ public class NotificationCommandFactory extends NotificationCommandManager {
      */
     public void reload() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));
-        Reader reader = new InputStreamReader(configIn);
+        Reader reader = new InputStreamReader(configIn, "UTF-8");
         parseXML(reader);
     }
 

@@ -101,7 +101,7 @@ public class OpenMapController implements Controller {
 		float heightFactor =1;
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 
 		try {
 			int mapWidth = WebSecurityUtils.safeParseInt(mapWidthStr);
