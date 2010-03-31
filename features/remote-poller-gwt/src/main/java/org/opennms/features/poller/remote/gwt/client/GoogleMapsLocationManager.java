@@ -14,6 +14,7 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.control.LargeMapControl;
 import com.google.gwt.maps.client.event.MapMoveEndHandler;
@@ -230,7 +231,8 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 		m_mapWidget.savePosition();
 		m_mapWidget.setCenter(transformLatLng(latLng));
 		if (m != null) {
-			m_mapWidget.getInfoWindow().open(m, Utils.getInfoWindowForLocation(location));
+		    InfoWindowContent content = Utils.getInfoWindowForLocation(location);
+			m_mapWidget.getInfoWindow().open(m, content);
 		}
 	}
 
@@ -262,9 +264,6 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
         }
 
         locationUpdateComplete(location);
-        if (!isLocationUpdateInProgress()) {
-        	checkAllVisibleLocations();
-        }
 	}
 
 	private void placeMarker(final GoogleMapsLocation location) {
