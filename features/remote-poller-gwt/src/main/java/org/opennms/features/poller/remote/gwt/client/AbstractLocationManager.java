@@ -10,6 +10,7 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -156,23 +157,36 @@ public abstract class AbstractLocationManager implements LocationManager {
 		 * Override this 
 		 * @throws InitializationException
 		 */
-		protected void finished() throws InitializationException {}
+		protected void finished() throws InitializationException {
+			getApplication().finished();
+		}
 	}
 
 	protected final HandlerManager m_eventBus;
 	
 	private String m_apiKey;
 	private static final Set<String> m_locationsUpdating = new HashSet<String>();
+	private final Application m_application;
 
 	protected final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 
-	public AbstractLocationManager(HandlerManager eventBus) {
+	public AbstractLocationManager(final Application application, final HandlerManager eventBus) {
+		m_application = application;
 		m_eventBus = eventBus;
 	}
 
 	public abstract void initialize();
 	
-	public abstract void updateLocation(Location location);
+	public void updateLocation(final Location location) {
+		if (location == null) return;
+		GWTLatLng latLng = location.getLatLng();
+		if (latLng == null) {
+			Log.warn("no lat/lng for this location");
+		} else {
+			updateMarker(location);
+		}
+	}
+
 	public abstract void removeLocation(Location location);
 
 	public void updateLocations(Collection<Location> locations) {
@@ -203,9 +217,7 @@ public abstract class AbstractLocationManager implements LocationManager {
 
 	public abstract void updateComplete();
 
-	public abstract Location getLocation(int index);
 	public abstract List<Location> getAllLocations();
-	public abstract List<Location> getLocations(int startIndex, int maxRows);
 	public abstract List<Location> getVisibleLocations();
 	public abstract void selectLocation(String locationName);
 	public abstract void fitToMap();
@@ -223,10 +235,13 @@ public abstract class AbstractLocationManager implements LocationManager {
 	protected void initializeApiKey() {
 		m_remoteService.getApiKey(new AsyncCallback<String>() {
 			public void onFailure(Throwable throwable) {
-				Log.debug("failed to get API key", throwable);
+				Log.warn("failed to get API key", throwable);
 			}
 
 			public void onSuccess(String key) {
+				key = key.replace("//percent//", "%");
+				key = URL.decodeComponent(key, false);
+//				Window.alert("got API key: " + key);
 				Log.debug("got API key: " + key);
 				setApiKey(key);
 			}
@@ -245,4 +260,9 @@ public abstract class AbstractLocationManager implements LocationManager {
 		return m_locationsUpdating.size() > 0;
 	}
 	
+	protected Application getApplication() {
+		return m_application;
+	}
+	
+	abstract protected void updateMarker(Location location);
 }

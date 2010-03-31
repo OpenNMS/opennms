@@ -1,7 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectE
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.ajaxloader.client.AjaxLoader;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
@@ -24,13 +22,12 @@ import com.google.gwt.maps.client.event.MapZoomEndHandler;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.geom.LatLngBounds;
+import com.google.gwt.maps.client.geom.Size;
 import com.google.gwt.maps.client.overlay.Icon;
 import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.maps.utility.client.DefaultPackage;
 import com.google.gwt.maps.utility.client.GoogleMapsUtility;
-import com.google.gwt.maps.utility.client.mapiconmaker.MapIconMaker;
-import com.google.gwt.maps.utility.client.mapiconmaker.MarkerIconOptions;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
@@ -43,7 +40,6 @@ import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 public class GoogleMapsLocationManager extends AbstractLocationManager implements LocationManager {
 //	private static final int MARKER_MAX_ZOOM = 18;
 
-	private final Application m_application;
 	private final SplitLayoutPanel m_panel;
 
 	private MapWidget m_mapWidget;
@@ -56,8 +52,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	private final HashMap<String, Location> m_visibleLocations = new HashMap<String, Location>();
 
 	public GoogleMapsLocationManager(Application application, final HandlerManager eventBus, final SplitLayoutPanel panel) {
-		super(eventBus);
-    	m_application = application;
+		super(application, eventBus);
 		m_panel = panel;
 		m_locationManager = this;
 	}
@@ -116,23 +111,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 			private boolean m_inProgress = false;
 
 			@Override
-			protected void loadMapApi() throws InitializationException {
-				m_inProgress = true;
-				AjaxLoader.init(getApiKey());
-				AjaxLoader.loadApi("maps", "2.x", new Runnable() {
-					public void run() {
-						m_inProgress = false;
-					}
-					
-				}, null);
-			}
-
-			@Override
 			protected boolean mapApiLoaded() throws InitializationException {
-				if (m_inProgress) {
-					return false;
-				}
-
 				m_mapWidget = new MapWidget();
 				m_mapWidget.setSize("100%", "100%");
 				m_mapWidget.setUIToDefault();
@@ -210,25 +189,9 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 				return (!m_inProgress);
 			}
 
-			@Override
-			protected void finished() throws InitializationException {
-				m_application.finished();
-			}
 		});
 	}
 
-	@Override
-	public void updateLocation(final Location location) {
-		if (location == null) return;
-		GWTLatLng latLng = location.getLatLng();
-		if (latLng == null) {
-			Log.warn("no lat/lng for this location");
-		} else {
-			GoogleMapsLocation loc = new GoogleMapsLocation(location);
-			updateMarker(loc);
-		}
-	}
-	
 	@Override
 	public void removeLocation(final Location location) {
 		if (location == null) return;
@@ -260,26 +223,10 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	}
 
 	@Override
-	public Location getLocation(final int index) {
-		final String[] locations = m_locations.keySet().toArray(new String[0]);
-		return m_locations.get(locations[index]);
-	}
-
-	@Override
 	public List<Location> getAllLocations() {
 		return new ArrayList<Location>(m_locations.values());
 	}
-	
-	@Override
-	public List<Location> getLocations(final int startIndex, final int maxRows) {
-		final List<String> keys = Arrays.asList(m_locations.keySet().toArray(new String[0]));
-		final List<Location> locations = new ArrayList<Location>(maxRows);
-		for (String key : keys.subList(startIndex, checkOutOfBounds(keys.size(), (startIndex + maxRows) ) )) {
-			locations.add(m_locations.get(key));
-		}
-		return locations;
-	}
-	
+
 	@Override
     public List<Location> getVisibleLocations() {
 		final List<Location> locations = new ArrayList<Location>();
@@ -323,21 +270,9 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
     	m_mapWidget.setCenter(bounds.getCenter(), m_mapWidget.getBoundsZoomLevel(bounds));
     }
 
-	private int checkOutOfBounds(int size, int maxRows) {
-		return maxRows > size? size : maxRows;
-    }
-	
-	private void updateMarker(final GoogleMapsLocation location) {
-	    if (location == null) {
-            return;
-        }
-
-	    if (location.getLatLng() == null) {
-            return;
-        }
-	    
+	protected void updateMarker(final Location location) {
         GoogleMapsLocation oldLocation = m_locations.get(location.getName());
-        addAndMergeLocation(oldLocation, location);
+        addAndMergeLocation(oldLocation, new GoogleMapsLocation(location));
 
         if (oldLocation == null) {
             placeMarker(m_locations.get(location.getName()));
@@ -381,13 +316,9 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	}
 
 	private Marker createMarker(final GoogleMapsLocation location) {
-		final LocationMonitorState state = location.getLocationMonitorState();
-		final MarkerIconOptions mio = MarkerIconOptions.newInstance();
-		mio.setPrimaryColor("#00ff00");
-		if (state != null && state.getStatus() != null) {
-			mio.setPrimaryColor(state.getStatus().getColor());
-		}
-		Icon icon = MapIconMaker.createMarkerIcon(mio);
+		Icon icon = Icon.newInstance();
+		icon.setIconSize(Size.newInstance(32, 64));
+		icon.setImageURL("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png");
 
 		final MarkerOptions markerOptions = MarkerOptions.newInstance();
 		markerOptions.setAutoPan(true);

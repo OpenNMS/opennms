@@ -1,5 +1,6 @@
 package org.opennms.features.poller.remote.gwt.server;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,7 +44,6 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	private static final int MAX_LOCATIONS_PER_EVENT = 500;
 	private WebApplicationContext m_context;
 	
-	private volatile Map<String,GWTLatLng> m_coordinates = new HashMap<String,GWTLatLng>();
 	private volatile Map<String,MonitorStatus> m_monitorStatuses = new HashMap<String,MonitorStatus>();
 	private volatile Geocoder m_geocoder;
 
@@ -54,25 +54,35 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 
 	private void initializeContext() {
 		if (m_context == null) {
+			LogUtils.infof(this, "initializing context");
 			m_context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 		}
 	}
 	
 	private void initializeLocationDao() {
 		if (m_locationDao == null) {
+			LogUtils.infof(this, "initializing location DAO");
 			m_locationDao = m_context.getBean(LocationMonitorDao.class);
 		}
 	}
 
-	private void initializeApiKey() {
+	private synchronized void initializeApiKey() {
 		initializeContext();
 		if (m_apiKey == null) {
+			LogUtils.infof(this, "initializing API key");
 			m_apiKey = m_context.getBean("apiKey", String.class);
+			try {
+				m_apiKey = URLEncoder.encode(m_apiKey, "UTF-8");
+				m_apiKey = m_apiKey.replace("%", "//percent//");
+			} catch (Exception e) {
+				LogUtils.warnf(this, e, "unable to encode API key (%s)", m_apiKey);
+			}
 		}
 	}
 
 	private void initializeGeocoder() {
 		if (m_geocoder == null) {
+			LogUtils.infof(this, "initializing geocoder");
 			m_geocoder = m_context.getBean("geocoder", Geocoder.class);
 		}
 	}
@@ -114,7 +124,6 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			for (OnmsMonitoringLocationDefinition def : definitions) {
 				final Location location = getLocation(def);
 				locations.add(location);
-				def.setCoordinates(location.getLatLng().getCoordinates());
 				LogUtils.debugf(this, "pushing location: %s", def.getName());
 //				addEventUserSpecific(getLocation(def));
 //				addEvent(Location.LOCATION_EVENT_DOMAIN, getLocation(def));
@@ -193,11 +202,16 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			def.setGeolocation("35.715751,-79.16262");
 		}
 
-		GWTLatLng latLng = m_coordinates.get(def.getGeolocation());
+		GWTLatLng latLng = null;
+
+		if (def.getCoordinates() != null && def.getCoordinates().matches("^.+,.+$")) {
+			final String[] coordinates = def.getCoordinates().split(",");
+			latLng = new GWTLatLng(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
+		}
 		if (latLng == null) {
 			try {
 				latLng = m_geocoder.geocode(def.getGeolocation());
-				m_coordinates.put(def.getGeolocation(), latLng);
+				def.setCoordinates(latLng.getCoordinates());
 			} catch (GeocoderLookupException e) {
 				LogUtils.warnf(this, e, "unable to geocode %s", def.getGeolocation());
 			}

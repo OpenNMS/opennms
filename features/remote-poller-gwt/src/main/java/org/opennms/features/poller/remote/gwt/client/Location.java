@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import de.novanic.eventservice.client.event.Event;
 
-public interface Location extends Event, IsSerializable {
+public interface Location extends Event, IsSerializable, Comparable<Location> {
 
 	public abstract String getName();
 

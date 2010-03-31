@@ -1,8 +1,9 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.gwtmapquest.transaction.MQAPoi;
 
-public class MapQuestLocation extends BaseLocation implements Location {
+public class MapQuestLocation extends BaseLocation implements Location, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private MQAPoi m_marker;
 
@@ -16,6 +17,11 @@ public class MapQuestLocation extends BaseLocation implements Location {
 
 	public MapQuestLocation(String name, String pollingPackageName, String area, String geolocation) {
 		super(name, pollingPackageName, area, geolocation);
+	}
+
+	@Override
+	public String getImageURL() {
+		return m_marker.getIcon().getImageURL();
 	}
 
 	public MQAPoi getMarker() {

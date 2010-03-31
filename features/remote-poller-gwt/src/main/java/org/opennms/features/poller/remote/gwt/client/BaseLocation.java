@@ -74,10 +74,14 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	}
 
 	protected String getAttributeText() {
-		return "name=" + getName() + ",pollingPackage=" + getPollingPackageName() + ",area=" + getArea() + ",geolocation=" + getGeolocation() + ",locationMonitorState=" + m_locationMonitorState;
+		return "name=" + getName() + ",pollingPackage=" + getPollingPackageName() + ",area=" + getArea() + ",geolocation=" + getGeolocation() + ",lat/lng=" + getLatLng() + ",locationMonitorState=" + m_locationMonitorState;
 	}
 
 	public String toString() {
 		return "BaseLocation["+getAttributeText()+"]";
+	}
+
+	public int compareTo(Location o) {
+		return this.getName().compareTo(o.getName());
 	}
 }

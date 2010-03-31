@@ -6,27 +6,24 @@
 <!-- with a "Standards Mode" doctype is supported, -->
 <!-- but may lead to some differences in layout.   -->
 
+<%@page language="java" contentType="text/html; charset=UTF-8" %>
+<% String mapImplementation = System.getProperty("gwt.maptype"); %>
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <!--                                           -->
-    <!-- Any title is fine                         -->
-    <!--                                           -->
     <title>Application</title>
     
-    <!--                                           -->
-    <!-- This script loads your compiled module.   -->
-    <!-- If you add any GWT meta tags, they must   -->
-    <!-- be added before this line.                -->
-    <!--                                           -->
+    <% if (mapImplementation.equalsIgnoreCase("googlemaps")) { %>
+    <script src="http://maps.google.com/maps?gwt=1&file=api&v=2.x&key=<%= System.getProperty("gwt.apikey") %>"></script>
+    <% } else if (mapImplementation.equalsIgnoreCase("mapquest")) { %>
+    <script type="text/javascript" src="http://btilelog.access.mapquest.com/tilelog/transaction?transaction=script&itk=true&v=5.3.s&ipkg=controls1&key=<%= System.getProperty("gwt.apikey") %>"></script>
+    <script type="text/javascript" src="mapquest/debug/mqutils.js"></script>
+    <script type="text/javascript" src="mapquest/debug/mqobjects.js"></script>
+    <% } %>
+
     <script type="text/javascript" language="javascript" src="org.opennms.features.poller.remote.gwt.Application.nocache.js"></script>
   </head>
 
-  <!--                                           -->
-  <!-- The body can have arbitrary html, or      -->
-  <!-- you can leave the body empty if you want  -->
-  <!-- to create a completely dynamic UI.        -->
-  <!--                                           -->
   <body>
 
     <div id="remotePollerMap"></div>
