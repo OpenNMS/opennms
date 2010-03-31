@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -239,67 +240,79 @@ public final class DiscoveryConfigFactory {
      * @param retries
      *            the retries for all entries in this URL
      */
-    public boolean addToSpecificsFromURL(List<IPPollAddress> specifics, String url, long timeout, int retries) {
+    public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, String url, long timeout, int retries) {
+        Category log = ThreadCategory.getInstance();
+        
+        // open the file indicated by the URL
+        InputStream is = null;
+        try {
+            URL fileURL = new URL(url);
+            is = fileURL.openStream();
+            // check to see if the file exists
+            if (is == null) {
+                // log something
+                log.warn("URL does not exist: " + url);
+                return true;
+            } else {
+                return addToSpecificsFromURL(specifics, fileURL.openStream(), timeout, retries);
+            }
+        } catch (MalformedURLException e) {
+            log.error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
+            return false;
+        } catch (IOException e) {
+            log.error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
+            return false;
+        } finally {
+            if (is != null) { 
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    log.warn("Could not close discovery include file stream: " + e.getMessage(), e);
+                } 
+            }
+        }
+    }
+    
+    public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, InputStream is, long timeout, int retries) throws IOException {
         Category log = ThreadCategory.getInstance();
     
         boolean bRet = true;
     
         try {
-            // open the file indicated by the URL
-            URL fileURL = new URL(url);
-    
-            InputStream is = fileURL.openStream();
-    
-            // check to see if the file exists
-            if (is != null) {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-    
-                String ipLine = null;
-                String specIP = null;
-    
-                // get each line of the file and turn it into a specific range
-                while ((ipLine = buffer.readLine()) != null) {
-                    ipLine = ipLine.trim();
-                    if (ipLine.length() == 0 || ipLine.charAt(0) == DiscoveryConfigFactory.COMMENT_CHAR) {
-                        // blank line or skip comment
-                        continue;
-                    }
-    
-                    // check for comments after IP
-                    int comIndex = ipLine.indexOf(DiscoveryConfigFactory.COMMENT_STR);
-                    if (comIndex == -1) {
-                        specIP = ipLine;
-                    } else {
-                        specIP = ipLine.substring(0, comIndex);
-                        ipLine = ipLine.trim();
-                    }
-    
-                    try {
-                        specifics.add(new IPPollAddress(specIP, timeout, retries));
-                    } catch (UnknownHostException e) {
-                        log.warn("Unknown host \'" + specIP + "\' read from URL \'" + url.toString() + "\': address ignored");
-                    }
-    
-                    specIP = null;
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+            String ipLine = null;
+            String specIP = null;
+
+            // get each line of the file and turn it into a specific range
+            while ((ipLine = buffer.readLine()) != null) {
+                ipLine = ipLine.trim();
+                if (ipLine.length() == 0 || ipLine.charAt(0) == DiscoveryConfigFactory.COMMENT_CHAR) {
+                    // blank line or skip comment
+                    continue;
                 }
-    
-                buffer.close();
-            } else {
-                // log something
-                log.warn("URL does not exist: " + url.toString());
-                bRet = true;
+
+                // check for comments after IP
+                int comIndex = ipLine.indexOf(DiscoveryConfigFactory.COMMENT_STR);
+                if (comIndex == -1) {
+                    specIP = ipLine;
+                } else {
+                    specIP = ipLine.substring(0, comIndex);
+                    ipLine = ipLine.trim();
+                }
+
+                try {
+                    specifics.add(new IPPollAddress(specIP, timeout, retries));
+                } catch (UnknownHostException e) {
+                    log.warn("Unknown host \'" + specIP + "\' inside discovery include file: address ignored");
+                }
+
+                specIP = null;
             }
-        } catch (MalformedURLException e) {
-            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-            bRet = false;
-        } catch (FileNotFoundException e) {
-            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-            bRet = false;
-        } catch (IOException e) {
-            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-            bRet = false;
+        } catch (UnsupportedEncodingException e) {
+            log.error("Your JVM doesn't support UTF-8");
+            return false;
         }
-    
         return bRet;
     }
 
