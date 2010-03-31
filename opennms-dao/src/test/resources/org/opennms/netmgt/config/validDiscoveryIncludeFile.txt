@@ -1,0 +1,6 @@
+127.0.0.1
+10.1.1.1
+10.2.1.1 # This row has a comment
+8.8.8.8	# Uh oh, this row has a comment separated by a TAB
+# This row is all comments
+  # This row has some whitespace and then a comment
