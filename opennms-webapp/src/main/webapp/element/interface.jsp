@@ -183,7 +183,7 @@ function doDelete() {
         if (! ipAddr.equals("0.0.0.0")) {
         %>
 	<li>
-        <a href="<%=eventUrl1%>">View Events by Ip address</a>
+        <a href="<%=eventUrl1%>">View Events by IP Address</a>
 	</li>
 		<% } %>
 		
