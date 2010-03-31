@@ -16,9 +16,7 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.control.LargeMapControl;
-import com.google.gwt.maps.client.event.MapDragEndHandler;
 import com.google.gwt.maps.client.event.MapMoveEndHandler;
-import com.google.gwt.maps.client.event.MapZoomEndHandler;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.geom.LatLngBounds;
@@ -63,23 +61,6 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
             public void onLocationSelected(final LocationPanelSelectEvent event) {
                 selectLocation(event.getLocationName());
             }
-        });
-        
-        m_mapWidget.addMapDragEndHandler(new MapDragEndHandler() {
-
-            public void onDragEnd(MapDragEndEvent event) {
-                checkAllVisibleLocations();
-            }
-
-            
-        });
-        
-        m_mapWidget.addMapZoomEndHandler(new MapZoomEndHandler() {
-
-            public void onZoomEnd(MapZoomEndEvent event) {
-                checkAllVisibleLocations();
-            }
-            
         });
         
         m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
