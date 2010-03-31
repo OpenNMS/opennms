@@ -28,6 +28,8 @@ import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.maps.utility.client.DefaultPackage;
 import com.google.gwt.maps.utility.client.GoogleMapsUtility;
+import com.google.gwt.maps.utility.client.mapiconmaker.MapIconMaker;
+import com.google.gwt.maps.utility.client.mapiconmaker.MarkerIconOptions;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
@@ -50,6 +52,8 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	private final Map<String,GoogleMapsLocation> m_locations = new HashMap<String,GoogleMapsLocation>();
 	private boolean updated = false;
 	private final HashMap<String, Location> m_visibleLocations = new HashMap<String, Location>();
+	
+	
 
 	public GoogleMapsLocationManager(Application application, final HandlerManager eventBus, final SplitLayoutPanel panel) {
 		super(application, eventBus);
@@ -193,6 +197,29 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	}
 
 	@Override
+	public void updateLocation(final Location location) {
+		if (location == null) return;
+		GWTLatLng latLng = new GWTLatLng(38.0, -79.0);
+		GoogleMapsLocation loc = new GoogleMapsLocation(location);
+        loc.setLatLng(latLng);
+        updateMarker(loc);
+//		GWTLatLng latLng = getGeolocation(location);
+//		if (latLng != null) {
+//		    //Window.alert("latLng found");
+//			GoogleMapsLocation loc = new GoogleMapsLocation(location);
+//			loc.setLatLng(latLng);
+//			updateMarker(loc);
+//		} else {
+//		    //Window.alert("Looking up location");
+//		    latLng = new GWTLatLng(38.0, -79.0);
+//		    GoogleMapsLocation loc = new GoogleMapsLocation(location);
+//            loc.setLatLng(latLng);
+//            updateMarker(loc);
+//			//m_geocoder.getLatLng(location.getGeolocation(), new LatLngMarkerPlacer(location));
+//		}
+	}
+	
+	@Override
 	public void removeLocation(final Location location) {
 		if (location == null) return;
 		GoogleMapsLocation loc = m_locations.get(location.getName());
@@ -253,7 +280,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 		}
 	}
 
-	private LatLng transformLatLng(final GWTLatLng latLng) {
+	private static LatLng transformLatLng(final GWTLatLng latLng) {
 		return LatLng.newInstance(latLng.getLatitude(), latLng.getLongitude());
 	}
 
@@ -281,19 +308,21 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
         }
 
         locationUpdateComplete(location);
-        if (!isLocationUpdateInProgress()) {
-        	checkAllVisibleLocations();
-        }
 	}
+	
+	static Marker s_marker = null;
 
 	private void placeMarker(final GoogleMapsLocation location) {
-	    final Marker oldMarker = location.getMarker();
-	    final Marker newMarker = createMarker(location);
-
-	    if (oldMarker != null) {
-	    	m_mapWidget.removeOverlay(oldMarker);
+//	    final Marker oldMarker = location.getMarker();
+//	    final Marker newMarker = createMarker(location);
+//
+//	    if (oldMarker != null) {
+//	    	m_mapWidget.removeOverlay(oldMarker);
+//	    }
+	    if (s_marker == null) {
+	        s_marker = createMarker();
 	    }
-	    m_mapWidget.addOverlay(newMarker);
+	    m_mapWidget.addOverlay(s_marker);
 	}
 
     private void addAndMergeLocation(final GoogleMapsLocation oldLocation, final GoogleMapsLocation newLocation) {
@@ -332,6 +361,23 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 
 		return m;
 	}
+
+    private static Marker createMarker() {
+        final MarkerIconOptions mio = MarkerIconOptions.newInstance();
+        mio.setPrimaryColor("#00ff00");
+        Icon icon = MapIconMaker.createMarkerIcon(mio);
+
+        final MarkerOptions markerOptions = MarkerOptions.newInstance();
+        markerOptions.setAutoPan(true);
+        markerOptions.setClickable(true);
+        markerOptions.setTitle("Marker");
+        markerOptions.setIcon(icon);
+        final GWTLatLng latLng = new GWTLatLng(38.0, -79.0);
+        final Marker m = new Marker(transformLatLng(latLng), markerOptions);
+        //m.addMarkerClickHandler(new DefaultMarkerClickHandler("Marker"));
+
+        return m;
+    }
 
 	@Override
 	public void reportError(final String errorMessage, final Throwable throwable) {

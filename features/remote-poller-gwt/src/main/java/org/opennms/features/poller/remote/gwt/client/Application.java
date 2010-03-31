@@ -9,10 +9,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -33,6 +31,7 @@ public class Application implements EntryPoint
    */
 	public void onModuleLoad()
 	{
+	    Window.alert("start");
 		Log.setUncaughtExceptionHandler();
 
 		// Defer the rest of initialization so the uncaught exception handler can catch it

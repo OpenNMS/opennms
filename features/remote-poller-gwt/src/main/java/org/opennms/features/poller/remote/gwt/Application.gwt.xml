@@ -35,5 +35,7 @@
 
   <!-- Specify the app entry point class. -->
   <entry-point class='org.opennms.features.poller.remote.gwt.client.Application'/>
+  
+  <set-property name="user.agent" value="gecko"/>
 
 </module>

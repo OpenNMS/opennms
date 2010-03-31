@@ -36,7 +36,7 @@ public abstract class AbstractLocationManager implements LocationManager {
 
 		public InitializationException() {
 			super();
-		}
+		} 
 
 		public InitializationException(String message, Throwable cause) {
 			super(message, cause);
