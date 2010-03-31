@@ -43,16 +43,16 @@ import org.opennms.api.integration.ticketing.*;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class TicketerPluginFactory implements FactoryBean {
+public class TicketerPluginFactory implements FactoryBean<Plugin> {
 
-    private Class m_pluginClass;
+    private Class<? extends Plugin> m_pluginClass;
     private Plugin m_ticketerPlugin;
 
-    public void setPluginClass(Class pluginClass) {
+    public void setPluginClass(Class<? extends Plugin> pluginClass) {
         m_pluginClass = pluginClass;
     }
     
-    public Object getObject() throws Exception {
+    public Plugin getObject() throws Exception {
         if (m_pluginClass == null) {
             throw new IllegalStateException("pluginClass must be set");
         }
@@ -66,7 +66,7 @@ public class TicketerPluginFactory implements FactoryBean {
         
     }
 
-    public Class getObjectType() {
+    public Class<? extends Plugin> getObjectType() {
         return (m_pluginClass == null ? Plugin.class : m_pluginClass);
     }
 

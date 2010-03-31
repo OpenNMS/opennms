@@ -13,7 +13,7 @@ import org.smslib.Service.ServiceStatus;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
-public class SmsServiceListFactoryBean implements FactoryBean, InitializingBean {
+public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, InitializingBean {
 	private GatewayGroup[] m_gatewayGroups;
 	private SmsService[] m_services;
 	
@@ -82,11 +82,11 @@ public class SmsServiceListFactoryBean implements FactoryBean, InitializingBean 
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	public Object getObject() throws Exception {
+	public SmsService[] getObject() throws Exception {
 		return m_services;
 	}
 
-	public Class<?> getObjectType() {
+	public Class<? extends SmsService[]> getObjectType() {
 		return SmsService[].class;
 	}
 

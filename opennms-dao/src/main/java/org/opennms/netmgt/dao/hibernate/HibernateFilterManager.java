@@ -61,7 +61,7 @@ public class HibernateFilterManager implements FilterManager {
      * @see org.opennms.netmgt.model.FilterManager#disableAuthorizationFilter()
      */
     public void disableAuthorizationFilter() {
-        HibernateCallback cb = new HibernateCallback() {
+        HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 session.disableFilter(AUTH_FILTER_NAME);
@@ -77,7 +77,7 @@ public class HibernateFilterManager implements FilterManager {
      * @see org.opennms.netmgt.model.FilterManager#enableAuthorizationFilter(java.lang.String[])
      */
     public void enableAuthorizationFilter(final String[] authorizationGroups) {
-        HibernateCallback cb = new HibernateCallback() {
+        HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 session.enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", authorizationGroups);

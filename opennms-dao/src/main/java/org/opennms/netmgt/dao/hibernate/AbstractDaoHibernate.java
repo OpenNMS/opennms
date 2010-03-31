@@ -132,22 +132,22 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     }
     
     protected <S> S findUnique(final Class <? extends S> type, final String queryString, final Object... args) {
-        HibernateCallback callback = new HibernateCallback() {
+        HibernateCallback<S> callback = new HibernateCallback<S>() {
 
-            public Object doInHibernate(Session session)
+            public S doInHibernate(Session session)
                     throws HibernateException, SQLException {
                 Query query = session.createQuery(queryString);
                 for (int i = 0; i < args.length; i++) {
                     query.setParameter(i, args[i]);
                 }
-                return query.uniqueResult();
+                Object result = query.uniqueResult();
+                return result == null ? null : type.cast(result);
             }
 
         };
-        Object result = getHibernateTemplate().execute(callback);
-//        logger.debug(String.format("findUnique(%s, %s, %s) = %s", type, queryString, Arrays.toString(args), result));
-//        Assert.isTrue(result == null || type.isInstance(result), "Expected "+result+" to an instance of "+type+" but is "+(result == null ? null : result.getClass()));
-        return result == null ? null : type.cast(result);
+//      logger.debug(String.format("findUnique(%s, %s, %s) = %s", type, queryString, Arrays.toString(args), result));
+//      Assert.isTrue(result == null || type.isInstance(result), "Expected "+result+" to an instance of "+type+" but is "+(result == null ? null : result.getClass()));
+        return getHibernateTemplate().execute(callback);
     }
 
 

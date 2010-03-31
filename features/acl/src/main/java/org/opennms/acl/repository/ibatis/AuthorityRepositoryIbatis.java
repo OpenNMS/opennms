@@ -104,9 +104,9 @@ public class AuthorityRepositoryIbatis extends SqlMapClientTemplate implements A
 
     public Boolean saveAuthorities(final Integer groupId, final List<Integer> authorities) {
 
-        return (Boolean) execute(new SqlMapClientCallback() {
+        return execute(new SqlMapClientCallback<Boolean>() {
             @SuppressWarnings("unchecked")
-            public Object doInSqlMapClient(SqlMapExecutor executor) {
+            public Boolean doInSqlMapClient(SqlMapExecutor executor) {
                 int ris = 0;
                 try {
 
@@ -133,9 +133,9 @@ public class AuthorityRepositoryIbatis extends SqlMapClientTemplate implements A
 
     private Boolean saveItems(final Integer authority, final List<?> items) {
 
-        return (Boolean) execute(new SqlMapClientCallback() {
+        return execute(new SqlMapClientCallback<Boolean>() {
             @SuppressWarnings("unchecked")
-            public Object doInSqlMapClient(SqlMapExecutor executor) {
+            public Boolean doInSqlMapClient(SqlMapExecutor executor) {
                 int ris = 0;
                 try {
 
