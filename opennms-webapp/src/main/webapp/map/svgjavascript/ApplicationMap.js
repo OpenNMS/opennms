@@ -1,6 +1,3 @@
-var suffix = "map";
-var failed_string = "Failed";
-
 function testResponse(action, response){
 		var tmpStr=response.substring(0,action.length+2);
 		if(tmpStr==(action+"OK"))

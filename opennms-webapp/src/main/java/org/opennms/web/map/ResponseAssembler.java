@@ -50,7 +50,6 @@ import java.util.Set;
 
 import net.sf.json.JSONSerializer;
 
-//import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VLink;
