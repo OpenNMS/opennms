@@ -435,9 +435,9 @@ public class ThresholdController extends AbstractController implements Initializ
         return modelAndView;
     }
     
-    private void sendNotifEvent(String uei) throws ServletException {
+    private void sendNotifEvent(String uei, String source) throws ServletException {
         Event event = new Event();
-        event.setSource("Web UI");
+        event.setSource(source);
         event.setUei(uei);
         try {
                 event.setHost(InetAddress.getLocalHost().getHostName());
@@ -457,7 +457,7 @@ public class ThresholdController extends AbstractController implements Initializ
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
         try {
             configFactory.saveCurrent();
-            sendNotifEvent(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
+            sendNotifEvent(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "Threshd");
         } catch (Exception e) {
             throw new ServletException("Could not save the changes to the threshold because "+e.getMessage(),e);
         }
@@ -465,7 +465,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(eventConfChanged) {
             try {
                 EventconfFactory.getInstance().saveCurrent();
-                sendNotifEvent(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI);
+                sendNotifEvent(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "Web UI");
             } catch (Exception e) {
                 throw new ServletException("Could not save the changes to the event configuration because "+e.getMessage(),e);
             }
