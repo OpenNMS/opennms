@@ -53,15 +53,20 @@
 		java.util.*
 	"
 %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
     int nodeId = (Integer)request.getAttribute("nodeId");
 	String ipAddr = (String)request.getAttribute("ipAddr");
     Outage[] outages = (Outage[])request.getAttribute("outages");
 %>
+<c:set var="ipAddr"><%=ipAddr%></c:set>
 
-<h3><a href="outage/list.htm?filter=intf%3d<%=ipAddr%>">Recent&nbsp;Outages</a></h3>
+<c:url var="outageLink" value="outage/list.htm">
+  <c:param name="filter" value="intf=${ipAddr}"/>
+</c:url>
+<h3><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
 
 <table>
 

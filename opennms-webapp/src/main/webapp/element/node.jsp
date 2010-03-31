@@ -244,6 +244,13 @@
       <a href="${alarmLink}">View Alarms</a>
     </li>
     
+    <c:url var="outageLink" value="outage/list.htm">
+      <c:param name="filter" value="node=${model.id}"/>
+    </c:url>
+    <li class="o-menuitem">
+      <a href="${outageLink}">View Outages</a>
+    </li>
+    
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
