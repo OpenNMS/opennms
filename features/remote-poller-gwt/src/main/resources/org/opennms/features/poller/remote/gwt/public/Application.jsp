@@ -13,8 +13,11 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Application</title>
     
-    <% if (mapImplementation.equalsIgnoreCase("googlemaps")) { %>
-    <script src="http://maps.google.com/maps?gwt=1&file=api&v=2.x&key=<%= System.getProperty("gwt.apikey") %>"></script>
+    <% if (mapImplementation.equalsIgnoreCase("googlemaps")) { 
+        String keyText = "hello"; //System.getProperty("gwt.apikey");
+        keyText = keyText == null ? "" : "&key=" + keyText; 
+    %>
+    <script src="http://maps.google.com/maps?gwt=1&file=api&v=2.x<%=keyText%>"></script>
     <% } else if (mapImplementation.equalsIgnoreCase("mapquest")) { %>
     <script type="text/javascript" src="http://btilelog.access.mapquest.com/tilelog/transaction?transaction=script&itk=true&v=5.3.s&ipkg=controls1&key=<%= System.getProperty("gwt.apikey") %>"></script>
     <script type="text/javascript" src="mapquest/debug/mqutils.js"></script>
