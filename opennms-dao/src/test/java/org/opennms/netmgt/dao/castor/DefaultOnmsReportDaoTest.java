@@ -38,7 +38,6 @@ package org.opennms.netmgt.dao.castor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.config.reporting.DateParm;
@@ -92,6 +91,8 @@ public class DefaultOnmsReportDaoTest {
         assertEquals(false,dates[0].getUseAbsoluteDate());
         assertEquals(1,dates[0].getDefaultCount());
         assertEquals("day",dates[0].getDefaultInterval());
+        assertEquals(23,dates[0].getDefaultTime().getHours());
+        assertEquals(59,dates[0].getDefaultTime().getMinutes());
         
         IntParm[] integers = m_dao.getIntParms(ID);
         assertEquals(1,integers.length);

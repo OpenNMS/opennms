@@ -39,6 +39,7 @@
         classpath*:/META-INF/opennms/component-service.xml
         classpath:/META-INF/opennms/applicationContext-reportingCore.xml
         classpath:/META-INF/opennms/applicationContext-reportingAvailability.xml
+        classpath:/META-INF/opennms/applicationContext-reportingJasperReports.xml
         classpath:/META-INF/opennms/applicationContext-reporting.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml

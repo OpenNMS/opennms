@@ -226,6 +226,14 @@
     <property name="configResource" ref="availabilityReportConfigResourceLocation" />
   </bean>
   
+  <bean id="jasperReportConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml" />
+  </bean>
+  
+  <bean id="jasperReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJasperReportConfigDao">
+    <property name="configResource" ref="jasperReportConfigResourceLocation" />
+  </bean>
+  
   <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
   </bean>

@@ -123,12 +123,12 @@ public class ReportParameters implements Serializable {
             Iterator<ReportDateParm>dateIter = m_dateParms.iterator();
             while (dateIter.hasNext()) {
                 ReportDateParm parm = dateIter.next();
+                Calendar cal = Calendar.getInstance();
                 if (parm.getUseAbsoluteDate()) {
                     // use the absolute date set when the report was scheduled.
-                    parmMap.put(parm.getName(), parm.getValue());
+                    cal.setTime(parm.getValue());
                 } else {
                     // use the offset date set when the report was scheduled
-                    Calendar cal = Calendar.getInstance();
                     int amount = 0 - parm.getCount();
                     if (parm.getInterval().equals("year")) {
                         cal.add(Calendar.YEAR, amount);
@@ -138,9 +138,13 @@ public class ReportParameters implements Serializable {
                         } else {
                             cal.add(Calendar.DATE, amount);
                         }
-                    }   
-                    parmMap.put(parm.getName(),cal.getTime());
+                    }
                 }
+                cal.set(Calendar.HOUR_OF_DAY, parm.getHours());
+                cal.set(Calendar.MINUTE, parm.getMinutes());
+                cal.set(Calendar.SECOND,0);
+                cal.set(Calendar.MILLISECOND,0);
+                parmMap.put(parm.getName(), cal.getTime());
             }
         }
         

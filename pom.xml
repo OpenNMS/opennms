@@ -902,6 +902,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.reporting</groupId>
+        <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.reporting</groupId>
         <artifactId>org.opennms.features.reporting.availability</artifactId>
         <version>${project.version}</version>
       </dependency>

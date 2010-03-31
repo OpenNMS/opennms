@@ -10,9 +10,9 @@
  *
  * Modifications:
  * 
- * Created: December 8th, 2009 jonathan@opennms.org
- *
- * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * Created: March 1st 2010 Jonathan Sartin <jonathan@opennms.org>
+ * 
+ * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,19 @@
  */
 package org.opennms.api.reporting;
 
-import java.util.HashMap;
+public class ReportException extends Exception {
 
-public interface ReportValidationService {
-    
-    public abstract boolean validate(HashMap<String, Object> reportParms,
-            String reportID);
+    private static final long serialVersionUID = 4117625493115237316L;
 
+    public ReportException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ReportException(String message) {
+        super(message);
+    }
+
+    public ReportException(Throwable cause) {
+        super(cause);
+    }
 }

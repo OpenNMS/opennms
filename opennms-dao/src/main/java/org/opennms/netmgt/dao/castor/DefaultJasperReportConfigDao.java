@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009 jonathan@opennms.org
+// Created: March 9th, 2010 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,18 +33,51 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.castor;
 
-public interface OnmsDatabaseReportConfigDao {
-    
-    String getPdfStylesheetLocation(String id);
-    
-    String getSvgStylesheetLocation(String id);
-    
-    String getHtmlStylesheetLocation(String id);
-    
-    String getType(String id);
-    
-    String getLogo(String logo);
+import java.util.Collections;
+import java.util.List;
 
+import org.opennms.netmgt.config.reporting.jasperReports.JasperReports;
+import org.opennms.netmgt.config.reporting.jasperReports.Report;
+import org.opennms.netmgt.dao.JasperReportConfigDao;
+
+public class DefaultJasperReportConfigDao extends
+        AbstractCastorConfigDao<JasperReports, List<Report>> implements
+        JasperReportConfigDao {
+
+    public DefaultJasperReportConfigDao() {
+        super(JasperReports.class, "JasperReports configuration");
+    }
+
+    public String getEngine(String id) {
+        Report report = getReport(id);
+        if (report != null) {
+            return report.getEngine();
+        }
+        return null;
+    }
+
+    public String getTemplateLocation(String id) {
+        Report report = getReport(id);
+        if (report != null) {
+            return report.getTemplate();
+        }
+        return null;
+    }
+
+    private Report getReport(String id) {
+        for (Report report : getContainer().getObject()) {
+            if (id.equals(report.getId())) {
+                return report;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Report> translateConfig(JasperReports castorConfig) {
+        return Collections.unmodifiableList(castorConfig.getReportCollection());
+    }
+    
 }
