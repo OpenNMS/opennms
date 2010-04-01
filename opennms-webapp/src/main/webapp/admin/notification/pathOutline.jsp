@@ -157,7 +157,7 @@
   <jsp:param name="breadcrumb" value="Path Outline" />
 </jsp:include>
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
 
 <h3>Choose the piece of the path that you want to edit from below. When
   all editing is complete click the <i>Finish</i> button. No changes will
@@ -196,18 +196,18 @@
                 <%="Escalation #" + i%>
               <% } %>
               </b>
-              <br>
+              <br/>
               <% if (i > 0) { %>  
                 Delay:
-                <%=buildDelaySelect(intervals, "escalate"+(i-1)+"Delay", newPath.getEscalate(i-1).getDelay())%><br>
+                <%=buildDelaySelect(intervals, "escalate"+(i-1)+"Delay", newPath.getEscalate(i-1).getDelay())%><br/>
               <% } %>
               <%=buildTargetList(i, newPath, "escalate"+i)%>  
             </td>
             <td width="5%" valign="top">
                 <input type="button" value="Edit" onclick="javascript:edit(<%=i-1%>)"/>
-                <br>
+                <br/>
                 &nbsp;
-                <br>
+                <br/>
                 <%if (i > 0) { %>
                   <input type="button" value="Remove" onclick="javascript:remove(<%=i-1%>)"/>
                 <% } else { %>

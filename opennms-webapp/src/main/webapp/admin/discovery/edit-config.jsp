@@ -129,9 +129,9 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 <!-- Body -->
 
 
-<br>
+<br/>
 
-<FORM method="POST" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/actionDiscovery">
+<FORM method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/actionDiscovery">
 <input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
 <input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
 <input type="hidden" id="specificretries" name="specificretries" value=""/>
@@ -219,7 +219,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 				    <table class="standard">
 				      <tr>
 					<td class="standardheaderplain">
-					    <b>Ip Address</b>
+					    <b>IP Address</b>
 					</td> 
 					<td class="standardheaderplain">
 					    <b>Timeout (ms.)</b>

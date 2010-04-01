@@ -60,6 +60,9 @@
     OpenNMS Web Console
   </title>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css"/>
+  <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>

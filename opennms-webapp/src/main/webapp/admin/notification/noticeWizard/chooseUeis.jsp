@@ -95,7 +95,7 @@
 
 </script>
 
-<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
 
 <h3>Choose the event uei that will trigger this notification.</h3>
 

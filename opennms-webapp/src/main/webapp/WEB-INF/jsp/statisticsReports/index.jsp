@@ -98,36 +98,36 @@
           <ec:column property="name" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor"/>
           --%>
 
-          <ec:column property="description" title="Enter Filter Text Above <BR> <BR> Report Description">
+          <ec:column property="description" title="Enter Filter Text Above <br/> <br/> Report Description">
           	<c:url var="reportUrl" value="statisticsReports/report.htm">
           		<c:param name="id" value="${row.id}" />
           	</c:url>
           	<a href="${reportUrl}">${row.description}</a>
           </ec:column>
 
-          <ec:column property="startDate" title="Enter Filter Text Above <BR> <BR> Reporting Period Start" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-          <ec:column property="endDate" title="Enter Filter Text Above <BR> <BR> Reporting Period End"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-		  <ec:column property="duration" title="Enter Filter Text Above <BR> <BR> Run Interval">
+          <ec:column property="startDate" title="Enter Filter Text Above <br/> <br/> Reporting Period Start" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+          <ec:column property="endDate" title="Enter Filter Text Above <br/> <br/> Reporting Period End"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+		  <ec:column property="duration" title="Enter Filter Text Above <br/> <br/> Run Interval">
             ${row.durationString}
           </ec:column>
           
           
         <%--
-          <ec:column property="jobStartedDate" title="Enter Filter Text Above <BR> <BR> Job Started"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-          <ec:column property="jobCompletedDate" title="Enter Filter Text Above <BR> <BR> Job Completed"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-          <ec:column property="Enter Filter Text Above <BR> <BR> jobDuration" title="Job Run Time">
+          <ec:column property="jobStartedDate" title="Enter Filter Text Above <br/> <br/> Job Started"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+          <ec:column property="jobCompletedDate" title="Enter Filter Text Above <br/> <br/> Job Completed"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+          <ec:column property="Enter Filter Text Above <br/> <br/> jobDuration" title="Job Run Time">
             ${row.jobDurationString}
           </ec:column>
         --%>
 
-          <ec:column property="maxDatumValue" title="Enter Filter Text Above <BR> <BR> Max Value">
+          <ec:column property="maxDatumValue" title="Enter Filter Text Above <br/> <br/> Max Value">
             ${row.maxDatumValue}
           </ec:column>
-          <ec:column property="minDatumValue" title="Enter Filter Text Above <BR> <BR> Min Value">
+          <ec:column property="minDatumValue" title="Enter Filter Text Above <br/> <br/> Min Value">
             ${row.minDatumValue}
           </ec:column>
 
-          <ec:column property="purgeDate" title="Enter Filter Text Above <BR> <BR> Keep Until At Least" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
+          <ec:column property="purgeDate" title="Enter Filter Text Above <br/> <br/> Keep Until At Least" cell="date" format="MMM d, yyyy  HH:mm:ss"/>
         </ec:row>
       </ec:table>
     </form>

@@ -63,7 +63,7 @@ function emitSVG(embedAttrs) {
 }
 </script>
 
-<script language="JavaScript">
+<script type="text/javascript">
 emitSVG('src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml"');
 </script>
 </p>

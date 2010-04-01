@@ -91,7 +91,7 @@
 
 </script>
 
-<h3><%=(pathName!=null ? "Editing path " + pathName + "<br>" : "")%></h3>
+<h3><%=(pathName!=null ? "Editing path " + pathName + "<br/>" : "")%></h3>
 
 <h3>Step 4: Add escalations to the path.</h3>
 

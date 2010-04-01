@@ -107,7 +107,7 @@
         <% } %>
       </p>
       
-      <form method="POST" action="element/rescan">
+      <form method="post" action="element/rescan">
         <p>
           <input type="hidden" name="node" value="<%=nodeId%>" />
           <input type="hidden" name="returnUrl" value="<%=returnUrl%>" />             

@@ -54,7 +54,7 @@
       <h3>Event Queries</h3>
       <div class="boxWrapper">
       <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
-			<form action="event/detail.jsp" method="GET">
+			<form action="event/detail.jsp" method="get">
 				<p align="right">Event ID:          
 					<input type="text" name="id" />
 					<input type="submit" value="Get details"/></p>               

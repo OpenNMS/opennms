@@ -57,7 +57,7 @@
 	<jsp:param name="breadcrumb" value="New User" />
 </jsp:include>
 
-<script language="JavaScript">
+<script type="text/javascript">
   function validateFormInput() 
   {
     var id = new String(document.newUserForm.userID.value);
