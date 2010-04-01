@@ -675,7 +675,7 @@
 		</table>
 
 
-<form method="POST" name="setStatus" />
+<form method="post" name="setStatus" />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

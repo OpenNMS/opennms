@@ -60,7 +60,7 @@
 </script>
 
 	  <!-- hidden form for adding a new Notification -->
-	  <form action="admin/notification/noticeWizard/notificationWizard" method="POST" name="add_notification_form">
+	  <form action="admin/notification/noticeWizard/notificationWizard" method="post" name="add_notification_form">
 	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
 	  	<input type="hidden" id="uei" name="uei" value="" /> <!-- Set by java script -->
 	  	<input type="hidden" name="returnPage" value="<%=Util.calculateUrlBase(request)%>/admin/thresholds/index.htm?groupName=${group.name}&editGroup" />

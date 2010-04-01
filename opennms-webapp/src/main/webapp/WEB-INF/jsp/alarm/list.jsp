@@ -264,7 +264,7 @@
 
       <!-- hidden form for acknowledging the result set --> 
       <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <form method="POST" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">    
+          <form method="post" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">    
             <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
             <input type="hidden" name="actionCode" value="<%=action%>" />
             <%=Util.makeHiddenTags(req)%>
@@ -303,7 +303,7 @@
             <% } %>
 
       <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <form action="alarm/acknowledge" method="POST" name="alarm_action_form">
+          <form action="alarm/acknowledge" method="post" name="alarm_action_form">
           <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=Util.makeHiddenTags(req)%>
