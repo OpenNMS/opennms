@@ -78,7 +78,7 @@
   <jsp:param name="breadcrumb" value="Modify User" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
     
     function validate()
     {

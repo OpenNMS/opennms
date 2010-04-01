@@ -68,7 +68,7 @@
    <c:set var="totalRecords" value="${fn:length(resourceType.value) + totalRecords}"/>
 </c:forEach>
     
-<script language="Javascript" type="text/javascript"> 
+<script type="text/javascript"> 
   var data = {total:"${totalRecords}", records:[
 	<c:set var="first" value="true"/>
 	<c:forEach var="resourceType" items="${model.resourceTypes}">
@@ -93,7 +93,7 @@
   <script type="text/javascript" src="js/opennms/ux/DeleteBtnSelectionModel.js" ></script>
   <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
   <script type="text/javascript" src="js/ChooseResourceView.js" ></script>
-  <script language="Javascript" type="text/javascript" >
+  <script type="text/javascript" >
   	  Ext.onReady(function(){
   		chooseResourceViewInit("resources-view", data, removeGraphStringIfIE("${model.endUrl}"));
   		
@@ -242,7 +242,7 @@
         <input type="button" value="Unselect All" onclick="selectAll('resourceId', false)" />
       </form>
       
-      <script language="Javascript" type="text/javascript">
+      <script type="text/javascript">
           selectIfOnlyOneResource("resourceId");
       </script>--%>
       

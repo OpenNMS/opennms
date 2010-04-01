@@ -103,7 +103,7 @@
     
     <c:otherwise>
       <form method="get" name="kscBoxForm" action="KSC/formProcMain.htm">
-        <input type="hidden" name="report_action" value="View">
+        <input type="hidden" name="report_action" value="View"/>
         <input type="hidden" name="report" value="" />
       </form>
   

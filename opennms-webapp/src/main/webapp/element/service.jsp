@@ -76,7 +76,7 @@
        
 <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 function doDelete() {
      if (confirm("Are you sure you want to proceed? This action will permanently delete this service and cannot be undone."))
      {

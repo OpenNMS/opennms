@@ -68,7 +68,7 @@
   <jsp:param name="breadcrumb" value="Validate Path Outage" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
   
   function next()
   {

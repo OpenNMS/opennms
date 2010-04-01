@@ -499,7 +499,7 @@ TD {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 var enabledIds = new Array();
 var disabledIds = new Array();
 

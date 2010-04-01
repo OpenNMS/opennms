@@ -47,7 +47,7 @@
   <jsp:param name="breadcrumb" value="Admin Storage" />
 </jsp:include>
 
-   <script type="text/javascript" language="javascript">
+   <script type="text/javascript">
 
 
    //-------------------------------------------------------------------------------

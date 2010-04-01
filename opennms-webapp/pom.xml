@@ -331,6 +331,10 @@
       <artifactId>org.opennms.features.reporting.availability</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+    </dependency>
+    <dependency>
       <groupId>alt.dev.jmta</groupId>
       <artifactId>jmta</artifactId>
     </dependency>
