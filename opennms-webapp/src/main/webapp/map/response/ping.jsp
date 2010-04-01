@@ -70,7 +70,7 @@
     <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
 
-<script language="javascript">
+<script type="text/javascript">
 
 function checkIpAddress(ip){
 	var ipArr = ip.split(".");

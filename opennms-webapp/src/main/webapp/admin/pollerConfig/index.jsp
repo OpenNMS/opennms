@@ -193,7 +193,7 @@
   <jsp:param name="breadcrumb" value="Configure Pollers" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
  
   function modifyPoller()
   {

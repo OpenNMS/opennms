@@ -64,7 +64,7 @@
   <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
 </jsp:include>
 
-<script language="javascript">
+<script type="text/javascript">
 
 
 

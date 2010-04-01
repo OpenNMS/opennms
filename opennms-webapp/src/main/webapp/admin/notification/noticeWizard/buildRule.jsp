@@ -80,7 +80,7 @@
   <jsp:param name="breadcrumb" value="Build Rule" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
     function next()
     {

@@ -84,7 +84,7 @@
   <jsp:param name="breadcrumb" value="Existing notifications for UEI" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
     function next()
     {

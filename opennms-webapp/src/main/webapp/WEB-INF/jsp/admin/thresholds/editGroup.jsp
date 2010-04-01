@@ -52,7 +52,7 @@
     <jsp:param name="breadcrumb" value="Edit Group" />
 </jsp:include>
 
-<script>
+<script type="text/javascript">
     function submitNewNotificationForm(uei) {
     	document.getElementById("uei").value=uei;
     	document.add_notification_form.submit();

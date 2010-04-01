@@ -63,7 +63,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 </head>
 
 <body>
-<script language="javascript">
+<script type="text/javascript">
 function checkIpAddr(ip){
 	var ipArr = ip.split(".");
 	if(ipArr.length!=4)
