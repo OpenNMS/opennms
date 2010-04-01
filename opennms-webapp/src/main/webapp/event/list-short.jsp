@@ -219,7 +219,7 @@
 
 
       <!-- hidden form for acknowledging the result set --> 
-      <form action="event/acknowledgeByFilter" method="POST" name="acknowledge_by_filter_form">    
+      <form action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">    
         <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
         <input type="hidden" name="action" value="<%=action%>" />
         <%=org.opennms.web.Util.makeHiddenTags(req)%>
@@ -255,7 +255,7 @@
             <% } %>
 
     <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-      <form action="event/acknowledge" method="POST" name="acknowledge_form">
+      <form action="event/acknowledge" method="post" name="acknowledge_form">
         <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
         <input type="hidden" name="action" value="<%=action%>" />
         <%=org.opennms.web.Util.makeHiddenTags(req)%>
@@ -382,7 +382,7 @@
         </p>
       </form>
 
-      <%--<br>
+      <%--<br/>
       <% if(req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
         <a HREF="admin/events.jsp" title="Acknowledge or Unacknowledge All Events">[Acknowledge or Unacknowledge All Events]</a>
       <% } %>--%>

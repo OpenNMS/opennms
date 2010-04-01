@@ -122,7 +122,7 @@
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
-<script language="JavaScript">
+<script type="text/javascript">
 
 function runInventory() {
 	  document.inventoryReport.action="inventory/rancidReportExec.htm";

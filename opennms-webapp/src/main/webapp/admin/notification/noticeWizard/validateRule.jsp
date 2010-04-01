@@ -98,7 +98,7 @@
   
 </script>
 
-<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
 
 <h3>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
           'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
@@ -109,7 +109,7 @@
           <td align="left"> <%=newRule%>
           </td>
       </table>
-      <br>
+      <br/>
       <form METHOD="POST" NAME="addresses" ACTION="admin/notification/noticeWizard/notificationWizard">
         <%=Util.makeHiddenTags(request)%>
         <input type="hidden" name="userAction" value=""/>
@@ -153,7 +153,7 @@
               
               if (serviceList.length!=0 || notServiceList.length!=0) {
                   for (String service : interfaces.get(key)) { 
-                      buffer.append(service).append("<br>");
+                      buffer.append(service).append("<br/>");
                   }
               } else {
                   buffer.append("All services");

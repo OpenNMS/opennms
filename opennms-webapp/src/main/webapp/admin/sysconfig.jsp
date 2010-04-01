@@ -56,7 +56,7 @@
   <jsp:param name="breadcrumb" value="System Configuration" />
 </jsp:include>
 
-<script language="JavaScript">
+<script type="text/javascript">
     
         function cancel()
         {

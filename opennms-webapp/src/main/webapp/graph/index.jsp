@@ -144,7 +144,7 @@
 </script>
 <div class="TwoColLeft">
   
-    <h3 class="o-box">Standard Resource<br>Performance Reports</h3>
+    <h3 class="o-box">Standard Resource<br/>Performance Reports</h3>
 	<div class="boxWrapper">
     <p>
       Choose a resource for a standard performance report.
@@ -180,7 +180,7 @@
   </div>
   
 
-    <h3 class="o-box">Custom Resource<br>Performance Reports</h3>
+    <h3 class="o-box">Custom Resource<br/>Performance Reports</h3>
 	<div class="boxWrapper">
     <p>
       Choose a resource for a custom performance report.

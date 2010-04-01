@@ -207,7 +207,7 @@
         Please choose one or more resources that you wish to query.
       </p>
 
-      <form method="GET" name="report" action="${model.endUrl}">
+      <form method="get" name="report" action="${model.endUrl}">
         <%=Util.makeHiddenTags(request, new String[] { "parentResourceId", "parentResourceType", "parentResource", "endUrl" })%>
   
         <c:set var="num" value="0"/>

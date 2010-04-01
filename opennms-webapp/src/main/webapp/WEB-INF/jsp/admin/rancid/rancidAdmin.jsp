@@ -346,7 +346,7 @@
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
-<script language="JavaScript">
+<script type="text/javascript">
 function deleteCloginInfo() {
 	  document.newUserForm.action="admin/rancid/rancidDeleteClogin.htm?node=${model.db_id}";
 	  document.newUserForm.submit();	

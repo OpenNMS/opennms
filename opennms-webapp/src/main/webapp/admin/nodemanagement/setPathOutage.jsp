@@ -154,19 +154,19 @@
   
 <form method="post" name="setCriticalPath" action="admin/setCriticalPath">
 
-<br><br>
+<br/><br/>
 
 Enter the critical path IP address in xxx.xxx.xxx.xxx format:
 
-<br><br>
+<br/><br/>
 
 <input type="text" name="criticalIp" size="17" maxlength="15" />
 
-<br><br>
+<br/><br/>
 
 critical path service:
 
-<br><br>
+<br/><br/>
 
   <select name="criticalSvc" value="ICMP" size="1">
         <option value="ICMP">ICMP</option>
@@ -174,21 +174,21 @@ critical path service:
 
 <input name="node" value=<%=nodeId%> type="hidden"/>
 
-<br><br><br>
+<br/><br/><br/>
 
 <input type="submit" name="task" value="Submit" onClick="verifyIpAddress()">
 &nbsp;&nbsp;
 <input type="submit" name="task" value="Cancel" onClick="cancel()">
 
-<br><br>
+<br/><br/>
 
 <hr>
 
-<br>
+<br/>
 
 Delete critical path for this node
 
-<br><br>
+<br/><br/>
 
 <input type="submit" name="task" value="Delete" onClick="Delete()">
 
