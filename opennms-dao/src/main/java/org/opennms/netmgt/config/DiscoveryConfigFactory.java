@@ -36,7 +36,6 @@ package org.opennms.netmgt.config;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,7 +85,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class DiscoveryConfigFactory {
-    public static final String COMMENT_STR = " #";
+    public static final String COMMENT_STR = "#";
 
     public static final char COMMENT_CHAR = '#';
 
@@ -291,14 +290,14 @@ public final class DiscoveryConfigFactory {
                     // blank line or skip comment
                     continue;
                 }
-
+                
                 // check for comments after IP
                 int comIndex = ipLine.indexOf(DiscoveryConfigFactory.COMMENT_STR);
                 if (comIndex == -1) {
                     specIP = ipLine;
                 } else {
                     specIP = ipLine.substring(0, comIndex);
-                    ipLine = ipLine.trim();
+                    specIP = specIP.trim();
                 }
 
                 try {
