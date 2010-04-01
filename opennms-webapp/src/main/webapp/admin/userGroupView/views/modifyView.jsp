@@ -309,7 +309,7 @@
   </table>
 </form>
 
-<script language="JavaScript">
+<script type="text/javascript">
   // shorthand for refering to menus
   // must run after document has been created
   // you can also change the name of the select menus and

@@ -83,7 +83,7 @@
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
-<script language="JavaScript">
+<script type="text/javascript">
 
 </script>
 

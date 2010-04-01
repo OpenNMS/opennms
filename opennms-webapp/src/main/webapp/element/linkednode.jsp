@@ -235,7 +235,7 @@
     boolean isRouteIP = NetworkElementFactory.isRouteInfoNode(nodeId);
 
 %>
-<script  language="JavaScript">
+<script type="text/javascript">
   function setDown(node, intf){
 	document.setStatus.action="element/ManageSnmpIntf?node="+node+"&intf="+intf+"&status="+2;
 	document.setStatus.submit();
