@@ -1726,9 +1726,9 @@
         <version>3.0.1</version>
       </dependency>
       <dependency>
-        <groupId>openldap</groupId>
+        <groupId>com.novell.ldap</groupId>
         <artifactId>jldap</artifactId>
-        <version>2005.10.03</version>
+        <version>4.3</version>
       </dependency>
       <dependency>
         <groupId>org.dhcp.jdhcp</groupId>
