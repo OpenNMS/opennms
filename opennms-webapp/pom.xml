@@ -205,13 +205,11 @@
             <artifactId>jdtcore</artifactId>
           </exclusion>
 	</exclusions>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>1.6.8</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -336,12 +334,10 @@
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.availability</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>alt.dev.jmta</groupId>
