@@ -181,7 +181,7 @@ function doCommand(){
       <td align="left">
         <table >
           <tr>
-            <td>Ip Address: </td>
+            <td>IP Address: </td>
 	    <td><select id="address" name="address">
 	<%
     String ipAddress = null;              

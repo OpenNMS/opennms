@@ -139,7 +139,7 @@ function nodePageGridInit(){
 		                layout: 'form',
 		                items: [{
 		                    xtype:'textfield',
-		                    fieldLabel: 'Mac Address Like',
+		                    fieldLabel: 'MAC Address Like',
 		                    name: 'macLike',
 		                    id:'macLike',
 		                    anchor:'95%'
@@ -369,7 +369,7 @@ var ipInterfacePagingBar = new Ext.PagingToolbar({
 
 var filterMenuItems = [
     new Ext.menu.CheckItem({ 
-        text: 'Ip Address', 
+        text: 'IP Address', 
         checked: true, 
         group: 'filter',
         id: 'ipAddress',
