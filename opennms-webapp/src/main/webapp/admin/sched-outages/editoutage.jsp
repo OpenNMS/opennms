@@ -542,7 +542,7 @@ function updateOutageTypeDisplay(selectElement) {
 	while (enumList.hasMoreElements()) {
 		String paramName = enumList.nextElement();
 %>
-<!--	<%=paramName%>=<%=request.getParameter(paramName)%><BR>  -->
+<!--	<%=paramName%>=<%=request.getParameter(paramName)%><br/>  -->
 <%
 	}
 %>
@@ -573,7 +573,7 @@ function updateOutageTypeDisplay(selectElement) {
 						}
 
 						if (hasMatchAny) {
-							out.println("&lt;All Nodes&gt;<br>");
+							out.println("&lt;All Nodes&gt;<br/>");
 						} else {
 							org.opennms.netmgt.config.poller.Node[] outageNodes = theOutage.getNode();
 							for (int i = 0; i < outageNodes.length; i++) {
@@ -584,12 +584,12 @@ function updateOutageTypeDisplay(selectElement) {
 									org.opennms.web.element.Node thisNode = nodeMap.get(nodeId);
 									nodeMap.remove(nodeId);
 									if (thisNode != null) {
-										out.println(thisNode.getLabel() + "<br>");
+										out.println(thisNode.getLabel() + "<br/>");
 									} else {
-										out.println("Node " + nodeId + " Is Null<br>");
+										out.println("Node " + nodeId + " Is Null<br/>");
 									}
 								} else {
-									out.println("Node Id " + nodeId + " Not Found<br>");
+									out.println("Node Id " + nodeId + " Not Found<br/>");
 								}
 							}
 						}
@@ -619,7 +619,7 @@ function updateOutageTypeDisplay(selectElement) {
 						allInterfaces = null;
 
 						if (hasMatchAny) {
-							out.println("&lt;All Interfaces&gt;<br>");
+							out.println("&lt;All Interfaces&gt;<br/>");
 						} else {
 							org.opennms.netmgt.config.poller.Interface[] outageInterfaces = theOutage.getInterface();
 							for (int i = 0; i < outageInterfaces.length; i++) {
@@ -638,14 +638,14 @@ function updateOutageTypeDisplay(selectElement) {
 											out.println(thisAddr);
 										}
 										if (thisInterface.isManaged()) {
-											out.println("<br>");
+											out.println("<br/>");
 										} else {
-											out.println(" (unmanaged)<br>");
+											out.println(" (unmanaged)<br/>");
 										}
 									}
 								} else {
 									out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
-									out.println(addr + " Not Found<br>");
+									out.println(addr + " Not Found<br/>");
 								}
 							}
 						}

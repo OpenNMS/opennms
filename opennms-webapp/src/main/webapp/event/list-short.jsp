@@ -382,7 +382,7 @@
         </p>
       </form>
 
-      <%--<br>
+      <%--<br/>
       <% if(req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
         <a HREF="admin/events.jsp" title="Acknowledge or Unacknowledge All Events">[Acknowledge or Unacknowledge All Events]</a>
       <% } %>--%>

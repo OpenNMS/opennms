@@ -494,7 +494,7 @@
         </p>
       </form>
 
-      <%--<br>
+      <%--<br/>
       <% if(req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
         <a HREF="admin/alarms.jsp" title="Acknowledge or Unacknowledge All Alarms">[Acknowledge or Unacknowledge All Alarms]</a>
       <% } %>--%>

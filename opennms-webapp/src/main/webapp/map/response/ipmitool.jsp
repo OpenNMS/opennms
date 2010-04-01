@@ -157,7 +157,7 @@ function doCommand(){
 
           <tr id="info" style="display:none">
              <td>&nbsp;</td>
-	    <td colspan="3" align="right">Insert an Ip address to force <br> a route passing through it.
+	    <td colspan="3" align="right">Insert an Ip address to force <br/> a route passing through it.
 	    </td>
 	    <td>&nbsp;</td>
 	  </tr>

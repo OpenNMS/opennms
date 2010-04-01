@@ -96,7 +96,7 @@
 
 </script>
 
-    <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
+    <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
     <h3><% String mode = request.getParameter("mode");
            if ("failed".equals(mode)) { %>
               <font color="FF0000">The rule as entered is invalid, possibly due to a malformed TCP/IP address or invalid
@@ -127,12 +127,12 @@
                   <li>192.168.0-3.0-255
                   <li>192.168.0,1,2,3.*
                </ul>
-	    <p>To Use a rule based on TCP/IP addresses as described above, enter<BR><BR>
-	       IPADDR IPLIKE *.*.*.*<BR><BR>in the Current Rule box below, substituting your
+	    <p>To Use a rule based on TCP/IP addresses as described above, enter<br/><br/>
+	       IPADDR IPLIKE *.*.*.*<br/><br/>in the Current Rule box below, substituting your
 	       desired address fields for *.*.*.*.
-	       <BR>Otherwise, you may enter any valid rule.
+	       <br/>Otherwise, you may enter any valid rule.
 	    </p>
-	    Current Rule:<br>
+	    Current Rule:<br/>
 	    <input type="text" size=100 name="newRule" value="<%=newRule%>"/>
           </td>
         </tr>
@@ -144,13 +144,13 @@
               			<p>Select each service you would like to filter on in conjunction with the TCP/IP address in the previous column.
                			   For example highlighting both HTTP and FTP will match TCP/IP addresses that support HTTP <b>OR</b> FTP.
              			</p>
-             			Services:<br><select size="10" multiple name="services"><%=buildServiceOptions(newRule)%></select>
+             			Services:<br/><select size="10" multiple name="services"><%=buildServiceOptions(newRule)%></select>
           			</td>
           			<td valign="top" align="left">
               			<p>Select each service you would like to do a NOT filter on in conjunction with the TCP/IP address. Highlighting
               			   multiple items ANDs them--for example, highlighting HTTP and FTP will match events (NOT on HTTP) AND (NOT on FTP).
               			</p>
-              			"NOT" Services:<br><select size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
+              			"NOT" Services:<br/><select size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
           			</td>
         		</tr>
 			</table>

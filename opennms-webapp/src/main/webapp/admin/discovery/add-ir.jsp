@@ -120,8 +120,8 @@ function addIncludeRange(){
 <h3>Add Include Range to Discovery</h3>
 <div class="boxWrapper">
 		  <p>Add a range of IP addresses to include in discovery.<br/>
-	      Begin and End IP addresses are required.<br>
-	      <br>
+	      Begin and End IP addresses are required.<br/>
+	      <br/>
 	      You can set the number of <i>Retries</i> and <i>Timeout</i>.
 	      If these parameters are not set, default values will be used.
 	      </p>

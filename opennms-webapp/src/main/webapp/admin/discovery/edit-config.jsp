@@ -129,7 +129,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 <!-- Body -->
 
 
-<br>
+<br/>
 
 <FORM method="POST" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/actionDiscovery">
 <input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
