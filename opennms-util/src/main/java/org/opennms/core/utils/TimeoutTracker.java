@@ -44,11 +44,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeoutTracker {
 
-    private int m_retry;
-    private long m_timeoutInNanos;
-    private long m_timeoutInMillis;
-    private long m_timeoutInSeconds;
-    private boolean m_strictTimeouts;
+    private final int m_retry;
+    private final long m_timeoutInNanos;
+    private final long m_timeoutInMillis;
+    private final long m_timeoutInSeconds;
+    private final boolean m_strictTimeouts;
     
     private int m_attempt = 0;
     private long m_nextRetryTimeNanos = -1L;
@@ -60,7 +60,7 @@ public class TimeoutTracker {
         // make sure the timeout is a least 10 millis
         m_timeoutInMillis = Math.max(10L, ParameterMap.getKeyedInteger(parameters, "timeout", defaultTimeout));
         m_timeoutInNanos = Math.max(10000000L, TimeUnit.NANOSECONDS.convert(m_timeoutInMillis, TimeUnit.MILLISECONDS));
-        m_timeoutInSeconds = Math.max(1L, TimeUnit.SECONDS.convert(m_timeoutInMillis, TimeUnit.SECONDS));
+        m_timeoutInSeconds = Math.max(1L, TimeUnit.SECONDS.convert(m_timeoutInMillis, TimeUnit.MILLISECONDS));
 
 
         m_strictTimeouts = ParameterMap.getKeyedBoolean(parameters, "strict-timeout", false);

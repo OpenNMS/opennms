@@ -56,7 +56,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
 
-    /* (non-Javadoc)
+    /**
      * @see org.opennms.netmgt.alarmd.AlarmPersister#persist(org.opennms.netmgt.xml.event.Event)
      */
     public void persist(Event event) {
@@ -70,8 +70,11 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     @Transactional
     private void addOrReduceEventAsAlarm(Event event) {
+        //TODO: Understand why we use Assert
+        Assert.notNull(event, "Incoming event was null, aborting"); 
+        Assert.isTrue(event.getDbid() > 0, "Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
         OnmsEvent e = m_eventDao.get(event.getDbid());
-        Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm."); //TODO: Understand why we use Assert
+        Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm.");
     
         String reductionKey = event.getAlarmData().getReductionKey();
         log().debug("addOrReduceEventAsAlarm: looking for existing reduction key: "+reductionKey);
@@ -85,7 +88,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             m_alarmDao.save(alarm);
             m_eventDao.saveOrUpdate(e);
         } else {
-            log().debug("addOrReduceEventAsAlarm: reductionKey:"+reductionKey+" found, reducting event to exisiting alarm: "+alarm.getIpAddr());
+            log().debug("addOrReduceEventAsAlarm: reductionKey:"+reductionKey+" found, reducing event to existing alarm: "+alarm.getIpAddr());
             reduceEvent(e, alarm);
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
@@ -96,20 +99,22 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
     }
 
-    private void reduceEvent(OnmsEvent e, OnmsAlarm alarm) {
+    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm) {
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
+        // Update any dynamic fields that the user will want to see the latest 
+        // values for to values from the latest event 
         alarm.setLogMsg(e.getEventLogMsg());
+        alarm.setEventParms(e.getEventParms());
         alarm.setCounter(alarm.getCounter() + 1);
         e.setAlarm(alarm);
     }
 
-    private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
+    private static OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
         OnmsAlarm alarm;
         alarm = new OnmsAlarm();
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
-        alarm.setClearUei(event.getAlarmData().getClearUei());
         alarm.setCounter(1);
         alarm.setDescription(e.getEventDescr());
         alarm.setDistPoller(e.getDistPoller());
@@ -136,28 +141,26 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
     
-    private boolean checkEventSanityAndDoWeProcess(final Event event) {
+    private static boolean checkEventSanityAndDoWeProcess(final Event event) {
         Assert.notNull(event, "event argument must not be null");
-        Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
-        Assert.notNull(event.getLogmsg().getDest(), "event logmsg does not have a destination");
         
         //Events that are marked donotpersist have a dbid of 0
         //Assert.isTrue(event.getDbid() > 0, "event does not have a dbid");//TODO: figure out what happens when this exception is thrown
         
-        if ("donotpersist".equals(event.getLogmsg().getDest())) {
+        if (event.getLogmsg() != null && event.getLogmsg().getDest() != null && "donotpersist".equals(event.getLogmsg().getDest())) {
             log().debug("checkEventSanity" + ": uei '" + event.getUei() + "' marked as 'donotpersist'; not processing event.");
             return false;
         }
         
         if (event.getAlarmData() == null) {
-            log().debug("checkEventSanity" + ": uei '" + event.getUei() + "' has no alarm data'; not processing event.");
+            log().debug("checkEventSanity" + ": uei '" + event.getUei() + "' has no alarm data; not processing event.");
             return false;
         }
         return true;
     }
     
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    private static Category log() {
+        return ThreadCategory.getInstance(AlarmPersisterImpl.class);
     }
     
     public void setAlarmDao(AlarmDao alarmDao) {

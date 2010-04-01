@@ -5,7 +5,7 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="htmlConfigurationReportRenderer"
-		class="org.opennms.report.render.HTMLReportRenderer">
+		class="org.opennms.reporting.availability.render.HTMLReportRenderer">
 		<property name="inputFileName">
 			<value>ConfigurationReport.xml</value>
 		</property>
@@ -33,7 +33,7 @@
 	</bean>
 
 	<bean id="htmlInventoryReportRenderer"
-		class="org.opennms.report.render.HTMLReportRenderer">
+		class="org.opennms.reporting.availability.render.HTMLReportRenderer">
 		<property name="inputFileName">
 			<value>InventoryReport.xml</value>
 		</property>

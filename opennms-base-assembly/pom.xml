@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-SNAPSHOT</version>
+    <version>1.7.11-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -143,6 +143,24 @@
                 <artifactItem>
                   <groupId>org.opennms.features</groupId>
                   <artifactId>org.opennms.features.http-remoting</artifactId>
+                  <version>${project.version}</version>
+                  <type>war</type>
+	             </artifactItem>
+	           </artifactItems>
+	         </configuration>
+	       </execution>
+          <execution>
+            <id>unpack-monitor-webapp</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+	         <configuration>
+	           <outputDirectory>${project.build.directory}/dependency-remote-monitor</outputDirectory>
+	           <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
                   <version>${project.version}</version>
                   <type>war</type>
 	             </artifactItem>

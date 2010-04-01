@@ -42,16 +42,16 @@ package org.opennms.netmgt.vacuumd.jmx;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  */
 public interface VacuumdMBean {
-    public void init();
+    void init();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public int getStatus();
+    int getStatus();
 
-    public String status();
+    String status();
 
-    public String getStatusText();
+    String getStatusText();
 
 }

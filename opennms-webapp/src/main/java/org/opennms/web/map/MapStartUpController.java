@@ -63,9 +63,7 @@ public class MapStartUpController extends SimpleFormController {
 	Category log; 
 
 	private Manager manager;
-	
-	private MapsConstants mapsConstants;
-	
+		
 	private MapPropertiesFactory mapsPropertiesFactory;
 	
 	public MapPropertiesFactory getMapsPropertiesFactory() {
@@ -84,19 +82,11 @@ public class MapStartUpController extends SimpleFormController {
 		this.manager = manager;
 	}
 	
-
-	public MapsConstants getMapsConstants() {
-		return mapsConstants;
-	}
-
-	public void setMapsConstants(MapsConstants mapsConstants) {
-		this.mapsConstants = mapsConstants;
-	}
-
+	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 		

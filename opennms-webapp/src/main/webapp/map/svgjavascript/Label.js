@@ -3,17 +3,17 @@
 Label.prototype = new MoveableSVGElement;
 Label.superclass = MoveableSVGElement.prototype;
 
-function Label(text, x, y, fontsize, linkToNodePage)
+function Label(text, x, y, fontsize, anchor,linkToNodePage)
 {
-	if (arguments.length == 5)
+	if (arguments.length == 6)
 	{
-	   this.init(text, x, y, fontsize, linkToNodePage);
+	   this.init(text, x, y, fontsize, anchor, linkToNodePage);
 	} 
 	else
 		alert("Label constructor call error");
 }
 
-Label.prototype.init = function(text, x, y, fontsize, linkToNodePage)
+Label.prototype.init = function(text, x, y, fontsize, anchor, linkToNodePage)
 {
 	this.text = text;
 	
@@ -22,7 +22,7 @@ Label.prototype.init = function(text, x, y, fontsize, linkToNodePage)
 	this.svgNode = document.createElementNS(svgNS,"text");	
 	this.svgNode.setAttributeNS(null,this.attributeX, x);	
 	this.svgNode.setAttributeNS(null,this.attributeY, y);
-	this.svgNode.setAttributeNS(null,"text-anchor", "middle");
+	this.svgNode.setAttributeNS(null,"text-anchor", anchor);
 	this.svgNode.setAttributeNS(null,"font-size", fontsize);
 	this.svgNode.appendChild(document.createTextNode(this.text));
 

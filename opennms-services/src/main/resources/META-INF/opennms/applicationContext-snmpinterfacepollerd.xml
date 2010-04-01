@@ -12,15 +12,13 @@
 	">
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-    
-    <bean name="snmpinterfacepollerQueryManager" class="org.opennms.netmgt.snmpinterfacepoller.DefaultQueryManager"/>
-    
+        
     <bean name="pollContext" class="org.opennms.netmgt.snmpinterfacepoller.DefaultPollContext">
       <property name="eventManager" ref="eventIpcManager" />
       <property name="localHostName" ref="localHostName" />
       <property name="name" value="OpenNMS.SnmpPoller.DefaultPollContext" />
-      <property name="pollerConfig" ref="snmpinterfacepollerConfig" />
-      <property name="queryManager" ref="snmpinterfacepollerQueryManager" />
+      <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
+      <property name="dataSource" ref="dataSource" />
     </bean> 
     
     <bean name="pollableNetwork" class="org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork">
@@ -28,13 +26,12 @@
     </bean>
     
         
-    <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.SnmpPoller">
-      <property name="eventManager" ref="eventIpcManager" />
-      <property name="queryManager" ref="snmpinterfacepollerQueryManager" />
+    <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.SnmpPoller" destroy-method="stop">
       <property name="pollerConfig" ref="snmpinterfacepollerConfig" />
       <property name="network" ref="pollableNetwork" />
       <property name="dataSource" ref="dataSource" />
     </bean>
+    
     <bean id="init-snmpinterfacepollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
       <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory.init</value></property>
     </bean>
@@ -43,5 +40,9 @@
       <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory.getInstance</value></property>
     </bean>
 	
-    
+    <bean id="snmpPollerEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  	  <property name="annotatedListener" ref="daemon" />
+  	  <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>
+   
 </beans>

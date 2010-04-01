@@ -56,6 +56,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     private List<StringReplaceOperation> m_replaceOps;
 
     public SiblingColumnStorageStrategy() {
+        super();
         m_replaceOps = new ArrayList<StringReplaceOperation>();
     }
     

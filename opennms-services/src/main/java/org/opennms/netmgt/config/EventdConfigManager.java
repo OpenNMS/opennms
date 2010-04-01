@@ -168,9 +168,4 @@ public class EventdConfigManager {
     public synchronized String getGetNextEventID() {
         return m_config.getGetNextEventID();
     }
-
-    public synchronized String getGetNextAlarmID() {
-        return m_config.getGetNextAlarmID();
-    }
-
 }

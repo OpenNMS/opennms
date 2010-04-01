@@ -365,7 +365,6 @@ public class OnmsAlarmOssjMapper {
 
 					onmsAlarm.setDescription(alarmValue.getAdditionalText()); //TODO need Qosd Not to generate this if remote
 					onmsAlarm.setCounter(new Integer(1));
-					onmsAlarm.setClearUei("");
 					onmsAlarm.setApplicationDN(applicationDN);
 					onmsAlarm.setAlarmType(new Integer(1)); // set to raise alarm
 					//alarm.setAlarmAckUser(arg0);

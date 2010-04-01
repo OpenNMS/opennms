@@ -83,9 +83,9 @@ public class OnmsMapDaoHibernate extends AbstractDaoHibernate<OnmsMap, Integer> 
     }
     
     public int updateAllAutomatedMap(final Date time) {
-        return (Integer) getHibernateTemplate().execute(
-                                       new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        return getHibernateTemplate().execute(
+                                       new HibernateCallback<Integer>() {
+            public Integer doInHibernate(Session session) throws HibernateException, SQLException {
                 
              String hql = "update OnmsMap as map set map.lastModifiedTime = :time where map.type = :type";
              Query query = session.createQuery(hql);

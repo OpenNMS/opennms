@@ -45,6 +45,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 
@@ -587,7 +588,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
                 + "      created and service level availability calculations will be\n"
                 + "      impacted until this outage is resolved.</p>\n"
                 + "    ");
-        t.put("severity", "Major");
+        t.put("severity", "Minor");
         m_anticipator1.anticipateCall("sendEvent", createVector(t));
         
         Event e = new Event();
@@ -616,6 +617,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         e.setTime(EventConstants.formatToString(new Date(dateLong)));
         e.setSnmp(XmlRpcNotifierTest.makeBasicTrapEventSnmp("public", 6, enterpriseId, 2, dateLong, "1"));
         e.setSource("the one true source");
+        e.setLogmsg(new Logmsg());
         getEventIpcManager().sendNow(e);
         
         Thread.sleep(1000);
@@ -640,11 +642,13 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         Hashtable<String, String> t = XmlRpcNotifierTest.makeBasicRpcTrapHashtable(v, date, "public", 6, enterpriseId, 2, dateLong, "1");
         t.put("uei", "uei.opennms.org/default/trap");
         t.put("source", "the one true source");
+        /*
         t.put("description", "\n" + 
                 "      <p>This is the default event format used when an enterprise\n" +
                 "      specific event (trap) is received for which no format has been\n" + 
                 "      configured (i.e. no event definition exists).</p>\n" + 
                 "    ");
+                */
         t.put("severity", "Normal");
         m_anticipator1.anticipateCall("sendSnmpTrapEvent", v);
 
@@ -653,6 +657,8 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         e.setTime(EventConstants.formatToString(new Date(dateLong)));
         e.setSnmp(XmlRpcNotifierTest.makeBasicTrapEventSnmp("public", 6, enterpriseId, 2, dateLong, "1"));
         e.setSource("the one true source");
+        e.setSeverity("Normal");
+        e.setLogmsg(new Logmsg());
         getEventIpcManager().sendNow(e);
         
         Thread.sleep(1000);

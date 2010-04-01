@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -48,16 +49,19 @@ import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcBroadcaster;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerProxy;
+import org.opennms.netmgt.eventd.processor.EventExpander;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
 public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
@@ -65,9 +69,9 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     static class ListenerKeeper {
         EventListener m_listener;
 
-        Set m_ueiList;
+        Set<String> m_ueiList;
 
-        ListenerKeeper(EventListener listener, Set ueiList) {
+        ListenerKeeper(EventListener listener, Set<String> ueiList) {
             m_listener = listener;
             m_ueiList = ueiList;
         }
@@ -91,6 +95,56 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
                 m_listener.onEvent(e);
             }
         }
+    }
+
+    /**
+     * This class implements {@link EventConfDao} but every call returns null.
+     */
+    private static class EmptyEventConfDao implements EventConfDao {
+        public void addEvent(org.opennms.netmgt.xml.eventconf.Event event) {}
+
+        public void addEventToProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event event) {}
+
+        public org.opennms.netmgt.xml.eventconf.Event findByEvent(
+                Event matchingEvent) {
+            return null;
+        }
+
+        public org.opennms.netmgt.xml.eventconf.Event findByUei(String uei) {
+            return null;
+        }
+
+        public String getEventLabel(String uei) {
+            return null;
+        }
+
+        public Map<String, String> getEventLabels() {
+            return null;
+        }
+
+        public List<String> getEventUEIs() {
+            return null;
+        }
+
+        public List<org.opennms.netmgt.xml.eventconf.Event> getEvents(String uei) {
+            return null;
+        }
+
+        public List<org.opennms.netmgt.xml.eventconf.Event> getEventsByLabel() {
+            return null;
+        }
+
+        public boolean isSecureTag(String tag) {
+            return false;
+        }
+
+        public void reload() throws DataAccessException {}
+
+        public boolean removeEventFromProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event event) {
+            return false;
+        }
+
+        public void saveCurrent() {}
     }
 
     private EventAnticipator m_anticipator;
@@ -182,6 +236,10 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     }
     
     public synchronized void sendNow(final Event event) {
+        // Expand the event parms
+        EventExpander expander = new EventExpander();
+        expander.setEventConfDao(new EmptyEventConfDao());
+        expander.expandEvent(event);
         m_pendingEvents++;
         MockUtil.println("StartEvent processing: m_pendingEvents = "+m_pendingEvents);
         MockUtil.println("Received: "+ new EventWrapper(event));

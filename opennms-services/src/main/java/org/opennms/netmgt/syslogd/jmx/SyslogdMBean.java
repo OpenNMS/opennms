@@ -38,15 +38,15 @@
 package org.opennms.netmgt.syslogd.jmx;
 
 public interface SyslogdMBean {
-    public void init();
+    void init();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public int getStatus();
+    int getStatus();
 
-    public String status();
+    String status();
 
-    public String getStatusText();
+    String getStatusText();
 }

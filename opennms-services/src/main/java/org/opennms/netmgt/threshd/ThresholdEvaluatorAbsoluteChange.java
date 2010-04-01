@@ -142,7 +142,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         
         private Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource) {
             Map<String,String> params = new HashMap<String,String>();
-            params.put("previousValue", Double.toString(getPreviousTriggeringSample()));
+            params.put("previousValue", formatValue(getPreviousTriggeringSample()));
             params.put("changeThreshold", Double.toString(getThresholdConfig().getValue()));
             return createBasicEvent(uei, date, dsValue, resource, params);
         }

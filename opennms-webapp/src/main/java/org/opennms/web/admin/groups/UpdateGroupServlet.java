@@ -117,7 +117,6 @@ public class UpdateGroupServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getDutySchedulesForGroup(Group group) {
         return (List<String>) group.getDutyScheduleCollection();
     }

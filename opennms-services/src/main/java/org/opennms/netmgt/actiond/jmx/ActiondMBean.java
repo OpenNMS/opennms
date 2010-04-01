@@ -35,15 +35,15 @@
 package org.opennms.netmgt.actiond.jmx;
 
 public interface ActiondMBean {
-    public void init();
+    void init();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public int getStatus();
+    int getStatus();
 
-    public String getStatusText();
+    String getStatusText();
 
-    public String status();
+    String status();
 }

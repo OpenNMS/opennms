@@ -41,9 +41,11 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
@@ -79,6 +81,7 @@ public class GroupFactory extends GroupManager {
      * @throws MarshalException 
      */
     public GroupFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        super();
         reload();
     }
 
@@ -141,7 +144,7 @@ public class GroupFactory extends GroupManager {
      */
     protected void saveXml(String data) throws IOException {
         if (data != null) {
-            FileWriter fileWriter = new FileWriter(m_groupsConfFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), "UTF-8");
             fileWriter.write(data);
             fileWriter.flush();
             fileWriter.close();

@@ -48,14 +48,20 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.outage.*,java.util.*" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
 	int nodeId = (Integer)request.getAttribute("nodeId");
 	Outage[] outages = (Outage[])request.getAttribute("outages");
 %>
+<c:set var="nodeId"><%=nodeId%></c:set>
 
-<h3 class="o-box"><a href="outage/list.htm?filter=node%3d<%=nodeId%>">Recent&nbsp;Outages</a></h3>
+
+<c:url var="outageLink" value="outage/list.htm">
+  <c:param name="filter" value="node=${nodeId}"/>
+</c:url>
+<h3 class="o-box"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
 <table class="o-box">
 <% if(outages.length == 0) { %>
   <tr>

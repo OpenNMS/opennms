@@ -53,9 +53,6 @@ public class PackageReport {
     private Long m_retainInterval;
     private StatsdPackage m_pkg;
     
-    public PackageReport() {
-    }
-
     public boolean isEnabled() {
         return m_enabled;
     }

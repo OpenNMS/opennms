@@ -38,6 +38,7 @@ package org.opennms.netmgt.threshd;
 public class JBossThresholder extends JMXThresholder {
     
     public JBossThresholder() {
+        super();
         setServiceName("jboss");
     }
 }

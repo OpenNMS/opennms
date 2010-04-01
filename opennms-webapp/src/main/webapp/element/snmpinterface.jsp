@@ -44,6 +44,8 @@
 		contentType="text/html"
 		session="true"
 		import="java.util.*,
+				org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
+				org.opennms.netmgt.config.SnmpInterfacePollerConfig,
                 org.opennms.core.utils.SIUtils,
                 org.opennms.netmgt.model.OnmsResource,
                 org.opennms.web.Util,
@@ -79,6 +81,9 @@
 
     String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;
     
+    SnmpInterfacePollerConfigFactory.init();
+    SnmpInterfacePollerConfig snmpPollerCfgFactory = SnmpInterfacePollerConfigFactory.getInstance();
+    snmpPollerCfgFactory.rebuildPackageIpListMap();
 %>
 
 <%
@@ -208,6 +213,26 @@ function doDelete() {
                   </td>
                 </tr>
               <% } %>
+                <tr> 
+	          	  <th>Last Snmp Table Scan</th>
+    	          <td><%=intf_db.getSnmpLastCapsdPoll()%></td>
+        	  	</tr>
+              
+				<tr>
+	              <th>Snmp Polling Status</th>
+	              <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
+	            </tr>  
+              <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+                <tr>
+                    <th>Snmp Polling Package</th>
+                    <td><%= snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId))%></td>
+                </tr>
+	           <% } %>
+                <tr> 
+	          	  <th>Last Snmp Poll</th>
+        	          <td><%=(intf_db.getSnmpLastSnmpPoll() == null) ? "&nbsp;" : intf_db.getSnmpLastSnmpPoll()%></td>
+        	  	</tr>              
+
             </table>
             
             <!-- Node Link box -->

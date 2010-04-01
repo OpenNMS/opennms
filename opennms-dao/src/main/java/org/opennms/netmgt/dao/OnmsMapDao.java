@@ -37,18 +37,18 @@ import java.util.Collection;
 import java.util.Date;
 
 public interface OnmsMapDao extends OnmsDao<OnmsMap, Integer> {
-    public abstract Collection<OnmsMap> findAll(Integer offset, Integer limit);
-    public abstract Collection<OnmsMap> findMapsLike(String mapLabel);
-    public abstract Collection<OnmsMap> findMapsByName(String mapLabel);
-    public abstract OnmsMap findMapById(int id);
-    public abstract Collection<OnmsMap> findMapsByNameAndType(String mapName, String mapType);
-    public abstract Collection<OnmsMap> findMapsByType(String mapType);
-    public abstract Collection<OnmsMap> findAutoMaps();
-    public abstract Collection<OnmsMap> findUserMaps();
-    public abstract Collection<OnmsMap> findSaveMaps();
-    public abstract Collection<OnmsMap> findAutoAndSaveMaps();
-    public abstract Collection<OnmsMap> findMapsByOwner(String owner);
-    public abstract Collection<OnmsMap> findMapsByGroup(String group);
-    public abstract Collection<OnmsMap> findVisibleMapsByGroup(String group);
-    public abstract int updateAllAutomatedMap(Date time);
+    Collection<OnmsMap> findAll(Integer offset, Integer limit);
+    Collection<OnmsMap> findMapsLike(String mapLabel);
+    Collection<OnmsMap> findMapsByName(String mapLabel);
+    OnmsMap findMapById(int id);
+    Collection<OnmsMap> findMapsByNameAndType(String mapName, String mapType);
+    Collection<OnmsMap> findMapsByType(String mapType);
+    Collection<OnmsMap> findAutoMaps();
+    Collection<OnmsMap> findUserMaps();
+    Collection<OnmsMap> findSaveMaps();
+    Collection<OnmsMap> findAutoAndSaveMaps();
+    Collection<OnmsMap> findMapsByOwner(String owner);
+    Collection<OnmsMap> findMapsByGroup(String group);
+    Collection<OnmsMap> findVisibleMapsByGroup(String group);
+    int updateAllAutomatedMap(Date time);
 }

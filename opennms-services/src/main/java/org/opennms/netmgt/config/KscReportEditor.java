@@ -67,9 +67,6 @@ public class KscReportEditor implements Serializable {
      */
     private Graph m_workingGraph = null;
 
-    public KscReportEditor() {
-    }
-
     /** Create a new blank report & initialize it */
     private static Report getNewReport() {
         Report new_report = new Report();

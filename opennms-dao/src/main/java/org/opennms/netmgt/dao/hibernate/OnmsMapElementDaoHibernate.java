@@ -75,6 +75,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         return find("from OnmsMapElement as element where element.elementId = ? and (element.type = ? or element.type = ? )", values);
     }
     
+    @SuppressWarnings("unchecked")
     public void deleteElementsByMapId(final OnmsMap map) {
         getHibernateTemplate().execute(
                                        new HibernateCallback() {
@@ -89,6 +90,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         });
     }
 
+    @SuppressWarnings("unchecked")
     public void deleteElementsByNodeid(final int nodeid) {
       getHibernateTemplate().execute(
                                      new HibernateCallback() {
@@ -106,6 +108,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
       });
   }
 
+    @SuppressWarnings("unchecked")
     public void deleteElementsByType(final String type) {
         getHibernateTemplate().execute(
                                        new HibernateCallback() {
@@ -121,6 +124,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
 
     }
 
+    @SuppressWarnings("unchecked")
     public void deleteElementsByElementIdAndType(final int id,final String type) {
         getHibernateTemplate().execute(
                                        new HibernateCallback() {
@@ -153,6 +157,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         return  findUnique("from OnmsMapElement as element where element.elementId = ? and element.type = ? and element.map = ?", values);
     }
 
+    @SuppressWarnings("unchecked")
     public void deleteElementsByMapType(final String mapType) {
         getHibernateTemplate().execute(
                                        new HibernateCallback() {
@@ -183,6 +188,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         return find("from OnmsMapElement as element where element.map.id = ? and (element.type = ? or element.type= ? )",values);
     }
 
+    @SuppressWarnings("unchecked")
     public int countElementsOnMap(final int mapid) {
         Number nu = (Number) getHibernateTemplate().execute(
           new HibernateCallback() {

@@ -62,12 +62,6 @@ public final class IcmpPlugin extends AbstractPlugin {
     private static final String PROTOCOL_NAME = "ICMP";
 
     /**
-     * Constructs a new monitor.
-     */
-    public IcmpPlugin() throws IOException {
-    }
-
-    /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.
      * 

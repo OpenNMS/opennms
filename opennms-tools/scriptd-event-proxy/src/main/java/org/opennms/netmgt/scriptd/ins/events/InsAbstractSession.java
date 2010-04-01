@@ -91,38 +91,11 @@ public abstract class InsAbstractSession extends Thread {
         );
         log.debug("interfaces found: " + iface.size());
 
+        if (iface.size() == 0) return "-1";
         String ifAlias = iface.get(0).getIfAlias();
         log.debug("ifalias found: " + ifAlias);
         
         return ifAlias;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected OnmsSnmpInterface getIfAlias(int nodeid, String ipaddr) {
-
-        log.debug("getting ifalias for nodeid: " +nodeid + " and ipaddress: " + ipaddr);
-        setCriteria("nodeid = " + nodeid + " AND ipaddr = '" + ipaddr +"'");
-        BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
-        final SnmpInterfaceDao snmpInterfaceDao = BeanUtils.getBean(bf,"snmpInterfaceDao", SnmpInterfaceDao.class);
-        TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
-        List<OnmsSnmpInterface> iface = (List<OnmsSnmpInterface>) transTemplate.execute(
-                   new TransactionCallback() {
-                        public Object doInTransaction(final TransactionStatus status) {
-                            final OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsSnmpInterface.class);
-                            onmsCriteria.add(Restrictions.sqlRestriction(getCriteria()));
-                            return snmpInterfaceDao.findMatching(onmsCriteria);
-                        }
-                   }
-        );
-        log.debug("interfaces found: " + iface.size());
-
-        if (iface.size() > 0 ) {
-        String ifAlias = iface.get(0).getIfAlias();
-        log.debug("ifalias found: " + ifAlias);
-        
-        return iface.get(0);
-        }
-        return null;
     }
 
 }

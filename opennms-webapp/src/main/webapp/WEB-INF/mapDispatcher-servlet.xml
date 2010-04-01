@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:tx="http://www.springframework.org/schema/tx"
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:aop="http://www.springframework.org/schema/aop" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
- 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+ 	   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+       >
+
 
   <tx:annotation-driven />
 
@@ -14,7 +18,6 @@
     <property name="locations">
       <list>
         <value>WEB-INF/configuration.properties</value>
-        <value>file:${opennms.home}/etc/model-importer.properties</value>
       </list>
     </property>
   </bean>
@@ -28,8 +31,6 @@
   </bean>
   
 	<!-- Necessary to Client and Server to communicate and display correct informations -->
-  <bean id="mapsConstants" class="org.opennms.web.map.MapsConstants"/>
-
   <bean id="mapsPropertiesFactory" class="org.opennms.web.map.config.MapPropertiesFactory">
      <constructor-arg value="${opennms.home}/etc/map.properties"/>
   </bean>
@@ -38,9 +39,9 @@
 
   <bean id="manager" class="org.opennms.web.map.db.ManagerDefaultImpl" scope="session">
     <aop:scoped-proxy/>
-    <property name="mapsPropertiesFactory"><ref bean="mapsPropertiesFactory"/></property>
-    <property name="dbManager"><ref bean="dbManager"/></property>
-    <property name="groupDao"><ref bean="groupDao"/></property>
+    <property name="mapsPropertiesFactory" ref="mapsPropertiesFactory"/>
+    <property name="dbManager" ref="dbManager"/>
+    <property name="groupDao" ref="groupDao"/>
     <!-- Enable these and configure if you want to get status, severity and avail from other sources -->
     <!-- This sources try to get info for node under filter-->
     <!-- property name="dataSource"><ref bean="dataSource"/></property-->
@@ -48,7 +49,7 @@
     value="SELECT distinct assets.nodeid from assets left join ipinterface on asset.nodeid = ipinterface.nodeid 
     where displaycategory='Server' and iplike(ipaddr,'10.*.*.*')"/-->
   </bean>
-
+  
     <!-- Enable this if you want to get status, severity and avail from other sources -->
     <!-- This sources try to get info for node under filter-->
     
@@ -71,125 +72,69 @@
     	</map>
     </constructor-arg>
   </bean -->
-  <!-- bean id="mapApplianceValidator" class="org.opennms.web.map.MapApplianceValidator"/-->
-  <!-- bean id="mapStartUpValidator" class="org.opennms.web.map.MapStartUpConfigValidator"/-->
-  <!-- bean id="openMapValidator" class="org.opennms.web.map.OpenMapValidator"/-->
-  <!-- bean id="newMapValidator" class="org.opennms.web.map.NewMapValidator"/-->
-  <!-- bean id="clearMapValidator" class="org.opennms.web.map.ClearMapValidator"/-->
-  <!-- bean id="closeMapValidator" class="org.opennms.web.map.CloseMapValidator"/-->
-  <!-- bean id="saveMapValidator" class="org.opennms.web.map.SaveMapValidator"/-->
 
-  <!--bean id="HomeMapPage" class="org.opennms.web.map.IndexMapController">
-  	<property name="manager"><ref bean="manager"/></property>
-    <property name="mapsConstants"><ref bean="mapsConstants"/></property>  	
-  </bean-->
-
-  <bean id="MapStartUp" class="org.opennms.web.map.MapStartUpController">
-   	<!-- property name="sessionForm" value="false"/-->
-  	<!-- property name="commandName" value="config"/-->
-  	<!-- property name="commandClass" value="org.opennms.web.map.config.MapStartUpConfig"/-->
-  	<!-- property name="validator"><ref bean="mapStartUpValidator"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
-    <property name="mapsConstants"><ref bean="mapsConstants"/></property>
-    <property name="mapsPropertiesFactory"><ref bean="mapsPropertiesFactory"/></property>
+  <bean name="/MapStartUp.map" class="org.opennms.web.map.MapStartUpController">
+    <property name="mapsPropertiesFactory" ref="mapsPropertiesFactory"/>
+    <property name="manager" ref="manager"/>
   </bean>
 
-  <bean id="SwitchRole" class="org.opennms.web.map.SwitchRoleController">
-  	<!--property name="validator"><ref bean="******"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/SwitchRole.map" class="org.opennms.web.map.SwitchRoleController">
+    <property name="manager" ref="manager" />
   </bean>
  
-  <bean id="OpenMap" class="org.opennms.web.map.OpenMapController">
-  	<!--property name="validator"><ref bean="openMapValidator"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/OpenMap.map" class="org.opennms.web.map.OpenMapController">
+    <property name="manager" ref="manager" />
   </bean>
 
-  <bean id="NewMap" class="org.opennms.web.map.NewMapController">
-  	<!--property name="validator"><ref bean="newMapValidator"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/NewMap.map" class="org.opennms.web.map.NewMapController">
+    <property name="manager" ref="manager" />
   </bean>
 
-  <bean id="CloseMap" class="org.opennms.web.map.CloseMapController">
-  	<!--property name="validator"><ref bean="closeMapValidator"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/CloseMap.map" class="org.opennms.web.map.CloseMapController">
+    <property name="manager" ref="manager" />
   </bean>
   
-  <bean id="DeleteMap" class="org.opennms.web.map.DeleteMapController">
-  	<!--property name="validator"><ref bean="******"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/DeleteMap.map" class="org.opennms.web.map.DeleteMapController">
+    <property name="manager" ref="manager" />
   </bean>
 
-  <bean id="ClearMap" class="org.opennms.web.map.ClearMapController">
-  	<!--property name="validator"><ref bean="clearMapValidator"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/ClearMap.map" class="org.opennms.web.map.ClearMapController">
+    <property name="manager" ref="manager" />
   </bean>
 
-  <bean id="SaveMap" class="org.opennms.web.map.SaveMapController">
-  	<!--property name="validator"><ref bean="saveMapValidator"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/SaveMap.map" class="org.opennms.web.map.SaveMapController">
+    <property name="manager" ref="manager" />
   </bean>
   
-  <bean id="LoadDefaultMap" class="org.opennms.web.map.LoadDefaultMapController">
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/LoadDefaultMap.map" class="org.opennms.web.map.LoadDefaultMapController">
+    <property name="manager" ref="manager" />
   </bean>
 
 
-  <bean id="LoadMaps" class="org.opennms.web.map.LoadMapsController">
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/LoadMaps.map" class="org.opennms.web.map.LoadMapsController">
+    <property name="manager" ref="manager" />
   </bean>
 
-  <bean id="LoadNodes" class="org.opennms.web.map.LoadNodesController">
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/LoadNodes.map" class="org.opennms.web.map.LoadNodesController">
+    <property name="manager" ref="manager" />
   </bean>
 
-  <bean id="AddNodes" class="org.opennms.web.map.AddNodesController">
-  	<!--property name="validator"><ref bean="*****"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/AddNodes.map" class="org.opennms.web.map.AddNodesController">
+    <property name="manager" ref="manager" />
   </bean>
   
-  <bean id="AddMaps" class="org.opennms.web.map.AddMapsController">
-  	<!--property name="validator"><ref bean="*****"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/AddMaps.map" class="org.opennms.web.map.AddMapsController">
+    <property name="manager" ref="manager" />
   </bean> 
   
-  <bean id="DeleteElements" class="org.opennms.web.map.DeleteElementsController">
-  	<!--property name="validator"><ref bean="*****"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
+  <bean name="/DeleteElements.map" class="org.opennms.web.map.DeleteElementsController">
+    <property name="manager" ref="manager" />
   </bean>  
   
-  <bean id="ExecCommand" class="org.opennms.web.map.ExecCommandController">
-  	<!--property name="validator"><ref bean="*****"/></property-->
-  </bean>  
+  <bean name="/ExecCommand.map" class="org.opennms.web.map.ExecCommandController"/>   
   
-  <bean id="RefreshMap" class="org.opennms.web.map.RefreshMapController">
-  	<!--property name="validator"><ref bean="*****"/></property-->
-    <property name="manager"><ref bean="manager"/></property>
-  </bean>      
-  
-  <bean id="urlMapping"   class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="mappings">
-      <props>
-      	<!-- prop key="/Index.map">HomeMapPage</prop-->
-      	<prop key="/MapStartUp.map">MapStartUp</prop>
-        <prop key="/OpenMap.map">OpenMap</prop>
-        <prop key="/NewMap.map">NewMap</prop>
-        <prop key="/CloseMap.map">CloseMap</prop>
-        <prop key="/DeleteMap.map">DeleteMap</prop>   
-        <prop key="/ClearMap.map">ClearMap</prop>                
-        <prop key="/SaveMap.map">SaveMap</prop>
-        <prop key="/LoadDefaultMap.map">LoadDefaultMap</prop>        
-        <prop key="/LoadMaps.map">LoadMaps</prop>        
-        <prop key="/LoadNodes.map">LoadNodes</prop>
-        <prop key="/AddNodes.map">AddNodes</prop>
-        <prop key="/AddMaps.map">AddMaps</prop> 
-        <prop key="/DeleteElements.map">DeleteElements</prop>                                  
-        <prop key="/SwitchRole.map">SwitchRole</prop>        
-        <prop key="/ExecCommand.map">ExecCommand</prop>         
-        <prop key="/RefreshMap.map">RefreshMap</prop> 
-      </props>
-    </property>
-    <property name="order" value="0"/>
-  </bean>	     
-  
+  <bean name="/RefreshMap.map" class="org.opennms.web.map.RefreshMapController">
+    <property name="manager" ref="manager" />
+  </bean>       
 
 </beans>

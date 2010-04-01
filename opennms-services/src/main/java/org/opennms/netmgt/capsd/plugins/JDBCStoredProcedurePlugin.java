@@ -70,6 +70,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 	 * Class constructor. Load the JDBC drivers.
 	 */
 	public JDBCStoredProcedurePlugin() {
+		super();
 		Category log = ThreadCategory.getInstance(getClass());
 		log.info(getClass().getName()
 				+ ": JDBCStoredProcedurePlugin class loaded");

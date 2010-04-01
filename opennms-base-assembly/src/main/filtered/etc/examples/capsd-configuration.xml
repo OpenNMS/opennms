@@ -14,48 +14,16 @@
         <property key="timeout" value="2000" />
         <property key="retry" value="2" />
     </protocol-plugin>
-    <protocol-plugin protocol="Memcached" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
-        <property key="port" value="11211" />
+    <protocol-plugin protocol="StrafePing" class-name="org.opennms.netmgt.capsd.plugins.IcmpPlugin" scan="on">
         <property key="timeout" value="2000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="NTP" class-name="org.opennms.netmgt.capsd.plugins.NtpPlugin" scan="on">
-        <property key="port" value="123" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="NotesHTTP" class-name="org.opennms.netmgt.capsd.plugins.NotesHttpPlugin" scan="on">
-        <property key="port" value="80,8080" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="DominoIIOP" class-name="org.opennms.netmgt.capsd.plugins.DominoIIOPPlugin" scan="on">
-        <property key="port" value="63148" />
-        <property key="ior-port" value="80" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="Citrix" class-name="org.opennms.netmgt.capsd.plugins.CitrixPlugin" scan="on">
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="LDAP" class-name="org.opennms.netmgt.capsd.plugins.LdapPlugin" scan="on">
-        <property key="port" value="389" />
-        <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
     <protocol-plugin protocol="SNMP" class-name="org.opennms.netmgt.capsd.plugins.SnmpPlugin" scan="on">
         <property key="timeout" value="2000" />
         <property key="retry" value="2" />
     </protocol-plugin>
-    <protocol-plugin protocol="SMB" class-name="org.opennms.netmgt.capsd.plugins.SmbPlugin" scan="on" />
     <protocol-plugin protocol="HTTP" class-name="org.opennms.netmgt.capsd.plugins.HttpPlugin" scan="on">
         <property key="port" value="80" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="HTTP-MGMT" class-name="org.opennms.netmgt.capsd.plugins.HttpPlugin" scan="on">
-        <property key="port" value="280" />
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
@@ -72,6 +40,16 @@
     <protocol-plugin protocol="HTTPS" class-name="org.opennms.netmgt.capsd.plugins.HttpsPlugin" scan="on">
         <property key="port" value="443" />
         <property key="timeout" value="5000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="HypericAgent" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
+        <property key="port" value="2144" />
+        <property key="timeout" value="2000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="HypericHQ" class-name="org.opennms.netmgt.capsd.plugins.HttpPlugin" scan="off">
+        <property key="port" value="7080" />
+        <property key="timeout" value="2000" />
         <property key="retry" value="2" />
     </protocol-plugin>
     <protocol-plugin protocol="FTP" class-name="org.opennms.netmgt.capsd.plugins.FtpPlugin" scan="on">
@@ -135,18 +113,6 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
-    <protocol-plugin protocol="Informix" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
-        <property key="banner" value="*" />
-        <property key="port" value="1536" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
-    <protocol-plugin protocol="Sybase" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
-        <property key="banner" value="*" />
-        <property key="port" value="1498" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-    </protocol-plugin>
     <protocol-plugin protocol="Oracle" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="1521" />
@@ -160,7 +126,7 @@
         <property key="retry" value="2" />
     </protocol-plugin>
     <protocol-plugin protocol="Router" class-name="org.opennms.netmgt.capsd.plugins.SnmpPlugin" scan="on">
-        <property key="vbname" value=".1.3.6.1.2.1.4.1" />
+        <property key="vbname" value=".1.3.6.1.2.1.4.1.0" />
         <property key="vbvalue" value="1" />
         <property key="timeout" value="2000" />
         <property key="retry" value="2" />
@@ -174,6 +140,103 @@
     <protocol-plugin protocol="Dell-OpenManage" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
         <property key="banner" value="*" />
         <property key="port" value="1311" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>    
+    <protocol-plugin protocol="NSClient" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on">
+        <property key="banner" value="*" />
+        <property key="port" value="1248" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="NSClientpp" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on">
+        <property key="banner" value="*" />
+        <property key="port" value="12489" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="NRPE" class-name="org.opennms.netmgt.capsd.plugins.NrpePlugin" scan="on">
+        <property key="banner" value="*" />
+        <property key="port" value="5666" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+        <property key="command" value="_NRPE_CHECK" />
+    </protocol-plugin>
+    <protocol-plugin protocol="NRPE-NoSSL" class-name="org.opennms.netmgt.capsd.plugins.NrpePlugin" scan="on">
+        <property key="banner" value="*" />
+        <property key="port" value="5666" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+        <property key="usessl" value="false" />
+        <property key="command" value="_NRPE_CHECK" />
+    </protocol-plugin>
+    <protocol-plugin protocol="Windows-Task-Scheduler" class-name="org.opennms.netmgt.capsd.plugins.Win32ServicePlugin" scan="on">
+        <property key="timeout" value="2000" />
+        <property key="retry" value="2" />
+        <property key="service-name" value="Task Scheduler" />
+    </protocol-plugin>
+    <protocol-plugin protocol="OpenNMS-JVM" class-name="org.opennms.netmgt.capsd.plugins.Jsr160Plugin" scan="on" user-defined="false">
+        <property key="port" value="18980" />
+        <property key="factory" value="PASSWORD-CLEAR"/>
+        <property key="username" value="admin" />
+        <property key="password" value="admin" />
+        <property key="protocol" value="rmi"/>
+        <property key="urlPath" value="/jmxrmi"/>
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+        <property key="type" value="default" />
+    </protocol-plugin>
+
+    <!--
+        The following <protocol-plugin> tags contain examples of other types of 
+        capsd plugins that can be added to the system 
+    -->
+
+    <protocol-plugin protocol="Memcached" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
+        <property key="port" value="11211" />
+        <property key="timeout" value="2000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="NTP" class-name="org.opennms.netmgt.capsd.plugins.NtpPlugin" scan="on">
+        <property key="port" value="123" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="NotesHTTP" class-name="org.opennms.netmgt.capsd.plugins.NotesHttpPlugin" scan="on">
+        <property key="port" value="80,8080" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="DominoIIOP" class-name="org.opennms.netmgt.capsd.plugins.DominoIIOPPlugin" scan="on">
+        <property key="port" value="63148" />
+        <property key="ior-port" value="80" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="Citrix" class-name="org.opennms.netmgt.capsd.plugins.CitrixPlugin" scan="on">
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="LDAP" class-name="org.opennms.netmgt.capsd.plugins.LdapPlugin" scan="on">
+        <property key="port" value="389" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="SMB" class-name="org.opennms.netmgt.capsd.plugins.SmbPlugin" scan="on" />
+    <protocol-plugin protocol="HTTP-MGMT" class-name="org.opennms.netmgt.capsd.plugins.HttpPlugin" scan="on">
+        <property key="port" value="280" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="Informix" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
+        <property key="banner" value="*" />
+        <property key="port" value="1536" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
+    <protocol-plugin protocol="Sybase" class-name="org.opennms.netmgt.capsd.plugins.TcpPlugin" scan="on">
+        <property key="banner" value="*" />
+        <property key="port" value="1498" />
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
@@ -215,14 +278,6 @@
          <property key="urlPath" value="/jmxrmi"/>
          <property key="retry" value="2"/>
          <property key="timeout" value="2000"/>
-    </protocol-plugin>
-    <protocol-plugin protocol="NRPE" class-name="org.opennms.netmgt.capsd.plugins.NrpePlugin" scan="on">
-        <property key="banner" value="*" />
-        <property key="port" value="5666" />
-        <property key="timeout" value="3000" />
-        <property key="retry" value="2" />
-        <property key="usessl" value="true" />
-        <property key="command" value="_NRPE_CHECK" />
     </protocol-plugin>
     <protocol-plugin protocol="DiskUsage-root" class-name="org.opennms.netmgt.capsd.plugins.DiskUsagePlugin" scan="on">
         <property key="timeout" value="3000" />

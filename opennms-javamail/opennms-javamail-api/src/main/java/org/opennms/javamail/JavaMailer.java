@@ -98,7 +98,7 @@ public class JavaMailer {
     private static final boolean DEFAULT_USE_JMTA = true;
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private static final String DEFAULT_CHARSET = "us-ascii";
-    private static final String DEFAULT_ENCODING = "7-bit";
+    private static final String DEFAULT_ENCODING = "Q"; // I think this means quoted-printable encoding, see bug 2825
     private static final boolean DEFAULT_STARTTLS_ENABLE = false;
     private static final boolean DEFAULT_QUIT_WAIT = true;
     private static final int DEFAULT_SMTP_PORT = 25;

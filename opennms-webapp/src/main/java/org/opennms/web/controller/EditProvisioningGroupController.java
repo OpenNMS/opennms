@@ -31,7 +31,10 @@
 //
 package org.opennms.web.controller;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -257,12 +260,11 @@ public class EditProvisioningGroupController extends SimpleFormController {
         formCommand.setFormData(formData);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected Map referenceData(HttpServletRequest request) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
+    protected Map<String, Collection<String>> referenceData(HttpServletRequest request) throws Exception {
+        Map<String, Collection<String>> map = new HashMap<String, Collection<String>>();
         
-        String[] choices = { "P", "S", "C", "N" };
+        List<String> choices = Arrays.asList("P", "S", "C", "N");
         map.put("snmpPrimaryChoices", choices);
         
         map.put("categories", m_provisioningService.getNodeCategoryNames());

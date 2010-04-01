@@ -81,6 +81,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     protected AbstractTcpPlugin(String protocol, int defaultPort, int defaultTimeout, int defaultRetry) {
+        super();
         if (protocol == null)
             throw new NullPointerException("protocol is null");
 

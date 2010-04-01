@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.7.10-SNAPSHOT</version>
+  <version>1.7.11-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -220,6 +220,25 @@
         </dependencies>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2-beta-4</version>
@@ -243,13 +262,28 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>2.0.2</version>
+        <configuration>
+          <archiveClasses>true</archiveClasses>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <version>${gmavenVersion}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.groovy.maven.runtime</groupId>
+            <artifactId>gmaven-runtime-1.6</artifactId>
+            <version>${gmavenVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>1.6.8</version>
+          </dependency>
+        </dependencies>
         <configuration>
-          <providerSelection>1.5</providerSelection>
+          <providerSelection>1.6</providerSelection>
         </configuration>
       </plugin>
       <plugin>
@@ -356,84 +390,27 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
-          <systemProperties>
-            <property>
-              <name>java.awt.headless</name>
-              <value>true</value>
-            </property>
-            <property>
-              <name>mock.logLevel</name>
-              <value>${mock.logLevel}</value>
-            </property>
-            <property>
-              <name>mock.debug</name>
-              <value>${mock.debug}</value>
-            </property>
-            <property>
-              <name>mock.rundbtests</name>
-              <value>${mock.rundbtests}</value>
-            </property>
-            <property>
-              <name>mock.leaveDatabase</name>
-              <value>${mock.leaveDatabase}</value>
-            </property>
-            <property>
-              <name>mock.leaveDatabaseOnFailure</name>
-              <value>${mock.leaveDatabaseOnFailure}</value>
-            </property>
-            <property>
-              <name>mock.db.driver</name>
-              <value>${mock.db.driver}</value>
-            </property>
-            <property>
-              <name>mock.db.url</name>
-              <value>${mock.db.url}</value>
-            </property>
-            <property>
-              <name>mock.db.adminUser</name>
-              <value>${mock.db.adminUser}</value>
-            </property>
-            <property>
-              <name>mock.db.adminPassword</name>
-              <value>${mock.db.adminPassword}</value>
-            </property>
-            <property>
-              <name>mock.runSnmpTests</name>
-              <value>${mock.runSnmpTests}</value>
-            </property>
-            <property>
-              <name>mock.snmpHost</name>
-              <value>${mock.snmpHost}</value>
-            </property>
-            <property>
-              <name>opennms.library.jicmp</name>
-              <value>${opennms.library.jicmp}</value>
-            </property>
-            <property>
-              <name>opennms.library.jrrd</name>
-              <value>${opennms.library.jrrd}</value>
-            </property>
-            <property>
-              <name>install.rrdtool.bin</name>
-              <value>${install.rrdtool.bin}</value>
-            </property>
-            <property>
-              <name>runOtrsTests</name>
-              <value>${runOtrsTests}</value>
-            </property>
-            <property>
-              <name>runRtTests</name>
-              <value>${runRtTests}</value>
-            </property>
-            <property>
-              <name>runMailTests</name>
-              <value>${runMailTests}</value>
-            </property>
-            <property>
-              <name>runPingTests</name>
-              <value>${runPingTests}</value>
-            </property>
-          </systemProperties>
+          <systemPropertyVariables>
+            <java.awt.headless>true</java.awt.headless>
+            <mock.logLevel>${mock.logLevel}</mock.logLevel>
+            <mock.debug>${mock.debug}</mock.debug>
+            <mock.rundbtests>${mock.rundbtests}</mock.rundbtests>
+            <mock.leaveDatabase>${mock.leaveDatabase}</mock.leaveDatabase>
+            <mock.leaveDatabaseOnFailure>${mock.leaveDatabaseOnFailure}</mock.leaveDatabaseOnFailure>
+            <mock.db.driver>${mock.db.driver}</mock.db.driver>
+            <mock.db.url>${mock.db.url}</mock.db.url>
+            <mock.db.adminUser>${mock.db.adminUser}</mock.db.adminUser>
+            <mock.db.adminPassword>${mock.db.adminPassword}</mock.db.adminPassword>
+            <mock.runSnmpTests>${mock.runSnmpTests}</mock.runSnmpTests>
+            <mock.snmpHost>${mock.snmpHost}</mock.snmpHost>
+            <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
+            <opennms.library.jrrd>${opennms.library.jrrd}</opennms.library.jrrd>
+            <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
+            <runOtrsTests>${runOtrsTests}</runOtrsTests>
+            <runRtTests>${runRtTests}</runRtTests>
+            <runMailTests>${runMailTests}</runMailTests>
+            <runPingTests>${runPingTests}</runPingTests>
+          </systemPropertyVariables>
 	  <forkMode>pertest</forkMode>
           <argLine>-Xmx1024m</argLine>
           <includes>
@@ -535,8 +512,41 @@
         <configuration>
             <targetJdk>1.5</targetJdk>
             <rulesets>
+               <!--
+               <ruleset>/rulesets/basic-jsf.xml</ruleset>
+               <ruleset>/rulesets/basic-jsp.xml</ruleset>
+               -->
                <ruleset>/rulesets/basic.xml</ruleset>
+               <!--
+               <ruleset>/rulesets/braces.xml</ruleset>
+               <ruleset>/rulesets/clone.xml</ruleset>
+               <ruleset>/rulesets/codesize.xml</ruleset>
+               -->
                <ruleset>/rulesets/controversial.xml</ruleset>
+               <!--
+               <ruleset>/rulesets/coupling.xml</ruleset>
+               <ruleset>/rulesets/design.xml</ruleset>
+               <ruleset>/rulesets/favorites.xml</ruleset>
+               <ruleset>/rulesets/finalizers.xml</ruleset>
+               <ruleset>/rulesets/imports.xml</ruleset>
+               <ruleset>/rulesets/j2ee.xml</ruleset>
+               <ruleset>/rulesets/javabeans.xml</ruleset>
+               <ruleset>/rulesets/junit.xml</ruleset>
+               <ruleset>/rulesets/logging-jakarta-commons.xml</ruleset>
+               <ruleset>/rulesets/logging-java.xml</ruleset>
+               <ruleset>/rulesets/migrating.xml</ruleset>
+               <ruleset>/rulesets/migrating_to_13.xml</ruleset>
+               <ruleset>/rulesets/migrating_to_14.xml</ruleset>
+               <ruleset>/rulesets/migrating_to_15.xml</ruleset>
+               <ruleset>/rulesets/naming.xml</ruleset>
+               <ruleset>/rulesets/optimizations.xml</ruleset>
+               <ruleset>/rulesets/scratchpad.xml</ruleset>
+               <ruleset>/rulesets/strictexception.xml</ruleset>
+               <ruleset>/rulesets/strings.xml</ruleset>
+               <ruleset>/rulesets/sunsecure.xml</ruleset>
+               <ruleset>/rulesets/typeresolution.xml</ruleset>
+               <ruleset>/rulesets/unusedcode.xml</ruleset>
+               -->
             </rulesets>
             <format>xml</format>
             <linkXref>true</linkXref>
@@ -866,6 +876,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
         <version>${project.version}</version>
@@ -933,7 +948,7 @@
       <dependency>
         <groupId>org.opennms.lib</groupId>
         <artifactId>org.opennms.lib.tracker</artifactId>
-        <version>0.4</version>
+        <version>0.6</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.lib.snmp</groupId>
@@ -970,7 +985,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>spring-security-dependencies</artifactId>
+        <artifactId>jradius-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -980,7 +995,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jradius-dependencies</artifactId>
+        <artifactId>servlet-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-security-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1382,29 +1402,29 @@
         <version>1.4</version>
       </dependency>
       <dependency>
-        <groupId>batik</groupId>
+        <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-dom</artifactId>
-        <version>1.5</version>
+        <version>1.7</version>
       </dependency>
       <dependency>
-        <groupId>batik</groupId>
+        <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-svg-dom</artifactId>
-        <version>1.5</version>
+        <version>1.7</version>
       </dependency>
       <dependency>
-        <groupId>batik</groupId>
+        <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-transcoder</artifactId>
-        <version>1.5</version>
+        <version>1.7</version>
       </dependency>
       <dependency>
-        <groupId>batik</groupId>
+        <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-xml</artifactId>
-        <version>1.5</version>
+        <version>1.7</version>
       </dependency>
       <dependency>
-        <groupId>batik</groupId>
+        <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
-        <version>1.5</version>
+        <version>1.7</version>
       </dependency>
         <dependency>
           <groupId>bsf</groupId>
@@ -1532,7 +1552,7 @@
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy</artifactId>
-        <version>1.5.6</version>    
+        <version>1.6.8</version>    
         <exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -1794,6 +1814,11 @@
         <version>${xercesVersion}</version>
       </dependency>
       <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>1.3.04</version>
+      </dependency>
+      <dependency>
         <groupId>xmlrpc</groupId>
         <artifactId>xmlrpc</artifactId>
         <version>2.0.1</version>
@@ -1814,16 +1839,22 @@
         <version>2.40</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-mojo</artifactId>
-        <version>${gmavenVersion}</version>
-	   </dependency>
-	   <dependency>
         <groupId>org.codehaus.groovy.maven.runtime</groupId>
-        <artifactId>gmaven-runtime-1.5</artifactId>
+        <artifactId>gmaven-runtime-1.6</artifactId>
         <version>${gmavenVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all-minimal</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
-    </dependencies>
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>1.6.8</version>
+      </dependency>
+  </dependencies>
   </dependencyManagement>
   <repositories>
 <!--

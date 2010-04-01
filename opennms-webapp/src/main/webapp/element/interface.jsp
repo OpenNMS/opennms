@@ -49,6 +49,8 @@
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
 				org.opennms.netmgt.config.PollerConfig,
+				org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
+				org.opennms.netmgt.config.SnmpInterfacePollerConfig,
 				java.util.*,
                 org.opennms.core.utils.SIUtils,
                 org.opennms.netmgt.model.OnmsResource,
@@ -122,6 +124,10 @@
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
+    
+    SnmpInterfacePollerConfigFactory.init();
+    SnmpInterfacePollerConfig snmpPollerCfgFactory = SnmpInterfacePollerConfigFactory.getInstance();
+    snmpPollerCfgFactory.rebuildPackageIpListMap();
 %>
 
 <%
@@ -177,7 +183,7 @@ function doDelete() {
         if (! ipAddr.equals("0.0.0.0")) {
         %>
 	<li>
-        <a href="<%=eventUrl1%>">View Events by Ip address</a>
+        <a href="<%=eventUrl1%>">View Events by IP Address</a>
 	</li>
 		<% } %>
 		
@@ -292,19 +298,21 @@ function doDelete() {
                 <th>Last Service Scan</th>
                 <td><%=intf_db.getLastCapsdPoll()%></td>
               </tr>
+			  <tr>
+	            <th>Snmp Polling Status</th>
+	            <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
+	          </tr>  
+       <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
               <tr>
-                <th>Physical Address</th>
-                <td>
-                  <% String macAddr = intf_db.getPhysicalAddress(); %>
-                  <% if( macAddr != null && macAddr.trim().length() > 0 && !macAddr.equals("000000000000")) { %>
-                    <%=macAddr%>
-                  <% } else if ( atif_db != null && atif_db.get_physaddr().trim().length() > 0 ) { %>
-                  <%=atif_db.get_physaddr()%>
-                  <% } else { %>
-                    &nbsp;
-                  <% } %>
-                </td>
+                <th>Snmp Polling Package</th>
+                <td><%= snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId))%></td>
               </tr>
+	   <% } %>
+              <tr> 
+                <th>Last Snmp Poll</th>
+    	        <td><%=(intf_db.getSnmpLastSnmpPoll() == null) ? "&nbsp;" : intf_db.getSnmpLastSnmpPoll()%></td>
+        	  </tr>
+              
             </table>
             
             <!-- Node Link box -->
@@ -347,21 +355,22 @@ function doDelete() {
                       <th>Alias</th>
                       <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
                     </tr>
-
-                  </table>
+					<tr>
+		              <th>Physical Address</th>
+		              <td>
+		                <% String macAddr = intf_db.getPhysicalAddress(); %>
+		                <% if( macAddr != null && macAddr.trim().length() > 0 && !macAddr.equals("000000000000")) { %>
+		                  <%=macAddr%>
+		                <% } else if ( atif_db != null && atif_db.get_physaddr().trim().length() > 0 ) { %>
+		                <%=atif_db.get_physaddr()%>
+		                <% } else { %>
+		                  &nbsp;
+		                <% } %>
+		              </td>
+		            </tr>		            
+		            </table>
             <% } %>
 
-            <!-- services box -->
-            
-            <h3>Services</h3>
-            
-		    <table>
-              <% for( int i=0; i < services.length; i++ ) { %>
-                <tr>
-                  <td><a href="element/service.jsp?node=<%=services[i].getNodeId()%>&intf=<%=services[i].getIpAddress()%>&service=<%=services[i].getServiceId()%>"><%=services[i].getServiceName()%></a></td>
-                </tr>
-              <% } %>
-            </table>
 
             <!-- Availability box -->
             <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false" />

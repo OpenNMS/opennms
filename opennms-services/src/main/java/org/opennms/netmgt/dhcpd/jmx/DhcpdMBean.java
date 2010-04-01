@@ -35,13 +35,13 @@
 package org.opennms.netmgt.dhcpd.jmx;
 
 public interface DhcpdMBean {
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public int getStatus();
+    int getStatus();
 
-    public String getStatusText();
+    String getStatusText();
 
-    public String status();
+    String status();
 }

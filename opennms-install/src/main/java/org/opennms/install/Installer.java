@@ -50,10 +50,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -162,12 +162,12 @@ public class Installer {
         if (doDatabase) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             
-            Reader fr = new FileReader(cfgFile);
+            Reader fr = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
             JdbcDataSource adminDsConfig = C3P0ConnectionFactory.marshalDataSourceFromConfig(fr, ADMIN_DATA_SOURCE_NAME);
             DataSource adminDs = new SimpleDataSource(adminDsConfig);
             fr.close();
 
-            fr = new FileReader(cfgFile);
+            fr = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
             JdbcDataSource dsConfig = C3P0ConnectionFactory.marshalDataSourceFromConfig(fr, OPENNMS_DATA_SOURCE_NAME);
             DataSource ds = new SimpleDataSource(dsConfig);
             fr.close();
@@ -643,7 +643,7 @@ public class Installer {
             return;
         }
 
-        FileReader fr = new FileReader(f);
+        Reader fr = new InputStreamReader(new FileInputStream(f), "UTF-8");
         BufferedReader r = new BufferedReader(fr);
         String line;
 
@@ -771,7 +771,7 @@ public class Installer {
 
         m_out.print("- setting tomcat4 user to 'root'... ");
 
-        BufferedReader r = new BufferedReader(new FileReader(f));
+        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
         StringBuffer b = new StringBuffer();
         String line;
 
@@ -880,7 +880,7 @@ public class Installer {
             return null;
         }
         Pattern p = Pattern.compile("The Tomcat (\\S+) Servlet/JSP Container");
-        BufferedReader in = new BufferedReader(new FileReader(file));
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
         for (int i = 0; i < 5; i++) {
             String line = in.readLine();
             if (line == null) { // EOF

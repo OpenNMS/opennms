@@ -1,5 +1,6 @@
 *~
 .*.swp
+.gwt-tmp
 target
 .classpath
 .externalToolBuilders

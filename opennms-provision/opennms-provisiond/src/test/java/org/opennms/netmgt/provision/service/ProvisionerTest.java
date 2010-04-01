@@ -679,7 +679,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         long now = System.currentTimeMillis();
         
         Date date = new Date();
-        date.setTime(System.currentTimeMillis() - 43200000);
+        date.setTime(now - 43200000);
         long lastPoll = date.getTime();
         long nextPoll = lastPoll + 86400000;
         long initialDelay = Math.max(0, nextPoll - now);

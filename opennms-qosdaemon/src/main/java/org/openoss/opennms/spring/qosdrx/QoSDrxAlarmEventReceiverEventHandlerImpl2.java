@@ -413,7 +413,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				
 				alarm.setDescription(nnae.getAdditionalText()); //TODO need Qosd Not to generate this if remote
 				alarm.setCounter(new Integer(1));
-				alarm.setClearUei("");
 				alarm.setApplicationDN(applicationDN);
 				alarm.setAlarmType(new Integer(1)); // set to raise alarm
 				//alarm.setAlarmAckUser(arg0);
@@ -507,7 +506,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 					//alarm.setDistPoller(arg0);
 					//alarm.setDescription(arg0); 
 					//alarm.setCounter(arg0);
-					//alarm.setClearUei(arg0);
 					//alarm.setApplicationDN(arg0);
 					//alarm.setAlarmType(arg0); 
 					alarm.setAlarmAckUser("ossjclearevent"); //TODO CLEARING ALARMS ON RECEIPT OF CLEAR - NOT WAITING FOR ACK
@@ -706,7 +704,6 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 					alarm.setDistPoller(arg0);
 					alarm.setDescription(arg0);
 					alarm.setCounter(arg0);
-					alarm.setClearUei(arg0);
 					alarm.setApplicationDN(arg0);
 					alarm.setAlarmType(arg0);
 					alarm.setAlarmAckUser(arg0);

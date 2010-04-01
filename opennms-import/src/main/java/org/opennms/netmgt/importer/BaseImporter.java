@@ -232,7 +232,7 @@ public class BaseImporter implements ImportOperationFactory {
 	}
 
     private void auditNodes(final ImportOperationsManager opsMgr, final SpecFile specFile) {
-    	m_transTemplate.execute(new TransactionCallback() {
+    	m_transTemplate.execute(new TransactionCallback<Object>() {
     
             public Object doInTransaction(TransactionStatus status) {
                 ImportAccountant accountant = new ImportAccountant(opsMgr);
@@ -321,10 +321,9 @@ public class BaseImporter implements ImportOperationFactory {
     	return ThreadCategory.getInstance(getClass());
 	}
 
-	@SuppressWarnings("unchecked")
-    private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
-        return (Map<String, Integer>)m_transTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
+	private Map<String, Integer> getForeignIdToNodeMap(final String foreignSource) {
+        return m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
+            public Map<String,Integer> doInTransaction(TransactionStatus status) {
                 return getNodeDao().getForeignIdToNodeIdMap(foreignSource);
             }
         });
@@ -332,9 +331,9 @@ public class BaseImporter implements ImportOperationFactory {
     }
 
     private OnmsDistPoller createDistPollerIfNecessary() {
-        return (OnmsDistPoller)m_transTemplate.execute(new TransactionCallback() {
+        return m_transTemplate.execute(new TransactionCallback<OnmsDistPoller>() {
     
-            public Object doInTransaction(TransactionStatus status) {
+            public OnmsDistPoller doInTransaction(TransactionStatus status) {
                 OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
                 if (distPoller == null) {
                     distPoller = new OnmsDistPoller("localhost", "127.0.0.1");

@@ -151,7 +151,7 @@ final class SyslogProcessor implements Runnable {
                 log.log(Level.TRACE, "Stop flag set before thread started, exiting");
             return;
         } else if (isTracing)
-            log.debug("Thread context started");
+            log.log(Level.TRACE, "Thread context started");
 
         while (!m_stop) {
 

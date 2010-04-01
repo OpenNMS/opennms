@@ -97,11 +97,11 @@ public enum SortStyle {
     
         switch (this) {
         case SEVERITY:
-            clause = " ORDER BY SEVERITY DESC";
+            clause = " ORDER BY EVENTSEVERITY DESC";
             break;
     
         case REVERSE_SEVERITY:
-            clause = " ORDER BY SEVERITY ASC";
+            clause = " ORDER BY EVENTSEVERITY ASC";
             break;
     
         case TIME:

@@ -348,8 +348,7 @@ public class AckdTest {
         
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setAlarmType(1);
-        alarm.setClearKey("abc");
-        alarm.setClearUei(EventConstants.NODE_UP_EVENT_UEI);
+        alarm.setClearKey(EventConstants.NODE_UP_EVENT_UEI + ":localhost:1");
         alarm.setCounter(1);
         alarm.setDescription(event.getEventDescr());
         alarm.setDistPoller(event.getDistPoller());

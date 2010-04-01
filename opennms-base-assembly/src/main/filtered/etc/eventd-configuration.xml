@@ -5,7 +5,6 @@
         UDPPort="5817"
 	receivers="5"
 	getNextEventID="SELECT nextval('eventsNxtId')"
-	getNextAlarmID="SELECT nextval('alarmsNxtId')"
 	socketSoTimeoutRequired="yes"
 	socketSoTimeoutPeriod="3000">
 </EventdConfiguration>

@@ -48,6 +48,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     private SnmpValue m_val;
 
     public SnmpAttribute(CollectionResource resource, SnmpAttributeType type, SnmpValue val) {
+        super();
         m_resource = resource;
         m_type = type;
         m_val = val;

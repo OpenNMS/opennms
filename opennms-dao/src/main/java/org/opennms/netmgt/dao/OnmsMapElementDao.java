@@ -37,20 +37,20 @@ import org.opennms.netmgt.model.OnmsMapElement;
 import java.util.Collection;
 
 public interface OnmsMapElementDao extends OnmsDao<OnmsMapElement, Integer> {
-    public abstract Collection<OnmsMapElement> findAll(Integer offset, Integer limit);
-    public abstract OnmsMapElement findElementById(int id);
-    public abstract OnmsMapElement findElement(int elementId, String type, OnmsMap map);
-    public abstract Collection<OnmsMapElement> findElementsByMapId(OnmsMap map);
-    public abstract Collection<OnmsMapElement> findElementsByNodeId(int nodeId);
-    public abstract Collection<OnmsMapElement> findElementsByElementIdAndType(int elementId, String type);
-    public abstract Collection<OnmsMapElement> findElementsByMapIdAndType(int mapId, String type);
-    public abstract Collection<OnmsMapElement> findElementsByType(String type);
-    public abstract void deleteElementsByMapId(OnmsMap map);
-    public abstract Collection<OnmsMapElement> findMapElementsOnMap(int mapId);
-    public abstract Collection<OnmsMapElement> findNodeElementsOnMap(int mapId);
-    public abstract void deleteElementsByNodeid(int nodeId);
-    public abstract void deleteElementsByType(String type);
-    public abstract void deleteElementsByElementIdAndType(int elementId, String type);
-    public abstract void deleteElementsByMapType(String mapType);
-    public abstract int countElementsOnMap(int mapid);
+    Collection<OnmsMapElement> findAll(Integer offset, Integer limit);
+    OnmsMapElement findElementById(int id);
+    OnmsMapElement findElement(int elementId, String type, OnmsMap map);
+    Collection<OnmsMapElement> findElementsByMapId(OnmsMap map);
+    Collection<OnmsMapElement> findElementsByNodeId(int nodeId);
+    Collection<OnmsMapElement> findElementsByElementIdAndType(int elementId, String type);
+    Collection<OnmsMapElement> findElementsByMapIdAndType(int mapId, String type);
+    Collection<OnmsMapElement> findElementsByType(String type);
+    void deleteElementsByMapId(OnmsMap map);
+    Collection<OnmsMapElement> findMapElementsOnMap(int mapId);
+    Collection<OnmsMapElement> findNodeElementsOnMap(int mapId);
+    void deleteElementsByNodeid(int nodeId);
+    void deleteElementsByType(String type);
+    void deleteElementsByElementIdAndType(int elementId, String type);
+    void deleteElementsByMapType(String mapType);
+    int countElementsOnMap(int mapid);
 }

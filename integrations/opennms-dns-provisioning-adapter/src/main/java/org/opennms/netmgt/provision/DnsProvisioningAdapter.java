@@ -89,7 +89,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         Assert.notNull(m_nodeDao, "DnsProvisioner requires a NodeDao which is not null.");
         
         //load current nodes into the map
-        m_template.execute(new TransactionCallback() {
+        m_template.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus arg0) {
                 createDnsRecordMap();
                 return null;
@@ -154,14 +154,14 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
         log().info("processPendingOperationForNode: Handling Operation: "+op);
         if (op.getType() == AdapterOperationType.ADD || op.getType() == AdapterOperationType.UPDATE) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doUpdate(op);
                     return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.DELETE) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doDelete(op);
                     return null;

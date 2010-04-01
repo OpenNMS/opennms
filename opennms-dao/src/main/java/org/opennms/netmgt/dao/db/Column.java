@@ -54,31 +54,23 @@ public class Column {
 
         if ((m_name == null && other.getName() != null) || (m_name != null && other.getName() == null)) {
             return false;
-        }
-        if (m_name != null && other.getName() != null && !m_name.equals(other.getName())) {
+        } else if (m_name != null && other.getName() != null && !m_name.equals(other.getName())) {
             return false;
-        }
-        if ((m_type == null && other.getType() != null) || (m_type != null && other.getType() == null)) {
+        } else if ((m_type == null && other.getType() != null) || (m_type != null && other.getType() == null)) {
             return false;
-        }
-        if (m_type != null && other.getType() != null && !m_type.equals(other.getType())) {
+        } else if (m_type != null && other.getType() != null && !m_type.equals(other.getType())) {
             return false;
-        }
-        if (m_size != other.getSize()) {
+        } else if (m_size != other.getSize()) {
             return false;
-        }
-        if (m_notNull != other.isNotNull()) {
+        } else if (m_notNull != other.isNotNull()) {
             return false;
-        }
-        if ((m_defaultValue == null && other.getDefaultValue() != null) || (m_defaultValue != null && other.getDefaultValue() == null)) {
+        } else if ((m_defaultValue == null && other.getDefaultValue() != null) || (m_defaultValue != null && other.getDefaultValue() == null)) {
             return false;
-        }
-        if (m_defaultValue != null && other.getDefaultValue() != null && !m_defaultValue.equals(other.getDefaultValue())) {
+        } else if (m_defaultValue != null && other.getDefaultValue() != null && !m_defaultValue.equals(other.getDefaultValue())) {
             return false;
+        } else {
+            return true;
         }
-        
-        
-        return true;
     }
 
     public int hashCode() {
@@ -110,9 +102,6 @@ public class Column {
         }
 
         return b.toString();
-    }
-
-    public Column() {
     }
 
     public String getName() {

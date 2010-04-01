@@ -1,0 +1,58 @@
+<ui:UiBinder
+  xmlns:ui='urn:ui:com.google.gwt.uibinder'
+  xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:me='urn:import:org.opennms.features.poller.remote.gwt.client'>
+  
+  <ui:style>
+  
+    .scrollPanel{
+  	    width: 100%;
+  	 }
+  	 
+  	 .flexTable{
+  	     width: 100%;
+  	     min-width: 200px;
+         border-collapse: collapse;	
+  	 }
+  
+  </ui:style>
+
+  <ui:style field='selectionStyle' type='org.opennms.features.poller.remote.gwt.client.LocationPanel.SelectionStyle'>
+    .selectedRow {
+        border-width: 1px;
+        border-style: inset;
+        border-color: #90a5d3;
+        opacity: .5;
+        filter:literal("alpha(opacity=50)");
+    }
+
+    .alternateRow{
+        background-color: #c8e1fe;
+    }
+    
+    .upStatus{
+        background-color:  #00ff00;
+        color: white;    	
+    }
+    
+    .downStatus{
+    	background-color: #ffff00;
+    	color: white;
+    }
+    
+    .marginalStatus{
+    	background-color: #ff0000;
+    	color: white;
+    }
+    
+    .unknownStatus{
+        background-color: #0000ff;
+        color: white;
+    }
+  </ui:style>
+
+  <g:ScrollPanel styleName="{style.scrollPanel}">
+    <g:FlexTable ui:field='locations' styleName="{style.flexTable}" />
+  </g:ScrollPanel>
+
+</ui:UiBinder>

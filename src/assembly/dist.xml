@@ -12,7 +12,7 @@
       <binaries>
         <outputDirectory>webapps/opennms</outputDirectory>
         <unpack>true</unpack>
-         <includeDependencies>false</includeDependencies>
+        <includeDependencies>false</includeDependencies>
       </binaries>
     </moduleSet>
     <moduleSet>
@@ -22,7 +22,17 @@
       <binaries>
         <outputDirectory>webapps/opennms-remoting</outputDirectory>
         <unpack>true</unpack>
-         <includeDependencies>false</includeDependencies>
+        <includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+    <moduleSet>
+      <includes>
+        <include>org.opennms.features:org.opennms.features.remote-poller-gwt</include>
+      </includes>
+      <binaries>
+        <outputDirectory>webapps/opennms-remote-monitor-ui</outputDirectory>
+        <unpack>true</unpack>
+        <includeDependencies>false</includeDependencies>
       </binaries>
     </moduleSet>
     <moduleSet>
@@ -32,7 +42,7 @@
       <binaries>
         <outputDirectory>/</outputDirectory>
         <unpack>true</unpack>
-         <includeDependencies>false</includeDependencies>
+        <includeDependencies>false</includeDependencies>
       </binaries>      
     </moduleSet>
     <moduleSet>
@@ -42,7 +52,7 @@
       <binaries>
         <outputDirectory>/</outputDirectory>
         <unpack>true</unpack>
-         <includeDependencies>false</includeDependencies>
+        <includeDependencies>false</includeDependencies>
       </binaries>      
     </moduleSet>
     <moduleSet>
@@ -52,7 +62,7 @@
       <binaries>
         <outputDirectory>/lib</outputDirectory>
         <unpack>true</unpack>
-         <includeDependencies>false</includeDependencies>
+        <includeDependencies>false</includeDependencies>
       </binaries>      
     </moduleSet>
   </moduleSets>

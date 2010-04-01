@@ -87,6 +87,7 @@ public class NSClientCollector implements ServiceCollector {
         CollectionAttributeType m_attribType;
         
         NSClientCollectionAttribute(NSClientCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
+            super();
             m_resource=resource;
             m_attribType=attribType;
             m_alias = alias;

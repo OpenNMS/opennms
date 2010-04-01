@@ -322,7 +322,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private void reSyncMap(final Set<Integer> deletes,final Set<Integer> adds,final Set<Integer> updates) throws ProvisioningAdapterException {
         m_mapsAdapterConfig.rebuildPackageIpListMap();
         
-        m_template.execute(new TransactionCallback() {
+        m_template.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus arg0) {
                 try {
                     // first of all delete the element with nodeid ind deletes
@@ -552,7 +552,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     private void syncMaps() throws ProvisioningAdapterException {
 
         try {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
 
                     log().info("syncMaps: acquiring lock...");
@@ -612,7 +612,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 log().debug("syncMaps: map type: " + onmsMap.getType());
                             }
                         }
-                        // adding nodes to auto maps 
+                        // adding nodes to auto maps
                         for(OnmsNode node: m_onmsNodeDao.findAllProvisionedNodes()) {
                             log().debug("syncMaps: try to sync automated maps for node element: '" + node.getLabel() +"'");
                             Map<String, Celement> mapNameCelements = m_mapsAdapterConfig.getElementByAddress(getSuitableIp(node));
@@ -630,7 +630,8 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                        new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
                                     );
                                     m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
-                                } else {
+                                } else  if (m_onmsMapElementDao.findElement(node.getId(), OnmsMapElement.NODE_TYPE, onmsMap) == null &&
+                                            m_onmsMapElementDao.findElement(node.getId(), OnmsMapElement.NODE_HIDE_TYPE, onmsMap) == null) {
                                     m_onmsMapElementDao.save(
                                        new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                     );   

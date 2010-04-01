@@ -29,7 +29,6 @@ public class GatewayStatusNotification implements IGatewayStatusNotification, Ap
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Collection<IGatewayStatusNotification> getListeners() {
 		if ( m_listenerList == null ) {
 			m_listenerList = m_applicationContext.getBeansOfType(IGatewayStatusNotification.class).values();

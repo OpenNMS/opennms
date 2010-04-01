@@ -82,13 +82,6 @@
         </annotation>
       </attribute>
 
-      <attribute name="getNextAlarmID" type="string" use="required">
-        <annotation>
-          <documentation>SQL query to get the next sequence for the alarms
-          table serial number.</documentation>
-        </annotation>
-      </attribute>
-
       <attribute name="socketSoTimeoutRequired" type="string" use="required">
         <annotation>
           <documentation>Set the socket timeout value. In Linux, the close()

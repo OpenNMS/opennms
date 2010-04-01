@@ -282,15 +282,24 @@ public class HypericAckProcessor implements AckProcessor {
             List<OnmsAlarm> unAckdAlarms = fetchUnclearedHypericAlarms();
 
             Map<String,List<OnmsAlarm>> organizedAlarms = new TreeMap<String,List<OnmsAlarm>>();
+            int legacyAlarmCount = 0;
             // Split the list of alarms up according to the Hyperic system where they originated
             for (OnmsAlarm alarm : unAckdAlarms) {
                 String key = getAlertSourceParmValue(alarm);
-                List<OnmsAlarm> targetList = organizedAlarms.get(key);
-                if (targetList == null) {
-                    targetList = new ArrayList<OnmsAlarm>();
-                    organizedAlarms.put(key, targetList);
+                if (key == null || "".equals(key)) {
+                    legacyAlarmCount++;
+                } else {
+                    List<OnmsAlarm> targetList = organizedAlarms.get(key);
+                    if (targetList == null) {
+                        targetList = new ArrayList<OnmsAlarm>();
+                        organizedAlarms.put(key, targetList);
+                    }
+                    targetList.add(alarm);
                 }
-                targetList.add(alarm);
+            }
+
+            if (legacyAlarmCount > 0) {
+                log().info(String.valueOf(legacyAlarmCount) + " Hyperic alarms without an alert.source param found, these alarms will not be processed");
             }
 
             // Connect to each Hyperic system and query for the status of corresponding alerts 
@@ -323,8 +332,10 @@ public class HypericAckProcessor implements AckProcessor {
                     for (HypericAlertStatus alert : alertsForSystem) {
                         OnmsAlarm alarm = findAlarmForHypericAlert(alarmsForSystem, hypericSystem, alert);
 
-                        // If the Hyperic alert has been fixed and the local alarm is not yet marked as CLEARED, then clear it
-                        if (alert.isFixed() && !OnmsSeverity.CLEARED.equals(alarm.getSeverity())) {
+                        if (alarm == null) {
+                            log().warn("Could not find the OpenNMS alarm for the following Hyperic alert: URL: \"" + hypericUrl + "\", id: " + alert.getAlertId());
+                        } else if (alert.isFixed() && !OnmsSeverity.CLEARED.equals(alarm.getSeverity())) {
+                            // If the Hyperic alert has been fixed and the local alarm is not yet marked as CLEARED, then clear it
                             OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, "Ackd.HypericAckProcessor", (alert.getFixTime() != null) ? alert.getFixTime() : new Date());
                             ack.setAckAction(AckAction.CLEAR);
                             ack.setLog(alert.getFixMessage());
@@ -348,9 +359,9 @@ public class HypericAckProcessor implements AckProcessor {
                 }
             }
 
-            log().info("run: Finished processing Hyperic acknowledgments (" + acks.size() + " acks processed)" );
+            log().info("run: Finished processing Hyperic acknowledgments (" + acks.size() + " ack(s) processed for " + unAckdAlarms.size() + " alarm(s))" );
         } catch (Throwable e) {
-            log().warn("run: threw exception: " + e.getMessage());
+            log().warn("run: threw exception: " + e.getMessage(), e);
         }
     }
 
@@ -374,7 +385,7 @@ public class HypericAckProcessor implements AckProcessor {
     }
 
     public static String getAlertSourceParmValue(OnmsAlarm alarm) {
-        return getParmValueByRegex(alarm, "alert.source=([0-9]*)[(]string,text[)]");
+        return getParmValueByRegex(alarm, "alert.source=(.*)[(]string,text[)]");
     }
 
     public static String getAlertIdParmValue(OnmsAlarm alarm) {
@@ -401,7 +412,7 @@ public class HypericAckProcessor implements AckProcessor {
         for (String parm : parms) {
             Matcher matcher = pattern.matcher(parm);
             if (matcher.matches()) {
-                return matcher.group();
+                return matcher.group(1);
             }
         }
         return null;
@@ -442,16 +453,13 @@ public class HypericAckProcessor implements AckProcessor {
             }
 
             try {
-                log().debug("httpClient request with the following parameters: " + httpClient);
-                log().debug("hostConfig parameters: " + hostConfig);
-                log().debug("getMethod parameters: " + httpMethod);
                 httpClient.executeMethod(hostConfig, httpMethod);
 
                 //Integer statusCode = httpMethod.getStatusCode();
                 //String statusText = httpMethod.getStatusText();
                 InputStream responseText = httpMethod.getResponseBodyAsStream();
 
-                retval = parseHypericAlerts(new InputStreamReader(responseText));
+                retval = parseHypericAlerts(new InputStreamReader(responseText, httpMethod.getResponseCharSet()));
             } finally{
                 httpMethod.releaseConnection();
             }

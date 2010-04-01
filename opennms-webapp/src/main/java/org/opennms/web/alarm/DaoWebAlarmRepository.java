@@ -111,6 +111,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
                 case SERVICE:
                     criteria.addOrder(Order.desc("serviceType.name"));
                     break;
+                case SEVERITY:
+                    criteria.addOrder(Order.desc("severityId"));
+                    break;
                 case REVERSE_COUNT:
                     criteria.addOrder(Order.asc("counter"));
                     break;
@@ -134,6 +137,9 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
                     break;
                 case REVERSE_SERVICE:
                     criteria.addOrder(Order.asc("serviceType.name"));
+                    break;
+                case REVERSE_SEVERITY:
+                    criteria.addOrder(Order.asc("severityId"));
                     break;
                 default:
                     break;

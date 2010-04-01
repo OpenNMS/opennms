@@ -81,6 +81,10 @@ public class AutomationProcessor implements ReadyRunnable {
     private final Automation m_automation;
     private final TriggerProcessor m_trigger;
     private final ActionProcessor m_action;
+    
+    /** 
+     * @deprecated Associate {@link Automation} objects with {@link ActionEvent} instances instead.
+     */
     private final AutoEventProcessor m_autoEvent;
     private final ActionEventProcessor m_actionEvent;
     
@@ -414,11 +418,17 @@ public class AutomationProcessor implements ReadyRunnable {
         
     }
     
+    /**
+     * @deprecated Use {@link ActionEventProcessor} instead.
+     */
     static class AutoEventProcessor {
 
         private final String m_automationName;
         private final AutoEvent m_autoEvent;
         
+        /**
+         * @deprecated Use {@link ActionEventProcessor} instead.
+         */
         public AutoEventProcessor(String automationName, AutoEvent autoEvent) {
             m_automationName = automationName;
             m_autoEvent = autoEvent;
@@ -722,7 +732,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
 			return success;
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	Transaction.rollbackOnly();
             log().warn("runAutomation: Could not execute automation: "+m_automation.getName(), e);
             return false;
@@ -782,7 +792,7 @@ public class AutomationProcessor implements ReadyRunnable {
         int triggerRowCount = m_trigger.getTrigger().getRowCount();
         String triggerOperator = m_trigger.getTrigger().getOperator();
 
-        log().debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+triggerOperator+" than "+triggerRowCount);
+        log().debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+(triggerOperator == null ? "<null>" : triggerOperator)+" than "+triggerRowCount);
 
         if (!m_trigger.triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
             validRows = false;

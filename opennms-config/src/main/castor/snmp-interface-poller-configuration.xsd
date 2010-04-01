@@ -49,15 +49,17 @@
 
       <attribute default="true" name="suppressAdminDownEvent" use="optional">
         <annotation>
-          <documentation>Flag which indicates to suppress Admin Status events at all</documentation>
+          <documentation>Flag which indicates to suppress Admin Status events at all.
+          This is deprecated and will be ignored in the code!
+          </documentation>
         </annotation>
-
+ 
         <simpleType>
           <restriction base="string">
             <pattern value="(true|false)"/>
           </restriction>
         </simpleType>
-      </attribute>
+      </attribute>    
     </complexType>
   </element>
 
@@ -305,10 +307,10 @@
         </annotation>
       </attribute>
 
- <attribute name="max-interface-per-pdu" type="int" use="optional" default="0" >
+<attribute name="max-interface-per-pdu" type="int" use="optional" default="0" >
         <annotation>
           <documentation>
-            Max Number of Interface per runnable.
+            Max Number of Interface per runnable. This is deprecated and will be ignored in the code!
           </documentation>
         </annotation>
       </attribute>

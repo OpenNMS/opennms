@@ -42,23 +42,23 @@ import javax.management.MalformedObjectNameException;
  * 
  */
 public interface UdpEventReceiverMBean {
-    public void init();
+    void init();
 
-    public void destroy();
+    void destroy();
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
-    public void setPort(Integer port);
+    void setPort(Integer port);
 
-    public Integer getPort();
+    Integer getPort();
 
-    public int getStatus();
+    int getStatus();
 
-    public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
+    void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
 
-    public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
+    void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
 
-    public void setLogPrefix(String prefix);
+    void setLogPrefix(String prefix);
 }

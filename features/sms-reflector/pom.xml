@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.7.10-SNAPSHOT</version>
+    <version>1.7.11-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -68,6 +68,7 @@
             <param>--platform=equinox</param>
           </provision>
         </configuration>
+        <!--
 	 <executions>
  	   <execution>
 	     <id>ide-support</id>
@@ -76,6 +77,7 @@
 	     </goals>
 	   </execution>
 	 </executions>
+         -->
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -89,12 +91,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.4.3</version>
         <configuration>
-          <systemProperties>
-            <property>
-              <name>net.sourceforge.cobertura.datafile</name>
-              <value>${basedir}/target/cobertura/cobertura.ser</value>
-            </property>
-          </systemProperties>
+          <systemPropertyVariables>
+            <net.sourceforge.cobertura.datafile>${basedir}/target/cobertura/cobertura.ser</net.sourceforge.cobertura.datafile>
+          </systemPropertyVariables>
           <forkMode>pertest</forkMode>
           <argLine>-Xmx1024m</argLine>
           <includes>

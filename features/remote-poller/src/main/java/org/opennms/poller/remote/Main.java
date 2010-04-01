@@ -148,7 +148,7 @@ public class Main {
             }
         } catch(Exception e) {
             // a fatal exception occurred
-            LogUtils.errorf(this, "Exception occurred during registration!", e);
+            LogUtils.errorf(this, e, "Exception occurred during registration!");
             System.exit(27);
         }
         

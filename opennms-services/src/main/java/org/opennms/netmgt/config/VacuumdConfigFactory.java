@@ -203,6 +203,8 @@ public final class VacuumdConfigFactory {
     /**
      * Returns a Collection of named events to that may have
      * been configured to be sent after an automation has run.
+     * 
+     * @deprecated Use {@link ActionEvent} objects instead. Access these objects with {@link #getActionEvents()}.
      */
     public synchronized Collection<AutoEvent> getAutoEvents() {
         return m_config.getAutoEvents().getAutoEventCollection();
@@ -260,6 +262,7 @@ public final class VacuumdConfigFactory {
     
     /**
      * Returns the AutoEvent associated with the auto-event-name
+     * @deprecated Use {@link ActionEvent} objects instead. Access these objects with {@link #getActionEvent(String)}.
      * @param name
      * @return
      */

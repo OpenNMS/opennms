@@ -37,28 +37,28 @@ import org.opennms.netmgt.xml.event.Event;
 
 public interface EventTranslatorConfig {
 	
-	public static final String TRANSLATOR_NAME = "OpenNMS.EventTranslator";
+	static final String TRANSLATOR_NAME = "OpenNMS.EventTranslator";
 
     /**
      * Get the list of UEIs that are registered in the passive status configuration.
      * @return list of UEIs
      */
-    public abstract List<String> getUEIList();
+    List<String> getUEIList();
     
     /**
      * Determine if the @param e is a translation event
      * @param e Event
      * @return true if e is a translation event
      */
-    public abstract boolean isTranslationEvent(Event e);
+    boolean isTranslationEvent(Event e);
 
     /**
      * Translate the @param e to a new event
      * @param e Event
      * @return a translated event
      */
-	public abstract List<Event> translateEvent(Event e);
+	List<Event> translateEvent(Event e);
 	
-	public abstract void update() throws Exception;
+	void update() throws Exception;
 
 }

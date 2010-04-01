@@ -47,7 +47,10 @@ import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
@@ -146,15 +149,40 @@ public class MockEventUtil {
     }
     
     public static Event createNodeDownEvent(String source, MockNode node) {
-        return createNodeEvent(source, EventConstants.NODE_DOWN_EVENT_UEI, node);
+        Event event = createNodeEvent(source, EventConstants.NODE_DOWN_EVENT_UEI, node);
+        event.setSeverity(OnmsSeverity.MAJOR.getLabel());
+        // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false" />
+        AlarmData alarmData = new AlarmData();
+        alarmData.setReductionKey("%uei%:%dpname%:%nodeid%");
+        alarmData.setAlarmType(1);
+        alarmData.setAutoClean(false);
+        event.setAlarmData(alarmData);
+        return event;
     }
     
     public static Event createNodeDownEventWithReason(String source, MockNode node, String reason) {
-        return createNodeEventWithReason(source, EventConstants.NODE_DOWN_EVENT_UEI, node, reason);
+        Event event = createNodeEventWithReason(source, EventConstants.NODE_DOWN_EVENT_UEI, node, reason);
+        event.setSeverity(OnmsSeverity.MAJOR.getLabel());
+        // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false" />
+        AlarmData alarmData = new AlarmData();
+        alarmData.setReductionKey("%uei%:%dpname%:%nodeid%");
+        alarmData.setAlarmType(1);
+        alarmData.setAutoClean(false);
+        event.setAlarmData(alarmData);
+        return event;
     }
     
     public static Event createNodeUpEvent(String source, MockNode node) {
-        return createNodeEvent(source, EventConstants.NODE_UP_EVENT_UEI, node);
+        Event event = createNodeEvent(source, EventConstants.NODE_UP_EVENT_UEI, node);
+        event.setSeverity(OnmsSeverity.NORMAL.getLabel());
+        // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" auto-clean="false" />
+        AlarmData alarmData = new AlarmData();
+        alarmData.setReductionKey("%uei%:%dpname%:%nodeid%");
+        alarmData.setAlarmType(2);
+        alarmData.setClearKey("uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%");
+        alarmData.setAutoClean(false);
+        event.setAlarmData(alarmData);
+        return event;
     }
     
     public static Event createNodeAddedEvent(String source, MockNode node) {

@@ -564,7 +564,6 @@
           </restriction>
         </simpleType>
       </attribute>
-      <attribute name="clear-uei" type="string" use="optional" />
       <attribute name="clear-key" type="string" use="optional" />
       <attribute name="auto-clean" type="boolean" use="optional" default="false" />
       <attribute name="x733-alarm-type" type="this:x733-alarm-type" use="optional" />

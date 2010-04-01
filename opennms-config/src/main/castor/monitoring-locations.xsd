@@ -37,15 +37,17 @@
       <documentation>
         This element contains the name of the location, the name of the monitoring
         area (used to aggregate locations, example: Area San Francisco, location name "SFO"
-        which becomes SFO-1 or SFO-BuildingA, etc.)  Critical link here is that the polling
-        package name is used to link a polling configuration found in the polling-configuration.xml
-        file. 
+        which becomes SFO-1 or SFO-BuildingA, etc.)  Finally, a geolocation can be provided
+        (either latitude,longitude, or an address/location).  Critical link here is that the
+        polling package name is used to link a polling configuration found in the
+        polling-configuration.xml file. 
       </documentation>
     </annotation>
     <complexType>
       <attribute name="location-name" type="string" use="required" />
       <attribute name="monitoring-area" type="string" use="required" />
       <attribute name="polling-package-name" type="string" use="required" />
+      <attribute name="geolocation" type="string" use="optional" />
     </complexType>
   </element>
 </schema>

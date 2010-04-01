@@ -247,7 +247,7 @@ public class OssDaoOpenNMSImpl {
 				String uniqueKey=alarm.getApplicationDN()+alarm.getOssPrimaryKey();
 
 				//_alarmDao.save(alarm); // - replaced by;
-				transTemplate.execute(new TransactionCallback() {
+				transTemplate.execute(new TransactionCallback<Object>() {
 					public Object doInTransaction(TransactionStatus status) {
 						_alarmDao.save(alarm);
 						return null;
@@ -315,7 +315,7 @@ public class OssDaoOpenNMSImpl {
 			try { // if alarm in database then update alarm in OpenNMS
 				if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: alarm to update in database"+ alarmToStringBrief(alarm));
 
-				transTemplate.execute(new TransactionCallback() {
+				transTemplate.execute(new TransactionCallback<Object>() {
 					public Object doInTransaction(TransactionStatus status) {
 						_alarmDao.update(alarm);
 						return null;
@@ -381,7 +381,7 @@ public class OssDaoOpenNMSImpl {
 	 * Not Thread Safe - only to be called from within the synchronised methods
 	 */
 	private void localUpdateAlarmCache(){
-		transTemplate.execute(new TransactionCallback() {
+		transTemplate.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				localUpdateAlarmCacheTransaction();
 				return null;
@@ -566,12 +566,12 @@ public class OssDaoOpenNMSImpl {
 				"\t\tsuppressedTime \t" + 	alarm.getSuppressedTime()+"\n"+ //suppressedTime
 				"\t\talarmAckUser \t" + 	alarm.getAlarmAckUser()+"\n"+ //alarmAckUser
 				"\t\talarmAckTime \t" + 	alarm.getAlarmAckTime()+"\n"+ //alarmAckTime
-				"\t\tclearUei   \t" + 	alarm.getClearUei()+"\n"+ //clearUei        
+				"\t\tclearKey   \t" + 	alarm.getClearKey()+"\n"+ //clearKey
 				"\t\tmanagedObjectInstance \t" + 	alarm.getManagedObjectInstance()+"\n"+ //managedObjectInstance        
 				"\t\tmanagedObjectType \t" + 	alarm.getManagedObjectType()+"\n"+ //managedObjectType
 				"\t\tapplicationDN \t" + 	alarm.getApplicationDN()+"\n"+ //applicationDN
 				"\t\tossPrimaryKey \t" + 	alarm.getOssPrimaryKey()+"\n"+ //ossPrimaryKey
-				"\t\talarmID \t" + 	alarm.getId()+ //alarmID
+				"\t\talarmID \t" + 	alarm.getId()+"\n"+ //alarmID
 			    "\t\tqosAlarmState \t" + 	alarm.getQosAlarmState(); //qosAlarmState
 		}
 		return s;
@@ -724,7 +724,7 @@ public class OssDaoOpenNMSImpl {
 						
 						// save asset data back with new node information 
 						// (Note - data may not have changed)
-						transTemplate.execute(new TransactionCallback() {
+						transTemplate.execute(new TransactionCallback<Object>() {
 							public Object doInTransaction(TransactionStatus status) {
 								_assetRecordDao.update(assetRecord);
 								return null;

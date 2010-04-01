@@ -46,12 +46,14 @@
 	<jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 
-    <!-- Left Column -->
-    <div id="index-contentleft">
-      <!-- Services down box -->
+	<!-- Left Column -->
+	<div id="index-contentleft">
+		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
+		<hr />
+		<!-- Services down box -->
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
 		<hr />
-    </div>
+	</div>
 
 	<!-- Middle Column -->
 	<div id="index-contentmiddle">
@@ -59,8 +61,8 @@
 		<jsp:include page="/includes/categories-box.jsp" flush="false" />
 		<hr />
 	</div>
-	
-    <!-- Right Column -->
+
+	<!-- Right Column -->
 	<div id="index-contentright">
 		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />

@@ -52,6 +52,7 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface.Snm
  * plug-ins by the service poller framework.
  * </P>
  * 
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * 
  */
 
@@ -122,72 +123,6 @@ public class SnmpPollInterfaceMonitor {
             log().error("Unexpected exception during SNMP poll of interface " + agentConfig, t);
         }
         
-
-        // Establish SNMP session with interface
-        //
-        /*
-    	SnmpValue[] totalresults = new SnmpValue[2 * mifaces.size()];
-
-    	try {
-
-        	if (maxVarsPerPdu > oids.length) {
-        		
-        		totalresults = SnmpUtils.get(agentConfig, oids);
-        		log().debug("got " + totalresults.length +" SnmpValues");
-            } else {
-            	int remaining = 2 * mifaces.size();
-            	while (remaining > maxVarsPerPdu) {
-            		SnmpObjId[] curoids = new SnmpObjId[maxVarsPerPdu];
-            		log().debug("max-var=per-pdu: " +  maxVarsPerPdu);
-            		for (int j=0; j< maxVarsPerPdu; j++) {
-            			curoids[j]= oids[2*mifaces.size() - remaining + j];
-            		}
-        			SnmpValue[] results = SnmpUtils.get(agentConfig, curoids);
-            		log().debug("got " + results.length +" SnmpValues");
-            		for (int j=0; j< maxVarsPerPdu; j++) {
-            			totalresults[2* mifaces.size() - remaining + j]= results[j];
-            		}
-        			remaining = remaining - maxVarsPerPdu;
-            	}
-            	if (remaining > 0 ) {
-            		SnmpObjId[] curoids = new SnmpObjId[remaining];
-            		for (int j=0; j< maxVarsPerPdu; j++) {
-            			curoids[j]= oids[2*mifaces.size() - remaining + j];
-            		}
-        			SnmpValue[] results = SnmpUtils.get(agentConfig, curoids);
-            		log().debug("got " + results.length +" SnmpValues");
-            		for (int j=0; j< remaining; j++) {
-            			totalresults[2*mifaces.size() - remaining + j]= results[j];
-            		}
-            	}
-            }
-
-        } catch (NumberFormatException e) {
-            log().error("Number operator used on a non-number " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            log().error("Invalid Snmp Criteria: " + e.getMessage());
-        } catch (Throwable t) {
-            log().error("Unexpected exception during SNMP poll of interface " + agentConfig, t);
-        }
-        
-        int i=0;
-        for(SnmpValue result : totalresults) {
-            if (result != null) {
-                log().debug("Snmp Value is "+ result.toInt() + " for oid: " + oids[i]);
-                if (i< mifaces.size()) {
-                    SnmpMinimalPollInterface miface = mifaces.get(i);
-                    miface.setStatus(PollStatus.up());
-                    miface.setAdminstatus(result.toInt());
-                } else {
-                    SnmpMinimalPollInterface miface = mifaces.get(i-mifaces.size());
-                    miface.setStatus(PollStatus.up());
-                    miface.setOperstatus(result.toInt());
-                }
-            } else {
-                log().error("Snmp Value is null for oid: " + oids[i]);
-            }
-            i++;
-        } */
         return mifaces;
     }
     

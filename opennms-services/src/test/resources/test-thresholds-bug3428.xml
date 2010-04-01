@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+        <group name="generic-snmp" rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <threshold type="high" ds-name="ifInOctets"  ds-type="if" value="90" rearm="50" trigger="1" filterOperator="and">
+                	<resource-filter field='snmpifdescr'>wlan0</resource-filter>
+                	<resource-filter field='snmpifspeed'>100000000</resource-filter>
+                </threshold>
+        </group>
+
+</thresholding-config>

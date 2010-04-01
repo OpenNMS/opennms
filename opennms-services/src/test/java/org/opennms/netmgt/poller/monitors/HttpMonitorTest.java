@@ -117,11 +117,11 @@ public class HttpMonitorTest {
         Parameter p = new Parameter();
         
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = getMonitoredService(99, "1.1.1.1", "HTTP");
+        MonitoredService svc = getMonitoredService(99, "www.opennms.org", "HTTP");
 
         
         p.setKey("port");
-        p.setValue("80");
+        p.setValue("3020");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
