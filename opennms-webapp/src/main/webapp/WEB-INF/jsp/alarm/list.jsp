@@ -148,7 +148,7 @@
 </jsp:include>
 
 
-  <script language="Javascript" type="text/javascript">
+  <script type="text/javascript">
     function checkAllCheckboxes() {
        if( document.alarm_action_form.alarm.length ) {  
          for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) {

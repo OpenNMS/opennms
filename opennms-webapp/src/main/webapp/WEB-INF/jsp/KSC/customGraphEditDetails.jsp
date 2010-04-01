@@ -52,7 +52,7 @@
   <jsp:param name="breadcrumb" value="Custom Graph" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript">
+<script type="text/javascript">
  
     function saveGraph()
     {

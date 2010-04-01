@@ -80,7 +80,7 @@
   <jsp:param name="breadcrumb" value="Configure Path Outage" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
   function verifyIpAddress() {
     var prompt = new String("IP Address");
