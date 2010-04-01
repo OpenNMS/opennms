@@ -219,7 +219,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 				    <table class="standard">
 				      <tr>
 					<td class="standardheaderplain">
-					    <b>Ip Address</b>
+					    <b>IP Address</b>
 					</td> 
 					<td class="standardheaderplain">
 					    <b>Timeout (ms.)</b>
