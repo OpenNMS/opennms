@@ -1259,49 +1259,41 @@ public class ManagerDefaultImpl implements Manager {
                     VLink vlink = new VLink(first.getId(), first.getType(),
                                             second.getId(), second.getType(), getLinkTypeId(linfo));
                     int status=getLinkStatus(linfo);
+                    String statusString = getLinkStatusString(status);
                     int index = links.indexOf(vlink);
                     
                     if (index != -1) {
                         VLink alreadyIn = links.get(index);
                         int numberOfLinks = alreadyIn.increaseLinks();
                         log.debug("Updated " + numberOfLinks + " on Link: " + alreadyIn.getId());
-                        int numberOfLinkwithStatus = alreadyIn.increaseStatusMapLinks(vlink.getLinkStatusString());
-                        log.debug("Updated Status Map: found: "+ numberOfLinkwithStatus + " links with Status: " +vlink.getLinkStatusString() );
-                        if (multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS) &&
-                                status < getLinkStatusInt(alreadyIn.getLinkStatusString()) ) {
-                            log.debug("updating the link "
-                                    + alreadyIn.toString()
-                                    + " with status "
-                                    + alreadyIn.getLinkStatusString());
-                            
-                            log.debug("setting link properties: "
-                                    + vlink.toString()
-                                    + " with better found status "
-                                    + vlink.getLinkStatusString());
-                            alreadyIn.setLinkStatusString(getLinkStatusString(status));
-                            vlink.setFirstNodeid(linfo.nodeid);
-                            vlink.setSecondNodeid(linfo.nodeparentid);
-                        } else if (multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS) &&
-                                          status > getLinkStatusInt(alreadyIn.getLinkStatusString())) {
-                            log.debug("updating the link "
+                        int numberOfLinkwithStatus = alreadyIn.increaseStatusMapLinks(statusString);
+                        log.debug("Updated Status Map: found: "+ numberOfLinkwithStatus + " links with Status: " +statusString );
+                        if ( ( multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS) 
+                               && status < getLinkStatusInt(alreadyIn.getLinkStatusString())
+                             ) 
+                          || ( multilinkStatus.equals(MapPropertiesFactory.MULTILINK_WORST_STATUS) 
+                               && status > getLinkStatusInt(alreadyIn.getLinkStatusString())
+                             )
+                            ) {
+                            log.debug("Upgrading with Link info becouse multilink.status=" + multilinkStatus);
+                            log.debug("updating existing the link "
                                   + alreadyIn.toString()
                                   + " with status "
                                   + alreadyIn.getLinkStatusString());
 
                             log.debug("setting link properties: "
                                   + vlink.toString()
-                                  + " with worse found status "
+                                  + " with new found status "
                                   + vlink.getLinkStatusString());
-                            alreadyIn.setLinkStatusString(getLinkStatusString(status));
-                            vlink.setFirstNodeid(linfo.nodeid);
-                            vlink.setSecondNodeid(linfo.nodeparentid);
+                            alreadyIn.setLinkStatusString(statusString);
+                            alreadyIn.setFirstNodeid(linfo.nodeid);
+                            alreadyIn.setSecondNodeid(linfo.nodeparentid);
                         }
                         links.set(index,alreadyIn);
                     } else {
-                        log.debug("adding new link (" + vlink.hashCode() + ") "
-                                + vlink.getFirst() + "-" + vlink.getSecond());
-                        vlink.setLinkStatusString(getLinkStatusString(status));
-                        vlink.increaseStatusMapLinks(getLinkStatusString(status));
+                        log.debug("adding new link: " + vlink.getId() );
+                        vlink.setLinkStatusString(statusString);
+                        vlink.increaseStatusMapLinks(statusString);
                         vlink.setFirstNodeid(linfo.nodeid);
                         vlink.setSecondNodeid(linfo.nodeparentid);
                         links.add(vlink);
