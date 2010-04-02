@@ -126,6 +126,8 @@ public class InstallerDb {
     
     private String m_pg_iplike = null;
     
+    private String m_pg_plpgsql = null;
+    
     private final Map<String, ColumnChangeReplacement> m_columnReplacements =
         new HashMap<String, ColumnChangeReplacement>();
 
@@ -374,7 +376,8 @@ public class InstallerDb {
         if (rs.next()) {
             m_out.println("EXISTS");
         } else {
-            st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c'");
+            st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '"
+                       + m_pg_plpgsql + "' LANGUAGE 'c'");
             m_out.println("OK");
         }
 
@@ -2382,6 +2385,21 @@ public class InstallerDb {
 
     public String getPgIpLikeLocation() {
         return m_pg_iplike;
+    }
+    
+    public void setPostgresPlPgsqlLocation(String location) {
+        if (location != null) {
+            File plpgsql = new File(location);
+            if (!plpgsql.exists()) {
+                m_out.println("FATAL: missing " + location + ": Unable to set up even the slower IPLIKE stored procedure without PL/PGSQL language support");
+            }
+        }
+        
+        m_pg_plpgsql = location;
+    }
+    
+    public String getPgPlPgsqlLocation() {
+        return m_pg_plpgsql;
     }
     
     public void addColumnReplacements() throws SQLException {

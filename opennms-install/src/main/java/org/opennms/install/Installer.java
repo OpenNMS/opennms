@@ -405,10 +405,12 @@ public class Installer {
         m_import_dir = fetchProperty("importer.requisition.dir");
 
         String soext = fetchProperty("build.soext");
-        String pg_iplike_dir = m_properties.getProperty("install.postgresql.dir");
+        String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 
-        if (pg_iplike_dir != null) {
-            m_installerDb.setPostgresIpLikeLocation(pg_iplike_dir
+        if (pg_lib_dir != null) {
+            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir
+                    + File.separator + "plpgsql." + soext);
+            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir
                     + File.separator + "iplike." + soext);
         }
 
