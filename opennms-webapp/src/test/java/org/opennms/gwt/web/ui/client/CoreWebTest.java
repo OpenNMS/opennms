@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 
-public class CoreWebTestGwt {
+public class CoreWebTest {
 
 	@Test
     public void testUpperCasingLabel() {
