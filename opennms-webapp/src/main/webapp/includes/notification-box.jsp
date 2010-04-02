@@ -57,7 +57,7 @@
     String nodeFilter = "";
 
     if( nodeIdString != null ) {
-        nodeFilter = "&filter=node%3D" + nodeIdString;
+        nodeFilter = "&amp;filter=node%3D" + nodeIdString;
     }
 %>
 
@@ -74,7 +74,7 @@
 				String format = this.formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
 				%>
-				(<a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+				(<a href="notification/browse?acktype=unack&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
 			<li><strong>All</strong>: <%
 				count = this.model.getOutstandingNoticeCount();
 				format = this.formatter.format( count );
@@ -84,9 +84,9 @@
 			<li><a href="roles">On-Call Schedule</a></li>
 		<% } else { %>
 			<li><strong>You: Outstanding</strong>: 
-				(<a href="notification/browse?acktype=unack<%=nodeFilter%>&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+				(<a href="notification/browse?acktype=unack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
 			<li><strong>You: Acknowledged</strong>: 
-				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
 		<% } %>
 	</ul>
 </div>

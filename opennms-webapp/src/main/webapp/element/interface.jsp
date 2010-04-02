@@ -183,7 +183,7 @@ function doDelete() {
         if (! ipAddr.equals("0.0.0.0")) {
         %>
 	<li>
-        <a href="<%=eventUrl1%>">View Events by Ip address</a>
+        <a href="<%=eventUrl1%>">View Events by IP Address</a>
 	</li>
 		<% } %>
 		
@@ -384,7 +384,7 @@ function doDelete() {
           
             <!-- events list box 1 using ipaddress-->
             <% if (!ipAddr.equals("0.0.0.0")) {
-            	String eventHeader1 = "<a href='" + eventUrl1 + "'>Recent Events (Using Filter Ip address:" + ipAddr + ")</a>"; %>
+            	String eventHeader1 = "<a href='" + eventUrl1 + "'>Recent Events (Using Filter IP Address:" + ipAddr + ")</a>"; %>
             <% String moreEventsUrl1 = eventUrl1; %>
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />

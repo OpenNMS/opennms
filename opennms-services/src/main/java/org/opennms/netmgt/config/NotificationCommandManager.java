@@ -38,7 +38,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +73,7 @@ public abstract class NotificationCommandManager {
      * @throws MarshalException
      * @throws ValidationException
      */
-    protected void parseXML(Reader reader) throws MarshalException, ValidationException {
+    protected void parseXML(InputStream reader) throws MarshalException, ValidationException {
         NotificationCommands config = getXML(reader);
 
         Map<String, Command> commands = new HashMap<String, Command>();
@@ -89,8 +88,7 @@ public abstract class NotificationCommandManager {
         m_commands = commands;
     }
 
-    @SuppressWarnings("deprecation")
-    private NotificationCommands getXML(Reader reader)
+    private NotificationCommands getXML(InputStream reader)
             throws MarshalException, ValidationException {
         return CastorUtils.unmarshal(NotificationCommands.class, reader);
     }

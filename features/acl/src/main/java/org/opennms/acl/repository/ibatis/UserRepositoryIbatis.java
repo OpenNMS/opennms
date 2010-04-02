@@ -146,9 +146,9 @@ public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRe
 
     private Boolean saveItems(final String username, final List<?> items) {
 
-        return (Boolean) execute(new SqlMapClientCallback() {
+        return execute(new SqlMapClientCallback<Boolean>() {
             @SuppressWarnings("unchecked")
-            public Object doInSqlMapClient(SqlMapExecutor executor) {
+            public Boolean doInSqlMapClient(SqlMapExecutor executor) {
                 int ris = 0;
                 try {
 

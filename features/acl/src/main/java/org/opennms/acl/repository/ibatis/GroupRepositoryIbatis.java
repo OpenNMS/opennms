@@ -101,9 +101,9 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
 
     public Boolean saveGroups(final String username, final List<Integer> groups) {
 
-        return (Boolean) execute(new SqlMapClientCallback() {
+        return execute(new SqlMapClientCallback<Boolean>() {
             @SuppressWarnings("unchecked")
-            public Object doInSqlMapClient(SqlMapExecutor executor) {
+            public Boolean doInSqlMapClient(SqlMapExecutor executor) {
                 int ris = 0;
                 try {
 
@@ -175,9 +175,9 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
 
     private Boolean saveAuthorities(final Integer group, final List<?> authorities) {
 
-        return (Boolean) execute(new SqlMapClientCallback() {
+        return execute(new SqlMapClientCallback<Boolean>() {
             @SuppressWarnings("unchecked")
-            public Object doInSqlMapClient(SqlMapExecutor executor) {
+            public Boolean doInSqlMapClient(SqlMapExecutor executor) {
                 int ris = 0;
                 try {
                     executor.startBatch();

@@ -42,10 +42,12 @@ public class ReportDateParm extends ReportParm implements Serializable {
 
     private static final long serialVersionUID = -8528562178984136887L;
     
-    Date m_date;
-    Boolean m_useAbsoluteDate;
-    String m_interval;
-    Integer m_count;
+    private Date m_date;
+    private Boolean m_useAbsoluteDate;
+    private String m_interval;
+    private Integer m_count;
+    private Integer m_hours;
+    private Integer m_minutes;
     
     public ReportDateParm() {
         super();
@@ -80,6 +82,22 @@ public class ReportDateParm extends ReportParm implements Serializable {
     }
     public void setValue(Date date) {
         m_date = date;
+    }
+
+    public Integer getHours() {
+        return m_hours;
+    }
+
+    public void setHours(Integer hour) {
+        m_hours = hour;
+    }
+
+    public Integer getMinutes() {
+        return m_minutes;
+    }
+
+    public void setMinutes(Integer minute) {
+        m_minutes = minute;
     } 
 
 }

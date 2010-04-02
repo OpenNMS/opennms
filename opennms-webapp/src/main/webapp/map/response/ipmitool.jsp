@@ -19,7 +19,7 @@
     <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
 
-<script language="javascript">
+<script type="text/javascript">
 
 function checkIpAddress(ip){
 	var ipArr = ip.split(".");
@@ -82,7 +82,7 @@ function doCommand(){
         <table >
           <tr>
             <td>&nbsp;</td>
-            <td>Ip Address: </td>
+            <td>IP Address: </td>
 	    <td><select id="address" name="address">
 	<%
     String ipAddress = null;              
@@ -157,7 +157,7 @@ function doCommand(){
 
           <tr id="info" style="display:none">
              <td>&nbsp;</td>
-	    <td colspan="3" align="right">Insert an Ip address to force <br> a route passing through it.
+	    <td colspan="3" align="right">Insert an IP address to force <br/> a route passing through it.
 	    </td>
 	    <td>&nbsp;</td>
 	  </tr>

@@ -55,7 +55,7 @@
       <h3>Alarm Queries</h3>
       <div class="boxWrapper">
        <%-- <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />--%>
-        <form action="alarm/detail.jsp" method="GET">
+        <form action="alarm/detail.jsp" method="get">
           <p align="right">Alarm ID:          
             <input type="TEXT" NAME="id" />
             <input type="submit" value="Get details"/></p>                

@@ -52,7 +52,7 @@
   <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 <c:set var="totalRecords" value="${fn:length(resources)}"/>
-<script>
+<script type="text/javascript">
 	var data = {total:"${totalRecords}", records:[
 					<c:forEach var="resource" items="${resources}">
 					{id:"${resource.id}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.label}"},
@@ -63,7 +63,7 @@
   <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
   <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
   <script type="text/javascript" src="js/CustomGraphResourceView.js" ></script>
-  <script language="Javascript" type="text/javascript" >
+  <script type="text/javascript" >
   
       function validateResource()
       {
@@ -192,7 +192,7 @@
       </c:when>
       
       <c:otherwise>
-      	<script language="Javascript" type="text/javascript">
+      	<script type="text/javascript">
 	      	Ext.onReady(function(){
 	  	      customResourceViewInit("resource-grid", data, "blah");
 	  	 	});

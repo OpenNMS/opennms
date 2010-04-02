@@ -99,7 +99,7 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
     function checkAllCheckboxes() {
        if( document.acknowledge_form.notices.length ) {  
          for( i = 0; i < document.acknowledge_form.notices.length; i++ ) {

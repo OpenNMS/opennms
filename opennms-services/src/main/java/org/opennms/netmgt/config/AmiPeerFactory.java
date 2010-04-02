@@ -40,9 +40,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
@@ -55,7 +53,6 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
@@ -64,6 +61,7 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.ami.Definition;
 import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.protocols.ami.AmiAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
 
@@ -114,15 +112,10 @@ public class AmiPeerFactory extends PeerFactory {
     private AmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
         super();
         InputStream cfgIn = new FileInputStream(configFile);
-        m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, new InputStreamReader(cfgIn, "UTF-8"));
+        m_config = CastorUtils.unmarshal(AmiConfig.class, cfgIn);
         cfgIn.close();
     }
 
-    public AmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        super();
-        m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, rdr);
-    }
-    
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.

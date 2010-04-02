@@ -42,7 +42,7 @@
         <tree:field label="IP Interface" property="ipAddr" />
         <tree:field label="Description" property="descr" />
         
-        <tree:select label="Snmp Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" />
+        <tree:select label="SNMP Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" />
         <tree:action label="Add Service" action="addService" />
       </tree:nodeForm>
 

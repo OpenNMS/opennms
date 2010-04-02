@@ -17,6 +17,10 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>
@@ -96,6 +100,12 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
+         <additionalBuildcommands>
+           <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+         </additionalBuildcommands>
+         <additionalProjectnatures>
+           <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+         </additionalProjectnatures>
         </configuration>
       </plugin>
       <plugin>
@@ -321,27 +331,31 @@
       <artifactId>org.opennms.features.reporting.availability</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+    </dependency>
+    <dependency>
       <groupId>alt.dev.jmta</groupId>
       <artifactId>jmta</artifactId>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
+      <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
+      <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-svg-dom</artifactId>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
+      <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-transcoder</artifactId>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
+      <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-xml</artifactId>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
+      <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-util</artifactId>
     </dependency>
     <!-- GWT Dependencies -->

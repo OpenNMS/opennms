@@ -41,7 +41,7 @@
 
 			  <!-- The add time button for initiating an edit of this schedule -->
 			  <td>
-			    <form method="GET" id="<c:out value="${schedId}.addTimeForm"/>">
+			    <form method="get" id="<c:out value="${schedId}.addTimeForm"/>">
 			    		<input id="<c:out value="${schedId}.addTimeOp"/>" type="hidden" name="op" value="addTime"/>
 			    		<input id="<c:out value="${schedId}.addTimeIndex"/>" type="hidden" name="scheduleIndex" value="<c:out value="${schedStatus.index}"/>">
 			    		<input id="<c:out value="${schedId}.doAddTime"/>" type="submit" name="submit" value="Add Time"/>
@@ -49,7 +49,7 @@
 			  </td>
 			  <!-- The edit button for initiating an edit of this schedule -->
 			  <td>
-			    <form method="GET" id="<c:out value="${schedId}.editForm"/>">
+			    <form method="get" id="<c:out value="${schedId}.editForm"/>">
 			    		<input id="<c:out value="${schedId}.editOp"/>" type="hidden" name="op" value="edit"/>
 			    		<input id="<c:out value="${schedId}.editIndex"/>" type="hidden" name="scheduleIndex" value="<c:out value="${schedStatus.index}"/>">
 			    		<input id="<c:out value="${schedId}.doEdit"/>" type="submit" name="submit" value="Edit"/>
@@ -57,7 +57,7 @@
 			  </td>
 			  <!-- The delete button for deleting this schedule -->
 			  <td>
-			    <form method="GET" id="<c:out value="${schedId}.deleteForm"/>" onSubmit="return confirm('Are you sure you wish to delete this schedule?');">
+			    <form method="get" id="<c:out value="${schedId}.deleteForm"/>" onSubmit="return confirm('Are you sure you wish to delete this schedule?');">
 			    		<input id="<c:out value="${schedId}.deleteOp"/>" type="hidden" name="op" value="delete"/>
 			    		<input id="<c:out value="${schedId}.deleteIndex"/>" type="hidden" name="scheduleIndex" value="<c:out value="${schedStatus.index}"/>">
 			    		<input id="<c:out value="${schedId}.doDelete"/>" type="submit" name="submit" value="Delete" />

@@ -84,16 +84,6 @@ public class CollectorConfigDaoImplTest extends TestCase {
         super.tearDown();
 	}
 	
-	public Reader getReaderForFile(String fileName) {
-        Reader retval = null;
-        try {
-            retval = new InputStreamReader(getInputStreamForFile(fileName), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            fail("Your JVM doesn't support UTF-8 encoding, which is pretty much impossible.");
-        }
-        return retval;
-	}
-
     private InputStream getInputStreamForFile(String fileName) {
         return getClass().getResourceAsStream(fileName);
     }

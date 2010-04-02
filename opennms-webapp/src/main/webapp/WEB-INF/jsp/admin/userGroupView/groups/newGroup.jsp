@@ -52,7 +52,7 @@
 	<jsp:param name="breadcrumb" value="New Group" />
 </jsp:include>
 
-<script language="JavaScript">
+<script type="text/javascript">
   function validateFormInput() 
   {
     var id = new String(document.newGroupForm.groupName.value);

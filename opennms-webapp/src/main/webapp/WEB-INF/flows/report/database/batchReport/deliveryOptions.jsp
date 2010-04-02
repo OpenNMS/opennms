@@ -58,20 +58,20 @@
 	<p>
 	Name to identify this report
 	<form:input path="instanceId"/>
-	<br><form:checkbox path="sendMail"/>
+	<br/><form:checkbox path="sendMail"/>
 	Email a copy of the report in 
 	<form:select path="format"> 
 		<form:options items="${formats}"/>
 	</form:select>
 	format, to: 
     <form:input path="mailTo"/>
-    <br><B>Report Persistence</B><br>
+    <br/><B>Report Persistence</B><br/>
     <form:checkbox path="persist"/>
     Save a copy of the report
     </p> 
 
 
-    <br>
+    <br/>
     <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
 	<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
 	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;

@@ -10,7 +10,7 @@
 //
 // Modifications:
 // 
-// Created: October 5th, 2009 jonathan@opennms.org
+// Created: March 9th, 2010 jonathan@opennms.org
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -33,25 +33,35 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.castor;
 
-import org.opennms.netmgt.config.reporting.DateParm;
-import org.opennms.netmgt.config.reporting.StringParm;
+import static org.junit.Assert.assertEquals;
 
-public interface AvailabilityReportConfigDao {
-    
-    DateParm[] getDateParms(String id);
-    
-    StringParm[] getStringParms(String id);
-    
-    String getPdfStylesheetLocation(String id);
-    
-    String getSvgStylesheetLocation(String id);
-    
-    String getHtmlStylesheetLocation(String id);
-    
-    String getType(String id);
-    
-    String getLogo(String logo);
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+public class DefaultJaspertReportConfigDaoTest {
+
+    private static final String ID = "sample-report";
+    private static final String TEMPLATE = "sample-report.jxrml";
+    private static final String ENGINE = "jdbc";
+
+    private static DefaultJasperReportConfigDao m_dao;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        Resource resource = new ClassPathResource("/jasper-reports-testdata.xml");
+        m_dao = new DefaultJasperReportConfigDao();
+        m_dao.setConfigResource(resource);
+        m_dao.afterPropertiesSet();
+    }
+
+    @Test
+    public void testConfig() throws Exception {
+        assertEquals(TEMPLATE, m_dao.getTemplateLocation(ID));
+        assertEquals(ENGINE, m_dao.getEngine(ID));
+    }
 
 }

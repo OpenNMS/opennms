@@ -53,7 +53,7 @@
   <jsp:param name="breadcrumb" value="Configure SNMP by IP" />
 </jsp:include>
 
-<script language="JavaScript">
+<script type="text/javascript">
         function verifyIpAddress (prompt, ipValue) {
                 var errorMsg = new String("");
 

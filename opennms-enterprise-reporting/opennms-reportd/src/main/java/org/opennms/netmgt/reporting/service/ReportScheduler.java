@@ -9,7 +9,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.StringUtils;
-import org.eclipse.jdt.internal.core.Assert;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.ReportdConfigurationDao;

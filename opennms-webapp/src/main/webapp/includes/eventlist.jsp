@@ -127,7 +127,7 @@
     }
 %>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
     
     function submitAck()
     {
@@ -170,7 +170,7 @@
 <div id="include-eventlist">
 
 <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-    <form action="event/acknowledge" method="POST" name="acknowledge_form">
+    <form action="event/acknowledge" method="post" name="acknowledge_form">
     <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />
     <input type="hidden" name="actionCode" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
 <% } %>

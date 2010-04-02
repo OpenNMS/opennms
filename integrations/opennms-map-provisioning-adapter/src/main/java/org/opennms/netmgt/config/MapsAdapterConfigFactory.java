@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -43,7 +44,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    public MapsAdapterConfigFactory(long currentVersion, Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+    public MapsAdapterConfigFactory(long currentVersion, InputStream reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         super(reader, localServer, verifyServer);
         m_currentVersion = currentVersion;
     }
@@ -73,7 +74,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
 
         logStatic().debug("init: config file path: " + cfgFile.getPath());
 
-        Reader reader = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
+        InputStream reader = new FileInputStream(cfgFile);
         MapsAdapterConfigFactory config = new MapsAdapterConfigFactory(cfgFile.lastModified(), reader,onmsSvrConfig.getServerName(),onmsSvrConfig.verifyServer());
         reader.close();
         setInstance(config);
@@ -138,7 +139,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
         if (cfgFile.lastModified() > m_currentVersion) {
             m_currentVersion = cfgFile.lastModified();
             logStatic().debug("init: config file path: " + cfgFile.getPath());
-            reloadXML(new InputStreamReader(new FileInputStream(cfgFile), "UTF-8"));
+            reloadXML(new FileInputStream(cfgFile));
             logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
         }
     }

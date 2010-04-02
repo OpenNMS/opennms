@@ -61,7 +61,7 @@
   <jsp:param name="breadcrumb" value="Configure Path Outages" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
     function next()
     {
@@ -86,15 +86,15 @@
 
     Enter the critical path IP address in xxx.xxx.xxx.xxx format. (Or leave blank to clear previously set paths.)
 
-    <br><br>
+    <br/><br/>
 
     <input type="text" name="criticalIp" value = '<%= (criticalIp != null ? criticalIp : "") %>' size="17" maxlength="15" />
 
-    <br><br>
+    <br/><br/>
 
     critical path service:
 
-    <br><br>
+    <br/><br/>
 
     <select name="criticalSvc" value="ICMP" size="1">
         <option value="ICMP">ICMP</option>
@@ -116,14 +116,14 @@
                   <li>192.168.0-3.0-255
                   <li>192.168.0,1,2,3.*
                </ul>
-	    <p>To Use a rule based on TCP/IP addresses as described above, enter<BR><BR>
-	       IPADDR IPLIKE *.*.*.*<BR><BR>in the Current Rule box below, substituting your
+	    <p>To Use a rule based on TCP/IP addresses as described above, enter<br/><br/>
+	       IPADDR IPLIKE *.*.*.*<br/><br/>in the Current Rule box below, substituting your
 	       desired address fields for *.*.*.*.
-	       <BR>Otherwise, you may enter any valid rule.
+	       <br/>Otherwise, you may enter any valid rule.
 	    </p>
-	    Current Rule:<br>
+	    Current Rule:<br/>
 	    <input type="text" size=100 name="newRule" value="<%=newRule%>"/>
-           <br><br>
+           <br/><br/>
 
 	    Show matching node list:
             <% if (showNodes == null) { %>
@@ -131,11 +131,11 @@
             <% } else { %>
             <input type="checkbox" name="showNodes">
             <% } %>
-           <br>
+           <br/>
 
-           <br>
+           <br/>
             <input type="reset" value="Reset"/>
-           <br><br>
+           <br/><br/>
            <a href="javascript:next()">Validate rule results &#155;&#155;&#155;</a>
     </form>
 

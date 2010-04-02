@@ -103,7 +103,7 @@
 
 </style>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
 	function changeDisplay() {
 		document.displayForm.submit();

@@ -271,11 +271,11 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
 
     public OnmsLocationSpecificStatus getMostRecentStatusChange(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monSvc) {
-        HibernateCallback callback = new HibernateCallback() {
+        HibernateCallback<OnmsLocationSpecificStatus> callback = new HibernateCallback<OnmsLocationSpecificStatus>() {
 
-            public Object doInHibernate(Session session)
+            public OnmsLocationSpecificStatus doInHibernate(Session session)
                     throws HibernateException, SQLException {
-                return session.createQuery("from OnmsLocationSpecificStatus status where status.locationMonitor = :locationMonitor and status.monitoredService = :monitoredService order by status.pollResult.timestamp desc")
+                return (OnmsLocationSpecificStatus) session.createQuery("from OnmsLocationSpecificStatus status where status.locationMonitor = :locationMonitor and status.monitoredService = :monitoredService order by status.pollResult.timestamp desc")
                     .setEntity("locationMonitor", locationMonitor)
                     .setEntity("monitoredService", monSvc)
                     .setMaxResults(1)
@@ -283,7 +283,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             }
 
         };
-        return (OnmsLocationSpecificStatus)getHibernateTemplate().execute(callback);
+        return getHibernateTemplate().execute(callback);
     }
 
     public void saveStatusChange(OnmsLocationSpecificStatus statusChange) {

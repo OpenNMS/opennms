@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE jasperReport
+  PUBLIC "-//JasperReports//DTD Report Design//EN"
+  "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport name="trivial-report">
+ <detail>
+    <band height="20">
+      <staticText>
+        <reportElement x="180" y="0" width="200" height="20"/>
+        <text><![CDATA[Jasper Reports Successfully Configured]]></text>
+      </staticText>
+    </band>
+  </detail>
+</jasperReport>

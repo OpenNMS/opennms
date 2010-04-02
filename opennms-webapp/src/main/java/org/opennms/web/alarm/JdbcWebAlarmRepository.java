@@ -284,19 +284,17 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
     
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
-        Number number = (Number) queryForObject(sql, setter, new SingleColumnRowMapper(Integer.class));
+        Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
     }
     
-    @SuppressWarnings("unchecked")
-    private Object queryForObject(String sql, PreparedStatementSetter setter, RowMapper rowMapper) throws DataAccessException {
-        return DataAccessUtils.requiredSingleResult((List) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rowMapper, 1)));
+    private <T> T queryForObject(String sql, PreparedStatementSetter setter, RowMapper<T> rowMapper) throws DataAccessException {
+        return DataAccessUtils.requiredSingleResult(jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
     }
 
 
-    @SuppressWarnings("unchecked")
     private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
-        return (List<T>) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rm));
+        return jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
     }
     
     private JdbcOperations jdbc() {

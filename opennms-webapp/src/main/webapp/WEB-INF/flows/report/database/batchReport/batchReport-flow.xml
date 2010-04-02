@@ -15,11 +15,11 @@
 		<evaluate expression="reportWrapperService.getParameters(reportId)" result="flowScope.parameters" />
 	</on-start>
 	
+	<decision-state id="hasParameters">
+    	<if test="reportWrapperService.hasParameters(reportId)" then="reportParameters" else="deliveryOptions" />
+	</decision-state>
+	
 	<view-state id="reportParameters" model="parameters">
-		<!--<binder>
-			<binding property="dates" converter="shortDate" required="true" />
-			<binding property="categories" required="true" />
-		</binder>-->
 		<on-render>
         	<evaluate expression="categoryConfigService.getCategoriesList()"
                   result="viewScope.categories" />
@@ -29,13 +29,7 @@
 	</view-state>
 
 	<view-state id="deliveryOptions" model="deliveryOptions">
-		<!-- <binder>
-			<binding property="persist" required="true" />
-			<binding property="sendMail" required="true" />
-			<binding property="mailTo" />
-			<binding property="mailFormat" />
-		</binder>
-		-->
+
 		<on-render>
 			<evaluate expression="reportWrapperService.getDeliveryOptions(reportId, currentUser.name)" 
 				result="flowScope.deliveryOptions" />
@@ -46,18 +40,6 @@
 		<transition on="revise" to="reportParameters" />
 		<transition on="cancel" to="reportCancelled" />
 	</view-state>
-	
-	<!--
-	
-	TODO Decide if we want to review this at all (value is limited)
-	
-	<view-state id="reviewReport" model="criteria">
-		<transition on="proceed" to="scheduleOrExecute" />
-		<transition on="revise" to="reportParameters" />
-		<transition on="cancel" to="reportCancelled" />
-	</view-state>
-	
-	-->
 	
 	<decision-state id="scheduleOrExecute">
     	<if test="schedule" then="cronExpression" else="executeReport" />

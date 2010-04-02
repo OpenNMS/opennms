@@ -84,7 +84,7 @@
   <jsp:param name="breadcrumb" value="Existing notifications for UEI" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
     function next()
     {
@@ -104,13 +104,13 @@
 
 </script>
 <!-- Hidden form that will cause the notification to be edited -->
-<form action="admin/notification/noticeWizard/notificationWizard"  method="POST" name="editForm">
+<form action="admin/notification/noticeWizard/notificationWizard"  method="post" name="editForm">
 	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTIFS_FOR_UEI%>"/>
 	<input type="hidden" name="userAction" value="edit"/>
 	<input type="hidden" id="notice" name="notice" value=""/>
 </form>
 
-<form action="admin/notification/noticeWizard/notificationWizard"  method="POST" name="newNotificationForm">
+<form action="admin/notification/noticeWizard/notificationWizard"  method="post" name="newNotificationForm">
 	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTIFS_FOR_UEI%>"/>
 	<input type="hidden" name="userAction" value="new"/>
 	<input type="hidden" name="uei" value="<%=uei%>"/>
