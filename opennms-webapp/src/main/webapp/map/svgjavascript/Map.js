@@ -252,7 +252,7 @@ Map.prototype.deleteLinksOnElement = function(id)
 }
 
 // add a new link to map
-Map.prototype.addLink = function(id1, id2, typology, status, stroke, stroke_width, dash_array, flash, deltaLink,nodeid1,nodeid2)
+Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, status, stroke, stroke_width, dash_array, flash, deltaLink,nodeid1,nodeid2)
 {
 	var id = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[id]==null){
@@ -298,7 +298,7 @@ Map.prototype.addLink = function(id1, id2, typology, status, stroke, stroke_widt
 			return false;
 		}
 
-		var link = new Link(id, typology, status, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology]-1, deltaLink,nodeid1,nodeid2);
+		var link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology]-1, deltaLink,nodeid1,nodeid2);
 //		alert("first: "+first.getLabel()+" nodeid1:" + nodeid1 +"---second: " + second.getLabel() + "nodeid2:" + nodeid2);
 		
 		this.mapLinks[id] = link;

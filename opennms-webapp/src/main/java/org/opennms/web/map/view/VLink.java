@@ -168,7 +168,7 @@ final public class VLink {
         if (vlinkStatusMap.containsKey(statusString)) {
             i = vlinkStatusMap.get(statusString);
         } 
-        vlinkStatusMap.put(statusString, i++);
+        vlinkStatusMap.put(statusString, ++i);
         return i;
     }
 

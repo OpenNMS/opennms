@@ -13,10 +13,30 @@ function onMouseOverMapElement(evt) {
 	myMapApp.addTooltip(id,toolTipLabel,false,false,"currentTarget",undefined);
 }
 
-function onMouseOutMapElement(evt) {
+function onMouseOverLink(evt) {
+	myMapApp.enableTooltips();
+	var id = evt.target.getAttributeNS(null,"id");
 
+	
+	var link = map.mapLinks[id]
+		var toolTipLabel = "";
+
+    var statusMap = link.getStatusMap();
+    for (var statusString in statusMap) {
+    	toolTipLabel = toolTipLabel+" "+ statusString + "("+statusMap[statusString]+")";
+	}
+	toolTipLabel = toolTipLabel+" total("+link.getNumberOfLinks()+")";
+	
+	myMapApp.addTooltip(id,toolTipLabel,false,false,"currentTarget",undefined);
 }
 
+function onMouseOutMapElement(evt) {
+		myMapApp.disableTooltips();
+}
+
+function onMouseOutLink(evt) {
+		myMapApp.disableTooltips();
+}
 //if double-click on an element (map) open the map 
 function onClickMapElement(evt)
 {

@@ -13,7 +13,7 @@ var textFontSize = 10;
 var textFamily = "Arial,Helvetica";
 
 // Variables used by "Link" SVG Object 
-var deltaLink=2;
+var deltaLink=6;
 var borderPercentage=5;
 
 //global factors for spacing between elements

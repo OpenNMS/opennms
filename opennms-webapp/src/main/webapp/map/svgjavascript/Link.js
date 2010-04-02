@@ -3,7 +3,7 @@
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
 
-function Link(id, typology, status, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeid1,nodeid2)
+function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeid1,nodeid2)
 {
 	if (arguments.length >= 8) {
 		var idSplitted = id.split("-");
@@ -28,12 +28,12 @@ function Link(id, typology, status, mapElement1, mapElement2, stroke, stroke_wid
 		this.nodeid1=nodeid1;
 		this.nodeid2=nodeid2;
 
-//		var heightCapacity=this.mapElement1.height/deltaLink;		
-//		var widthCapacity=this.mapElement1.width/deltaLink;		
+		this.numberOfLinks = numberOfLinks;
+		this.statusMap = statusMap;
 
 		var x1 = this.mapElement1.getX()+this.mapElement1.width/2;
 		var y1 = this.mapElement1.getY()+this.mapElement1.height/2+deltaLink*totalLinks;
-//		var startY2=this.mapElement2.getY()-parseInt((heightCapacity-1)/2)*deltaLink;		
+
 		var x2=this.mapElement2.getX()+this.mapElement2.width/2;
 		var y2=this.mapElement2.getY()+this.mapElement2.height/2+deltaLink*totalLinks;
 		
@@ -65,6 +65,8 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 	this.svgNode.setAttributeNS(null,"style", "z-index:0");
 	this.svgNode.setAttributeNS(null,"cursor", "pointer");
 	this.svgNode.addEventListener("click", this.onClick, false);
+	this.svgNode.addEventListener("mouseover", this.onMouseOver, false);
+	this.svgNode.addEventListener("mouseout", this.onMouseOut, false);
 	this.animateTag = document.createElementNS(svgNS,"animate");
 	this.animateTag.setAttributeNS(null,"attributeName", "stroke");	
 	this.animateTag.setAttributeNS(null,"from", stroke);	
@@ -154,6 +156,16 @@ Link.prototype.getSecondNodeId = function()
 	return this.nodeid2;
 }
 
+Link.prototype.getStatusMap = function()
+{
+	return this.statusMap;
+}
+
+Link.prototype.getNumberOfLinks = function()
+{
+	return this.numberOfLinks;
+}
+
 // update link
 Link.prototype.update = function()
 {
@@ -189,3 +201,5 @@ Link.prototype.onRepeat = function(evt)
 }
 
 Link.prototype.onClick = onMouseDownOnLink;
+Link.prototype.onMouseOver = onMouseOverLink;
+Link.prototype.onMouseOut  = onMouseOutLink;

@@ -265,7 +265,7 @@ function handleAddElementResponse(data) {
 	}	
 	// Links
 
-	var vlink,id1,id2, typology, status,nodeid1,nodeid2;
+	var vlink,id1,id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
 	for(var linksIndex in addElem.links) {
 		vlink = addElem.links[linksIndex];
 		id1=vlink.first;
@@ -274,7 +274,9 @@ function handleAddElementResponse(data) {
 		status=vlink.linkStatusString;
 		nodeid1=vlink.firstNodeid;
 		nodeid2=vlink.secondNodeid;
-		map.addLink(id1,id2,typology,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+		numberOfLinks=vlink.numberOfLinks;
+		statusMap=vlink.vlinkStatusMap;
+		map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
 	}
 		
 	map.render();
@@ -502,7 +504,7 @@ function handleLoadingMap(data) {
 		}
 	}
 	for ( var link in openingMap.links ) {
-		var id1, id2, typology, status,nodeid1,nodeid2;
+		var id1, id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
 		var vlink = openingMap.links[link];
 		id1=vlink.first;
 		id2=vlink.second;
@@ -510,8 +512,10 @@ function handleLoadingMap(data) {
 		status=vlink.linkStatusString;
 		nodeid1=vlink.firstNodeid;
 		nodeid2=vlink.secondNodeid;
+		numberOfLinks=vlink.numberOfLinks;
+		statusMap=vlink.vlinkStatusMap;
 
-		map.addLink(id1,id2,typology,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+		map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
 	}
 	
 	savedMapString=getMapString();
@@ -797,7 +801,7 @@ function handleRefreshNodesResponse(data) {
 		}
 	}
 	// Links		
-	var vlink,id1,id2, typology, status,nodeid1,nodeid2;
+	var vlink,id1,id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
 	for(var linksIndex in refreshResponse.links) {
 		vlink = refreshResponse.links[linksIndex];
 		id1=vlink.first;
@@ -806,7 +810,9 @@ function handleRefreshNodesResponse(data) {
 		status=vlink.linkStatusString;
 		nodeid1=vlink.firstNodeid;
 		nodeid2=vlink.secondNodeid;
-		map.addLink(id1,id2,typology,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+		numberOfLinks=vlink.numberOfLinks;
+		statusMap=vlink.vlinkStatusMap;
+		map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
 	}
 	map.render();
 

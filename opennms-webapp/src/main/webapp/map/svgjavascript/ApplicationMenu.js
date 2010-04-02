@@ -1733,7 +1733,6 @@ function getInfoOnMapElement(mapElement)
 
 function getInfoOnLink(link) 
 {
-	//var statusColor = LINKSTATUS_COLOR[link.getStatus()];
 	var statusColor = 'black';
 	var text = document.createElementNS(svgNS,"text");
 	text.setAttributeNS(null, "x","3");
@@ -1777,6 +1776,13 @@ function getInfoOnLink(link)
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
 	tspanContent = document.createTextNode(" Speed: "+LINK_SPEED[link.getTypology()]);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of Links: "+link.getNumberOfLinks());
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);	
 	
