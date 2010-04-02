@@ -31,11 +31,11 @@ function onMouseOverLink(evt) {
 }
 
 function onMouseOutMapElement(evt) {
-		myMapApp.disableTooltips();
+	myMapApp.disableTooltips();
 }
 
 function onMouseOutLink(evt) {
-		myMapApp.disableTooltips();
+	myMapApp.disableTooltips();
 }
 //if double-click on an element (map) open the map 
 function onClickMapElement(evt)
@@ -248,6 +248,7 @@ function resetDraggableObject(){
 		
 function onMouseDownOnLink(evt)
 {
+	myMapApp.disableTooltips();
 	
 	resetSelectedObjects();
 	if ((typeof map) == "object")
