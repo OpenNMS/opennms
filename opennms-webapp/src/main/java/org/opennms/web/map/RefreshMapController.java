@@ -103,7 +103,7 @@ public class RefreshMapController implements Controller {
 			if(map==null){
 				throw new MapNotFoundException();
 			}else{
-				bw.write(ResponseAssembler.getRefreshResponse(action, map));
+				bw.write(ResponseAssembler.getRefreshResponse(map));
 			}
 		} catch (Exception e) {
 			log.error("Error while refreshing map. Action "+action,e);

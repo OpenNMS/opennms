@@ -56,3 +56,4 @@ var COLOR_SEMAPHORE_BY_AVAILABILITY = "A";
 
 var failed_string = "Failed";
 
+var success_string = "OK";

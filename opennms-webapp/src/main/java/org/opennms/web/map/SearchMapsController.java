@@ -119,8 +119,8 @@ public class SearchMapsController implements Controller {
             log.debug("Recalculated - Max number of element in the map: "+n * k );
         }
 		
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
-
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
+                                                                      .getOutputStream(), "UTF-8"));
 		try {
             List<VElement> velems = new ArrayList<VElement>();
             // response for addElement

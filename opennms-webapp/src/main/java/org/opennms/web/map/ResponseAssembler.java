@@ -59,18 +59,16 @@ import org.opennms.web.map.view.VProperties;
 
 public class ResponseAssembler {
 	
-	//TODO change the ApplicationMap
 	@SuppressWarnings("unchecked")
-    protected static String getRefreshResponse(String action, VMap map){		
+    protected static String getRefreshResponse(VMap map){		
 		Map refreshResponseMap = new HashMap();
 		refreshResponseMap.put("elems",map.getElements().values());
 		refreshResponseMap.put("links", map.getLinks().values());
 		return JSONSerializer.toJSON(refreshResponseMap).toString();
 	}
 
-    //TODO change the ApplicationMap
     @SuppressWarnings("unchecked")
-	protected static String getAddElementResponse(String action,  List<Integer> mapsWithLoopInfo, Collection<VElement> elems, Collection<VLink> links){
+	protected static String getAddElementResponse(List<Integer> mapsWithLoopInfo, Collection<VElement> elems, Collection<VLink> links){
 		Map addElementResponseMap = new HashMap();
         addElementResponseMap.put("mapsWithLoop",mapsWithLoopInfo);
         addElementResponseMap.put("elems",elems);
@@ -78,26 +76,24 @@ public class ResponseAssembler {
         return JSONSerializer.toJSON(addElementResponseMap).toString();		
 	}
 	
-    //TODO change the ApplicationMap
-	protected static String getDeleteElementsResponse(String action, List<VElement> velems){
-        return JSONSerializer.toJSON(velems).toString();     
+	protected static String getDeleteElementsResponse(List<String> velemsids){
+        return JSONSerializer.toJSON(velemsids).toString();     
 	}
 		
-	protected static String getLoadNodesResponse(String action, List<VElementInfo> elemInfos){
+	protected static String getLoadNodesResponse(List<VElementInfo> elemInfos){
 		return JSONSerializer.toJSON(elemInfos).toString();
 	}
 	
-   protected static String getLoadMapsResponse(String action, List<VMapInfo> maps) {
-       return JSONSerializer.toJSON(maps).toString();
+   protected static String getLoadMapsResponse(List<VMapInfo> vmapinfos) {
+       return JSONSerializer.toJSON(vmapinfos).toString();
     }
 
-   //TODO change the ApplicationMap
-   protected static String getLoadDefaultMapResponse(String action, VMapInfo map) {
-       return JSONSerializer.toJSON(map).toString();
+   protected static String getLoadDefaultMapResponse(VMapInfo vmapinfo) {
+       return JSONSerializer.toJSON(vmapinfo).toString();
     }
 
 	@SuppressWarnings("unchecked")
-    protected static String getSaveMapResponse(String action,VMap map){
+    protected static String getSaveMapResponse(VMap map){
 		Map saveMapResponse = new HashMap();
 		saveMapResponse.put("id", map.getId());
 		saveMapResponse.put("accessMode",map.getAccessMode());
@@ -145,11 +141,11 @@ public class ResponseAssembler {
     }
 
 	protected static String getActionOKMapResponse(String action) {
-		return action+"OK";
+		return action+MapsConstants.success_string;
 	}
 
 	protected static String getMapErrorResponse(String action) {
-		return action+"Failed";
+		return action+MapsConstants.failed_string;
 	}
 
 

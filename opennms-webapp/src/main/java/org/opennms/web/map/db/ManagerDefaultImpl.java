@@ -1248,10 +1248,6 @@ public class ManagerDefaultImpl implements Manager {
             log.debug("Found link: node1:" + linfo.nodeid + " node2: "
                     + linfo.nodeparentid);
             log.debug("Getting linkinfo for nodeid " + linfo.nodeid);
-            if (!node2Element.containsKey(linfo.nodeid))
-                continue;
-            if (!node2Element.containsKey(linfo.nodeparentid))
-                continue;
             
             for (VElement first : node2Element.get(linfo.nodeid)) {
                 log.debug("Getting linkinfo for nodeid " + linfo.nodeparentid);
@@ -1263,48 +1259,56 @@ public class ManagerDefaultImpl implements Manager {
                     VLink vlink = new VLink(first.getId(), first.getType(),
                                             second.getId(), second.getType(), getLinkTypeId(linfo));
                     int status=getLinkStatus(linfo);
-                    vlink.setLinkStatusString(getLinkStatusString(status));
-                    vlink.setFirstNodeid(linfo.nodeid);
-                    vlink.setSecondNodeid(linfo.nodeparentid);
-                    
                     int index = links.indexOf(vlink);
                     
                     if (index != -1) {
                         VLink alreadyIn = links.get(index);
-                        if (alreadyIn.equals(vlink)) {
-                            if (multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS)) {
-                                if (status < getLinkStatusInt(alreadyIn.getLinkStatusString())) {
-                                    log.debug("removing to the array link "
-                                            + alreadyIn.toString()
-                                            + " with status "
-                                            + alreadyIn.getLinkStatusString());
-                                    links.remove(index);
-                                    links.add(vlink);
-                                    log.debug("adding to the array link "
-                                            + vlink.toString()
-                                            + " with status "
-                                            + vlink.getLinkStatusString());
-                                }
-                            } else if (status > getLinkStatusInt(alreadyIn.getLinkStatusString())) {
-                                log.debug("removing to the array link "
-                                        + alreadyIn.toString()
-                                        + " with status "
-                                        + alreadyIn.getLinkStatusString());
-                                links.remove(index);
-                                links.add(vlink);
-                                log.debug("adding to the array link "
-                                        + vlink.toString() + " with status "
-                                        + vlink.getLinkStatusString());
-                            }
+                        int numberOfLinks = alreadyIn.increaseLinks();
+                        log.debug("Updated " + numberOfLinks + " on Link: " + alreadyIn.getId());
+                        int numberOfLinkwithStatus = alreadyIn.increaseStatusMapLinks(vlink.getLinkStatusString());
+                        log.debug("Updated Status Map: found: "+ numberOfLinkwithStatus + " links with Status: " +vlink.getLinkStatusString() );
+                        if (multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS) &&
+                                status < getLinkStatusInt(alreadyIn.getLinkStatusString()) ) {
+                            log.debug("updating the link "
+                                    + alreadyIn.toString()
+                                    + " with status "
+                                    + alreadyIn.getLinkStatusString());
+                            
+                            log.debug("setting link properties: "
+                                    + vlink.toString()
+                                    + " with better found status "
+                                    + vlink.getLinkStatusString());
+                            alreadyIn.setLinkStatusString(getLinkStatusString(status));
+                            vlink.setFirstNodeid(linfo.nodeid);
+                            vlink.setSecondNodeid(linfo.nodeparentid);
+                        } else if (multilinkStatus.equals(MapPropertiesFactory.MULTILINK_BEST_STATUS) &&
+                                          status > getLinkStatusInt(alreadyIn.getLinkStatusString())) {
+                            log.debug("updating the link "
+                                  + alreadyIn.toString()
+                                  + " with status "
+                                  + alreadyIn.getLinkStatusString());
+
+                            log.debug("setting link properties: "
+                                  + vlink.toString()
+                                  + " with worse found status "
+                                  + vlink.getLinkStatusString());
+                            alreadyIn.setLinkStatusString(getLinkStatusString(status));
+                            vlink.setFirstNodeid(linfo.nodeid);
+                            vlink.setSecondNodeid(linfo.nodeparentid);
                         }
+                        links.set(index,alreadyIn);
                     } else {
-                        log.debug("adding link (" + vlink.hashCode() + ") "
+                        log.debug("adding new link (" + vlink.hashCode() + ") "
                                 + vlink.getFirst() + "-" + vlink.getSecond());
+                        vlink.setLinkStatusString(getLinkStatusString(status));
+                        vlink.increaseStatusMapLinks(getLinkStatusString(status));
+                        vlink.setFirstNodeid(linfo.nodeid);
+                        vlink.setSecondNodeid(linfo.nodeparentid);
                         links.add(vlink);
                     }
-                }
-            }
-        }
+                } // end second element for
+            } //end first element for
+        } // end linkinfo for
         return links;
     }
 
@@ -1319,7 +1323,7 @@ public class ManagerDefaultImpl implements Manager {
         else return "unknown";
     }
 
-    public int getLinkStatusInt(String linkStatus) {
+    private int getLinkStatusInt(String linkStatus) {
         if (linkStatus.equals("up") ) return 0;
         else if (linkStatus.equals("down")) return 1;
         else if (linkStatus.equals("admindown")) return 2;

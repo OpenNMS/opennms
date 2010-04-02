@@ -84,7 +84,7 @@ public class LoadNodesController implements Controller {
 		String user = request.getRemoteUser();
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-			bw.write(ResponseAssembler.getLoadNodesResponse(MapsConstants.LOADNODES_ACTION, manager.getElementInfo()));
+			bw.write(ResponseAssembler.getLoadNodesResponse(manager.getElementInfo()));
 		} catch (Exception e) {
 			log.error("Error while loading visible maps for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADNODES_ACTION));

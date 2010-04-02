@@ -37,6 +37,9 @@
  */
 package org.opennms.web.map.view;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.web.map.MapsConstants;
 
 /**
@@ -51,6 +54,8 @@ final public class VLink {
     private int elem2Id;	
 	private int nodeid1;
 	private int nodeid2;
+	private Map<String, Integer> vlinkStatusMap;
+	private int numberOfLinks;
     //the link type defined in the map properties file
 	private int linkTypeId;
 	
@@ -64,7 +69,8 @@ final public class VLink {
         this.elem1Id = elem1Id;
         this.elem2Id = elem2Id;
         this.linkTypeId = linkTypeId;
-
+        this.numberOfLinks = 1;
+        this.vlinkStatusMap = new HashMap<String, Integer>();
         String  a = elem1Id+elem1Type;
         String  b = elem2Id+elem2Type;
         String id = a + "-" + b;
@@ -80,7 +86,23 @@ final public class VLink {
 		this.id = id;
 	}
 	
-	public String getLinkStatusString() {
+	public Map<String, Integer> getVlinkStatusMap() {
+        return vlinkStatusMap;
+    }
+
+    public void setVlinkStatusMap(Map<String, Integer> vlinkStatusMap) {
+        this.vlinkStatusMap = vlinkStatusMap;
+    }
+
+    public int getNumberOfLinks() {
+        return numberOfLinks;
+    }
+
+    public void setNumberOfLinks(int numberOfLinks) {
+        this.numberOfLinks = numberOfLinks;
+    }
+
+    public String getLinkStatusString() {
 	    return linkStatusString;
 	}
 
@@ -97,18 +119,6 @@ final public class VLink {
 		return ( getId().equals(link.getId()));
 	}
 	
-		
-	public int hashCode() {
-		int molt1 = 11;
-		if(elem1Type.equals(MapsConstants.NODE_TYPE))
-			molt1 = 13;
-		int molt2 = 15;
-		if(elem2Type.equals(MapsConstants.NODE_TYPE))
-			molt2 = 17;
-
-		return (3*elem1Id)+(5*elem2Id)+(7*(linkTypeId+1))*molt1*molt2;
-	}
-
 	public String getFirst() {
 		return elem1Id+elem1Type;
 	}
@@ -147,6 +157,19 @@ final public class VLink {
 
     public void setSecondNodeid(int nodeid) {
         this.nodeid2 =nodeid;
+    }
+    
+    public int increaseLinks() {
+        return ++numberOfLinks;
+    }
+
+    public int increaseStatusMapLinks(String statusString) {
+        int i=0;
+        if (vlinkStatusMap.containsKey(statusString)) {
+            i = vlinkStatusMap.get(statusString);
+        } 
+        vlinkStatusMap.put(statusString, i++);
+        return i;
     }
 
 }

@@ -96,42 +96,37 @@ public class DeleteElementsController implements Controller {
 			if(log.isDebugEnabled())
 				log.debug("Got map from manager "+map);
 			
-			Integer[] nodeids = null;
+			Integer[] elemeids = null;
 			String type = MapsConstants.NODE_TYPE;
+
+            String[] mapids = elems.split(",");
+            elemeids = new Integer[mapids.length];
+            for (int i = 0; i<mapids.length;i++) {
+                elemeids[i] = new Integer(mapids[i]);
+            }
 
 			boolean actionfound = false;
 			if (action.equals(MapsConstants.DELETENODES_ACTION)) {
 				actionfound = true;
-				type = MapsConstants.NODE_TYPE;
-				String[] snodeids = elems.split(",");
-				nodeids = new Integer[snodeids.length];
-				for (int i = 0; i<snodeids.length;i++) {
-					nodeids[i] = new Integer(snodeids[i]);
-				}
 			}
 			
 			if (action.equals(MapsConstants.DELETEMAPS_ACTION)) {
 				actionfound = true;
 				type = MapsConstants.MAP_TYPE;
-				String[] snodeids = elems.split(",");
-				nodeids = new Integer[snodeids.length];
-				for (int i = 0; i<snodeids.length;i++) {
-					nodeids[i] = new Integer(snodeids[i]);
-				}
 			}
 			
-			List<VElement> velems = new ArrayList<VElement>();
-			if (actionfound) {
-				
-				for (int i = 0; i < nodeids.length; i++) {
-					int elemId = nodeids[i].intValue();
+			List<String> velemsids = new ArrayList<String>();
+			if (actionfound) {				
+				for (int i = 0; i < elemeids.length; i++) {
+					int elemId = elemeids[i].intValue();
 					if (map.containsElement(elemId, type)){
 						map.removeLinksOnElementList(elemId,type);
-						velems.add(map.removeElement(elemId,type));
+						VElement ve = map.removeElement(elemId,type);
+						velemsids.add(ve.getId()+ve.getType());
 					}
 				}
 			} 
-			bw.write(ResponseAssembler.getDeleteElementsResponse(action, velems));
+			bw.write(ResponseAssembler.getDeleteElementsResponse(velemsids));
 		} catch (Exception e) {
 			log.error("Error while adding nodes for action: "+action,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(action));

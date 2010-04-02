@@ -189,7 +189,7 @@ public class AddNodesController implements Controller {
 				map = manager.addElements(map, velems);
 				log.debug("After getting/adding links");
 	
-				bw.write(ResponseAssembler.getAddElementResponse(action, null, velems, map.getLinks().values()));
+				bw.write(ResponseAssembler.getAddElementResponse(null, velems, map.getLinks().values()));
 			}
 		} catch (Exception e) {
 			log.error("Error while adding nodes for action: "+action,e);

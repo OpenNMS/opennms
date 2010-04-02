@@ -133,11 +133,7 @@ public class VElement extends DbElement {
     public boolean equals(Object other){
     	return equalsIgnorePosition((VElement)other);
     }
-    /**
-     * @param elem
-     * @return
-     */
-
+    
     public boolean equalsIgnorePosition(VElement elem) {
     	if (this.getMapId() == elem.getMapId() &&
     		this.getId() == elem.getId() && this.type.equals( elem.getType()) &&

@@ -273,7 +273,9 @@ function searchMapSetUp(mapId)
 {
 	if (verifyMapString()) return;
 
-	if (selectedMapInList == 0) {
+	if ( selMaps.elementsArray.length == 1 ) {
+		alert("No Matching Map Found");
+	} else if (selectedMapInList == 0 ) {
 		var elems = new String();
 		var first = true;
 		for ( var i = 1; i< selMaps.elementsArray.length; i++ ) {
@@ -446,14 +448,20 @@ function deleteMapSetUp() {
 // Save Map
 function saveMapSetUp() {	
 	closeAllMenu();
-	if(currentMapId!=MAP_NOT_OPENED){
+	if(currentMapId == MAP_NOT_OPENED){
+		alert("No maps opened");
+	} else if (currentMapId == NEW_MAP && currentMapName == NEW_MAP_NAME){
+		alert("Rename 'NewMap' before saving");
+		addRenameMapBox();
+	} else if (currentMapId == SEARCH_MAP && currentMapName == SEARCH_MAP_NAME){
+		alert("Rename 'SearchMap' before saving");
+		addRenameMapBox();
+	}else{
 		clearTopInfo();
 		disableMenu();
 		writeDownInfo("Saving map '" +currentMapName+"'");
 		resetFlags();
 		saveMap();
-	}else{
-		alert("No maps opened");
 	}
 	
 }

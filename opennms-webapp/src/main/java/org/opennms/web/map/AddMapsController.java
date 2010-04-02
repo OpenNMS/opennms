@@ -118,7 +118,7 @@ public class AddMapsController implements Controller {
 
 			//get map
 			map = manager.addElements(map, velems);
-			bw.write(ResponseAssembler.getAddElementResponse(MapsConstants.ADDMAPS_ACTION, mapsWithLoop,velems,map.getLinks().values()));
+			bw.write(ResponseAssembler.getAddElementResponse(mapsWithLoop,velems,map.getLinks().values()));
 		} catch (Exception e) {
 			log.error("Error while adding Maps: ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.ADDMAPS_ACTION));

@@ -138,6 +138,12 @@ public final class MapsConstants {
 	
 	public static final String COLOR_SEMAPHORE_BY_AVAILABILITY = "A";	
 	
+	//Failed Map String
+	public static final String failed_string = "Failed";
+
+   //Success Map String
+    public static final String success_string = "OK";
+
 	public MapsConstants() {
 		super();
 	}
