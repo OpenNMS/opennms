@@ -1,14 +1,13 @@
 package org.opennms.gwt.web.ui.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
+import static org.junit.Assert.assertEquals;
 
-public class CoreWebTestGwt extends GWTTestCase {
+import org.junit.Test;
 
-    @Override
-    public String getModuleName() {
-        return "org.opennms.gwt.web.ui.CoreWeb";
-    }
-    
+
+public class CoreWebTestGwt {
+
+	@Test
     public void testUpperCasingLabel() {
         UpperCasingLabel upperCasingLabel = new UpperCasingLabel();
         
