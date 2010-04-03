@@ -155,7 +155,6 @@ public abstract class NotificationManager {
     public Notification[] getNotifForEvent(final Event event) throws IOException, MarshalException, ValidationException {
         update();
         List<Notification> notifList = new ArrayList<Notification>();
-        Notification[] notif = null;
         boolean matchAll = getConfigManager().getNotificationMatch();
         Category log = ThreadCategory.getInstance(getClass());
   
@@ -163,25 +162,27 @@ public abstract class NotificationManager {
 
         if (event == null) {
             log.warn("unable to get notification for null event!");
-        }
-
-        if (event.getLogmsg() != null && !(event.getLogmsg().getNotify())) {
+            return null;
+        } else if (event.getLogmsg() != null && !(event.getLogmsg().getNotify())) {
             log.debug("Event " + event.getUei() + " is configured to supress notifications.");
-            return notif;
+            return null;
         }
     
         for (Notification curNotif : m_notifications.getNotificationCollection()) {
-            boolean curHasUei = false;
-            boolean curHasSeverity = false;
-
             log.debug("Checking " + event.getUei() + " against " + curNotif.getUei());
  
             if (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) {
-               curHasUei = true;
+               // Match!
             } else if (curNotif.getUei().charAt(0) == '~') {
                if (event.getUei().matches(curNotif.getUei().substring(1))) {
-                       curHasUei = true;
+                    // Match!
+               } else {
+                   log.debug("Notification regex " + curNotif.getUei() + " failed to match event UEI: " + event.getUei());
+                   continue;
                }
+            } else {
+                log.debug("Event UEI " + event.getUei() + " did not match " + curNotif.getUei());
+                continue;
             }
 
             /**
@@ -190,9 +191,12 @@ public abstract class NotificationManager {
             log.debug("Checking event severity: " + event.getSeverity() + " against notification severity: " + curNotif.getEventSeverity());
             // parameter is optional, return true if not set
             if (curNotif.getEventSeverity() == null) {
-               curHasSeverity = true;
+                // Skip matching on severity
             } else if (event.getSeverity().toLowerCase().matches(curNotif.getEventSeverity().toLowerCase())) {
-               curHasSeverity = true;
+                // Severities match
+            } else {
+                log.debug("Event severity: " + event.getSeverity() + " did not match notification severity: " + curNotif.getEventSeverity());
+                continue;
             }
            
             // The notice has to be "on"
@@ -201,26 +205,34 @@ public abstract class NotificationManager {
             // If all those things are true:
             // Then the service has to match if configured, the interface if configured, and the node if configured.
 
-            if (curNotif.getStatus().equals("on") && curHasSeverity && curHasUei && nodeInterfaceServiceValid(curNotif, event)) {
-                boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
-
-                if (!parmsmatched) {
-                    log().debug("Event " + event.getUei() + " did not match parameters for notice " + curNotif.getName());
-                    continue;
+            if (curNotif.getStatus().equals("on")) {
+                if (nodeInterfaceServiceValid(curNotif, event)) {
+                    boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
+    
+                    if (!parmsmatched) {
+                        log().debug("Event " + event.getUei() + " did not match parameters for notice " + curNotif.getName());
+                        continue;
+                    }
+                    // Add this notification to the return value
+                    notifList.add(curNotif);
+    
+                    log().debug("Event " + event.getUei() + " matched notice " + curNotif.getName());
+                    
+                    if (!matchAll)
+                        break;
+                } else {
+                    log().debug("Node/interface/service combination in the event was invalid");
                 }
-                notifList.add(curNotif);
-
-                log().debug("Event " + event.getUei() + " matched notice " + curNotif.getName());
-                
-                if (!matchAll)
-                    break;
+            } else {
+                log().debug("Current notification is turned off.");
             }
         }
     
         if (!notifList.isEmpty()) {
-            notif = notifList.toArray(new Notification[0]);
+            return notifList.toArray(new Notification[0]);
+        } else {
+            return null;
         }
-        return notif;
     }
 
     private Category log() {
@@ -931,9 +943,12 @@ public abstract class NotificationManager {
                 continue;
             }
             String expandedValue = EventUtil.expandParms(map.get(key), event);
-            map.put(key, (expandedValue != null ? expandedValue : map.get(key)));
+            if (expandedValue == null) {
+                // Don't use this value to replace the existing value if it's null
+            } else {
+                map.put(key, expandedValue);
+            }
         }
-        
     }
 
     /**
