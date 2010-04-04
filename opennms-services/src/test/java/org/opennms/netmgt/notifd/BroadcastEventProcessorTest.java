@@ -36,14 +36,10 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.Reader;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -71,11 +67,14 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         rdr.close();
     }
 
+    protected void tearDown() throws Exception {
+        // Do nothing??
+    }
+
     /**
      * Test calling expandNotifParms to see if the regular expression in
      * m_notifdExpandRE is initialized from {@link BroadcastEventProcessor.NOTIFD_EXPANSION_PARM}.
      */
-    @Test
     public void testExpandNotifParms() throws Exception {
         String expandResult = BroadcastEventProcessor.expandNotifParms("%foo%", new TreeMap<String,String>());
         assertEquals("%foo%", expandResult);
@@ -155,23 +154,25 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
 
         event.setParms(parms);
 
+        /*
         List<String> names = m_notificationManager.getNotificationNames();
         Collections.sort(names);
         for (String name : names) {
             System.out.println(name);
         }
+        */
         Notification[] notifications = null;
-        /*
         notifications = m_notificationManager.getNotifForEvent(null);
         assertNull(notifications);
-        */
         notifications = m_notificationManager.getNotifForEvent(event);
         assertNotNull(notifications);
         assertEquals(1, notifications.length);
         Map<String,String> paramMap = BroadcastEventProcessor.buildParameterMap(notifications[0], event, 9999);
+        /*
         for (Map.Entry<String,String> entry : paramMap.entrySet()) {
             System.out.println(entry.getKey() + " => " + entry.getValue());
         }
+         */
         assertEquals("High disk Threshold exceeded on 0.0.0.0, dsk-usr-pcent with Crap! There's only 15% free on the SAN and we need 20%! RUN AWAY!", paramMap.get("-tm"));
         expandResult = BroadcastEventProcessor.expandNotifParms("Notice #%noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", paramMap);
         assertEquals("Notice #9999: Disk threshold exceeded on %nodelabel%: %parm[all]%.", expandResult);
@@ -183,7 +184,6 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
      * 
      * @author Jeff Gehlbach <jeffg@jeffg.org>
      */
-    @Test
     public void testExpandNoticeId_Bug1745() throws Exception {
         MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
         Event event = MockEventUtil.createServiceEvent("Test", "uei.opennms.org/test/noticeIdExpansion", svc, null);

@@ -953,7 +953,6 @@ public final class EventUtil {
                 // expand it with a parameter value
                 if (parm.matches(".*\\s.*")) {
                     ret.append(PERCENT);
-                    System.out.println(Thread.currentThread().toString() + " " + PERCENT);
                     tempInp = tempInp.substring(1);
                     continue;
                 }
