@@ -49,7 +49,7 @@ public class ValidatedListBox extends ListBox {
     private Dashlet m_dashlet;
     private boolean m_allowWrapAround = true;
     private ValidatedListBox m_parent = null;
-    private DirectionalChangeListener m_directionalChangeListener = null;
+    private DirectionalChangeHandler m_directionalChangeHandler = null;
 
     public ValidatedListBox(Dashlet dashlet) {
         super();
@@ -60,8 +60,8 @@ public class ValidatedListBox extends ListBox {
         m_parent = parent;
     }
     
-    public void setDirectionalChangeListener(DirectionalChangeListener listener) {
-        m_directionalChangeListener = listener;
+    public void setDirectionalChangeHandler(DirectionalChangeHandler handler) {
+        m_directionalChangeHandler = handler;
     }
     
     public String getSelectedValue() {
@@ -111,8 +111,8 @@ public class ValidatedListBox extends ListBox {
         
         setSelectedIndex(newPrefabIndex);
         
-        if (m_directionalChangeListener != null) {
-            m_directionalChangeListener.onChange(this, direction);
+        if (m_directionalChangeHandler != null) {
+            m_directionalChangeHandler.onChange(null, direction);
         }
     }
 }

@@ -1,0 +1,156 @@
+#!/bin/sh -
+#
+# Original Debian version written by Jonathan Oddy <jonathan.oddy@truphone.com>
+# Adapted to work with RedHat and friends as well.
+
+# chkconfig:   345 99 01
+# description: Starts and stops the OpenNMS remote poller
+# processname: java
+# pidfile:     /var/run/opennms-remote-poller.pid
+#
+### BEGIN INIT INFO
+# Provides:          opennms-remote-poller
+# Required-Start:    $network $time
+# Required-Stop:     $network
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: OpenNMS - Open Source Network Management System remote poller
+# Description:       Enterprise grade open-source network management platform,
+#                    providing service polling, data collection, and event
+#                    and notification management. Remote poller service.
+### END INIT INFO
+
+NAME="opennms-remote-poller"
+DESC="OpenNMS Remote Poller"
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+PIDFILE="/var/run/$NAME.pid"
+OPENNMS_HOME="${install.dir}"
+JVM_ARGS=""
+EXTRA_ARGS=""
+URI="http://localhost:8980/opennms-remoting"
+LOCATION="Default"
+GUI="false"
+RUNAS="root"
+START_POLLER=0
+
+CONFFILE="/etc/default/$NAME"
+
+if [ -f $CONFFILE ]; then
+	. $CONFFILE
+fi
+
+if [ -z "$CONFFILE" ] && [ -f "/etc/sysconfig/$NAME" ]; then
+	CONFFILE="/etc/sysconfig/$NAME"
+	. $CONFFILE
+fi
+
+if [ -z "$CONFFILE" ] || [ -z "$JAVA_HOME" ] || [ $START_POLLER -eq 0 ]; then
+	echo "Remote poller init not configured.  Please edit $CONFFILE and restart."
+	exit 0
+fi
+
+if [ x$GUI = xtrue ]; then
+	EXTRA_ARGS="$EXTRA_ARGS --gui"
+fi
+
+if [ x$USERNAME != x ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -n $USERNAME"
+fi
+
+if [ x$PASSWORD != x ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -p $PASSWORD"
+fi
+
+pid_running() {
+	if [ -f "$PIDFILE" ]; then
+		POLLER_PID=`cat $PIDFILE`
+		if [ -n $POLLER_PID ]; then
+			return ps -p $POLLER_PID >/dev/null 2>&1
+		fi
+	fi
+	return 1
+}
+
+case "$1" in
+
+	start)
+
+		if pid_running; then
+			exit 0
+		fi
+
+		if [ x$RUNAS != xroot ]; then
+			SUDO_PREFIX="sudo -u $RUNAS"
+			CHUID="--chuid $RUNAS"
+		fi
+
+		echo -n "Starting $DESC: "
+		if [ -x /sbin/start-stop-daemon ]; then
+			start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE $CHUID --startas /usr/sbin/opennms-remote-poller -- $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null
+		else
+			$SUDO_PREFIX $OPENNMS_HOME/bin/remote-poller.sh $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS
+			RETVAL="$?"
+			POLLER_PID="$!"
+			echo "$POLLER_PID" > "$PIDFILE"
+		fi
+		echo "."
+		;;
+
+	stop)
+		echo -n "Stopping $DESC: "
+		if [ -x /sbin/start-stop-daemon ]; then
+			start-stop-daemon --stop --quiet --retry 15 --pidfile $PIDFILE > /dev/null
+		else
+			if ! pid_running; then
+				rm "$PIDFILE"
+				exit 0
+			fi
+	
+			kill `cat $PIDFILE`
+			exit 0
+		fi
+		echo "."
+		;;
+
+	restart)
+		$0 stop
+		sleep 2
+		$0 start
+		exit $?
+		;;
+
+	try-restart)
+		if pid_running; then
+			$0 restart
+			exit $?
+		fi
+		exit 0
+		;;
+
+	reload)
+		exit 3
+		;;
+
+	force-reload)
+		$0 try-restart
+		exit $?
+		;;
+
+	status)
+		if pid_running; then
+			exit 0
+		else
+			if [ -f $PIDFILE ]; then
+				exit 1
+			else
+				exit 3
+			fi
+		fi
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|try-restart|reload|force-reload|status}" >&2
+		exit 1
+		;;
+esac
