@@ -995,6 +995,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>rrd4j-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>servlet-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>

@@ -206,8 +206,10 @@ public abstract class NotifdConfigManager {
 
             if (notification.getVarbind().getVbvalue() != null) {
                 notfValue = notification.getVarbind().getVbvalue();
-            } else if (log.isDebugEnabled()) {
-                log.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
+                }
                 parmmatch = true;
             }
 
@@ -219,11 +221,9 @@ public abstract class NotifdConfigManager {
                 else
                     parmContent = parmValue.getContent();
 
-                if (parmName.equals(notfName) && parmContent.startsWith(notfValue))
-		{
+                if (parmName.equals(notfName) && parmContent.startsWith(notfValue)) {
                     parmmatch = true;
                 }
-
             }
         } else if (notification.getVarbind() == null || notification.getVarbind().getVbname() == null) {
             parmmatch = true;
