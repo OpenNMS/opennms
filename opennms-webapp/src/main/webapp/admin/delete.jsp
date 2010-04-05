@@ -175,7 +175,7 @@
           <input type="button" value="Cancel" onClick="cancel()">
           <input type="button" value="Select All" onClick="checkAll()">
           <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset"><br>&nbsp;
+          <input type="reset"><br/>&nbsp;
 
 	<br/>
       

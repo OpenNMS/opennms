@@ -100,6 +100,21 @@
 						widgetType : "dijit.form.DateTextBox",
 						widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
 					</script>
+					<form:select path="dateParms[${dateParmRow.index}].hours">
+						<c:forEach var="hour" begin="0" end="23">
+							<form:option value="${hour}">
+								<fmt:formatNumber minIntegerDigits="2" value="${hour}" />
+							</form:option>
+						</c:forEach>
+					</form:select>
+					:
+					<form:select path="dateParms[${dateParmRow.index}].minutes">
+						<c:forEach var="minute" begin="0" end="59">
+							<form:option value="${minute}">
+								<fmt:formatNumber minIntegerDigits="2" value="${minute}" />
+							</form:option>
+						</c:forEach>
+					</form:select>
 				</td>
 			</tr>
 		</c:forEach>

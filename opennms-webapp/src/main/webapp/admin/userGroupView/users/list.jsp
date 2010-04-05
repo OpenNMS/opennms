@@ -73,7 +73,7 @@
   <jsp:param name="breadcrumb" value="User List" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
     function addNewUser()
     {

@@ -99,7 +99,7 @@ public class IpListFromUrl extends Object {
 
             // check to see if the file exists
             if (file != null) {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(file));
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(file, "UTF-8"));
 
                 String ipLine = null;
                 String specIP = null;

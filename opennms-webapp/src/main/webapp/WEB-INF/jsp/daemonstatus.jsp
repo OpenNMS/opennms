@@ -5,7 +5,7 @@
 
 <html>
   <body>
-     <form:form method="POST" commandName="toModify">
+     <form:form method="post" commandName="toModify">
         <table border="1">
           <tr>
             <td></td>

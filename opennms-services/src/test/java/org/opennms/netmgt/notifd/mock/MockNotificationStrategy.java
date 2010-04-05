@@ -101,7 +101,7 @@ public class MockNotificationStrategy implements NotificationStrategy {
         return s_anticpator;
     }
 
-    public static void setAnticpator(NotificationAnticipator anticpator) {
+    public static void setAnticipator(NotificationAnticipator anticpator) {
         s_anticpator = anticpator;
     }
 }

@@ -48,11 +48,12 @@ package org.opennms.reporting.availability;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -68,16 +69,12 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.reporting.availability.Categories;
-import org.opennms.reporting.availability.Created;
-import org.opennms.reporting.availability.Report;
-import org.opennms.reporting.availability.ViewInfo;
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
 import org.opennms.reporting.availability.render.PDFReportRenderer;
 import org.springframework.util.StringUtils;
 
 /**
- * AvailabilityReport generates the Availability report in pdf format
+ * AvailabilityReport generates the Availability report in PDF format
  * 
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
@@ -223,7 +220,7 @@ public class AvailabilityReport extends Object {
         File file = new File(ConfigFileConstants.getHome()
                 + "/share/reports/AvailReport.xml");
         try {
-            FileWriter fileWriter = new FileWriter(file);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);
@@ -257,7 +254,7 @@ public class AvailabilityReport extends Object {
                                     + ConfigFileConstants.getHome()
                                     + "/share/reports/AvailReport.xml");
             }
-            FileReader fileReader = new FileReader(file);
+            Reader fileReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
             if (!format.equals("HTML")) {
                 new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
             } else {

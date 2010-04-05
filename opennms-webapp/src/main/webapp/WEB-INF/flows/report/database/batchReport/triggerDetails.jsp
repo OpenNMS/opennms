@@ -55,13 +55,13 @@
   
 <form:form commandName="triggerDetails">
 
-	<B>Enter scheduler cron expression</B><br>
+	<B>Enter scheduler cron expression</B><br/>
 	
 	Cron Expression: 
 	<form:input path="cronExpression"/>
 		   
 
-    <br>
+    <br/>
     <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
 	<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
 	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;

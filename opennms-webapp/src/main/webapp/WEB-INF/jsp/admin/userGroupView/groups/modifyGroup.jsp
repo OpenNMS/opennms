@@ -81,7 +81,7 @@
   <jsp:param name="breadcrumb" value="Modify Group" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
     
     function validate()
     {
@@ -356,21 +356,21 @@
               </tr>
               <tr>
                 <td align="center">
-                  Available Users <br>
-                  <%=createSelectList("availableUsers", availableUsers)%><br>
+                  Available Users <br/>
+                  <%=createSelectList("availableUsers", availableUsers)%><br/>
                   <p align="center">
-                  <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"><br>
+                  <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"><br/>
                   <input type="button" onClick="addUsers()" value="&nbsp;&gt;&gt;&nbsp;"></p>
                 </td>
                 <td align="center">
-                  Currently in Group <br>
-                  <%=createSelectList("selectedUsers", selectedUsers)%><br>
+                  Currently in Group <br/>
+                  <%=createSelectList("selectedUsers", selectedUsers)%><br/>
                   <p align="center">
-                  <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"><br>
+                  <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"><br/>
                   <input type="button" onClick="removeUsers()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
                 </td>
                 <td>
-                  <input type="button" value="  Move Up   " onclick="move(-1)"> <br>
+                  <input type="button" value="  Move Up   " onclick="move(-1)"> <br/>
                   <input type="button" value="Move Down" onclick="move(1)">
                 </td>
               </tr>
@@ -389,22 +389,22 @@
 	              </tr>
 	              <tr>
 	                <td align="center">
-	                  Available Categories <br>
-	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br>
+	                  Available Categories <br/>
+	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br/>
 	                  <p align="center">
 	                  
-	                  <input type="button" name="availableAll" onClick="selectAllAvailableCategories()" value="Select All"><br>
+	                  <input type="button" name="availableAll" onClick="selectAllAvailableCategories()" value="Select All"><br/>
 	                  <input type="button" onClick="addCategories()" value="&nbsp;&gt;&gt;&nbsp;"></p>
 	                </td>
 	                <td align="center">
-	                  Currently in Group <br>
-	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br>
+	                  Currently in Group <br/>
+	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
 	                  <p align="center">
-	                  <input type="button" name="selectedAll" onClick="selectAllSelectedCategories()" value="Select All"><br>
+	                  <input type="button" name="selectedAll" onClick="selectAllSelectedCategories()" value="Select All"><br/>
 	                  <input type="button" onClick="removeCategories()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
 	                </td>
 	                <td>
-	                  <input type="button" value="  Move Up   " onclick="moveCat(-1)"> <br>
+	                  <input type="button" value="  Move Up   " onclick="moveCat(-1)"> <br/>
 	                  <input type="button" value="Move Down" onclick="moveCat(1)">
 	                </td>
 	              </tr>
@@ -492,7 +492,7 @@
   </table>
 </form>
   
-<script language="JavaScript">
+<script type="text/javascript">
   // shorthand for refering to menus
   // must run after document has been created
   // you can also change the name of the select menus and

@@ -62,7 +62,7 @@ function Blank_TextField_Validator()
 -->
 </script>
 
-<form name="event_search" action="event/query" method="GET" onsubmit="return Blank_TextField_Validator()">
+<form name="event_search" action="event/query" method="get" onsubmit="return Blank_TextField_Validator()">
       <p>Event Text:<input type="text" name="msgmatchany" /> &nbsp; Time:
         <select name="relativetime" size="1">
           <option value="0" selected>Any</option>

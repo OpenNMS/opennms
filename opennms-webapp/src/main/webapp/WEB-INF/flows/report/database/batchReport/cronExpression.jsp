@@ -60,7 +60,7 @@
 	<form:input path="cronExpression"/>
 	</p>	   
 
-    <br>
+    <br/>
     <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
 	<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
 	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;

@@ -1,8 +1,10 @@
 package org.opennms.report.inventory;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -388,7 +390,7 @@ public class InventoryReportCalculator implements InitializingBean {
     public void marshal(File outputFile)
     throws InventoryCalculationException {
         try {
-            FileWriter fileWriter = new FileWriter(outputFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(rnbi);

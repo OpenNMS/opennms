@@ -130,7 +130,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         for (Resource rulesFile : m_rules) {
             Reader rdr = null;
             try {
-                rdr = new InputStreamReader( rulesFile.getInputStream() );
+                rdr = new InputStreamReader( rulesFile.getInputStream(), "UTF-8" );
                 builder.addPackageFromDrl( rdr );
             } finally {
                 IOUtils.closeQuietly(rdr);

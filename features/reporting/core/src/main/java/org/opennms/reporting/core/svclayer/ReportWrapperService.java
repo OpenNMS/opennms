@@ -36,7 +36,6 @@
 package org.opennms.reporting.core.svclayer;
 
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.List;
 
 import org.opennms.api.reporting.ReportFormat;
@@ -57,21 +56,21 @@ public interface ReportWrapperService {
      * This method validates that the map of report parameters matches the report
      * parameters accepted by the report. Used by the web interface.
      * 
-     * @param reportParms hashmap of parameters to be provided at runtime
+     * @param parameters runtime report parameters
      * @param reportId reportId as defined in database-reports.xml
      * @return true if the reportParms supplied match those in the report definition.
      */
-    public abstract boolean validate(ReportParameters reportParms,
+    public abstract boolean validate(ReportParameters parameters,
             String reportId);
     
     /**
      * This method runs the report
      * 
-     * @param reportParms hashmap of parameters to be provided at runtime
-     * @param options delivery options for the report
+     * @param parameters runtime report parameters
+     * @param deliveryOptions delivery options for the report
      * @param reportId reportId as defined in database-reports.xml
      */
-    public abstract void run(ReportParameters reportParms, DeliveryOptions options,
+    public abstract void run(ReportParameters parameters, DeliveryOptions deliveryOptions,
             String reportId);
     
     /**
@@ -97,11 +96,10 @@ public interface ReportWrapperService {
      * This method runs the report and renders in into the given output stream
      * with no intermediate steps
      *
-     * @param ReportId reportId as defined in database-reports.xml
-     * @param format format to render the report
+     * @param parameters runtime report parameters
      * @param outputStream stream to render the resulting report
      */
-    public abstract void runAndRender(HashMap<String, Object> reportParms, String ReportId, ReportFormat format, OutputStream outputStream);
+    public abstract void runAndRender(ReportParameters parameters, OutputStream outputStream);
     
     /**
      * This method renders the report into a given output stream.
@@ -112,6 +110,15 @@ public interface ReportWrapperService {
      * @param outputStream stream to render the resulting report
      */
     public abstract void render(String ReportId, String location, ReportFormat format, OutputStream outputStream);
+    
+    
+    /**
+     * This method is used to determine whether the report takes any parameters
+     * 
+     *  @param reportId
+     *  @return true if the report takes parameters, false if not.
+     */
+    public abstract Boolean hasParameters(String ReportId);
     
     /**
      * This method retrieves the runtime parameters taken by the report

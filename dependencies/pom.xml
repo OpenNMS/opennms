@@ -26,6 +26,7 @@
     <module>jradius</module>
     <module>quartz</module>
     <module>rancid</module>
+    <module>rrd4j</module>
     <module>servlet</module>
     <module>snmp</module>
   </modules>

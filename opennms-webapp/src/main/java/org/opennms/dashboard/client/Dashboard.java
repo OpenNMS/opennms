@@ -39,7 +39,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -180,9 +181,9 @@ public class Dashboard implements EntryPoint, ErrorHandler {
 
         dialog.setWidget(panel);
         
-        ok.addClickListener(new ClickListener() {
+        ok.addClickHandler(new ClickHandler() {
 
-            public void onClick(Widget arg0) {
+            public void onClick(ClickEvent arg0) {
                 dialog.hide();
             }
             

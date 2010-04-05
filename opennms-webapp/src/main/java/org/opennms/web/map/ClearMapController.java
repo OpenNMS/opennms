@@ -80,7 +80,7 @@ public class ClearMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		log.info("Clearing map.");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-					.getOutputStream()));
+					.getOutputStream(), "UTF-8"));
 	
 		try {
 

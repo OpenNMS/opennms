@@ -105,7 +105,7 @@ public class DestinationWizardServlet extends HttpServlet {
             String action = request.getParameter("userAction");
 
             if (action.equals("edit")) {
-                // get the path that was choosen in the select
+                // get the path that was chosen in the select
                 try {
                     Path oldPath = DestinationPathFactory.getInstance().getPath(request.getParameter("paths"));
                     user.setAttribute("oldPath", oldPath);
@@ -180,7 +180,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 redirectString.append(SOURCE_PAGE_PATHS);
             }
         } else if (sourcePage.equals(SOURCE_PAGE_TARGETS)) {
-            // compare the list of targets choosen to the existing targets,
+            // compare the list of targets chosen to the existing targets,
             // replacing
             // and creating new targets as necessary
             String userTargets[] = request.getParameterValues("users");

@@ -124,7 +124,7 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-  <script language="Javascript" type="text/javascript">
+  <script type="text/javascript">
     function checkAllCheckboxes() {
        if( document.acknowledge_form.event.length ) {  
          for( i = 0; i < document.acknowledge_form.event.length; i++ ) {
@@ -219,13 +219,13 @@
       <!-- end menu -->
 
 	  <!-- hidden form for adding a new Notification -->
-	  <form action="admin/notification/noticeWizard/notificationWizard" method="POST" name="add_notification_form">
+	  <form action="admin/notification/noticeWizard/notificationWizard" method="post" name="add_notification_form">
 	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
 	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
 	  </form>
 	  
       <!-- hidden form for acknowledging the result set --> 
-      <form action="event/acknowledgeByFilter" method="POST" name="acknowledge_by_filter_form">    
+      <form action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">    
         <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <%=org.opennms.web.Util.makeHiddenTags(req)%>
@@ -262,7 +262,7 @@
             <% } %>
 
     <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-      <form action="event/acknowledge" method="POST" name="acknowledge_form">
+      <form action="event/acknowledge" method="post" name="acknowledge_form">
         <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <%=org.opennms.web.Util.makeHiddenTags(req)%>

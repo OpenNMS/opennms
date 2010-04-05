@@ -83,7 +83,7 @@
   <jsp:param name="breadcrumb" value="Choose Targets" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
     function next() 
     {
@@ -166,7 +166,7 @@
 
 
 <h2><%=(newPath.getName() != null ? "Editing path: "
-                            + newPath.getName() + "<br>" : "")%></h2>
+                            + newPath.getName() + "<br/>" : "")%></h2>
 
 <h3>Choose the users and groups to send the notice to.</h3>
 
@@ -263,7 +263,7 @@ action="admin/notification/destinationWizard" >
            <td>&nbsp;</td>
            <td width="25%" valign="top" align="left">
             <input type="button" value="Add Address" onclick="javascript:addAddress()"/>
-            <br>&nbsp;<br>
+            <br/>&nbsp;<br/>
             <select  WIDTH="200" STYLE="width: 200px" NAME="emails" SIZE="7" multiple>
              <%
                          Map emails = getEmails(targets);
@@ -276,7 +276,7 @@ action="admin/notification/destinationWizard" >
             }
             %>
             </select>
-            <br>
+            <br/>
             <input type="button" value="Remove Address" onclick="javascript:removeAddress()"/>
             </td>
             

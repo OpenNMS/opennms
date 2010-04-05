@@ -56,7 +56,7 @@
 
 
 <%-- A script to Save the file --%>
-<script language="Javascript" type="text/javascript">
+<script type="text/javascript">
     function saveReport()
     {
         document.customize_form.action.value = "Save"; 

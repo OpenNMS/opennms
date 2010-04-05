@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  *
  * @author brozow
  */
-public class ServiceFactoryBean implements FactoryBean, BeanFactoryAware, InitializingBean, DisposableBean {
+public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactoryAware, InitializingBean, DisposableBean {
     
     private BeanFactory m_beanFactory;
     private ServiceRegistry m_serviceRegistry;
@@ -100,11 +100,11 @@ public class ServiceFactoryBean implements FactoryBean, BeanFactoryAware, Initia
         }
     }
 
-    public Object getObject() throws Exception {
+    public Registration getObject() throws Exception {
         return m_registration;
     }
 
-    public Class<?> getObjectType() {
+    public Class<? extends Registration> getObjectType() {
         return (m_registration == null ? Registration.class : m_registration.getClass());
     }
 

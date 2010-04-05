@@ -131,7 +131,7 @@ final public class MemcachedMonitor extends IPv4Monitor {
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
 
-                OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream());
+                OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
                 osw.write("stats\n");
                 osw.flush();
 

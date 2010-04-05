@@ -40,8 +40,10 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -316,7 +318,7 @@ public class ManageNodeServlet extends HttpServlet {
             String fileName = path + INCLUDE_FILE_NAME;
 
             try {
-                FileWriter fileWriter = new FileWriter(fileName);
+                Writer fileWriter = new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8");
 
                 for (int i = 0; i < interfaceList.size(); i++) {
                     fileWriter.write(interfaceList.get(i) + System.getProperty("line.separator"));

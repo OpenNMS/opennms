@@ -1,21 +1,20 @@
 package org.opennms.netmgt.poller.monitors;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
-import org.apache.bsf.util.IOUtils;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
-
+import org.apache.bsf.util.IOUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.core.utils.ParameterMap;
 
 
 // this might actually be able to pushed out to the remote poller....  though prob not so easy out of the box
@@ -44,7 +43,7 @@ public class BSFMonitor extends IPv4Monitor {
             }
             
             if(file.exists() && file.canRead()){   
-                    String code = IOUtils.getStringFromReader(new FileReader(file));
+                    String code = IOUtils.getStringFromReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
                     String status = new String();
                     
                     bsfManager.declareBean("map", map, Map.class);

@@ -60,6 +60,9 @@
     OpenNMS Web Console
   </title>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css"/>
+  <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>
@@ -87,7 +90,7 @@
   </c:forEach>
   <script type="text/javascript" src="js/global.js"></script>
     <c:if test="${!empty pageContext.request.remoteUser}">
-        <script type="text/javascript" language="javascript" src="coreweb/coreweb.nocache.js"></script>
+        <script type="text/javascript" src="coreweb/coreweb.nocache.js"></script>
     </c:if>
 	<c:if test="${param.enableExtJS == 'true'}">
   		<script type='text/javascript' src='extJS/source/core/Ext.js'></script>

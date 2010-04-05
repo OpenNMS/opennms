@@ -80,7 +80,7 @@ public class DeleteMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		log.info("Deleting map");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 		try {
 			manager.deleteMap(); 
 			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.DELETEMAP_ACTION));

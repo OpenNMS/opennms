@@ -88,7 +88,7 @@ public class RefreshMapController implements Controller {
 		
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 		VMap map = null;
 		try {
 			if (action.equals(MapsConstants.REFRESH_ACTION)) {

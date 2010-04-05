@@ -291,7 +291,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 m_onmsNodeRancidNodeMap.put(nodeId, rUpdatedNode);
             
             } catch (RancidApiException re) {
-                if (re.getRancidCode() ==RancidApiException.OTHER_ERROR) {
+                if (re.getRancidCode() ==RancidApiException.RWS_RESOURCE_NOT_FOUND) {
                     log().warn("doUpdate: node not found in router.db: " + rUpdatedNode.toString());
                     try {
                         log().debug("doUpdate: adding Node to router.db for nodeid: " + nodeId);

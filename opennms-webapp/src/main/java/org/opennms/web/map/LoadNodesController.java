@@ -83,7 +83,7 @@ public class LoadNodesController implements Controller {
 		log.debug("Loading Nodes like "+like );
 		
 		String user = request.getRemoteUser();
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
 			VElementInfo[] elemInfos = null;
 			if(like==null)

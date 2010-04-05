@@ -134,7 +134,7 @@ public class ExecCommandController implements Controller {
         response.setHeader("pragma","no-Chache");
         response.setHeader("Expires","0");
         response.setHeader("Chache-Control","no-Chache");
-        final OutputStreamWriter os = new OutputStreamWriter(response.getOutputStream());
+        final OutputStreamWriter os = new OutputStreamWriter(response.getOutputStream(), "UTF-8");
         os.write("<html>"); 
 
         try {

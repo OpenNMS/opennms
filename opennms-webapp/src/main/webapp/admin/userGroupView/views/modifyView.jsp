@@ -76,7 +76,7 @@
 </jsp:include>
 
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
     
     function validate()
     {
@@ -243,17 +243,17 @@
               </tr>
               <tr>
                 <td align="center">
-                  Available Users <br>
-                  <%=getAllUsersMinusInView(view)%><br>
+                  Available Users <br/>
+                  <%=getAllUsersMinusInView(view)%><br/>
                   <p align=center>
-                  <input type="button"  onClick="selectAllAvailableUsers()" value="Select All"><br>
+                  <input type="button"  onClick="selectAllAvailableUsers()" value="Select All"><br/>
                   <input type="button" onClick="addUsers()" value="&nbsp;&gt;&gt;&nbsp;"></p>
                 </td>
                 <td align="center">
-                  Users Currently in View <br>
-                  <%=getUsersList(view)%><br>
+                  Users Currently in View <br/>
+                  <%=getUsersList(view)%><br/>
                   <p align=center>
-                  <input type="button" onClick="selectAllSelectedUsers()" value="Select All"><br>
+                  <input type="button" onClick="selectAllSelectedUsers()" value="Select All"><br/>
                   <input type="button" onClick="removeUsers()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
                 </td>
               </tr>
@@ -271,17 +271,17 @@
               </tr>
               <tr>
                 <td align="center">
-                  Available Groups <br>
-                  <%=getAllGroupsMinusInView(view)%><br>
+                  Available Groups <br/>
+                  <%=getAllGroupsMinusInView(view)%><br/>
                   <p align=center>
-                  <input type="button" onClick="selectAllAvailableGroups()" value="Select All"><br>
+                  <input type="button" onClick="selectAllAvailableGroups()" value="Select All"><br/>
                   <input type="button" onClick="addGroups()" value="&nbsp;&gt;&gt;&nbsp;"></p>
                 </td>
                 <td align="center">
-                  Groups Currently in View <br>
-                  <%=getGroupsList(view)%><br>
+                  Groups Currently in View <br/>
+                  <%=getGroupsList(view)%><br/>
                   <p align=center>
-                  <input type="button" onClick="selectAllSelectedGroups()" value="Select All"><br>
+                  <input type="button" onClick="selectAllSelectedGroups()" value="Select All"><br/>
                   <input type="button" onClick="removeGroups()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
                 </td>
               </tr>
@@ -309,7 +309,7 @@
   </table>
 </form>
 
-<script language="JavaScript">
+<script type="text/javascript">
   // shorthand for refering to menus
   // must run after document has been created
   // you can also change the name of the select menus and

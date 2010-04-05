@@ -111,7 +111,7 @@ public class NotificationsTestCase extends TestCase {
         m_pollOutagesConfigManager = new MockPollerConfig(m_network);
         
         m_anticipator = new NotificationAnticipator();
-        MockNotificationStrategy.setAnticpator(m_anticipator);
+        MockNotificationStrategy.setAnticipator(m_anticipator);
         
         m_notifd = new Notifd();
         m_notifd.setEventManager(m_eventMgr);
@@ -181,7 +181,7 @@ public class NotificationsTestCase extends TestCase {
         m_notifd.stop();
 
         m_db.drop();
-        MockNotificationStrategy.setAnticpator(null);
+        MockNotificationStrategy.setAnticipator(null);
         MockLogAppender.assertNoWarningsOrGreater();
         super.tearDown();
     }

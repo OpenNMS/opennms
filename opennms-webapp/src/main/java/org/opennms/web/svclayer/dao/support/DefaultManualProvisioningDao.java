@@ -35,9 +35,10 @@
 package org.opennms.web.svclayer.dao.support;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
@@ -130,7 +131,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
             Marshaller.marshal(group, strWriter);
             
             // if we successfully get here then the file is correct
-            w = new FileWriter(importFile);
+            w = new OutputStreamWriter(new FileOutputStream(importFile), "UTF-8");
             w.write(strWriter.toString());
             
         } catch (IOException e) {

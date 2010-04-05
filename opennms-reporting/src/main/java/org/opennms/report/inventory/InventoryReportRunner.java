@@ -172,7 +172,7 @@ public class InventoryReportRunner implements Runnable {
                 FileOutputStream hmtlFileWriter = new FileOutputStream(file);
                 PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-nbinventoryreport.xsl");
                 File fileR = new File(xmlFileName);
-                FileReader fileReader = new FileReader(fileR);
+                Reader fileReader = new InputStreamReader(new FileInputStream(fileR), "UTF-8");
                 htmlWriter.generateHTML(fileReader, hmtlFileWriter);
                 log().debug("runNodeBaseInventoryReport html sending email");
                 ReportMailer mailer = new ReportMailer(reportEmail,htmlFileName,"OpenNMS Inventory Report");
