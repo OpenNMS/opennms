@@ -272,6 +272,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jcommon</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
