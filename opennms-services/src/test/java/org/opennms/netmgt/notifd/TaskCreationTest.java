@@ -29,11 +29,17 @@
 //
 package org.opennms.netmgt.notifd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockNode;
@@ -48,13 +54,8 @@ public class TaskCreationTest extends NotificationsTestCase {
     private Map<String, String> m_params;
     private String[] m_commands;
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(TaskCreationTest.class);
-    }
-    
-    
-    
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         m_eventProcessor = m_notifd.getBroadcastEventProcessor();
         
@@ -62,18 +63,18 @@ public class TaskCreationTest extends NotificationsTestCase {
         MockNode node = m_network.getNode(1);
         Event nodeDownEvent = node.createDownEvent();
         
-        m_params = m_eventProcessor.buildParameterMap(m_notif, nodeDownEvent, 1);
+        m_params = BroadcastEventProcessor.buildParameterMap(m_notif, nodeDownEvent, 1);
         m_commands = new String[]{ "email" };
-
     }
 
 
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        // super.tearDown();
     }
 
 
+    @Test
     public void testMakeEmailTask() throws Exception {
         long startTime = now();
 
@@ -90,6 +91,7 @@ public class TaskCreationTest extends NotificationsTestCase {
         return System.currentTimeMillis();
     }
 
+    @Test
     public void testMakeUserTask() throws Exception {
         long startTime = now();
 
@@ -118,6 +120,7 @@ public class TaskCreationTest extends NotificationsTestCase {
         }
     }
 
+    @Test
     public void testMakeGroupTasks() throws Exception {
         long startTime = now();
         
@@ -128,6 +131,7 @@ public class TaskCreationTest extends NotificationsTestCase {
         
     }
     
+    @Test
     public void testMakeGroupTasksWithDutySchedule() throws Exception {
         final String groupName = "EscalationGroup";
 
@@ -153,6 +157,7 @@ public class TaskCreationTest extends NotificationsTestCase {
 
     }
     
+    @Test
     public void testMakeRoleTasks() throws Exception {
         long dayTime = getTimeStampFor("21-FEB-2005 11:59:56");
 
