@@ -94,12 +94,6 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                                                                                 // Object
                                                                                 // Id
 
-    /**
-     * Interface attribute key used to store the interface's SnmpAgentConfig
-     * object.
-     */
-    static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
-
     private static final String DEFAULT_REASON_TEMPLATE = "Observed value '${observedValue}' does not meet criteria '${operator} ${operand}'";
 
     /**
@@ -156,29 +150,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      */
     public void initialize(MonitoredService svc) {
-        NetworkInterface iface = svc.getNetInterface();
-        // Log4j category
-        //
-        // Get interface address from NetworkInterface
-        //
         super.initialize(svc);
-
-        InetAddress ipAddr = (InetAddress) iface.getAddress();
-
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
-        if (log().isDebugEnabled()) {
-            log().debug("initialize: SnmpAgentConfig address: " + agentConfig);
-        }
-
-        // Add the snmp config object as an attribute of the interface
-        //
-        if (log().isDebugEnabled())
-            log().debug("initialize: setting SNMP peer attribute for interface " + ipAddr.getHostAddress());
-
-        iface.setAttribute(SNMP_AGENTCONFIG_KEY, agentConfig);
-
-        log().debug("initialize: interface: " + agentConfig.getAddress() + " initialized.");
-
         return;
     }
 
@@ -206,8 +178,9 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
 
         // Retrieve this interface's SNMP peer object
         //
-        SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
 
         // Get configuration parameters
         //
