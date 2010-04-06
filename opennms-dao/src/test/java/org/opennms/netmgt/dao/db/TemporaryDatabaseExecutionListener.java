@@ -37,11 +37,14 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 /**
- * TemporaryDatabaseExecutionListener
+ * This {@link TestExecutionListener} creates a temporary database and then registers it
+ * as the default datasource inside {@link DataSourceFactory} by using 
+ * {@link DataSourceFactory#setInstance(DataSource)}.
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
