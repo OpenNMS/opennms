@@ -10,7 +10,6 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectE
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
@@ -25,38 +24,53 @@ import com.google.gwt.maps.client.geom.Size;
 import com.google.gwt.maps.client.overlay.Icon;
 import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.maps.client.overlay.MarkerOptions;
-import com.google.gwt.maps.utility.client.DefaultPackage;
-import com.google.gwt.maps.utility.client.GoogleMapsUtility;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
-import de.novanic.eventservice.client.event.RemoteEventService;
-import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
-
 public class GoogleMapsLocationManager extends AbstractLocationManager implements LocationManager {
-//	private static final int MARKER_MAX_ZOOM = 18;
-
-	private final SplitLayoutPanel m_panel;
-
+    
+ 	private final SplitLayoutPanel m_panel;
 	private MapWidget m_mapWidget;
-//	private MarkerManager m_markerManager;
-	private LocationListener m_locationListener;
-	private LocationManager m_locationManager;
 
 	private final Map<String,GoogleMapsLocation> m_locations = new HashMap<String,GoogleMapsLocation>();
-	private boolean updated = false;
 	private final HashMap<String, Location> m_visibleLocations = new HashMap<String, Location>();
+    private boolean updated = false;
 
 	public GoogleMapsLocationManager(Application application, final HandlerManager eventBus, final SplitLayoutPanel panel) {
 		super(application, eventBus);
 		m_panel = panel;
-		m_locationManager = this;
 	}
+	
+	@Override
+    protected void initializeMapWidget() {
+        m_mapWidget = new MapWidget();
+        m_mapWidget.setSize("100%", "100%");
+        m_mapWidget.setUIToDefault();
+        m_mapWidget.addControl(new LargeMapControl());
+      //              m_mapWidget.setZoomLevel(10);
+        m_mapWidget.setContinuousZoom(true);
+        m_mapWidget.setScrollWheelZoomEnabled(true);
+      
+        m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
+        
+            public void onMoveEnd(MapMoveEndEvent event) {
+                checkAllVisibleLocations();
+            }
+            
+        });
+        
+        Window.addResizeHandler(new ResizeHandler() {
+            public void onResize(final ResizeEvent resizeEvent) {
+                if (m_mapWidget != null) {
+                    m_mapWidget.checkResizeAndCenter();
+                }
+            }
+        });
+        
+        m_panel.add(m_mapWidget);
 
-    private void setupEventHandlers() {
         m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, new LocationPanelSelectEventHandler() {
             
             public void onLocationSelected(final LocationPanelSelectEvent event) {
@@ -64,117 +78,40 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
             }
         });
         
-        m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
-
-            public void onMoveEnd(MapMoveEndEvent event) {
-                checkAllVisibleLocations();
+}
+    
+	@Override
+    public void selectLocation(String locationName) {
+        final GoogleMapsLocation location = m_locations.get(locationName);
+        if (location == null) {
+            return;
+        }
+        final Marker m = location.getMarker();
+        final GWTLatLng latLng = location.getLatLng();
+        m_mapWidget.savePosition();
+        m_mapWidget.setCenter(transformLatLng(latLng));
+        if (m != null) {
+            InfoWindowContent content = Utils.getInfoWindowForLocation(location);
+            m_mapWidget.getInfoWindow().open(m, content);
+        }
+    }
+	
+	private void checkAllVisibleLocations() {
+        for(GoogleMapsLocation location : m_locations.values()) {
+            if(checkIfLocationIsVisibleOnMap(location)) {
+                m_visibleLocations.put(location.getName(), location);
+            } else {
+                if(m_visibleLocations.containsKey(location.getName())) {
+                    m_visibleLocations.remove(location.getName());
+                }
             }
-            
-        });
-        
+        }
+        m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
     }
 
-	private void checkAllVisibleLocations() {
-	    for(GoogleMapsLocation location : m_locations.values()) {
-	        if(checkIfLocationIsVisibleOnMap(location)) {
-	            m_visibleLocations.put(location.getName(), location);
-	        } else {
-	            if(m_visibleLocations.containsKey(location.getName())) {
-	                m_visibleLocations.remove(location.getName());
-	            }
-	        }
-	    }
-	    m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
-	}
+	
 
-	@Override
-	public void initialize() {
-		DeferredCommand.addCommand(new InitializationCommand() {
-			private boolean m_inProgress = false;
-
-			@Override
-			protected boolean mapApiLoaded() throws InitializationException {
-				m_mapWidget = new MapWidget();
-				m_mapWidget.setSize("100%", "100%");
-				m_mapWidget.setUIToDefault();
-				m_mapWidget.addControl(new LargeMapControl());
-//				m_mapWidget.setZoomLevel(10);
-				m_mapWidget.setContinuousZoom(true);
-				m_mapWidget.setScrollWheelZoomEnabled(true);
-
-				m_panel.add(m_mapWidget);
-
-				Window.addResizeHandler(new ResizeHandler() {
-					public void onResize(final ResizeEvent resizeEvent) {
-						if (m_mapWidget != null) {
-							m_mapWidget.checkResizeAndCenter();
-						}
-					}
-				});
-
-				return true;
-			}
-
-			@Override
-			protected void loadMarkerApi() throws InitializationException {
-				m_inProgress = true;
-				GoogleMapsUtility.loadUtilityApi(new Runnable() {
-					public void run() {
-						m_inProgress = false;
-					}
-				}, DefaultPackage.MARKER_MANAGER);
-			}
-
-			@Override
-			protected boolean markerApiLoaded() throws InitializationException {
-				return (!m_inProgress);
-			}
-			
-			@Override
-			protected void loadIconApi() throws InitializationException {
-				m_inProgress = true;
-				GoogleMapsUtility.loadUtilityApi(new Runnable() {
-					public void run() {
-						m_inProgress = false;
-					}
-				}, DefaultPackage.MAP_ICON_MAKER);
-			}
-
-			@Override
-			protected boolean iconApiLoaded() throws InitializationException {
-				return (!m_inProgress);
-			}
-
-			@Override
-			protected void loadEventBackend() throws InitializationException {
-				m_inProgress = true;
-				m_locationListener = new DefaultLocationListener(m_locationManager);
-				final RemoteEventService eventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
-				eventService.addListener(LocationManager.LOCATION_EVENT_DOMAIN, m_locationListener);
-
-				setupEventHandlers();
-
-				m_remoteService.start(new AsyncCallback<Void>() {
-					public void onFailure(Throwable throwable) {
-						Log.debug("unable to start location even service backend", throwable);
-						throw new InitializationException("remote service start failed", throwable);
-					}
-
-					public void onSuccess(Void voidArg) {
-						m_inProgress = false;
-					}
-				});
-			}
-
-			@Override
-			protected boolean eventBackendLoaded() throws InitializationException {
-				return (!m_inProgress);
-			}
-
-		});
-	}
-
-	@Override
+    @Override
 	public void removeLocation(final Location location) {
 		if (location == null) return;
 		GoogleMapsLocation loc = m_locations.get(location.getName());
@@ -219,22 +156,10 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 		}
 		return locations;
     }
-
-	@Override
-    public void selectLocation(String locationName) {
-    	final GoogleMapsLocation location = m_locations.get(locationName);
-    	if (location == null) {
-    		return;
-    	}
-		final Marker m = location.getMarker();
-		final GWTLatLng latLng = location.getLatLng();
-		m_mapWidget.savePosition();
-		m_mapWidget.setCenter(transformLatLng(latLng));
-		if (m != null) {
-		    InfoWindowContent content = Utils.getInfoWindowForLocation(location);
-			m_mapWidget.getInfoWindow().open(m, content);
-		}
-	}
+	
+	
+	
+	
 
 	private LatLng transformLatLng(final GWTLatLng latLng) {
 		return LatLng.newInstance(latLng.getLatitude(), latLng.getLongitude());
@@ -322,7 +247,8 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
         return m_mapWidget.getBounds().containsLatLng(transformLatLng(location.getLatLng()));
     }
 
-	private final class DefaultMarkerClickHandler implements MarkerClickHandler {
+	
+    private final class DefaultMarkerClickHandler implements MarkerClickHandler {
 		private final String m_locationName;
 
 		private DefaultMarkerClickHandler(final String locationName) {

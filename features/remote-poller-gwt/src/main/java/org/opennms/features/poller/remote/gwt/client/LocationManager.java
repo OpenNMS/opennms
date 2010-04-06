@@ -25,4 +25,5 @@ public interface LocationManager {
 	public void fitToMap();
 
 	public void reportError(String string, Throwable t);
+
 }
