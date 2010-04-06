@@ -104,7 +104,7 @@ fi
 
 echo nohup $JAVA_EXE \
 	$JVM_ARGS \
-	-Djava.rmi.activation.port="$REMOTE_PORT" \
+	-Djava.rmi.activation.port="$RMI_PORT" \
 	-jar "$MONITOR_JAR" \
 	--url="$REMOTE_URI" \
 	--location="$REMOTE_LOCATION" \
@@ -113,7 +113,7 @@ echo nohup $JAVA_EXE \
 
 exec nohup $JAVA_EXE \
 	$JVM_ARGS \
-	-Djava.rmi.activation.port="$REMOTE_PORT" \
+	-Djava.rmi.activation.port="$RMI_PORT" \
 	-jar "$MONITOR_JAR" \
 	--url="$REMOTE_URI" \
 	--location="$REMOTE_LOCATION" \

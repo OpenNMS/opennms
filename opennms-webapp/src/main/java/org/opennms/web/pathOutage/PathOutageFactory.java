@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2010 Apr 05: Add method to read the critical path
+//              (getCriticalPath). - ayres@opennms.org
 // 2007 Jul 24: Organize imports, Java 5 generics. - dj@opennms.org
 // 2006 Apr 27: reworked getLabelAndStatus
 // 2006 Apr 25: replaced getNodeLabelAndColor with getLabelAndStatus to
@@ -48,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.DBUtils;
 import org.opennms.web.WebSecurityUtils;
 
 /**
@@ -61,6 +64,8 @@ public class PathOutageFactory extends Object {
 
     private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
 
+    private static final String GET_CRITICAL_PATH_BY_NODEID = "SELECT criticalpathip, criticalpathservicename FROM pathoutage WHERE nodeid=?";
+    
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.criticalpathservicename=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
     private static final String COUNT_MANAGED_SVCS = "SELECT count(*) FROM ifservices WHERE status ='A' and nodeid=?";
@@ -78,6 +83,8 @@ public class PathOutageFactory extends Object {
     private static final String GET_CRITICAL_PATH_STATUS = "SELECT count(*) FROM outages WHERE ipaddr=? AND ifregainedservice IS NULL AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
     private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifservices WHERE ipaddr=? AND status='A' AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
+    
+    public static final String NO_CRITICAL_PATH = "Not Configured";
 
     /**
      * <p>
@@ -104,6 +111,34 @@ public class PathOutageFactory extends Object {
             Vault.releaseDbConnection(conn);
         }
         return paths;
+    }
+    
+    /**
+     * <p>
+     * Retrieve critical path by nodeid
+     * from the database
+     * @param String nodeID
+     */
+    public static String getCriticalPath(int nodeID) throws SQLException {
+        final DBUtils d = new DBUtils(PathOutageFactory.class);
+        String result = NO_CRITICAL_PATH;
+
+        try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement(GET_CRITICAL_PATH_BY_NODEID);
+            d.watch(stmt);
+            stmt.setInt(1, nodeID);
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            while (rs.next()) {
+                result = (rs.getString(1) + " " + rs.getString(2));
+            }
+        } finally {
+            d.cleanUp();
+        }
+
+        return result;
     }
 
     /**

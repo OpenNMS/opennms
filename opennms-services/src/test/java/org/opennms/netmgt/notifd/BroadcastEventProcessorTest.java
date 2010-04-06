@@ -35,12 +35,17 @@
 //
 package org.opennms.netmgt.notifd;
 
-import java.io.Reader;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockService;
@@ -49,32 +54,30 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.test.ConfigurationTestUtils;
 
 public class BroadcastEventProcessorTest extends NotificationsTestCase {
 
     private BroadcastEventProcessor m_processor;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         m_processor = new BroadcastEventProcessor();
         m_processor.initExpandRe();
 
         m_anticipator.setExpectedDifference(3000);
-
-        Reader rdr = ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml"); 
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
-        rdr.close();
     }
 
-    protected void tearDown() throws Exception {
-        // Do nothing??
+    @After
+    public void tearDown() throws Exception {
+        // super.tearDown();
     }
 
     /**
      * Test calling expandNotifParms to see if the regular expression in
      * m_notifdExpandRE is initialized from {@link BroadcastEventProcessor.NOTIFD_EXPANSION_PARM}.
      */
+    @Test
     public void testExpandNotifParms() throws Exception {
         String expandResult = BroadcastEventProcessor.expandNotifParms("%foo%", new TreeMap<String,String>());
         assertEquals("%foo%", expandResult);
@@ -184,6 +187,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
      * 
      * @author Jeff Gehlbach <jeffg@jeffg.org>
      */
+    @Test
     public void testExpandNoticeId_Bug1745() throws Exception {
         MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
         Event event = MockEventUtil.createServiceEvent("Test", "uei.opennms.org/test/noticeIdExpansion", svc, null);
