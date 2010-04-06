@@ -20,6 +20,7 @@ import com.google.gwt.maps.client.event.MapMoveEndHandler;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.geom.LatLngBounds;
+import com.google.gwt.maps.client.geom.Point;
 import com.google.gwt.maps.client.geom.Size;
 import com.google.gwt.maps.client.overlay.Icon;
 import com.google.gwt.maps.client.overlay.Marker;
@@ -221,18 +222,24 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	}
 
 	private Marker createMarker(final GoogleMapsLocation location) {
-		Icon icon = Icon.newInstance();
-		icon.setIconSize(Size.newInstance(32, 64));
-		icon.setImageURL("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png");
-
-		final MarkerOptions markerOptions = MarkerOptions.newInstance();
-		markerOptions.setAutoPan(true);
-		markerOptions.setClickable(true);
-		markerOptions.setTitle(location.getName());
-		markerOptions.setIcon(icon);
-		final GWTLatLng latLng = location.getLatLng();
-		final Marker m = new Marker(transformLatLng(latLng), markerOptions);
-		m.addMarkerClickHandler(new DefaultMarkerClickHandler(location.getName()));
+		Marker m = location.getMarker();
+		if (m == null) {
+			Icon icon = Icon.newInstance();
+			icon.setIconSize(Size.newInstance(32, 32));
+			icon.setIconAnchor(Point.newInstance(16, 32));
+			icon.setImageURL("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png");
+	
+			final MarkerOptions markerOptions = MarkerOptions.newInstance();
+			markerOptions.setAutoPan(true);
+			markerOptions.setClickable(true);
+			markerOptions.setTitle(location.getName());
+			markerOptions.setIcon(icon);
+			final GWTLatLng latLng = location.getLatLng();
+			m = new Marker(transformLatLng(latLng), markerOptions);
+			m.addMarkerClickHandler(new DefaultMarkerClickHandler(location.getName()));
+		} else {
+			m.setImage("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png");
+		}
 		location.setMarker(m);
 
 		return m;

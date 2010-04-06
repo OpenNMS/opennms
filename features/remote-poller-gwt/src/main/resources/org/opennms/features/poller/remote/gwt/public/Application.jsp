@@ -7,19 +7,25 @@
 <!-- but may lead to some differences in layout.   -->
 
 <%@page language="java" contentType="text/html; charset=UTF-8" %>
-<% String mapImplementation = System.getProperty("gwt.maptype"); %>
+<%
+	final String mapImplementation = System.getProperty("gwt.maptype");
+	String apiKey = System.getProperty("gwt.apikey");
+	if (apiKey == null) {
+		apiKey = "";
+	}
+%>
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Application</title>
     
-    <% if (mapImplementation.equalsIgnoreCase("googlemaps")) { 
-        String keyText = "hello"; //System.getProperty("gwt.apikey");
-        keyText = keyText == null ? "" : "&key=" + keyText; 
-    %>
-    <script src="http://maps.google.com/maps?gwt=1&file=api&v=2.x<%=keyText%>"></script>
+    <script type="text/javascript" language="javascript">
+    	window.mapImplementation = "<%= mapImplementation %>";
+    </script>
+    <% if (mapImplementation.equalsIgnoreCase("googlemaps")) { %>
+    <script src="http://maps.google.com/maps?gwt=1&file=api&v=2.x<%= apiKey %>"></script>
     <% } else if (mapImplementation.equalsIgnoreCase("mapquest")) { %>
-    <script type="text/javascript" src="http://btilelog.access.mapquest.com/tilelog/transaction?transaction=script&itk=true&v=5.3.s&ipkg=controls1&key=<%= System.getProperty("gwt.apikey") %>"></script>
+    <script type="text/javascript" src="http://btilelog.access.mapquest.com/tilelog/transaction?transaction=script&itk=true&v=5.3.s&ipkg=controls1&key=<%= apiKey %>"></script>
     <script type="text/javascript" src="mapquest/debug/mqutils.js"></script>
     <script type="text/javascript" src="mapquest/debug/mqobjects.js"></script>
     <% } %>

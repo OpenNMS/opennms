@@ -9,10 +9,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -53,10 +51,24 @@ public class Application implements EntryPoint
 
 		locationPanel.setEventBus(m_eventBus);
 
-//		m_locationManager = new MapquestLocationManager(this, m_eventBus, splitPanel);
-		m_locationManager = new GoogleMapsLocationManager(this, m_eventBus, splitPanel);
+		// no reflection in GWT  :(
+		if (getMapImplementationType() == null) {
+			Window.alert("unable to determine gwt.maptype setting from opennms.properties!");
+			throw new RuntimeException("unable to determine gwt.maptype setting from opennms.properties!");
+		} else if (getMapImplementationType().equals("Mapquest")) {
+			m_locationManager = new MapquestLocationManager(this, m_eventBus, splitPanel);
+		} else if (getMapImplementationType().equals("GoogleMaps")) {
+			m_locationManager = new GoogleMapsLocationManager(this, m_eventBus, splitPanel);
+		} else {
+			Window.alert("unknown map implementation: " + getMapImplementationType());
+			throw new RuntimeException("unknown map implementation: " + getMapImplementationType());
+		}
 		m_locationManager.initialize();
 	}
+
+	public native String getMapImplementationType() /*-{
+		return $wnd.mapImplementation;
+	}-*/;
 
 	public void finished() {
 		splitPanel.setWidgetMinSize(locationPanel, 200);
