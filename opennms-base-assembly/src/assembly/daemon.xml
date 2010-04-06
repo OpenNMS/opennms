@@ -43,6 +43,18 @@
       <outputDirectory>jetty-webapps/ROOT</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>target/remote-poller/etc</directory>
+      <outputDirectory>contrib/remote-poller</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/remote-poller/bin</directory>
+      <outputDirectory>bin</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/remote-poller/lib</directory>
+      <outputDirectory>bin</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/dependency-webapp</directory>
       <outputDirectory>jetty-webapps/opennms</outputDirectory>
       <excludes>

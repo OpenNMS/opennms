@@ -68,22 +68,27 @@ public class Main {
     String m_locationName;
     String m_username = null;
     String m_password = null;
+    String m_pollerHome = null;
     boolean m_shuttingDown = false;
     boolean m_gui = false;
     CommandLine m_cl;
 
     private Main(String[] args) throws Exception {
         m_args = args;
+        m_pollerHome = System.getProperty("poller.home");
+        if (m_pollerHome == null) {
+        	if (System.getProperty("os.name").contains("Windows")) {
+        		m_pollerHome = System.getProperty("java.io.tmpdir");
+        	} else {
+        		m_pollerHome = System.getProperty("user.home") + File.separator + ".opennms";
+        	}
+        }
         initializeLogging();
     }
 
     private void initializeLogging() throws Exception {
         String logFile;
-        if (System.getProperty("os.name").contains("Windows")) {
-            logFile = System.getProperty("java.io.tmpdir") + File.separator + "opennms-remote-poller.log";
-        } else {
-            logFile = System.getProperty("user.home") + File.separator + ".opennms" + File.separator + "remote-poller.log";
-        }
+        logFile = m_pollerHome + File.separator + "opennms-remote-poller.log";
         File logDirectory = new File(logFile).getParentFile();
         if (!logDirectory.exists()) {
             if (!logDirectory.mkdirs()) {
@@ -98,7 +103,7 @@ public class Main {
     }
 
     private void getAuthenticationInfo() {
-    	if (m_uri == null) {
+    	if (m_uri == null || m_uri.getScheme() == null) {
     		throw new RuntimeException("no URI specified!");
     	}
     	if (m_uri.getScheme().equals("rmi")) {

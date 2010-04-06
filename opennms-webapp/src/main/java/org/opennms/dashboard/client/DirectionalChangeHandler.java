@@ -35,17 +35,17 @@
 
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public abstract class DirectionalChangeListener implements ChangeListener {
-    public void onChange(Widget widget) {
-        onChange(widget, 1);
+public abstract class DirectionalChangeHandler implements ChangeHandler {
+    public void onChange(ChangeEvent event) {
+        onChange(event, 1);
     }
-    
-    public abstract void onChange(Widget widget, int direction);
+
+    public abstract void onChange(ChangeEvent event, int direction);
 }

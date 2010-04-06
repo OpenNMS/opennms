@@ -20,3 +20,5 @@ opennms-server
 opennms-webapp-jetty
 opennms-webapp-standalone
 opennms
+opennms-remote-poller.default
+opennms-remote-poller.init
