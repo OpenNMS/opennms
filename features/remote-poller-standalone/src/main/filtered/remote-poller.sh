@@ -102,14 +102,14 @@ if [ -n "$REMOTE_PASSWORD" ]; then
 	EXTRA_ARGS="$EXTRA_ARGS -p $REMOTE_PASSWORD"
 fi
 
-echo nohup $JAVA_EXE \
-	$JVM_ARGS \
-	-Djava.rmi.activation.port="$RMI_PORT" \
-	-jar "$MONITOR_JAR" \
-	--url="$REMOTE_URI" \
-	--location="$REMOTE_LOCATION" \
-	$EXTRA_ARGS \
-	"$@"
+#echo nohup $JAVA_EXE \
+#	$JVM_ARGS \
+#	-Djava.rmi.activation.port="$RMI_PORT" \
+#	-jar "$MONITOR_JAR" \
+#	--url="$REMOTE_URI" \
+#	--location="$REMOTE_LOCATION" \
+#	$EXTRA_ARGS \
+#	"$@"
 
 exec nohup $JAVA_EXE \
 	$JVM_ARGS \
