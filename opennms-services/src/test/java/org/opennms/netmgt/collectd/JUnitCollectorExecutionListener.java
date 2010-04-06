@@ -111,9 +111,9 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         for (File f : directory.listFiles()) {
             if (f.isDirectory()) {
                 deleteChildDirectories(f);
-            }
-            if (f.list().length == 0) {
-                f.delete();
+                if (f.list().length == 0) {
+                    f.delete();
+                }
             }
         }
     }
