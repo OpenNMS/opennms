@@ -15,7 +15,9 @@ public class GWTLatLng implements IsSerializable {
 		return new GWTLatLng(35.7174,-79.1619);
 	}
 
-	public GWTLatLng() {}
+	public GWTLatLng() {
+	    this(0.0, 0.0);
+	}
 	
 	public GWTLatLng(Double latitude, Double longitude) {
 		m_latitude = latitude;

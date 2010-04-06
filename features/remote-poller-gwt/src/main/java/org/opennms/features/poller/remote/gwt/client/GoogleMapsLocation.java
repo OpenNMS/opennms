@@ -34,4 +34,8 @@ public class GoogleMapsLocation extends BaseLocation {
 		setLatLng(new GWTLatLng(marker.getLatLng().getLatitude(), marker.getLatLng().getLongitude()));
 	}
 
+    boolean isVisible(GWTBounds bounds) {
+        return bounds.contains(getLatLng());
+    }
+
 }
