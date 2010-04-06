@@ -175,14 +175,20 @@ public class NotificationsTestCase {
     private MockGroupManager createGroupManager() throws MarshalException, ValidationException, IOException {
         return new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "groups.xml"));
     }
-
+    
     protected void tearDown() throws Exception {
+        this.tearDown(false);
+    }
+
+    protected void tearDown(boolean allowAllLogMessages) throws Exception {
         m_eventMgr.finishProcessingEvents();
         m_notifd.stop();
 
-        m_db.drop();
+        // m_db.drop();
         MockNotificationStrategy.setAnticipator(null);
-        MockLogAppender.assertNoWarningsOrGreater();
+        if (!allowAllLogMessages) {
+            MockLogAppender.assertNoWarningsOrGreater();
+        }
     }
     
     public void testDoNothing() {

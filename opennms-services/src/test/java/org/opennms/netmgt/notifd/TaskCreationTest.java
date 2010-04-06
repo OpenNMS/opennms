@@ -70,7 +70,7 @@ public class TaskCreationTest extends NotificationsTestCase {
 
     @After
     public void tearDown() throws Exception {
-        // super.tearDown();
+        super.tearDown();
     }
 
 
