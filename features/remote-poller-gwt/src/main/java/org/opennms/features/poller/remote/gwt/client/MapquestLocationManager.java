@@ -34,8 +34,8 @@ public class MapquestLocationManager extends AbstractLocationManager {
 
 	private final Map<String,MapQuestLocation> m_locations = new HashMap<String,MapQuestLocation>();
 
-	public MapquestLocationManager(Application application, HandlerManager eventBus, SplitLayoutPanel splitPanel) {
-		super(application, eventBus);
+	public MapquestLocationManager(HandlerManager eventBus, SplitLayoutPanel splitPanel) {
+		super(eventBus);
 		m_outerPanel = splitPanel;
 	}
 

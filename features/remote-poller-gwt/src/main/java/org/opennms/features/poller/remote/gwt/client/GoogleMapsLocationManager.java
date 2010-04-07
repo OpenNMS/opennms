@@ -1,6 +1,5 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toGWTBounds;
 import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toLatLng;
 
 import java.util.ArrayList;
@@ -11,14 +10,11 @@ import java.util.Map;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.maps.client.control.LargeMapControl;
-import com.google.gwt.maps.client.event.MapMoveEndHandler;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
-import com.google.gwt.maps.client.geom.LatLngBounds;
 import com.google.gwt.maps.client.geom.Point;
 import com.google.gwt.maps.client.geom.Size;
 import com.google.gwt.maps.client.overlay.Icon;
@@ -26,7 +22,6 @@ import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 public class GoogleMapsLocationManager extends AbstractLocationManager {
@@ -37,46 +32,32 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 	private final Map<String,GoogleMapsLocation> m_locations = new HashMap<String,GoogleMapsLocation>();
     private boolean updated = false;
 
-	public GoogleMapsLocationManager(Application application, final HandlerManager eventBus, final SplitLayoutPanel panel) {
-		super(application, eventBus);
+	public GoogleMapsLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel) {
+		super(eventBus);
 		m_panel = panel;
 	}
 
 	@Override
     protected void initializeMapWidget() {
-        m_mapPanel.getMapWidget().setSize("100%", "100%");
-        m_mapPanel.getMapWidget().setUIToDefault();
-        m_mapPanel.getMapWidget().addControl(new LargeMapControl());
-      //              m_mapWidget.setZoomLevel(10);
-        m_mapPanel.getMapWidget().setContinuousZoom(true);
-        m_mapPanel.getMapWidget().setScrollWheelZoomEnabled(true);
-
-        m_mapPanel.getMapWidget().addMapMoveEndHandler(new MapMoveEndHandler() {
-
-            public void onMoveEnd(MapMoveEndEvent event) {
+        
+        m_panel.add(m_mapPanel);
+        
+        m_mapPanel.addMapPanelBoundsChangedEventHandler(new MapPanelBoundsChangedEventHandler() {
+            
+            public void onBoundsChanged(MapPanelBoundsChangedEvent event) {
                 m_eventBus.fireEvent(new LocationsUpdatedEvent(GoogleMapsLocationManager.this));
             }
-
         });
-
-        Window.addResizeHandler(new ResizeHandler() {
-            public void onResize(final ResizeEvent resizeEvent) {
-                if (m_mapPanel.getMapWidget() != null) {
-                    m_mapPanel.getMapWidget().checkResizeAndCenter();
-                }
-            }
-        });
-
-        m_panel.add(m_mapPanel.getMapWidget());
-
+        
         m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, new LocationPanelSelectEventHandler() {
 
             public void onLocationSelected(final LocationPanelSelectEvent event) {
                 selectLocation(event.getLocationName());
             }
-        });
+        }); 
+        
+	}
 
-}
 
 	@Override
     public void selectLocation(String locationName) {
@@ -92,12 +73,12 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 		if (location == null) return;
 		GoogleMapsLocation loc = m_locations.get(location.getName());
 		if (loc.getMarker() != null) {
-			m_mapPanel.getMapWidget().removeOverlay(loc.getMarker());
+			m_mapPanel.removeOverlay(loc.getMarker());
 		}
 		m_locations.remove(location.getName());
 	}
 
-	@Override
+    @Override
 	public void updateComplete() {
 		if (!updated) {
 			DeferredCommand.addPause();
@@ -131,10 +112,6 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 	    return visibleLocations;
     }
 
-
-
-
-
 	@Override
     public void fitToMap() {
     	m_mapPanel.setBounds(getLocationBounds());
@@ -142,16 +119,10 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
     private GWTBounds getLocationBounds() {
         BoundsBuilder bldr = new BoundsBuilder();
-        final LatLngBounds bnds = LatLngBounds.newInstance();
-    	for (GoogleMapsLocation l : m_locations.values()) {
-    		if (l.getLatLng() != null) {
-    			bnds.extend(toLatLng(l.getLatLng()));
-    		} else if (l.getMarker() != null) {
-    			bnds.extend(l.getMarker().getLatLng());
-    		}
-    	}
-    	GWTBounds b = toGWTBounds(bnds);
-        return b;
+        for (GoogleMapsLocation l : m_locations.values()) {
+            bldr.extend(l.getLatLng());
+        }
+        return bldr.getBounds();
     }
 
 
@@ -172,7 +143,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 	private void placeMarker(final GoogleMapsLocation location) {
 		if (location.getMarker() == null) {
 		    final Marker newMarker = createMarker(location);
-		    m_mapPanel.getMapWidget().addOverlay(newMarker);
+		    m_mapPanel.addOverlay(newMarker);
 		} else {
 			createMarker(location);
 		}

@@ -10,15 +10,40 @@ import de.novanic.eventservice.client.event.Event;
 public class BaseLocation implements Event, IsSerializable, Location {
 	private static final long serialVersionUID = 3L;
 
-	private LocationInfo m_locationInfo = new LocationInfo();
-	private LocationDetails m_locationDetails = new LocationDetails();
+	private LocationInfo m_locationInfo;
+	private LocationDetails m_locationDetails;
+
+    private LocationMonitorState m_locationMonitorState;
 
 	public BaseLocation() {
+	    m_locationInfo = new LocationInfo();
+	    m_locationDetails = new LocationDetails();
+	}
+	
+	public BaseLocation(LocationInfo locationInfo, LocationDetails locationDetails) {
+	    setLocationInfo(locationInfo);
+	    setLocationDetails(locationDetails);
+//	    m_locationInfo = new LocationInfo(locationInfo);
+//	    m_locationDetails = new LocationDetails(locationDetails);
 	}
 
-	public BaseLocation(final LocationInfo locationInfo, final LocationDetails locationDetails) {
-		setLocationInfo(locationInfo);
-		setLocationDetails(locationDetails);
+	public BaseLocation(final String name, final String pollingPackageName, final String area, final String geolocation) {
+	    this();
+		m_locationInfo.setName(name);
+		m_locationInfo.setPollingPackageName(pollingPackageName);
+		m_locationInfo.setArea(area);
+		m_locationInfo.setGeolocation(geolocation);
+	}
+
+	public BaseLocation(String name, String pollingPackageName, String area, String geolocation, String coordinates, ServiceStatus status) {
+		this(name, pollingPackageName, area, geolocation);
+		m_locationInfo.setCoordinates(coordinates);
+		m_locationInfo.setStatus(status);
+	}
+	
+	public BaseLocation(String name, String pollingPackageName, String area, String geolocation, GWTLatLng latLng, LocationMonitorState lms) {
+		this(name, pollingPackageName, area, geolocation, latLng.getCoordinates(), lms.getStatus());
+		m_locationMonitorState = lms;
 	}
 
 	public String getName() {

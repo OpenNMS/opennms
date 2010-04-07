@@ -5,9 +5,14 @@ import org.opennms.features.poller.remote.gwt.client.LocationMonitorState;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class LocationDetails implements IsSerializable {
-	private LocationMonitorState m_locationMonitorState;
 
-	public LocationMonitorState getLocationMonitorState() {
+    private LocationMonitorState m_locationMonitorState;
+
+//	public LocationDetails(LocationDetails locationDetails) {
+//        m_locationMonitorState = locationDetails.getLocationMonitorState();
+//    }
+
+    public LocationMonitorState getLocationMonitorState() {
 		return m_locationMonitorState;
 	}
 

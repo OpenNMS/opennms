@@ -16,20 +16,24 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private String m_geolocation;
 	private String m_coordinates;
 	private ServiceStatus m_status;
-
+	
 	public LocationInfo() {
-
+	    
 	}
-
-	public LocationInfo(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates, final ServiceStatus status) {
-		m_name = name;
-		m_pollingPackage = pollingPackageName;
-		m_area = area;
-		m_geolocation = geolocation;
-		m_coordinates = coordinates;
-		m_status = status;
+	
+	public LocationInfo(String name, String pollingPackage, String area, String geolocation, String coordinates, ServiceStatus status) {
+	    m_name = name;
+	    m_pollingPackage = pollingPackage;
+	    m_area = area;
+	    m_geolocation = geolocation;
+	    m_coordinates = coordinates;
+	    m_status = status;
 	}
-
+	
+	public LocationInfo(LocationInfo info) {
+	    this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getStatus());
+	}
+	
 	public String getName() {
 		return m_name;
 	}

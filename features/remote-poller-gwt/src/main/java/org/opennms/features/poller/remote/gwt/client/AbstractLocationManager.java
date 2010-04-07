@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
+import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
+import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
@@ -22,12 +24,11 @@ public abstract class AbstractLocationManager implements LocationManager {
 	protected final HandlerManager m_eventBus;
 
 	private static final Set<String> m_locationsUpdating = new HashSet<String>();
-	private final Application m_application;
+	private final HandlerManager m_handlerManager = new HandlerManager(this);
 
 	private final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 
-	public AbstractLocationManager(final Application application, final HandlerManager eventBus) {
-		m_application = application;
+	public AbstractLocationManager(final HandlerManager eventBus) {
 		m_eventBus = eventBus;
 	}
 
@@ -58,7 +59,7 @@ public abstract class AbstractLocationManager implements LocationManager {
     protected abstract void initializeMapWidget();
 
     protected void initializationComplete() {
-        getApplication().finished();
+        m_handlerManager.fireEvent(new LocationManagerInitializationCompleteEvent());
     }
 
     public void updateLocation(final LocationInfo info) {
@@ -128,16 +129,16 @@ public abstract class AbstractLocationManager implements LocationManager {
 		return m_locationsUpdating.size() > 0;
 	}
 
-	protected Application getApplication() {
-		return m_application;
-	}
-
 	abstract protected void updateMarker(Location location);
 
     protected LocationStatusServiceAsync getRemoteService() {
         return m_remoteService;
     }
-
+    
+    public void addLocationManagerInitializationCompleteEventHandler(LocationManagerInitializationCompleteEventHander handler) {
+        m_handlerManager.addHandler(LocationManagerInitializationCompleteEvent.TYPE, handler);
+    };
+    
     protected void displayDialog(final String title, final String contents) {
     	final DialogBox db = new DialogBox();
     	db.setAutoHideEnabled(true);

@@ -26,8 +26,6 @@ public class LocationPanel extends Composite {
 	}
 
 	private static final Binder BINDER = GWT.create(Binder.class);
-	private static final int MAX_ROWS = 20;
-	private int startIndex = 0;
 	private transient HandlerManager m_eventBus;
 	
 	@UiField FlexTable m_locations;

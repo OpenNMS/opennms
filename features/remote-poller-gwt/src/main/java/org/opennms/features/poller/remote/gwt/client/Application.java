@@ -1,5 +1,8 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
+import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
+
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -50,19 +53,27 @@ public class Application implements EntryPoint
 		Window.setMargin("0px");
 
 		locationPanel.setEventBus(m_eventBus);
-
+		
 		// no reflection in GWT  :(
 		if (getMapImplementationType() == null) {
 			Window.alert("unable to determine gwt.maptype setting from opennms.properties!");
 			throw new RuntimeException("unable to determine gwt.maptype setting from opennms.properties!");
 		} else if (getMapImplementationType().equals("Mapquest")) {
-			m_locationManager = new MapquestLocationManager(this, m_eventBus, splitPanel);
+			m_locationManager = new MapquestLocationManager(m_eventBus, splitPanel);
 		} else if (getMapImplementationType().equals("GoogleMaps")) {
-			m_locationManager = new GoogleMapsLocationManager(this, m_eventBus, splitPanel);
+			m_locationManager = new GoogleMapsLocationManager(m_eventBus, splitPanel);
 		} else {
 			Window.alert("unknown map implementation: " + getMapImplementationType());
 			throw new RuntimeException("unknown map implementation: " + getMapImplementationType());
 		}
+		
+		m_locationManager.addLocationManagerInitializationCompleteEventHandler(new LocationManagerInitializationCompleteEventHander() {
+            
+            public void onInitializationComplete(LocationManagerInitializationCompleteEvent event) {
+                finished();
+            }
+        });
+		
 		m_locationManager.initialize();
 	}
 
