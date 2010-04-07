@@ -305,7 +305,8 @@ function doDelete() {
        <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
               <tr>
                 <th>Snmp Polling Package</th>
-                <td><%= snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId))%></td>
+                <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
+                snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId))%></td>
               </tr>
 	   <% } %>
               <tr> 
