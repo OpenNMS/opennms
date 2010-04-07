@@ -49,10 +49,15 @@
 
 <%
     statusMap = new HashMap<Character, String>();
-  	statusMap.put( new Character('A'), "Active" );
+  	statusMap.put( new Character('A'), "Active - See Interface status" );
     statusMap.put( new Character(' '), "Unknown" );
+    statusMap.put( new Character('U'), "Unknown" );
     statusMap.put( new Character('D'), "Deleted" );
-    statusMap.put( new Character('N'), "Not Active" );
+    statusMap.put( new Character('N'), "Not Polled" );
+    statusMap.put( new Character('B'), "Bad" );
+    statusMap.put( new Character('G'), "Good" );
+    statusMap.put( new Character('X'), "Admin Down" );
+
 
     Interface intf = null;
     DataLinkInterface[] dl_if = null;
@@ -97,7 +102,7 @@
       <% } %>
       </td>
 
-      <td><%=getStatusString(dl_if[i].get_status())%></td>
+      <td><%=(getStatusString(dl_if[i].get_status())==null) ? "&nbsp;" : getStatusString(dl_if[i].get_status())%></td>
       <td><%=dl_if[i].get_lastPollTime()%></td>
     </tr>
   <% } %>
