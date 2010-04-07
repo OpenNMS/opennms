@@ -62,10 +62,8 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -103,7 +101,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
-    
+
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 
@@ -118,10 +116,8 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
     private TestContext m_context;
 
-    private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-
     private final String m_testHostName = "127.0.0.1";
-    
+
     private final static String TEST_NODE_LABEL = "TestNode"; 
 
     private CollectionSpecification m_collectionSpecification;
@@ -138,7 +134,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);
-        
+
         OnmsIpInterface iface = null;
         OnmsNode testNode = null;
         Collection<OnmsNode> testNodes = m_nodeDao.findByLabel(TEST_NODE_LABEL);
@@ -177,7 +173,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
-    
+
     @After
     public void tearDown() throws Exception {
         MockUtil.println("------------ End Test --------------------------");
@@ -217,22 +213,8 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testCollect() throws Exception {
         // initializeAgent("/org/opennms/netmgt/snmp/bigrouter-walk.properties");
-        
-        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
 
-        /*
-        File nodeDir = anticipatePath(getSnmpRrdDirectory(), "1");
-        anticipateRrdFiles(nodeDir, "tcpActiveOpens", "tcpAttemptFails");
-        anticipateRrdFiles(nodeDir, "tcpPassiveOpens", "tcpRetransSegs");
-        anticipateRrdFiles(nodeDir, "tcpCurrEstab", "tcpEstabResets");
-        anticipateRrdFiles(nodeDir, "tcpInErrors", "tcpInSegs");
-        anticipateRrdFiles(nodeDir, "tcpOutRsts", "tcpOutSegs");
-        
-        File ifDir = anticipatePath(nodeDir, "fw0");
-        anticipateRrdFiles(ifDir, "ifInDiscards", "ifInErrors", "ifInNUcastpkts",
-                "ifInOctets", "ifInUcastpkts", "ifOutErrors", "ifOutNUcastPkts",
-                "ifOutOctets", "ifOutUcastPkts");
-        */
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
 
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
@@ -240,12 +222,12 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
-                     collectionSet.getStatus());
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                collectionSet.getStatus());
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
-        
+
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
 
@@ -259,7 +241,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);
     }
-    
+
     @Test
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml", 
@@ -276,37 +258,37 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testPersist() throws Exception {
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
-        
+
         // node level collection
         File nodeDir = new File(snmpRrdDirectory, "1");
         File rrdFile = new File(nodeDir, rrd("tcpCurrEstab"));
-        
+
         // interface level collection
         File ifDir = new File(nodeDir, "fw0");
         File ifRrdFile = new File(ifDir, rrd("ifInOctets"));
-        
+
         int numUpdates = 2;
         int stepSizeInSecs = 1;
-        
+
         int stepSizeInMillis = stepSizeInSecs*1000;
-        
+
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
-        
+
         CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
-        
+
         // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
         assertEquals(new Double(123.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
-        
+
         // This is the value from snmpTestData1.properties
         // .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 1234567
         assertEquals(new Double(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
-        
+
         // now update the data in the agent
         m_agent.updateIntValue(".1.3.6.1.2.1.6.9.0", 456);
         m_agent.updateCounter32Value(".1.3.6.1.2.1.2.2.1.10.6", 7654321);
-        
+
         CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
@@ -334,13 +316,13 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         long start = System.currentTimeMillis();
 
         File rrdFile = new File(snmpDir, rrd("test"));
-        
+
         RrdStrategy m_rrdStrategy = RrdUtils.getStrategy();
-        
+
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
         Object def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def);
-                
+
         Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {
             m_rrdStrategy.updateFile(rrdFileObject, "test", (start/1000 - stepSize*(numUpdates-i)) + ":1");
@@ -402,12 +384,12 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
                 collectionSet.getStatus());
-        
+
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
-        
-        
+
+
         System.err.println("FIRST COLLECTION FINISHED");
-        
+
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
 
@@ -421,7 +403,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);
     }
-    
+
     @Test
     @JUnitCollector(
             datacollectionConfig = "/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml", 
@@ -475,12 +457,12 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
                 collectionSet.getStatus());
-        
+
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
-        
-        
+
+
         System.err.println("FIRST COLLECTION FINISHED");
-        
+
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
 
@@ -506,15 +488,4 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
     public void setTestContext(TestContext t) {
         m_context = t;
     }
-
-    private OnmsServiceType getServiceType(String name) {
-        OnmsServiceType serviceType = m_serviceTypeDao.findByName(name);
-        if (serviceType == null) {
-            serviceType = new OnmsServiceType(name);
-            m_serviceTypeDao.save(serviceType);
-            m_serviceTypeDao.flush();
-        }
-        return serviceType;
-    }
-
 }
