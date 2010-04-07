@@ -27,6 +27,15 @@ public class VProperties {
 
     int unknownstatusid;
     int maxLinks;
+    int summaryLink;
+
+    public int getSummaryLink() {
+        return summaryLink;
+    }
+
+    public void setSummaryLink(int summaryLink) {
+        this.summaryLink = summaryLink;
+    }
 
     public int getMaxLinks() {
         return maxLinks;

@@ -116,10 +116,8 @@ public class MapPropertiesFactory extends Object {
     protected  int defaultMapElementDimension = 25;
     
     protected int maxLinks = 3;
-
-	public int getMaxLinks() {
-        return maxLinks;
-    }
+    
+    protected int summaryLink = -1;
 
     public static final  String MULTILINK_BEST_STATUS ="best"; 
 	
@@ -600,10 +598,15 @@ public class MapPropertiesFactory extends Object {
 			linkStatusesMap.put(linkStatuses[i], ls);
 		}		
 
-	      if(props.getProperty("max.links")!=null){
-	            maxLinks = WebSecurityUtils.safeParseInt(props.getProperty("max.links"));    
-	        }
-	      log.debug("found max.links: "+maxLinks);
+        if(props.getProperty("summarylink.id")!=null){
+            summaryLink = WebSecurityUtils.safeParseInt(props.getProperty("summarylink.id"));    
+        }
+        log.debug("found summarylink.id: "+summaryLink);
+
+        if(props.getProperty("max.links")!=null){
+            maxLinks = WebSecurityUtils.safeParseInt(props.getProperty("max.links"));    
+        }
+        log.debug("found max.links: "+maxLinks);
 
 		
 		if(props.getProperty("multilink.status")!=null){
@@ -986,6 +989,13 @@ public class MapPropertiesFactory extends Object {
     	return defaultMapElementDimension;
     }
     
+    public int getMaxLinks() {
+        return maxLinks;
+    }
+
+    public int getSummaryLink() {
+        return summaryLink;
+    }
 
 
 

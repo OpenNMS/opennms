@@ -87,8 +87,8 @@ function handleInit(data) {
 		UNKNOWN_STATUS = mapsPropertiesFactory.unknownstatusid;
 		mapElemDimension = mapsPropertiesFactory.defaultMapElementDimension;
 		maxLinks = mapsPropertiesFactory.maxLinks;
-		
-		
+		summaryLinkId = mapsPropertiesFactory.summaryLink;
+
 		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
 		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;
 		DEFAULT_BG_COLOR = mapsPropertiesFactory.defaultBackgroundColor;
