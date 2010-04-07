@@ -13,7 +13,7 @@ function warInPlace() {
     if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../../build.sh $OFFLINE_ARGS compile war:inplace
+    ../../build.sh $OFFLINE_ARGS $DEFINES compile war:inplace
 }
 
 function runInPlace() {

@@ -10,15 +10,23 @@ import de.novanic.eventservice.client.event.Event;
 public class BaseLocation implements Event, IsSerializable, Location {
 	private static final long serialVersionUID = 3L;
 
-	private LocationInfo m_locationInfo = new LocationInfo();
-	private LocationDetails m_locationDetails = new LocationDetails();
+	private LocationInfo m_locationInfo;
+	private LocationDetails m_locationDetails;
 
 	private LocationMonitorState m_locationMonitorState;
 
 	public BaseLocation() {
+	    m_locationInfo = new LocationInfo();
+	    m_locationDetails = new LocationDetails();
+	}
+	
+	public BaseLocation(LocationInfo locationInfo, LocationDetails locationDetails) {
+	    m_locationInfo = new LocationInfo(locationInfo);
+	    m_locationDetails = new LocationDetails(locationDetails);
 	}
 
 	public BaseLocation(final String name, final String pollingPackageName, final String area, final String geolocation) {
+	    this();
 		m_locationInfo.setName(name);
 		m_locationInfo.setPollingPackageName(pollingPackageName);
 		m_locationInfo.setArea(area);

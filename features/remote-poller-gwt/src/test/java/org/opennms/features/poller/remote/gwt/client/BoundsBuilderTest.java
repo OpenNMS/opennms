@@ -2,7 +2,6 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -78,7 +77,6 @@ public class BoundsBuilderTest {
     }
     
     @Test
-    @Ignore
     public void testDatelinePoints() {
         
         BoundsBuilder bldr = new BoundsBuilder();
@@ -88,8 +86,65 @@ public class BoundsBuilderTest {
         
         assertEquals(new GWTBounds(30, 170, 40, -170), bldr.getBounds());
         
+    }
+    
+    @Test
+    public void testExtendEastThenWest() {
+        BoundsBuilder bldr = new BoundsBuilder();
         
-        // 
+        bldr.extend(0.0, 0.0);
+        bldr.extend(0.0, 170.0);
+        
+        assertEquals(new GWTBounds(0.0, 0.0, 0, 170), bldr.getBounds());
+        
+        bldr.extend(0.0, -90.0);
+        
+        assertEquals(new GWTBounds(0, -90, 0, 170), bldr.getBounds());
+        
+    }
+    
+    @Test
+    public void testExtendEastAndWrap() {
+        BoundsBuilder bldr = new BoundsBuilder();
+        
+        bldr.extend(0.0, 0.0);
+        bldr.extend(0.0, 170.0);
+        
+        assertEquals(new GWTBounds(0.0, 0.0, 0, 170), bldr.getBounds());
+        
+        bldr.extend(0.0, -100.0);
+        
+        assertEquals(new GWTBounds(0, 0, 0, -100), bldr.getBounds());
+        
+    }
+    
+    @Test
+    public void testExtendWestThenEast() {
+        BoundsBuilder bldr = new BoundsBuilder();
+        
+        bldr.extend(0.0, 0.0);
+        bldr.extend(0.0, -170.0);
+        
+        assertEquals(new GWTBounds(0.0, -170, 0, 0), bldr.getBounds());
+        
+        bldr.extend(0.0, 90.0);
+        
+        assertEquals(new GWTBounds(0, -170, 0, 90), bldr.getBounds());
+        
+    }
+    @Test
+    public void testExtendWestAndWrap() {
+        BoundsBuilder bldr = new BoundsBuilder();
+        
+        bldr.extend(0.0, 0.0);
+        bldr.extend(0.0, -170.0);
+        
+        assertEquals(new GWTBounds(0.0, -170, 0, 0), bldr.getBounds());
+        
+        bldr.extend(0.0, 100.0);
+        
+        assertEquals(new GWTBounds(0, 100, 0, 0), bldr.getBounds());
+        
     }
     
     @Test

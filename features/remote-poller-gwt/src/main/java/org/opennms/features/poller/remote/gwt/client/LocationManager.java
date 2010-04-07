@@ -3,6 +3,8 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
+
 import de.novanic.eventservice.client.event.domain.Domain;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 
@@ -25,5 +27,7 @@ public interface LocationManager {
 	public void fitToMap();
 
 	public void reportError(String string, Throwable t);
+	
+	public void addLocationManagerInitializationCompleteEventHandler(LocationManagerInitializationCompleteEventHander handler);
 
 }

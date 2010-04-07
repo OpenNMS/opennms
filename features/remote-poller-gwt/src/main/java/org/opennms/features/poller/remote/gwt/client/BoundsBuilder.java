@@ -22,14 +22,31 @@ public class BoundsBuilder {
        } else {
            swLat = Math.min(swLat, lat);
            neLat = Math.max(neLat, lat);
-           swLng = Math.min(swLng, lng);
-           neLng = Math.max(neLng, lng);
+           
+           if (!containsLongitude(lng)) {
+               if (distanceEast(lng) < distanceWest(lng)) {
+                   neLng = lng;
+               } else {
+                   swLng = lng;
+               }
+           }
+           
        }
     }
     
     public void extend(GWTLatLng coords) {
         extend(coords.getLatitude(), coords.getLongitude());
     }
+    
+    private boolean containsLongitude(double lng) {
+        if (swLng <= neLng) {
+            return swLng <= lng && lng <= neLng;
+        } else {
+            return !(neLng < lng && lng < swLng);
+        }
+    }
+
+
     
     public double distanceEast(double lng) {
         return lng > neLng ? lng - neLng : lng+360.0 - neLng;
