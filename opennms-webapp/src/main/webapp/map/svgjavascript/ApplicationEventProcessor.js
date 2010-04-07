@@ -35,6 +35,22 @@ function onMouseOutMapElement(evt) {
 function onMouseOutLink(evt) {
 
 }
+
+function onMouseOutSLink(evt) {
+	var id = evt.target.parentNode.getAttributeNS(null,"id");
+//	alert(id);
+}
+
+function onMouseOverSLink(evt) {
+	var id = evt.target.parentNode.getAttributeNS(null,"id");
+//	alert(id);
+}
+
+function onMouseDownOnSLink(evt) {
+	var id = evt.target.parentNode.getAttributeNS(null,"id");
+//	alert(id);
+}
+
 //if double-click on an element (map) open the map 
 function onClickMapElement(evt)
 {

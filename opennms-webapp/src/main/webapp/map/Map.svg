@@ -27,6 +27,7 @@
 	<script type="text/ecmascript" xlink:href="svgjavascript/Node.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Label.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Link.js"/>
+	<script type="text/ecmascript" xlink:href="svgjavascript/SLink.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Icon.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/MapElement.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Semaphore.js"/>
@@ -44,7 +45,7 @@ var MAPS_STARTUP_ACTION = "MapStartUp";
 
 function startUp() {
 	// Instantiate the default map
-	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0, maxLinks);
+	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0, maxLinks,summaryLinkId,LINK_WIDTH[summaryLinkId],LINK_DASHARRAY[summaryLinkId]);
 	mapSvgElement.appendChild(map.getSvgNode());
 
 	defaultMap = new ElemMap(-2, null, null);

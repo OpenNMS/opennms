@@ -11,22 +11,23 @@ Map.superclass = SVGElement.prototype;
 // height == map height in pixel
 // x      == x coord of map's "centre" 
 // y      == y coord of map's "centre"
-// maxLinks == the max number of links between 2 mapElement 
+// maxLinks == the max number of links between 2 mapElement
+// sLinkId == the id of the summary Link 
 // mapElements  == array of MapElement Objects
 // mapLinks   == array of Link Object
 // linksBetweenElements == array containing the number of links existing between 2 element the key of the array 
 //                         is like 'idElem1-idElem2' and the value is an integer representing the number of 
 //                         links between elem1 and elem2
 
-function Map(defaultcolor, id, width, height, x, y, maxlinks)
+function Map(defaultcolor, id, width, height, x, y, maxlinks, sLink,strokewidth,strokedasharray)
 {
- 	if ( arguments.length == 7 )
-		this.init(defaultcolor, id, width, height, x, y, maxlinks);
+ 	if ( arguments.length == 10 )
+		this.init(defaultcolor, id, width, height, x, y, maxlinks,sLink,strokewidth,strokedasharray);
 	else
 		alert("Map constructor call error");
 }
 
-Map.prototype.init = function(color, id, width, height, x, y, maxlinks)
+Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,strokewidth,strokedasharray)
 {
 	//following attributes are the starting and the ending SVGPoints of the rectangle 
 	//for the selection of the nodes on the map.
@@ -40,6 +41,10 @@ Map.prototype.init = function(color, id, width, height, x, y, maxlinks)
 	this.y = y;
 	this.maxlinks = maxlinks;
 	
+	this.sLinkId=sLink;
+	this.sLinkStrokeDashArray=strokedasharray;
+	this.sLinkStrokeWidth=strokewidth;
+
 	this.startSelectionRectangle = null;
 	this.endSelectionRectangle = null;
 	this.draggableObject = null;
@@ -288,21 +293,31 @@ Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, s
 
 		//calculate and mantains the number of links between the elements
 		if(this.linksBetweenElements[idWithoutTypology]==undefined){
-			this.linksBetweenElements[idWithoutTypology]=1;
-		}else{
+			this.linksBetweenElements[idWithoutTypology]=0;
+		}
+
+		var link,slink,sid;
+		
+		if (this.maxlinks == this.linksBetweenElements[idWithoutTypology]+1) {
+			link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.maxlinks-1, deltaLink,nodeid1,nodeid2);		
+			sid =  this.getLinkId(id1,id2,this.sLinkId);
+			slink = new SLink(sid, typology, first, second, stroke, this.sLinkStrokeWidth, this.sLinkStrokeDashArray, this.maxlinks-1, deltaLink);
+			slink.addLink(id,link);
+			this.mapLinks[sid] = slink;
+			this.mapLinkSize++;
+			this.linksBetweenElements[idWithoutTypology]++;
+		}  else if (this.maxlinks == this.linksBetweenElements[idWithoutTypology]) {
+			link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.maxlinks-1, deltaLink,nodeid1,nodeid2);		
+			sid =  this.getLinkId(id1,id2,this.sLinkId);
+			slink = this.mapLinks[sid];
+			slink.addLink(id,link);
+			this.mapLinks[sid] = slink;
+		} else {
+			link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology], deltaLink,nodeid1,nodeid2);		
+			this.mapLinks[id] = link;
+			this.mapLinkSize++;
 			this.linksBetweenElements[idWithoutTypology]++;
 		}
-
-		if (this.maxlinks < this.linksBetweenElements[idWithoutTypology]) {
-			this.linksBetweenElements[idWithoutTypology]--;
-			return false;
-		}
-
-		var link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology]-1, deltaLink,nodeid1,nodeid2);
-//		alert("first: "+first.getLabel()+" nodeid1:" + nodeid1 +"---second: " + second.getLabel() + "nodeid2:" + nodeid2);
-		
-		this.mapLinks[id] = link;
-		this.mapLinkSize++;
 		//alert('link with id '+id+' added');
 	}
 	return true;
@@ -466,4 +481,3 @@ Map.prototype.getMapLinksSize = function() {
 Map.prototype.onMouseDownOnMap = onMouseDownOnMap;
 Map.prototype.onMouseMove = onMouseMove;
 Map.prototype.onMouseUp = onMouseUp;
-
