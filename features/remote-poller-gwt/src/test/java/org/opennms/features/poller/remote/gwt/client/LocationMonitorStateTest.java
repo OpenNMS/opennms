@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.Test;
-import org.opennms.features.poller.remote.gwt.client.LocationMonitorState.ServiceStatus;
 
 public class LocationMonitorStateTest {
 	private static int count = 0;

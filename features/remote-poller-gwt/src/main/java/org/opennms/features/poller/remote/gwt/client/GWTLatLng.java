@@ -23,6 +23,13 @@ public class GWTLatLng implements IsSerializable {
 		m_latitude = latitude;
 		m_longitude = longitude;
 	}
+
+
+	public static GWTLatLng fromCoordinates(String coordinates) {
+		final String[] coords = coordinates.split(",");
+		return new GWTLatLng(Double.valueOf(coords[0]), Double.valueOf(coords[1]));
+	}
+
 	Double getLatitude() {
 		return m_latitude;
 	}

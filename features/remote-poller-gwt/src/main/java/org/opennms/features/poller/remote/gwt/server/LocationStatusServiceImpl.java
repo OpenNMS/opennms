@@ -172,7 +172,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			final Collection<Location> locations = new ArrayList<Location>();
 			for (final OnmsMonitoringLocationDefinition def : definitions.values()) {
 				final Location location = getLocation(def);
-				LogUtils.debugf(this, "pushing location update: %s", location.getName());
+				LogUtils.debugf(this, "pushing location update: %s", location.getLocationInfo().getName());
 				locations.add(location);
 //				addEvent(Location.LOCATION_EVENT_DOMAIN, location);
 			}
@@ -197,24 +197,44 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 
 		final LocationMonitorState lms = new LocationMonitorState(monitors, tracker.drain());
 
+		/*
 		if (def.getGeolocation() == null || def.getGeolocation().equals("")) {
 			// OpenNMS World HQ
 			def.setGeolocation("35.715751,-79.16262");
 		}
+		*/
 
 		GWTLatLng latLng = null;
+		final String coordinateMatchString = "^\\s*[\\-\\d\\.]+\\s*,\\s*[\\-\\d\\.]+\\s*$";
 
-		if (def.getCoordinates() != null && def.getCoordinates().matches("^.+,.+$")) {
+		// first, see if we already have coordinates
+		if (def.getCoordinates() != null && def.getCoordinates().matches(coordinateMatchString)) {
+			LogUtils.debugf(this, "using coordinates: %s", def.getCoordinates());
 			final String[] coordinates = def.getCoordinates().split(",");
 			latLng = new GWTLatLng(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
+		}
+		// if not, see if geolocation is coordinates
+		if (latLng == null) {
+			LogUtils.debugf(this, "using geolocation: %s", def.getGeolocation());
+			if (def.getGeolocation() != null && def.getGeolocation().matches(coordinateMatchString)) {
+				final String[] coordinates = def.getGeolocation().split(",");
+				latLng = new GWTLatLng(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
+			}
+		}
+		if (latLng == null && (def.getGeolocation() == null || def.getGeolocation().equals(""))) {
+			LogUtils.debugf(this, "no geolocation or coordinates found, using OpenNMS World HQ");
+			latLng = new GWTLatLng(35.715751, -79.16262);
 		}
 		if (latLng == null) {
 			try {
 				latLng = m_geocoder.geocode(def.getGeolocation());
+				LogUtils.debugf(this, "got coordinates %s for geolocation %s", latLng.getCoordinates(), def.getGeolocation());
 				def.setCoordinates(latLng.getCoordinates());
 			} catch (GeocoderLookupException e) {
 				LogUtils.warnf(this, e, "unable to geocode %s", def.getGeolocation());
 			}
+		} else {
+			def.setCoordinates(latLng.getCoordinates());
 		}
 
 		final Location loc = new UpdateLocation(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), latLng, lms);

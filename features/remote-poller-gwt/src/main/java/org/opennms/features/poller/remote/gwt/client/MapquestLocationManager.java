@@ -60,10 +60,10 @@ public class MapquestLocationManager extends AbstractLocationManager implements 
 		}
 
 		final MQALatLng latLng = MQALatLng.newInstance(location.getLatLng().getLatitude(), location.getLatLng().getLongitude());
-		final MQAIcon icon = MQAIcon.newInstance("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png", 32, 64);
+		final MQAIcon icon = MQAIcon.newInstance("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png", 32, 32);
 		final MQAPoi point = MQAPoi.newInstance(latLng, icon);
 //		Window.alert("current offset = " + point.getIconOffset().getX() + "," + point.getIconOffset().getY());
-		point.setIconOffset(MQAPoint.newInstance(-16, 0));
+		point.setIconOffset(MQAPoint.newInstance(-16, -32));
 		newLocation.setMarker(point);
 		m_locations.put(location.getName(), newLocation);
 		m_map.addShape(point);

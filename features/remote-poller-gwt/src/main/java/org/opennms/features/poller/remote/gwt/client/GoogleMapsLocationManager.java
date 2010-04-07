@@ -208,6 +208,26 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 		final GWTLatLng latLng = location.getLatLng();
 		final Marker m = new Marker(toLatLng(latLng), markerOptions);
 		m.addMarkerClickHandler(new DefaultMarkerClickHandler(location.getName()));
+
+		//Ben's Edits
+//		Marker m = location.getMarker();
+//		if (m == null) {
+//			Icon icon = Icon.newInstance();
+//			icon.setIconSize(Size.newInstance(32, 32));
+//			icon.setIconAnchor(Point.newInstance(16, 32));
+//			icon.setImageURL("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png");
+//	
+//			final MarkerOptions markerOptions = MarkerOptions.newInstance();
+//			markerOptions.setAutoPan(true);
+//			markerOptions.setClickable(true);
+//			markerOptions.setTitle(location.getName());
+//			markerOptions.setIcon(icon);
+//			final GWTLatLng latLng = location.getLatLng();
+//			m = new Marker(transformLatLng(latLng), markerOptions);
+//			m.addMarkerClickHandler(new DefaultMarkerClickHandler(location.getName()));
+//		} else {
+//			m.setImage("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png");
+//		}
 		location.setMarker(m);
 
 		return m;

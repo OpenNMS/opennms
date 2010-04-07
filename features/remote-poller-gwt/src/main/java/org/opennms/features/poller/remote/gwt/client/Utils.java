@@ -2,7 +2,6 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.Collection;
 
-import org.opennms.features.poller.remote.gwt.client.LocationMonitorState.ServiceStatus;
 
 import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.user.client.ui.FlexTable;
