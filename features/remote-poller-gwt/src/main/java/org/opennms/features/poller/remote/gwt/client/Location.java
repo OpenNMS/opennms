@@ -29,8 +29,10 @@ public interface Location extends Event, IsSerializable, Comparable<Location> {
 
 	@Deprecated
 	public abstract String getImageURL();
-	
+
 	public abstract LocationInfo getLocationInfo();
 
 	public abstract LocationDetails getLocationDetails();
+
+	public abstract String getStatusText();
 }

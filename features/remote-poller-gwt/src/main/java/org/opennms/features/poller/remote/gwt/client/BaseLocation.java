@@ -13,26 +13,12 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	private LocationInfo m_locationInfo = new LocationInfo();
 	private LocationDetails m_locationDetails = new LocationDetails();
 
-	private LocationMonitorState m_locationMonitorState;
-
 	public BaseLocation() {
 	}
 
-	public BaseLocation(final String name, final String pollingPackageName, final String area, final String geolocation) {
-		m_locationInfo.setName(name);
-		m_locationInfo.setPollingPackageName(pollingPackageName);
-		m_locationInfo.setArea(area);
-		m_locationInfo.setGeolocation(geolocation);
-	}
-
-	public BaseLocation(String name, String pollingPackageName, String area, String geolocation, String coordinates, ServiceStatus status) {
-		this(name, pollingPackageName, area, geolocation);
-		m_locationInfo.setCoordinates(coordinates);
-		m_locationInfo.setStatus(status);
-	}
-	public BaseLocation(String name, String pollingPackageName, String area, String geolocation, GWTLatLng latLng, LocationMonitorState lms) {
-		this(name, pollingPackageName, area, geolocation, latLng.getCoordinates(), lms.getStatus());
-		m_locationMonitorState = lms;
+	public BaseLocation(final LocationInfo locationInfo, final LocationDetails locationDetails) {
+		setLocationInfo(locationInfo);
+		setLocationDetails(locationDetails);
 	}
 
 	public String getName() {
@@ -68,13 +54,14 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	}
 
 	public LocationMonitorState getLocationMonitorState() {
-		return m_locationMonitorState;
+		return m_locationDetails.getLocationMonitorState();
 	}
 
 	public void setLocationMonitorState(final LocationMonitorState lms) {
-		m_locationMonitorState = lms;
+		m_locationInfo.setStatus(lms.getStatus());
+		m_locationDetails.setLocationMonitorState(lms);
 	}
-	
+
 	public GWTLatLng getLatLng() {
 		return GWTLatLng.fromCoordinates(m_locationInfo.getCoordinates());
 	}
@@ -97,7 +84,7 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	public void setLocationInfo(final LocationInfo info) {
 		m_locationInfo = info;
 	}
-	
+
 	public LocationDetails getLocationDetails() {
 		return m_locationDetails;
 	}
@@ -106,12 +93,26 @@ public class BaseLocation implements Event, IsSerializable, Location {
 		m_locationDetails = details;
 	}
 
+	public String getStatusText() {
+		if (m_locationInfo != null) {
+			if (m_locationInfo.getStatus() != null) {
+				return m_locationInfo.getStatus().toString();
+			}
+		}
+		if (m_locationDetails != null) {
+			if (m_locationDetails.getLocationMonitorState() != null) {
+				return m_locationDetails.getLocationMonitorState().getStatus().toString();
+			}
+		}
+		return null;
+	}
+
 	protected String getAttributeText() {
-		return "name=" + getName() + ",pollingPackage=" + getPollingPackageName() + ",area=" + getArea() + ",geolocation=" + getGeolocation() + ",lat/lng=" + getLatLng() + ",locationMonitorState=" + m_locationMonitorState;
+		return "locationInfo=" + getLocationInfo() + ",locationDetails=" + getLocationDetails();
 	}
 
 	public String toString() {
-		return "BaseLocation["+getAttributeText()+"]";
+		return this.getClass().getName()+"["+getAttributeText()+"]";
 	}
 
 	public int compareTo(Location o) {

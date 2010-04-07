@@ -3,6 +3,8 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+
 import de.novanic.eventservice.client.event.domain.Domain;
 import de.novanic.eventservice.client.event.domain.DomainFactory;
 
@@ -13,6 +15,8 @@ public interface LocationManager {
 
 	public void updateLocation(Location location);
 	public void removeLocation(Location location);
+
+	public void updateLocation(final LocationInfo mLocationInfo);
 
 	public void updateLocations(Collection<Location> location);
 	public void removeLocations(Collection<Location> location);

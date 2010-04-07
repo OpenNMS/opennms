@@ -2,6 +2,7 @@ package org.opennms.features.poller.remote.gwt.client.location;
 
 import java.io.Serializable;
 
+import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.ServiceStatus;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -16,10 +17,23 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private String m_coordinates;
 	private ServiceStatus m_status;
 
+	public LocationInfo() {
+
+	}
+
+	public LocationInfo(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates, final ServiceStatus status) {
+		m_name = name;
+		m_pollingPackage = pollingPackageName;
+		m_area = area;
+		m_geolocation = geolocation;
+		m_coordinates = coordinates;
+		m_status = status;
+	}
+
 	public String getName() {
 		return m_name;
 	}
-	
+
 	public void setName(final String name) {
 		m_name = name;
 	}
@@ -62,5 +76,15 @@ public class LocationInfo implements IsSerializable, Serializable {
 
 	public void setStatus(final ServiceStatus status) {
 		m_status = status;
+	}
+
+	public GWTLatLng getLatLng() {
+		return GWTLatLng.fromCoordinates(getCoordinates());
+	}
+
+	public String toString() {
+		return "LocationInfo[name=" + m_name + ",polling package=" + m_pollingPackage
+			+ ",area=" + m_area + ",geolocation=" + m_geolocation
+			+ ",coordinates=" + m_coordinates + ",status=" + m_status + "]";
 	}
 }

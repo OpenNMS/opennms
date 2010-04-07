@@ -29,11 +29,11 @@ import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
-public class GoogleMapsLocationManager extends AbstractLocationManager implements LocationManager {
-    
+public class GoogleMapsLocationManager extends AbstractLocationManager {
+
  	private final SplitLayoutPanel m_panel;
 	private GoogleMapsPanel m_mapPanel = new GoogleMapsPanel();
-	
+
 	private final Map<String,GoogleMapsLocation> m_locations = new HashMap<String,GoogleMapsLocation>();
     private boolean updated = false;
 
@@ -41,7 +41,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 		super(application, eventBus);
 		m_panel = panel;
 	}
-	
+
 	@Override
     protected void initializeMapWidget() {
         m_mapPanel.getMapWidget().setSize("100%", "100%");
@@ -50,15 +50,15 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
       //              m_mapWidget.setZoomLevel(10);
         m_mapPanel.getMapWidget().setContinuousZoom(true);
         m_mapPanel.getMapWidget().setScrollWheelZoomEnabled(true);
-      
+
         m_mapPanel.getMapWidget().addMapMoveEndHandler(new MapMoveEndHandler() {
-        
+
             public void onMoveEnd(MapMoveEndEvent event) {
                 m_eventBus.fireEvent(new LocationsUpdatedEvent(GoogleMapsLocationManager.this));
             }
-            
+
         });
-        
+
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(final ResizeEvent resizeEvent) {
                 if (m_mapPanel.getMapWidget() != null) {
@@ -66,18 +66,18 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
                 }
             }
         });
-        
+
         m_panel.add(m_mapPanel.getMapWidget());
 
         m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, new LocationPanelSelectEventHandler() {
-            
+
             public void onLocationSelected(final LocationPanelSelectEvent event) {
                 selectLocation(event.getLocationName());
             }
         });
-        
+
 }
-    
+
 	@Override
     public void selectLocation(String locationName) {
         final GoogleMapsLocation location = m_locations.get(locationName);
@@ -130,10 +130,10 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 
 	    return visibleLocations;
     }
-	
-	
-	
-	
+
+
+
+
 
 	@Override
     public void fitToMap() {
@@ -154,13 +154,15 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
         return b;
     }
 
+
+	@Override
 	protected void updateMarker(final Location location) {
         GoogleMapsLocation oldLocation = m_locations.get(location.getName());
         addAndMergeLocation(oldLocation, new GoogleMapsLocation(location));
 
         if (oldLocation == null) {
             placeMarker(m_locations.get(location.getName()));
-        } else if (!oldLocation.getLocationMonitorState().getStatus().equals(location.getLocationMonitorState().getStatus())) {
+        } else if (!oldLocation.getStatusText().equals(location.getStatusText())) {
             placeMarker(m_locations.get(location.getName()));
         }
 
@@ -182,7 +184,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
         }else {
             m_locations.put(newLocation.getName(), newLocation);
         }
-        
+
     }
 
 	private GoogleMapsLocation mergeLocations(final GoogleMapsLocation oldLocation, final GoogleMapsLocation newLocation) {
@@ -201,8 +203,8 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 			Icon icon = Icon.newInstance();
 			icon.setIconSize(Size.newInstance(32, 32));
 			icon.setIconAnchor(Point.newInstance(16, 32));
-			icon.setImageURL("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png");
-	
+			icon.setImageURL("images/icon-" + location.getStatusText() + ".png");
+
 			final MarkerOptions markerOptions = MarkerOptions.newInstance();
 			markerOptions.setAutoPan(true);
 			markerOptions.setClickable(true);
@@ -211,10 +213,11 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 			final GWTLatLng latLng = location.getLatLng();
 			m = new Marker(toLatLng(latLng), markerOptions);
 			m.addMarkerClickHandler(new DefaultMarkerClickHandler(location.getName()));
+			location.setMarker(m);
+			m_locations.put(location.getName(), location);
 		} else {
-			m.setImage("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png");
+			m.setImage("images/icon-" + location.getStatusText() + ".png");
 		}
-		location.setMarker(m);
 
 		return m;
 	}
@@ -223,7 +226,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager implement
 	public void reportError(final String errorMessage, final Throwable throwable) {
 		// FIXME: implement error reporting in UI
 	}
-	
+
 	private final class DefaultMarkerClickHandler implements MarkerClickHandler {
 		private final String m_locationName;
 

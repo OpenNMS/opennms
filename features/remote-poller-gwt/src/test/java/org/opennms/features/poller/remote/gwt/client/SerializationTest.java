@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.Test;
+import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.user.server.rpc.impl.LegacySerializationPolicy;
 import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamWriter;
@@ -37,31 +39,41 @@ public class SerializationTest {
 	}
 
 	@Test
-	public void testUpdateLocation() throws Exception {
-		UpdateLocation location = new UpdateLocation();
-		location.setArea("East Coast");
-		location.setGeolocation("RDU");
-		location.setLatLng(new GWTLatLng(1D, 1D));
-		location.setLocationMonitorState(getLocationMonitorState());
+	public void testLocationInfo() throws Exception {
+		LocationInfo location = new LocationInfo();
 		location.setName("Bob");
 		location.setPollingPackageName("Harry");
+		location.setArea("East Coast");
+		location.setGeolocation("RDU");
+		location.setCoordinates("0.0,0.0");
+		location.setStatus(ServiceStatus.UP);
 		writer.writeObject(location);
-		
-		Collection<Location> locations = new ArrayList<Location>();
-		locations.add(location);
-		UpdateLocations updateLocations = new UpdateLocations(locations);
-		writer.writeObject(updateLocations);
+	}
+
+	@Test
+	public void testLocationDetails() throws Exception {
+		LocationDetails l = new LocationDetails();
+		l.setLocationMonitorState(getLocationMonitorState());
+		writer.writeObject(l);
 	}
 
 	@Test
 	public void testBaseLocation() throws Exception {
 		BaseLocation location = new BaseLocation();
-		location.setArea("East Coast");
-		location.setGeolocation("RDU");
-		location.setLatLng(new GWTLatLng(1D, 1D));
-		location.setLocationMonitorState(getLocationMonitorState());
-		location.setName("Bob");
-		location.setPollingPackageName("Harry");
+
+		LocationInfo info = new LocationInfo();
+		info.setArea("East Coast");
+		info.setGeolocation("RDU");
+		info.setCoordinates("0.0,0.0");
+		info.setName("Bob");
+		info.setPollingPackageName("Harry");
+
+		LocationDetails details = new LocationDetails();
+		details.setLocationMonitorState(getLocationMonitorState());
+
+		location.setLocationInfo(info);
+		location.setLocationDetails(details);
+
 		writer.writeObject(location);
 	}
 

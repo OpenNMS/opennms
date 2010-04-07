@@ -10,13 +10,9 @@ public class GoogleMapsLocation extends BaseLocation {
 	}
 
 	public GoogleMapsLocation(Location location) {
-		super(location.getName(), location.getPollingPackageName(), location.getArea(), location.getGeolocation(), location.getLatLng(), location.getLocationMonitorState());
+		super(location.getLocationInfo(), location.getLocationDetails());
 	}
 
-	public GoogleMapsLocation(final String name, final String pollingPackageName, final String area, final String geolocation) {
-		super(name, pollingPackageName, area, geolocation);
-	}
-	
 	@Override
 	public String getImageURL() {
 		if (m_marker != null) {
@@ -38,4 +34,11 @@ public class GoogleMapsLocation extends BaseLocation {
         return bounds.contains(getLatLng());
     }
 
+    protected String getAttributeText() {
+    	return super.getAttributeText() + ",imageUrl=" + getImageURL() + ",marker=" + getMarker();
+    }
+
+    public String toString() {
+		return "GoogleMapsLocation["+getAttributeText()+"]";
+	}
 }
