@@ -146,7 +146,6 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
             builder.addSnmpInterface(m_testHostName, 2).setIfName("gif0").setPhysAddr("00:11:22:33:45").setIfType(55);
             builder.addSnmpInterface(m_testHostName, 3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
 
-            // InterfaceBuilder ifBldr = builder.addInterface(m_testHostName).setId(27).setIsSnmpPrimary("P");
             InterfaceBuilder ifBldr = builder.addInterface(m_testHostName).setIsSnmpPrimary("P");
             ifBldr.addSnmpInterface(m_testHostName, 6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
 
@@ -211,9 +210,8 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
             }
     )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
+    //@JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/bigrouter-walk.properties");
     public void testCollect() throws Exception {
-        // initializeAgent("/org/opennms/netmgt/snmp/bigrouter-walk.properties");
-
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
 
         // don't forget to initialize the agent
@@ -387,7 +385,6 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
-
         System.err.println("FIRST COLLECTION FINISHED");
 
         //need a one second time elapse to update the RRD
@@ -460,7 +457,6 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
         CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
-
         System.err.println("FIRST COLLECTION FINISHED");
 
         //need a one second time elapse to update the RRD
@@ -485,7 +481,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         m_agent = agent;
     }
 
-    public void setTestContext(TestContext t) {
-        m_context = t;
+    public void setTestContext(TestContext context) {
+        m_context = context;
     }
 }
