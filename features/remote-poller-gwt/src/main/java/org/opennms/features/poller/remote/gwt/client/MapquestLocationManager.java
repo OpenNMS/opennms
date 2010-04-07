@@ -26,7 +26,7 @@ import com.googlecode.gwtmapquest.transaction.MQATileMap;
 
 
 
-public class MapquestLocationManager extends AbstractLocationManager implements LocationManager {
+public class MapquestLocationManager extends AbstractLocationManager {
 	private final SplitLayoutPanel m_outerPanel;
 	private SimplePanel m_panel;
 
@@ -39,7 +39,7 @@ public class MapquestLocationManager extends AbstractLocationManager implements 
 		m_outerPanel = splitPanel;
 	}
 
-	
+
     @Override
     protected void initializationComplete() {
         super.initializationComplete();
@@ -139,11 +139,11 @@ public class MapquestLocationManager extends AbstractLocationManager implements 
         m_panel = new SimplePanel();
         m_panel.setSize("100%", "100%");
         m_outerPanel.add(m_panel);
-        
+
         m_map = MQATileMap.newInstance(m_panel.getElement());
         m_map.addControl(MQALargeZoomControl.newInstance());
         m_map.setZoomLevel(2);
-        
+
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
                 m_map.setSize(MQASize.newInstance(m_panel.getOffsetWidth(), m_panel.getOffsetHeight()));

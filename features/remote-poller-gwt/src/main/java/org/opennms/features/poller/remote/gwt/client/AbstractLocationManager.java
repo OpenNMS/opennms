@@ -9,17 +9,20 @@ import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataL
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Label;
 
 
 public abstract class AbstractLocationManager implements LocationManager {
 
 	protected final HandlerManager m_eventBus;
-	
+
 	private static final Set<String> m_locationsUpdating = new HashSet<String>();
 	private final HandlerManager m_handlerManager = new HandlerManager(this);
 
@@ -28,7 +31,7 @@ public abstract class AbstractLocationManager implements LocationManager {
 	public AbstractLocationManager(final HandlerManager eventBus) {
 		m_eventBus = eventBus;
 	}
-	
+
     public void initialize() {
         DeferredCommand.addCommand(new InitializationCommand(this, createFinisher(), createDataLoaders()));
     }
@@ -40,7 +43,7 @@ public abstract class AbstractLocationManager implements LocationManager {
             }
         };
     }
-    
+
     protected DataLoader[] createDataLoaders() {
         return new DataLoader[] {
             new DataLoader() {
@@ -52,15 +55,20 @@ public abstract class AbstractLocationManager implements LocationManager {
              new EventServiceInitializer(this)
         };
     }
-    
+
     protected abstract void initializeMapWidget();
-    
+
     protected void initializationComplete() {
         m_handlerManager.fireEvent(new LocationManagerInitializationCompleteEvent());
     }
-    
 
-	
+    public void updateLocation(final LocationInfo info) {
+    	if (info == null) return;
+    	final BaseLocation l = new BaseLocation();
+    	l.setLocationInfo(info);
+    	updateMarker(l);
+    }
+
 	public void updateLocation(final Location location) {
 		if (location == null) return;
 		GWTLatLng latLng = location.getLatLng();
@@ -84,18 +92,18 @@ public abstract class AbstractLocationManager implements LocationManager {
 			updateLocation(location);
 		}
 	}
-	
+
 	public void removeLocations(Collection<Location> locations) {
 		for (Location location : locations) {
 			if (location == null) continue;
 			locationUpdateInProgress(location);
 		}
-		
+
 		for (Location location : locations) {
 			if (location == null) continue;
 			removeLocation(location);
 		}
-		
+
 		m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
 	}
 
@@ -120,7 +128,7 @@ public abstract class AbstractLocationManager implements LocationManager {
 	protected boolean isLocationUpdateInProgress() {
 		return m_locationsUpdating.size() > 0;
 	}
-	
+
 	abstract protected void updateMarker(Location location);
 
     protected LocationStatusServiceAsync getRemoteService() {
@@ -131,5 +139,13 @@ public abstract class AbstractLocationManager implements LocationManager {
         m_handlerManager.addHandler(LocationManagerInitializationCompleteEvent.TYPE, handler);
     };
     
-    
+    protected void displayDialog(final String title, final String contents) {
+    	final DialogBox db = new DialogBox();
+    	db.setAutoHideEnabled(true);
+    	db.setModal(true);
+    	db.setText(title);
+    	db.setWidget(new Label(contents, true));
+    	db.show();
+    }
+
  }
