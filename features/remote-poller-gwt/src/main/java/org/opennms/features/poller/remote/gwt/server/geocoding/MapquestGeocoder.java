@@ -48,7 +48,7 @@ public class MapquestGeocoder implements Geocoder {
 		m_apiKey = apiKey;
 	}
 
-	public GWTLatLng geocode(final String geolocation) throws GeocoderLookupException {
+	public GWTLatLng geocode(final String geolocation) throws GeocoderException {
 		final HttpMethod method = new GetMethod(getUrl(geolocation));
 		method.addRequestHeader("User-Agent", "OpenNMS-MapQuestGeocoder/1.0");
 		method.addRequestHeader("Referer", m_referer);
@@ -57,7 +57,7 @@ public class MapquestGeocoder implements Geocoder {
 			m_httpClient.executeMethod(method);
 			final ElementTree tree = ElementTree.fromStream(method.getResponseBodyAsStream());
 			if (tree == null) {
-				throw new GeocoderLookupException("an error occurred connecting to the MapQuest geocoding service (no XML tree was found)");
+				throw new GeocoderException("an error occurred connecting to the MapQuest geocoding service (no XML tree was found)");
 			}
 
 			final ElementTree statusCode = tree.find("//statusCode");
@@ -65,7 +65,7 @@ public class MapquestGeocoder implements Geocoder {
 				final String code = (statusCode == null? "unknown" : statusCode.getText());
 				final ElementTree messageTree = tree.find("//message");
 				final String message = (messageTree == null? "unknown" : messageTree.getText());
-				throw new GeocoderLookupException(
+				throw new GeocoderException(
 					"an error occurred when querying MapQuest (statusCode=" + code + ", message=" + message + ")"
 				);
 			}
@@ -74,7 +74,7 @@ public class MapquestGeocoder implements Geocoder {
 			if (locations.size() > 1) {
 				LogUtils.warnf(this, "more than one location returned for query: %s", geolocation);
 			} else if (locations.size() == 0) {
-				throw new GeocoderLookupException("MapQuest returned an OK status code, but no locations");
+				throw new GeocoderException("MapQuest returned an OK status code, but no locations");
 			}
 			final ElementTree location = locations.get(0);
 
@@ -82,7 +82,7 @@ public class MapquestGeocoder implements Geocoder {
 			if (m_minimumQuality != null) {
 				final Quality geocodeQuality = Quality.valueOf(location.find("//geocodeQuality").getText().toUpperCase());
 				if (geocodeQuality.compareTo(m_minimumQuality) < 0) {
-					throw new GeocoderLookupException("response did not meet minimum quality requirement (" + geocodeQuality + " is less specific than " + m_minimumQuality + ")");
+					throw new GeocoderException("response did not meet minimum quality requirement (" + geocodeQuality + " is less specific than " + m_minimumQuality + ")");
 				}
 			}
 
@@ -91,18 +91,18 @@ public class MapquestGeocoder implements Geocoder {
 			Double latitude = Double.valueOf(latLng.find("//lat").getText());
 			Double longitude = Double.valueOf(latLng.find("//lng").getText());
 			return new GWTLatLng(latitude, longitude);
-		} catch (GeocoderLookupException e) {
+		} catch (GeocoderException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new GeocoderLookupException("unable to get lat/lng from MapQuest", e);
+			throw new GeocoderException("unable to get lat/lng from MapQuest", e);
 		}
 	}
 
-	private String getUrl(String geolocation) throws GeocoderLookupException {
+	private String getUrl(String geolocation) throws GeocoderException {
 		try {
 			return GEOCODE_URL + "&key=" + m_apiKey + "&location=" + URLEncoder.encode(geolocation, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			throw new GeocoderLookupException("unable to URL-encode query string", e);
+			throw new GeocoderException("unable to URL-encode query string", e);
 		}
 	}
 

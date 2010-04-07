@@ -4,6 +4,6 @@ import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
 public interface Geocoder {
 
-	public GWTLatLng geocode(String geolocation) throws GeocoderLookupException;
+	public GWTLatLng geocode(String geolocation) throws GeocoderException;
 
 }
