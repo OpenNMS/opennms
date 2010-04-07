@@ -62,11 +62,6 @@ public abstract class NotificationCommandManager {
     private Map<String, Command> m_commands;
 
     /**
-     * 
-     */
-    protected InputStream configIn;
-
-    /**
      * Populate the internal list of notification commands from an XML file.
      *  
      * @param reader contains the XML file to be parsed
@@ -74,7 +69,7 @@ public abstract class NotificationCommandManager {
      * @throws ValidationException
      */
     protected void parseXML(InputStream reader) throws MarshalException, ValidationException {
-        NotificationCommands config = getXML(reader);
+        NotificationCommands config = CastorUtils.unmarshal(NotificationCommands.class, reader);
 
         Map<String, Command> commands = new HashMap<String, Command>();
         for (Command curCommand : getCommandsFromConfig(config)) {
@@ -88,12 +83,7 @@ public abstract class NotificationCommandManager {
         m_commands = commands;
     }
 
-    private NotificationCommands getXML(InputStream reader)
-            throws MarshalException, ValidationException {
-        return CastorUtils.unmarshal(NotificationCommands.class, reader);
-    }
-
-    private List<Command> getCommandsFromConfig(NotificationCommands config) {
+    private static List<Command> getCommandsFromConfig(NotificationCommands config) {
         if (config == null) {
             log().warn("no notification commands found");
             return Collections.emptyList();
@@ -103,7 +93,7 @@ public abstract class NotificationCommandManager {
     
     public abstract void update() throws Exception;
 
-    private Category log() {
+    private static Category log() {
         return ThreadCategory.getInstance(NotificationCommandManager.class);
     }
 
