@@ -1,5 +1,4 @@
 function onMouseOverMapElement(evt) {
-	myMapApp.enableTooltips();
 	var id = evt.target.parentNode.getAttributeNS(null,"id");
 	var mapElement = map.mapElements[id];
 	var toolTipLabel = "";
@@ -14,8 +13,7 @@ function onMouseOverMapElement(evt) {
 }
 
 function onMouseOverLink(evt) {
-	myMapApp.enableTooltips();
-	var id = evt.target.getAttributeNS(null,"id");
+	var id = evt.target.parentNode.getAttributeNS(null,"id");
 
 	
 	var link = map.mapLinks[id]
@@ -31,11 +29,11 @@ function onMouseOverLink(evt) {
 }
 
 function onMouseOutMapElement(evt) {
-	myMapApp.disableTooltips();
+
 }
 
 function onMouseOutLink(evt) {
-	myMapApp.disableTooltips();
+
 }
 //if double-click on an element (map) open the map 
 function onClickMapElement(evt)
@@ -64,7 +62,6 @@ function onClickMapElement(evt)
 
 	if (evt.detail == 2)
 	{
-		myMapApp.disableTooltips();
 		if(mapElement.isNode())
 		{
 			var nodeid = mapElement.getNodeId();
@@ -248,8 +245,6 @@ function resetDraggableObject(){
 		
 function onMouseDownOnLink(evt)
 {
-	myMapApp.disableTooltips();
-	
 	resetSelectedObjects();
 	if ((typeof map) == "object")
 	{
@@ -258,8 +253,8 @@ function onMouseDownOnLink(evt)
 
 		clearDownInfo();
 		clearActionsStarted();
-		
-		var mapLink = map.mapLinks[evt.target.getAttributeNS(null,"id")];
+		var id = evt.target.parentNode.getAttributeNS(null,"id");
+		var mapLink = map.mapLinks[id];
 		writeTopInfoText(getInfoOnLink(mapLink));
 		
 		if (evt.detail == 2)

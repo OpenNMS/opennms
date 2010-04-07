@@ -51,22 +51,27 @@ function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapEl
 // <line onclick="*" stroke="*" stroke-width="*"/>
 Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash)
 {
-	this.svgNode = document.createElementNS(svgNS,"line");
+	this.svgNode = document.createElementNS(svgNS,"g");
 	this.svgNode.setAttributeNS(null,"id", id);	
-	this.svgNode.setAttributeNS(null,"x1", x1);	
-	this.svgNode.setAttributeNS(null,"x2", x2);	
-	this.svgNode.setAttributeNS(null,"y1", y1);
-	this.svgNode.setAttributeNS(null,"y2", y2);
-	this.svgNode.setAttributeNS(null,"stroke", stroke);
-	this.svgNode.setAttributeNS(null,"stroke-width", stroke_width);
+
+	this.line = document.createElementNS(svgNS,"line");
+	this.line.setAttributeNS(null,"id", id+"line");	
+	this.line.setAttributeNS(null,"x1", x1);	
+	this.line.setAttributeNS(null,"x2", x2);	
+	this.line.setAttributeNS(null,"y1", y1);
+	this.line.setAttributeNS(null,"y2", y2);
+	this.line.setAttributeNS(null,"stroke", stroke);
+	this.line.setAttributeNS(null,"stroke-width", stroke_width);
 	if(dash_array!=-1 && dash_array!=0){
-		this.svgNode.setAttributeNS(null,"stroke-dasharray", dash_array);
+		this.line.setAttributeNS(null,"stroke-dasharray", dash_array);
 	}
-	this.svgNode.setAttributeNS(null,"style", "z-index:0");
-	this.svgNode.setAttributeNS(null,"cursor", "pointer");
-	this.svgNode.addEventListener("click", this.onClick, false);
-	this.svgNode.addEventListener("mouseover", this.onMouseOver, false);
-	this.svgNode.addEventListener("mouseout", this.onMouseOut, false);
+	this.line.setAttributeNS(null,"style", "z-index:0");
+	this.line.setAttributeNS(null,"cursor", "pointer");
+	this.line.addEventListener("click", this.onClick, false);
+	this.line.addEventListener("mouseover", this.onMouseOver, false);
+	this.line.addEventListener("mouseout", this.onMouseOut, false);
+	this.svgNode.appendChild(this.line);
+	
 	this.animateTag = document.createElementNS(svgNS,"animate");
 	this.animateTag.setAttributeNS(null,"attributeName", "stroke");	
 	this.animateTag.setAttributeNS(null,"from", stroke);	
@@ -74,7 +79,7 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 	this.animateTag.setAttributeNS(null,"dur", "0ms");
 	this.animateTag.setAttributeNS(null,"repeatCount", "indefinite");
 	this.animateTag.addEventListener("repeat", this.onRepeat, false);
-	this.svgNode.appendChild(this.animateTag);
+	this.line.appendChild(this.animateTag);
 	this.flash=false;
 	if(flash!=undefined && flash==true)
 		this.setFlash(true);
@@ -101,15 +106,15 @@ Link.prototype.getStatus = function() {
 }
 
 Link.prototype.getStroke = function() {
-	return this.svgNode.getAttribute("stroke");
+	return this.line.getAttribute("stroke");
 }
 
 Link.prototype.getStrokeWidth = function() {
-	return this.svgNode.getAttribute("stroke-width");
+	return this.line.getAttribute("stroke-width");
 }
 
 Link.prototype.getDashArray = function() {
-	return this.svgNode.getAttribute("dash-array");
+	return this.line.getAttribute("dash-array");
 }
 
 Link.prototype.getFlash = function() {
@@ -175,10 +180,10 @@ Link.prototype.update = function()
 	var x2=this.mapElement2.getX()+this.deltaX2FromElem2Center;	
 	var y2=this.mapElement2.getY()+this.deltaY2FromElem2Center;	
 
-	this.svgNode.setAttributeNS(null,"x1", x1);	
-	this.svgNode.setAttributeNS(null,"x2", x2);	
-	this.svgNode.setAttributeNS(null,"y1", y1);
-	this.svgNode.setAttributeNS(null,"y2", y2);	
+	this.line.setAttributeNS(null,"x1", x1);	
+	this.line.setAttributeNS(null,"x2", x2);	
+	this.line.setAttributeNS(null,"y1", y1);
+	this.line.setAttributeNS(null,"y2", y2);	
 }
 
 /*
