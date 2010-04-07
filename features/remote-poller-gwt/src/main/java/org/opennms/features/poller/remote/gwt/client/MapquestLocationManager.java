@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -48,7 +49,8 @@ public class MapquestLocationManager extends AbstractLocationManager {
 
 
     public void updateMarker(final Location location) {
-		final MapQuestLocation oldLocation = m_locations.get(location.getName());
+		final LocationInfo locationInfo = location.getLocationInfo();
+		final MapQuestLocation oldLocation = m_locations.get(locationInfo.getName());
 		if (oldLocation != null) {
 			m_map.removeShape(oldLocation.getMarker());
 		}
@@ -59,13 +61,13 @@ public class MapquestLocationManager extends AbstractLocationManager {
 			newLocation = new MapQuestLocation(location);
 		}
 
-		final MQALatLng latLng = MQALatLng.newInstance(location.getLatLng().getLatitude(), location.getLatLng().getLongitude());
-		final MQAIcon icon = MQAIcon.newInstance("images/icon-" + location.getLocationMonitorState().getStatus().toString() + ".png", 32, 32);
+		final GWTLatLng gLatLng = locationInfo.getLatLng();
+		final MQALatLng latLng = MQALatLng.newInstance(gLatLng.getLatitude(), gLatLng.getLongitude());
+		final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getStatus() + ".png", 32, 32);
 		final MQAPoi point = MQAPoi.newInstance(latLng, icon);
-//		Window.alert("current offset = " + point.getIconOffset().getX() + "," + point.getIconOffset().getY());
 		point.setIconOffset(MQAPoint.newInstance(-16, -32));
 		newLocation.setMarker(point);
-		m_locations.put(location.getName(), newLocation);
+		m_locations.put(locationInfo.getName(), newLocation);
 		m_map.addShape(point);
         locationUpdateComplete(location);
         if (!isLocationUpdateInProgress()) {
@@ -80,9 +82,9 @@ public class MapquestLocationManager extends AbstractLocationManager {
 	@Override
 	public void removeLocation(final Location location) {
 		if (location == null) return;
-		GWTLatLng latLng = location.getLatLng();
+		GWTLatLng latLng = location.getLocationInfo().getLatLng();
 		if (latLng == null) {
-			Log.warn("no lat/long for location " + location.getName());
+			Log.warn("no lat/long for location " + location.getLocationInfo().getName());
 			return;
 		}
 		MapQuestLocation loc = new MapQuestLocation(location);
@@ -113,12 +115,12 @@ public class MapquestLocationManager extends AbstractLocationManager {
 		if (location == null) return;
 
 		final MQAPoi point = location.getMarker();
-		final GWTLatLng latLng = location.getLatLng();
+		final GWTLatLng latLng = location.getLocationInfo().getLatLng();
 		m_map.saveState();
 		m_map.setCenter(MQALatLng.newInstance(latLng.getLatitude(), latLng.getLongitude()));
 		if (point != null) {
-			point.setInfoTitleHTML(location.getName() + " (" + location.getArea() + ")");
-			point.setInfoContentHTML("Status = " + location.getLocationMonitorState().getStatus().toString());
+			point.setInfoTitleHTML(location.getLocationInfo().getName() + " (" + location.getLocationInfo().getArea() + ")");
+			point.setInfoContentHTML("Status = " + location.getLocationInfo().getStatus().toString());
 			final MQAInfoWindow window = m_map.getInfoWindow();
 			window.hide();
 			point.showInfoWindow();

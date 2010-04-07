@@ -31,7 +31,7 @@ public class GoogleMapsLocation extends BaseLocation {
 	}
 
     boolean isVisible(GWTBounds bounds) {
-        return bounds.contains(getLatLng());
+        return bounds.contains(getLocationInfo().getLatLng());
     }
 
     protected String getAttributeText() {

@@ -58,11 +58,11 @@ public class GoogleMapsPanel extends Composite {
 
     void showLocationDetails(final GoogleMapsLocation location) {
         final Marker m = location.getMarker();
-        final GWTLatLng latLng = location.getLatLng();
+        final GWTLatLng latLng = location.getLocationInfo().getLatLng();
         getMapWidget().setCenter(toLatLng(latLng));
         if (m != null) {
             //InfoWindowContent content = getInfoWindowForLocation(location);
-            InfoWindowContent content = new InfoWindowContent(location.getName() + " Wahoo!");
+            InfoWindowContent content = new InfoWindowContent(location.getLocationInfo().getName() + " Wahoo!");
             getMapWidget().getInfoWindow().open(m, content);
         }
     }

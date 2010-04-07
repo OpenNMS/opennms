@@ -15,7 +15,7 @@ public abstract class GoogleMapsUtils {
 //	private static Random generator = new Random();
 
 	public static InfoWindowContent getInfoWindowForLocation(final Location location) {
-		final LocationMonitorState state = location.getLocationMonitorState();
+		final LocationMonitorState state = location.getLocationDetails().getLocationMonitorState();
 
 		int pollersStarted = state.getMonitorsStarted();
 		int pollersStopped = state.getMonitorsStopped();
@@ -25,7 +25,7 @@ public abstract class GoogleMapsUtils {
 		int monitorsWithOutages = state.getMonitorsWithServicesDown().size();
 
 		final VerticalPanel panel = new VerticalPanel();
-		panel.add(new Label(location.getName()));
+		panel.add(new Label(location.getLocationInfo().getName()));
 	
 		final FlexTable table = new FlexTable();
 		table.setCellPadding(0);
