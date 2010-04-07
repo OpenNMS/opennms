@@ -1772,10 +1772,13 @@ function getInfoOnLink(link)
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
 	
+	var speed = 'Undefined';
+	if (LINK_SPEED[link.getTypology()] > 0 )
+		speed = LINK_SPEED[link.getTypology()];
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+LINK_SPEED[link.getTypology()]);
+	tspanContent = document.createTextNode(" Speed: "+speed);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);	
 
