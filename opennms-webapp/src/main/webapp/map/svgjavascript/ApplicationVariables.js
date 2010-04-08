@@ -18,6 +18,7 @@ var borderPercentage=5;
 
 // Variables used by "Summary Link" SVG Object
 var summaryLinkId = -1;
+var summaryLinkColor;
 //global factors for spacing between elements
 //suggested factor:   xfactor/yfactor = 4/3 
 var X_FACTOR = 3.5;

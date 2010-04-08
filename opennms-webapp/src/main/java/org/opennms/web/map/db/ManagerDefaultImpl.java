@@ -1438,6 +1438,7 @@ public class ManagerDefaultImpl implements Manager {
         inObj.setDefaultMapElementDimension(mapsPropertiesFactory.getDefaultMapElementDimension());
         inObj.setMaxLinks(mapsPropertiesFactory.getMaxLinks());
         inObj.setSummaryLink(mapsPropertiesFactory.getSummaryLink());
+        inObj.setSummaryLinkColor(mapsPropertiesFactory.getSummaryLinkColor());
         return inObj;
     }
 

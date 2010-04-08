@@ -19,15 +19,15 @@ Map.superclass = SVGElement.prototype;
 //                         is like 'idElem1-idElem2' and the value is an integer representing the number of 
 //                         links between elem1 and elem2
 
-function Map(defaultcolor, id, width, height, x, y, maxlinks, sLink,strokewidth,strokedasharray)
+function Map(defaultcolor, id, width, height, x, y, maxlinks, sLink,stroke,strokewidth,strokedasharray)
 {
- 	if ( arguments.length == 10 )
-		this.init(defaultcolor, id, width, height, x, y, maxlinks,sLink,strokewidth,strokedasharray);
+ 	if ( arguments.length == 11 )
+		this.init(defaultcolor, id, width, height, x, y, maxlinks,sLink,stroke,strokewidth,strokedasharray);
 	else
 		alert("Map constructor call error");
 }
 
-Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,strokewidth,strokedasharray)
+Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,stroke,strokewidth,strokedasharray)
 {
 	//following attributes are the starting and the ending SVGPoints of the rectangle 
 	//for the selection of the nodes on the map.
@@ -42,6 +42,7 @@ Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,st
 	this.maxlinks = maxlinks;
 	
 	this.sLinkId=sLink;
+	this.sLinkStroke=stroke;
 	this.sLinkStrokeDashArray=strokedasharray;
 	this.sLinkStrokeWidth=strokewidth;
 
@@ -53,6 +54,7 @@ Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,st
 	this.linksBetweenElements = new Array();
 	this.mapElements = new Array();
 	this.mapLinks = new Array();
+	this.lastlinks = new Array();
 	
 	this.svgNode = document.createElementNS(svgNS,"g");
 	
@@ -260,78 +262,73 @@ Map.prototype.deleteLinksOnElement = function(id)
 Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, status, stroke, stroke_width, dash_array, flash, deltaLink,nodeid1,nodeid2)
 {
 	var id = this.getLinkId(id1,id2,typology);
-	if(this.mapLinks[id]==null){
-		// check parameter
+	if(this.mapLinks[id]!= undefined) {
+		alert("Cannot add Link: exists!");
+		return false
+	}
+	// check parameter
 
-		var first = null;
-		var second = null;
+	var first = null;
+	var second = null;
 
-		var idSplitted = id.split("-");
-		var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
+	var idSplitted = id.split("-");
+	var idWithoutTypology = idSplitted[0]+"-"+idSplitted[1];
 
-		//remove the element from the svg view	
-		if(this.mapElements !=null && id1 != null && id2 != null )
-		{
-			first = this.mapElements[id1];
-			second = this.mapElements[id2];
+	//remove the element from the svg view	
+	if(this.mapElements !=null && id1 != null && id2 != null )
+	{
+		first = this.mapElements[id1];
+		second = this.mapElements[id2];
+	} else {
+		return false;
+	}
+
+	if (first == undefined || second == undefined) {
+		return false;
+	}
+	
+	//calculate and mantains the number of links between the elements
+	if(this.linksBetweenElements[idWithoutTypology]==undefined){
+		this.linksBetweenElements[idWithoutTypology]=0;
+	}
+
+	var link;
+	var sid =  this.getLinkId(id1,id2,this.sLinkId);
+    
+    if (this.linksBetweenElements[idWithoutTypology] <= this.maxlinks-1) {
+		link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology], deltaLink,nodeid1,nodeid2);		
+		this.mapLinkSize++;
+
+		this.mapLinks[id] = link;
+		if (this.linksBetweenElements[idWithoutTypology] == this.maxlinks-1 )
+			this.lastlinks[sid] = link;
+		this.linksBetweenElements[idWithoutTypology]++;    	
+	} else {		
+		link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.maxlinks-1, deltaLink,nodeid1,nodeid2);
+		var summaryLink;
+		if (this.mapLinks[sid]==undefined) {
+			summaryLink = new SLink(sid, typology, first, second, this.sLinkStroke, this.sLinkStrokeWidth, this.sLinkStrokeDashArray, this.maxlinks-1, deltaLink);
+			var lastlink =this.lastlinks[sid];
+			summaryLink.addLink[lastlink];
+			var tempMapLinks=new Array();
+			for ( var linkid in this.mapLinks ) {
+			    if ( linkid != lastlink.id ) {
+					tempMapLinks[linkid]=this.mapLinks[linkid];
+				}
+			}
+			this.mapLinks=tempMapLinks;
 		} else {
-			return false;
+			summaryLink = this.mapLinks[sid];
 		}
-
-		if (first == undefined || second == undefined) {
-			//alert("Paramater id1 error: map doesn't contain mapnode with id=" + id1);
-			return false;
-		}
-
-		
-		//alert(id+" " +this.mapLinks[id]);
-		if( (this.mapLinks[id] != undefined) ){
-			//alertDebug("Map already contains the element");
-			this.deleteLink(id1,id2,typology);
-			this.linksBetweenElements[idWithoutTypology]--;
-		}
-
-		//calculate and mantains the number of links between the elements
-		if(this.linksBetweenElements[idWithoutTypology]==undefined){
-			this.linksBetweenElements[idWithoutTypology]=0;
-		}
-
-		var link,slink,sid;
-		
-		if (this.maxlinks == this.linksBetweenElements[idWithoutTypology]+1) {
-			link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.maxlinks-1, deltaLink,nodeid1,nodeid2);		
-			sid =  this.getLinkId(id1,id2,this.sLinkId);
-			slink = new SLink(sid, typology, first, second, stroke, this.sLinkStrokeWidth, this.sLinkStrokeDashArray, this.maxlinks-1, deltaLink);
-			slink.addLink(id,link);
-			this.mapLinks[sid] = slink;
-			this.mapLinkSize++;
-			this.linksBetweenElements[idWithoutTypology]++;
-		}  else if (this.maxlinks == this.linksBetweenElements[idWithoutTypology]) {
-			link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.maxlinks-1, deltaLink,nodeid1,nodeid2);		
-			sid =  this.getLinkId(id1,id2,this.sLinkId);
-			slink = this.mapLinks[sid];
-			slink.addLink(id,link);
-			this.mapLinks[sid] = slink;
-		} else {
-			link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology], deltaLink,nodeid1,nodeid2);		
-			this.mapLinks[id] = link;
-			this.mapLinkSize++;
-			this.linksBetweenElements[idWithoutTypology]++;
-		}
-		//alert('link with id '+id+' added');
+		summaryLink.addLink(link);
+		this.mapLinks[sid] = summaryLink;
 	}
 	return true;
 }
 
 // delete the link with the id in input
 Map.prototype.deleteLink = function(id1,id2,typology)
-{
-	var links="";
-	if(this.mapLinks!=null && this.mapLinkSize>0)
-	for (currLink in this.mapLinks){
-		links+=","+currLink;
-	}
-	
+{	
 	var linkDeleted = false;
 	var linkId = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[linkId]==undefined){
@@ -402,7 +399,7 @@ Map.prototype.clear = function()
 	this.mapLinks=new Array();
 	this.mapElements=new Array();
 	this.linksBetweenElements=new Array();
-	
+	this.lastlinks = new Array();
 	//reset the array mantaining the number of links between the elements
 }
 
@@ -440,6 +437,7 @@ Map.prototype.clearLinks = function(){
 	this.cleanLinks();
 
 	this.mapLinks=new Array();
+	this.lastlinks = new Array();
 	//reset the array mantaining the number of links between the elements
 	this.linksBetweenElements=new Array();
 	//alert('links cleaned');

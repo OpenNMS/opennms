@@ -118,6 +118,8 @@ public class MapPropertiesFactory extends Object {
     protected int maxLinks = 3;
     
     protected int summaryLink = -1;
+    
+    protected String summaryLinkColor = "yellow";
 
     public static final  String MULTILINK_BEST_STATUS ="best"; 
 	
@@ -603,6 +605,11 @@ public class MapPropertiesFactory extends Object {
         }
         log.debug("found summarylink.id: "+summaryLink);
 
+        if(props.getProperty("summarylink.color")!=null){
+            summaryLinkColor = props.getProperty("summarylink.color");    
+        }
+        log.debug("found summarylink.color: "+summaryLinkColor);
+
         if(props.getProperty("max.links")!=null){
             maxLinks = WebSecurityUtils.safeParseInt(props.getProperty("max.links"));    
         }
@@ -780,7 +787,11 @@ public class MapPropertiesFactory extends Object {
 		}
 	}
 
-	public Map<String,String> getIconsBySysoidMap() {
+	public String getSummaryLinkColor() {
+        return summaryLinkColor;
+    }
+
+    public Map<String,String> getIconsBySysoidMap() {
 	    return iconsBySysoidMap;
 	}
 
@@ -996,7 +1007,5 @@ public class MapPropertiesFactory extends Object {
     public int getSummaryLink() {
         return summaryLink;
     }
-
-
 
 }

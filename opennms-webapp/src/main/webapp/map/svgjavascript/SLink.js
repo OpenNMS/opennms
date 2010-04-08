@@ -50,6 +50,7 @@ SLink.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_a
 	this.links = new Array();
 	this.statusMap = new Array();
 	this.numberOfLinks=0;
+	this.numberOfMultiLinks=0;
 	
 	this.svgNode = document.createElementNS(svgNS,"g");
 	this.svgNode.setAttributeNS(null,"id", id);	
@@ -160,7 +161,7 @@ SLink.prototype.getNumberOfLinks = function()
 
 SLink.prototype.getNumberOfMultiLinks = function()
 {
-	return this.links.length;
+	return this.numberOfMultiLinks;
 }
 
 SLink.prototype.getLinks = function()
@@ -168,12 +169,14 @@ SLink.prototype.getLinks = function()
 	return this.links;
 }
 
-SLink.prototype.addLink = function(id,link)
+SLink.prototype.addLink = function(link)
 {
-	this.links[id]=link;
+	this.links[link.id]=link;
+	this.numberOfMultiLinks++;
 	this.numberOfLinks=this.numberOfLinks+link.getNumberOfLinks();
-	
+	var statutesfound=0;
 	for (var status in link.getStatusMap()) {
+	    statutesfound++;
 		if (this.statusMap[status]==undefined) {
 			this.statusMap[status]=link.getStatusMap()[status];
 		} else {
@@ -181,21 +184,37 @@ SLink.prototype.addLink = function(id,link)
 		  this.statusMap[status] = i;
 		}
 	}
+	if (statutesfound == 1) {
+		this.line.setAttributeNS(null,"stroke", link.stroke);
+	} else {
+		this.line.setAttributeNS(null,"stroke", this.stroke);
+	}
 }
 
 SLink.prototype.switch = function(linkId)
 {
-	var link = links[linkId];
-	if ( link==undefined )
-		return;
-	this.line.setAttributeNS(null,"stroke", link.stroke);
-	this.line.setAttributeNS(null,"stroke-width", link.stroke_width);
-	if(link.dash_array!=-1 && link.dash_array!=0){
-		this.line.setAttributeNS(null,"stroke-dasharray", link.dash_array);
+	if (this.id == linkId) {
+		this.line.setAttributeNS(null,"stroke", this.stroke);
+		this.line.setAttributeNS(null,"stroke-width", this.stroke_width);
+		if(this.dash_array!=-1 && this.dash_array!=0){
+			this.line.setAttributeNS(null,"stroke-dasharray", this.dash_array);
+		} else {
+			this.line.setAttributeNS(null,"stroke-dasharray", 0);
+		}
+		this.setFlash(false);
 	} else {
-		this.line.setAttributeNS(null,"stroke-dasharray", 0);
+		var link = links[linkId];
+		if ( link==undefined )
+			return;
+		this.line.setAttributeNS(null,"stroke", link.stroke);
+		this.line.setAttributeNS(null,"stroke-width", link.stroke_width);
+		if(link.dash_array!=-1 && link.dash_array!=0){
+			this.line.setAttributeNS(null,"stroke-dasharray", link.dash_array);
+		} else {
+			this.line.setAttributeNS(null,"stroke-dasharray", 0);
+		}
+		this.setFlash(link.flash);
 	}
-	this.setFlash(link.flash);
 }
 
 // update link

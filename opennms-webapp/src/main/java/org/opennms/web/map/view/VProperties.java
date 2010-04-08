@@ -28,22 +28,8 @@ public class VProperties {
     int unknownstatusid;
     int maxLinks;
     int summaryLink;
-
-    public int getSummaryLink() {
-        return summaryLink;
-    }
-
-    public void setSummaryLink(int summaryLink) {
-        this.summaryLink = summaryLink;
-    }
-
-    public int getMaxLinks() {
-        return maxLinks;
-    }
-
-    public void setMaxLinks(int maxLinks) {
-        this.maxLinks = maxLinks;
-    }
+    
+    String summaryLinkColor;
 
     ContextMenu contextMenu;
 
@@ -67,6 +53,30 @@ public class VProperties {
 	List<String> categories;
 	
 	
+    public String getSummaryLinkColor() {
+        return summaryLinkColor;
+    }
+
+    public void setSummaryLinkColor(String summaryLinkColor) {
+        this.summaryLinkColor = summaryLinkColor;
+    }
+
+    public int getSummaryLink() {
+        return summaryLink;
+    }
+
+    public void setSummaryLink(int summaryLink) {
+        this.summaryLink = summaryLink;
+    }
+
+    public int getMaxLinks() {
+        return maxLinks;
+    }
+
+    public void setMaxLinks(int maxLinks) {
+        this.maxLinks = maxLinks;
+    }
+
 	public int getUnknownstatusid() {
         return unknownstatusid;
     }
