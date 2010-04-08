@@ -13,6 +13,16 @@ public enum ServiceStatus implements Serializable, IsSerializable {
 	DOWN,
 	UNKNOWN;
 
+	private String m_reason = "";
+
+	public String getReason() {
+		return m_reason;
+	}
+	
+	public void setReason(String reason) {
+		m_reason = reason;
+	}
+
 	public String getColor() {
 		String color;
 		if (this.equals(ServiceStatus.UP)){
@@ -39,5 +49,29 @@ public enum ServiceStatus implements Serializable, IsSerializable {
 			cssClass = "statusUnknown";
 		}
 		return cssClass;
+	}
+
+	public static ServiceStatus up(final String reason) {
+		final ServiceStatus status = ServiceStatus.UP;
+		status.setReason(reason);
+		return status;
+	}
+
+	public static ServiceStatus marginal(final String reason) {
+		final ServiceStatus status = ServiceStatus.MARGINAL;
+		status.setReason(reason);
+		return status;
+	}
+	
+	public static ServiceStatus down(final String reason) {
+		final ServiceStatus status = ServiceStatus.DOWN;
+		status.setReason(reason);
+		return status;
+	}
+
+	public static ServiceStatus unknown(final String reason) {
+		final ServiceStatus status = ServiceStatus.UNKNOWN;
+		status.setReason(reason);
+		return status;
 	}
 }
