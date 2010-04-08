@@ -52,12 +52,12 @@ public abstract class GoogleMapsUtils {
 			table.setHTML(4, 1, monitorsWithOutages + " poller reporting errors");
 
 			for (int i = 3; i < 5; i++) {
-				rf.setStyleName(i, ServiceStatus.UP.getStyle());
+				rf.setStyleName(i, Status.UP.getStyle());
 				if (servicesWithOutages > 0) {
 					if (monitorsWithOutages == pollersStarted) {
-						rf.setStyleName(i, ServiceStatus.DOWN.getStyle());
+						rf.setStyleName(i, Status.DOWN.getStyle());
 					} else {
-						rf.setStyleName(i, ServiceStatus.MARGINAL.getStyle());
+						rf.setStyleName(i, Status.MARGINAL.getStyle());
 					}
 				}
 			}

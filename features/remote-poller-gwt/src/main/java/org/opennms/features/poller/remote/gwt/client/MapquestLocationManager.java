@@ -47,9 +47,10 @@ public class MapquestLocationManager extends AbstractLocationManager {
 		
 		if (oldLocation == null) {
 			placeMarker(m_locations.get(locationInfo.getName()));
-		}else if(!oldLocation.getLocationInfo().getStatus().equals(locationInfo.getStatus())) {
+		}else if(!oldLocation.getLocationInfo().getMonitorStatus().equals(locationInfo.getMonitorStatus())) {
 		    placeMarker(m_locations.get(locationInfo.getName()));
 		}
+
 
 		locationUpdateComplete(location);
         if (!isLocationUpdateInProgress()) {
@@ -71,7 +72,7 @@ public class MapquestLocationManager extends AbstractLocationManager {
         
         final GWTLatLng gLatLng = locationInfo.getLatLng();
         final MQALatLng latLng = MQALatLng.newInstance(gLatLng.getLatitude(), gLatLng.getLongitude());
-        final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getStatus() + ".png", 32, 32);
+        final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getMonitorStatus() + ".png", 32, 32);
         final MQAPoi point = MQAPoi.newInstance(latLng, icon);
         point.setIconOffset(MQAPoint.newInstance(-16, -32));
         location.setMarker(point);
@@ -89,8 +90,8 @@ public class MapquestLocationManager extends AbstractLocationManager {
     }
 
     private MapQuestLocation mergeLocation(MapQuestLocation oldLocation, MapQuestLocation newLocation) {
-        if (newLocation.getLocationInfo().getStatus() == null) 
-            newLocation.getLocationInfo().setStatus(oldLocation.getLocationInfo().getStatus());
+        if (newLocation.getLocationInfo().getMonitorStatus() == null) 
+            newLocation.getLocationInfo().setMonitorStatus(oldLocation.getLocationInfo().getMonitorStatus());
         
         if (newLocation.getLocationDetails().getLocationMonitorState() == null) 
             newLocation.getLocationDetails().setLocationMonitorState(oldLocation.getLocationDetails().getLocationMonitorState());

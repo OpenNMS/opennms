@@ -94,7 +94,7 @@ public class MapQuestMapPanel extends Composite {
     	setCenter(latLng);
     	if (point != null) {
     		point.setInfoTitleHTML(location.getLocationInfo().getName() + " (" + location.getLocationInfo().getArea() + ")");
-    		point.setInfoContentHTML("Status = " + location.getLocationInfo().getStatus().toString());
+    		point.setInfoContentHTML("Status = " + location.getLocationInfo().getMonitorStatus().toString());
     		final MQAInfoWindow window = getInfoWindow();
     		window.hide();
     		point.showInfoWindow();
