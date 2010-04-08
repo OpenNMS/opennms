@@ -90,7 +90,7 @@ public class FileAnticipatorTest extends TestCase {
         String file = "FileAnticipatorTest_bogus_" + System.currentTimeMillis();
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Expected file that needs to be deleted does not exist: " + m_anticipator.getTempDir() + File.separator + file));
+        ta.anticipate(new AssertionFailedError("Errors occurred inside FileAnticipator:\nExpected file that needs to be deleted does not exist: " + m_anticipator.getTempDir() + File.separator + file));
 
         m_anticipator.expecting(file);
 
