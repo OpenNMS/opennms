@@ -44,7 +44,7 @@ SLink.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_a
 {
 
 	this.stroke =stroke;
-	this.stroke_width=stroke.width;
+	this.stroke_width=stroke_width;
 	this.dash_array = dash_array;
 
 	this.links = new Array();
@@ -204,7 +204,7 @@ SLink.prototype.switch = function(linkId)
 		}
 		this.setFlash(false);
 	} else {
-		var link = links[linkId];
+		var link = this.links[linkId];
 		if ( link==undefined )
 			return;
 		this.line.setAttributeNS(null,"stroke", link.stroke);

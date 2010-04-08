@@ -46,12 +46,20 @@ function onMouseDownOnSLink(evt) {
 		clearDownInfo();
 		clearActionsStarted();
 		var id = evt.target.parentNode.getAttributeNS(null,"id");
-		var mapLink = map.mapLinks[id];
-		writeTopInfoText(getInfoOnSLink(mapLink));
+		var slink = map.mapLinks[id];
+		writeTopInfoText(getInfoOnSLink(slink));
 		
 		if (evt.detail == 2)
 		{
-			alert("Implement Context Menu");	
+			var x=evt.clientX + 2;
+			var y=evt.clientY + 4;
+			var height = cmdelta * slink.getNumberOfMultiLinks();
+			var cm =  new ContextMenuSimulator(winSvgElement,slink.id,"ProvaMenu",x,y,cmwidth,height,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+			cm.addItem(slink.id,LINK_TEXT[slink.getTypology()],execLinkCMAction);
+			for ( var linkid in slink.getLinks() ) {
+			    var link = slink.getLinks()[linkid];
+				cm.addItem(linkid,LINK_TEXT[link.getTypology()],execLinkCMAction);	
+			}
 		}		
 	}
 }
