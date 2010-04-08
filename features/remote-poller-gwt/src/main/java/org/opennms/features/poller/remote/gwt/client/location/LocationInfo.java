@@ -15,23 +15,25 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private String m_area;
 	private String m_geolocation;
 	private String m_coordinates;
-	private Status m_status;
+	private Status m_monitorStatus;
+	private Status m_applicationStatus;
 	
 	public LocationInfo() {
 	    
 	}
 	
-	public LocationInfo(String name, String pollingPackage, String area, String geolocation, String coordinates, Status status) {
+	public LocationInfo(String name, String pollingPackage, String area, String geolocation, String coordinates) {
 	    m_name = name;
 	    m_pollingPackage = pollingPackage;
 	    m_area = area;
 	    m_geolocation = geolocation;
 	    m_coordinates = coordinates;
-	    m_status = status;
 	}
 	
 	public LocationInfo(LocationInfo info) {
-	    this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getMonitorStatus());
+	    this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates());
+	    setMonitorStatus(info.getMonitorStatus());
+	    setApplicationStatus(info.getApplicationStatus());
 	}
 	
 	public String getName() {
@@ -75,11 +77,19 @@ public class LocationInfo implements IsSerializable, Serializable {
 	}
 
 	public Status getMonitorStatus() {
-		return m_status;
+		return m_monitorStatus;
 	}
 
 	public void setMonitorStatus(final Status status) {
-		m_status = status;
+		m_monitorStatus = status;
+	}
+	
+	public Status getApplicationStatus() {
+		return m_applicationStatus;
+	}
+	
+	public void setApplicationStatus(final Status status) {
+		m_applicationStatus = status;
 	}
 
 	public GWTLatLng getLatLng() {
@@ -89,6 +99,7 @@ public class LocationInfo implements IsSerializable, Serializable {
 	public String toString() {
 		return "LocationInfo[name=" + m_name + ",polling package=" + m_pollingPackage
 			+ ",area=" + m_area + ",geolocation=" + m_geolocation
-			+ ",coordinates=" + m_coordinates + ",status=" + m_status + "]";
+			+ ",coordinates=" + m_coordinates
+			+ ",monitorStatus=" + m_monitorStatus + ",applicationStatus=" + m_applicationStatus + "]";
 	}
 }
