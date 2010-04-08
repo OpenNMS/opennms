@@ -27,21 +27,19 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 public class GoogleMapsLocationManager extends AbstractLocationManager {
 
- 	private final SplitLayoutPanel m_panel;
-	private GoogleMapsPanel m_mapPanel = new GoogleMapsPanel();
+ 	private GoogleMapsPanel m_mapPanel = new GoogleMapsPanel();
 
 	private final Map<String,GoogleMapsLocation> m_locations = new HashMap<String,GoogleMapsLocation>();
     private boolean updated = false;
 
 	public GoogleMapsLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel) {
-		super(eventBus);
-		m_panel = panel;
+		super(eventBus, panel);
 	}
 
 	@Override
     protected void initializeMapWidget() {
         
-        m_panel.add(m_mapPanel);
+        getPanel().add(m_mapPanel);
         
         m_mapPanel.addMapPanelBoundsChangedEventHandler(new MapPanelBoundsChangedEventHandler() {
             
