@@ -51,6 +51,7 @@ SLink.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_a
 	this.statusMap = new Array();
 	this.numberOfLinks=0;
 	this.numberOfMultiLinks=0;
+	this.statutes=0
 	
 	this.svgNode = document.createElementNS(svgNS,"g");
 	this.svgNode.setAttributeNS(null,"id", id);	
@@ -174,17 +175,17 @@ SLink.prototype.addLink = function(link)
 	this.links[link.id]=link;
 	this.numberOfMultiLinks++;
 	this.numberOfLinks=this.numberOfLinks+link.getNumberOfLinks();
-	var statutesfound=0;
 	for (var status in link.getStatusMap()) {
-	    statutesfound++;
 		if (this.statusMap[status]==undefined) {
 			this.statusMap[status]=link.getStatusMap()[status];
+			this.statutes++;
 		} else {
 		  var i = this.statusMap[status]+link.getStatusMap()[status];
 		  this.statusMap[status] = i;
 		}
 	}
-	if (statutesfound == 1) {
+	
+	if (this.statutes == 1) {
 		this.line.setAttributeNS(null,"stroke", link.stroke);
 	} else {
 		this.line.setAttributeNS(null,"stroke", this.stroke);
