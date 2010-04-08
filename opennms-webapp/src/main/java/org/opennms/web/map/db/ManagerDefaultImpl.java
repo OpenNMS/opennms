@@ -1310,7 +1310,7 @@ public class ManagerDefaultImpl implements Manager {
         else if (linkStatus == 2 ) return "admindown";
         else if (linkStatus == 3 ) return "testing";
         else if (linkStatus == -100 ) return "good";
-        else if (linkStatus == -99 ) return "bad";
+        else if (linkStatus == 1000 ) return "bad";
         else if (linkStatus == 1004 ) return "unknown";
         else return "unknown";
     }
@@ -1320,8 +1320,8 @@ public class ManagerDefaultImpl implements Manager {
         else if (linkStatus.equals("down")) return 1;
         else if (linkStatus.equals("admindown")) return 2;
         else if (linkStatus.equals("testing") ) return 3;
-        else if (linkStatus.equals("good") ) return 1001;
-        else if (linkStatus.equals("bad") ) return 1002;
+        else if (linkStatus.equals("good") ) return -100;
+        else if (linkStatus.equals("bad") ) return 1000;
         else return 1004;
     }
 
@@ -1329,7 +1329,7 @@ public class ManagerDefaultImpl implements Manager {
         if (linfo.status.equalsIgnoreCase("G"))
             return -100;
         if (linfo.status.equalsIgnoreCase("B"))
-            return -99;
+            return 1000;
         if (linfo.status.equalsIgnoreCase("X"))
             return 2;
         if (linfo.status.equalsIgnoreCase("U"))
