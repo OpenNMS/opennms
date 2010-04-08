@@ -12,11 +12,6 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.googlecode.gwtmapquest.transaction.MQAIcon;
-import com.googlecode.gwtmapquest.transaction.MQALatLng;
-import com.googlecode.gwtmapquest.transaction.MQAPoi;
-import com.googlecode.gwtmapquest.transaction.MQAPoint;
-
 
 
 public class MapquestLocationManager extends AbstractLocationManager {
@@ -60,24 +55,10 @@ public class MapquestLocationManager extends AbstractLocationManager {
 
     private void placeMarker(MapQuestLocation location) {
         if(location.getMarker() == null) {
-            final MQAPoi newMarker = createMarker(location);
-            m_mapPanel.addOverlay(newMarker);
+            m_mapPanel.addOverlay(m_mapPanel.createMarker(location));
         }else {
-            createMarker(location);
+            m_mapPanel.createMarker(location);
         }
-    }
-
-    private MQAPoi createMarker(MapQuestLocation location) {
-        final LocationInfo locationInfo = location.getLocationInfo();
-        
-        final GWTLatLng gLatLng = locationInfo.getLatLng();
-        final MQALatLng latLng = MQALatLng.newInstance(gLatLng.getLatitude(), gLatLng.getLongitude());
-        final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getMonitorStatus() + ".png", 32, 32);
-        final MQAPoi point = MQAPoi.newInstance(latLng, icon);
-        point.setIconOffset(MQAPoint.newInstance(-16, -32));
-        location.setMarker(point);
-        
-        return location.getMarker();
     }
 
     private void addAndMergeLocation( final MapQuestLocation oldLocation, final MapQuestLocation newLocation) {

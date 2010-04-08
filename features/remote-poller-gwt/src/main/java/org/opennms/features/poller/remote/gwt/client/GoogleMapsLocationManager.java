@@ -1,6 +1,5 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toLatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,12 +14,6 @@ import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChange
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.maps.client.event.MarkerClickHandler;
-import com.google.gwt.maps.client.geom.Point;
-import com.google.gwt.maps.client.geom.Size;
-import com.google.gwt.maps.client.overlay.Icon;
-import com.google.gwt.maps.client.overlay.Marker;
-import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -142,10 +135,9 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
 	private void placeMarker(final GoogleMapsLocation location) {
 		if (location.getMarker() == null) {
-		    final Marker newMarker = createMarker(location);
-		    m_mapPanel.addOverlay(newMarker);
+		    m_mapPanel.addOverlay(m_mapPanel.createMarker(location));
 		} else {
-			createMarker(location);
+			m_mapPanel.createMarker(location);
 		}
 	}
 
@@ -169,47 +161,9 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 		return newLocation;
 	}
 
-	private Marker createMarker(final GoogleMapsLocation location) {
-		final LocationInfo locationInfo = location.getLocationInfo();
-		Marker m = location.getMarker();
-		if (m == null) {
-			Icon icon = Icon.newInstance();
-			icon.setIconSize(Size.newInstance(32, 32));
-			icon.setIconAnchor(Point.newInstance(16, 32));
-			icon.setImageURL("images/icon-" + locationInfo.getMonitorStatus() + ".png");
-
-			final MarkerOptions markerOptions = MarkerOptions.newInstance();
-			markerOptions.setAutoPan(true);
-			markerOptions.setClickable(true);
-			markerOptions.setTitle(locationInfo.getName());
-			markerOptions.setIcon(icon);
-			final GWTLatLng latLng = locationInfo.getLatLng();
-			m = new Marker(toLatLng(latLng), markerOptions);
-			m.addMarkerClickHandler(new DefaultMarkerClickHandler(locationInfo.getName()));
-			location.setMarker(m);
-			m_locations.put(locationInfo.getName(), location);
-		} else {
-			m.setImage("images/icon-" + locationInfo.getMonitorStatus() + ".png");
-		}
-
-		return m;
-	}
-
 	@Override
 	public void reportError(final String errorMessage, final Throwable throwable) {
 		// FIXME: implement error reporting in UI
-	}
-
-	private final class DefaultMarkerClickHandler implements MarkerClickHandler {
-		private final String m_locationName;
-
-		private DefaultMarkerClickHandler(final String locationName) {
-			m_locationName = locationName;
-		}
-
-		public void onClick(final MarkerClickEvent mke) {
-			selectLocation(m_locationName);
-		}
 	}
 
 }
