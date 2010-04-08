@@ -32,9 +32,10 @@
 package org.opennms.web.map;
 
 /*
- * Created on 8-giu-2005
+ * Created on 6-giu-2007
  *
  */
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -50,22 +51,20 @@ import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
 /**
+ * 
  * @author mmigliore
- * 
- * this class provides to create, manage and delete 
- * proper session objects to use when working with maps
- * 
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class LoadDefaultMapController implements Controller {
-	Category log;
+@SuppressWarnings("deprecation")
+public class LoadLabelMapController extends SimpleFormController {
+	Category log; 
 
 	private Manager manager;
-	
-	
+		
 	public Manager getManager() {
 		return manager;
 	}
@@ -73,28 +72,31 @@ public class LoadDefaultMapController implements Controller {
 	public void setManager(Manager manager) {
 		this.manager = manager;
 	}
-
+	
+	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 		
-		String user = request.getRemoteUser();
+		try{
+	        String user = request.getRemoteUser();
 
-	      log.debug("Loading Default Map for user: " + user);
+	        if (log.isDebugEnabled()) 
+	            log.debug("Loading Label Map for user:" + user);
 
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
-		try {
-		    VMapInfo mapInfo  = manager.getDefaultMapsMenu(user);
-			bw.write(ResponseAssembler.getLoadDefaultMapResponse(mapInfo));
+			bw.write(ResponseAssembler.getLoadLabelMapResponse(manager.getNodeLabelToMaps(user)));
 		} catch (Exception e) {
-			log.error("Error while loading default map for user:"+user,e);
-			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADDEFAULTMAP_ACTION));
+			log.error("Error in map's startup",e);
+			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADLABELMAP_ACTION));
 		} finally {
 			bw.close();
 		}
 
 		return null;
 	}
+	
+
 
 }

@@ -1,3 +1,7 @@
+// variable used only locally to this set of functions
+var selectedMapInList=0;
+var selMaps;
+
 // Menu Svg Object Basic Functions	
 function instantiateRWAdminMenu(){
 	mapMenu.removeChilds();
@@ -123,7 +127,7 @@ function instantiateMapGroupNormalMode() {
 	// *** MAP MENU FOR ADMINISTRATOR***
 	instantiateMapGroup();
 	id="AdminMode";
-	mapMenu.addElement(id, "Admin Mode", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, switchRoleSetUp,null);
+	mapMenu.addElement(id, "Admin Mode", menuDeltaX,4*menuDeltaY,menuWidth,menuHeight, switchRoleSetUp,null);
 }
 
 function instantiateMapGroup() {
@@ -131,7 +135,9 @@ function instantiateMapGroup() {
 	var id="Open";
 	mapMenu.addElement(id, id, menuDeltaX,menuDeltaY,menuWidth,menuHeight, addMapsList,null);
 	id="Close";
-	mapMenu.addElement(id, id, menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, closeSetUp,null);	
+	mapMenu.addElement(id, id, menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, closeSetUp,null);
+	id="Search";
+	mapMenu.addElement(id, id, menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, addSearchMapList,null);	
 }
 
 function instantiateRefreshGroupAdminMode() {
@@ -212,6 +218,84 @@ function newMapSetUp() {
 	newMap();
 }
 
+// Search Map
+function addSearchMapList()
+{
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	textbox1 = new textbox("textbox1","textboxwithcommand","",textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",filterSearchMapSelectionList);
+	selMaps = new selectionList("maps","maps",mapLabels,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,mymapsResult);
+	selMaps.sortList("asc");
+	selMaps.selectElementByPosition(0, false);
+	button1  = new button("button1","maps",searchMapSetUp,"rect","Open",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);
+}
+
+function filterSearchMapSelectionList(textboxId,value,changeType) {
+		
+		if (changeType == "change") {
+			var matchingMaps = new Array(); 
+			for(var i=0;i<nodeLabels.length;i++) {
+			    var nodeLabel = nodeLabels[i];
+				if (nodeLabel.indexOf(value) >= 0) {
+				    var mapLbl = nodeLabelMap[nodeLabel];
+				    if (mapLbl!=undefined) {
+						for (var j=0; j<mapLbl.length;j++ ){
+					    	matchingMaps.push(mapLbl[j]);
+						}
+					}
+				}  
+			}
+			var elementInList = mapLabels.length;
+			for(var k=1;k<mapLabels.length;k++) {
+				var mapLabel = mapLabels[k];
+				var match = true;
+				for(var l=0;l<matchingMaps.length;l++) {
+					if (matchingMaps[l] == mapLabel ) {
+					   match = false;
+					   break;
+					}
+				}
+				if  ( match ) {
+					elementInList--;
+					if (selMaps.elementExists(mapLabel) >= 0) 
+						selMaps.deleteElement(mapLabel);
+				} else if (selMaps.elementExists(mapLabel) == -1 && match >= 0) {
+					selMaps.addElementAtPosition(mapLabel,k);
+				}
+			}
+		}
+}
+
+function searchMapSetUp(mapId)
+{
+	if (verifyMapString()) return;
+
+	if ( selMaps.elementsArray.length == 1 ) {
+		alert("No Matching Map Found");
+	} else if (selectedMapInList == 0 ) {
+		var elems = new String();
+		var first = true;
+		for ( var i = 1; i< selMaps.elementsArray.length; i++ ) {
+			if (first) {
+				elems = mapSortAss[selMaps.elementsArray[i]].id;
+				first = false;
+			} else {
+				elems = elems + "," + mapSortAss[selMaps.elementsArray[i]].id;
+			}
+		}
+		windowsClean();
+		clearTopInfo();
+		clearDownInfo();
+		searchMap(elems);
+		
+	} else {
+		openMapSetUp(mapId);
+	}
+}
+
 // Open Map
 function addMapsList()
 {
@@ -261,7 +345,7 @@ function openMapSetUp(mapId) {
 	if (verifyMapString()) return;
 
 	var mapToOpen;
-	if(mapId != undefined && mapId > 0){
+	if(mapId != undefined && (mapId > 0 || mapId == SEARCH_MAP )){
 		mapToOpen = mapId;
 	}else if(selectedMapInList != undefined && mapSortAss[selectedMapInList].id > 0){
 		mapToOpen = mapSortAss[selectedMapInList].id;		
@@ -364,14 +448,20 @@ function deleteMapSetUp() {
 // Save Map
 function saveMapSetUp() {	
 	closeAllMenu();
-	if(currentMapId!=MAP_NOT_OPENED){
+	if(currentMapId == MAP_NOT_OPENED){
+		alert("No maps opened");
+	} else if (currentMapId == NEW_MAP && currentMapName == NEW_MAP_NAME){
+		alert("Rename 'NewMap' before saving");
+		addRenameMapBox();
+	} else if (currentMapId == SEARCH_MAP && currentMapName == SEARCH_MAP_NAME){
+		alert("Rename 'SearchMap' before saving");
+		addRenameMapBox();
+	}else{
 		clearTopInfo();
 		disableMenu();
 		writeDownInfo("Saving map '" +currentMapName+"'");
 		resetFlags();
 		saveMap();
-	}else{
-		alert("No maps opened");
 	}
 	
 }
@@ -836,6 +926,7 @@ function addIconList()
 
 	selMEIcons = new selectionList("meicons","meicons",MEIcons,selBoxwidth,selBoxxOffset,selBoxyOffset,selBoxCellHeight,selBoxTextpadding,selBoxheightNrElements,selBoxtextStyles,selBoxStyles,selBoxScrollbarStyles,selBoxSmallrectStyles,selBoxHighlightStyles,selBoxTriangleStyles,selBoxpreSelect,false,true,myMEIconsResult);
 	selMEIcons.sortList("asc");
+	selMEIcons.selectElementByPosition(1,true)
 } 
 
 function setIconSetUp() {
@@ -870,7 +961,7 @@ MEIconsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal
         iconPreview.setAttributeNS(null,"y", 87);
         iconPreview.setAttributeNS(null,"width", 20);
         iconPreview.setAttributeNS(null,"height", 25);
-        iconPreview.setAttributeNS(xlinkNS, "xlink:href",MEIconsSortAss[arrayVal] );
+        iconPreview.setAttributeNS(xlinkNS, "xlink:href",MEIconsSortAss[arrayVal]);
         iconPreviewGroup.appendChild(iconPreviewRect);
         iconPreviewGroup.appendChild(iconPreview);
         selMEIcons.parentGroup.appendChild(iconPreviewGroup);
@@ -1642,7 +1733,6 @@ function getInfoOnMapElement(mapElement)
 
 function getInfoOnLink(link) 
 {
-	//var statusColor = LINKSTATUS_COLOR[link.getStatus()];
 	var statusColor = 'black';
 	var text = document.createElementNS(svgNS,"text");
 	text.setAttributeNS(null, "x","3");
@@ -1682,13 +1772,77 @@ function getInfoOnLink(link)
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
 	
+	var speed = 'Undefined';
+	if (LINK_SPEED[link.getTypology()] > 0 )
+		speed = LINK_SPEED[link.getTypology()];
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+LINK_SPEED[link.getTypology()]);
+	tspanContent = document.createTextNode(" Speed: "+speed);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of Links: "+link.getNumberOfLinks());
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);	
 	
 	return text;
 }
 
+function getInfoOnSLink(slink) 
+{
+	var statusColor = 'black';
+	var text = document.createElementNS(svgNS,"text");
+	text.setAttributeNS(null, "x","3");
+	text.setAttributeNS(null, "dy","15");
+	text.setAttributeNS(null, "id","topInfoTextTitle");
+	text.setAttributeNS(null, "font-size",titleFontSize);
+	
+	var textLabel = document.createTextNode("Summary Link info");
+	text.appendChild(textLabel);
+	var tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","20");
+	tspanContent = document.createTextNode(" Type: "+LINK_TEXT[slink.getTypology()]);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	for (var linkid in slink.getLinks()) {
+		var link = slink.getLinks()[linkid];
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode(" Type(#links): " + LINK_TEXT[link.getTypology()] + "(" + link.getNumberOfLinks() + ")");
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);
+	}
+	
+	var speed = 'Undefined';
+	if (LINK_SPEED[slink.getTypology()] > 0 )
+		speed = LINK_SPEED[slink.getTypology()];
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Speed: "+speed);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of Links: "+slink.getNumberOfLinks());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of MultiLinks: "+slink.getNumberOfMultiLinks());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+	
+	return text;
+}

@@ -36,6 +36,7 @@ package org.opennms.web.map.db;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
+import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
 
 /**
@@ -46,7 +47,7 @@ import org.opennms.web.map.MapsException;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class Element implements Cloneable {
+public class DbElement implements Cloneable {
     private int mapId;
 
     private int id;
@@ -55,32 +56,31 @@ public class Element implements Cloneable {
 
     private String label;
 
-    private String iconName;
+    private String icon;
+
+    private String sysoid;
+    
+    public String getSysoid() {
+        return sysoid;
+    }
+
+    public void setSysoid(String sysoid) {
+        this.sysoid = sysoid;
+    }
 
     private int x;
 
     private int y;
-
-    public static final String MAP_TYPE = "M";
-
-    public static final String MAP_HIDE_TYPE = "W";
-
-    public static final String NODE_TYPE = "N";
-
-    public static final String NODE_HIDE_TYPE = "H";
     
-    public static final String defaultNodeIcon = "unspecified";
-    public static final String defaultMapIcon = "map";
-
-    protected Element() {
+    protected DbElement() {
         // blank
     }
 
-    public Element(Element e) throws MapsException {
-        this(e.mapId, e.id, e.type, e.label, e.iconName, e.x, e.y);
+    public DbElement(DbElement e) throws MapsException {
+        this(e.mapId, e.id, e.type, e.label, e.icon, e.x, e.y);
     }
 
-    public Element(int mapId, int id, String type, String label,
+    public DbElement(int mapId, int id, String type, String label,
             String iconName, int x, int y)throws MapsException {
         this.mapId = mapId;
         this.id = id;
@@ -95,7 +95,7 @@ public class Element implements Cloneable {
      * @return Returns the iconName.
      */
     public String getIcon() {
-        return iconName;
+        return icon;
     }
 
     /**
@@ -103,10 +103,7 @@ public class Element implements Cloneable {
      *            The iconName to set.
      */
     public void setIcon(String iconName) {
-    	if(iconName==null){
-    		iconName=defaultNodeIcon;
-    	}
-        this.iconName = iconName;
+        this.icon = iconName;
     }
 
     /**
@@ -166,7 +163,7 @@ public class Element implements Cloneable {
      *            The type to set.
      */
     public void setType(String type) throws MapsException {
-        if (type.equals(MAP_TYPE) || type.equals(NODE_TYPE) || type.equals(NODE_HIDE_TYPE) || type.equals(MAP_HIDE_TYPE))  this.type = type;
+        if (type.equals(MapsConstants.MAP_TYPE) || type.equals(MapsConstants.NODE_TYPE) || type.equals(MapsConstants.NODE_HIDE_TYPE) || type.equals(MapsConstants.MAP_HIDE_TYPE))  this.type = type;
         new MapsException("Cannot create an Element with type " + type);
     }
 
@@ -193,31 +190,31 @@ public class Element implements Cloneable {
         this.id = id;
     }
 
-    public Element clone() {
+    public DbElement clone() {
         try {
-            return (Element) super.clone();
+            return (DbElement) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new UndeclaredThrowableException(e, "CloneNotSupportedException thrown while calling super.clone(), which is odd since we implement the Cloneable interface");
         }
     }
     
     public boolean isMap() {
-    	if (type.equals(MAP_TYPE)) return true;
+    	if (type.equals(MapsConstants.MAP_TYPE)) return true;
     	return false;
     }
 
     public boolean isNode() {
-    	if (type.equals(NODE_TYPE)) return true;
+    	if (type.equals(MapsConstants.NODE_TYPE)) return true;
     	return false;
     }
 
     public boolean isHideMap() {
-        if (type.equals(MAP_HIDE_TYPE)) return true;
+        if (type.equals(MapsConstants.MAP_HIDE_TYPE)) return true;
         return false;
     }
 
     public boolean isHideNode() {
-        if (type.equals(NODE_HIDE_TYPE)) return true;
+        if (type.equals(MapsConstants.NODE_HIDE_TYPE)) return true;
         return false;
     }
 

@@ -4,7 +4,7 @@ MapElement.superclass = MoveableSVGElement.prototype;
 
 /*
 id=the id of the element 
-iconName=the name of the icon 
+iconUrl=the Url of the icon 
 labelText= the label of the element
 semaphoreColor=the color of the semaphore (rgb or 'white','yellow' ecc.)
 x=x position
@@ -13,24 +13,24 @@ status=the element status at the moment of the creation
 avail=availability of the element at the moment of the creation
 */
 
-function MapElement(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity)
+function MapElement(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity)
 {
 	if ( arguments.length == 11 )
 	{
-	   	this.init(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity);
+	   	this.init(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity);
 	}
 	else
 		alert("MapElement constructor call error");
 }
 
-MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity)
+MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity)
 {
 
 	MapElement.superclass.init.call(this, "x", "y", x, y);
 	this.id = new String(id);
 	this.width = dimension;
 	this.height = dimension*4/3;
-	this.icon = iconName;
+	this.icon = icon;
 	this.avail = avail;
 	this.status = status;
 	this.severity = severity;
@@ -49,11 +49,7 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	this.image.setAttributeNS(null,this.attributeY, 0);
 	this.image.setAttributeNS(null,"preserveAspectRatio", "xMinYMin");
 	this.image.setAttributeNS(null,"cursor", "pointer");
-	this.image.setAttributeNS(xlinkNS, "xlink:href", IMAGES_ELEMENTS_FOLDER+MEIconsSortAss[this.icon].fileName);
-	if(MEIconsSortAss[this.icon].height != "")	
-          this.image.setAttributeNS(null,"height", MEIconsSortAss[this.icon].height);
-	if(MEIconsSortAss[this.icon].width != "")	
-	  this.image.setAttributeNS(null,"width", MEIconsSortAss[this.icon].width);
+	this.image.setAttributeNS(xlinkNS, "xlink:href",this.icon.getUrl());
 	this.image.addEventListener("click", this.onClick, false);
 	this.image.addEventListener("mousedown", this.onMouseDown, false);
 	this.image.addEventListener("mousemove", this.onMouseMove, false);
@@ -67,32 +63,14 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 	var labelSize = dimension/2;
 	var labelAnchor = "middle";
 
-	if (MEIconsSortAss[this.icon].textX!="")
-		labelx = MEIconsSortAss[this.icon].textX;
-	
-	if (MEIconsSortAss[this.icon].textY!="")
-		labely = MEIconsSortAss[this.icon].textY;
-
-	if (MEIconsSortAss[this.icon].textSize!="")
-		labelSize = MEIconsSortAss[this.icon].textSize;
-
-	if(MEIconsSortAss[this.icon].textAlign!="")
-		labelAnchor = MEIconsSortAss[this.icon].textAlign;  
-
-
-        this.label = new Label(labelText, labelx, labely, labelSize, labelAnchor ,null);
+    this.label = new Label(labelText, labelx, labely, labelSize, labelAnchor ,null);
 	this.svgNode.appendChild(this.label.getSvgNode());
 	
 	//renderize semaphore
 	var r=dimension/4;
         var cx=this.width+r;
 	var cy=this.height-r;
-	if (MEIconsSortAss[this.icon].semaphoreRadius !="")
-		r = MEIconsSortAss[this.icon].semaphoreRadius
-        if (MEIconsSortAss[this.icon].semaphoreX !="")
-        	cx = MEIconsSortAss[this.icon].semaphoreX; 
-        if (MEIconsSortAss[this.icon].semaphoreY !="")
-        	cy = MEIconsSortAss[this.icon].semaphoreY;
+
 	this.semaphore = new Semaphore(r, cx, cy, semaphoreColor, "black");
 	this.semaphore.flash(semaphoreFlash);
 	this.svgNode.appendChild(this.semaphore.getSvgNode());
@@ -101,15 +79,13 @@ MapElement.prototype.init = function(id,iconName, labelText, semaphoreColor, sem
 }
 
 
-MapElement.prototype.setDimension = function(newDimension){
-        if (mapScale != "disabled" ) {
-     	this.width = newDimension;
-	this.height = newDimension;
+MapElement.prototype.setDimension = function(newDimension) {
+	this.width = newDimension;
+	this.height = newDimension*4/3;
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);	
 	this.label.setFontSize(newDimension/2);
 	this.semaphore.setDimension(newDimension/4);
-        }
 }
 
 MapElement.prototype.getMapId = function() {
@@ -171,6 +147,17 @@ MapElement.prototype.move = function(x, y)
 	this.svgNode.setAttributeNS(null,"transform", "translate(" + this.x + "," + this.y + ")");
 }
 
+MapElement.prototype.getIcon = function()
+{
+	return this.icon.name;
+}
+
+MapElement.prototype.setIcon = function(icon)
+{
+	this.icon = icon;
+	this.image.setAttributeNS(xlinkNS, "xlink:href", this.icon.getUrl());
+	
+}
 MapElement.prototype.getLabel = function()
 {
 	return this.label.text;

@@ -105,7 +105,7 @@ function getMapString()
 			if(count>0)
 				query+="-";
 			var elem = map.mapElements[elemId];
-			query+= elemId+","+elem.x+","+elem.y+","+elem.icon;
+			query+= elemId+","+elem.x+","+elem.y+","+elem.icon.name;
 			count++;
 		}
 	}
@@ -281,4 +281,17 @@ function removeChilds(svgObject) {
           var obj = ls.item(0);
           svgObject.removeChild(obj);
         }
+}
+
+function assArrayPopulate(arrayKeys,arrayValues) {
+	var returnArray = new Array();
+	if (arrayKeys.length != arrayValues.length) {
+		alert("Error: arrays do not have same length");
+	}
+	else {
+		for (i=0;i<arrayKeys.length;i++) {
+			returnArray[arrayKeys[i]] = arrayValues[i];
+		}
+	}
+	return returnArray;
 }

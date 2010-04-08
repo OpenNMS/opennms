@@ -1,40 +1,27 @@
-// == link.js -- 
+// == Slink.js -- 
 
-Link.prototype = new SVGElement;
-Link.superclass = SVGElement.prototype;
+SLink.prototype = new SVGElement;
+SLink.superclass = SVGElement.prototype;
 
-function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeid1,nodeid2)
+function SLink(id, typology, mapElement1,mapElement2, stroke, stroke_width, dash_array, totalLinks, deltaLink)
 {
-	if (arguments.length >= 8) {
+	if (arguments.length >= 9) {
 		var idSplitted = id.split("-");
 		
 		if(mapElement1.id==idSplitted[1]){
 			var tmp = mapElement1;
 			mapElement1=mapElement2;
 			mapElement2=tmp;
-			tmp = nodeid1;
-			nodeid1 = nodeid2;
-			nodeid2 = tmp;
 		}
 		
 		this.typology=typology;
-		this.status=status;
 		this.animateTag = null;
 		this.id = id;
 		
+		this.status = 'Not Defined';
 		this.mapElement1 = mapElement1;
 		this.mapElement2 = mapElement2;
 		
-		this.nodeid1=nodeid1;
-		this.nodeid2=nodeid2;
-
-		this.numberOfLinks = numberOfLinks;
-		this.statusMap = statusMap;
-
-		this.stroke =stroke;
-		this.stroke_width=stroke.width;
-		this.dash_array = dash_array;
-
 		var x1 = this.mapElement1.getX()+this.mapElement1.width/2;
 		var y1 = this.mapElement1.getY()+this.mapElement1.height/2+deltaLink*totalLinks;
 
@@ -46,15 +33,26 @@ function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapEl
 		this.deltaX2FromElem2Center=x2-this.mapElement2.getX();
 		this.deltaY2FromElem2Center=y2-this.mapElement2.getY();
 
-		this.init(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash);
+		this.init(id, x1, x2, y1, y2, stroke, stroke_width, dash_array);
 	}
 	else
-		alert("Link constructor call error");
+		alert("Summary Link constructor call error");
 }
 
 // <line onclick="*" stroke="*" stroke-width="*"/>
-Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash)
+SLink.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_array)
 {
+
+	this.stroke =stroke;
+	this.stroke_width=stroke_width;
+	this.dash_array = dash_array;
+
+	this.links = new Array();
+	this.statusMap = new Array();
+	this.numberOfLinks=0;
+	this.numberOfMultiLinks=0;
+	this.statutes=0
+	
 	this.svgNode = document.createElementNS(svgNS,"g");
 	this.svgNode.setAttributeNS(null,"id", id);	
 
@@ -84,51 +82,48 @@ Link.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_ar
 	this.animateTag.setAttributeNS(null,"repeatCount", "indefinite");
 	this.animateTag.addEventListener("repeat", this.onRepeat, false);
 	this.line.appendChild(this.animateTag);
-	this.flash=false;
-	if(flash!=undefined && flash==true)
-		this.setFlash(true);
 }
 
-Link.prototype.getId = function() {
+SLink.prototype.getId = function() {
 	return this.id;
 }
 
-Link.prototype.getMapElement1 = function() {
+SLink.prototype.getMapElement1 = function() {
 	return this.mapElement1;
 }
 
-Link.prototype.getMapElement2 = function() {
+SLink.prototype.getMapElement2 = function() {
 	return this.mapElement2;
 }
 
-Link.prototype.getTypology = function() {
+SLink.prototype.getTypology = function() {
 	return this.typology;
 }
 
-Link.prototype.getStatus = function() {
+SLink.prototype.getStatus = function() {
 	return this.status;
 }
 
-Link.prototype.getStroke = function() {
+SLink.prototype.getStroke = function() {
 	return this.line.getAttribute("stroke");
 }
 
-Link.prototype.getStrokeWidth = function() {
+SLink.prototype.getStrokeWidth = function() {
 	return this.line.getAttribute("stroke-width");
 }
 
-Link.prototype.getDashArray = function() {
+SLink.prototype.getDashArray = function() {
 	return this.line.getAttribute("dash-array");
 }
 
-Link.prototype.getFlash = function() {
+SLink.prototype.getFlash = function() {
 	return this.flash;
 }
 
 /*
 	set flashing of link
 */
-Link.prototype.setFlash = function(bool)
+SLink.prototype.setFlash = function(bool)
 {
 	this.flash=bool;
 	if (this.animateTag != null) 
@@ -143,40 +138,88 @@ Link.prototype.setFlash = function(bool)
 	}
 }
 
-Link.prototype.getFirstElementId = function()
+SLink.prototype.getFirstElementId = function()
 {
      var ids = this.id.split('-');
      return ids[0];
 }
 
-Link.prototype.getSecondElementId = function()
+SLink.prototype.getSecondElementId = function()
 {
      var ids = this.id.split('-');
      return ids[1];
 }
 
-Link.prototype.getFirstNodeId = function()
-{
-	return this.nodeid1;
-}
-
-Link.prototype.getSecondNodeId = function()
-{
-	return this.nodeid2;
-}
-
-Link.prototype.getStatusMap = function()
+SLink.prototype.getStatusMap = function()
 {
 	return this.statusMap;
 }
 
-Link.prototype.getNumberOfLinks = function()
+SLink.prototype.getNumberOfLinks = function()
 {
 	return this.numberOfLinks;
 }
 
+SLink.prototype.getNumberOfMultiLinks = function()
+{
+	return this.numberOfMultiLinks;
+}
+
+SLink.prototype.getLinks = function()
+{
+	return this.links;
+}
+
+SLink.prototype.addLink = function(link)
+{
+	this.links[link.id]=link;
+	this.numberOfMultiLinks++;
+	this.numberOfLinks=this.numberOfLinks+link.getNumberOfLinks();
+	for (var status in link.getStatusMap()) {
+		if (this.statusMap[status]==undefined) {
+			this.statusMap[status]=link.getStatusMap()[status];
+			this.statutes++;
+		} else {
+		  var i = this.statusMap[status]+link.getStatusMap()[status];
+		  this.statusMap[status] = i;
+		}
+	}
+	
+	if (this.statutes == 1) {
+		this.line.setAttributeNS(null,"stroke", link.stroke);
+	} else {
+		this.line.setAttributeNS(null,"stroke", this.stroke);
+	}
+}
+
+SLink.prototype.switch = function(linkId)
+{
+	if (this.id == linkId) {
+		this.line.setAttributeNS(null,"stroke", this.stroke);
+		this.line.setAttributeNS(null,"stroke-width", this.stroke_width);
+		if(this.dash_array!=-1 && this.dash_array!=0){
+			this.line.setAttributeNS(null,"stroke-dasharray", this.dash_array);
+		} else {
+			this.line.setAttributeNS(null,"stroke-dasharray", 0);
+		}
+		this.setFlash(false);
+	} else {
+		var link = this.links[linkId];
+		if ( link==undefined )
+			return;
+		this.line.setAttributeNS(null,"stroke", link.stroke);
+		this.line.setAttributeNS(null,"stroke-width", link.stroke_width);
+		if(link.dash_array!=-1 && link.dash_array!=0){
+			this.line.setAttributeNS(null,"stroke-dasharray", link.dash_array);
+		} else {
+			this.line.setAttributeNS(null,"stroke-dasharray", 0);
+		}
+		this.setFlash(link.flash);
+	}
+}
+
 // update link
-Link.prototype.update = function()
+SLink.prototype.update = function()
 {
 	var x1=this.mapElement1.getX()+this.deltaX1FromElem1Center;
 	var y1=this.mapElement1.getY()+this.deltaY1FromElem1Center;	
@@ -193,7 +236,7 @@ Link.prototype.update = function()
 /*
 	OnRepeat event handler
 */
-Link.prototype.onRepeat = function(evt)
+SLink.prototype.onRepeat = function(evt)
 {
 	var from = evt.getTarget().getAttribute("from");
 	var to = evt.getTarget().getAttribute("to");
@@ -209,6 +252,6 @@ Link.prototype.onRepeat = function(evt)
 	evt.getTarget().setAttribute("to", to);	
 }
 
-Link.prototype.onClick = onMouseDownOnLink;
-Link.prototype.onMouseOver = onMouseOverLink;
-Link.prototype.onMouseOut  = onMouseOutLink;
+SLink.prototype.onClick = onMouseDownOnSLink;
+SLink.prototype.onMouseOver = onMouseOverLink;
+SLink.prototype.onMouseOut  = onMouseOutLink;

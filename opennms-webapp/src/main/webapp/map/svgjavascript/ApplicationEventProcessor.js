@@ -1,5 +1,4 @@
 function onMouseOverMapElement(evt) {
-	myMapApp.enableTooltips();
 	var id = evt.target.parentNode.getAttributeNS(null,"id");
 	var mapElement = map.mapElements[id];
 	var toolTipLabel = "";
@@ -13,8 +12,56 @@ function onMouseOverMapElement(evt) {
 	myMapApp.addTooltip(id,toolTipLabel,false,false,"currentTarget",undefined);
 }
 
+function onMouseOverLink(evt) {
+	var id = evt.target.parentNode.getAttributeNS(null,"id");
+
+	
+	var link = map.mapLinks[id]
+		var toolTipLabel = "";
+
+    var statusMap = link.getStatusMap();
+    for (var statusString in statusMap) {
+    	toolTipLabel = toolTipLabel+" "+ statusString + "("+statusMap[statusString]+")";
+	}
+	toolTipLabel = toolTipLabel+" total("+link.getNumberOfLinks()+")";
+	
+	myMapApp.addTooltip(id,toolTipLabel,false,false,"currentTarget",undefined);
+}
+
 function onMouseOutMapElement(evt) {
 
+}
+
+function onMouseOutLink(evt) {
+
+}
+
+function onMouseDownOnSLink(evt) {
+	resetSelectedObjects();
+	if ((typeof map) == "object")
+	{
+		// close other menus
+		windowsClean();
+
+		clearDownInfo();
+		clearActionsStarted();
+		var id = evt.target.parentNode.getAttributeNS(null,"id");
+		var slink = map.mapLinks[id];
+		writeTopInfoText(getInfoOnSLink(slink));
+		
+		if (evt.detail == 2)
+		{
+			var x=evt.clientX + 2;
+			var y=evt.clientY + 4;
+			var height = cmdelta * slink.getNumberOfMultiLinks();
+			var cm =  new ContextMenuSimulator(winSvgElement,slink.id,"ProvaMenu",x,y,cmwidth,height,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+			cm.addItem(slink.id,LINK_TEXT[slink.getTypology()],execLinkCMAction);
+			for ( var linkid in slink.getLinks() ) {
+			    var link = slink.getLinks()[linkid];
+				cm.addItem(linkid,LINK_TEXT[link.getTypology()],execLinkCMAction);	
+			}
+		}		
+	}
 }
 
 //if double-click on an element (map) open the map 
@@ -44,7 +91,6 @@ function onClickMapElement(evt)
 
 	if (evt.detail == 2)
 	{
-		myMapApp.disableTooltips();
 		if(mapElement.isNode())
 		{
 			var nodeid = mapElement.getNodeId();
@@ -141,8 +187,7 @@ function onMouseDownOnMapElement(evt)
 
 		//set the icon selected into the relative selection list to the selected element
 		if(settingMapElemIcon==true){
-			mapElement.icon=selectedMEIconInList;
-			mapElement.image.setAttributeNS(xlinkNS, "xlink:href", MEIconsSortAss[selectedMEIconInList]);
+			mapElement.setIcon(new Icon(selectedMEIconInList,MEIconsSortAss[selectedMEIconInList]));
 			map.render();
 			setIconSetUp();
 		}
@@ -229,7 +274,6 @@ function resetDraggableObject(){
 		
 function onMouseDownOnLink(evt)
 {
-	
 	resetSelectedObjects();
 	if ((typeof map) == "object")
 	{
@@ -238,8 +282,8 @@ function onMouseDownOnLink(evt)
 
 		clearDownInfo();
 		clearActionsStarted();
-		
-		var mapLink = map.mapLinks[evt.target.getAttributeNS(null,"id")];
+		var id = evt.target.parentNode.getAttributeNS(null,"id");
+		var mapLink = map.mapLinks[id];
 		writeTopInfoText(getInfoOnLink(mapLink));
 		
 		if (evt.detail == 2)
