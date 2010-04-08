@@ -10,15 +10,9 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.googlecode.gwtmapquest.transaction.MQAIcon;
-import com.googlecode.gwtmapquest.transaction.MQAInfoWindow;
-import com.googlecode.gwtmapquest.transaction.MQALargeZoomControl;
 import com.googlecode.gwtmapquest.transaction.MQALatLng;
 import com.googlecode.gwtmapquest.transaction.MQAPoi;
 import com.googlecode.gwtmapquest.transaction.MQAPoint;
@@ -26,28 +20,25 @@ import com.googlecode.gwtmapquest.transaction.MQAPoint;
 
 
 public class MapquestLocationManager extends AbstractLocationManager {
-	private final SplitLayoutPanel m_outerPanel;
-	private SimplePanel m_panel;
-
-//	private MQATileMap m_map;
 	private MapQuestMapPanel m_mapPanel = new MapQuestMapPanel();
 
 	private final Map<String,MapQuestLocation> m_locations = new HashMap<String,MapQuestLocation>();
 
 	public MapquestLocationManager(HandlerManager eventBus, SplitLayoutPanel splitPanel) {
-		super(eventBus);
-		m_outerPanel = splitPanel;
+		super(eventBus, splitPanel);
 	}
-
-
+	
+	@Override
+    protected void initializeMapWidget() {
+        getPanel().add(m_mapPanel);
+    }
+	
     @Override
     protected void initializationComplete() {
         super.initializationComplete();
-        int offsetWidth = m_panel.getOffsetWidth();
-        int offsetHeight = m_panel.getOffsetHeight();
-        m_mapPanel.setSize(offsetWidth, offsetHeight);
+        m_mapPanel.updateSize();
     }
-
+    
 
     public void updateMarker(final Location location) {
 		final LocationInfo locationInfo = location.getLocationInfo();
@@ -116,19 +107,10 @@ public class MapquestLocationManager extends AbstractLocationManager {
 	@Override
 	public void selectLocation(String locationName) {
 		final MapQuestLocation location = m_locations.get(locationName);
-		if (location == null) return;
-
-		final MQAPoi point = location.getMarker();
-		
-		final GWTLatLng latLng = location.getLocationInfo().getLatLng();
-		m_mapPanel.setCenter(latLng);
-		if (point != null) {
-			point.setInfoTitleHTML(location.getLocationInfo().getName() + " (" + location.getLocationInfo().getArea() + ")");
-			point.setInfoContentHTML("Status = " + location.getLocationInfo().getStatus().toString());
-			final MQAInfoWindow window = m_mapPanel.getInfoWindow();
-			window.hide();
-			point.showInfoWindow();
+		if (location == null) {
+		    return;
 		}
+		m_mapPanel.showLocationDetails(location);
 	}
 
 
@@ -137,27 +119,10 @@ public class MapquestLocationManager extends AbstractLocationManager {
 	}
 
 	@Override
-	public void reportError(String string, Throwable t) {
-	}
+	public void reportError(String string, Throwable t) { }
 
 
-	@Override
-    protected void initializeMapWidget() {
-        m_panel = new SimplePanel();
-        m_panel.setSize("100%", "100%");
-        m_outerPanel.add(m_panel);
-
-//        m_map = MQATileMap.newInstance(m_panel.getElement());
-        
-        m_mapPanel.addControl(MQALargeZoomControl.newInstance());
-        m_mapPanel.setZoomLevel(2);
-
-        Window.addResizeHandler(new ResizeHandler() {
-            public void onResize(ResizeEvent event) {
-                m_mapPanel.setSize(m_panel.getOffsetWidth(), m_panel.getOffsetHeight());
-            }
-        });
-    }
+	
 
 
 

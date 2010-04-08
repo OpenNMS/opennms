@@ -17,6 +17,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 
 public abstract class AbstractLocationManager implements LocationManager {
@@ -28,8 +29,11 @@ public abstract class AbstractLocationManager implements LocationManager {
 
 	private final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 
-	public AbstractLocationManager(final HandlerManager eventBus) {
+    private final SplitLayoutPanel m_panel;
+
+	public AbstractLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel) {
 		m_eventBus = eventBus;
+		m_panel = panel;
 	}
 
     public void initialize() {
@@ -146,6 +150,10 @@ public abstract class AbstractLocationManager implements LocationManager {
     	db.setText(title);
     	db.setWidget(new Label(contents, true));
     	db.show();
+    }
+
+    protected SplitLayoutPanel getPanel() {
+        return m_panel;
     }
 
  }

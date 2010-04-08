@@ -1,8 +1,11 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,6 +30,8 @@ public class MapQuestMapPanel extends Composite {
     public MapQuestMapPanel() {
         initWidget(uiBinder.createAndBindUi(this));
         setMapWidget(MQATileMap.newInstance(m_mapHolder.getElement()));
+        
+        initializeMap();
     }
 
     private void setMapWidget(MQATileMap map) {
@@ -63,6 +68,37 @@ public class MapQuestMapPanel extends Composite {
 
     void setZoomLevel(int level) {
         getMapWidget().setZoomLevel(level);
+    }
+
+    public void initializeMap() {
+        m_mapHolder.setSize("100%", "100%");
+        addControl(MQALargeZoomControl.newInstance());
+        setZoomLevel(2);
+    
+        Window.addResizeHandler(new ResizeHandler() {
+            public void onResize(ResizeEvent event) {
+                
+                setSize(m_mapHolder.getOffsetWidth(), m_mapHolder.getOffsetHeight());
+            }
+        });
+    }
+
+    public void updateSize() {
+        setSize(m_mapHolder.getOffsetWidth(), m_mapHolder.getOffsetHeight());
+    }
+
+    void showLocationDetails(final MapQuestLocation location) {
+        final MQAPoi point = location.getMarker();
+    	
+    	final GWTLatLng latLng = location.getLocationInfo().getLatLng();
+    	setCenter(latLng);
+    	if (point != null) {
+    		point.setInfoTitleHTML(location.getLocationInfo().getName() + " (" + location.getLocationInfo().getArea() + ")");
+    		point.setInfoContentHTML("Status = " + location.getLocationInfo().getStatus().toString());
+    		final MQAInfoWindow window = getInfoWindow();
+    		window.hide();
+    		point.showInfoWindow();
+    	}
     }
 
 }
