@@ -46,7 +46,7 @@ public class SerializationTest {
 		location.setArea("East Coast");
 		location.setGeolocation("RDU");
 		location.setCoordinates("0.0,0.0");
-		location.setStatus(ServiceStatus.UP);
+		location.setMonitorStatus(Status.UP);
 		writer.writeObject(location);
 	}
 

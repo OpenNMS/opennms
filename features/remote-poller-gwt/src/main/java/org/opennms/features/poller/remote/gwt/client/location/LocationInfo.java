@@ -3,7 +3,7 @@ package org.opennms.features.poller.remote.gwt.client.location;
 import java.io.Serializable;
 
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
-import org.opennms.features.poller.remote.gwt.client.ServiceStatus;
+import org.opennms.features.poller.remote.gwt.client.Status;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -15,13 +15,13 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private String m_area;
 	private String m_geolocation;
 	private String m_coordinates;
-	private ServiceStatus m_status;
+	private Status m_status;
 	
 	public LocationInfo() {
 	    
 	}
 	
-	public LocationInfo(String name, String pollingPackage, String area, String geolocation, String coordinates, ServiceStatus status) {
+	public LocationInfo(String name, String pollingPackage, String area, String geolocation, String coordinates, Status status) {
 	    m_name = name;
 	    m_pollingPackage = pollingPackage;
 	    m_area = area;
@@ -31,7 +31,7 @@ public class LocationInfo implements IsSerializable, Serializable {
 	}
 	
 	public LocationInfo(LocationInfo info) {
-	    this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getStatus());
+	    this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getMonitorStatus());
 	}
 	
 	public String getName() {
@@ -74,11 +74,11 @@ public class LocationInfo implements IsSerializable, Serializable {
 		m_coordinates = coordinates;
 	}
 
-	public ServiceStatus getStatus() {
+	public Status getMonitorStatus() {
 		return m_status;
 	}
 
-	public void setStatus(final ServiceStatus status) {
+	public void setMonitorStatus(final Status status) {
 		m_status = status;
 	}
 

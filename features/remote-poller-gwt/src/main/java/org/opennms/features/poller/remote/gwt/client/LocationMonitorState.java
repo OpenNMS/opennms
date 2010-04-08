@@ -21,7 +21,7 @@ public class LocationMonitorState implements IsSerializable {
 	private Collection<GWTLocationSpecificStatus> m_locationStatuses;
 	private Set<String> m_services = new HashSet<String>();
 
-	private transient ServiceStatus m_status;
+	private transient Status m_status;
 
 	public LocationMonitorState() { }
 
@@ -124,7 +124,7 @@ public class LocationMonitorState implements IsSerializable {
 		return false;
 	}
 
-	public ServiceStatus getStatus() {
+	public Status getStatus() {
 		if (m_status == null) {
 			m_status = getStatusUncached();
 		}
@@ -172,15 +172,15 @@ public class LocationMonitorState implements IsSerializable {
 		return monitors;
 	}
 
-	protected ServiceStatus getStatusUncached() {
+	protected Status getStatusUncached() {
 		// blue/unknown: If no monitors are started for a location
 		if (noMonitorsStarted()) {
-			return ServiceStatus.unknown("No monitors are started for this location.");
+			return Status.unknown("No monitors are started for this location.");
 		}
 
 		// yellow/marginal: If all but 1 non-stopped monitors are disconnected
 		if (allButOneMonitorsDisconnected()) {
-			return ServiceStatus.marginal("Only 1 monitor is started, the rest are disconnected.");
+			return Status.marginal("Only 1 monitor is started, the rest are disconnected.");
 		}
 
 		Set<String> anyDown = new HashSet<String>();
@@ -210,23 +210,23 @@ public class LocationMonitorState implements IsSerializable {
 		if (servicesDown.size() > 0) {
 			if (servicesDown.size() == services.size()) {
 				// red/down: If all started monitors report "down" for all services
-				return ServiceStatus.down("All services are down on all started monitors.");
+				return Status.down("All services are down on all started monitors.");
 			} else {
 				// red/down: If all started monitors report "down" for the same service
 				if (servicesDown.size() == 1) {
-					return ServiceStatus.down(servicesDown.iterator().next() + " has been reported down by all monitors.");
+					return Status.down(servicesDown.iterator().next() + " has been reported down by all monitors.");
 				} else {
-					return ServiceStatus.down("The following services are reported down by all monitors: " + join(servicesDown, ", ") + ".");
+					return Status.down("The following services are reported down by all monitors: " + join(servicesDown, ", ") + ".");
 				}
 			}
 		}
 		
 		// yellow/marginal: If some (but not all) started monitors report "down" for the same service
 		if (anyDown.size() > 0) {
-			return ServiceStatus.marginal("The following services are reported down by at least one monitor: " + join(anyDown, ", ") + ".");
+			return Status.marginal("The following services are reported down by at least one monitor: " + join(anyDown, ", ") + ".");
 		}
 
-		return ServiceStatus.up("There are no current service outages for this location.");
+		return Status.up("There are no current service outages for this location.");
 	}
 
 	private static String join(Collection<?> s, String delimiter) {

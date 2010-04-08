@@ -63,7 +63,7 @@ public class MapquestLocationManager extends AbstractLocationManager {
 
 		final GWTLatLng gLatLng = locationInfo.getLatLng();
 		final MQALatLng latLng = MQALatLng.newInstance(gLatLng.getLatitude(), gLatLng.getLongitude());
-		final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getStatus() + ".png", 32, 32);
+		final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getMonitorStatus() + ".png", 32, 32);
 		final MQAPoi point = MQAPoi.newInstance(latLng, icon);
 		point.setIconOffset(MQAPoint.newInstance(-16, -32));
 		newLocation.setMarker(point);
@@ -120,7 +120,7 @@ public class MapquestLocationManager extends AbstractLocationManager {
 		m_map.setCenter(MQALatLng.newInstance(latLng.getLatitude(), latLng.getLongitude()));
 		if (point != null) {
 			point.setInfoTitleHTML(location.getLocationInfo().getName() + " (" + location.getLocationInfo().getArea() + ")");
-			point.setInfoContentHTML("Status = " + location.getLocationInfo().getStatus().toString());
+			point.setInfoContentHTML("Status = " + location.getLocationInfo().getMonitorStatus().toString());
 			final MQAInfoWindow window = m_map.getInfoWindow();
 			window.hide();
 			point.showInfoWindow();

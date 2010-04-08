@@ -135,7 +135,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
         if (oldLocation == null) {
             placeMarker(m_locations.get(locationInfo.getName()));
-        } else if (!oldLocation.getLocationInfo().getStatus().equals(locationInfo.getStatus())) {
+        } else if (!oldLocation.getLocationInfo().getMonitorStatus().equals(locationInfo.getMonitorStatus())) {
             placeMarker(m_locations.get(locationInfo.getName()));
         }
 
@@ -160,8 +160,8 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
     }
 
 	private GoogleMapsLocation mergeLocations(final GoogleMapsLocation oldLocation, final GoogleMapsLocation newLocation) {
-		if (newLocation.getLocationInfo().getStatus() == null)
-			newLocation.getLocationInfo().setStatus(oldLocation.getLocationInfo().getStatus());
+		if (newLocation.getLocationInfo().getMonitorStatus() == null)
+			newLocation.getLocationInfo().setMonitorStatus(oldLocation.getLocationInfo().getMonitorStatus());
 		if (newLocation.getLocationDetails().getLocationMonitorState() == null)
 			newLocation.getLocationDetails().setLocationMonitorState(oldLocation.getLocationDetails().getLocationMonitorState());
 		if (newLocation.getLocationInfo().getCoordinates() == null)
@@ -178,7 +178,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 			Icon icon = Icon.newInstance();
 			icon.setIconSize(Size.newInstance(32, 32));
 			icon.setIconAnchor(Point.newInstance(16, 32));
-			icon.setImageURL("images/icon-" + locationInfo.getStatus() + ".png");
+			icon.setImageURL("images/icon-" + locationInfo.getMonitorStatus() + ".png");
 
 			final MarkerOptions markerOptions = MarkerOptions.newInstance();
 			markerOptions.setAutoPan(true);
@@ -191,7 +191,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 			location.setMarker(m);
 			m_locations.put(locationInfo.getName(), location);
 		} else {
-			m.setImage("images/icon-" + locationInfo.getStatus() + ".png");
+			m.setImage("images/icon-" + locationInfo.getMonitorStatus() + ".png");
 		}
 
 		return m;

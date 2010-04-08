@@ -60,7 +60,7 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	}
 
 	public void setLocationMonitorState(final LocationMonitorState lms) {
-		m_locationInfo.setStatus(lms.getStatus());
+		m_locationInfo.setMonitorStatus(lms.getStatus());
 		m_locationDetails.setLocationMonitorState(lms);
 	}
 

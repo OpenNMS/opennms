@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public enum ServiceStatus implements Serializable, IsSerializable {
+public enum Status implements Serializable, IsSerializable {
 	UP,
 	MARGINAL,
 	DOWN,
@@ -25,11 +25,11 @@ public enum ServiceStatus implements Serializable, IsSerializable {
 
 	public String getColor() {
 		String color;
-		if (this.equals(ServiceStatus.UP)){
+		if (this.equals(Status.UP)){
 			color = "#00ff00";
-		} else if (this.equals(ServiceStatus.MARGINAL)) {
+		} else if (this.equals(Status.MARGINAL)) {
 			color = "#ffff00";
-		} else if (this.equals(ServiceStatus.DOWN)) {
+		} else if (this.equals(Status.DOWN)) {
 			color = "#ff0000";
 		} else {
 			color = "#0000ff";
@@ -39,11 +39,11 @@ public enum ServiceStatus implements Serializable, IsSerializable {
 	
 	public String getStyle() {
 		String cssClass;
-		if (this.equals(ServiceStatus.UP)) {
+		if (this.equals(Status.UP)) {
 			cssClass = "statusUp";
-		} else if (this.equals(ServiceStatus.MARGINAL)) {
+		} else if (this.equals(Status.MARGINAL)) {
 			cssClass = "statusMarginal";
-		} else if (this.equals(ServiceStatus.DOWN)) {
+		} else if (this.equals(Status.DOWN)) {
 			cssClass = "statusDown";
 		} else {
 			cssClass = "statusUnknown";
@@ -51,26 +51,26 @@ public enum ServiceStatus implements Serializable, IsSerializable {
 		return cssClass;
 	}
 
-	public static ServiceStatus up(final String reason) {
-		final ServiceStatus status = ServiceStatus.UP;
+	public static Status up(final String reason) {
+		final Status status = Status.UP;
 		status.setReason(reason);
 		return status;
 	}
 
-	public static ServiceStatus marginal(final String reason) {
-		final ServiceStatus status = ServiceStatus.MARGINAL;
+	public static Status marginal(final String reason) {
+		final Status status = Status.MARGINAL;
 		status.setReason(reason);
 		return status;
 	}
 	
-	public static ServiceStatus down(final String reason) {
-		final ServiceStatus status = ServiceStatus.DOWN;
+	public static Status down(final String reason) {
+		final Status status = Status.DOWN;
 		status.setReason(reason);
 		return status;
 	}
 
-	public static ServiceStatus unknown(final String reason) {
-		final ServiceStatus status = ServiceStatus.UNKNOWN;
+	public static Status unknown(final String reason) {
+		final Status status = Status.UNKNOWN;
 		status.setReason(reason);
 		return status;
 	}
