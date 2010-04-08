@@ -39,35 +39,70 @@ public class MapquestLocationManager extends AbstractLocationManager {
         m_mapPanel.updateSize();
     }
     
-
+    @Override
     public void updateMarker(final Location location) {
 		final LocationInfo locationInfo = location.getLocationInfo();
 		final MapQuestLocation oldLocation = m_locations.get(locationInfo.getName());
-		if (oldLocation != null) {
-			MQAPoi marker = oldLocation.getMarker();
-            m_mapPanel.removeShape(marker);
-		}
-		MapQuestLocation newLocation;
-		if (location instanceof MapQuestLocation) {
-			newLocation = (MapQuestLocation)location;
-		} else {
-			newLocation = new MapQuestLocation(location);
+		addAndMergeLocation(oldLocation, new MapQuestLocation(location));
+		
+		if (oldLocation == null) {
+			placeMarker(m_locations.get(locationInfo.getName()));
+		}else if(!oldLocation.getLocationInfo().getStatus().equals(locationInfo.getStatus())) {
+		    placeMarker(m_locations.get(locationInfo.getName()));
 		}
 
-		final GWTLatLng gLatLng = locationInfo.getLatLng();
-		final MQALatLng latLng = MQALatLng.newInstance(gLatLng.getLatitude(), gLatLng.getLongitude());
-		final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getStatus() + ".png", 32, 32);
-		final MQAPoi point = MQAPoi.newInstance(latLng, icon);
-		point.setIconOffset(MQAPoint.newInstance(-16, -32));
-		newLocation.setMarker(point);
-
-		m_locations.put(locationInfo.getName(), newLocation);
-        m_mapPanel.addShape(point);
-        locationUpdateComplete(location);
+		locationUpdateComplete(location);
         if (!isLocationUpdateInProgress()) {
         	checkAllVisibleLocations();
         }
 	}
+
+    private void placeMarker(MapQuestLocation location) {
+        if(location.getMarker() == null) {
+            final MQAPoi newMarker = createMarker(location);
+            m_mapPanel.addOverlay(newMarker);
+        }else {
+            createMarker(location);
+        }
+    }
+
+    private MQAPoi createMarker(MapQuestLocation location) {
+        final LocationInfo locationInfo = location.getLocationInfo();
+        
+        final GWTLatLng gLatLng = locationInfo.getLatLng();
+        final MQALatLng latLng = MQALatLng.newInstance(gLatLng.getLatitude(), gLatLng.getLongitude());
+        final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getStatus() + ".png", 32, 32);
+        final MQAPoi point = MQAPoi.newInstance(latLng, icon);
+        point.setIconOffset(MQAPoint.newInstance(-16, -32));
+        location.setMarker(point);
+        
+        return location.getMarker();
+    }
+
+    private void addAndMergeLocation( final MapQuestLocation oldLocation, final MapQuestLocation newLocation) {
+        if(oldLocation != null) {
+            m_locations.put(newLocation.getLocationInfo().getName(), mergeLocation(oldLocation, newLocation));
+        }else {
+            m_locations.put(newLocation.getLocationInfo().getName(), newLocation);
+        }
+        
+    }
+
+    private MapQuestLocation mergeLocation(MapQuestLocation oldLocation, MapQuestLocation newLocation) {
+        if (newLocation.getLocationInfo().getStatus() == null) 
+            newLocation.getLocationInfo().setStatus(oldLocation.getLocationInfo().getStatus());
+        
+        if (newLocation.getLocationDetails().getLocationMonitorState() == null) 
+            newLocation.getLocationDetails().setLocationMonitorState(oldLocation.getLocationDetails().getLocationMonitorState());
+        
+        if (newLocation.getLocationInfo().getCoordinates() == null) 
+            newLocation.getLocationInfo().setCoordinates(oldLocation.getLocationInfo().getCoordinates());
+        
+        if (newLocation.getMarker() == null)
+            newLocation.setMarker(oldLocation.getMarker());
+        
+        return newLocation;
+    }
 
 
     private void checkAllVisibleLocations() {

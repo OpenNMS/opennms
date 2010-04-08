@@ -46,11 +46,11 @@ public class MapQuestMapPanel extends Composite {
         getMapWidget().setSize(MQASize.newInstance(offsetWidth, offsetHeight));
     }
 
-    void removeShape(MQAPoi marker) {
+    void removeOverlay(MQAPoi marker) {
         getMapWidget().removeShape(marker);
     }
 
-    void addShape(final MQAPoi point) {
+    void addOverlay(final MQAPoi point) {
         getMapWidget().addShape(point);
     }
 

@@ -107,4 +107,8 @@ public class BaseLocation implements Event, IsSerializable, Location {
 		return this.getLocationInfo().getName().compareTo(o.getLocationInfo().getName());
 	}
 
+    protected boolean isVisible(GWTBounds bounds) {
+        return bounds.contains(getLocationInfo().getLatLng());
+    }
+
 }

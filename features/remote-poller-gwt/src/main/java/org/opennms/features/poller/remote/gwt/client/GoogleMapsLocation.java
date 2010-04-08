@@ -5,6 +5,7 @@ import com.google.gwt.maps.client.overlay.Marker;
 public class GoogleMapsLocation extends BaseLocation {
 	private static final long serialVersionUID = 1L;
 	private Marker m_marker;
+	
 	public GoogleMapsLocation() {
 		super();
 	}
@@ -29,11 +30,8 @@ public class GoogleMapsLocation extends BaseLocation {
 		m_marker = marker;
 		setLatLng(new GWTLatLng(marker.getLatLng().getLatitude(), marker.getLatLng().getLongitude()));
 	}
-
-    boolean isVisible(GWTBounds bounds) {
-        return bounds.contains(getLocationInfo().getLatLng());
-    }
-
+	
+	@Override
     protected String getAttributeText() {
     	return super.getAttributeText() + ",imageUrl=" + getImageURL() + ",marker=" + getMarker();
     }

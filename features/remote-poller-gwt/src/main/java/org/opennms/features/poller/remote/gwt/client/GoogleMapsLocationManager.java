@@ -102,7 +102,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
     public List<Location> getVisibleLocations() {
 	    List<Location> visibleLocations = new ArrayList<Location>();
 	    GWTBounds bounds = m_mapPanel.getBounds();
-	    for(GoogleMapsLocation location : m_locations.values()) {
+	    for(BaseLocation location : m_locations.values()) {
 	        if(location.isVisible(bounds)) {
 	            visibleLocations.add(location);
 	        }
@@ -118,7 +118,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
     private GWTBounds getLocationBounds() {
         BoundsBuilder bldr = new BoundsBuilder();
-        for (GoogleMapsLocation l : m_locations.values()) {
+        for (BaseLocation l : m_locations.values()) {
             bldr.extend(l.getLocationInfo().getLatLng());
         }
         return bldr.getBounds();
@@ -128,7 +128,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 	@Override
 	protected void updateMarker(final Location location) {
 		final LocationInfo locationInfo = location.getLocationInfo();
-        GoogleMapsLocation oldLocation = m_locations.get(locationInfo.getName());
+        final GoogleMapsLocation oldLocation = m_locations.get(locationInfo.getName());
         addAndMergeLocation(oldLocation, new GoogleMapsLocation(location));
 
         if (oldLocation == null) {

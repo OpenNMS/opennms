@@ -27,4 +27,13 @@ public class MapQuestLocation extends BaseLocation implements IsSerializable {
 	public void setMarker(MQAPoi marker) {
 		m_marker = marker;
 	}
+	
+	@Override
+	protected String getAttributeText() {
+	    return super.getAttributeText() + ",imageUrl=" + getImageURL() + ",marker=" + getMarker();
+	}
+	
+	public String toString() {
+	    return "MapQuestLocation[" + getAttributeText() + "]";
+	}
 }
