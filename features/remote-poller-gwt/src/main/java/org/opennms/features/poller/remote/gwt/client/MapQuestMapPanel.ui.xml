@@ -4,6 +4,5 @@
 	<ui:style>
 		
 	</ui:style>
-	<g:HTMLPanel>
-	</g:HTMLPanel>
+	<g:SimplePanel ui:field="m_mapHolder"/>
 </ui:UiBinder> 

@@ -21,8 +21,6 @@ import com.googlecode.gwtmapquest.transaction.MQALargeZoomControl;
 import com.googlecode.gwtmapquest.transaction.MQALatLng;
 import com.googlecode.gwtmapquest.transaction.MQAPoi;
 import com.googlecode.gwtmapquest.transaction.MQAPoint;
-import com.googlecode.gwtmapquest.transaction.MQASize;
-import com.googlecode.gwtmapquest.transaction.MQATileMap;
 
 
 
@@ -30,7 +28,8 @@ public class MapquestLocationManager extends AbstractLocationManager {
 	private final SplitLayoutPanel m_outerPanel;
 	private SimplePanel m_panel;
 
-	private MQATileMap m_map;
+//	private MQATileMap m_map;
+	private MapQuestMapPanel m_mapPanel = new MapQuestMapPanel();
 
 	private final Map<String,MapQuestLocation> m_locations = new HashMap<String,MapQuestLocation>();
 
@@ -43,14 +42,17 @@ public class MapquestLocationManager extends AbstractLocationManager {
     @Override
     protected void initializationComplete() {
         super.initializationComplete();
-        m_map.setSize(MQASize.newInstance(m_panel.getOffsetWidth(), m_panel.getOffsetHeight()));
+        int offsetWidth = m_panel.getOffsetWidth();
+        int offsetHeight = m_panel.getOffsetHeight();
+        m_mapPanel.setSize(offsetWidth, offsetHeight);
     }
 
 
     public void updateMarker(final Location location) {
 		final MapQuestLocation oldLocation = m_locations.get(location.getName());
 		if (oldLocation != null) {
-			m_map.removeShape(oldLocation.getMarker());
+			MQAPoi marker = oldLocation.getMarker();
+            m_mapPanel.removeShape(marker);
 		}
 		MapQuestLocation newLocation;
 		if (location instanceof MapQuestLocation) {
@@ -66,14 +68,15 @@ public class MapquestLocationManager extends AbstractLocationManager {
 		point.setIconOffset(MQAPoint.newInstance(-16, -32));
 		newLocation.setMarker(point);
 		m_locations.put(location.getName(), newLocation);
-		m_map.addShape(point);
+		m_mapPanel.addShape(point);
         locationUpdateComplete(location);
         if (!isLocationUpdateInProgress()) {
         	checkAllVisibleLocations();
         }
 	}
 
-	private void checkAllVisibleLocations() {
+
+    private void checkAllVisibleLocations() {
 	    m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
 	}
 
@@ -114,18 +117,18 @@ public class MapquestLocationManager extends AbstractLocationManager {
 
 		final MQAPoi point = location.getMarker();
 		final GWTLatLng latLng = location.getLatLng();
-		m_map.saveState();
-		m_map.setCenter(MQALatLng.newInstance(latLng.getLatitude(), latLng.getLongitude()));
+		m_mapPanel.setCenter(latLng);
 		if (point != null) {
 			point.setInfoTitleHTML(location.getName() + " (" + location.getArea() + ")");
 			point.setInfoContentHTML("Status = " + location.getLocationMonitorState().getStatus().toString());
-			final MQAInfoWindow window = m_map.getInfoWindow();
+			final MQAInfoWindow window = m_mapPanel.getInfoWindow();
 			window.hide();
 			point.showInfoWindow();
 		}
 	}
 
-	@Override
+
+    @Override
 	public void updateComplete() {
 	}
 
@@ -140,13 +143,14 @@ public class MapquestLocationManager extends AbstractLocationManager {
         m_panel.setSize("100%", "100%");
         m_outerPanel.add(m_panel);
 
-        m_map = MQATileMap.newInstance(m_panel.getElement());
-        m_map.addControl(MQALargeZoomControl.newInstance());
-        m_map.setZoomLevel(2);
+//        m_map = MQATileMap.newInstance(m_panel.getElement());
+        
+        m_mapPanel.addControl(MQALargeZoomControl.newInstance());
+        m_mapPanel.setZoomLevel(2);
 
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
-                m_map.setSize(MQASize.newInstance(m_panel.getOffsetWidth(), m_panel.getOffsetHeight()));
+                m_mapPanel.setSize(m_panel.getOffsetWidth(), m_panel.getOffsetHeight());
             }
         });
     }
