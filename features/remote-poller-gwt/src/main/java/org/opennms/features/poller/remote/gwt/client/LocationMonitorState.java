@@ -6,6 +6,7 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -91,7 +92,7 @@ public class LocationMonitorState implements IsSerializable {
 	}
 
 	public boolean allButOneMonitorsDisconnected() {
-		if (m_monitorsDisconnected.size() < 2) {
+		if (m_monitorsDisconnected.size() == 0) {
 			return false;
 		}
 		if (m_monitorsStarted.size() > 1) {
@@ -174,15 +175,16 @@ public class LocationMonitorState implements IsSerializable {
 	protected ServiceStatus getStatusUncached() {
 		// blue/unknown: If no monitors are started for a location
 		if (noMonitorsStarted()) {
-			return ServiceStatus.UNKNOWN;
+			return ServiceStatus.unknown("No monitors are started for this location.");
 		}
 
 		// yellow/marginal: If all but 1 non-stopped monitors are disconnected
 		if (allButOneMonitorsDisconnected()) {
-			return ServiceStatus.MARGINAL;
+			return ServiceStatus.marginal("Only 1 monitor is started, the rest are disconnected.");
 		}
-		
-		boolean anyDown = false;
+
+		Set<String> anyDown = new HashSet<String>();
+		Set<String> services = new HashSet<String>();
 		Set<String> servicesDown = new HashSet<String>();
 		for (String serviceName : m_services) {
 			boolean serviceAllDown = true;
@@ -191,9 +193,10 @@ public class LocationMonitorState implements IsSerializable {
 				final GWTMonitoredService monitoredService = status.getMonitoredService();
 				if (monitoredService.getServiceName().equals(serviceName)) {
 					foundService = true;
+					services.add(serviceName);
 					final GWTPollResult pollResult = status.getPollResult();
 					if (pollResult.getStatus().equalsIgnoreCase("down")) {
-						anyDown = true;
+						anyDown.add(serviceName);
 					} else {
 						serviceAllDown = false;
 					}
@@ -204,19 +207,40 @@ public class LocationMonitorState implements IsSerializable {
 			}
 		}
 
-		// red/down: If all started monitors report "down" for all services
-		// red/down: If all started monitors report "down" for the same service
 		if (servicesDown.size() > 0) {
-			return ServiceStatus.DOWN;
+			if (servicesDown.size() == services.size()) {
+				// red/down: If all started monitors report "down" for all services
+				return ServiceStatus.down("All services are down on all started monitors.");
+			} else {
+				// red/down: If all started monitors report "down" for the same service
+				if (servicesDown.size() == 1) {
+					return ServiceStatus.down(servicesDown.iterator().next() + " has been reported down by all monitors.");
+				} else {
+					return ServiceStatus.down("The following services are reported down by all monitors: " + join(servicesDown, ", ") + ".");
+				}
+			}
 		}
 		
 		// yellow/marginal: If some (but not all) started monitors report "down" for the same service
-		if (anyDown) {
-			return ServiceStatus.MARGINAL;
+		if (anyDown.size() > 0) {
+			return ServiceStatus.marginal("The following services are reported down by at least one monitor: " + join(anyDown, ", ") + ".");
 		}
 
-		return ServiceStatus.UP;
+		return ServiceStatus.up("There are no current service outages for this location.");
 	}
+
+	private static String join(Collection<?> s, String delimiter) {
+	     StringBuilder builder = new StringBuilder();
+	     Iterator<?> iter = s.iterator();
+	     while (iter.hasNext()) {
+	         builder.append(iter.next());
+	         if (!iter.hasNext()) {
+	           break;                  
+	         }
+	         builder.append(delimiter);
+	     }
+	     return builder.toString();
+	 }
 
 	public String toString() {
 		return "LocationMonitorState[started=" + m_monitorsStarted + ",stopped=" + m_monitorsStopped + ",disconnected=" + m_monitorsDisconnected + ",statuses="+m_locationStatuses+",services="+m_services+"]";
