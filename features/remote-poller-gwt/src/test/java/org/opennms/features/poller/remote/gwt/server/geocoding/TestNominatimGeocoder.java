@@ -26,7 +26,7 @@ public class TestNominatimGeocoder extends AbstractGeocoderTest {
 			try {
 				geocoder.geocode("asdasdasdasdasdasdasdasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf");
 				assertTrue("this should throw an exception", false);
-			} catch (GeocoderLookupException e) {
+			} catch (GeocoderException e) {
 				assertEquals("Nominatim returned an OK status code, but no places", e.getMessage());
 			}
 		}

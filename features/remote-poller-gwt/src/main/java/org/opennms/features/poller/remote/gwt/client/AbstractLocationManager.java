@@ -71,7 +71,7 @@ public abstract class AbstractLocationManager implements LocationManager {
 
 	public void updateLocation(final Location location) {
 		if (location == null) return;
-		GWTLatLng latLng = location.getLatLng();
+		GWTLatLng latLng = location.getLocationInfo().getLatLng();
 		if (latLng == null) {
 			Log.warn("no lat/lng for this location");
 		} else {
@@ -118,11 +118,11 @@ public abstract class AbstractLocationManager implements LocationManager {
 
 
 	protected void locationUpdateInProgress(Location location) {
-		m_locationsUpdating.add(location.getName());
+		m_locationsUpdating.add(location.getLocationInfo().getName());
 	}
 
 	protected void locationUpdateComplete(final Location location) {
-		m_locationsUpdating.remove(location.getName());
+		m_locationsUpdating.remove(location.getLocationInfo().getName());
 	}
 
 	protected boolean isLocationUpdateInProgress() {

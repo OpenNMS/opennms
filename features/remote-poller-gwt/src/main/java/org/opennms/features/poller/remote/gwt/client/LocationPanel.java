@@ -79,8 +79,8 @@ public class LocationPanel extends Composite {
             icon.setUrl(location.getImageURL());
 
             m_locations.setWidget(count, 0, icon);
-            m_locations.setText(count, 1, location.getName());
-		    m_locations.setText(count, 2, location.getArea());
+            m_locations.setText(count, 1, location.getLocationInfo().getName());
+		    m_locations.setText(count, 2, location.getLocationInfo().getArea());
 		    
 		    if(count %2 != 0) {
 		        m_locations.getRowFormatter().addStyleName(count, selectionStyle.alternateRow());

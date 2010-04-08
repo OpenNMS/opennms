@@ -24,7 +24,7 @@ public class GoogleMapsGeocoder implements Geocoder {
 
 	}
 
-	public GWTLatLng geocode(String geolocation) throws GeocoderLookupException {
+	public GWTLatLng geocode(String geolocation) throws GeocoderException {
 		try {
 			List<GeoAddress> addresses = m_standardizer.standardizeToGeoAddresses(geolocation);
 			if (addresses.size() > 0) {
@@ -33,10 +33,10 @@ public class GoogleMapsGeocoder implements Geocoder {
 				}
 				return getLatLng(addresses.get(0).getCoordinate());
 			}
-			throw new GeocoderLookupException("unable to find latitude/longitude for geolocation '" + geolocation + "'");
+			throw new GeocoderException("unable to find latitude/longitude for geolocation '" + geolocation + "'");
 		} catch (Exception e) {
 			LogUtils.infof(this, e, "unable to convert geolocation '%s'", geolocation);
-			throw new GeocoderLookupException(e);
+			throw new GeocoderException(e);
 		}
 	}
 

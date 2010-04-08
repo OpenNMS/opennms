@@ -2,6 +2,7 @@ package org.opennms.features.poller.remote.gwt.server.geocoding;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
@@ -17,19 +18,34 @@ public class NominatimGeocoder implements Geocoder {
 	private static final HttpClient m_httpClient = new HttpClient();
 	private String m_emailAddress;
 	private String m_referer = null;
+	private static final int m_rateLimit = 1000;  // wait 1000 ms
+	private static volatile Date m_lastRequest = new Date();
 
-	public NominatimGeocoder() {
+	public NominatimGeocoder() throws GeocoderException {
 		this(System.getProperty("gwt.geocoder.email"));
 	}
 	
-	public NominatimGeocoder(final String emailAddress) {
+	public NominatimGeocoder(final String emailAddress) throws GeocoderException {
 		m_emailAddress = emailAddress;
 		m_referer = System.getProperty("gwt.geocoder.referer");
+
+		if (m_emailAddress == null || m_emailAddress.equals("")) {
+			throw new GeocoderException("you must configure gwt.geocoder.email to comply with the Nominatim terms of service (see http://wiki.openstreetmap.org/wiki/Nominatim)");
+		}
 	}
 
-	public GWTLatLng geocode(final String geolocation) throws GeocoderLookupException {
-		if (m_emailAddress == null || m_emailAddress.equals("")) {
-			throw new GeocoderLookupException("you must configure gwt.geocoder.email to comply with the Nominatim terms of service (see http://wiki.openstreetmap.org/wiki/Nominatim)");
+	public GWTLatLng geocode(final String geolocation) throws GeocoderException {
+		final Date now = new Date();
+		final long difference = now.getTime() - m_lastRequest.getTime();
+		m_lastRequest = now;
+		if (difference < m_rateLimit) {
+			try {
+				LogUtils.tracef(this, "waiting %d milliseconds for the next request", difference);
+				Thread.sleep(difference);
+			} catch (InterruptedException e) {
+				LogUtils.warnf(this, e, "thread was interrupted while sleeping");
+				Thread.currentThread().interrupt();
+			}
 		}
 
 		final HttpMethod method = new GetMethod(getUrl(geolocation));
@@ -42,32 +58,32 @@ public class NominatimGeocoder implements Geocoder {
 			m_httpClient.executeMethod(method);
 			final ElementTree tree = ElementTree.fromStream(method.getResponseBodyAsStream());
 			if (tree == null) {
-				throw new GeocoderLookupException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
+				throw new GeocoderException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
 			}
 			
 			final List<ElementTree> places = tree.findAll("//place");
 			if (places.size() > 1) {
 				LogUtils.warnf(this, "more than one location returned for query: %s", geolocation);
 			} else if (places.size() == 0) {
-				throw new GeocoderLookupException("Nominatim returned an OK status code, but no places");
+				throw new GeocoderException("Nominatim returned an OK status code, but no places");
 			}
 			final ElementTree place = places.get(0);
 
 			Double latitude = Double.valueOf(place.getAttribute("lat"));
 			Double longitude = Double.valueOf(place.getAttribute("lon"));
 			return new GWTLatLng(latitude, longitude);
-		} catch (GeocoderLookupException e) {
+		} catch (GeocoderException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new GeocoderLookupException("unable to get lat/lng from Nominatim", e);
+			throw new GeocoderException("unable to get lat/lng from Nominatim", e);
 		}
 	}
 
-	private String getUrl(String geolocation) throws GeocoderLookupException {
+	private String getUrl(String geolocation) throws GeocoderException {
 		try {
 			return GEOCODE_URL + "&q=" + URLEncoder.encode(geolocation, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			throw new GeocoderLookupException("unable to URL-encode query string", e);
+			throw new GeocoderException("unable to URL-encode query string", e);
 		}
 	}
 

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.BaseLocation;
@@ -27,7 +28,7 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 import org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder;
-import org.opennms.features.poller.remote.gwt.server.geocoding.GeocoderLookupException;
+import org.opennms.features.poller.remote.gwt.server.geocoding.GeocoderException;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -43,11 +44,12 @@ import de.novanic.eventservice.service.RemoteEventServiceServlet;
 public class LocationStatusServiceImpl extends RemoteEventServiceServlet implements LocationStatusService {
 	private static final long serialVersionUID = 1L;
 	private static final int UPDATE_PERIOD = 1000 * 60; // 1 minute
-	private static final int MAX_LOCATIONS_PER_EVENT = 500;
+	private static final int MAX_LOCATIONS_PER_EVENT = 50;
 	private WebApplicationContext m_context;
 
 	private volatile Map<String,MonitorStatus> m_monitorStatuses = new HashMap<String,MonitorStatus>();
 	private volatile Geocoder m_geocoder;
+	private static AtomicInteger m_inProgress = new AtomicInteger(0);
 
 	private static volatile Timer myLocationTimer;
 	private static volatile Date lastUpdated;
@@ -132,6 +134,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 
 		@Override
 		public void run() {
+			m_inProgress.incrementAndGet();
 			LogUtils.debugf(this, "pushing initial data");
 			lastUpdated = new Date();
 
@@ -153,6 +156,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			}
 			m_locationDao.saveMonitoringLocationDefinitions(definitions);
 			addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new UpdateCompleteRemoteEvent());
+			m_inProgress.decrementAndGet();
 		}
 
 	}
@@ -160,6 +164,11 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	private class LocationUpdateSenderTimerTask extends TimerTask {
 		@Override
 		public void run() {
+			if (m_inProgress.get() > 0) {
+				LogUtils.warnf(this, "an update is already in progress, skipping");
+				return;
+			}
+			m_inProgress.incrementAndGet();
 			LogUtils.debugf(this, "checking for monitor status updates");
 			final Date startDate = lastUpdated;
 			final Date endDate   = new Date();
@@ -195,6 +204,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(locations));
 
 			lastUpdated = endDate;
+			m_inProgress.decrementAndGet();
 		}
 	}
 
@@ -213,13 +223,6 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 
 		final LocationMonitorState lms = new LocationMonitorState(monitors, tracker.drain());
 
-		/*
-		if (def.getGeolocation() == null || def.getGeolocation().equals("")) {
-			// OpenNMS World HQ
-			def.setGeolocation("35.715751,-79.16262");
-		}
-		*/
-
 		GWTLatLng latLng = null;
 		final String coordinateMatchString = "^\\s*[\\-\\d\\.]+\\s*,\\s*[\\-\\d\\.]+\\s*$";
 
@@ -237,18 +240,18 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 				latLng = new GWTLatLng(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
 			}
 		}
-		if (latLng == null && (def.getGeolocation() == null || def.getGeolocation().equals(""))) {
-			LogUtils.debugf(this, "no geolocation or coordinates found, using OpenNMS World HQ");
-			latLng = new GWTLatLng(35.715751, -79.16262);
-		}
-		if (latLng == null) {
+		if (latLng == null && def.getGeolocation() != null && !def.getGeolocation().equals("")) {
 			try {
 				latLng = m_geocoder.geocode(def.getGeolocation());
 				LogUtils.debugf(this, "got coordinates %s for geolocation %s", latLng.getCoordinates(), def.getGeolocation());
 				def.setCoordinates(latLng.getCoordinates());
-			} catch (GeocoderLookupException e) {
+			} catch (GeocoderException e) {
 				LogUtils.warnf(this, e, "unable to geocode %s", def.getGeolocation());
 			}
+		}
+		if (latLng == null) {
+			LogUtils.debugf(this, "no geolocation or coordinates found, using OpenNMS World HQ");
+			latLng = new GWTLatLng(35.715751, -79.16262);
 		} else {
 			def.setCoordinates(latLng.getCoordinates());
 		}

@@ -12,6 +12,7 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectE
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
@@ -71,11 +72,11 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
     @Override
 	public void removeLocation(final Location location) {
 		if (location == null) return;
-		GoogleMapsLocation loc = m_locations.get(location.getName());
+		GoogleMapsLocation loc = m_locations.get(location.getLocationInfo().getName());
 		if (loc.getMarker() != null) {
 			m_mapPanel.removeOverlay(loc.getMarker());
 		}
-		m_locations.remove(location.getName());
+		m_locations.remove(location.getLocationInfo().getName());
 	}
 
     @Override
@@ -120,7 +121,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
     private GWTBounds getLocationBounds() {
         BoundsBuilder bldr = new BoundsBuilder();
         for (GoogleMapsLocation l : m_locations.values()) {
-            bldr.extend(l.getLatLng());
+            bldr.extend(l.getLocationInfo().getLatLng());
         }
         return bldr.getBounds();
     }
@@ -128,13 +129,14 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
 	@Override
 	protected void updateMarker(final Location location) {
-        GoogleMapsLocation oldLocation = m_locations.get(location.getName());
+		final LocationInfo locationInfo = location.getLocationInfo();
+        GoogleMapsLocation oldLocation = m_locations.get(locationInfo.getName());
         addAndMergeLocation(oldLocation, new GoogleMapsLocation(location));
 
         if (oldLocation == null) {
-            placeMarker(m_locations.get(location.getName()));
-        } else if (!oldLocation.getStatusText().equals(location.getStatusText())) {
-            placeMarker(m_locations.get(location.getName()));
+            placeMarker(m_locations.get(locationInfo.getName()));
+        } else if (!oldLocation.getLocationInfo().getStatus().equals(locationInfo.getStatus())) {
+            placeMarker(m_locations.get(locationInfo.getName()));
         }
 
         locationUpdateComplete(location);
@@ -151,43 +153,45 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
     private void addAndMergeLocation(final GoogleMapsLocation oldLocation, final GoogleMapsLocation newLocation) {
         if(oldLocation != null) {
-            m_locations.put(newLocation.getName(), mergeLocations(oldLocation, newLocation));
+            m_locations.put(newLocation.getLocationInfo().getName(), mergeLocations(oldLocation, newLocation));
         }else {
-            m_locations.put(newLocation.getName(), newLocation);
+            m_locations.put(newLocation.getLocationInfo().getName(), newLocation);
         }
-
     }
 
 	private GoogleMapsLocation mergeLocations(final GoogleMapsLocation oldLocation, final GoogleMapsLocation newLocation) {
-		if (newLocation.getLocationMonitorState() == null)
-			newLocation.setLocationMonitorState(oldLocation.getLocationMonitorState());
-		if (newLocation.getLatLng() == null)
-			newLocation.setLatLng(oldLocation.getLatLng());
+		if (newLocation.getLocationInfo().getStatus() == null)
+			newLocation.getLocationInfo().setStatus(oldLocation.getLocationInfo().getStatus());
+		if (newLocation.getLocationDetails().getLocationMonitorState() == null)
+			newLocation.getLocationDetails().setLocationMonitorState(oldLocation.getLocationDetails().getLocationMonitorState());
+		if (newLocation.getLocationInfo().getCoordinates() == null)
+			newLocation.getLocationInfo().setCoordinates(oldLocation.getLocationInfo().getCoordinates());
 		if (newLocation.getMarker() == null)
 			newLocation.setMarker(oldLocation.getMarker());
 		return newLocation;
 	}
 
 	private Marker createMarker(final GoogleMapsLocation location) {
+		final LocationInfo locationInfo = location.getLocationInfo();
 		Marker m = location.getMarker();
 		if (m == null) {
 			Icon icon = Icon.newInstance();
 			icon.setIconSize(Size.newInstance(32, 32));
 			icon.setIconAnchor(Point.newInstance(16, 32));
-			icon.setImageURL("images/icon-" + location.getStatusText() + ".png");
+			icon.setImageURL("images/icon-" + locationInfo.getStatus() + ".png");
 
 			final MarkerOptions markerOptions = MarkerOptions.newInstance();
 			markerOptions.setAutoPan(true);
 			markerOptions.setClickable(true);
-			markerOptions.setTitle(location.getName());
+			markerOptions.setTitle(locationInfo.getName());
 			markerOptions.setIcon(icon);
-			final GWTLatLng latLng = location.getLatLng();
+			final GWTLatLng latLng = locationInfo.getLatLng();
 			m = new Marker(toLatLng(latLng), markerOptions);
-			m.addMarkerClickHandler(new DefaultMarkerClickHandler(location.getName()));
+			m.addMarkerClickHandler(new DefaultMarkerClickHandler(locationInfo.getName()));
 			location.setMarker(m);
-			m_locations.put(location.getName(), location);
+			m_locations.put(locationInfo.getName(), location);
 		} else {
-			m.setImage("images/icon-" + location.getStatusText() + ".png");
+			m.setImage("images/icon-" + locationInfo.getStatus() + ".png");
 		}
 
 		return m;
