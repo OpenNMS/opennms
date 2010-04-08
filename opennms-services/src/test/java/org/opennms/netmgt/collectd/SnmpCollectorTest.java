@@ -37,368 +37,451 @@
 //
 package org.opennms.netmgt.collectd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.mock.snmp.JUnitSnmpAgent;
+import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.support.RrdTestUtils;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.PlatformTransactionManager;
 
-public class SnmpCollectorTest extends AbstractCollectorTest {
-    private SnmpCollector m_snmpCollector;
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    JUnitCollectorExecutionListener.class,
+    JUnitSnmpAgentExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+})
+public class SnmpCollectorTest implements MockSnmpAgentAware {
+
+    @Autowired
+    private MockEventIpcManager m_mockEventIpcManager;
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
+
+    private TestContext m_context;
+
+    private final String m_testHostName = "127.0.0.1";
+
+    private final static String TEST_NODE_LABEL = "TestNode"; 
+
+    private CollectionSpecification m_collectionSpecification;
+
+    private CollectionAgent m_collectionAgent;
 
     private MockSnmpAgent m_agent;
 
-    final String SNMP_CONFIG = "<?xml version=\"1.0\"?>\n"
-        + "<snmp-config port=\"1691\" retry=\"3\" timeout=\"800000\"\n"
-        + "               read-community=\"public\"\n"
-        + "               version=\"v2c\">\n" + "</snmp-config>\n";
-
-
-
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+        assertNotNull(m_mockEventIpcManager);
+        assertNotNull(m_transactionManager);
+        assertNotNull(m_nodeDao);
+        assertNotNull(m_ipInterfaceDao);
+        assertNotNull(m_serviceTypeDao);
 
-        MockNetwork m_network = new MockNetwork();
-        m_network.setCriticalService("ICMP");
-        m_network.addNode(1, "Router");
-        m_network.addInterface("127.0.0.1");
-        m_network.addService("ICMP");
+        OnmsIpInterface iface = null;
+        OnmsNode testNode = null;
+        Collection<OnmsNode> testNodes = m_nodeDao.findByLabel(TEST_NODE_LABEL);
+        if (testNodes == null || testNodes.size() < 1) {
+            NetworkBuilder builder = new NetworkBuilder();
+            builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
 
-        MockDatabase m_db = new MockDatabase();
-        m_db.populate(m_network);
+            builder.addSnmpInterface(m_testHostName, 1).setIfName("lo0").setPhysAddr("00:11:22:33:44");
+            builder.addSnmpInterface(m_testHostName, 2).setIfName("gif0").setPhysAddr("00:11:22:33:45").setIfType(55);
+            builder.addSnmpInterface(m_testHostName, 3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
 
-        DataSourceFactory.setInstance(m_db);
-        
-        MockEventIpcManager eventIpcManager = new MockEventIpcManager();
-        
-        EventIpcManagerFactory.setIpcManager(eventIpcManager);
-        
-        //RrdConfig.loadProperties(new ByteArrayInputStream(s_rrdConfig.getBytes()));
-        RrdTestUtils.initialize();
+            InterfaceBuilder ifBldr = builder.addInterface(m_testHostName).setIsSnmpPrimary("P");
+            ifBldr.addSnmpInterface(m_testHostName, 6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringReader(SNMP_CONFIG)));
-        
-        initializeDatabaseSchemaConfig("/org/opennms/netmgt/config/test-database-schema.xml");
-        
-        setTransMgr();
-        setFileAnticipator();
-    }
-    
-    @Override
-    public void runTest() throws Throwable {
-        super.runTest();
-        MockLogAppender.assertNoWarningsOrGreater();
-        m_fileAnticipator.deleteExpected();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        if (m_agent != null) {
-            m_agent.shutDownAndWait();
+            testNode = builder.getCurrentNode();
+            assertNotNull(testNode);
+            m_nodeDao.save(testNode);
+            m_nodeDao.flush();
+        } else {
+            testNode = testNodes.iterator().next();
         }
-        m_fileAnticipator.deleteExpected(true);
-        m_fileAnticipator.tearDown();
-        MockUtil.println("------------ End Test " + getName() + " --------------------------");
-        super.tearDown();
+
+        Set<OnmsIpInterface> ifaces = testNode.getIpInterfaces();
+        assertEquals(1, ifaces.size());
+        iface = ifaces.iterator().next();
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringReader(
+                "<?xml version=\"1.0\"?>\n"
+                + "<snmp-config port=\"9161\" retry=\"3\" timeout=\"800000\" read-community=\"public\" version=\"v2c\">\n"
+                + "</snmp-config>"        )));
+
+        SnmpCollector collector = new SnmpCollector();
+        collector.initialize(null);
+
+        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
+        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        MockUtil.println("------------ End Test --------------------------");
+        // MockLogAppender.assertNoWarningsOrGreater();
+    }
+
+    @Test
+    @JUnitCollector(
+            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
+            datacollectionType = "snmp",
+            anticipateFiles = {
+                    "1",
+                    "1/fw0"
+            },
+            anticipateRrds = {
+                    "1/tcpActiveOpens",
+                    "1/tcpAttemptFails",
+                    "1/tcpPassiveOpens",
+                    "1/tcpRetransSegs",
+                    "1/tcpCurrEstab",
+                    "1/tcpEstabResets",
+                    "1/tcpInErrors",
+                    "1/tcpInSegs",
+                    "1/tcpOutRsts",
+                    "1/tcpOutSegs",
+                    "1/fw0/ifInDiscards",
+                    "1/fw0/ifInErrors",
+                    "1/fw0/ifInNUcastpkts",
+                    "1/fw0/ifInOctets",
+                    "1/fw0/ifInUcastpkts",
+                    "1/fw0/ifOutErrors",
+                    "1/fw0/ifOutNUcastPkts",
+                    "1/fw0/ifOutOctets",
+                    "1/fw0/ifOutUcastPkts"
+            }
+    )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
+    //@JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/bigrouter-walk.properties");
     public void testCollect() throws Exception {
-//        initializeAgent("/org/opennms/netmgt/snmp/bigrouter-walk.properties");
-        
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
-        initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
 
-        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-config.xml");
-
-        createSnmpCollector();
-
-        OnmsIpInterface iface = createInterface();
-
-        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
-
-        CollectionAgent agent = createCollectionAgent(iface);
-        
-        File nodeDir = anticipatePath(getSnmpRrdDirectory(), "1");
-        anticipateRrdFiles(nodeDir, "tcpActiveOpens", "tcpAttemptFails");
-        anticipateRrdFiles(nodeDir, "tcpPassiveOpens", "tcpRetransSegs");
-        anticipateRrdFiles(nodeDir, "tcpCurrEstab", "tcpEstabResets");
-        anticipateRrdFiles(nodeDir, "tcpInErrors", "tcpInSegs");
-        anticipateRrdFiles(nodeDir, "tcpOutRsts", "tcpOutSegs");
-        
-        File ifDir = anticipatePath(nodeDir, "fw0");
-        anticipateRrdFiles(ifDir, "ifInDiscards", "ifInErrors", "ifInNUcastpkts",
-                "ifInOctets", "ifInUcastpkts", "ifOutErrors", "ifOutNUcastPkts",
-                "ifOutOctets", "ifOutUcastPkts");
-        
-        // don't for get to initialize the agent
-        spec.initialize(agent);
+        // don't forget to initialize the agent
+        m_collectionSpecification.initialize(m_collectionAgent);
 
         // now do the actual collection
-        CollectionSet collectionSet=spec.collect(agent);
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
-                     collectionSet.getStatus());
-        persistCollectionSet(spec, collectionSet);
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
-        
+
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
 
         // try collecting again
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
-                spec.collect(agent).getStatus());
+                m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
 
         // release the agent
-        spec.release(agent);
-        
-        // Wait for any RRD writes to finish up
-        Thread.sleep(1000);
+        m_collectionSpecification.release(m_collectionAgent);
     }
-    
+
+    @Test
+    @JUnitCollector(
+            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml", 
+            datacollectionType = "snmp",
+            anticipateFiles = {
+                    "1",
+                    "1/fw0"
+            },
+            anticipateRrds = {
+                    "1/tcpCurrEstab",
+                    "1/fw0/ifInOctets"
+            }
+    )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/snmpTestData1.properties")
     public void testPersist() throws Exception {
-        initializeAgent("/org/opennms/netmgt/snmp/snmpTestData1.properties");
+        File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
 
-        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-persistTest-config.xml");
-
-        createSnmpCollector();
-
-        OnmsIpInterface iface = createInterface();
-
-        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
-
-        CollectionAgent agent = createCollectionAgent(iface);
-        
         // node level collection
-        File nodeDir = anticipatePath(getSnmpRrdDirectory(), "1");
-        anticipateRrdFiles(nodeDir, "tcpCurrEstab");
-        
-        // interface level collection
-        File ifDir = anticipatePath(nodeDir, "fw0");
-        anticipateRrdFiles(ifDir, "ifInOctets");
-        
+        File nodeDir = new File(snmpRrdDirectory, "1");
         File rrdFile = new File(nodeDir, rrd("tcpCurrEstab"));
+
+        // interface level collection
+        File ifDir = new File(nodeDir, "fw0");
         File ifRrdFile = new File(ifDir, rrd("ifInOctets"));
-       
-        
+
         int numUpdates = 2;
         int stepSizeInSecs = 1;
-        
+
         int stepSizeInMillis = stepSizeInSecs*1000;
-        
-        // don't for get to initialize the agent
-        spec.initialize(agent);
-        
-        collectNTimes(spec, agent, numUpdates);
-        
+
+        // don't forget to initialize the agent
+        m_collectionSpecification.initialize(m_collectionAgent);
+
+        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+
         // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
-        assertEquals(123.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
-        
+        assertEquals(new Double(123.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
+
         // This is the value from snmpTestData1.properties
         // .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 1234567
-        assertEquals(1234567.0, RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
-        
+        assertEquals(new Double(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
+
         // now update the data in the agent
         m_agent.updateIntValue(".1.3.6.1.2.1.6.9.0", 456);
         m_agent.updateCounter32Value(".1.3.6.1.2.1.2.2.1.10.6", 7654321);
-        
-        collectNTimes(spec, agent, numUpdates);
+
+        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
-        assertEquals(456.0, RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
-        assertEquals(7654321.0, RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
-        
+        assertEquals(new Double(456.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(new Double(7654321.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
 
         // release the agent
-        spec.release(agent);
-        
-        // Wait for any RRD writes to finish up
-        Thread.sleep(1000);
-        
+        m_collectionSpecification.release(m_collectionAgent);
     }
 
+    @Test
+    @JUnitCollector(
+            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config.xml", 
+            datacollectionType = "snmp",
+            anticipateRrds = {
+                    "test"
+            }
+    )
     public void testUsingFetch() throws Exception {
+        File snmpDir = (File)m_context.getAttribute("rrdDirectory");
 
         int stepSize = 1;
         int numUpdates = 2;
 
         long start = System.currentTimeMillis();
 
-        File snmpDir = getSnmpRrdDirectory();
-        anticipateRrdFiles(snmpDir, "test");
-        
         File rrdFile = new File(snmpDir, rrd("test"));
-        
+
         RrdStrategy m_rrdStrategy = RrdUtils.getStrategy();
-        
-        
-        
+
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
         Object def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def);
-                
+
         Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {
             m_rrdStrategy.updateFile(rrdFileObject, "test", (start/1000 - stepSize*(numUpdates-i)) + ":1");
         }
         m_rrdStrategy.closeFile(rrdFileObject);
-        
 
-        assertEquals(1.0, m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSize*1000, stepSize*1000));
-       
+        assertEquals(new Double(1.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSize*1000, stepSize*1000));
     }
 
+    @Test
+    @JUnitCollector(
+            datacollectionConfig="/org/opennms/netmgt/config/datacollection-brocade-config.xml", 
+            datacollectionType="snmp",
+            anticipateRrds={ 
+                    "1/brocadeFCPortIndex/1/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/1/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/2/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/2/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/3/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/3/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/4/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/4/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/5/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/5/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/6/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/6/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/7/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/7/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/8/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/8/swFCPortRxWords"
+            }, 
+            anticipateFiles={ 
+                    "1",
+                    "1/brocadeFCPortIndex",
+                    "1/brocadeFCPortIndex/1/strings.properties",
+                    "1/brocadeFCPortIndex/1",
+                    "1/brocadeFCPortIndex/2/strings.properties",
+                    "1/brocadeFCPortIndex/2",
+                    "1/brocadeFCPortIndex/3/strings.properties",
+                    "1/brocadeFCPortIndex/3",
+                    "1/brocadeFCPortIndex/4/strings.properties",
+                    "1/brocadeFCPortIndex/4",
+                    "1/brocadeFCPortIndex/5/strings.properties",
+                    "1/brocadeFCPortIndex/5",
+                    "1/brocadeFCPortIndex/6/strings.properties",
+                    "1/brocadeFCPortIndex/6",
+                    "1/brocadeFCPortIndex/7/strings.properties",
+                    "1/brocadeFCPortIndex/7",
+                    "1/brocadeFCPortIndex/8/strings.properties",
+                    "1/brocadeFCPortIndex/8"
+            }
+    )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBrocadeCollect() throws Exception {
-        initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
-
-        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-brocade-config.xml");
-
-        createSnmpCollector();
-
-        OnmsIpInterface iface = createInterface();
-
-        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
-
-        CollectionAgent agent = createCollectionAgent(iface);
-
-        File brocadeDir = anticipatePath(getSnmpRrdDirectory(), "1", "brocadeFCPortIndex"); 
-        for (int i = 1; i <= 8; i++) {
-            File brocadeIndexDir = anticipatePath(brocadeDir, Integer.toString(i));
-            anticipateFiles(brocadeIndexDir, "strings.properties");
-            anticipateRrdFiles(brocadeIndexDir, "swFCPortTxWords", "swFCPortRxWords");
-        }
-
-        // don't for get to initialize the agent
-        spec.initialize(agent);
+        m_collectionSpecification.initialize(m_collectionAgent);
 
         // now do the actual collection
-        CollectionSet collectionSet=spec.collect(agent);
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
                 collectionSet.getStatus());
-        
-        persistCollectionSet(spec, collectionSet);
-        
-        
+
+        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
+
         System.err.println("FIRST COLLECTION FINISHED");
-        
+
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
 
         // try collecting again
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
-                spec.collect(agent).getStatus());
+                m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
 
         // release the agent
-        spec.release(agent);
-        
-        // Wait for any RRD writes to finish up
-        Thread.sleep(1000);
-        
+        m_collectionSpecification.release(m_collectionAgent);
     }
-    
+
+    @Test
+    @JUnitCollector(
+            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml", 
+            datacollectionType = "snmp",
+            anticipateRrds={ 
+                    "1/brocadeFCPortIndex/1/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/1/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/2/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/2/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/3/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/3/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/4/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/4/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/5/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/5/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/6/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/6/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/7/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/7/swFCPortRxWords",
+                    "1/brocadeFCPortIndex/8/swFCPortTxWords",
+                    "1/brocadeFCPortIndex/8/swFCPortRxWords"
+            }, 
+            anticipateFiles={ 
+                    "1",
+                    "1/brocadeFCPortIndex",
+                    "1/brocadeFCPortIndex/1/strings.properties",
+                    "1/brocadeFCPortIndex/1",
+                    "1/brocadeFCPortIndex/2/strings.properties",
+                    "1/brocadeFCPortIndex/2",
+                    "1/brocadeFCPortIndex/3/strings.properties",
+                    "1/brocadeFCPortIndex/3",
+                    "1/brocadeFCPortIndex/4/strings.properties",
+                    "1/brocadeFCPortIndex/4",
+                    "1/brocadeFCPortIndex/5/strings.properties",
+                    "1/brocadeFCPortIndex/5",
+                    "1/brocadeFCPortIndex/6/strings.properties",
+                    "1/brocadeFCPortIndex/6",
+                    "1/brocadeFCPortIndex/7/strings.properties",
+                    "1/brocadeFCPortIndex/7",
+                    "1/brocadeFCPortIndex/8/strings.properties",
+                    "1/brocadeFCPortIndex/8"
+            }
+    )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBug2447_GenericIndexedOnlyCollect() throws Exception {
-        initializeAgent("/org/opennms/netmgt/snmp/brocadeTestData1.properties");
-
-        initializeDataCollectionConfig("/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml");
-
-        createSnmpCollector();
-
-        OnmsIpInterface iface = createInterface();
-
-        CollectionSpecification spec = createCollectionSpec("SNMP", m_snmpCollector, "default");
-
-        CollectionAgent agent = createCollectionAgent(iface);
-
-        File brocadeDir = anticipatePath(getSnmpRrdDirectory(), "1", "brocadeFCPortIndex"); 
-        for (int i = 1; i <= 8; i++) {
-            File brocadeIndexDir = anticipatePath(brocadeDir, Integer.toString(i));
-            anticipateFiles(brocadeIndexDir, "strings.properties");
-            anticipateRrdFiles(brocadeIndexDir, "swFCPortTxWords", "swFCPortRxWords");
-        }
-
-        // don't for get to initialize the agent
-        spec.initialize(agent);
+        // don't forget to initialize the agent
+        m_collectionSpecification.initialize(m_collectionAgent);
 
         // now do the actual collection
-        CollectionSet collectionSet=spec.collect(agent);
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
                 collectionSet.getStatus());
-        
-        persistCollectionSet(spec, collectionSet);
-        
-        
+
+        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
+
         System.err.println("FIRST COLLECTION FINISHED");
-        
+
         //need a one second time elapse to update the RRD
         Thread.sleep(1000);
 
         // try collecting again
         assertEquals("collection status",
                 ServiceCollector.COLLECTION_SUCCEEDED,
-                spec.collect(agent).getStatus());
+                m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
 
         // release the agent
-        spec.release(agent);
-        
-        // Wait for any RRD writes to finish up
-        Thread.sleep(1000);
-        
+        m_collectionSpecification.release(m_collectionAgent);
     }
 
-    private void createSnmpCollector() {
-        m_snmpCollector = new SnmpCollector();
-        m_snmpCollector.initialize(null); // no properties are passed
+    private static String rrd(String file) {
+        return file + RrdUtils.getExtension();
     }
 
-    private OnmsIpInterface createInterface() {
-        
-        NetworkBuilder bldr = new NetworkBuilder();
-        bldr.addNode("TestNode").setId(1).setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
-
-        bldr.addSnmpInterface("127.0.0.1", 1).setIfName("lo0").setPhysAddr("00:11:22:33:44");
-        bldr.addSnmpInterface("127.0.0.1", 2).setIfName("gif0").setPhysAddr("00:11:22:33:45").setIfType(55);
-        bldr.addSnmpInterface("127.0.0.1", 3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
-
-        InterfaceBuilder ifBldr = bldr.addInterface("127.0.0.1").setId(27).setIsSnmpPrimary("P");
-        ifBldr.addSnmpInterface("127.0.0.1", 6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
-
-        return ifBldr.getInterface();
+    public void setMockSnmpAgent(MockSnmpAgent agent) {
+        m_agent = agent;
     }
 
-    private void initializeAgent(String testData) throws InterruptedException {
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource(testData),
-                                                  "127.0.0.1/1691");
+    public void setTestContext(TestContext context) {
+        m_context = context;
     }
-
 }

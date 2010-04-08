@@ -107,7 +107,7 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         m_fileAnticipator.tearDown();
     }
 
-    private void deleteChildDirectories(File directory) {
+    private static void deleteChildDirectories(File directory) {
         for (File f : directory.listFiles()) {
             if (f.isDirectory()) {
                 deleteChildDirectories(f);
@@ -118,7 +118,7 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         }
     }
 
-    private JUnitCollector findCollectorAnnotation(TestContext testContext) {
+    private static JUnitCollector findCollectorAnnotation(TestContext testContext) {
         Method testMethod = testContext.getTestMethod();
         JUnitCollector config = testMethod.getAnnotation(JUnitCollector.class);
         if (config != null) {
