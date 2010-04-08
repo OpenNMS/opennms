@@ -252,5 +252,5 @@ SLink.prototype.onRepeat = function(evt)
 }
 
 SLink.prototype.onClick = onMouseDownOnSLink;
-SLink.prototype.onMouseOver = onMouseOverSLink;
-SLink.prototype.onMouseOut  = onMouseOutSLink;
+SLink.prototype.onMouseOver = onMouseOverLink;
+SLink.prototype.onMouseOut  = onMouseOutLink;

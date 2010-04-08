@@ -36,19 +36,24 @@ function onMouseOutLink(evt) {
 
 }
 
-function onMouseOutSLink(evt) {
-	var id = evt.target.parentNode.getAttributeNS(null,"id");
-//	alert(id);
-}
-
-function onMouseOverSLink(evt) {
-	var id = evt.target.parentNode.getAttributeNS(null,"id");
-//	alert(id);
-}
-
 function onMouseDownOnSLink(evt) {
-	var id = evt.target.parentNode.getAttributeNS(null,"id");
-//	alert(id);
+	resetSelectedObjects();
+	if ((typeof map) == "object")
+	{
+		// close other menus
+		windowsClean();
+
+		clearDownInfo();
+		clearActionsStarted();
+		var id = evt.target.parentNode.getAttributeNS(null,"id");
+		var mapLink = map.mapLinks[id];
+		writeTopInfoText(getInfoOnSLink(mapLink));
+		
+		if (evt.detail == 2)
+		{
+			alert("Implement Context Menu");	
+		}		
+	}
 }
 
 //if double-click on an element (map) open the map 

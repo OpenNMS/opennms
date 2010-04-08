@@ -300,16 +300,18 @@ Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, s
 		this.mapLinkSize++;
 
 		this.mapLinks[id] = link;
-		if (this.linksBetweenElements[idWithoutTypology] == this.maxlinks-1 )
+		if (this.linksBetweenElements[idWithoutTypology] == this.maxlinks-1 ) {
 			this.lastlinks[sid] = link;
+		}
 		this.linksBetweenElements[idWithoutTypology]++;    	
 	} else {		
 		link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.maxlinks-1, deltaLink,nodeid1,nodeid2);
 		var summaryLink;
+		
 		if (this.mapLinks[sid]==undefined) {
-			summaryLink = new SLink(sid, typology, first, second, this.sLinkStroke, this.sLinkStrokeWidth, this.sLinkStrokeDashArray, this.maxlinks-1, deltaLink);
+			summaryLink = new SLink(sid, this.sLinkId, first, second, this.sLinkStroke, this.sLinkStrokeWidth, this.sLinkStrokeDashArray, this.maxlinks-1, deltaLink);
 			var lastlink =this.lastlinks[sid];
-			summaryLink.addLink[lastlink];
+			summaryLink.addLink(lastlink);
 			var tempMapLinks=new Array();
 			for ( var linkid in this.mapLinks ) {
 			    if ( linkid != lastlink.id ) {
@@ -320,6 +322,7 @@ Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, s
 		} else {
 			summaryLink = this.mapLinks[sid];
 		}
+		
 		summaryLink.addLink(link);
 		this.mapLinks[sid] = summaryLink;
 	}

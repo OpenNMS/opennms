@@ -1792,3 +1792,57 @@ function getInfoOnLink(link)
 	return text;
 }
 
+function getInfoOnSLink(slink) 
+{
+	var statusColor = 'black';
+	var text = document.createElementNS(svgNS,"text");
+	text.setAttributeNS(null, "x","3");
+	text.setAttributeNS(null, "dy","15");
+	text.setAttributeNS(null, "id","topInfoTextTitle");
+	text.setAttributeNS(null, "font-size",titleFontSize);
+	
+	var textLabel = document.createTextNode("Summary Link info");
+	text.appendChild(textLabel);
+	var tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","20");
+	tspanContent = document.createTextNode(" Type: "+LINK_TEXT[slink.getTypology()]);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);
+	
+	for (var linkid in slink.getLinks()) {
+		var link = slink.getLinks()[linkid];
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode(" Type(#links): " + LINK_TEXT[link.getTypology()] + "(" + link.getNumberOfLinks() + ")");
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);
+	}
+	
+	var speed = 'Undefined';
+	if (LINK_SPEED[slink.getTypology()] > 0 )
+		speed = LINK_SPEED[slink.getTypology()];
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Speed: "+speed);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of Links: "+slink.getNumberOfLinks());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of MultiLinks: "+slink.getNumberOfMultiLinks());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+	
+	return text;
+}
