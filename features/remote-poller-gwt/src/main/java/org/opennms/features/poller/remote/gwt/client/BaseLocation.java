@@ -14,16 +14,19 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	private LocationDetails m_locationDetails;
 
 	public BaseLocation() {
-	    m_locationInfo = new LocationInfo();
-	    m_locationDetails = new LocationDetails();
+	    this(new LocationInfo(), new LocationDetails());
 	}
 	
 	public BaseLocation(LocationInfo locationInfo, LocationDetails locationDetails) {
-	    setLocationInfo(locationInfo);
-	    setLocationDetails(locationDetails);
+	    m_locationInfo = locationInfo;
+	    m_locationDetails = locationDetails;
 	}
 
-	public String getName() {
+	public BaseLocation(LocationInfo info) {
+	    this(info, new LocationDetails());
+	}
+
+    public String getName() {
 		return m_locationInfo.getName();
 	}
 
@@ -55,15 +58,6 @@ public class BaseLocation implements Event, IsSerializable, Location {
 		m_locationInfo.setGeolocation(geolocation);
 	}
 
-	public LocationMonitorState getLocationMonitorState() {
-		return m_locationDetails.getLocationMonitorState();
-	}
-
-	public void setLocationMonitorState(final LocationMonitorState lms) {
-		m_locationInfo.setMonitorStatus(lms.getStatus());
-		m_locationDetails.setLocationMonitorState(lms);
-	}
-
 	public GWTLatLng getLatLng() {
 		return GWTLatLng.fromCoordinates(m_locationInfo.getCoordinates());
 	}
@@ -73,10 +67,7 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	}
 
 	public String getImageURL() {
-		return null;
-	}
-
-	public void setImageUrl(String image) {
+		return m_locationInfo.getImageURL();
 	}
 
 	public LocationInfo getLocationInfo() {

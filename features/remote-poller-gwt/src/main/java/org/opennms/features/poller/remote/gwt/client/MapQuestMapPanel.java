@@ -1,5 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -17,8 +19,11 @@ import com.googlecode.gwtmapquest.transaction.MQALargeZoomControl;
 import com.googlecode.gwtmapquest.transaction.MQALatLng;
 import com.googlecode.gwtmapquest.transaction.MQAPoi;
 import com.googlecode.gwtmapquest.transaction.MQAPoint;
+import com.googlecode.gwtmapquest.transaction.MQARectLL;
 import com.googlecode.gwtmapquest.transaction.MQASize;
 import com.googlecode.gwtmapquest.transaction.MQATileMap;
+import com.googlecode.gwtmapquest.transaction.event.ZoomEndEvent;
+import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
 
 public class MapQuestMapPanel extends Composite {
 
@@ -36,6 +41,14 @@ public class MapQuestMapPanel extends Composite {
         setMapWidget(MQATileMap.newInstance(m_mapHolder.getElement()));
         
         initializeMap();
+        
+        m_map.addZoomEndHandler(new ZoomEndHandler() {
+            
+            public void onZoomEnd(ZoomEndEvent event) {
+                fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
+                
+            }
+        });
     }
 
     private void setMapWidget(MQATileMap map) {
@@ -46,60 +59,27 @@ public class MapQuestMapPanel extends Composite {
         return m_map;
     }
 
-    void setSize(int offsetWidth, int offsetHeight) {
-        getMapWidget().setSize(MQASize.newInstance(offsetWidth, offsetHeight));
-    }
-
-    void removeOverlay(MQAPoi marker) {
-        getMapWidget().removeShape(marker);
-    }
-
-    void addOverlay(final MQAPoi point) {
-        getMapWidget().addShape(point);
-    }
-
-    void setCenter(final GWTLatLng latLng) {
-        getMapWidget().setCenter(MQALatLng.newInstance(latLng.getLatitude(), latLng.getLongitude()));
-    }
-
-    MQAInfoWindow getInfoWindow() {
-        return getMapWidget().getInfoWindow();
-    }
-
-    void addControl(MQALargeZoomControl zoomControl) {
-        getMapWidget().addControl(zoomControl);
-    }
-
-    void setZoomLevel(int level) {
-        getMapWidget().setZoomLevel(level);
-    }
-
     public void initializeMap() {
         m_mapHolder.setSize("100%", "100%");
-        addControl(MQALargeZoomControl.newInstance());
-        setZoomLevel(2);
+        getMapWidget().addControl(MQALargeZoomControl.newInstance());
+        getMapWidget().setZoomLevel(2);
     
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
                 
-                setSize(m_mapHolder.getOffsetWidth(), m_mapHolder.getOffsetHeight());
+                getMapWidget().setSize(MQASize.newInstance(m_mapHolder.getOffsetWidth(), m_mapHolder.getOffsetHeight()));
             }
         });
-    }
-
-    public void updateSize() {
-        setSize(m_mapHolder.getOffsetWidth(), m_mapHolder.getOffsetHeight());
     }
 
     void showLocationDetails(final MapQuestLocation location) {
         final MQAPoi point = location.getMarker();
     	
-    	final GWTLatLng latLng = location.getLocationInfo().getLatLng();
-    	setCenter(latLng);
+    	getMapWidget().setCenter(toMQALatLng(location.getLocationInfo().getLatLng()));
     	if (point != null) {
     		point.setInfoTitleHTML(location.getLocationInfo().getName() + " (" + location.getLocationInfo().getArea() + ")");
     		point.setInfoContentHTML("Status = " + location.getLocationInfo().getMonitorStatus().toString());
-    		final MQAInfoWindow window = getInfoWindow();
+    		final MQAInfoWindow window = getMapWidget().getInfoWindow();
     		window.hide();
     		point.showInfoWindow();
     	}
@@ -108,14 +88,47 @@ public class MapQuestMapPanel extends Composite {
     MQAPoi createMarker(MapQuestLocation location) {
         final LocationInfo locationInfo = location.getLocationInfo();
         
-        final GWTLatLng gLatLng = locationInfo.getLatLng();
-        final MQALatLng latLng = MQALatLng.newInstance(gLatLng.getLatitude(), gLatLng.getLongitude());
-        final MQAIcon icon = MQAIcon.newInstance("images/icon-" + locationInfo.getMonitorStatus() + ".png", 32, 32);
+        final MQALatLng latLng = toMQALatLng(locationInfo.getLatLng());
+        final MQAIcon icon = MQAIcon.newInstance(locationInfo.getImageURL(), 32, 32);
         final MQAPoi point = MQAPoi.newInstance(latLng, icon);
         point.setIconOffset(MQAPoint.newInstance(-16, -32));
         location.setMarker(point);
         
         return location.getMarker();
+    }
+
+    public void addMapPanelBoundsChangedEventHandler(MapPanelBoundsChangedEventHandler handler) {
+        addHandler(handler, MapPanelBoundsChangedEvent.TYPE);
+    }
+
+    private GWTBounds getBounds() {
+        return toGWTBounds(m_map.getBounds());
+    }
+    
+    
+    private static GWTLatLng toGWTLatLng(MQALatLng latLng) {
+        return new GWTLatLng(latLng.getLatitude(), latLng.getLongitude());
+    }
+    
+    private static MQALatLng toMQALatLng(GWTLatLng latLng) {
+        return MQALatLng.newInstance(latLng.getLatitude(), latLng.getLongitude());
+    }
+    
+    private static GWTBounds toGWTBounds(MQARectLL bounds) {
+        BoundsBuilder bldr = new BoundsBuilder();
+        bldr.extend(bounds.getUpperLeft().getLatitude(), bounds.getUpperLeft().getLongitude());
+        bldr.extend(bounds.getLowerRight().getLatitude(), bounds.getLowerRight().getLongitude());
+        
+        return bldr.getBounds();
+    }
+    
+    private static MQARectLL toMQARectLL(GWTBounds bounds) {
+        MQALatLng latLng = toMQALatLng(bounds.getNorthEastCorner());
+        
+        MQARectLL mqBounds = MQARectLL.newInstance(latLng, latLng);
+        mqBounds.extend(toMQALatLng(bounds.getSouthWestCorner()));
+        
+        return mqBounds;
     }
 
 }
