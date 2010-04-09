@@ -27,5 +27,5 @@ function execSelectedCMAction(index,nodeid,nodelabel,evt) {
 
 function execLinkCMAction(linkid,sid,label,evt) {
 	var sLink=map.mapLinks[sid];
-	sLink.switch(linkid);
+	sLink.switchLink(linkid);
 }

@@ -192,7 +192,7 @@ SLink.prototype.addLink = function(link)
 	}
 }
 
-SLink.prototype.switch = function(linkId)
+SLink.prototype.switchLink = function(linkId)
 {
 	if (this.id == linkId) {
 		this.line.setAttributeNS(null,"stroke", this.stroke);
