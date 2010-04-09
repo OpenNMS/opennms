@@ -4,6 +4,9 @@ import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toGW
 import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toLatLng;
 import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toLatLngBounds;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
@@ -11,7 +14,6 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.control.Control;
@@ -27,10 +29,9 @@ import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class GoogleMapsPanel extends Composite {
+public class GoogleMapsPanel extends AbstractMapPanel {
 
     private static GoogleMapsPanelUiBinder uiBinder = GWT.create(GoogleMapsPanelUiBinder.class);
 
@@ -41,10 +42,9 @@ public class GoogleMapsPanel extends Composite {
     @UiField
     MapWidget m_mapWidget;
     
-    HandlerManager m_handlerManager;
+    private Map<String, Marker> m_markers = new HashMap<String, Marker>();
 
     public GoogleMapsPanel() {
-        m_handlerManager = new HandlerManager(this);
         initWidget(uiBinder.createAndBindUi(this));
         
         initializeMapPanel();
@@ -52,7 +52,7 @@ public class GoogleMapsPanel extends Composite {
         m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
 
             public void onMoveEnd(MapMoveEndEvent event) {
-                m_handlerManager.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
+                fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
             
         });
@@ -62,8 +62,8 @@ public class GoogleMapsPanel extends Composite {
         return m_mapWidget;
     }
 
-    void showLocationDetails(final GoogleMapsLocation location) {
-        final Marker m = location.getMarker();
+    void showLocationDetails(final Location location) {
+        final Marker m = getMarker(location);
         final GWTLatLng latLng = location.getLocationInfo().getLatLng();
         getMapWidget().setCenter(toLatLng(latLng));
         if (m != null) {
@@ -71,6 +71,14 @@ public class GoogleMapsPanel extends Composite {
             InfoWindowContent content = new InfoWindowContent(location.getLocationInfo().getName() + " Wahoo!");
             getMapWidget().getInfoWindow().open(m, content);
         }
+    }
+
+    private Marker getMarker(final Location location) {
+        return m_markers.get(location.getLocationInfo().getName());
+    }
+    
+    private void setMarker(final Location location, Marker m) {
+        m_markers.put(location.getLocationInfo().getName(), m);
     }
 
     GWTBounds getBounds() {
@@ -83,7 +91,7 @@ public class GoogleMapsPanel extends Composite {
     }
     
     public void addMapPanelBoundsChangedEventHandler( MapPanelBoundsChangedEventHandler handler) {
-        m_handlerManager.addHandler(MapPanelBoundsChangedEvent.TYPE, handler);
+        addHandler(handler, MapPanelBoundsChangedEvent.TYPE);
     }
     
     public void addControl(Control control) {
@@ -114,36 +122,44 @@ public class GoogleMapsPanel extends Composite {
         getMapWidget().removeOverlay(marker);
     }
 
-    Marker createMarker(final GoogleMapsLocation location) {
-        Marker m = location.getMarker();
-        LocationInfo locationInfo = location.getLocationInfo();
-    	if (m == null) {
-    		
-            Icon icon = Icon.newInstance();
-            icon.setIconSize(Size.newInstance(32, 32));
-            icon.setIconAnchor(Point.newInstance(16, 32));
-            icon.setImageURL("images/icon-" + locationInfo.getMonitorStatus() + ".png");
-            
-            final MarkerOptions markerOptions = MarkerOptions.newInstance();
-            markerOptions.setAutoPan(true);
-            markerOptions.setClickable(true);
-            markerOptions.setTitle(locationInfo.getName());
-            markerOptions.setIcon(icon);
-            final GWTLatLng latLng = locationInfo.getLatLng();
-            m = new Marker(toLatLng(latLng), markerOptions);
-            m.addMarkerClickHandler(new DefaultMarkerClickHandler(location));
-            location.setMarker(m);
-    		
-    	} else {
-    		m.setImage("images/icon-" + locationInfo.getMonitorStatus() + ".png");
-    	}
+
+    private Marker createMarker(final Location location) {
+        final LocationInfo locationInfo = location.getLocationInfo();
+        
+        final Icon icon = Icon.newInstance();
+        icon.setIconSize(Size.newInstance(32, 32));
+        icon.setIconAnchor(Point.newInstance(16, 32));
+        icon.setImageURL(locationInfo.getImageURL());
+        
+        final MarkerOptions markerOptions = MarkerOptions.newInstance();
+        markerOptions.setAutoPan(true);
+        markerOptions.setClickable(true);
+        markerOptions.setTitle(locationInfo.getName());
+        markerOptions.setIcon(icon);
+        
+        Marker m = new Marker(toLatLng(locationInfo.getLatLng()), markerOptions);
+        m.addMarkerClickHandler(new DefaultMarkerClickHandler(location));
         return m;
     }
 
+    public void placeMarker(final Location location) {
+        Marker m = getMarker(location);
+        if (m == null) {
+        	
+            m = createMarker(location);
+            setMarker(location, m);
+            addOverlay(m);
+        	
+        } else {
+        	m.setImage(location.getLocationInfo().getImageURL());
+        }
+        
+    }
+
     private final class DefaultMarkerClickHandler implements MarkerClickHandler {
-        private final GoogleMapsLocation m_location;
+        private final Location m_location;
     
-        DefaultMarkerClickHandler(final GoogleMapsLocation location) {
+        DefaultMarkerClickHandler(final Location location) {
             m_location = location;
         }
     

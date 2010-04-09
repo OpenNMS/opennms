@@ -99,6 +99,11 @@ public class LocationInfo implements IsSerializable, Serializable {
 		return "LocationInfo[name=" + m_name + ",polling package=" + m_pollingPackage
 			+ ",area=" + m_area + ",geolocation=" + m_geolocation
 			+ ",coordinates=" + m_coordinates
-			+ ",monitorStatus=" + m_monitorStatus + ",applicationStatus=" + m_applicationStatus + "]";
+			+ ",monitorStatus=" + m_monitorStatus + ",applicationStatus=" + m_applicationStatus
+			+ ",imageURL=" + getImageURL() + "]";
 	}
+
+    public String getImageURL() {
+        return "images/icon-" + getMonitorStatus() + ".png";
+    }
 }

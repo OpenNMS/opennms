@@ -6,12 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
+import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.googlecode.gwtmapquest.transaction.MQASize;
 
 
 public class MapquestLocationManager extends AbstractLocationManager {
@@ -26,16 +30,29 @@ public class MapquestLocationManager extends AbstractLocationManager {
 	@Override
     protected void initializeMapWidget() {
         getPanel().add(m_mapPanel);
+        
+        m_mapPanel.addMapPanelBoundsChangedEventHandler(new MapPanelBoundsChangedEventHandler() {
+            
+            public void onBoundsChanged(MapPanelBoundsChangedEvent event) {
+                m_eventBus.fireEvent(new LocationsUpdatedEvent(MapquestLocationManager.this));
+            }
+        });
+        
+        m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, new LocationPanelSelectEventHandler() {
+
+            public void onLocationSelected(final LocationPanelSelectEvent event) {
+                selectLocation(event.getLocationName());
+            }
+        }); 
     }
 	
     @Override
     protected void initializationComplete() {
         super.initializationComplete();
-        m_mapPanel.updateSize();
+        m_mapPanel.getMapWidget().setSize(MQASize.newInstance(m_mapPanel.m_mapHolder.getOffsetWidth(), m_mapPanel.m_mapHolder.getOffsetHeight()));
     }
     
-    @Override
-    public void updateMarker(final Location location) {
+    public void updateMarker(final Location location, final LocationInfo info) {
 		final LocationInfo locationInfo = location.getLocationInfo();
 		final MapQuestLocation oldLocation = m_locations.get(locationInfo.getName());
 		addAndMergeLocation(oldLocation, new MapQuestLocation(location));
@@ -47,15 +64,12 @@ public class MapquestLocationManager extends AbstractLocationManager {
 		}
 
 
-		locationUpdateComplete(location);
-        if (!isLocationUpdateInProgress()) {
-        	checkAllVisibleLocations();
-        }
+        	m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
 	}
 
     private void placeMarker(MapQuestLocation location) {
         if(location.getMarker() == null) {
-            m_mapPanel.addOverlay(m_mapPanel.createMarker(location));
+            m_mapPanel.getMapWidget().addShape(m_mapPanel.createMarker(location));
         }else {
             m_mapPanel.createMarker(location);
         }
@@ -87,26 +101,10 @@ public class MapquestLocationManager extends AbstractLocationManager {
     }
 
 
-    private void checkAllVisibleLocations() {
-	    m_eventBus.fireEvent(new LocationsUpdatedEvent(this));
-	}
-
-	@Override
-	public void removeLocation(final Location location) {
-		if (location == null) return;
-		GWTLatLng latLng = location.getLocationInfo().getLatLng();
-		if (latLng == null) {
-			Log.warn("no lat/long for location " + location.getLocationInfo().getName());
-			return;
-		}
-		MapQuestLocation loc = new MapQuestLocation(location);
-		updateMarker(loc);
-	}
-
-	@Override
+    @Override
 	public void fitToMap() {
-		// TODO Auto-generated method stub
-
+		// TODO m_mapPanel.setBounds([getBounds]) Not yet implemented
+	    
 	}
 
 	@Override
@@ -137,6 +135,14 @@ public class MapquestLocationManager extends AbstractLocationManager {
 
 	@Override
 	public void reportError(String string, Throwable t) { }
+	
+	@Override
+    public void updateLocation(final LocationInfo info) {
+    	if (info == null) return;
+    	final BaseLocation l = new BaseLocation();
+    	l.setLocationInfo(info);
+    	updateMarker(l, info);
+    }
 
 
 	

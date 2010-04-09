@@ -22,7 +22,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
  	private GoogleMapsPanel m_mapPanel = new GoogleMapsPanel();
 
-	private final Map<String,GoogleMapsLocation> m_locations = new HashMap<String,GoogleMapsLocation>();
+	private final Map<String,BaseLocation> m_locations = new HashMap<String,BaseLocation>();
     private boolean updated = false;
 
 	public GoogleMapsLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel) {
@@ -53,7 +53,7 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
 	@Override
     public void selectLocation(String locationName) {
-        final GoogleMapsLocation location = m_locations.get(locationName);
+        final Location location = m_locations.get(locationName);
         if (location == null) {
             return;
         }
@@ -61,23 +61,11 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
     }
 
     @Override
-	public void removeLocation(final Location location) {
-		if (location == null) return;
-		GoogleMapsLocation loc = m_locations.get(location.getLocationInfo().getName());
-		if (loc.getMarker() != null) {
-			m_mapPanel.removeOverlay(loc.getMarker());
-		}
-		m_locations.remove(location.getLocationInfo().getName());
-	}
-
-    @Override
 	public void updateComplete() {
 		if (!updated) {
 			DeferredCommand.addPause();
 			DeferredCommand.addCommand(new IncrementalCommand() {
 				public boolean execute() {
-					if (isLocationUpdateInProgress())
-						return true;
 					fitToMap();
 					updated = true;
 					return false;
@@ -111,59 +99,38 @@ public class GoogleMapsLocationManager extends AbstractLocationManager {
 
     private GWTBounds getLocationBounds() {
         BoundsBuilder bldr = new BoundsBuilder();
-        for (BaseLocation l : m_locations.values()) {
+        for (Location l : m_locations.values()) {
             bldr.extend(l.getLocationInfo().getLatLng());
         }
         return bldr.getBounds();
     }
 
-
-	@Override
-	protected void updateMarker(final Location location) {
-		final LocationInfo locationInfo = location.getLocationInfo();
-        final GoogleMapsLocation oldLocation = m_locations.get(locationInfo.getName());
-        addAndMergeLocation(oldLocation, new GoogleMapsLocation(location));
-
-        if (oldLocation == null) {
-            placeMarker(m_locations.get(locationInfo.getName()));
-        } else if (!oldLocation.getLocationInfo().getMonitorStatus().equals(locationInfo.getMonitorStatus())) {
-            placeMarker(m_locations.get(locationInfo.getName()));
-        }
-
-        locationUpdateComplete(location);
-	}
-
-	private void placeMarker(final GoogleMapsLocation location) {
-		if (location.getMarker() == null) {
-		    m_mapPanel.addOverlay(m_mapPanel.createMarker(location));
-		} else {
-			m_mapPanel.createMarker(location);
-		}
-	}
-
-    private void addAndMergeLocation(final GoogleMapsLocation oldLocation, final GoogleMapsLocation newLocation) {
-        if(oldLocation != null) {
-            m_locations.put(newLocation.getLocationInfo().getName(), mergeLocations(oldLocation, newLocation));
-        }else {
-            m_locations.put(newLocation.getLocationInfo().getName(), newLocation);
-        }
+    @Override
+    public void updateLocation(final LocationInfo info) {
+        if (info == null) return;
+        
+        Location location = getLocation(info);
+        
+        m_mapPanel.placeMarker(location);
+        
     }
 
-	private GoogleMapsLocation mergeLocations(final GoogleMapsLocation oldLocation, final GoogleMapsLocation newLocation) {
-		if (newLocation.getLocationInfo().getMonitorStatus() == null)
-			newLocation.getLocationInfo().setMonitorStatus(oldLocation.getLocationInfo().getMonitorStatus());
-		if (newLocation.getLocationDetails().getLocationMonitorState() == null)
-			newLocation.getLocationDetails().setLocationMonitorState(oldLocation.getLocationDetails().getLocationMonitorState());
-		if (newLocation.getLocationInfo().getCoordinates() == null)
-			newLocation.getLocationInfo().setCoordinates(oldLocation.getLocationInfo().getCoordinates());
-		if (newLocation.getMarker() == null)
-			newLocation.setMarker(oldLocation.getMarker());
-		return newLocation;
-	}
-
+    private Location getLocation(final LocationInfo info) {
+        BaseLocation location = m_locations.get(info.getName());
+        if(location == null) {
+            location = new BaseLocation(info);
+            m_locations.put(info.getName(), location);
+        }else {
+            location.setLocationInfo(info);
+        }
+        return location;
+    }
+    
 	@Override
 	public void reportError(final String errorMessage, final Throwable throwable) {
 		// FIXME: implement error reporting in UI
 	}
+	
+	
 
 }
