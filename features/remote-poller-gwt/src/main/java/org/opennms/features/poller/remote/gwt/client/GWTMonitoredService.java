@@ -1,8 +1,11 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.io.Serializable;
+import java.util.Collection;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTMonitoredService implements IsSerializable {
+public class GWTMonitoredService implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	private int m_id;
@@ -12,6 +15,7 @@ public class GWTMonitoredService implements IsSerializable {
 	private String m_hostname;
 	private int m_nodeId;
 	private String m_serviceName;
+	private Collection<String> m_applications;
 
 	public void setId(final int id) {
 		m_id = id;
@@ -54,6 +58,12 @@ public class GWTMonitoredService implements IsSerializable {
 	}
 	public String getServiceName() {
 		return m_serviceName;
+	}
+	public Collection<String> getApplications() {
+		return m_applications;
+	}
+	public void setApplications(final Collection<String> applications) {
+		m_applications = applications;
 	}
 
 }

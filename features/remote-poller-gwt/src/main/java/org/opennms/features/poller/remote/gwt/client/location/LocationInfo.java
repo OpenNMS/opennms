@@ -19,7 +19,6 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private Status m_applicationStatus;
 	
 	public LocationInfo() {
-	    
 	}
 	
 	public LocationInfo(String name, String pollingPackage, String area, String geolocation, String coordinates) {

@@ -7,12 +7,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.poller.remote.gwt.client.ApplicationState;
 import org.opennms.features.poller.remote.gwt.client.BaseLocation;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor;
@@ -29,7 +29,9 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdat
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 import org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder;
 import org.opennms.features.poller.remote.gwt.server.geocoding.GeocoderException;
+import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -43,6 +45,7 @@ import de.novanic.eventservice.service.RemoteEventServiceServlet;
 
 public class LocationStatusServiceImpl extends RemoteEventServiceServlet implements LocationStatusService {
 	private static final long serialVersionUID = 1L;
+	private static final int AVAILABILITY_MS = 1000 * 60 * 60 * 24; // 1 day
 	private static final int UPDATE_PERIOD = 1000 * 60; // 1 minute
 	private static final int MAX_LOCATIONS_PER_EVENT = 50;
 	private WebApplicationContext m_context;
@@ -54,6 +57,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	private static volatile Timer myLocationTimer;
 	private static volatile Date lastUpdated;
 	private static volatile LocationMonitorDao m_locationDao;
+	private static volatile ApplicationDao m_applicationDao;
 	private static volatile String m_apiKey = null;
 
 	private void initializeContext() {
@@ -63,10 +67,14 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		}
 	}
 
-	private void initializeLocationDao() {
+	private void initializeDaos() {
 		if (m_locationDao == null) {
 			LogUtils.infof(this, "initializing location DAO");
 			m_locationDao = m_context.getBean(LocationMonitorDao.class);
+		}
+		if (m_applicationDao == null) {
+			LogUtils.infof(this, "initializing application DAO");
+			m_applicationDao = m_context.getBean(ApplicationDao.class);
 		}
 	}
 
@@ -94,7 +102,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	public void start() {
 		LogUtils.debugf(this, "starting location status service");
 		initializeContext();
-		initializeLocationDao();
+		initializeDaos();
 		initializeGeocoder();
 
 		if (myLocationTimer == null) {
@@ -113,7 +121,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 
 	public Location getLocation(final String locationName) {
 		initializeContext();
-		initializeLocationDao();
+		initializeDaos();
 		initializeGeocoder();
 		final BaseLocation l = new BaseLocation();
 		l.setLocationInfo(getLocation(m_locationDao.findMonitoringLocationDefinition(locationName)));
@@ -219,9 +227,9 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			def.setCoordinates(latLng.getCoordinates());
 		}
 
-		final LocationMonitorState lms = getLocationMonitorState(def);
+		final LocationDetails ld = getLocationDetails(def);
 		final LocationInfo locationInfo = new LocationInfo(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), latLng.getCoordinates());
-		locationInfo.setMonitorStatus(lms.getStatus());
+		locationInfo.setMonitorStatus(ld.getLocationMonitorState().getStatus());
 		LogUtils.debugf(this, "getLocation(OnmsMonitoringLocationDefinition) returning %s", locationInfo.toString());
 		return locationInfo;
 	}
@@ -258,19 +266,30 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		return latLng;
 	}
 
-	private LocationMonitorState getLocationMonitorState(OnmsMonitoringLocationDefinition def) {
-		final LocationUpdateTracker tracker = new LocationUpdateTracker(def.getName());
+	private LocationDetails getLocationDetails(OnmsMonitoringLocationDefinition def) {
+		final LocationDetails ld = new LocationDetails();
+		final MonitorStatusTracker mst = new MonitorStatusTracker(def.getName());
+		final ApplicationStatusTracker ast = new ApplicationStatusTracker(def.getName());
 
 		final Collection<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
+		final Collection<String> applications = new HashSet<String>();
 
 		for (OnmsLocationMonitor mon : m_locationDao.findByLocationDefinition(def)) {
 			monitors.add(transformLocationMonitor(mon));
 		}
-		for (OnmsLocationSpecificStatus status : m_locationDao.getAllMostRecentStatusChanges()) {
-			tracker.onStatus(status);
+		for (OnmsApplication app : m_applicationDao.findAll()) {
+			applications.add(app.getName());
 		}
 
-		return new LocationMonitorState(monitors, tracker.drain());
+		final Date now = new Date();
+		for (OnmsLocationSpecificStatus status : m_locationDao.getStatusChangesBetween(new Date(now.getTime() - AVAILABILITY_MS), now)) {
+			mst.onStatus(status);
+			ast.onStatus(status);
+		}
+
+		ld.setLocationMonitorState(new LocationMonitorState(monitors, mst.drain()));
+		ld.setApplicationState(new ApplicationState(applications, ast.drain()));
+		return ld;
 	}
 
 	private GWTLocationMonitor transformLocationMonitor(final OnmsLocationMonitor monitor) {
@@ -327,18 +346,18 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		m_locationDao = dao;
 	}
 
-	private class LocationUpdateTracker {
-		private transient final Set<OnmsLocationSpecificStatus> m_statuses = new HashSet<OnmsLocationSpecificStatus>();
+	private class MonitorStatusTracker {
+		private transient final Map<Integer,OnmsLocationSpecificStatus> m_statuses = new HashMap<Integer,OnmsLocationSpecificStatus>();
 		private transient final String m_locationName;
 
-		public LocationUpdateTracker(final String locationName) {
+		public MonitorStatusTracker(final String locationName) {
 			m_locationName = locationName;
 		}
 
 		public void onStatus(final OnmsLocationSpecificStatus status) {
 			if (status.getLocationMonitor().getDefinitionName().equals(m_locationName)) {
 				LogUtils.tracef(this, "(added) status code for %s/%s is %d", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
-				m_statuses.add(status);
+				m_statuses.put(status.getMonitoredService().getId(), status);
 			} else {
 				LogUtils.tracef(this, "(skipped) status code for %s/%s is %d", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
 			}
@@ -347,7 +366,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		public Collection<GWTLocationSpecificStatus> drain() {
 			final Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
 			synchronized(m_statuses) {
-				for (OnmsLocationSpecificStatus status : m_statuses) {
+				for (OnmsLocationSpecificStatus status : m_statuses.values()) {
 					statuses.add(transformLocationSpecificStatus(status));
 				}
 				m_statuses.clear();
@@ -355,4 +374,46 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			return statuses;
 		}
 	}
+
+	public class ApplicationStatusTracker {
+		private String m_name;
+		private Map<String,Collection<OnmsLocationSpecificStatus>> m_statuses = new HashMap<String,Collection<OnmsLocationSpecificStatus>>();
+		
+		public ApplicationStatusTracker(final String name) {
+			m_name = name;
+		}
+		
+		public void onStatus(final OnmsLocationSpecificStatus status) {
+			if (status.getLocationMonitor().getDefinitionName().equals(m_name)) {
+				LogUtils.tracef(this, "(added) status code for %s/%s is %d", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
+				for (OnmsApplication app : status.getMonitoredService().getApplications()) {
+					Collection<OnmsLocationSpecificStatus> statuses = m_statuses.get(app.getName());
+					if (statuses == null) {
+						statuses = new ArrayList<OnmsLocationSpecificStatus>();
+					}
+					statuses.add(status);
+					m_statuses.put(app.getName(), statuses);
+				}
+			} else {
+				LogUtils.tracef(this, "(skipped) status code for %s/%s is %d", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
+			}
+		}
+
+		public Map<String,Collection<GWTLocationSpecificStatus>> drain() {
+			final Map<String,Collection<GWTLocationSpecificStatus>> statuses = new HashMap<String,Collection<GWTLocationSpecificStatus>>();
+			synchronized(m_statuses) {
+				for (final String app : statuses.keySet()) {
+					final Collection<GWTLocationSpecificStatus> s = new ArrayList<GWTLocationSpecificStatus>();
+					for (OnmsLocationSpecificStatus status : m_statuses.get(app)) {
+						s.add(transformLocationSpecificStatus(status));
+					}
+					statuses.put(app, s);
+				}
+				m_statuses.clear();
+			}
+			return statuses;
+		}
+		
+	}
+
 }

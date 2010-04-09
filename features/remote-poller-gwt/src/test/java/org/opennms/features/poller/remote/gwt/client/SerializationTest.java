@@ -1,8 +1,11 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
@@ -70,11 +73,22 @@ public class SerializationTest {
 
 		LocationDetails details = new LocationDetails();
 		details.setLocationMonitorState(getLocationMonitorState());
+		details.setApplicationState(getApplicationState());
 
 		location.setLocationInfo(info);
 		location.setLocationDetails(details);
 
 		writer.writeObject(location);
+	}
+
+	private ApplicationState getApplicationState() {
+		final Collection<String> applications = new ArrayList<String>();
+		final Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		final Map<String,Collection<GWTLocationSpecificStatus>> applicationStatuses = new HashMap<String,Collection<GWTLocationSpecificStatus>>();
+		applications.add("TestApp1");
+		applicationStatuses.put("TestApp1", statuses);
+		statuses.add(getLocationSpecificStatus());
+		return new ApplicationState(applications, applicationStatuses);
 	}
 
 	private LocationMonitorState getLocationMonitorState() {
@@ -91,6 +105,7 @@ public class SerializationTest {
 		status.setLocationMonitor(getMonitor());
 		status.setMonitoredService(getMonitoredService());
 		status.setPollResult(getPollResult());
+		status.setPollTime(new Date());
 		return status;
 	}
 
@@ -112,6 +127,7 @@ public class SerializationTest {
 		service.setIpInterfaceId(2);
 		service.setNodeId(3);
 		service.setServiceName("HTTP");
+		service.setApplications(Arrays.asList("TestApp1","TestApp3"));
 		return service;
 	}
 
