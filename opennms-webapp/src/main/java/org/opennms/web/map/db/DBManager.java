@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -47,7 +48,6 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.config.MapPropertiesFactory;
 
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VMapInfo;
@@ -188,110 +188,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public synchronized void saveMaps(Map[] m) throws MapsException {
-        Connection conn = startSession();
-
-        try {
-            log.debug("saving maps");
-
-            for (int i = 0, n = m.length; i < n; i++) {
-                saveMapInSession(m[i], conn);
-            }
-        } catch (Exception e) {
-            log.error("Error while saving maps ");
-            rollback(conn);
-        } finally {
-            endSession(conn);
-        }
-    }
-
-    private synchronized void saveMapInSession(Map m, Connection conn)
-            throws MapsException {
-        log.debug("saving map...");
-        final String sqlGetCurrentTimestamp = "SELECT CURRENT_TIMESTAMP";
-        final String sqlGetMapNxtId = "SELECT nextval('mapnxtid')";
-        final String sqlInsertQuery = "INSERT INTO "
-                + mapTable
-                + " (mapid, mapname, mapbackground, mapowner, mapcreatetime, mapaccess, userlastmodifies, lastmodifiedtime, mapscale, mapxoffset, mapyoffset, maptype, mapwidth, mapheight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        final String sqlUpdateQuery = "UPDATE "
-                + mapTable
-                + " SET mapname = ?, mapbackground = ?, mapowner = ?, mapaccess = ?, userlastmodifies = ?, lastmodifiedtime = ?, mapscale = ?, mapxoffset = ?, mapyoffset = ?, maptype = ? , mapwidth = ?, mapheight = ? WHERE mapid = ?";
-        Timestamp currentTimestamp = null;
-        int nxtid = 0;
-
-        int count = -1;
-
-        try {
-            Statement stmtCT = conn.createStatement();
-            ResultSet rs = stmtCT.executeQuery(sqlGetCurrentTimestamp);
-            if (rs.next()) {
-                currentTimestamp = rs.getTimestamp(1);
-                PreparedStatement statement;
-                if (m.isNew()) {
-                    Statement stmtID = conn.createStatement();
-                    ResultSet rsStmt = stmtID.executeQuery(sqlGetMapNxtId);
-                    if (rsStmt.next()) {
-                        nxtid = rsStmt.getInt(1);
-                    }
-                    rsStmt.close();
-                    stmtID.close();
-
-                    statement = conn.prepareStatement(sqlInsertQuery);
-                    statement.setInt(1, nxtid);
-                    statement.setString(2, m.getName());
-                    statement.setString(3, m.getBackground());
-                    statement.setString(4, m.getOwner());
-                    statement.setTimestamp(5, currentTimestamp);
-                    statement.setString(6, m.getAccessMode());
-                    statement.setString(7, m.getUserLastModifies());
-                    statement.setTimestamp(8, currentTimestamp);
-                    statement.setDouble(9, m.getScale());
-                    statement.setInt(10, m.getOffsetX());
-                    statement.setInt(11, m.getOffsetY());
-                    statement.setString(12, m.getType());
-                    statement.setInt(13, m.getWidth());
-                    statement.setInt(14, m.getHeight());
-                } else {
-                    statement = conn.prepareStatement(sqlUpdateQuery);
-                    statement.setString(1, m.getName());
-                    statement.setString(2, m.getBackground());
-                    statement.setString(3, m.getOwner());
-                    statement.setString(4, m.getAccessMode());
-                    statement.setString(5, m.getUserLastModifies());
-                    statement.setTimestamp(6, currentTimestamp);
-                    statement.setDouble(7, m.getScale());
-                    statement.setInt(8, m.getOffsetX());
-                    statement.setInt(9, m.getOffsetY());
-                    statement.setString(10, m.getType());
-                    statement.setInt(11, m.getWidth());
-                    statement.setInt(12, m.getHeight());
-                    statement.setInt(13, m.getId());
-                }
-                count = statement.executeUpdate();
-
-                statement.close();
-            }
-            rs.close();
-            stmtCT.close();
-        } catch (SQLException ex) {
-            log.error("Error while saving map");
-            throw new MapsException(ex);
-
-        }
-
-        if (count == 0) {
-            log.warn("Called saveMap() on deleted map");
-            throw new MapsException("Called saveMap() on deleted map");
-        }
-        if (m.isNew()) {
-            m.setId(nxtid);
-            m.setCreateTime(currentTimestamp);
-            m.setAsNew(false);
-        }
-        m.setLastModifiedTime(currentTimestamp);
-    }
-
-    public synchronized void saveMap(Map m) throws MapsException {
+    public synchronized int saveMap(DbMap m, Collection<DbElement> e) throws MapsException {
         log.debug("saving map...");
         Connection conn = startSession();
         final String sqlGetCurrentTimestamp = "SELECT CURRENT_TIMESTAMP";
@@ -354,6 +251,21 @@ public class DBManager extends Manager {
                     statement.setInt(13, m.getId());
                 }
                 count = statement.executeUpdate();
+                if (count == 0) {
+                    log.warn("Called saveMap() on deleted map");
+                    throw new MapsException("Called saveMap() on deleted map");
+                }
+                if (m.isNew()) {
+                    for (DbElement dbe : e) {
+                        dbe.setMapId(nxtid);
+                        saveElementInSession(dbe, conn);
+                    }
+                } else {
+                    deleteElementsOfMapInSession(m.getId(),conn);
+                    for (DbElement dbe : e) {
+                        saveElementInSession(dbe, conn);
+                    }
+                }
 
                 statement.close();
             }
@@ -366,38 +278,12 @@ public class DBManager extends Manager {
         } finally {
             endSession(conn);
         }
-
-        if (count == 0) {
-            log.warn("Called saveMap() on deleted map");
-            throw new MapsException("Called saveMap() on deleted map");
-        }
-        if (m.isNew()) {
-            m.setId(nxtid);
-            m.setCreateTime(currentTimestamp);
-            m.setAsNew(false);
-        }
-        m.setLastModifiedTime(currentTimestamp);
+        if (m.isNew())
+                return nxtid;
+        else return m.getId();
     }
 
-    public synchronized void saveElements(Element[] e) throws MapsException {
-        Connection conn = startSession();
-        try {
-            log.debug("saving elements");
-            if (e != null) {
-                for (int i = 0, n = e.length; i < n; i++) {
-                    saveElementInSession(e[i], conn);
-                }
-            }
-        } catch (Exception ex) {
-            log.error("error while saving elements");
-            rollback(conn);
-            throw new MapsException(ex);
-        } finally {
-            endSession(conn);
-        }
-    }
-
-    private synchronized void saveElementInSession(Element e, Connection conn)
+    private synchronized void saveElementInSession(DbElement e, Connection conn)
             throws MapsException {
         log.debug("saving element: " +e.getId()+e.getType());
 
@@ -451,7 +337,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public synchronized void saveElement(Element e) throws MapsException {
+    public synchronized void saveElement(DbElement e) throws MapsException {
         log.debug("saving element");
         Connection conn = startSession();
 
@@ -509,7 +395,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public synchronized void deleteElements(Element[] elems)
+    public synchronized void deleteElements(DbElement[] elems)
             throws MapsException {
         log.debug("deleting elements...");
         Connection conn = startSession();
@@ -530,7 +416,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public synchronized void deleteElement(Element e) throws MapsException {
+    public synchronized void deleteElement(DbElement e) throws MapsException {
         log.debug("deleting element...");
         if (e != null) {
             deleteElement(e.getId(), e.getMapId(), e.getType());
@@ -585,9 +471,8 @@ public class DBManager extends Manager {
         }
     }
 
-    public synchronized void deleteElementsOfMap(int id) throws MapsException {
+    private synchronized void deleteElementsOfMapInSession(int id, Connection conn) throws MapsException {
         log.debug("deleting elements of map...");
-        Connection conn = startSession();
         final String sqlDelete = "DELETE FROM " + elementTable
                 + " WHERE mapid = ?";
 
@@ -600,14 +485,7 @@ public class DBManager extends Manager {
             log.error("Error while deleting elements of map " + id);
             rollback(conn);
             throw new MapsException(e);
-        } finally {
-            endSession(conn);
         }
-    }
-
-    public synchronized int deleteMap(Map m) throws MapsException {
-        log.debug("deleting map...");
-        return deleteMap(m.getId());
     }
 
     public synchronized int deleteMap(int id) throws MapsException {
@@ -619,7 +497,7 @@ public class DBManager extends Manager {
         try {
             PreparedStatement statement = conn.prepareStatement(sqlDeleteMap);
             statement.setInt(1, id);
-            statement.setString(2, Map.AUTOMATICALLY_GENERATED_MAP);
+            statement.setString(2, MapsConstants.AUTOMATICALLY_GENERATED_MAP);
             countDelete = statement.executeUpdate();
             statement.close();
             return countDelete;
@@ -641,7 +519,7 @@ public class DBManager extends Manager {
 
         try {
             PreparedStatement statement = conn.prepareStatement(sqlDelete);
-            statement.setString(1, Element.NODE_TYPE);
+            statement.setString(1, MapsConstants.NODE_TYPE);
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -663,7 +541,7 @@ public class DBManager extends Manager {
 
         try {
             PreparedStatement statement = conn.prepareStatement(sqlDelete);
-            statement.setString(1, Element.MAP_TYPE);
+            statement.setString(1, MapsConstants.MAP_TYPE);
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -675,7 +553,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Element getElement(int id, int mapId, String type)
+    public DbElement getElement(int id, int mapId, String type)
             throws MapsException {
         Connection conn = createConnection();
 
@@ -689,7 +567,7 @@ public class DBManager extends Manager {
             statement.setInt(2, mapId);
             statement.setString(3, type);
             ResultSet rs = statement.executeQuery();
-            Element el = rs2Element(rs);
+            DbElement el = rs2Element(rs);
             rs.close();
             statement.close();
 
@@ -703,9 +581,9 @@ public class DBManager extends Manager {
         }
     }
 
-    public Element newElement(int id, int mapId, String type)
+    public DbElement newElement(int id, int mapId, String type)
             throws MapsException {
-        Element e = new Element(mapId, id, type, null, null, 0, 0);
+        DbElement e = new DbElement(mapId, id, type, null, null, 0, 0);
         e = completeElement(e);
         log.debug("Creating new VElement mapId:" + mapId + " id:" + id
                 + " type:" + type + " label:" + e.getLabel() + " iconname:"
@@ -720,13 +598,12 @@ public class DBManager extends Manager {
      * @param e
      * @return the element completed of label and icon name
      */
-    private Element completeElement(Element e) throws MapsException {
+    private DbElement completeElement(DbElement e) throws MapsException {
 
         Connection conn = createConnection();
         String sqlQuery = null;
         try {
-            if (e.getType().equals(Element.MAP_TYPE)) {
-                e.setIcon(Element.defaultMapIcon);
+            if (e.getType().equals(MapsConstants.MAP_TYPE)) {
                 sqlQuery = "SELECT mapname FROM " + mapTable
                         + " WHERE mapId = ?";
             } else {
@@ -737,17 +614,11 @@ public class DBManager extends Manager {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 e.setLabel(getLabel(rs.getString(1)));
-                if (e.getType().equals(Element.NODE_TYPE)) {
-                    String iconName = null;
-                    if (rs.getString(2) != null
-                            && getIconBySysoid(rs.getString(2)) != null) {
-                        iconName = getIconBySysoid(rs.getString(2));
-                    } else {
-                        iconName = Element.defaultNodeIcon;
+                if (e.getType().equals(MapsConstants.NODE_TYPE)) {
+                    if (rs.getString(2) != null) {
+                        log.debug("DBManager: sysoid = " + rs.getString(2));
+                        e.setSysoid(rs.getString(2));
                     }
-                    log.debug("DBManager: iconName = " + iconName
-                            + ", sysoid = " + rs.getString(2));
-                    e.setIcon(iconName);
                 }
             }
             rs.close();
@@ -764,41 +635,21 @@ public class DBManager extends Manager {
         return e;
     }
 
-    private String getIconBySysoid(String sysoid) throws MapsException {
-        try {
-            MapPropertiesFactory mpf = new MapPropertiesFactory();
-            java.util.Map<String, String> iconsBySysoid = mpf.getIconsBySysoid();
-            if (iconsBySysoid != null) {
-                log.debug("getIconBySysoid: sysoid = " + sysoid);
-                for (String key : iconsBySysoid.keySet()) {
-                    log.debug("getIconBySysoid: key = " + key);
-                    if (key.equals(sysoid)) {
-                        log.debug("getIconBySysoid: iconBySysoid = "
-                                + iconsBySysoid.get(key));
-                        return iconsBySysoid.get(key);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("Exception while getting icons by sysoid");
-            throw new MapsException(e);
-        }
-        return Element.defaultNodeIcon;
-    }
-
-    public Element[] getAllElements() throws MapsException {
+    public DbElement[] getAllElements() throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + elementTable;
 
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(sqlQuery);
-            Vector<Element> elements = rs2ElementVector(rs);
-            Element[] el = new Element[elements.size()];
-            el = elements.toArray(el);
+            Vector<DbElement> elements = rs2ElementVector(rs);
             rs.close();
             statement.close();
-            // conn.close();
+
+            if (elements == null) 
+                return new DbElement[0];
+            DbElement[] el = new DbElement[elements.size()];
+            el = elements.toArray(el);
             return el;
         } catch (Exception e) {
             log.error("Exception while getting all elements");
@@ -808,7 +659,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Element[] getElementsOfMap(int mapid) throws MapsException {
+    public DbElement[] getElementsOfMap(int mapid) throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + elementTable
@@ -817,10 +668,10 @@ public class DBManager extends Manager {
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, mapid);
             ResultSet rs = statement.executeQuery();
-            Vector<Element> elements = rs2ElementVector(rs);
-            Element[] el = null;
+            Vector<DbElement> elements = rs2ElementVector(rs);
+            DbElement[] el = null;
             if (elements != null) {
-                el = new Element[elements.size()];
+                el = new DbElement[elements.size()];
                 el = elements.toArray(el);
             }
             rs.close();
@@ -835,7 +686,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Element[] getNodeElementsOfMap(int mapid) throws MapsException {
+    public DbElement[] getNodeElementsOfMap(int mapid) throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + elementTable
@@ -843,10 +694,10 @@ public class DBManager extends Manager {
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, mapid);
             ResultSet rs = statement.executeQuery();
-            Vector<Element> elements = rs2ElementVector(rs);
-            Element[] el = null;
+            Vector<DbElement> elements = rs2ElementVector(rs);
+            DbElement[] el = null;
             if (elements != null) {
-                el = new Element[elements.size()];
+                el = new DbElement[elements.size()];
                 el = elements.toArray(el);
             }
             rs.close();
@@ -861,7 +712,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Element[] getMapElementsOfMap(int mapid) throws MapsException {
+    public DbElement[] getMapElementsOfMap(int mapid) throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + elementTable
@@ -870,10 +721,10 @@ public class DBManager extends Manager {
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, mapid);
             ResultSet rs = statement.executeQuery();
-            Vector<Element> elements = rs2ElementVector(rs);
-            Element[] el = null;
+            Vector<DbElement> elements = rs2ElementVector(rs);
+            DbElement[] el = null;
             if (elements != null) {
-                el = new Element[elements.size()];
+                el = new DbElement[elements.size()];
                 el = elements.toArray(el);
             }
             rs.close();
@@ -888,7 +739,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Element[] getElementsLike(String elementLabel)
+    public DbElement[] getElementsLike(String elementLabel)
             throws MapsException {
         Connection conn = createConnection();
         try {
@@ -899,8 +750,8 @@ public class DBManager extends Manager {
             elementLabel = "%" + elementLabel + "%";
             statement.setString(1, elementLabel);
             ResultSet rs = statement.executeQuery();
-            Vector<Element> elements = rs2ElementVector(rs);
-            Element[] el = new Element[elements.size()];
+            Vector<DbElement> elements = rs2ElementVector(rs);
+            DbElement[] el = new DbElement[elements.size()];
             el = elements.toArray(el);
             rs.close();
             statement.close();
@@ -922,7 +773,7 @@ public class DBManager extends Manager {
             String sqlQuery = "select elementid,mapid from " + elementTable
                     + " where elementtype=?";
             PreparedStatement ps = conn.prepareStatement(sqlQuery);
-            ps.setString(1, Element.MAP_TYPE);
+            ps.setString(1, MapsConstants.MAP_TYPE);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Integer parentId = new Integer(rs.getInt("mapid"));
@@ -972,7 +823,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Map getMap(int id) throws MapsException {
+    public DbMap getMap(int id) throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + mapTable
@@ -980,7 +831,7 @@ public class DBManager extends Manager {
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
-            Map map = rs2Map(rs);
+            DbMap map = rs2Map(rs);
             rs.close();
             statement.close();
 
@@ -993,7 +844,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Map[] getMaps(String mapname, String maptype) throws MapsException {
+    public DbMap[] getMaps(String mapname, String maptype) throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + mapTable
@@ -1002,11 +853,11 @@ public class DBManager extends Manager {
             statement.setString(1, mapname);
             statement.setString(2, maptype);
             ResultSet rs = statement.executeQuery();
-            Vector<Map> maps = rs2MapVector(rs);
-            Map[] el = null;
+            Vector<DbMap> maps = rs2MapVector(rs);
+            DbMap[] el = null;
             if (maps != null) {
-                el = new Map[maps.size()];
-                el = (Map[]) maps.toArray(el);
+                el = new DbMap[maps.size()];
+                el = (DbMap[]) maps.toArray(el);
             }
             rs.close();
             statement.close();
@@ -1020,17 +871,17 @@ public class DBManager extends Manager {
         }
     }
 
-    public Map[] getAllMaps() throws MapsException {
+    public DbMap[] getAllMaps() throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + mapTable;
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(sqlQuery);
-            Vector<Map> maps = rs2MapVector(rs);
+            Vector<DbMap> maps = rs2MapVector(rs);
 
-            Map[] el = null;
+            DbMap[] el = null;
             if (maps != null) {
-                el = new Map[maps.size()];
+                el = new DbMap[maps.size()];
                 el = maps.toArray(el);
             }
             rs.close();
@@ -1044,7 +895,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Map[] getMapsLike(String mapLabel) throws MapsException {
+    public DbMap[] getMapsLike(String mapLabel) throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + mapTable
@@ -1054,10 +905,10 @@ public class DBManager extends Manager {
             mapLabel = "%" + mapLabel + "%";
             statement.setString(1, mapLabel);
             ResultSet rs = statement.executeQuery();
-            Vector<Map> mapVector = rs2MapVector(rs);
-            Map[] maps = null;
+            Vector<DbMap> mapVector = rs2MapVector(rs);
+            DbMap[] maps = null;
             if (mapVector != null) {
-                maps = new Map[mapVector.size()];
+                maps = new DbMap[mapVector.size()];
                 maps = mapVector.toArray(maps);
             }
             rs.close();
@@ -1073,7 +924,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Map[] getMapsByName(String mapLabel) throws MapsException {
+    public DbMap[] getMapsByName(String mapLabel) throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT * FROM " + mapTable
@@ -1082,10 +933,10 @@ public class DBManager extends Manager {
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
             statement.setString(1, mapLabel);
             ResultSet rs = statement.executeQuery();
-            Vector<Map> mapVector = rs2MapVector(rs);
-            Map[] maps = null;
+            Vector<DbMap> mapVector = rs2MapVector(rs);
+            DbMap[] maps = null;
             if (mapVector != null) {
-                maps = new Map[mapVector.size()];
+                maps = new DbMap[mapVector.size()];
                 maps = mapVector.toArray(maps);
             }
             rs.close();
@@ -1101,7 +952,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public Map[] getContainerMaps(int id, String type) throws MapsException {
+    public DbMap[] getContainerMaps(int id, String type) throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = "SELECT " + mapTable + ".* FROM "
@@ -1113,8 +964,8 @@ public class DBManager extends Manager {
             statement.setInt(1, id);
             statement.setString(2, type);
             ResultSet rs = statement.executeQuery();
-            Vector<Map> el = rs2MapVector(rs);
-            Map[] maps = new Map[el.size()];
+            Vector<DbMap> el = rs2MapVector(rs);
+            DbMap[] maps = new DbMap[el.size()];
             maps = el.toArray(maps);
             rs.close();
             statement.close();
@@ -1217,7 +1068,7 @@ public class DBManager extends Manager {
 
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
             statement.setString(1, owner);
-            statement.setString(2, Map.ACCESS_MODE_GROUP);
+            statement.setString(2, MapsConstants.ACCESS_MODE_GROUP);
             ResultSet rs = statement.executeQuery();
             Vector<VMapInfo> mapVector = rs2MapMenuVector(rs);
             VMapInfo[] maps = null;
@@ -1246,7 +1097,7 @@ public class DBManager extends Manager {
 
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
             statement.setString(1, group);
-            statement.setString(2, Map.ACCESS_MODE_GROUP);
+            statement.setString(2, MapsConstants.ACCESS_MODE_GROUP);
             ResultSet rs = statement.executeQuery();
             Vector<VMapInfo> mapVector = rs2MapMenuVector(rs);
             VMapInfo[] maps = null;
@@ -1274,8 +1125,8 @@ public class DBManager extends Manager {
                     + "upper( mapaccess ) = upper( ? )";
 
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
-            statement.setString(1, Map.ACCESS_MODE_ADMIN);
-            statement.setString(2, Map.ACCESS_MODE_USER);
+            statement.setString(1, MapsConstants.ACCESS_MODE_ADMIN);
+            statement.setString(2, MapsConstants.ACCESS_MODE_USER);
             ResultSet rs = statement.executeQuery();
             Vector<VMapInfo> mapVector = rs2MapMenuVector(rs);
             VMapInfo[] maps = null;
@@ -1297,7 +1148,7 @@ public class DBManager extends Manager {
     public boolean isElementInMap(int elementId, int mapId, String type)
             throws MapsException {
         try {
-            Element element = null;
+            DbElement element = null;
             element = getElement(elementId, mapId, type);
             return (element != null);
         } catch (Exception e) {
@@ -1305,7 +1156,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public VElementInfo[] getAllElementInfo() throws MapsException {
+    public Vector<VElementInfo> getAllElementInfo() throws MapsException {
         Connection conn = createConnection();
         try {
             final String sqlQuery = " SELECT  nodeid,nodelabel FROM node WHERE nodetype!='D'";
@@ -1323,14 +1174,9 @@ public class DBManager extends Manager {
                                                                                               + ")");
                 elements.add(ei);
             }
-            VElementInfo[] el = null;
-            if (elements != null) {
-                el = new VElementInfo[elements.size()];
-                el = elements.toArray(el);
-            }
             rs.close();
             statement.close();
-            return el;
+            return elements;
         } catch (Exception e) {
             log.error("Exception while getting all element infos", e);
             throw new MapsException(e);
@@ -1339,7 +1185,7 @@ public class DBManager extends Manager {
         }
     }
 
-    public VElementInfo[] getElementInfoLike(String like)
+    public Vector<VElementInfo> getElementInfoLike(String like)
             throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1359,14 +1205,9 @@ public class DBManager extends Manager {
                                                                                               + ")");
                 elements.add(ei);
             }
-            VElementInfo[] el = null;
-            if (elements != null) {
-                el = new VElementInfo[elements.size()];
-                el = elements.toArray(el);
-            }
             rs.close();
             statement.close();
-            return el;
+            return elements;
         } catch (Exception e) {
             log.error("Exception while getting element infos like " + like, e);
             throw new MapsException(e);
@@ -1403,7 +1244,7 @@ public class DBManager extends Manager {
 
     }
 
-    public java.util.Map<Integer, Double> getAvails(Element[] mapElements)
+    public java.util.Map<Integer, Double> getAvails(DbElement[] mapElements)
             throws MapsException {
         // get avails for all nodes in map and its submaps
         java.util.Map<Integer, Double> availsMap = null;
@@ -1555,7 +1396,7 @@ public class DBManager extends Manager {
      * recursively gets all nodes contained by elem and its submaps (if elem
      * is a map)
      */
-    public Set<Integer> getNodeidsOnElement(Element elem)
+    public Set<Integer> getNodeidsOnElement(DbElement elem)
             throws MapsException {
         Set<Integer> elementNodeIds = new HashSet<Integer>();
         if (elem.isNode()) {
@@ -1564,14 +1405,14 @@ public class DBManager extends Manager {
             // elementNodeIds.addAll(getNodesFromParentNode(elem.getId()));
         } else if (elem.isMap()) {
             int curMapId = elem.getId();
-            Element[] elemNodeElems = getNodeElementsOfMap(curMapId);
+            DbElement[] elemNodeElems = getNodeElementsOfMap(curMapId);
             if (elemNodeElems != null && elemNodeElems.length > 0) {
                 for (int i = 0; i < elemNodeElems.length; i++) {
                     elementNodeIds.add(new Integer(elemNodeElems[i].getId()));
                 }
             }
 
-            Element[] elemMapElems = getMapElementsOfMap(curMapId);
+            DbElement[] elemMapElems = getMapElementsOfMap(curMapId);
             if (elemMapElems != null && elemMapElems.length > 0) {
                 for (int i = 0; i < elemMapElems.length; i++) {
                     elementNodeIds.addAll(getNodeidsOnElement(elemMapElems[i]));
@@ -1582,15 +1423,15 @@ public class DBManager extends Manager {
 
     }
 
-    private Vector<Map> rs2MapVector(ResultSet rs) throws SQLException {
-        Vector<Map> mapVec = null;
+    private Vector<DbMap> rs2MapVector(ResultSet rs) throws SQLException {
+        Vector<DbMap> mapVec = null;
         boolean firstTime = true;
         while (rs.next()) {
             if (firstTime) {
-                mapVec = new Vector<Map>();
+                mapVec = new Vector<DbMap>();
                 firstTime = false;
             }
-            Map currMap = new Map();
+            DbMap currMap = new DbMap();
             currMap.setAccessMode(rs.getString("mapAccess"));
             currMap.setBackground(rs.getString("mapBackGround"));
             currMap.setId(rs.getInt("mapId"));
@@ -1638,10 +1479,10 @@ public class DBManager extends Manager {
         return map;
     }
 
-    private Map rs2Map(ResultSet rs) throws SQLException {
-        Map map = null;
+    private DbMap rs2Map(ResultSet rs) throws SQLException {
+        DbMap map = null;
         if (rs.next()) {
-            map = new Map();
+            map = new DbMap();
             map.setAccessMode(rs.getString("mapAccess"));
             map.setBackground(rs.getString("mapBackGround"));
             map.setId(rs.getInt("mapId"));
@@ -1662,11 +1503,11 @@ public class DBManager extends Manager {
         return map;
     }
 
-    private Element rs2Element(ResultSet rs) throws SQLException,
+    private DbElement rs2Element(ResultSet rs) throws SQLException,
             MapsException {
-        Element element = null;
+        DbElement element = null;
         if (rs.next()) {
-            element = new Element();
+            element = new DbElement();
             element.setMapId(rs.getInt("mapId"));
             element.setId(rs.getInt("elementId"));
             element.setType(rs.getString("elementType"));
@@ -1678,16 +1519,16 @@ public class DBManager extends Manager {
         return element;
     }
 
-    private Vector<Element> rs2ElementVector(ResultSet rs)
+    private Vector<DbElement> rs2ElementVector(ResultSet rs)
             throws SQLException, MapsException {
-        Vector<Element> vecElem = null;
+        Vector<DbElement> vecElem = null;
         boolean firstTime = true;
         while (rs.next()) {
             if (firstTime) {
-                vecElem = new Vector<Element>();
+                vecElem = new Vector<DbElement>();
                 firstTime = false;
             }
-            Element currElem = new Element();
+            DbElement currElem = new DbElement();
             currElem.setMapId(rs.getInt("mapId"));
             currElem.setId(rs.getInt("elementId"));
             currElem.setType(rs.getString("elementType"));
@@ -2050,11 +1891,11 @@ public class DBManager extends Manager {
             throws MapsException {
         log.debug("isElementNotDeleted: elementId=" + elementId + " type= "
                 + type);
-        if (type.equals(Element.MAP_TYPE)) {
+        if (type.equals(MapsConstants.MAP_TYPE)) {
             log.debug("isElementNotDeleted: elementId=" + elementId
                     + " type= " + type);
             return isMapInRow(elementId);
-        } else if (type.equals(Element.NODE_TYPE)) {
+        } else if (type.equals(MapsConstants.NODE_TYPE)) {
             log.debug("isElementNotDeleted: elementId=" + elementId
                     + " type= " + type);
             return isNodeInRow(elementId);

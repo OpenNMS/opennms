@@ -50,6 +50,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 
+import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.view.*;
 
@@ -64,7 +65,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * proper session objects to use when working with maps
  * 
  */
-public class AddMapsController implements Controller {
+public class SearchMapsController implements Controller {
 	Category log;
 
 	private Manager manager;
@@ -82,46 +83,78 @@ public class AddMapsController implements Controller {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-		String elems = request.getParameter("elems");
-		log.debug("Adding Maps: elems="+elems );
+	    int mapWidth = WebSecurityUtils.safeParseInt(request
+	                                                   .getParameter("MapWidth"));
+        int mapHeight = WebSecurityUtils.safeParseInt(request
+	                                                       .getParameter("MapHeight"));
+
+        log.debug("Current mapWidth=" + mapWidth + " and MapHeight=" + mapHeight);
+
+        int d = WebSecurityUtils.safeParseInt(request
+                                                     .getParameter("MapElemDimension"));
+        
+        log.debug("default element dimension: "+d );
+
+
+        String elems = request.getParameter("elems");
+        log.debug("Adding Searching Maps: elems="+elems );
+
+
+        int n = mapWidth /4/d;
+        int k = mapHeight/2/d;
+        log.debug("Max number of element on the row: "+n );
+        log.debug("Max number of element in the map: "+n * k );
+
+        String[] smapids = elems.split(",");
+
+        log.debug("Map Element to add to the Search Map: " + smapids.length);
+
+        while (smapids.length > n*k) {
+            log.info("the map dimension is too big: resizing");
+            d = d - 5;
+            log.info("new element dimension: " + d);
+            n = mapWidth /4/d;
+            k = mapHeight/2/d;
+            log.debug("Recalculated - Max number of element on the row: "+n );
+            log.debug("Recalculated - Max number of element in the map: "+n * k );
+        }
 		
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
+                                                                      .getOutputStream(), "UTF-8"));
 		try {
-			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				log.warn("Cannot add maps because not admin role for user: " + request.getRemoteUser() );
-				throw new MapsException("User has not role admin");
-			}
-			VMap map = manager.openMap();
             List<VElement> velems = new ArrayList<VElement>();
             // response for addElement
-            List<Integer> mapsWithLoop = new ArrayList<Integer>();
-			log.debug("Got map from manager "+map);
 			
-			log.debug("Adding maps by id: "+ elems);
-			String[] smapids = elems.split(",");
+			int x = -1;
+            int y = 0;
+            int s = 1;
 
 			for (int i = 0; i<smapids.length;i++) {
-			    Integer id = new Integer(smapids[i]);
-				if (map.containsElement(id, MapsConstants.MAP_TYPE)) {
-					log.debug(" Map Contains Element: " + id+MapsConstants.MAP_TYPE);
-					continue;
-					
-				}
-				boolean foundLoop = manager.foundLoopOnMaps(map,id);
 
-				if(foundLoop) {
-					mapsWithLoop.add(id);
-				} else {
-				    velems.add(manager.newElement(map.getId(),id, MapsConstants.MAP_TYPE));
-				}
+			    if (x < n) {
+			        x++;
+			    } else {
+	               y++;
+       		        if (s==1) {
+       		            x=1;
+       		            s--;
+       		        } else {
+                        x=0;
+                        s++;
+       		        }
+			    }
+			    velems.add(manager.newElement(MapsConstants.SEARCH_MAP, new Integer(smapids[i]), MapsConstants.MAP_TYPE, null, x*4*d+s*2*d, y*2*d+d));
 			} // end for
 
 			//get map
-			map = manager.addElements(map, velems);
-			bw.write(ResponseAssembler.getAddElementResponse(mapsWithLoop,velems,map.getLinks().values()));
+            VMap map = manager.searchMap(request
+                                         .getRemoteUser(), request.getRemoteUser(),
+                                         mapWidth, mapHeight,velems);
+            log.debug("Got search map from manager "+map);
+			bw.write(ResponseAssembler.getMapResponse(map));
 		} catch (Exception e) {
 			log.error("Error while adding Maps: ",e);
-			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.ADDMAPS_ACTION));
+			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SEARCHMAPS_ACTION));
 		} finally {
 			bw.close();
 		}

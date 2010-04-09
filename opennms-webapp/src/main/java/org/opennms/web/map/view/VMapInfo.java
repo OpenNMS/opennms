@@ -43,11 +43,10 @@ package org.opennms.web.map.view;
  * Preferences - Java - Code Style - Code Templates
  */
 final public class VMapInfo {
-	public static final String DEFAULT_NAME = "NewMap";
 
-    private int id = -2;
-    private String name = DEFAULT_NAME;
-    private String owner = "admin";
+    private int id;
+    private String name;
+    private String owner;
 
 
 	/**

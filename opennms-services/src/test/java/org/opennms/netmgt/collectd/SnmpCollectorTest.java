@@ -68,6 +68,7 @@ import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,6 +135,8 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);
+        
+        RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
         OnmsIpInterface iface = null;
         OnmsNode testNode = null;

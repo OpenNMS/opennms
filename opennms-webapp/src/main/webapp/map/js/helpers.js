@@ -33,19 +33,6 @@ function replaceSpecialChars(myString) {
 		return myString;
 }
 
-function assArrayPopulate(arrayKeys,arrayValues) {
-	var returnArray = new Array();
-	if (arrayKeys.length != arrayValues.length) {
-		alert("Error: arrays do not have same length");
-	}
-	else {
-		for (i=0;i<arrayKeys.length;i++) {
-			returnArray[arrayKeys[i]] = arrayValues[i];
-		}
-	}
-	return returnArray;
-}
-
 function httpRequest()
 {
     var xmlhttp;
@@ -196,13 +183,6 @@ function trimAll(sString)
 		sString = sString.substring(0,sString.length-1);
 	}
 	return sString;
-}
-
-function testResponse(action, response){
-		var tmpStr=response.substring(0,action.length+2);
-		if(tmpStr==(action+"OK"))
-			return true;
-		return false;
 }
 
 function openLink( link, params){

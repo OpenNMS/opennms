@@ -33,6 +33,7 @@ package org.opennms.web.map;
 
 
 import java.io.BufferedWriter;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -43,7 +44,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.map.db.Element;
 
 import org.opennms.web.map.view.*;
 
@@ -112,7 +112,7 @@ public class SaveMapController implements Controller {
 				StringTokenizer nodeST = new StringTokenizer(nodeToken, ",");
 				int counter = 1;
 				String icon = "";
-				String type = Element.NODE_TYPE;
+				String type = MapsConstants.NODE_TYPE;
 
 				int id = 0, x = 0, y = 0;
 				while (nodeST.hasMoreTokens()) {
@@ -134,12 +134,12 @@ public class SaveMapController implements Controller {
 					}
 					counter++;
 				}
-				if (!type.equals(Element.NODE_TYPE)
-						&& !type.equals(Element.MAP_TYPE)) {
+				if (!type.equals(MapsConstants.NODE_TYPE)
+						&& !type.equals(MapsConstants.MAP_TYPE)) {
 					throw new MapsException("Map element type " + type
 							+ " not valid! Valid values are:"
-							+ Element.NODE_TYPE + " and "
-							+ Element.MAP_TYPE);
+							+ MapsConstants.NODE_TYPE + " and "
+							+ MapsConstants.MAP_TYPE);
 				}
 				
 				String label=null;
@@ -152,18 +152,15 @@ public class SaveMapController implements Controller {
                 if (label != null )
                     ve.setLabel(label);                    
                 
-                log.debug("adding map element to map with id: " +id+type + "and label: " + ve.getLabel());
+                log.debug("adding map element to map with id: " +id+type + " and label: " + ve.getLabel());
 				elems.add(ve);
 			}
 
-			log.info("removing all links and elements.");
 			map.removeAllLinks();
 			map.removeAllElements();
-			log.info("saving all elements.");
 				
-			for(VElement elem: elems) {
-				map.addElement(elem);
-			}
+			map.addElements(elems);
+
 				
 			map.setUserLastModifies(request.getRemoteUser());
 			map.setName(mapName);
@@ -171,15 +168,23 @@ public class SaveMapController implements Controller {
 			map.setWidth(mapWidth);
 			map.setHeight(mapHeight);
 			
-			if (map.isNew())
-				map.setType(VMap.USER_GENERATED_MAP);
-			else if (map.getType().trim().equalsIgnoreCase(VMap.AUTOMATICALLY_GENERATED_MAP))
-			    map.setType(VMap.AUTOMATIC_SAVED_MAP);
-			manager.save(map);
-				
-			log.info(map.getName() + " Map saved");
+			if (map.isNew()) {
+			    log.debug("Map is New Map");
+				map.setType(MapsConstants.USER_GENERATED_MAP);
+				map.setAccessMode(MapsConstants.ACCESS_MODE_ADMIN);
+			}
+			else if (map.getType().trim().equalsIgnoreCase(MapsConstants.AUTOMATICALLY_GENERATED_MAP)) {
+                log.debug("Map is Automated Map, saving as Static");
+                map.setType(MapsConstants.AUTOMATIC_SAVED_MAP);
+			}
+			int mapId = manager.save(map);
 
-			bw.write(ResponseAssembler.getSaveMapResponse(MapsConstants.SAVEMAP_ACTION, map));
+	        log.info(map.getName() + " Map saved. " + "With map id: " + mapId);
+
+			if (map.isNew()) 
+			    map.setId(mapId);
+
+			bw.write(ResponseAssembler.getSaveMapResponse(map));
 		} catch (Exception e) {
 			log.error("Map save error: " + e,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SAVEMAP_ACTION));
