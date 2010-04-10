@@ -265,7 +265,6 @@ Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, s
 {
 	var id = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[id]!= undefined) {
-		alert("Cannot add Link: exists!");
 		return false
 	}
 	// check parameter

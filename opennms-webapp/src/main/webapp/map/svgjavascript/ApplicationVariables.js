@@ -109,9 +109,11 @@ var tooltipRectStyles = {"fill":"white","stroke":"dimgray"};
 var menuSvgElement;
 // The SVG Node for MapPanel in Map.svg
 var mapSvgElement;
+// The SVG Node for TabPanel in Map.svg
+var tabSvgElement;
 //the SVG map object to work on.
 var map;
-//The SVG tabGroup
+//The SVG tabGroup object to work on.
 var mapTabGroub;
 
 // The Javascript var Object for menus!
@@ -189,8 +191,8 @@ var mapidSortAss;
 var mymapsResult;		
 var mapsLoaded = false;
 //variables for tabGroup
-var mapTabTitles = new Array("Map Opened","New Map","Search Map");
-
+var mapTabTitles = new Array();
+mapTabTitles.push(MAP_NOT_OPENED_NAME);
 // variables for search Map
 var nodeLabelMap =new Array();
 

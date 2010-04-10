@@ -295,3 +295,21 @@ function assArrayPopulate(arrayKeys,arrayValues) {
 	}
 	return returnArray;
 }
+
+function windowsClean() {
+	var obj, ls;
+	ls = winSvgElement.childNodes;
+	while (ls.length > 0) {
+	  obj = ls.item(0);
+	  winSvgElement.removeChild(obj);
+	}		
+}
+
+function tabClean() {
+	var obj, ls;
+	ls = tabSvgElement.childNodes;
+	while (ls.length > 0) {
+	  obj = ls.item(0);
+	  tabSvgElement.removeChild(obj);
+	}		
+}

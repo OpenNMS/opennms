@@ -51,7 +51,7 @@ function startUp() {
 
 	// Instantiate the tabPanel
 	mapTabGroup = 
-	new tabgroup("TabPanel","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,undefined);
+	new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,undefined);
 
 	defaultMap = new ElemMap(-2, null, null);
 	
@@ -216,8 +216,7 @@ function handleInit(data) {
 
 function load(evt){
 	
-	// Reference var to the Menu SVG Object
-	
+	// Reference var to the Menu SVG Object	
 	menuSvgElement = document.getElementById("Menu");
 	
 	// Reference var to the MapPanel SVG Object		
@@ -225,6 +224,9 @@ function load(evt){
 
 	// Reference var to the Windows SVG Object		
 	winSvgElement = document.getElementById("Windows");
+
+	// Reference var to the Windows SVG Object		
+	tabSvgElement = document.getElementById("TabPanel");
 
 	//WorkPanel data
 	var workPanelWidth = 3*menuWidth;
@@ -272,7 +274,7 @@ function load(evt){
 
 	<!-- ******** TAB P A N E L ********* -->	
 
-	<g id="TabPanel"/>
+	<svg id="TabPanel"/>
 
 
 

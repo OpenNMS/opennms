@@ -353,6 +353,7 @@ function openMapSetUp(mapId) {
 		alert("No maps to open");
 		return;
 	}
+	mapTabSetUp(mapToOpen);
 	windowsClean();
 	clearTopInfo();
 	clearDownInfo();

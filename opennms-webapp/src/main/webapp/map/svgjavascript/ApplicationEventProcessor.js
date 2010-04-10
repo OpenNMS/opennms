@@ -466,15 +466,6 @@ function onMouseUp(evt)
 	}
 }
 
-function windowsClean() {
-	var obj, ls;
-	ls = winSvgElement.childNodes;
-	while (ls.length > 0) {
-	  obj = ls.item(0);
-	  winSvgElement.removeChild(obj);
-	}		
-}
-
 function ciao() {
 	return;
 }
@@ -496,4 +487,22 @@ function execSelectedCMAction(index,nodeid,nodelabel,evt) {
 function execLinkCMAction(linkid,sid,label,evt) {
 	var sLink=map.mapLinks[sid];
 	sLink.switchLink(linkid);
+}
+
+function mapTabSetUp(mapId) {
+	var mapName = mapidSortAss[mapId];
+	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
+		mapTabTitles = new Array();
+	}
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i] == mapName ) {
+			mapTabGroup.activateTabByTitle(mapName,false);
+			return;
+		}
+	}
+	tabClean();
+	mapTabTitles.push(mapName);
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,undefined);
+	mapTabGroup.activateTabByTitle(mapName,false);
 }
