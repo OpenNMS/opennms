@@ -24,6 +24,12 @@ var summaryLinkColor;
 var X_FACTOR = 3.5;
 var Y_FACTOR = 2.625;
 
+//TabGroup Object Style
+var tabStyles = {"fill":"navy","stroke":"navy","stroke-width":1,"cursor":"pointer"};
+var tabwindowStyles = {"fill":"white","stroke":"navy","stroke-width":1};
+var tabtextStyles = {"font-family":textFamily,"font-size":titleFontSize,"fill":"white","font-weight":"normal"};
+var tabactivetabBGColor = "blue";
+
 // Menu ObjectStyle
 //Variables used for Menu style
 var menuDownColor = "blue";
@@ -105,6 +111,8 @@ var menuSvgElement;
 var mapSvgElement;
 //the SVG map object to work on.
 var map;
+//The SVG tabGroup
+var mapTabGroub;
 
 // The Javascript var Object for menus!
 var mapMenu;
@@ -180,6 +188,8 @@ var mapSortAss;
 var mapidSortAss;
 var mymapsResult;		
 var mapsLoaded = false;
+//variables for tabGroup
+var mapTabTitles = new Array("Map Opened","New Map","Search Map");
 
 // variables for search Map
 var nodeLabelMap =new Array();

@@ -61,6 +61,8 @@ Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,st
 	this.rect = document.createElementNS(svgNS,"rect"); 
 	this.rect.setAttributeNS(null,"width", width);
 	this.rect.setAttributeNS(null,"height", height);
+	this.rect.setAttributeNS(null,"x", x);
+	this.rect.setAttributeNS(null,"y", y);
 	this.rect.setAttributeNS(null,"fill", color);
 	this.rect.setAttributeNS(null,"stroke-width","1");
 	
