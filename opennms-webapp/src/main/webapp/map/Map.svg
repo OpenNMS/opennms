@@ -35,7 +35,6 @@
 	<script type="text/ecmascript" xlink:href="svgjavascript/ElemMap.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationMap.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationMenu.js"/>
-	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationWin.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ContextMenu.js"/>	
 	
 	
