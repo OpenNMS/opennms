@@ -349,4 +349,28 @@ function mapTabClose(mapName) {
 	mapTabTitles=tabs;
 	mapTabGroup = 
 new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+
+	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
+			mapTabGroup.activateTabByIndex(index,false);
+	} else {
+		mapTabGroup.activateTabByIndex(index,true);
+	}
+}
+
+function mapTabRename(oldMapName,newMapName) {
+	var tabs = new Array();
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==oldMapName ) {
+			tabs.push(newMapName);
+		} else {
+			tabs.push(mapTabTitles[i])			
+		}
+	}
+
+	tabClean();
+	mapTabTitles=tabs;
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+	mapTabGroup.activateTabByTitle(newMapName,false);
+
 }

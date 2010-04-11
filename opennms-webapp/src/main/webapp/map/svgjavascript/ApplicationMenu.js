@@ -418,6 +418,7 @@ function addRenameMapBox(){
 
 function renameMap(){
 	var newMapName = getTextBoxValue();
+	mapTabRename(currentMapName,newMapName)
 	clearTopInfo();
 	if(newMapName != null && trimAll(newMapName)!=""){
 		currentMapName=newMapName;
