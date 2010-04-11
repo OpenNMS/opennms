@@ -334,14 +334,6 @@ function handleDeleteElementResponse(data) {
 
 function close(){
 
-	hideNodesIds = "";
-	hasHideNodes = false;
-
-	hideMapsIds = "";
-	hasHideMaps = false;
-
-	map.clear();
-
 	loading++;
 	assertLoading();
 
@@ -353,6 +345,16 @@ function close(){
 function handleLoadingCloseMap(data) {
 
 	if((data.success || data.status==200) && testOKResponse(CLOSEMAP_ACTION, data.content) ) {
+
+		hideNodesIds = "";
+		hasHideNodes = false;
+
+		hideMapsIds = "";
+		hasHideMaps = false;
+
+		map.clear();
+		mapTabClose(mapidSortAss[currentMapId]);
+
 		currentMapId=MAP_NOT_OPENED;
 		currentMapBackGround=DEFAULT_BG_COLOR;
 		map.setBGvalue(DEFAULT_BG_COLOR);

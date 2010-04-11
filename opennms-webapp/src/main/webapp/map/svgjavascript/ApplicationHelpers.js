@@ -330,3 +330,23 @@ function mapTabSetUp(mapName) {
 new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
 	mapTabGroup.activateTabByTitle(mapName,false);
 }
+
+function mapTabClose(mapName) {
+	var tabs = new Array();
+	var index = 0;
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==mapName ) {
+			index = i;	
+		} else {
+			tabs.push(mapTabTitles[i]);
+		}
+	}
+	if (tabs.length == 0) {
+		tabs.push(MAP_NOT_OPENED_NAME);
+	}
+
+	tabClean();
+	mapTabTitles=tabs;
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+}
