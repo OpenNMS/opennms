@@ -490,5 +490,10 @@ function execLinkCMAction(linkid,sid,label,evt) {
 }
 
 function activateTabMap(id,tabTitle,tabindex) {
-	openMapSetUp(mapSortAss[tabTitle].id,false);
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if ( tabTitle == NEW_MAP_NAME ) {
+		newMapSetUp();
+	} else {
+		openMapSetUp(mapSortAss[tabTitle].id,false);
+	}
 }
