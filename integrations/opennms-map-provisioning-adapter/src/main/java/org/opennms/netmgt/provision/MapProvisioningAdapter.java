@@ -715,6 +715,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
                     return onmsIpInterface.getIpAddress();
             }
+            return "0.0.0.0";
         }
         return primaryInterface.getIpAddress();
     }
