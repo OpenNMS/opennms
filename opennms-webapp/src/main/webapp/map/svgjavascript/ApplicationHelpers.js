@@ -344,9 +344,12 @@ function mapTabClose(mapName) {
 	if (tabs.length == 0) {
 		tabs.push(MAP_NOT_OPENED_NAME);
 	}
+	if ( tabs.length == index )
+	   index--;
 
 	tabClean();
 	mapTabTitles=tabs;
+
 	mapTabGroup = 
 new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
 

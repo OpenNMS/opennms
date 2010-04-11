@@ -602,6 +602,8 @@ function deleteMap(){
 
 function handleDeleteMapResponse(data) {
 	if((data.success || data.status==200) && testOKResponse(DELETEMAP_ACTION, data.content) ) {
+		
+		mapTabClose(mapidSortAss[currentMapId]);
 		map.clear();
 		
 		currentMapId=MAP_NOT_OPENED;
