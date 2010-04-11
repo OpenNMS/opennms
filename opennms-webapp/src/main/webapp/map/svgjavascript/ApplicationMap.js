@@ -385,14 +385,6 @@ function handleLoadingCloseMap(data) {
 
 function newMap(){
 
-	hideNodesIds = "";
-	hasHideNodes = false;
-
-	hideMapsIds = "";
-	hasHideMaps = false;
-
-	map.clear();
-	
 	loading++;
 	assertLoading();
 	
@@ -401,8 +393,6 @@ function newMap(){
 
 function openMap(mapId){ 		
 
-	map.clear();
-
 	loading++;
 	assertLoading();
 
@@ -410,14 +400,6 @@ function openMap(mapId){
 }
 
 function searchMap(mapIds){
- 
- 	hideNodesIds = "";
-	hasHideNodes = false;
-
-	hideMapsIds = "";
-	hasHideMaps = false;
-
-	map.clear();
 	
 	loading++;
 	assertLoading();
@@ -447,6 +429,8 @@ function handleLoadingMap(data) {
 	hasHideNodes = false;
 	hideMapsIds = "";
 	hasHideMaps = false;
+
+	map.clear();
 
 	currentMapId=openingMap.id
 

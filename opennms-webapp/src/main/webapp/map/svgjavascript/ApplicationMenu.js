@@ -208,6 +208,7 @@ function instantiateViewGroup() {
 function newMapSetUp() {	
 	closeAllMenu();
 	if (verifyMapString()) return;
+
 	hideMapInfo();
 	hideHistory();
 	clearTopInfo();
@@ -215,6 +216,8 @@ function newMapSetUp() {
 	hidePickColor();
 	resetFlags();
 	disableMenu();
+	mapTabSetUp(NEW_MAP_NAME);
+
 	newMap();
 }
 
