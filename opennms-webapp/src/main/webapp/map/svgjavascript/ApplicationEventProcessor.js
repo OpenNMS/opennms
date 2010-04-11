@@ -489,20 +489,6 @@ function execLinkCMAction(linkid,sid,label,evt) {
 	sLink.switchLink(linkid);
 }
 
-function mapTabSetUp(mapId) {
-	var mapName = mapidSortAss[mapId];
-	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
-		mapTabTitles = new Array();
-	}
-	for ( var i in mapTabTitles) {
-		if ( mapTabTitles[i] == mapName ) {
-			mapTabGroup.activateTabByTitle(mapName,false);
-			return;
-		}
-	}
-	tabClean();
-	mapTabTitles.push(mapName);
-	mapTabGroup = 
-new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,undefined);
-	mapTabGroup.activateTabByTitle(mapName,false);
+function activateTabMap(id,tabTitle,tabindex) {
+	openMapSetUp(mapSortAss[tabTitle].id,false);
 }

@@ -25,7 +25,8 @@ function handleLoadDefaultMapResponse(data) {
 	assertLoading();
     
     if (defaultMap.getId() > 0 ) {
-            openMapSetUp(defaultMap.getId());
+    		mapTabSetUp(defaultMap.getName());
+            openMapSetUp(defaultMap.getId(),false);
     }
 }
 

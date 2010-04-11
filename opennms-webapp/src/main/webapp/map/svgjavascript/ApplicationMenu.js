@@ -269,13 +269,14 @@ function filterSearchMapSelectionList(textboxId,value,changeType) {
 		}
 }
 
-function searchMapSetUp(mapId)
+function searchMapSetUp()
 {
 	if (verifyMapString()) return;
 
 	if ( selMaps.elementsArray.length == 1 ) {
 		alert("No Matching Map Found");
 	} else if (selectedMapInList == 0 ) {
+
 		var elems = new String();
 		var first = true;
 		for ( var i = 1; i< selMaps.elementsArray.length; i++ ) {
@@ -286,13 +287,15 @@ function searchMapSetUp(mapId)
 				elems = elems + "," + mapSortAss[selMaps.elementsArray[i]].id;
 			}
 		}
+
 		windowsClean();
 		clearTopInfo();
 		clearDownInfo();
+		mapTabSetUp(SEARCH_MAP_NAME);
 		searchMap(elems);
-		
+
 	} else {
-		openMapSetUp(mapId);
+		openMapSetUp();
 	}
 }
 
@@ -341,19 +344,23 @@ mapsResult.prototype.getSelectionListVal = function(selBoxName,mapNr,arrayVal) {
 	selectedMapInList=arrayVal;
 }
 
-function openMapSetUp(mapId) {
+function openMapSetUp(mapId,setuptab) {
 	if (verifyMapString()) return;
 
 	var mapToOpen;
 	if(mapId != undefined && (mapId > 0 || mapId == SEARCH_MAP )){
 		mapToOpen = mapId;
+		if(setuptab != undefined && setuptab ) {
+			mapTabSetUp(mapidSortAss[mapToOpen]);
+		}
 	}else if(selectedMapInList != undefined && mapSortAss[selectedMapInList].id > 0){
-		mapToOpen = mapSortAss[selectedMapInList].id;		
+		mapToOpen = mapSortAss[selectedMapInList].id;	
+		mapTabSetUp(mapSortAss[selectedMapInList].name);
 	}else{
 		alert("No maps to open");
 		return;
 	}
-	mapTabSetUp(mapToOpen);
+	
 	windowsClean();
 	clearTopInfo();
 	clearDownInfo();
@@ -1416,7 +1423,7 @@ function showHistory(){
 			nextText.removeChild(nextText.firstChild);		
 		nextText.appendChild(textContent);
 		var nextAction = document.getElementById("nextAction");
-		nextAction.setAttribute("onclick","openMapSetUp("+next+");");
+		nextAction.setAttribute("onclick","openMapSetUp("+next+",true);");
 		document.getElementById("nextGroup").setAttributeNS(null,'display', 'inline');
 	}else{
 	    document.getElementById("nextGroup").setAttributeNS(null,'display', 'none');
@@ -1431,7 +1438,7 @@ function showHistory(){
 			prevText.removeChild(prevText.firstChild);
 		prevText.appendChild(textContent);
 		var prevAction = document.getElementById("prevAction");
-		prevAction.setAttribute("onclick","openMapSetUp("+prev+");");		
+		prevAction.setAttribute("onclick","openMapSetUp("+prev+",true);");		
 		document.getElementById("prevGroup").setAttributeNS(null,'display', 'inline');
 	}else{
 	    document.getElementById("prevGroup").setAttributeNS(null,'display', 'none');

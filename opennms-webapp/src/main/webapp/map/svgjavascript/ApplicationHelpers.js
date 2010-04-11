@@ -313,3 +313,20 @@ function tabClean() {
 	  tabSvgElement.removeChild(obj);
 	}		
 }
+
+function mapTabSetUp(mapName) {
+	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
+		mapTabTitles = new Array();
+	}
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==mapName ) {
+			mapTabGroup.activateTabByTitle(mapName,false);
+			return;
+		}
+	}
+	tabClean();
+	mapTabTitles.push(mapName);
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+	mapTabGroup.activateTabByTitle(mapName,false);
+}

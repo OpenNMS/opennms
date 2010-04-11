@@ -192,7 +192,6 @@ var mymapsResult;
 var mapsLoaded = false;
 //variables for tabGroup
 var mapTabTitles = new Array();
-mapTabTitles.push(MAP_NOT_OPENED_NAME);
 // variables for search Map
 var nodeLabelMap =new Array();
 
