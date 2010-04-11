@@ -113,7 +113,7 @@ function onClickMapElement(evt)
 	
 		if(mapElement.isMap())
 		{
-			openMap(mapElement.getMapId());
+			openMapSetUp(mapElement.getMapId(),true);
 		}
 			
 	}
