@@ -31,7 +31,7 @@ public class ApplicationState implements Serializable, IsSerializable {
 		return m_status;
 	}
 
-	public Status getStatusUncached() {
+	private Status getStatusUncached() {
 		if (m_statuses.size() == 0) {
 			return Status.unknown("No applications are currently defined.");
 		}

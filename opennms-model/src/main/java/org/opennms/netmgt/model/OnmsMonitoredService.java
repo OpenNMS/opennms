@@ -280,7 +280,7 @@ Comparable<OnmsMonitoredService> {
     }
 
 //  @ManyToMany(mappedBy="memberServices")
-    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
                name="application_service_map",
                joinColumns={@JoinColumn(name="ifserviceid", referencedColumnName="id", table="applications")},

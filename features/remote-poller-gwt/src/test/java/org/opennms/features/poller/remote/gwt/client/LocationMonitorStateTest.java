@@ -94,12 +94,22 @@ public class LocationMonitorStateTest {
 	@Test
 	public void testMarkerStatusAllButOneNonStoppedDisconnected() {
 		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
-		monitors.add(getMonitor("STARTED"));
+		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+
+		GWTLocationMonitor monitor = getMonitor("STARTED");
+		monitors.add(monitor);
 		monitors.add(getMonitor("DISCONNECTED"));
 		monitors.add(getMonitor("DISCONNECTED"));
 		monitors.add(getMonitor("DISCONNECTED"));
 
-		LocationMonitorState lms = new LocationMonitorState(monitors, null);
+		GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
+		status.setId(++count);
+		status.setLocationMonitor(monitor);
+		status.setMonitoredService(getService("HTTP"));
+		status.setPollResult(GWTPollResult.available(100));
+		statuses.add(status);
+		
+		LocationMonitorState lms = new LocationMonitorState(monitors, statuses);
 		assertEquals("status should be marginal if only one monitor started, and more than one disconnected", Status.MARGINAL, lms.getStatus());
 		
 	}
