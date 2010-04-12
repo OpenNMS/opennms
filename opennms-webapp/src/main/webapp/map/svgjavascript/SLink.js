@@ -57,7 +57,7 @@ function SLink(id, typology, mapElement1,mapElement2, stroke, stroke_width, dash
 SLink.prototype.drawlink = function(stroke, stroke_width, dash_array)
 {
 	this.line = document.createElementNS(svgNS,"line");
-	this.line.setAttributeNS(null,"id", id+"line");	
+	this.line.setAttributeNS(null,"id", this.id+"line");	
 	this.line.setAttributeNS(null,"x1", this.x1);	
 	this.line.setAttributeNS(null,"x2", this.x2);	
 	this.line.setAttributeNS(null,"y1", this.y1);
