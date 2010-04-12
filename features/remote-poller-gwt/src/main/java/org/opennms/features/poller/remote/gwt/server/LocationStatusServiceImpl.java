@@ -49,7 +49,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	private void initializeDaos() {
 		if (m_locationDataService == null) {
 			LogUtils.infof(this, "initializing location data service");
-			m_locationDataService = m_context.getBean(DefaultLocationDataService.class);
+			m_locationDataService = m_context.getBean(LocationDataService.class);
 		}
 	}
 

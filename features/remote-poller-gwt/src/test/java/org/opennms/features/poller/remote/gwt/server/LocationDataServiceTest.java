@@ -2,6 +2,7 @@ package org.opennms.features.poller.remote.gwt.server;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
 import java.util.Date;
 
 import org.junit.Before;
@@ -39,7 +40,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-import com.google.gwt.dev.util.collect.Sets;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
@@ -103,7 +104,7 @@ public class LocationDataServiceTest {
 		m_serviceTypeDao.saveOrUpdate(serviceType);
 
 		OnmsMonitoredService service = new OnmsMonitoredService();
-		service.setApplications(Sets.create(app));
+		service.setApplications(Collections.singleton(app));
 		service.setIpInterface(ipi);
 		service.setLastFail(new Date());
 		service.setLastGood(new Date());
