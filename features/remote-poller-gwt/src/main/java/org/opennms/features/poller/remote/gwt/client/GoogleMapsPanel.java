@@ -16,7 +16,6 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.maps.client.MapWidget;
-import com.google.gwt.maps.client.control.Control;
 import com.google.gwt.maps.client.control.LargeMapControl;
 import com.google.gwt.maps.client.event.MapMoveEndHandler;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
@@ -29,9 +28,10 @@ import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class GoogleMapsPanel extends AbstractMapPanel {
+public class GoogleMapsPanel extends Composite implements MapPanel {
 
     private static GoogleMapsPanelUiBinder uiBinder = GWT.create(GoogleMapsPanelUiBinder.class);
 
@@ -58,11 +58,11 @@ public class GoogleMapsPanel extends AbstractMapPanel {
         });
     }
     
-    public MapWidget getMapWidget() {
+    private MapWidget getMapWidget() {
         return m_mapWidget;
     }
 
-    void showLocationDetails(final Location location) {
+    public void showLocationDetails(final Location location) {
         final Marker m = getMarker(location);
         final GWTLatLng latLng = location.getLocationInfo().getLatLng();
         getMapWidget().setCenter(toLatLng(latLng));
@@ -81,11 +81,11 @@ public class GoogleMapsPanel extends AbstractMapPanel {
         m_markers.put(location.getLocationInfo().getName(), m);
     }
 
-    GWTBounds getBounds() {
+    public GWTBounds getBounds() {
         return toGWTBounds(getMapWidget().getBounds());
     }
 
-    void setBounds(GWTBounds b) {
+    public void setBounds(GWTBounds b) {
         LatLngBounds bounds = toLatLngBounds(b);
     	getMapWidget().setCenter(bounds.getCenter(), getMapWidget().getBoundsZoomLevel(bounds));
     }
@@ -94,11 +94,7 @@ public class GoogleMapsPanel extends AbstractMapPanel {
         addHandler(handler, MapPanelBoundsChangedEvent.TYPE);
     }
     
-    public void addControl(Control control) {
-        getMapWidget().addControl(control);
-    }
-
-    void initializeMapPanel() {
+    private void initializeMapPanel() {
         getMapWidget().setSize("100%", "100%");
         getMapWidget().setUIToDefault();
         getMapWidget().addControl(new LargeMapControl());
@@ -114,14 +110,9 @@ public class GoogleMapsPanel extends AbstractMapPanel {
         });
     }
 
-    void addOverlay(final Marker newMarker) {
+    private void addOverlay(final Marker newMarker) {
         getMapWidget().addOverlay(newMarker);
     }
-
-    public void removeOverlay(Marker marker) {
-        getMapWidget().removeOverlay(marker);
-    }
-
 
     private Marker createMarker(final Location location) {
         final LocationInfo locationInfo = location.getLocationInfo();
@@ -145,15 +136,21 @@ public class GoogleMapsPanel extends AbstractMapPanel {
     public void placeMarker(final Location location) {
         Marker m = getMarker(location);
         if (m == null) {
-        	
-            m = createMarker(location);
-            setMarker(location, m);
-            addOverlay(m);
-        	
+            addMarker(location);
         } else {
-        	m.setImage(location.getLocationInfo().getImageURL());
+        	updateMarker(location, m);
         }
         
+    }
+
+    private void addMarker(final Location location) {
+        Marker m = createMarker(location);
+        setMarker(location, m);
+        addOverlay(m);
+    }
+
+    private void updateMarker(final Location location, Marker m) {
+        m.setImage(location.getLocationInfo().getImageURL());
     }
 
     private final class DefaultMarkerClickHandler implements MarkerClickHandler {
@@ -166,6 +163,10 @@ public class GoogleMapsPanel extends AbstractMapPanel {
         public void onClick(final MarkerClickEvent mke) {
             showLocationDetails(m_location);
         }
+    }
+    
+    public Widget getWidget() {
+        return this;
     }
 
 }

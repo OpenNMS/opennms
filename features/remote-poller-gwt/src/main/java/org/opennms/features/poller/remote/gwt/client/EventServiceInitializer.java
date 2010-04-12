@@ -15,12 +15,12 @@ final class EventServiceInitializer extends InitializationCommand.DataLoader {
     /**
      * 
      */
-    private final AbstractLocationManager m_locationManager;
+    private final DefaultLocationManager m_locationManager;
 
     /**
      * @param mapquestInitialization
      */
-    EventServiceInitializer( final AbstractLocationManager locationManager ) {
+    EventServiceInitializer( final DefaultLocationManager locationManager ) {
         m_locationManager = locationManager;
     }
 

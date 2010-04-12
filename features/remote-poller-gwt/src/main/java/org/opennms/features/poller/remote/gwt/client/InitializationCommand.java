@@ -47,12 +47,12 @@ public class InitializationCommand implements IncrementalCommand {
     private Queue<DataLoader> m_queue = new LinkedList<DataLoader>();
     
     private DataLoader m_currentLoader;
-    private final AbstractLocationManager m_abstractLocationManager;
+    private final DefaultLocationManager m_abstractLocationManager;
 
     private Runnable m_finisher;
     
 
-    public InitializationCommand(AbstractLocationManager abstractLocationManager, Runnable finisher, DataLoader...dataLoaders) {
+    public InitializationCommand(DefaultLocationManager abstractLocationManager, Runnable finisher, DataLoader...dataLoaders) {
         m_abstractLocationManager = abstractLocationManager;
         m_finisher = finisher;
         initialize(dataLoaders);
