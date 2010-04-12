@@ -113,7 +113,7 @@ function onClickMapElement(evt)
 	
 		if(mapElement.isMap())
 		{
-			openMap(mapElement.getMapId());
+			openMapSetUp(mapElement.getMapId(),true);
 		}
 			
 	}
@@ -463,5 +463,37 @@ function onMouseUp(evt)
 			map.endSelectionRectangle=null;	
 		}			
 		
+	}
+}
+
+function ciao() {
+	return;
+}
+
+function execSelectedCMAction(index,nodeid,nodelabel,evt) {
+	if(CM_COMMANDS[index]){
+		var link = CM_LINKS[index];
+		var params = CM_PARAMS[index];				
+		link = link.replace("ELEMENT_ID",""+nodeid);
+		link = link.replace("ELEMENT_LABEL",nodelabel);
+		link = link.replace("ELEMENT_HOSTNAME",nodeidSortAss[nodeid].getLabel());
+		link = link.replace("ELEMENT_IP",nodeidSortAss[nodeid].getIpAddr());
+		openLink(escape(link),params);
+	} else {
+		alert("Windows Menu Command Error");
+	}
+}
+
+function execLinkCMAction(linkid,sid,label,evt) {
+	var sLink=map.mapLinks[sid];
+	sLink.switchLink(linkid);
+}
+
+function activateTabMap(id,tabTitle,tabindex) {
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if ( tabTitle == NEW_MAP_NAME ) {
+		newMapSetUp();
+	} else {
+		openMapSetUp(mapSortAss[tabTitle].id,false);
 	}
 }

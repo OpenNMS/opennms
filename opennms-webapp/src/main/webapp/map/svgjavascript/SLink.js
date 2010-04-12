@@ -22,46 +22,46 @@ function SLink(id, typology, mapElement1,mapElement2, stroke, stroke_width, dash
 		this.mapElement1 = mapElement1;
 		this.mapElement2 = mapElement2;
 		
-		var x1 = this.mapElement1.getX()+this.mapElement1.width/2;
-		var y1 = this.mapElement1.getY()+this.mapElement1.height/2+deltaLink*totalLinks;
+		this.x1 = this.mapElement1.getX()+this.mapElement1.width/2;
+		this.y1 = this.mapElement1.getY()+this.mapElement1.height/2+deltaLink*totalLinks;
 
-		var x2=this.mapElement2.getX()+this.mapElement2.width/2;
-		var y2=this.mapElement2.getY()+this.mapElement2.height/2+deltaLink*totalLinks;
+		this.x2=this.mapElement2.getX()+this.mapElement2.width/2;
+		this.y2=this.mapElement2.getY()+this.mapElement2.height/2+deltaLink*totalLinks;
 		
-		this.deltaX1FromElem1Center=x1-this.mapElement1.getX();
-		this.deltaY1FromElem1Center=y1-this.mapElement1.getY();
-		this.deltaX2FromElem2Center=x2-this.mapElement2.getX();
-		this.deltaY2FromElem2Center=y2-this.mapElement2.getY();
+		this.deltaX1FromElem1Center=this.x1-this.mapElement1.getX();
+		this.deltaY1FromElem1Center=this.y1-this.mapElement1.getY();
+		this.deltaX2FromElem2Center=this.x2-this.mapElement2.getX();
+		this.deltaY2FromElem2Center=this.y2-this.mapElement2.getY();
 
-		this.init(id, x1, x2, y1, y2, stroke, stroke_width, dash_array);
+		this.stroke =stroke;
+		this.stroke_width=stroke_width;
+		this.dash_array = dash_array;
+		
+		this.statusStroke=stroke;
+	
+		this.links = new Array();
+		this.statusMap = new Array();
+		this.numberOfLinks=0;
+		this.numberOfMultiLinks=0;
+		this.statutes=0
+		
+		this.svgNode = document.createElementNS(svgNS,"g");
+		this.svgNode.setAttributeNS(null,"id", id);			
+		this.drawlink(stroke, stroke_width, dash_array);
 	}
 	else
 		alert("Summary Link constructor call error");
 }
 
 // <line onclick="*" stroke="*" stroke-width="*"/>
-SLink.prototype.init = function(id, x1, x2, y1, y2, stroke, stroke_width, dash_array)
+SLink.prototype.drawlink = function(stroke, stroke_width, dash_array)
 {
-
-	this.stroke =stroke;
-	this.stroke_width=stroke_width;
-	this.dash_array = dash_array;
-
-	this.links = new Array();
-	this.statusMap = new Array();
-	this.numberOfLinks=0;
-	this.numberOfMultiLinks=0;
-	this.statutes=0
-	
-	this.svgNode = document.createElementNS(svgNS,"g");
-	this.svgNode.setAttributeNS(null,"id", id);	
-
 	this.line = document.createElementNS(svgNS,"line");
-	this.line.setAttributeNS(null,"id", id+"line");	
-	this.line.setAttributeNS(null,"x1", x1);	
-	this.line.setAttributeNS(null,"x2", x2);	
-	this.line.setAttributeNS(null,"y1", y1);
-	this.line.setAttributeNS(null,"y2", y2);
+	this.line.setAttributeNS(null,"id", this.id+"line");	
+	this.line.setAttributeNS(null,"x1", this.x1);	
+	this.line.setAttributeNS(null,"x2", this.x2);	
+	this.line.setAttributeNS(null,"y1", this.y1);
+	this.line.setAttributeNS(null,"y2", this.y2);
 	this.line.setAttributeNS(null,"stroke", stroke);
 	this.line.setAttributeNS(null,"stroke-width", stroke_width);
 	if(dash_array!=-1 && dash_array!=0){
@@ -186,34 +186,26 @@ SLink.prototype.addLink = function(link)
 	}
 	
 	if (this.statutes == 1) {
+		this.statusStroke = link.stroke;
 		this.line.setAttributeNS(null,"stroke", link.stroke);
 	} else {
+		this.statusStroke = this.stroke;
 		this.line.setAttributeNS(null,"stroke", this.stroke);
 	}
 }
 
 SLink.prototype.switchLink = function(linkId)
 {
+	this.svgNode.removeChild(this.line);
+
 	if (this.id == linkId) {
-		this.line.setAttributeNS(null,"stroke", this.stroke);
-		this.line.setAttributeNS(null,"stroke-width", this.stroke_width);
-		if(this.dash_array!=-1 && this.dash_array!=0){
-			this.line.setAttributeNS(null,"stroke-dasharray", this.dash_array);
-		} else {
-			this.line.setAttributeNS(null,"stroke-dasharray", 0);
-		}
+		this.drawlink(this.statusStroke, this.stroke_width, this.dash_array);			
 		this.setFlash(false);
 	} else {
 		var link = this.links[linkId];
 		if ( link==undefined )
 			return;
-		this.line.setAttributeNS(null,"stroke", link.stroke);
-		this.line.setAttributeNS(null,"stroke-width", link.stroke_width);
-		if(link.dash_array!=-1 && link.dash_array!=0){
-			this.line.setAttributeNS(null,"stroke-dasharray", link.dash_array);
-		} else {
-			this.line.setAttributeNS(null,"stroke-dasharray", 0);
-		}
+		this.drawlink(link.stroke, link.stroke_width, link.dash_array);		
 		this.setFlash(link.flash);
 	}
 }
@@ -221,16 +213,16 @@ SLink.prototype.switchLink = function(linkId)
 // update link
 SLink.prototype.update = function()
 {
-	var x1=this.mapElement1.getX()+this.deltaX1FromElem1Center;
-	var y1=this.mapElement1.getY()+this.deltaY1FromElem1Center;	
+	this.x1=this.mapElement1.getX()+this.deltaX1FromElem1Center;
+	this.y1=this.mapElement1.getY()+this.deltaY1FromElem1Center;	
 	
-	var x2=this.mapElement2.getX()+this.deltaX2FromElem2Center;	
-	var y2=this.mapElement2.getY()+this.deltaY2FromElem2Center;	
+	this.x2=this.mapElement2.getX()+this.deltaX2FromElem2Center;	
+	this.y2=this.mapElement2.getY()+this.deltaY2FromElem2Center;	
 
-	this.line.setAttributeNS(null,"x1", x1);	
-	this.line.setAttributeNS(null,"x2", x2);	
-	this.line.setAttributeNS(null,"y1", y1);
-	this.line.setAttributeNS(null,"y2", y2);	
+	this.line.setAttributeNS(null,"x1", this.x1);	
+	this.line.setAttributeNS(null,"x2", this.x2);	
+	this.line.setAttributeNS(null,"y1", this.y1);
+	this.line.setAttributeNS(null,"y2", this.y2);	
 }
 
 /*

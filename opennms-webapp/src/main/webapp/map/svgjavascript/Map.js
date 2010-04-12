@@ -61,6 +61,8 @@ Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,st
 	this.rect = document.createElementNS(svgNS,"rect"); 
 	this.rect.setAttributeNS(null,"width", width);
 	this.rect.setAttributeNS(null,"height", height);
+	this.rect.setAttributeNS(null,"x", x);
+	this.rect.setAttributeNS(null,"y", y);
 	this.rect.setAttributeNS(null,"fill", color);
 	this.rect.setAttributeNS(null,"stroke-width","1");
 	
@@ -263,7 +265,6 @@ Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, s
 {
 	var id = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[id]!= undefined) {
-		alert("Cannot add Link: exists!");
 		return false
 	}
 	// check parameter
