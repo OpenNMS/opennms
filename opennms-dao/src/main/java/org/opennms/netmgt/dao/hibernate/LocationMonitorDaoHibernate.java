@@ -357,6 +357,14 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     			);
     }
 
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationName) {
+    	return findObjects(OnmsLocationSpecificStatus.class,
+    			"from OnmsLocationSpecificStatus as status " +
+    			"where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ? and status.locationMonitor.definitionName = ?",
+    			startDate, endDate, locationName
+    			);
+    }
+
     @SuppressWarnings("unchecked")
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(int nodeId) {
         List l = getHibernateTemplate().find(

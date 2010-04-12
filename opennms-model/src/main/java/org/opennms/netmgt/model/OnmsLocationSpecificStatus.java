@@ -32,9 +32,6 @@
 
 package org.opennms.netmgt.model;
 
-import java.util.Date;
-
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,8 +41,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 @Entity
@@ -56,7 +51,6 @@ public class OnmsLocationSpecificStatus {
     private OnmsLocationMonitor m_locationMonitor;
     private OnmsMonitoredService m_monitoredService;
     private PollStatus m_pollResult;
-	private Date m_statusTime;
 
     public OnmsLocationSpecificStatus() {
         // this is used by hibernate to construct an object from the db
@@ -99,16 +93,6 @@ public class OnmsLocationSpecificStatus {
         m_monitoredService = monitoredService;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="statustime")
-    public Date getStatusTime() {
-    	return m_statusTime;
-    }
-
-    public void setStatusTime(final Date date) {
-    	m_statusTime = date;
-    }
-    
     @Embedded
     public PollStatus getPollResult() {
         return m_pollResult;

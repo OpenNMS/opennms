@@ -280,11 +280,11 @@ Comparable<OnmsMonitoredService> {
     }
 
 //  @ManyToMany(mappedBy="memberServices")
-    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
     @JoinTable(
                name="application_service_map",
-               joinColumns={@JoinColumn(name="ifserviceid")},
-               inverseJoinColumns={@JoinColumn(name="appid")}
+               joinColumns={@JoinColumn(name="ifserviceid", referencedColumnName="id", table="applications")},
+               inverseJoinColumns={@JoinColumn(name="appid", referencedColumnName="id", table="ifservices")}
     )
     public Set<OnmsApplication> getApplications() {
         return m_applications;

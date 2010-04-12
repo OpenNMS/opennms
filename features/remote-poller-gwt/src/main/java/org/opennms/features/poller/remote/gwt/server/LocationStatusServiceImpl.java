@@ -6,7 +6,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.ApplicationState;
 import org.opennms.features.poller.remote.gwt.client.BaseLocation;
+import org.opennms.features.poller.remote.gwt.client.GWTApplication;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus;
@@ -31,6 +34,7 @@ import org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder;
 import org.opennms.features.poller.remote.gwt.server.geocoding.GeocoderException;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -58,6 +62,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	private static volatile Date lastUpdated;
 	private static volatile LocationMonitorDao m_locationDao;
 	private static volatile ApplicationDao m_applicationDao;
+	private static volatile MonitoredServiceDao m_monitoredServiceDao;
 	private static volatile String m_apiKey = null;
 
 	private void initializeContext() {
@@ -75,6 +80,10 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		if (m_applicationDao == null) {
 			LogUtils.infof(this, "initializing application DAO");
 			m_applicationDao = m_context.getBean(ApplicationDao.class);
+		}
+		if (m_monitoredServiceDao == null) {
+			LogUtils.infof(this, "initializing monitored service DAO");
+			m_monitoredServiceDao = m_context.getBean(MonitoredServiceDao.class);
 		}
 	}
 
@@ -230,6 +239,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		final LocationDetails ld = getLocationDetails(def);
 		final LocationInfo locationInfo = new LocationInfo(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), latLng.getCoordinates());
 		locationInfo.setMonitorStatus(ld.getLocationMonitorState().getStatus());
+		locationInfo.setApplicationStatus(ld.getApplicationState().getStatus());
 		LogUtils.debugf(this, "getLocation(OnmsMonitoringLocationDefinition) returning %s", locationInfo.toString());
 		return locationInfo;
 	}
@@ -271,25 +281,53 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		final MonitorStatusTracker mst = new MonitorStatusTracker(def.getName());
 		final ApplicationStatusTracker ast = new ApplicationStatusTracker(def.getName());
 
-		final Collection<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
-		final Collection<String> applications = new HashSet<String>();
+		final Set<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
 
 		for (OnmsLocationMonitor mon : m_locationDao.findByLocationDefinition(def)) {
 			monitors.add(transformLocationMonitor(mon));
 		}
-		for (OnmsApplication app : m_applicationDao.findAll()) {
-			applications.add(app.getName());
+
+		final Set<GWTApplication> applications = new HashSet<GWTApplication>();
+		final Map<String,Set<OnmsMonitoredService>> services = new HashMap<String,Set<OnmsMonitoredService>>();
+		
+		for (final OnmsApplication application : m_applicationDao.findAll()) {
+			applications.add(transformApplication(m_monitoredServiceDao.findByApplication(application), application));
 		}
 
-		final Date now = new Date();
-		for (OnmsLocationSpecificStatus status : m_locationDao.getStatusChangesBetween(new Date(now.getTime() - AVAILABILITY_MS), now)) {
+		for (final OnmsMonitoredService service : m_monitoredServiceDao.findAll()) {
+			for (final OnmsApplication app : service.getApplications()) {
+				final String appName = app.getName();
+				Set<OnmsMonitoredService> serv = services.get(appName);
+				if (serv == null) {
+					serv = new HashSet<OnmsMonitoredService>();
+					services.put(appName, serv);
+				}
+				serv.add(service);
+			}
+		}
+
+		final Date to = new Date();
+		final Date from = new Date(to.getTime() - AVAILABILITY_MS);
+		for (OnmsLocationSpecificStatus status : m_locationDao.getStatusChangesBetween(from, to)) {
 			mst.onStatus(status);
 			ast.onStatus(status);
 		}
 
 		ld.setLocationMonitorState(new LocationMonitorState(monitors, mst.drain()));
-		ld.setApplicationState(new ApplicationState(applications, ast.drain()));
+		ld.setApplicationState(new ApplicationState(from, to, applications, ast.drainStatuses()));
 		return ld;
+	}
+	
+	private GWTApplication transformApplication(final Collection<OnmsMonitoredService> services, final OnmsApplication application) {
+		final GWTApplication app = new GWTApplication();
+		app.setId(application.getId());
+		app.setName(application.getName());
+		final Set<GWTMonitoredService> s = new HashSet<GWTMonitoredService>();
+		for (final OnmsMonitoredService service : services) {
+			s.add(transformMonitoredService(service));
+		}
+		app.setServices(s);
+		return app;
 	}
 
 	private GWTLocationMonitor transformLocationMonitor(final OnmsLocationMonitor monitor) {
@@ -399,11 +437,11 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			}
 		}
 
-		public Map<String,Collection<GWTLocationSpecificStatus>> drain() {
-			final Map<String,Collection<GWTLocationSpecificStatus>> statuses = new HashMap<String,Collection<GWTLocationSpecificStatus>>();
+		public Map<String,List<GWTLocationSpecificStatus>> drainStatuses() {
+			final Map<String,List<GWTLocationSpecificStatus>> statuses = new HashMap<String,List<GWTLocationSpecificStatus>>();
 			synchronized(m_statuses) {
 				for (final String app : statuses.keySet()) {
-					final Collection<GWTLocationSpecificStatus> s = new ArrayList<GWTLocationSpecificStatus>();
+					final List<GWTLocationSpecificStatus> s = new ArrayList<GWTLocationSpecificStatus>();
 					for (OnmsLocationSpecificStatus status : m_statuses.get(app)) {
 						s.add(transformLocationSpecificStatus(status));
 					}

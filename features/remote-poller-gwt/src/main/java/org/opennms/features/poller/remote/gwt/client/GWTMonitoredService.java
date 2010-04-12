@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTMonitoredService implements Serializable, IsSerializable {
+public class GWTMonitoredService implements Serializable, IsSerializable, Comparable<GWTMonitoredService> {
 	private static final long serialVersionUID = 1L;
 
 	private int m_id;
@@ -20,7 +20,7 @@ public class GWTMonitoredService implements Serializable, IsSerializable {
 	public void setId(final int id) {
 		m_id = id;
 	}
-	public int getId() {
+	public Integer getId() {
 		return m_id;
 	}
 	public void setIfIndex(final Integer ifIndex) {
@@ -64,6 +64,27 @@ public class GWTMonitoredService implements Serializable, IsSerializable {
 	}
 	public void setApplications(final Collection<String> applications) {
 		m_applications = applications;
+	}
+
+	public String toString() {
+		return "GWTMonitoredService[id=" + m_id + ",service=" + m_serviceName + ",nodeId=" + m_nodeId + ",ipInterfaceId=" + m_ipInterfaceId + "]";
+	}
+
+	public int compareTo(GWTMonitoredService that) {
+		int lastCompare = this.getServiceName().compareTo(that.getServiceName());
+		if (lastCompare != 0) return lastCompare;
+
+		lastCompare = this.getNodeId().compareTo(that.getNodeId());
+		if (lastCompare != 0) return lastCompare;
+		
+		lastCompare = this.getIpInterfaceId().compareTo(that.getIpInterfaceId());
+		if (lastCompare != 0) return lastCompare;
+
+		lastCompare = this.getApplications().toString().compareTo(that.getApplications().toString());
+		if (lastCompare != 0) return lastCompare;
+
+		lastCompare = Integer.valueOf(this.getId()).compareTo(that.getId());
+		return lastCompare;
 	}
 
 }

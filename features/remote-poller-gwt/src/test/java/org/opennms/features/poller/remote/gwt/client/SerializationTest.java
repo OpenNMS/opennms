@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
@@ -82,13 +85,18 @@ public class SerializationTest {
 	}
 
 	private ApplicationState getApplicationState() {
-		final Collection<String> applications = new ArrayList<String>();
-		final Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
-		final Map<String,Collection<GWTLocationSpecificStatus>> applicationStatuses = new HashMap<String,Collection<GWTLocationSpecificStatus>>();
-		applications.add("TestApp1");
+		final Collection<GWTApplication> applications = new ArrayList<GWTApplication>();
+		final List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+		final Map<String,List<GWTLocationSpecificStatus>> applicationStatuses = new HashMap<String,List<GWTLocationSpecificStatus>>();
+
+		services.add(getMonitoredService());
+		applications.add(new GWTApplication(1, "TestApp1", services));
 		applicationStatuses.put("TestApp1", statuses);
 		statuses.add(getLocationSpecificStatus());
-		return new ApplicationState(applications, applicationStatuses);
+		final Date to = new Date();
+		final Date from = new Date(to.getTime() - (1000 * 60 * 60 * 24));
+		return new ApplicationState(to, from, applications, applicationStatuses);
 	}
 
 	private LocationMonitorState getLocationMonitorState() {

@@ -3,16 +3,16 @@
  */
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class LocationMonitorState implements IsSerializable {
+public class LocationMonitorState implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private Set<GWTLocationMonitor> m_monitorsStarted = new HashSet<GWTLocationMonitor>();
 	private Set<GWTLocationMonitor> m_monitorsStopped = new HashSet<GWTLocationMonitor>();
@@ -216,31 +216,18 @@ public class LocationMonitorState implements IsSerializable {
 				if (servicesDown.size() == 1) {
 					return Status.down(servicesDown.iterator().next() + " has been reported down by all monitors.");
 				} else {
-					return Status.down("The following services are reported down by all monitors: " + join(servicesDown, ", ") + ".");
+					return Status.down("The following services are reported down by all monitors: " + Utils.join(servicesDown, ", ") + ".");
 				}
 			}
 		}
 		
 		// yellow/marginal: If some (but not all) started monitors report "down" for the same service
 		if (anyDown.size() > 0) {
-			return Status.marginal("The following services are reported down by at least one monitor: " + join(anyDown, ", ") + ".");
+			return Status.marginal("The following services are reported down by at least one monitor: " + Utils.join(anyDown, ", ") + ".");
 		}
 
 		return Status.up("There are no current service outages for this location.");
 	}
-
-	private static String join(Collection<?> s, String delimiter) {
-	     StringBuilder builder = new StringBuilder();
-	     Iterator<?> iter = s.iterator();
-	     while (iter.hasNext()) {
-	         builder.append(iter.next());
-	         if (!iter.hasNext()) {
-	           break;                  
-	         }
-	         builder.append(delimiter);
-	     }
-	     return builder.toString();
-	 }
 
 	public String toString() {
 		return "LocationMonitorState[started=" + m_monitorsStarted + ",stopped=" + m_monitorsStopped + ",disconnected=" + m_monitorsDisconnected + ",statuses="+m_locationStatuses+",services="+m_services+"]";

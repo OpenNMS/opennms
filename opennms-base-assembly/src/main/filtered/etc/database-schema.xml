@@ -75,6 +75,7 @@
 
 	<table name="ifServices">
 		<join column="ipInterfaceId" table="ipInterface" table-column="id"/>
+		<join column="id" table="application_service_map" table-column="ifServiceId"/>
 		<column name="id" visible="false"/>
 		<column name="ipAddr" visible="false"/>
 		<column name="nodeID" visible="false"/>
@@ -146,6 +147,7 @@
 
 	<table name="application_service_map">
 		<join column="ifServiceId" table="ifServices" table-column="id"/>
+		<join column="appId" table="applications" table-column="id"/>
 		<column name="appId" visible="false" />
 		<column name="ifServiceId" visible="false" />
 	</table>
