@@ -77,7 +77,7 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     private static Class<? extends Object> getClass(Object obj) {
-        return (obj != null) ? obj.getClass() : ConfigurationTestUtils.class.getClass();
+        return (obj != null) ? obj.getClass() : ConfigurationTestUtils.class;
     }
     
     public static Resource getSpringResourceForResource(Object obj, String resource) {

@@ -43,7 +43,6 @@
   <bean id="daemon" class="org.opennms.netmgt.ackd.Ackd" >
     <property name="executor" ref="readerScheduler" />
     <property name="configDao" ref="ackdConfigurationDao" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="eventForwarder" ref="eventForwarder"/>
     <property name="ackService" ref="ackService" />
     <property name="ackReaders" >

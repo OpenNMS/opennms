@@ -39,8 +39,7 @@ package org.opennms.netmgt.config;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -69,7 +68,7 @@ public class NotificationCommandFactory extends NotificationCommandManager {
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (!initialized) {
-            getInstance().reload();
+            getInstance().update();
             initialized = true;
         }
     }
@@ -85,19 +84,8 @@ public class NotificationCommandFactory extends NotificationCommandManager {
         return instance;
     }
     
-    public void update() throws Exception {
-        reload();
-    }
-
-    /**
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
-    public void reload() throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));
+    public void update() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        InputStream configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));
         parseXML(configIn);
     }
-
 }

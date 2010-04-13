@@ -335,8 +335,8 @@ rsync -avr --exclude=examples $RPM_BUILD_ROOT%{instprefix}/etc/ $RPM_BUILD_ROOT%
 chmod -R go-w $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
 
 install -d -m 755 $RPM_BUILD_ROOT%{_initrddir} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
-install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/remote-poller
-install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/remote-poller
+install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
+install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/opennms-remote-poller
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 pushd $RPM_BUILD_ROOT
@@ -421,8 +421,8 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files remote-poller
-%attr(755,root,root) %config %{_initrddir}/remote-poller
-%attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/remote-poller
+%attr(755,root,root) %config %{_initrddir}/opennms-remote-poller
+%attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/opennms-remote-poller
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
 

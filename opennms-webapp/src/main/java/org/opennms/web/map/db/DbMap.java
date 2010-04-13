@@ -8,8 +8,7 @@ package org.opennms.web.map.db;
 
 import java.sql.Timestamp;
 
-// FIXME: We really need to rename this class so that it doesn't have the same class name as java.util.Map
-public class Map {
+public class DbMap {
 
     private int id;
 
@@ -41,32 +40,20 @@ public class Map {
     
     private int height;
 
-    public static final String USER_GENERATED_MAP = "U";
-
-    public static final String AUTOMATICALLY_GENERATED_MAP = "A";
-    
-    public static final String AUTOMATIC_SAVED_MAP = "S";
-
-    public static final String DELETED_MAP = "D"; //for future use
-
-    public static final String ACCESS_MODE_ADMIN = "RW";
-    public static final String ACCESS_MODE_USER = "RO";
-    public static final String ACCESS_MODE_GROUP = "RWRO";
-
     private boolean isNew = false;
 
-    public Map() {
+    public DbMap() {
         this.isNew = true;
     }
     
-    public Map(int id, String name, String owner) {
+    public DbMap(int id, String name, String owner) {
         this.id = id;
         this.name = name;
         this.owner = owner;
     }
   
     
-    public Map(int id, String name, String background, String owner,
+    public DbMap(int id, String name, String background, String owner,
             String accessMode, String userLastModifies, float scale,
             int offsetX, int offsetY, String type, int width, int height) {
         this.id = id;
@@ -83,7 +70,7 @@ public class Map {
         this.height=height;
     }
 
-    public Map(int id, String name, String background, String owner, String group,
+    public DbMap(int id, String name, String background, String owner, String group,
             String accessMode, String userLastModifies, float scale,
             int offsetX, int offsetY, String type, int width, int height) {
         this.id = id;
@@ -272,7 +259,7 @@ public class Map {
     }
 
     public void setId(int id) {
-        this.id = id;
+            this.id=id;
     }
 
     public boolean isNew() {

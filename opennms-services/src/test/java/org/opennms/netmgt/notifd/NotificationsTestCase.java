@@ -68,9 +68,7 @@ import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
-import junit.framework.TestCase;
-
-public class NotificationsTestCase extends TestCase {
+public class NotificationsTestCase {
 
     protected Notifd m_notifd;
     protected MockEventIpcManager m_eventMgr;
@@ -86,9 +84,7 @@ public class NotificationsTestCase extends TestCase {
     private PollOutagesConfigManager m_pollOutagesConfigManager;
 
     protected void setUp() throws Exception {
-        super.setUp();
-    
-        MockUtil.println("################# Running Test "+getName()+" ################");
+        MockUtil.println("################# Running Test ################");
         MockLogAppender.setupLogging();
         
         m_network = createMockNetwork();
@@ -136,7 +132,7 @@ public class NotificationsTestCase extends TestCase {
 //        
 //        m_anticipator.reset();
     
-        MockUtil.println("################ Finish Setup for "+getName()+" ################");
+        MockUtil.println("################ Finish Setup ################");
 
     
     }
@@ -148,6 +144,10 @@ public class NotificationsTestCase extends TestCase {
         return db;
     }
 
+    /**
+     * TODO Use {@link MockNetwork#createStandardNetwork()} instead?
+     * @return
+     */
     private MockNetwork createMockNetwork() {
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
@@ -175,15 +175,20 @@ public class NotificationsTestCase extends TestCase {
     private MockGroupManager createGroupManager() throws MarshalException, ValidationException, IOException {
         return new MockGroupManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "groups.xml"));
     }
-
+    
     protected void tearDown() throws Exception {
+        this.tearDown(false);
+    }
+
+    protected void tearDown(boolean allowAllLogMessages) throws Exception {
         m_eventMgr.finishProcessingEvents();
         m_notifd.stop();
 
-        m_db.drop();
+        // m_db.drop();
         MockNotificationStrategy.setAnticipator(null);
-        MockLogAppender.assertNoWarningsOrGreater();
-        super.tearDown();
+        if (!allowAllLogMessages) {
+            MockLogAppender.assertNoWarningsOrGreater();
+        }
     }
     
     public void testDoNothing() {

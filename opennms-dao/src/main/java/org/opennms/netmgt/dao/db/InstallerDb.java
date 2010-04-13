@@ -375,10 +375,12 @@ public class InstallerDb {
         rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
         if (rs.next()) {
             m_out.println("EXISTS");
-        } else {
+        } else if (isPgPlPgsqlLibPresent()) {
             st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '"
                        + m_pg_plpgsql + "' LANGUAGE 'c'");
             m_out.println("OK");
+        } else {
+            m_out.println("SKIPPED (location of PL/pgSQL library not set, will try to continue)");
         }
 
         m_out.print("- adding PL/pgSQL language module... ");
@@ -2400,6 +2402,17 @@ public class InstallerDb {
     
     public String getPgPlPgsqlLocation() {
         return m_pg_plpgsql;
+    }
+    
+    public boolean isPgPlPgsqlLibPresent() {
+        if (m_pg_plpgsql == null)
+            return false;
+        
+        File plpgsqlLib = new File(m_pg_plpgsql);
+        if (plpgsqlLib.exists() && plpgsqlLib.canRead())
+            return true;
+        
+        return false;
     }
     
     public void addColumnReplacements() throws SQLException {

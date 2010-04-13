@@ -38,6 +38,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
@@ -175,6 +176,13 @@ public class EventBuilder {
         
     }
 
+    public EventBuilder setAlarmData(AlarmData alarmData) {
+        if (alarmData != null) {
+            m_event.setAlarmData(alarmData);
+        }
+        return this;
+    }
+    
     public EventBuilder setNode(OnmsNode node) {
         if (node != null) {
             m_event.setNodeid(node.getId().longValue());

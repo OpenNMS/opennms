@@ -74,7 +74,6 @@
   </bean -->
 
   <bean name="/MapStartUp.map" class="org.opennms.web.map.MapStartUpController">
-    <property name="mapsPropertiesFactory" ref="mapsPropertiesFactory"/>
     <property name="manager" ref="manager"/>
   </bean>
 
@@ -110,6 +109,9 @@
     <property name="manager" ref="manager" />
   </bean>
 
+  <bean name="/SearchMap.map" class="org.opennms.web.map.SearchMapsController">
+    <property name="manager" ref="manager" />
+  </bean>
 
   <bean name="/LoadMaps.map" class="org.opennms.web.map.LoadMapsController">
     <property name="manager" ref="manager" />
@@ -118,6 +120,11 @@
   <bean name="/LoadNodes.map" class="org.opennms.web.map.LoadNodesController">
     <property name="manager" ref="manager" />
   </bean>
+
+  <bean name="/LoadLabelMap.map" class="org.opennms.web.map.LoadLabelMapController">
+    <property name="manager" ref="manager" />
+  </bean>
+
 
   <bean name="/AddNodes.map" class="org.opennms.web.map.AddNodesController">
     <property name="manager" ref="manager" />

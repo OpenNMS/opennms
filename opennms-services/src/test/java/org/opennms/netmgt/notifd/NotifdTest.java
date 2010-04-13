@@ -38,6 +38,9 @@
 
 package org.opennms.netmgt.notifd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -50,42 +53,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
-import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
-import org.opennms.test.ConfigurationTestUtils;
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
 public class NotifdTest extends NotificationsTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         // XXX Bogus.. need to rework these tests
         m_anticipator.setExpectedDifference(5000);
-        
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
-        
-        FilterDaoFactory.setInstance(null);
-        FilterDaoFactory.getInstance();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     /**
      * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=1022
      * @throws Exception
      */
+    @Test
     public void testWicktorBug_1022_1031() throws Exception {
         
         Date date = new Date();
@@ -93,10 +99,10 @@ public class NotifdTest extends NotificationsTestCase {
         long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "High loadavg5 Threshold exceeded on 192.168.1.1, loadavg5 with ", "InitialGroup", date, 0);
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
-        Event e = MockEventUtil.createInterfaceEvent("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
-        MockEventUtil.setEventTime(e, date);
-        MockEventUtil.addEventParm(e, "ds", "loadavg5");
-        m_eventMgr.sendEventToListeners(e);
+        EventBuilder e = MockEventUtil.createInterfaceEventBuilder("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
+        e.setTime(date);
+        e.addParam("ds", "loadavg5");
+        m_eventMgr.sendEventToListeners(e.getEvent());
         
         /*
          * This is the notification config that Wicktor sent when reporting this bug.
@@ -115,20 +121,23 @@ public class NotifdTest extends NotificationsTestCase {
 
     // FIXME: latest notifd code seems to fail on this kind of notification
     // Bug 1954
-    public void BROKENtestNewSuspect() throws Exception {
+    @Test
+    @Ignore
+    public void testNewSuspect() throws Exception {
         
         Date date = new Date();
         
         long finished = anticipateNotificationsForGroup("A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "InitialGroup", date, 0);
 
-        Event e = MockEventUtil.createNewSuspectEvent("test", "uei.opennms.org/internal/discovery/newSuspect", "10.1.1.1");
-        MockEventUtil.setEventTime(e, date);
-        m_eventMgr.sendEventToListeners(e);
+        EventBuilder e = MockEventUtil.createNewSuspectEventBuilder("test", "uei.opennms.org/internal/discovery/newSuspect", "10.1.1.1");
+        e.setTime(date);
+        m_eventMgr.sendEventToListeners(e.getEvent());
         
         verifyAnticipated(finished, 1000);
         
     }
     
+    @Test
     public void testNotifdStatus() throws Exception {
         
         //test for off status passed in config XML string
@@ -144,6 +153,7 @@ public class NotifdTest extends NotificationsTestCase {
             
     }
     
+    @Test
     public void testMockNotificationBasic() throws Exception {
 
         MockNode node = m_network.getNode(1);
@@ -169,6 +179,7 @@ public class NotifdTest extends NotificationsTestCase {
 
     }
     
+    @Test
     public void testMockNotificationInitialDelay() throws Exception {
 
         m_destinationPathManager.getPath("NoEscalate").setInitialDelay("1800ms");
@@ -184,6 +195,7 @@ public class NotifdTest extends NotificationsTestCase {
 
     }
     
+    @Test
     public void testInterval() throws Exception {
         
         MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
@@ -201,6 +213,7 @@ public class NotifdTest extends NotificationsTestCase {
     }
     
 
+    @Test
     public void testEscalate() throws Exception {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
@@ -214,6 +227,7 @@ public class NotifdTest extends NotificationsTestCase {
         verifyAnticipated(endTime, 3000);
     }
     
+    @Test
     public void testManualAcknowledge1() throws Exception {
 
         m_destinationPathManager.getPath("NoEscalate").setInitialDelay("2000ms");
@@ -229,6 +243,7 @@ public class NotifdTest extends NotificationsTestCase {
         verifyAnticipated(0, 0, 7000);
     }
 
+    @Test
     public void testManualAcknowledge2() throws Exception {
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
@@ -248,6 +263,7 @@ public class NotifdTest extends NotificationsTestCase {
                 
     }
 
+    @Test
     public void testAutoAcknowledge1() throws Exception {
 
         m_destinationPathManager.getPath("NoEscalate").setInitialDelay("2000ms");
@@ -272,6 +288,7 @@ public class NotifdTest extends NotificationsTestCase {
         verifyAnticipated(endTime, 1000, 5000);
     }
 
+    @Test
     public void testAutoAcknowledge2() throws Exception {
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
@@ -299,6 +316,7 @@ public class NotifdTest extends NotificationsTestCase {
      * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=731
      * @throws Exception
      */
+    @Test
     public void testBug731() throws Exception {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
@@ -318,6 +336,7 @@ public class NotifdTest extends NotificationsTestCase {
         verifyAnticipated(endTime, 1000, 5000);
     }
 
+    @Test
     public void testBug1114() throws Exception {
         // XXX Needing to bump up this number is bogus
         m_anticipator.setExpectedDifference(5000);
@@ -339,6 +358,7 @@ public class NotifdTest extends NotificationsTestCase {
         verifyAnticipated(endTime - 5000, 1000);
     }
     
+    @Test
     public void testRebuildParameterMap() throws Exception {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
@@ -357,7 +377,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         int index = 0;
         for (Integer notifId : notifIds) {
-            Map<String, String> originalMap = m_notifd.getBroadcastEventProcessor().buildParameterMap(notification[index], event, notifId.intValue());
+            Map<String, String> originalMap = BroadcastEventProcessor.buildParameterMap(notification[index], event, notifId.intValue());
             
             Map<String, String> resolutionMap = new HashMap<String, String>(originalMap);
             resolutionMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_SUBJECT));
@@ -372,6 +392,7 @@ public class NotifdTest extends NotificationsTestCase {
         }
     }
     
+    @Test
     public void testGetUsersNotified() throws Exception {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
@@ -424,6 +445,7 @@ public class NotifdTest extends NotificationsTestCase {
 
     }
 
+    @Test
     public void testRoleNotification() throws Exception {
         
         MockNode node = m_network.getNode(1);

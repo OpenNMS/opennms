@@ -35,21 +35,37 @@ GUI="false"
 RUNAS="root"
 START_POLLER=0
 
+JAVA_CONF="$OPENNMS_HOME/etc/java.conf"
+
+if [ -f "$JAVA_CONF" ]; then
+	JAVA_EXE="`cat $JAVA_CONF`"
+fi
+
 CONFFILE="/etc/default/$NAME"
 
 if [ -f $CONFFILE ]; then
 	. $CONFFILE
-fi
-
-if [ -z "$CONFFILE" ] && [ -f "/etc/sysconfig/$NAME" ]; then
+elif [ -f "/etc/sysconfig/$NAME" ]; then
 	CONFFILE="/etc/sysconfig/$NAME"
 	. $CONFFILE
 fi
 
-if [ -z "$CONFFILE" ] || [ -z "$JAVA_HOME" ] || [ $START_POLLER -eq 0 ]; then
+if [ x$JAVA_EXE = x ]; then
+	if [ x$JAVA_HOME = x ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+		echo "ERROR: $JAVA_CONF file not found, and \$JAVA_HOME is not set to a valid JDK."
+		echo "Try running $OPENNMS_HOME/bin/runjava if OpenNMS is installed, or set JAVA_HOME in $CONFFILE."
+		exit 1
+	else
+		JAVA_EXE="$JAVA_HOME/bin/java"
+	fi
+fi
+
+if [ -z "$CONFFILE" ] || [ $START_POLLER -eq 0 ]; then
 	echo "Remote poller init not configured.  Please edit $CONFFILE and restart."
 	exit 0
 fi
+
+export JAVA_HOME PIDFILE
 
 if [ x$GUI = xtrue ]; then
 	EXTRA_ARGS="$EXTRA_ARGS --gui"
@@ -76,7 +92,6 @@ pid_running() {
 case "$1" in
 
 	start)
-
 		if pid_running; then
 			exit 0
 		fi
@@ -94,6 +109,8 @@ case "$1" in
 			RETVAL="$?"
 			POLLER_PID="$!"
 			echo "$POLLER_PID" > "$PIDFILE"
+			echo "OK"
+			exit 0
 		fi
 		echo "."
 		;;
@@ -102,16 +119,17 @@ case "$1" in
 		echo -n "Stopping $DESC: "
 		if [ -x /sbin/start-stop-daemon ]; then
 			start-stop-daemon --stop --quiet --retry 15 --pidfile $PIDFILE > /dev/null
+			echo "."
 		else
-			if ! pid_running; then
-				rm "$PIDFILE"
-				exit 0
+			if pid_running; then
+				kill `cat $PIDFILE`
+			else
+				rm "$PIDFILE" >/dev/null 2>&1
 			fi
-	
-			kill `cat $PIDFILE`
+
+			echo "OK"
 			exit 0
 		fi
-		echo "."
 		;;
 
 	restart)

@@ -45,9 +45,10 @@ import java.util.List;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
@@ -118,11 +119,10 @@ public class MockPollContext implements PollContext, EventListener {
     
 
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
-        String eventTime = EventConstants.formatToString(date);
-        Event e = MockEventUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName, reason);
-        e.setCreationTime(eventTime);
-        e.setTime(eventTime);
-        return e;
+        EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName, reason);
+        e.setCreationTime(date);
+        e.setTime(date);
+        return e.getEvent();
     }
     public void openOutage(final PollableService pSvc, final PollEvent svcLostEvent) {
         Runnable r = new Runnable() {

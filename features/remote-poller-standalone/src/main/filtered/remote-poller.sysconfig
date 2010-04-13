@@ -7,3 +7,4 @@ GUI=false
 RUNAS=root
 USERNAME=admin
 PASSWORD=admin
+# JAVA_HOME=/usr/java/default

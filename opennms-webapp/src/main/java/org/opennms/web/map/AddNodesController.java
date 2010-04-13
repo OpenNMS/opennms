@@ -59,7 +59,6 @@ import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.element.Node;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
-import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -97,15 +96,12 @@ public class AddNodesController implements Controller {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
 			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				log.warn(request.getRemoteUser() +": Cannot add nodes because user role is:" + MapsConstants.ROLE_USER);
-				throw new MapsException(request.getRemoteUser() +": Cannot add nodes because user role is:" + MapsConstants.ROLE_USER);
+	            if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
+	                log.warn("Cannot add maps because not admin role for user: " + request.getRemoteUser() );
+	                throw new MapsException("User has not role admin");
+	            }
 			}
-			VMap map = manager.openMap();
-			if(log.isDebugEnabled())
-				log.debug("Got map from manager "+map);
-			
 			Integer[] nodeids = null;
-			String type = VElement.NODE_TYPE;
 
 			boolean actionfound = false;
 			
@@ -168,55 +164,33 @@ public class AddNodesController implements Controller {
 				nodeids = linkednodeids.toArray(new Integer[linkednodeids.size()]);
 			} 
 			
-			if (action.equals(MapsConstants.ADDMAPS_ACTION)) {
-				actionfound = true;
-				type = VElement.MAP_TYPE;
-				String[] snodeids = elems.split(",");
-				nodeids = new Integer[snodeids.length];
-				for (int i = 0; i<snodeids.length;i++) {
-					nodeids[i] = new Integer(snodeids[i]);
-				}
-			}
+	         VMap map = manager.openMap();
+	            if(log.isDebugEnabled())
+	                log.debug("Got map from manager "+map);
+	            
+
 			List<VElement> velems = new ArrayList<VElement>();
-			List<VLink> links = new ArrayList<VLink>();
 			// response for addElement
 			if (actionfound) {
 				log.debug("Before Checking map contains elems");
 				
 				for (int i = 0; i < nodeids.length; i++) {
 					int elemId = nodeids[i].intValue();
-					if (map.containsElement(elemId, type)) {
-						log.debug("Action: " + action + " . Map Contains Element: " + elemId+type);
+					if (map.containsElement(elemId, MapsConstants.NODE_TYPE)) {
+						log.debug("Action: " + action + " . Map Contains Element: " + elemId+MapsConstants.NODE_TYPE);
 						continue;
 						
 					}
 
-					VElement ve = manager.newElement(elemId, type);
-                    try {
-                        VElement hve = manager.getElement(map.getId(), elemId, VElement.NODE_HIDE_TYPE);
-                        if (hve.getLabel() != null) {
-                            ve.setLabel(hve.getLabel());
-                            log.debug("preserving label map is hidden: label found: " + hve.getLabel());
-                        }
-                    } catch (Exception e) {
-                       log.debug("No Hidden Node found for id: " +elemId); 
-                    }
-                    log.debug("adding node element to map with id: " +elemId+type);
-
-					//set real-time data to -1 to force refresh always
-					velems.add(ve);
+					velems.add(manager.newElement(map.getId(), elemId, MapsConstants.NODE_TYPE));
 				} // end for
 
 				//get links and add elements to map
-				if (velems != null) {
-					map.addElements(velems);
-					links = manager.getLinks(map.getAllElements());
-				}
-				
+				map = manager.addElements(map, velems);
 				log.debug("After getting/adding links");
 	
-			} 				
-			bw.write(ResponseAssembler.getAddElementResponse(action, velems, links));
+				bw.write(ResponseAssembler.getAddElementResponse(null, velems, map.getLinks().values()));
+			}
 		} catch (Exception e) {
 			log.error("Error while adding nodes for action: "+action,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(action));
