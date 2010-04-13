@@ -119,17 +119,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
 public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
-    
+
     private Vacuumd m_vacuumd;
 
     @Autowired
     private Alarmd m_alarmd;
-    
-    @Autowired
-    private AlarmDao m_alarmDao;
-
-    @Autowired
-    private EventDao m_eventDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -140,7 +134,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
     @Autowired
     private MockEventIpcManager m_eventdIpcMgr;
 
-    private MockNetwork m_network;
+    private MockNetwork m_network = new MockNetwork();
 
     private MockDatabase m_database;
 
@@ -150,7 +144,6 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
 
     @Before
     public void setUp() throws Exception {
-        m_network = new MockNetwork();
         m_network.createStandardNetwork();
 
         InputStream is = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/vacuumd/vacuumd-configuration.xml");
@@ -255,6 +248,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     public final void testConfigReload() {
+        // TODO: Check configuration before and after
         EventBuilder builder = new EventBuilder(EventConstants.RELOAD_VACUUMD_CONFIG_UEI, "test");
         Event e = builder.getEvent();
         m_eventdIpcMgr.sendNow(e);

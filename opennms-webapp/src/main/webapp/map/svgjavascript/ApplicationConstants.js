@@ -33,6 +33,7 @@ var MAP_NOT_OPENED = -1;
 var NEW_MAP = -2;
 var SEARCH_MAP = -3;
 
+var MAP_NOT_OPENED_NAME = "NotOpenMap";
 var NEW_MAP_NAME = "NewMap";
 var SEARCH_MAP_NAME = "SearchMap";
 

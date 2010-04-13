@@ -25,7 +25,8 @@ function handleLoadDefaultMapResponse(data) {
 	assertLoading();
     
     if (defaultMap.getId() > 0 ) {
-            openMapSetUp(defaultMap.getId());
+    		mapTabSetUp(defaultMap.getName());
+            openMapSetUp(defaultMap.getId(),false);
     }
 }
 
@@ -333,14 +334,6 @@ function handleDeleteElementResponse(data) {
 
 function close(){
 
-	hideNodesIds = "";
-	hasHideNodes = false;
-
-	hideMapsIds = "";
-	hasHideMaps = false;
-
-	map.clear();
-
 	loading++;
 	assertLoading();
 
@@ -352,6 +345,16 @@ function close(){
 function handleLoadingCloseMap(data) {
 
 	if((data.success || data.status==200) && testOKResponse(CLOSEMAP_ACTION, data.content) ) {
+
+		hideNodesIds = "";
+		hasHideNodes = false;
+
+		hideMapsIds = "";
+		hasHideMaps = false;
+
+		map.clear();
+		mapTabClose(mapidSortAss[currentMapId]);
+
 		currentMapId=MAP_NOT_OPENED;
 		currentMapBackGround=DEFAULT_BG_COLOR;
 		map.setBGvalue(DEFAULT_BG_COLOR);
@@ -382,14 +385,6 @@ function handleLoadingCloseMap(data) {
 
 function newMap(){
 
-	hideNodesIds = "";
-	hasHideNodes = false;
-
-	hideMapsIds = "";
-	hasHideMaps = false;
-
-	map.clear();
-	
 	loading++;
 	assertLoading();
 	
@@ -398,8 +393,6 @@ function newMap(){
 
 function openMap(mapId){ 		
 
-	map.clear();
-
 	loading++;
 	assertLoading();
 
@@ -407,14 +400,6 @@ function openMap(mapId){
 }
 
 function searchMap(mapIds){
- 
- 	hideNodesIds = "";
-	hasHideNodes = false;
-
-	hideMapsIds = "";
-	hasHideMaps = false;
-
-	map.clear();
 	
 	loading++;
 	assertLoading();
@@ -444,6 +429,8 @@ function handleLoadingMap(data) {
 	hasHideNodes = false;
 	hideMapsIds = "";
 	hasHideMaps = false;
+
+	map.clear();
 
 	currentMapId=openingMap.id
 
@@ -615,6 +602,8 @@ function deleteMap(){
 
 function handleDeleteMapResponse(data) {
 	if((data.success || data.status==200) && testOKResponse(DELETEMAP_ACTION, data.content) ) {
+		
+		mapTabClose(mapidSortAss[currentMapId]);
 		map.clear();
 		
 		currentMapId=MAP_NOT_OPENED;
