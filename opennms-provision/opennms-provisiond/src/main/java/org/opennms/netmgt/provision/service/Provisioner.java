@@ -53,7 +53,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
@@ -85,7 +84,6 @@ public class Provisioner implements SpringServiceDaemon {
     private ProvisionService m_provisionService;
     private ScheduledExecutorService m_scheduledExecutor;
     private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
-    private volatile EventSubscriptionService m_eventSubscriptionService;
     private volatile EventForwarder m_eventForwarder;
     
     private volatile TimeTrackingMonitor m_stats;
@@ -268,14 +266,6 @@ public class Provisioner implements SpringServiceDaemon {
     public Category log() {
     	return ThreadCategory.getInstance(getClass());
 	}
-
-    public EventSubscriptionService getEventSubscriptionService() {
-        return m_eventSubscriptionService;
-    }
-
-    public void setEventSubscriptionService(EventSubscriptionService eventManager) {
-    	m_eventSubscriptionService = eventManager;
-    }
 
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;

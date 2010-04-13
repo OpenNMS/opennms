@@ -165,12 +165,10 @@
 
   <bean id="adapterManager" class="org.opennms.netmgt.provision.service.ProvisioningAdapterManager" >
     <property name="pluginRegistry" ref="pluginRegistry" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
     
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
     <property name="provisionService" ref="provisionService" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
     <property name="lifeCycleRepository" ref="lifeCycleRepository" />
     <property name="scheduledExecutor" ref="scheduledExecutor" />
