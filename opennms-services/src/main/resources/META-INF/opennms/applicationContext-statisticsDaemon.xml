@@ -22,7 +22,6 @@
       <property name="reportPersister" ref="reportPersister"/>
       <property name="scheduler" ref="scheduler"/>
       <property name="reportDefinitionBuilder" ref="reportDefinitionBuilder"/>
-      <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
       <property name="eventForwarder" ref="eventForwarder" />
     </bean>
 

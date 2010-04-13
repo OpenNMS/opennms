@@ -13,7 +13,6 @@
   
   <bean id="daemon" class="org.opennms.netmgt.tl1d.Tl1d">
     <property name="configurationDao" ref="tl1dConfigurationDao" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
   
