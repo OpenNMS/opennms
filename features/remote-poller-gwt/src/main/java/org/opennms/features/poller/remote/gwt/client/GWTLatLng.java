@@ -15,12 +15,21 @@ public class GWTLatLng implements IsSerializable {
 		return new GWTLatLng(35.7174,-79.1619);
 	}
 
-	public GWTLatLng() {}
+	public GWTLatLng() {
+	    this(0.0, 0.0);
+	}
 	
 	public GWTLatLng(Double latitude, Double longitude) {
 		m_latitude = latitude;
 		m_longitude = longitude;
 	}
+
+
+	public static GWTLatLng fromCoordinates(String coordinates) {
+		final String[] coords = coordinates.split(",");
+		return new GWTLatLng(Double.valueOf(coords[0]), Double.valueOf(coords[1]));
+	}
+
 	Double getLatitude() {
 		return m_latitude;
 	}

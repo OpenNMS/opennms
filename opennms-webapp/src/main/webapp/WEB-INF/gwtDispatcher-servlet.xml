@@ -18,7 +18,7 @@
   </bean>
 
   <bean id="urlMapping"   class="org.gwtwidgets.server.spring.GWTHandler">
-    <property name="mapping">
+    <property name="mappings">
       <map>
         <entry key="/surveillanceService.gwt" value-ref="gwtSurveillanceService"/>
       </map>

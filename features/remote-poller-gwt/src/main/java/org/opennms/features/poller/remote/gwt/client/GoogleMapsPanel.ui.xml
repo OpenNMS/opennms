@@ -1,0 +1,12 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:maps="urn:import:com.google.gwt.maps.client"
+    >
+	<ui:style>
+		
+	</ui:style>
+	
+	<maps:MapWidget ui:field="m_mapWidget" />
+	
+</ui:UiBinder> 

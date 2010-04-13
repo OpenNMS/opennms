@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+       ">
+
+  <context:annotation-config />
+
+  <bean id="apiKey" class="java.lang.String">
+    <constructor-arg value="1234" />
+  </bean>
+
+  <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
+
+  <bean id="monitoringLocationsConfiguration" class="org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration" />
+  
+  <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="monitoringLocationsConfiguration" ref="monitoringLocationsConfiguration" />
+  </bean>
+
+</beans>

@@ -26,7 +26,7 @@ public class TestGoogleMapsGeocoder extends AbstractGeocoderTest {
 			try {
 				geocoder.geocode("asdasdasdasdasdasdasdasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf");
 				assertTrue("this should throw an exception", false);
-			} catch (GeocoderLookupException e) {
+			} catch (GeocoderException e) {
 				assertEquals("geo.google.GeoException: Error Status Code: G_GEO_UNKNOWN_ADDRESS", e.getMessage());
 			}
 		}

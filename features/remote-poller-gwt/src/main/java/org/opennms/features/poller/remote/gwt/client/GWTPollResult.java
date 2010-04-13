@@ -1,10 +1,11 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTPollResult implements IsSerializable {
+public class GWTPollResult implements Serializable, IsSerializable, Comparable<GWTPollResult> {
 	private static final long serialVersionUID = 1L;
 
 	private String m_status;
@@ -13,6 +14,13 @@ public class GWTPollResult implements IsSerializable {
 	private Double m_responseTime;
 
 	public GWTPollResult() {}
+
+	public GWTPollResult(final String status, final Date timestamp, final String reason, final Double responseTime) {
+		m_status = status;
+		m_timestamp = timestamp;
+		m_reason = reason;
+		m_responseTime = responseTime;
+	}
 
 	public String getReason() {
 		return m_reason;
@@ -64,5 +72,16 @@ public class GWTPollResult implements IsSerializable {
 
 	public String toString() {
 		return "GWTPollResult[status=" + m_status + ",timestamp=" + m_timestamp + ",responseTime=" + m_responseTime + ",reason=" + m_reason + "]";
+	}
+
+	public int compareTo(GWTPollResult that) {
+		int lastCompare = this.getTimestamp().compareTo(that.getTimestamp());
+		if (lastCompare != 0) return lastCompare;
+		lastCompare = this.getStatus().compareTo(that.getStatus());
+		if (lastCompare != 0) return lastCompare;
+		lastCompare = this.getResponseTime().compareTo(that.getResponseTime());
+		if (lastCompare != 0) return lastCompare;
+		lastCompare = this.getReason().compareTo(that.getReason());
+		return lastCompare;
 	}
 }

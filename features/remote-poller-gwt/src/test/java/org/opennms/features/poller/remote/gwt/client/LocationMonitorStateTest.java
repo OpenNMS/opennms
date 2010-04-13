@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.Test;
-import org.opennms.features.poller.remote.gwt.client.LocationMonitorState.ServiceStatus;
 
 public class LocationMonitorStateTest {
 	private static int count = 0;
@@ -89,19 +88,29 @@ public class LocationMonitorStateTest {
 		}
 		
 		LocationMonitorState lms = new LocationMonitorState(monitors, statuses);
-		assertEquals("status should be up", ServiceStatus.UP, lms.getStatus());
+		assertEquals("status should be up", Status.UP, lms.getStatus());
 	}
 
 	@Test
 	public void testMarkerStatusAllButOneNonStoppedDisconnected() {
 		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
-		monitors.add(getMonitor("STARTED"));
+		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+
+		GWTLocationMonitor monitor = getMonitor("STARTED");
+		monitors.add(monitor);
 		monitors.add(getMonitor("DISCONNECTED"));
 		monitors.add(getMonitor("DISCONNECTED"));
 		monitors.add(getMonitor("DISCONNECTED"));
 
-		LocationMonitorState lms = new LocationMonitorState(monitors, null);
-		assertEquals("status should be marginal if only one monitor started, and more than one disconnected", ServiceStatus.MARGINAL, lms.getStatus());
+		GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
+		status.setId(++count);
+		status.setLocationMonitor(monitor);
+		status.setMonitoredService(getService("HTTP"));
+		status.setPollResult(GWTPollResult.available(100));
+		statuses.add(status);
+		
+		LocationMonitorState lms = new LocationMonitorState(monitors, statuses);
+		assertEquals("status should be marginal if only one monitor started, and more than one disconnected", Status.MARGINAL, lms.getStatus());
 		
 	}
 
@@ -145,7 +154,7 @@ public class LocationMonitorStateTest {
 		statuses.add(status);
 
 		LocationMonitorState lms = new LocationMonitorState(monitors, statuses);
-		assertEquals("status should be marginal when some services are down", ServiceStatus.MARGINAL, lms.getStatus());
+		assertEquals("status should be marginal when some services are down", Status.MARGINAL, lms.getStatus());
 	}
 
 	@Test
@@ -172,7 +181,7 @@ public class LocationMonitorStateTest {
 		}
 		
 		LocationMonitorState lms = new LocationMonitorState(monitors, statuses);
-		assertEquals("status should be down when one service is down across all monitors", ServiceStatus.DOWN, lms.getStatus());
+		assertEquals("status should be down when one service is down across all monitors", Status.DOWN, lms.getStatus());
 	}
 
 	@Test
@@ -192,7 +201,7 @@ public class LocationMonitorStateTest {
 		}
 		
 		LocationMonitorState lms = new LocationMonitorState(monitors, statuses);
-		assertEquals("status should be down when one (of one) service is down across all monitors", ServiceStatus.DOWN, lms.getStatus());
+		assertEquals("status should be down when one (of one) service is down across all monitors", Status.DOWN, lms.getStatus());
 	}
 
 	@Test
@@ -219,7 +228,7 @@ public class LocationMonitorStateTest {
 		}
 		
 		LocationMonitorState lms = new LocationMonitorState(monitors, statuses);
-		assertEquals("status should be down when two services (of two) are down across all monitors", ServiceStatus.DOWN, lms.getStatus());
+		assertEquals("status should be down when two services (of two) are down across all monitors", Status.DOWN, lms.getStatus());
 	}
 
 	@Test
@@ -232,7 +241,7 @@ public class LocationMonitorStateTest {
 		monitors.add(getMonitor("DISCONNECTED"));
 
 		LocationMonitorState lms = new LocationMonitorState(monitors, null);
-		assertEquals("status should be unknown if all monitors are either disconnected or stopped", ServiceStatus.UNKNOWN, lms.getStatus());
+		assertEquals("status should be unknown if all monitors are either disconnected or stopped", Status.UNKNOWN, lms.getStatus());
 	}
 
 	@Test
@@ -243,7 +252,7 @@ public class LocationMonitorStateTest {
 		monitors.add(getMonitor("DISCONNECTED"));
 
 		LocationMonitorState lms = new LocationMonitorState(monitors, null);
-		assertEquals("status should be unknown if all registered monitors are disconnected", ServiceStatus.UNKNOWN, lms.getStatus());
+		assertEquals("status should be unknown if all registered monitors are disconnected", Status.UNKNOWN, lms.getStatus());
 	}
 
 	@Test
@@ -252,7 +261,7 @@ public class LocationMonitorStateTest {
 		monitors.add(getMonitor("STOPPED"));
 		
 		LocationMonitorState lms = new LocationMonitorState(monitors, null);
-		assertEquals("single stopped monitor should be unknown", ServiceStatus.UNKNOWN, lms.getStatus());
+		assertEquals("single stopped monitor should be unknown", Status.UNKNOWN, lms.getStatus());
 	}
 
 	private GWTLocationMonitor getMonitor(String status) {
