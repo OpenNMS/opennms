@@ -20,6 +20,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -139,7 +140,11 @@ public class DefaultLocationManager implements LocationManager {
         getMapPanel().addMapPanelBoundsChangedEventHandler(new MapPanelBoundsChangedEventHandler() {
             
             public void onBoundsChanged(MapPanelBoundsChangedEvent event) {
+                long start = System.currentTimeMillis();
                 m_eventBus.fireEvent(new LocationsUpdatedEvent(DefaultLocationManager.this));
+                long stop = System.currentTimeMillis();
+                
+                Window.alert("Total time for Bounds change Event Fire: "  + (stop - start));
             }
         });
         

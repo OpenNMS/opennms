@@ -16,6 +16,7 @@
   <inherits name='com.google.gwt.maps.GoogleMaps' />
   <inherits name='com.google.gwt.maps.utility.GoogleMapsUtility' />
   <inherits name='com.googlecode.gwtmapquest.GWTMapquest' />
+  <inherits name="com.google.gwt.gen2.table.Table"/>
 
   <!-- Logging -->
   <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />

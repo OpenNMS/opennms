@@ -31,28 +31,26 @@
     }
     
     .upStatus{
-        background-color:  #00ff00;
-        color: white;    	
+    	background-image: "images/icon-UP.png";
     }
     
     .downStatus{
-    	background-color: #ffff00;
-    	color: white;
+    	background-image: "images/icon-DOWN.png";
     }
     
     .marginalStatus{
-    	background-color: #ff0000;
-    	color: white;
+    	background-image: "images/icon-MARGINAL.png";
     }
     
     .unknownStatus{
-        background-color: #0000ff;
-        color: white;
+        background-image: "images/icon-UNKNOWN.png";
     }
   </ui:style>
-
-  <g:ScrollPanel styleName="{style.scrollPanel}">
+  
+  <g:HTMLPanel >
+  <g:ScrollPanel ui:field="m_scrollPanel" styleName="{style.scrollPanel}">
     <g:FlexTable ui:field='m_locations' styleName="{style.flexTable}" />
   </g:ScrollPanel>
+  </g:HTMLPanel>
 
 </ui:UiBinder>
