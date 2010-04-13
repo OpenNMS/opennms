@@ -49,14 +49,9 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.BarrierSignaler;
-import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
-import org.opennms.netmgt.alarmd.Alarmd;
-import org.opennms.netmgt.dao.AlarmDao;
-import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
@@ -68,6 +63,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -102,17 +98,11 @@ import org.springframework.util.StringUtils;
 })
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
 public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
-    // private JdbcEventWriter m_jdbcEventWriter;
+
     private MockNetwork m_mockNetwork = new MockNetwork();
 
     @Autowired
     private Alarmd m_alarmd;
-
-    @Autowired
-    private AlarmDao m_alarmDao;
-
-    @Autowired
-    private EventDao m_eventDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -316,7 +306,7 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     private void sendNodeDownEvent(String reductionKey, MockNode node) throws SQLException {
-        Event event = MockEventUtil.createNodeDownEvent("Test", node);
+        EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
         if (reductionKey != null) {
             AlarmData data = new AlarmData();
@@ -327,11 +317,9 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
             event.setAlarmData(null);
         }
 
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent("testing");
-        event.setLogmsg(logmsg);
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
 
-        m_eventdIpcMgr.sendNow(event);
+        m_eventdIpcMgr.sendNow(event.getEvent());
     }
 }
