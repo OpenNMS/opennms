@@ -67,10 +67,10 @@
     <url-pattern>/org.opennms.features.poller.remote.gwt.Application/locationStatus</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
-    <servlet-name>gwt-log-remote-logger-servlet</servlet-name>
-    <url-pattern>/org.opennms.features.poller.remote.gwt.Application/gwt-log</url-pattern>
-  </servlet-mapping>
+<!--  <servlet-mapping>-->
+<!--    <servlet-name>gwt-log-remote-logger-servlet</servlet-name>-->
+<!--    <url-pattern>/org.opennms.features.poller.remote.gwt.Application/gwt-log</url-pattern>-->
+<!--  </servlet-mapping>-->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
