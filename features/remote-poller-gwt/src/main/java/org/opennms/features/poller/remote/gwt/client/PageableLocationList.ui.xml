@@ -1,0 +1,15 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		
+	</ui:style>
+	<g:DockLayoutPanel>
+	   <g:center>
+	       <g:FlexTable ui:field="dataList"></g:FlexTable>
+	   </g:center>
+	   <g:south size="20">
+	       <g:FlowPanel ui:field="pagingControls"></g:FlowPanel>
+	   </g:south>
+	</g:DockLayoutPanel>
+</ui:UiBinder> 
