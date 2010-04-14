@@ -48,7 +48,19 @@
 		  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
 		</jsp:include>
 <p>
+
+<script language="JavaScript" type="text/javascript" src="map/js/jquery.js"></script>
+<script language="JavaScript" type="text/javascript" src="map/js/jquery.history.js"></script>
+
 <script type="text/javascript">
+
+$.history.callback = function ( reinstate, cursor ) {
+		window.historyCallBack(reinstate,cursor);
+};
+
+function savehistory(mapid) {
+ 	$.history( {'mapid':mapid} );
+}
 
 function toggle(id)
 {
@@ -61,10 +73,9 @@ function toggle(id)
 function emitSVG(embedAttrs) {
     document.writeln('<embed '+embedAttrs+' width="'+parseInt(screen.availWidth*95/100)+'" height="'+parseInt(((screen.availWidth*95/100)-100)*3/4)+'">');
 }
-</script>
 
-<script type="text/javascript">
 emitSVG('src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml"');
+
 </script>
 </p>
     <jsp:include page="/includes/footer.jsp" flush="false" >
