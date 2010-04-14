@@ -162,11 +162,13 @@
       <artifactId>gwt-maps-utility</artifactId>
       <version>1.0</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>com.google.code.gwt-log</groupId>
       <artifactId>gwt-log</artifactId>
       <version>3.0.1</version>
     </dependency>
+    -->
     <dependency>
       <groupId>net.sourceforge.geo-google</groupId>
       <artifactId>geo-google</artifactId>
