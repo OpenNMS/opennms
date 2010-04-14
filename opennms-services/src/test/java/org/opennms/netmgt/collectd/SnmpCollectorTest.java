@@ -40,8 +40,10 @@ package org.opennms.netmgt.collectd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -119,7 +121,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
 
     private TestContext m_context;
 
-    private final String m_testHostName = "127.0.0.1";
+    private String m_testHostName;
 
     private final static String TEST_NODE_LABEL = "TestNode"; 
 
@@ -139,6 +141,8 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         assertNotNull(m_serviceTypeDao);
         
         RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
+
+        m_testHostName = InetAddress.getLocalHost().getHostAddress();
 
         OnmsIpInterface iface = null;
         OnmsNode testNode = null;
@@ -166,10 +170,10 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         assertEquals(1, ifaces.size());
         iface = ifaces.iterator().next();
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringReader(
-                "<?xml version=\"1.0\"?>\n"
-                + "<snmp-config port=\"9161\" retry=\"3\" timeout=\"800000\" read-community=\"public\" version=\"v2c\">\n"
-                + "</snmp-config>"        )));
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayInputStream(
+                ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<snmp-config port=\"9161\" retry=\"1\" timeout=\"1000\" read-community=\"public\" version=\"v2c\">\n"
+                + "</snmp-config>").getBytes("UTF-8") )));
 
         SnmpCollector collector = new SnmpCollector();
         collector.initialize(null);
