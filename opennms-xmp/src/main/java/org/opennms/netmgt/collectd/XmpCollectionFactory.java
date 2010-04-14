@@ -111,7 +111,7 @@ public class XmpCollectionFactory {
 
         InputStream cfgIn = new FileInputStream(configFile);
 
-        config = (XmpDatacollectionConfig)Unmarshaller.unmarshal(XmpDatacollectionConfig.class,new InputStreamReader(cfgIn));
+        config = (XmpDatacollectionConfig)Unmarshaller.unmarshal(XmpDatacollectionConfig.class,new InputStreamReader(cfgIn, "UTF-8"));
 
         cfgIn.close();
 

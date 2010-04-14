@@ -1,10 +1,18 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
+import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.user.server.rpc.impl.LegacySerializationPolicy;
 import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamWriter;
@@ -37,32 +45,58 @@ public class SerializationTest {
 	}
 
 	@Test
-	public void testUpdateLocation() throws Exception {
-		UpdateLocation location = new UpdateLocation();
-		location.setArea("East Coast");
-		location.setGeolocation("RDU");
-		location.setLatLng(new GWTLatLng(1D, 1D));
-		location.setLocationMonitorState(getLocationMonitorState());
+	public void testLocationInfo() throws Exception {
+		LocationInfo location = new LocationInfo();
 		location.setName("Bob");
 		location.setPollingPackageName("Harry");
+		location.setArea("East Coast");
+		location.setGeolocation("RDU");
+		location.setCoordinates("0.0,0.0");
+		location.setMonitorStatus(Status.UP);
 		writer.writeObject(location);
-		
-		Collection<Location> locations = new ArrayList<Location>();
-		locations.add(location);
-		UpdateLocations updateLocations = new UpdateLocations(locations);
-		writer.writeObject(updateLocations);
+	}
+
+	@Test
+	public void testLocationDetails() throws Exception {
+		LocationDetails l = new LocationDetails();
+		l.setLocationMonitorState(getLocationMonitorState());
+		writer.writeObject(l);
 	}
 
 	@Test
 	public void testBaseLocation() throws Exception {
 		BaseLocation location = new BaseLocation();
-		location.setArea("East Coast");
-		location.setGeolocation("RDU");
-		location.setLatLng(new GWTLatLng(1D, 1D));
-		location.setLocationMonitorState(getLocationMonitorState());
-		location.setName("Bob");
-		location.setPollingPackageName("Harry");
+
+		LocationInfo info = new LocationInfo();
+		info.setArea("East Coast");
+		info.setGeolocation("RDU");
+		info.setCoordinates("0.0,0.0");
+		info.setName("Bob");
+		info.setPollingPackageName("Harry");
+
+		LocationDetails details = new LocationDetails();
+		details.setLocationMonitorState(getLocationMonitorState());
+		details.setApplicationState(getApplicationState());
+
+		location.setLocationInfo(info);
+		location.setLocationDetails(details);
+
 		writer.writeObject(location);
+	}
+
+	private ApplicationState getApplicationState() {
+		final Collection<GWTApplication> applications = new ArrayList<GWTApplication>();
+		final List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+		final Map<String,List<GWTLocationSpecificStatus>> applicationStatuses = new HashMap<String,List<GWTLocationSpecificStatus>>();
+
+		services.add(getMonitoredService());
+		applications.add(new GWTApplication(1, "TestApp1", services));
+		applicationStatuses.put("TestApp1", statuses);
+		statuses.add(getLocationSpecificStatus());
+		final Date to = new Date();
+		final Date from = new Date(to.getTime() - (1000 * 60 * 60 * 24));
+		return new ApplicationState(to, from, applications, applicationStatuses);
 	}
 
 	private LocationMonitorState getLocationMonitorState() {
@@ -79,6 +113,7 @@ public class SerializationTest {
 		status.setLocationMonitor(getMonitor());
 		status.setMonitoredService(getMonitoredService());
 		status.setPollResult(getPollResult());
+		status.setPollTime(new Date());
 		return status;
 	}
 
@@ -100,6 +135,7 @@ public class SerializationTest {
 		service.setIpInterfaceId(2);
 		service.setNodeId(3);
 		service.setServiceName("HTTP");
+		service.setApplications(Arrays.asList("TestApp1","TestApp3"));
 		return service;
 	}
 

@@ -83,10 +83,10 @@ public class LoadDefaultMapController implements Controller {
 
 	      log.debug("Loading Default Map for user: " + user);
 
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-		    VMapInfo maps  = manager.getDefaultMapsMenu(user);
-			bw.write(ResponseAssembler.getMapsResponse(MapsConstants.LOADDEFAULTMAP_ACTION,maps));
+		    VMapInfo mapInfo  = manager.getDefaultMapsMenu(user);
+			bw.write(ResponseAssembler.getLoadDefaultMapResponse(mapInfo));
 		} catch (Exception e) {
 			log.error("Error while loading default map for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADDEFAULTMAP_ACTION));

@@ -37,10 +37,10 @@
  */
 package org.opennms.web.map.view;
 
-import org.opennms.web.map.db.LinkInfo;
+import java.util.HashMap;
+import java.util.Map;
 
-
-
+import org.opennms.web.map.MapsConstants;
 
 /**
  * @author antonio
@@ -48,84 +48,83 @@ import org.opennms.web.map.db.LinkInfo;
  */
 
 final public class VLink {
-	private VElement elem1;
-	private VElement elem2;
-	
+	private String elem1Type;
+	private int elem1Id;
+	private String elem2Type;
+    private int elem2Id;	
 	private int nodeid1;
 	private int nodeid2;
-    //the link typology defined in the map properties file
+	private Map<String, Integer> vlinkStatusMap;
+	private int numberOfLinks;
+    //the link type defined in the map properties file
 	private int linkTypeId;
-
-	private int linkStatus;
 	
-	private String id;
+	private String linkStatusString;
 	
-	public VLink(VElement elem1, VElement elem2) {
-		this.elem1 = elem1;
-		this.elem2 = elem2;
-		id = getLinkId();
+    private String id;
+	
+	public VLink(int elem1Id, String elem1Type, int elem2Id, String elem2Type, int linkTypeId) {
+		this.elem1Type = elem1Type;
+		this.elem2Type = elem2Type;
+        this.elem1Id = elem1Id;
+        this.elem2Id = elem2Id;
+        this.linkTypeId = linkTypeId;
+        this.numberOfLinks = 1;
+        this.vlinkStatusMap = new HashMap<String, Integer>();
+        String  a = elem1Id+elem1Type;
+        String  b = elem2Id+elem2Type;
+        String id = a + "-" + b;
+        
+        if (elem1Id > elem2Id) {
+            id = b + "-" + a;
+        }
+        
+        if (elem1Id == elem2Id && elem2Type.equals(MapsConstants.MAP_TYPE)) {
+            id = b + "-" + a;
+        }
+		id = id+"-"+linkTypeId;
+		this.id = id;
 	}
 	
-	public String getLinkStatusString() {
-		if (linkStatus == 0 ) return "up";
-		else if (linkStatus == 1 ) return "down";
-		else if (linkStatus == 2 ) return "admindown";
-        else if (linkStatus == 3 ) return "testing";
-        else if (linkStatus == 1001 ) return "good";
-        else if (linkStatus == 1002 ) return "bad";
-        else if (linkStatus == 1003 ) return "admindown";
-        else if (linkStatus == 1004 ) return "unknown";
-		else return "unknown";
+	public Map<String, Integer> getVlinkStatusMap() {
+        return vlinkStatusMap;
+    }
+
+    public void setVlinkStatusMap(Map<String, Integer> vlinkStatusMap) {
+        this.vlinkStatusMap = vlinkStatusMap;
+    }
+
+    public int getNumberOfLinks() {
+        return numberOfLinks;
+    }
+
+    public void setNumberOfLinks(int numberOfLinks) {
+        this.numberOfLinks = numberOfLinks;
+    }
+
+    public String getLinkStatusString() {
+	    return linkStatusString;
 	}
 
-	/**
+    public void setLinkStatusString(String linkStatusString) {
+        this.linkStatusString = linkStatusString;
+    }
+
+    /**
 	 * Asserts if the links are linking the same elements without considering their statuses
 	 */
 	public boolean equals(Object otherLink) {
 		if (!(otherLink instanceof VLink)) return false;
 		VLink link = (VLink) otherLink;
-		if (
-		 (
-		 (this.elem1.hasSameIdentifier(link.getFirst()) && this.elem2.hasSameIdentifier(link.getSecond()))
-			||
-		 (this.elem2.hasSameIdentifier(link.getFirst()) && this.elem1.hasSameIdentifier(link.getSecond()) ) 
-		 )
-		 	&&   
-		 this.linkTypeId==link.getLinkTypeId()
-		) return true;
-		return false;
+		return ( getId().equals(link.getId()));
 	}
 	
-	
-	public boolean equalsEndPoints(Object otherLink) {
-		if (!(otherLink instanceof VLink)) return false;
-		VLink link = (VLink) otherLink;
-		if (
-			 (this.elem1.hasSameIdentifier(link.getFirst()) && this.elem2.hasSameIdentifier(link.getSecond()))
-				||
-			 (this.elem2.hasSameIdentifier(link.getFirst()) && this.elem1.hasSameIdentifier(link.getSecond()) ) 
-			)
-		 return true;
-		return false;
-	}
-	
-	public int hashCode() {
-		int molt1 = 11;
-		if(elem1.getType().equals(VElement.NODE_TYPE))
-			molt1 = 13;
-		int molt2 = 15;
-		if(elem2.getType().equals(VElement.NODE_TYPE))
-			molt2 = 17;
-
-		return (3*elem1.getId())+(5*elem2.getId())+(7*(linkTypeId+1))*molt1*molt2;
+	public String getFirst() {
+		return elem1Id+elem1Type;
 	}
 
-	public VElement getFirst() {
-		return elem1;
-	}
-
-	public VElement getSecond() {
-		return elem2;
+	public String getSecond() {
+		return elem2Id+elem2Type;
 	}
 	
 	public int getLinkTypeId() {
@@ -136,43 +135,10 @@ final public class VLink {
 		linkTypeId = typeId;
 	}
 
-	public int getLinkOperStatus() {
-		return linkStatus;
-	}
-	
-	public void setLinkStatus(int operStatus) {
-		linkStatus = operStatus;
-	}
-	
 	public String toString() {
-			return ""+elem1.getId()+elem1.getType()+"-"+elem2.getId()+elem2.getType()+"-"+linkTypeId+"-"+linkStatus+" hashCode:"+this.hashCode();
+			return ""+getFirst()+"-"+getSecond()+"-"+linkTypeId+"-"+linkStatusString+" hashCode:"+this.hashCode();
 	}
 	
-    //like client function
-    private String getLinkId() {
-    	int id1=elem1.getId();
-    	int id2=elem2.getId();
-    	String type1=elem1.getType();
-    	String type2=elem2.getType();
-    	int typology=linkTypeId;
-    	String  a = id1+type1;
-    	String  b = id2+type2;
-    	String id = a + "-" + b;
-    	int  na = id1;
-    	int  nb = id2;
-    	
-    	if (na > nb) {
-    		id = b + "-" + a;
-    	}
-    	
-    	if (na == nb && type2.equals(VElement.MAP_TYPE)) {
-    		id = b + "-" + a;
-    	}
-    	id=id+"-"+typology;
-    	//alert(id);
-    	return id;    	
-    }
-    
     public String getId() {
 		return id;
 	}
@@ -191,6 +157,19 @@ final public class VLink {
 
     public void setSecondNodeid(int nodeid) {
         this.nodeid2 =nodeid;
+    }
+    
+    public int increaseLinks() {
+        return ++numberOfLinks;
+    }
+
+    public int increaseStatusMapLinks(String statusString) {
+        int i=0;
+        if (vlinkStatusMap.containsKey(statusString)) {
+            i = vlinkStatusMap.get(statusString);
+        } 
+        vlinkStatusMap.put(statusString, ++i);
+        return i;
     }
 
 }

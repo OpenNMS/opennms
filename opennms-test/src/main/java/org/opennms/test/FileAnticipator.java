@@ -38,10 +38,15 @@
 package org.opennms.test;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
@@ -298,7 +303,7 @@ public class FileAnticipator extends Assert {
 
     private File internalTempFile(File parent, String name, String contents) throws IOException {
         File f = internalTempFile(parent, name);
-        PrintWriter w = new PrintWriter(new FileWriter(f));
+        PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f), "UTF-8"));
         w.print(contents);
         w.close();
         return f;
@@ -373,18 +378,48 @@ public class FileAnticipator extends Assert {
     public void deleteExpected(boolean ignoreNonExistantFiles) {
         assertInitialized();
 
+        Collections.sort(m_expecting, new Comparator<File>() {
+            public int compare(File a, File b) {
+                return a.getAbsolutePath().compareTo(b.getAbsolutePath());
+            }
+        });
+        
+        List<String> errors = new ArrayList<String>();
+
         for (ListIterator<File> i = m_expecting.listIterator(m_expecting.size()); i.hasPrevious(); ) {
             File f = i.previous();
             if (!f.exists()) {
                 if (!ignoreNonExistantFiles) {
-                    fail("Expected file that needs to be deleted does not exist: " + f.getAbsolutePath());
+                    errors.add("Expected file that needs to be deleted does not exist: " + f.getAbsolutePath());
                 }
             } else {
-                assertTrue("Could not delete expected file: " + f.getAbsolutePath(), f.delete());
+                if (f.isDirectory()) {
+                    String[] files = f.list();
+                    if (files.length > 0) {
+                        StringBuffer fileList = new StringBuffer("{ ");
+                        fileList.append(files[0]);
+                        for (int j = 1; j < files.length; j++) {
+                            fileList.append(", ").append(files[j]);
+                        }
+                        fileList.append(" }");
+                        errors.add("Directory was not empty: " + f.getAbsolutePath() + ": " + fileList.toString());
+                    } else {
+                        if (!f.delete()) errors.add("Could not delete directory: " + f.getAbsolutePath());
+                    }
+                } else {
+                    if (!f.delete()) errors.add("Could not delete expected file: " + f.getAbsolutePath());
+                }
             }
             i.remove();
         }
         assertEquals("No expected files left over", m_expecting.size(), 0);
+        if (errors.size() > 0) {
+            StringBuffer errorString = new StringBuffer();
+            for (String error : errors) {
+                errorString.append(error).append("\n");
+            }
+            fail("Errors occurred inside FileAnticipator:\n" + errorString.toString().trim());
+        }
     }
 
     public boolean isInitialized() {

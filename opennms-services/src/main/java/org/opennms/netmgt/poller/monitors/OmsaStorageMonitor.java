@@ -65,8 +65,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     private static final String m_serviceName = "OMSAStorage";
     
-    static final String snmpAgentConfigKey = "org.opennms.netmgt.snmp.SnmpAgentConfig";
-        
     private static final String virtualDiskRollUpStatus = ".1.3.6.1.4.1.674.10893.1.20.140.1.1.19";
     private static final String arrayDiskLogicalConnectionVirtualDiskNumber = ".1.3.6.1.4.1.674.10893.1.20.140.3.1.5";
     private static final String arrayDiskNexusID = ".1.3.6.1.4.1.674.10893.1.20.130.4.1.26";
@@ -96,24 +94,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
 
     public void initialize(MonitoredService svc) {
-        NetworkInterface iface = svc.getNetInterface();
-        
-        
         super.initialize(svc);
-
-        InetAddress ipAddr = (InetAddress) iface.getAddress();
-
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
-        if (log().isDebugEnabled()) {
-            log().debug("initialize: SnmpAgentConfig address: " + agentConfig);
-            log().debug("initialize: setting SNMP peer attribute for interface " + ipAddr.getHostAddress());
-
-        }
-
-        iface.setAttribute(snmpAgentConfigKey, agentConfig);
-
-        log().debug("initialize: interface: " + agentConfig.getAddress() + " initialized.");
-
         return;
     }
 
@@ -202,8 +183,11 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     }
 
 	private SnmpAgentConfig configureAgent(Map<String, Object> parameters, NetworkInterface iface, InetAddress ipaddr) throws RuntimeException {
-		SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(snmpAgentConfigKey);
+        // Retrieve this interface's SNMP peer object
+        //
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));

@@ -47,10 +47,12 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -274,9 +276,9 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
                     throw new DataAccessResourceFailureException("Event resource '" + resource + "' is not a file resource and cannot be saved.  Nested exception: " + e, e);
                 }
                 
-                FileWriter fileWriter;
+                Writer fileWriter;
                 try {
-                    fileWriter = new FileWriter(file);
+                    fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
                 } catch (IOException e) {
                     throw new DataAccessResourceFailureException("Event file '" + file + "' could not be opened.  Nested exception: " + e, e);
                 }

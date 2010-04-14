@@ -80,7 +80,7 @@ public class ClearMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		log.info("Clearing map.");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-					.getOutputStream()));
+					.getOutputStream(), "UTF-8"));
 	
 		try {
 
@@ -88,8 +88,8 @@ public class ClearMapController implements Controller {
 				manager.clearMap();
 				bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLEAR_ACTION));
 			} else {
-				log.warn(request.getRemoteUser() +": Cannot Clear Map because user role is:" + MapsConstants.ROLE_USER);
-				bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLEAR_ACTION));
+	            log.warn("Cannot Clear maps because not admin role for user: " + request.getRemoteUser() );
+	            bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLEAR_ACTION));
 			}
 
 		} catch (Exception e) {

@@ -50,7 +50,7 @@
   <jsp:param name="breadcrumb" value="Change Password" />
 </jsp:include>
 
-<script language="JavaScript">
+<script type="text/javascript">
   function verifyGoForm() 
   {
     if (document.goForm.pass1.value == document.goForm.pass2.value) 

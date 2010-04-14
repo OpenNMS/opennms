@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
@@ -11,9 +12,19 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.util.ReflectionUtils;
 
+/**
+ * <p>This {@link TestExecutionListener} looks for the {@link JUnitCollector} annotation
+ * and uses attributes on it to:</p>
+ * <ul>
+ * <li>Load configuration files for the {@link ServiceCollector}</li>
+ * <li>Set up {@link FileAnticipator} checks for files created
+ * during the unit test execution</li>
+ * </ul>
+ */
 public class JUnitCollectorExecutionListener extends AbstractTestExecutionListener {
 
     private File m_snmpRrdDirectory;
@@ -53,6 +64,10 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             HttpCollectionConfigFactory factory = new HttpCollectionConfigFactory(is);
             HttpCollectionConfigFactory.setInstance(factory);
             HttpCollectionConfigFactory.init();
+        } else if (config.datacollectionType().equalsIgnoreCase("snmp")) {
+            DataCollectionConfigFactory factory = new DataCollectionConfigFactory(is);
+            DataCollectionConfigFactory.setInstance(factory);
+            DataCollectionConfigFactory.init();
         } else {
             throw new UnsupportedOperationException("data collection type '" + config.datacollectionType() + "' not supported");
         }
@@ -92,18 +107,18 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         m_fileAnticipator.tearDown();
     }
 
-    private void deleteChildDirectories(File directory) {
+    private static void deleteChildDirectories(File directory) {
         for (File f : directory.listFiles()) {
             if (f.isDirectory()) {
                 deleteChildDirectories(f);
-            }
-            if (f.list().length == 0) {
-                f.delete();
+                if (f.list().length == 0) {
+                    f.delete();
+                }
             }
         }
     }
 
-    private JUnitCollector findCollectorAnnotation(TestContext testContext) {
+    private static JUnitCollector findCollectorAnnotation(TestContext testContext) {
         Method testMethod = testContext.getTestMethod();
         JUnitCollector config = testMethod.getAnnotation(JUnitCollector.class);
         if (config != null) {

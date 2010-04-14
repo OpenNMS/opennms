@@ -80,7 +80,7 @@
 	<jsp:param name="breadcrumb" value="Role List" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
 	function doOperation(op, role) {
 		document.roleForm.operation.value=op;

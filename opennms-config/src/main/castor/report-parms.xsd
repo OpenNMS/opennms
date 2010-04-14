@@ -30,6 +30,7 @@
 		<sequence>
 			<element maxOccurs="1" minOccurs="1" name="default-interval" type="this:date-interval" />
 			<element maxOccurs="1" minOccurs="1" name="default-count" type="int" />
+			<element maxOccurs="1" minOccurs="0" name="default-time" type="this:time" />
 		</sequence>
 
 		<attribute name="name" type="string" use="required">
@@ -154,6 +155,40 @@
 		<restriction base="string">
 			<pattern value="(day|month|year)" />
 		</restriction>
+	</simpleType>
+	
+	<complexType name="time">
+		<annotation>
+			<documentation>
+				24 hour clock time
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="hours" type="this:hour">
+				<annotation>
+					<documentation>hours</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="1" minOccurs="1" name="minutes" type="this:minute">
+				<annotation>
+					<documentation>minutes</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	
+	<simpleType name='hour'>
+  		<restriction base='int'>
+    		<maxInclusive value='24'/>
+    		<minInclusive value="0" />
+  		</restriction>
+	</simpleType>
+	
+	<simpleType name='minute'>
+  		<restriction base='int'>
+    		<maxInclusive value='59'/>
+    		<minInclusive value="0" />
+  		</restriction>
 	</simpleType>
 	
 </schema>

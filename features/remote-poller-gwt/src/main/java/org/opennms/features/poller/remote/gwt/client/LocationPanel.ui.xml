@@ -42,10 +42,27 @@
         background-repeat: no-repeat;	
     }
     
+    .upStatus{
+    	background-image: "images/icon-UP.png";
+    }
+    
+    .downStatus{
+    	background-image: "images/icon-DOWN.png";
+    }
+    
+    .marginalStatus{
+    	background-image: "images/icon-MARGINAL.png";
+    }
+    
+    .unknownStatus{
+        background-image: "images/icon-UNKNOWN.png";
+    }
   </ui:style>
-
-  <g:ScrollPanel styleName="{style.scrollPanel}">
+  
+  <g:HTMLPanel >
+  <g:ScrollPanel ui:field="m_scrollPanel" styleName="{style.scrollPanel}">
     <g:FlexTable ui:field='m_locations' styleName="{style.flexTable}" />
   </g:ScrollPanel>
+  </g:HTMLPanel>
 
 </ui:UiBinder>

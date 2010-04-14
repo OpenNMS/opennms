@@ -68,6 +68,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
@@ -86,6 +87,7 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -109,7 +111,7 @@ public class Collectd extends AbstractServiceDaemon implements
         if (s_instrumentation == null) {
             String className = System.getProperty("org.opennms.collectd.instrumentationClass", DefaultCollectdInstrumentation.class.getName());
             try { 
-                s_instrumentation = (CollectdInstrumentation) ClassUtils.forName(className).newInstance();
+                s_instrumentation = (CollectdInstrumentation) ClassUtils.forName(className, Thread.currentThread().getContextClassLoader()).newInstance();
             } catch (Exception e) {
                 s_instrumentation = new DefaultCollectdInstrumentation();
             }
@@ -231,8 +233,11 @@ public class Collectd extends AbstractServiceDaemon implements
         // configureSNMP
         ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
         
-        //thresholds configuration change
+        // thresholds configuration change
         ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
+
+        // daemon configuration change
+        ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
 
         getEventIpcManager().addEventListener(this, ueiList);
     }
@@ -661,7 +666,7 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     public void onEvent(final Event event) {
 
-        m_transTemplate.execute(new TransactionCallback() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
                 onEventInTransaction(event);
@@ -700,6 +705,8 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleServiceDeleted(event);
             } else if (event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
                 handleThresholdConfigurationChanged(event);
+            } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
+                handleReloadDaemonConfig(event);
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);
@@ -1033,18 +1040,50 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     private void handleThresholdConfigurationChanged(Event event) {
         log().debug("handleThresholdConfigurationChanged: Reloading thresholding configuration in collectd");
-        try {
-            ThresholdingConfigFactory.reload();
-            ThreshdConfigFactory.reload(); // Added to avoid static methods on ThresholdingVisitor
-        } catch (Exception e) {
-            log().error("handleThresholdConfigurationChanged: Failed to reload threshold configuration because "+e.getMessage(), e);
-            return; //Do nothing else - the config is borked, so we carry on with what we've got which should still be relatively ok
-        }
-        
         synchronized (m_collectableServices) {
 	        for(CollectableService service: m_collectableServices) {
 	            service.reinitializeThresholding();
 	        }
+        }
+    }
+    
+    private void handleReloadDaemonConfig(Event event) {
+        boolean isTarget = false;
+        List<Parm> parmCollection = event.getParms().getParmCollection();
+        for (Parm parm : parmCollection) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Threshd".equalsIgnoreCase(parm.getValue().getContent())) {
+                isTarget = true;
+                break;
+            }
+        }
+        if (isTarget) {
+            String thresholdsFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
+            String threshdFile = ConfigFileConstants.getFileName(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+            String targetFile = thresholdsFile; // Default
+            for (Parm parm : parmCollection) {
+                if (EventConstants.PARM_CONFIG_FILE_NAME.equals(parm.getParmName()) && threshdFile.equalsIgnoreCase(parm.getValue().getContent())) {
+                    targetFile = threshdFile;
+                }
+            }
+            EventBuilder ebldr = null;
+            try {
+                if (targetFile.equals(thresholdsFile))
+                    ThresholdingConfigFactory.reload();
+                if (targetFile.equals(threshdFile))
+                    ThreshdConfigFactory.reload();
+                ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");
+                getEventIpcManager().sendNow(ebldr.getEvent());
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
+            } catch (Exception e) {
+                log().error("handleReloadDaemonConfig: Error reloading configuration: " + e, e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
+                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
+            }
+            if (ebldr != null) {
+                getEventIpcManager().sendNow(ebldr.getEvent());
+            }
         }
     }
     

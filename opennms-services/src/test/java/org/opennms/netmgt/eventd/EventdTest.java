@@ -45,9 +45,8 @@ import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -104,7 +103,7 @@ public class EventdTest extends OpenNMSTestCase {
      * @param node
      */
     private void sendNodeDownEvent(String reductionKey, MockNode node) {
-        Event e = MockEventUtil.createNodeDownEvent("Test", node);
+        EventBuilder e = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
         if (reductionKey != null) {
             AlarmData data = new AlarmData();
@@ -115,19 +114,17 @@ public class EventdTest extends OpenNMSTestCase {
             e.setAlarmData(null);
         }
 
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent("testing");
-        e.setLogmsg(logmsg);
+        e.setLogDest("logndisplay");
+        e.setLogMessage("testing");
         
-        m_eventdIpcMgr.sendNow(e);
+        m_eventdIpcMgr.sendNow(e.getEvent());
     }
 
     /**
      * @param reductionKey
      */
     private void sendServiceDownEvent(String reductionKey, MockService svc) {
-        Event e = MockEventUtil.createServiceUnresponsiveEvent("Test", svc, "Not responding");
+        EventBuilder e = MockEventUtil.createServiceUnresponsiveEventBuilder("Test", svc, "Not responding");
 
         if (reductionKey != null) {
             AlarmData data = new AlarmData();
@@ -138,12 +135,10 @@ public class EventdTest extends OpenNMSTestCase {
             e.setAlarmData(null);
         }
 
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent("testing");
-        e.setLogmsg(logmsg);
+        e.setLogDest("logndisplay");
+        e.setLogMessage("testing");
         
-        m_eventdIpcMgr.sendNow(e);
+        m_eventdIpcMgr.sendNow(e.getEvent());
     }
 
 

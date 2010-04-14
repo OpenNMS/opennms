@@ -47,7 +47,7 @@
   <jsp:param name="breadcrumb" value="Admin Storage" />
 </jsp:include>
 
-   <script type="text/javascript" language="javascript">
+   <script type="text/javascript">
 
 
    //-------------------------------------------------------------------------------
@@ -198,7 +198,7 @@
 	<c:when test="${model.bucketexist}">
 	<tr>
 	<th>
-	 <form id="FormUpload1" method="POST" enctype="multipart/form-data"
+	 <form id="FormUpload1" method="post" enctype="multipart/form-data"
           action="${model.url}/storage/buckets/${model.id}?responsetype=text"
           onsubmit="RWS_ProcessInFrameResponse(this, postFileCallback)">
       <input type="file" name="rws-storage-upload" />

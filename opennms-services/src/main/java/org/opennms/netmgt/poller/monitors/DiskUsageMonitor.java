@@ -76,8 +76,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 final public class DiskUsageMonitor extends SnmpMonitorStrategy {
     private static final String m_serviceName = "DISK-USAGE";
     
-    static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
-        
     private static final String hrStorageDescr = ".1.3.6.1.2.1.25.2.3.1.3";
     private static final String hrStorageSize  = ".1.3.6.1.2.1.25.2.3.1.5";
     private static final String hrStorageUsed  = ".1.3.6.1.2.1.25.2.3.1.6";
@@ -144,29 +142,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
      *                interface from being monitored.
      */
     public void initialize(MonitoredService svc) {
-        NetworkInterface iface = svc.getNetInterface();
-        // Log4j category
-        //
-        // Get interface address from NetworkInterface
-        //
         super.initialize(svc);
-
-        InetAddress ipAddr = (InetAddress) iface.getAddress();
-
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
-        if (log().isDebugEnabled()) {
-            log().debug("initialize: SnmpAgentConfig address: " + agentConfig);
-        }
-
-        // Add the snmp config object as an attribute of the interface
-        //
-        if (log().isDebugEnabled())
-            log().debug("initialize: setting SNMP peer attribute for interface " + ipAddr.getHostAddress());
-
-        iface.setAttribute(SNMP_AGENTCONFIG_KEY, agentConfig);
-
-        log().debug("initialize: interface: " + agentConfig.getAddress() + " initialized.");
-
         return;
     }
 
@@ -194,8 +170,11 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
         
-        SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
+        // Retrieve this interface's SNMP peer object
+        //
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
         
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));

@@ -79,12 +79,12 @@ public class CloseMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		
 		BufferedWriter  bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 
 		try {
 			
 			manager.closeMap();
-			bw.write(ResponseAssembler.getCloseMapResponse(MapsConstants.CLOSEMAP_ACTION));
+			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLOSEMAP_ACTION));
 		} catch (Exception e) {
 			log.error(this.getClass().getName()+" Failure: "+e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLOSEMAP_ACTION));

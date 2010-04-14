@@ -38,7 +38,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -63,19 +62,14 @@ public abstract class NotificationCommandManager {
     private Map<String, Command> m_commands;
 
     /**
-     * 
-     */
-    protected InputStream configIn;
-
-    /**
      * Populate the internal list of notification commands from an XML file.
      *  
      * @param reader contains the XML file to be parsed
      * @throws MarshalException
      * @throws ValidationException
      */
-    protected void parseXML(Reader reader) throws MarshalException, ValidationException {
-        NotificationCommands config = getXML(reader);
+    protected void parseXML(InputStream reader) throws MarshalException, ValidationException {
+        NotificationCommands config = CastorUtils.unmarshal(NotificationCommands.class, reader);
 
         Map<String, Command> commands = new HashMap<String, Command>();
         for (Command curCommand : getCommandsFromConfig(config)) {
@@ -89,13 +83,7 @@ public abstract class NotificationCommandManager {
         m_commands = commands;
     }
 
-    @SuppressWarnings("deprecation")
-    private NotificationCommands getXML(Reader reader)
-            throws MarshalException, ValidationException {
-        return CastorUtils.unmarshal(NotificationCommands.class, reader);
-    }
-
-    private List<Command> getCommandsFromConfig(NotificationCommands config) {
+    private static List<Command> getCommandsFromConfig(NotificationCommands config) {
         if (config == null) {
             log().warn("no notification commands found");
             return Collections.emptyList();
@@ -105,7 +93,7 @@ public abstract class NotificationCommandManager {
     
     public abstract void update() throws Exception;
 
-    private Category log() {
+    private static Category log() {
         return ThreadCategory.getInstance(NotificationCommandManager.class);
     }
 

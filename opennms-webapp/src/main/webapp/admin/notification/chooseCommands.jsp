@@ -80,7 +80,7 @@
   <jsp:param name="breadcrumb" value="Choose Commands" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
     function next() 
     {
@@ -106,10 +106,10 @@
 
 </script>
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
 
 <h3>Choose the commands to use for each user and group. More than one
-command can be choosen for each (except for email addresses). Also
+command can be chosen for each (except for email addresses). Also
 choose the desired behavior for automatic notification on "UP" events.</h3>
 
 <form method="post" name="commands"

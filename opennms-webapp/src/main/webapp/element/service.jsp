@@ -76,7 +76,7 @@
        
 <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 function doDelete() {
      if (confirm("Are you sure you want to proceed? This action will permanently delete this service and cannot be undone."))
      {
@@ -91,7 +91,7 @@ function doDelete() {
       <h2><%=service.getServiceName()%> service on <%=service.getIpAddress()%></h2>
 
          <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
-         <form method="POST" name="delete" action="admin/deleteService">
+         <form method="post" name="delete" action="admin/deleteService">
          <input type="hidden" name="node" value="<%=nodeId%>">
          <input type="hidden" name="intf" value="<%=ipAddr%>">
          <input type="hidden" name="service" value="<%=serviceId%>">

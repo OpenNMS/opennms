@@ -88,7 +88,7 @@ public class AuthorizationTest extends AbstractTransactionalDaoTestCase {
    
    public void enableAuthorizationFilter(final String... groupNames) {
        
-       HibernateCallback cb = new HibernateCallback() {
+       HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
            public Object doInHibernate(Session session) throws HibernateException, SQLException {
                session.enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
@@ -102,7 +102,7 @@ public class AuthorizationTest extends AbstractTransactionalDaoTestCase {
 
    public void disableAuthorizationFilter() {
        
-       HibernateCallback cb = new HibernateCallback() {
+       HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
            public Object doInHibernate(Session session) throws HibernateException, SQLException {
                session.disableFilter("authorizedOnly");

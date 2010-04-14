@@ -111,7 +111,7 @@ public class CommandExecutor implements ExecutorStrategy {
             // see if we have streamed arguments
             if (streamed) {
                 // make sure the output we are writting is buffered
-                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream()));
+                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), "UTF-8"));
 
                 // put the streamed arguments into the stream
                 if (log.isDebugEnabled()) {

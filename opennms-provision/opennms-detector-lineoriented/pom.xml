@@ -20,7 +20,7 @@
     	<scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>openldap</groupId>
+    	<groupId>com.novell.ldap</groupId>
     	<artifactId>jldap</artifactId>
     	<scope>compile</scope>
     </dependency>

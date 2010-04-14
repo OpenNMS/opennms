@@ -247,7 +247,7 @@ public class OssDaoOpenNMSImpl {
 				String uniqueKey=alarm.getApplicationDN()+alarm.getOssPrimaryKey();
 
 				//_alarmDao.save(alarm); // - replaced by;
-				transTemplate.execute(new TransactionCallback() {
+				transTemplate.execute(new TransactionCallback<Object>() {
 					public Object doInTransaction(TransactionStatus status) {
 						_alarmDao.save(alarm);
 						return null;
@@ -315,7 +315,7 @@ public class OssDaoOpenNMSImpl {
 			try { // if alarm in database then update alarm in OpenNMS
 				if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey: alarm to update in database"+ alarmToStringBrief(alarm));
 
-				transTemplate.execute(new TransactionCallback() {
+				transTemplate.execute(new TransactionCallback<Object>() {
 					public Object doInTransaction(TransactionStatus status) {
 						_alarmDao.update(alarm);
 						return null;
@@ -381,7 +381,7 @@ public class OssDaoOpenNMSImpl {
 	 * Not Thread Safe - only to be called from within the synchronised methods
 	 */
 	private void localUpdateAlarmCache(){
-		transTemplate.execute(new TransactionCallback() {
+		transTemplate.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction(TransactionStatus status) {
 				localUpdateAlarmCacheTransaction();
 				return null;
@@ -724,7 +724,7 @@ public class OssDaoOpenNMSImpl {
 						
 						// save asset data back with new node information 
 						// (Note - data may not have changed)
-						transTemplate.execute(new TransactionCallback() {
+						transTemplate.execute(new TransactionCallback<Object>() {
 							public Object doInTransaction(TransactionStatus status) {
 								_assetRecordDao.update(assetRecord);
 								return null;

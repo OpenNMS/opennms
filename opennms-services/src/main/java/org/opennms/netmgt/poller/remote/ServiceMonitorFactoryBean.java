@@ -47,13 +47,13 @@ import org.springframework.util.Assert;
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class ServiceMonitorFactoryBean implements FactoryBean, InitializingBean {
+public class ServiceMonitorFactoryBean implements FactoryBean<ServiceMonitor>, InitializingBean {
 	
 	private ServiceMonitor m_serviceMonitor;
-	private Class<?> m_monitorClass;
+	private Class<? extends ServiceMonitor> m_monitorClass;
 	private Map<String,Object> m_monitorParameters;
 	
-	public void setMonitorClass(Class<?> serviceClass) {
+	public void setMonitorClass(Class<? extends ServiceMonitor> serviceClass) {
 		m_monitorClass = serviceClass;
 	}
 	
@@ -61,11 +61,11 @@ public class ServiceMonitorFactoryBean implements FactoryBean, InitializingBean 
 		m_monitorParameters = serviceParameters;
 	}
 
-	public Object getObject() throws Exception {
+	public ServiceMonitor getObject() throws Exception {
 		return m_serviceMonitor;
 	}
 
-	public Class<?> getObjectType() {
+	public Class<? extends ServiceMonitor> getObjectType() {
 		return m_monitorClass;
 	}
 

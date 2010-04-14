@@ -59,7 +59,7 @@
 
 
 <%-- A script to Save the file --%>
-<script language="Javascript" type="text/javascript">
+<script type="text/javascript">
     function customizeReport()
     {
         document.view_form.action.value = "Customize"; 

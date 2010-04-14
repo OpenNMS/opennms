@@ -91,17 +91,16 @@ public class NewMapController implements Controller {
 			
 
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 
 		try {
 			if (request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
 				
-				if (log.isInfoEnabled())
-					log.info("New Map in admin mode: creating new map");
-			VMap map = manager.newMap(VMap.DEFAULT_NAME, MapsConstants.ROLE_ADMIN, request
+			log.info("New Map in admin mode: creating new map");
+			VMap map = manager.newMap(request
 						.getRemoteUser(), request.getRemoteUser(),
 						mapWidth, mapHeight);
-			bw.write(ResponseAssembler.getMapResponse(MapsConstants.NEWMAP_ACTION, map, 1, 1, false));
+			bw.write(ResponseAssembler.getMapResponse(map));
 			} else {
 				log.warn(request.getRemoteUser() + ": User is not in Admin mode, cannot create new map");
 				bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.NEWMAP_ACTION));

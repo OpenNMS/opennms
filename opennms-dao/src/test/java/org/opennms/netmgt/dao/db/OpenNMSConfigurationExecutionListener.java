@@ -36,7 +36,7 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
- * TemporaryDatabaseExecutionListener
+ * This {@link TestExecutionListener} initializes the {@link DaoTestConfigBean}.
  *
  * @author brozow
  */

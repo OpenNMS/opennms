@@ -56,6 +56,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import junit.framework.Assert;
@@ -76,7 +77,7 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     private static Class<? extends Object> getClass(Object obj) {
-        return (obj != null) ? obj.getClass() : ConfigurationTestUtils.class.getClass();
+        return (obj != null) ? obj.getClass() : ConfigurationTestUtils.class;
     }
     
     public static Resource getSpringResourceForResource(Object obj, String resource) {
@@ -108,7 +109,13 @@ public class ConfigurationTestUtils extends Assert {
      */
     @Deprecated
     public static Reader getReaderForResource(Object obj, String resource) {
-        return new InputStreamReader(getInputStreamForResource(obj, resource));
+        Reader retval = null;
+        try {
+            retval = new InputStreamReader(getInputStreamForResource(obj, resource), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            fail("Your JVM doesn't support UTF-8 encoding, which is pretty much impossible.");
+        }
+        return retval;
     }
 
     public static InputStream getInputStreamForResource(Object obj, String resource) {
@@ -161,7 +168,13 @@ public class ConfigurationTestUtils extends Assert {
      */
     @Deprecated
     public static Reader getReaderForConfigFile(String configFile) throws FileNotFoundException {
-        return new InputStreamReader(getInputStreamForConfigFile(configFile));
+        Reader retval = null;
+        try {
+            retval = new InputStreamReader(getInputStreamForConfigFile(configFile), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            fail("Your JVM doesn't support UTF-8 encoding, which is pretty much impossible.");
+        }
+        return retval;
     }
 
     public static InputStream getInputStreamForConfigFile(String configFile) throws FileNotFoundException {

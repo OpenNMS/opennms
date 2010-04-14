@@ -37,17 +37,14 @@ package org.opennms.netmgt.dao.castor;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 public class DefaultDatabaseReportConfigDaoTest {
     
     private static final String NAME = "defaultCalendarReport";
-    private static final String DESCRIPTION = "default calendar report";
     private static final String REPORT_SERVICE = "availabilityReportService";
     private static DefaultDatabaseReportConfigDao m_dao;
     

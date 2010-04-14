@@ -5,8 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +119,7 @@ public class PersistenceSerializationTest {
         StringBuffer exampleXML = new StringBuffer();
         File foreignSources = new File(ClassLoader.getSystemResource("foreign-sources.xml").getFile());
         assertTrue("foreign-sources.xml is readable", foreignSources.canRead());
-        BufferedReader reader = new BufferedReader(new FileReader(foreignSources));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(foreignSources), "UTF-8"));
         String line;
         while (true) {
             line = reader.readLine();

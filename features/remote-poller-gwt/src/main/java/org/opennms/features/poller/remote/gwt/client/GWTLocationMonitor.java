@@ -1,10 +1,11 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTLocationMonitor implements IsSerializable {
+public class GWTLocationMonitor implements Serializable, IsSerializable, Comparable<GWTLocationMonitor> {
 	private static final long serialVersionUID = 1L;
 
 	private Integer m_id;
@@ -13,7 +14,7 @@ public class GWTLocationMonitor implements IsSerializable {
 	private String m_name;
 	private Date m_lastCheckInTime;
 
-	public int getId() {
+	public Integer getId() {
 		return m_id;
 	}
 	public void setId(final Integer id) {
@@ -46,6 +47,19 @@ public class GWTLocationMonitor implements IsSerializable {
 	}
 	
 	public String toString() {
-		return "GWTLocationMonitor[id=" + m_id + ",status=" + m_status + ",definitionName=" + m_definitionName + ",name=" + m_name + ",lastCheckInTime=" + m_lastCheckInTime + "]";
+		return "GWTLocationMonitor[name=" + m_name + ",status=" + m_status + ",lastCheckInTime=" + m_lastCheckInTime + "]";
+	}
+	public int compareTo(GWTLocationMonitor that) {
+		int lastCompare = this.getDefinitionName().compareTo(that.getDefinitionName());
+		if (lastCompare != 0) return lastCompare;
+		
+		lastCompare = this.getName().compareTo(that.getName());
+		if (lastCompare != 0) return lastCompare;
+
+		lastCompare = this.getStatus().compareTo(that.getStatus());
+		if (lastCompare != 0) return lastCompare;
+		
+		lastCompare = this.getLastCheckInTime().compareTo(that.getLastCheckInTime());
+		return lastCompare;
 	}
 }

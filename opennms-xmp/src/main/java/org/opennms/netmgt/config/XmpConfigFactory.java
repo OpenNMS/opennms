@@ -109,7 +109,7 @@ public class XmpConfigFactory {
         InputStream cfgIn = new FileInputStream(configFile);
 
         config = (XmpConfig)Unmarshaller.unmarshal(XmpConfig.class,
-                                                   new InputStreamReader(cfgIn));
+                                                   new InputStreamReader(cfgIn, "UTF-8"));
         cfgIn.close();
         return; 
     }

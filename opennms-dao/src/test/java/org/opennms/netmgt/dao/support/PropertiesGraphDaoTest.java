@@ -41,8 +41,10 @@ package org.opennms.netmgt.dao.support;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,7 +53,6 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import org.opennms.netmgt.dao.support.PropertiesGraphDao;
 import org.opennms.netmgt.model.AdhocGraphType;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -317,7 +318,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         try {
             File f = fa.tempFile("snmp-graph.properties");
             
-            FileWriter writer = new FileWriter(f);
+            Writer writer = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
             // Don't include mib2.discards in the reports line
             String noDiscards = s_prefab.replace(", mib2.discards", "");
             writer.write(noDiscards);
@@ -344,7 +345,7 @@ public class PropertiesGraphDaoTest extends TestCase {
              */
             Thread.sleep(1100);
 
-            writer = new FileWriter(f);
+            writer = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
             writer.write(s_prefab);
             writer.close();
             
@@ -370,7 +371,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         try {
             File f = fa.tempFile("snmp-graph.properties");
 
-            FileWriter writer = new FileWriter(f);
+            Writer writer = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
             writer.write(s_prefab);
             writer.close();
 
@@ -395,7 +396,7 @@ public class PropertiesGraphDaoTest extends TestCase {
              */
             Thread.sleep(1100);
 
-            writer = new FileWriter(f);
+            writer = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
             // Don't include the reports line at all so we get an error
             String noReports = s_prefab.replace("reports=mib2.HCbits, mib2.bits, mib2.discards", "");
             writer.write(noReports);
@@ -430,7 +431,7 @@ public class PropertiesGraphDaoTest extends TestCase {
         try {
             File f = fa.tempFile("snmp-adhoc-graph.properties");
             
-            FileWriter writer = new FileWriter(f);
+            Writer writer = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
             // Set the image type to image/cheeesy
             String cheesy = s_adhoc.replace("image/png", "image/cheesy");
             writer.write(cheesy);
@@ -455,7 +456,7 @@ public class PropertiesGraphDaoTest extends TestCase {
              */
             Thread.sleep(1100);
 
-            writer = new FileWriter(f);
+            writer = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
             writer.write(s_adhoc);
             writer.close();
             

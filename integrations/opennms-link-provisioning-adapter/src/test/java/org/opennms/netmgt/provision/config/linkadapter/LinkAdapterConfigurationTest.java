@@ -2,8 +2,9 @@ package org.opennms.netmgt.provision.config.linkadapter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Properties;
@@ -110,7 +111,7 @@ public class LinkAdapterConfigurationTest {
     }
     
     private void printFile(File file) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(file));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
         StringBuilder sb = new StringBuilder();
         String line = null;
 

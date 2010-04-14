@@ -1,5 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.util.List;
+
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
@@ -15,7 +17,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
@@ -27,16 +28,18 @@ public class LocationPanel extends Composite {
 		String alternateRow();
 		String flexTableHeader();
 		String sortSelected();
+		String upStatus();
+		String downStatus();
+		String marginalStatus();
+		String unknownStatus();
 	}
 
 	private static final Binder BINDER = GWT.create(Binder.class);
-	private static final int MAX_ROWS = 20;
-	private int startIndex = 0;
 	private transient HandlerManager m_eventBus;
 	
 	@UiField FlexTable m_locations;
 	@UiField SelectionStyle selectionStyle;
-
+	
 	public LocationPanel() {
 		super();
 		initWidget(BINDER.createAndBindUi(this));
@@ -44,6 +47,7 @@ public class LocationPanel extends Composite {
 		m_locations.setText(0, 1, "Name");
 		m_locations.setText(0, 2, "Area");
 		m_locations.getRowFormatter().addStyleName(0, selectionStyle.flexTableHeader());
+		
 	}
 
 	@UiHandler("m_locations")
@@ -97,33 +101,73 @@ public class LocationPanel extends Composite {
 		}
 	}
 
-
 	public void update(final LocationManager locationManager) {
 		if (locationManager == null) {
 			return;
 		}
 		
 		int count = 1;
-		for (Location location : locationManager.getVisibleLocations()) {
-		    Image icon = new Image();
-            icon.setUrl(location.getImageURL());
-
-            m_locations.setWidget(count, 0, icon);
-            m_locations.setText(count, 1, location.getName());
-		    m_locations.setText(count, 2, location.getArea());
+		List<Location> visibleLocations = locationManager.getVisibleLocations();
+		
+		long aTotal = 0;
+		long bTotal = 0;
+		long cTotal = 0;
+		long dTotal = 0;
+		long eTotal = 0;
+		
+        for (Location location : visibleLocations) {
+            
+            long aStart = System.currentTimeMillis();
+            String statusStyle = getStatusStyle(location);
+            aTotal += System.currentTimeMillis() - aStart;
+            
+            long cStart = System.currentTimeMillis();
+            
+            m_locations.setText(count, 1, location.getLocationInfo().getName());
+            cTotal += System.currentTimeMillis() - cStart;
+            
+            long bStart = System.currentTimeMillis();
+            m_locations.setText(count, 0, "&nbsp;");
+            m_locations.getCellFormatter().addStyleName(count, 0, statusStyle);
+            bTotal +=  System.currentTimeMillis() - bStart;
+            
+            long dStart = System.currentTimeMillis();
+		    m_locations.setText(count, 2, location.getLocationInfo().getArea());
+		    dTotal += System.currentTimeMillis() - dStart;
 		    
+		    long eStart = System.currentTimeMillis();
 		    if(count %2 != 0) {
 		        m_locations.getRowFormatter().addStyleName(count, selectionStyle.alternateRow());
 		    }
+		    eTotal += System.currentTimeMillis() - eStart;
 		    
 			count++;
+			
 		}
-
+		
 		while (m_locations.getRowCount() > count) {
 			m_locations.removeRow(m_locations.getRowCount() - 1);
 		}
+
+		Window.alert("aTotal: " + aTotal + "\nbTotal: " + bTotal + "\ncTotal: " + cTotal + "\ndTotal: " + dTotal + "\neTotal: " + eTotal);
 		
 	}
+
+    private String getStatusStyle(Location location) {
+        switch(location.getLocationInfo().getMonitorStatus()) {
+            case UP:
+                 return selectionStyle.upStatus();
+            case DOWN:
+                return selectionStyle.downStatus();
+            case MARGINAL:
+                return selectionStyle.marginalStatus();
+            case UNKNOWN:
+                return selectionStyle.unknownStatus();
+            default:
+                return selectionStyle.unknownStatus();
+        }
+        
+    }
 
 
 

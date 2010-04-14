@@ -85,7 +85,7 @@
 <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
 <script type="text/javascript" src="js/GraphResourceView.js" ></script>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
   
   function validateResource()
   {
@@ -144,12 +144,12 @@
 </script>
 <div class="TwoColLeft">
   
-    <h3 class="o-box">Standard Resource<br>Performance Reports</h3>
+    <h3 class="o-box">Standard Resource<br/>Performance Reports</h3>
 	<div class="boxWrapper">
     <p>
       Choose a resource for a standard performance report.
     </p>
-	<script language="Javascript" type="text/javascript">
+	<script type="text/javascript">
 		var standardResourceData = {total:"${fn:length(topLevelResources)}", records:[
 									<c:set var="first" value="true"/>
 									<c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">
@@ -180,12 +180,12 @@
   </div>
   
 
-    <h3 class="o-box">Custom Resource<br>Performance Reports</h3>
+    <h3 class="o-box">Custom Resource<br/>Performance Reports</h3>
 	<div class="boxWrapper">
     <p>
       Choose a resource for a custom performance report.
     </p>
-	<script language="Javascript" type="text/javascript">
+	<script type="text/javascript">
 		var customResources = {total:"${fn:length(topLevelResources)}", records:[
                                             <c:set var="first" value="true"/>
                                             <c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">

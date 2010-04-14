@@ -35,10 +35,10 @@
 
 package org.opennms.dashboard.client;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -96,9 +96,9 @@ public class GraphDashlet extends Dashlet {
         private ChildResourceLoader m_childResourceLoader;
         private PrefabGraphLoader m_prefabGraphLoader;
         
-        private TopLevelResourceChangeListener m_topLevelResourceListener = new TopLevelResourceChangeListener();
-        private ChildResourceChangeListener m_childResourceListener = new ChildResourceChangeListener();
-        private PrefabGraphChangeListener m_prefabGraphListener = new PrefabGraphChangeListener();
+        private TopLevelResourceChangeHandler m_topLevelResourceHandler = new TopLevelResourceChangeHandler();
+        private ChildResourceChangeHandler m_childResourceHandler = new ChildResourceChangeHandler();
+        private PrefabGraphChangeHandler m_prefabGraphHandler = new PrefabGraphChangeHandler();
         
         private String m_selectedResourceId = null;
         
@@ -110,15 +110,15 @@ public class GraphDashlet extends Dashlet {
             m_panel.add(m_prefabGraphListBox);
             m_panel.add(m_graph);
             
-            m_topLevelResourceListBox.addChangeListener(m_topLevelResourceListener);
-            m_topLevelResourceListBox.setDirectionalChangeListener(m_topLevelResourceListener);
+            m_topLevelResourceListBox.addChangeHandler(m_topLevelResourceHandler);
+            m_topLevelResourceListBox.setDirectionalChangeHandler(m_topLevelResourceHandler);
 
-            m_childResourceListBox.addChangeListener(m_childResourceListener);
-            m_childResourceListBox.setDirectionalChangeListener(m_childResourceListener);
+            m_childResourceListBox.addChangeHandler(m_childResourceHandler);
+            m_childResourceListBox.setDirectionalChangeHandler(m_childResourceHandler);
             m_childResourceListBox.setParent(m_topLevelResourceListBox);
 
-            m_prefabGraphListBox.addChangeListener(m_prefabGraphListener);
-            m_prefabGraphListBox.setDirectionalChangeListener(m_prefabGraphListener);
+            m_prefabGraphListBox.addChangeHandler(m_prefabGraphHandler);
+            m_prefabGraphListBox.setDirectionalChangeHandler(m_prefabGraphHandler);
             m_prefabGraphListBox.setParent(m_childResourceListBox);
             
             m_topLevelResourceLoader = new TopLevelResourceLoader(m_topLevelResourceListBox);
@@ -154,12 +154,12 @@ public class GraphDashlet extends Dashlet {
                 super.onDataLoaded(resources);
 
                 // Trigger a change so sub-lists get loaded
-                m_topLevelResourceListener.onChange(m_view.m_topLevelResourceListBox);
+                m_topLevelResourceHandler.onChange(null);
             }
         }
 
-        public class TopLevelResourceChangeListener extends DirectionalChangeListener {
-            public void onChange(Widget widget, int direction) {
+        public class TopLevelResourceChangeHandler extends DirectionalChangeHandler {
+            public void onChange(ChangeEvent event, int direction) {
                 String resourceId = m_view.m_topLevelResourceListBox.getSelectedValue();
                 if (resourceId == null) {
                     return;
@@ -188,13 +188,13 @@ public class GraphDashlet extends Dashlet {
                 super.onDataLoaded(resources);
 
                 // Trigger a change so sub-lists get loaded
-                m_childResourceListener.onChange(getListBox(), getDirection());
+                m_childResourceHandler.onChange(null, getDirection());
             }
 
         }
 
-        public class ChildResourceChangeListener extends DirectionalChangeListener {
-            public void onChange(Widget widget, int direction) {
+        public class ChildResourceChangeHandler extends DirectionalChangeHandler {
+            public void onChange(ChangeEvent event, int direction) {
                 String resourceId = m_view.m_childResourceListBox.getSelectedValue();
                 if (resourceId == null) {
                     return;
@@ -229,12 +229,12 @@ public class GraphDashlet extends Dashlet {
                 super.onDataLoaded(prefabGraphs);
 
                 // Trigger a change so sub-lists get loaded
-                m_prefabGraphListener.onChange(getListBox());
+                m_prefabGraphHandler.onChange(null);
             }
         }
 
-        public class PrefabGraphChangeListener extends DirectionalChangeListener {
-            public void onChange(Widget widget, int direction) {
+        public class PrefabGraphChangeHandler extends DirectionalChangeHandler {
+            public void onChange(ChangeEvent event, int direction) {
                 String name = m_view.m_prefabGraphListBox.getSelectedValue();
                 if (name == null || "".equals(name)) {
                     m_view.m_graph.displayNoGraph();

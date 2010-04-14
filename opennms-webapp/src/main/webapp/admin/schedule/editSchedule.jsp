@@ -5,7 +5,7 @@
 	<head><title>Edit Schedule</title></head>
 	<body>
 		<c:set value="schedule[${currentSchedIndex}]" var="schedId" />
-		<form action="" method="POST">
+		<form action="" method="post">
 			<label for="<c:out value="${schedId}.name"/>">Name:</label>
 			<input id="<c:out value="${schedId}.name"/>" type="text" readonly="true" value="<c:out value="${currentSchedule.name}"/>"/>
 			<label for="<c:out value="${schedId}.type"/>">Type:</label>

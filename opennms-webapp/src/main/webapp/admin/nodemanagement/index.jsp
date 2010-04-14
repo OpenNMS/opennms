@@ -84,7 +84,7 @@
   <jsp:param name="breadcrumb" value="Node Management" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
   function getInterfacesPost()
   {

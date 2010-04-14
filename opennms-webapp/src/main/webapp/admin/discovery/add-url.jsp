@@ -58,7 +58,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 </head>
 
 <body>
-<script language="javascript">
+<script type="text/javascript">
 function addIncludeUrl() {
 	if(isNaN(document.getElementById("timeout").value)){
 		alert("Timeout not valid.");

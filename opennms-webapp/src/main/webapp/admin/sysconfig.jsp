@@ -56,7 +56,7 @@
   <jsp:param name="breadcrumb" value="System Configuration" />
 </jsp:include>
 
-<script language="JavaScript">
+<script type="text/javascript">
     
         function cancel()
         {
@@ -120,7 +120,7 @@
   </tr>
   <tr>
     <td class="standardheader">Client Time:</td>
-    <td class="standard"><script language="javascript"> document.write( new Date().toString()) </script></td>
+    <td class="standard"><script type="text/javascript"> document.write( new Date().toString()) </script></td>
   </tr>
   <tr>
     <td class="standardheader">Java Version:</td>

@@ -1,82 +1,105 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import de.novanic.eventservice.client.event.Event;
 
 public class BaseLocation implements Event, IsSerializable, Location {
 	private static final long serialVersionUID = 3L;
-	private String m_name;
-	private String m_area;
-	private String m_pollingPackage;
-	private String m_geolocation;
-	private LocationMonitorState m_locationMonitorState;
-	private GWTLatLng m_latLng;
+
+	private LocationInfo m_locationInfo;
+	private LocationDetails m_locationDetails;
 
 	public BaseLocation() {
+	    this(new LocationInfo(), new LocationDetails());
+	}
+	
+	public BaseLocation(LocationInfo locationInfo, LocationDetails locationDetails) {
+	    m_locationInfo = locationInfo;
+	    m_locationDetails = locationDetails;
 	}
 
-	public BaseLocation(final String name, final String pollingPackageName, final String area, final String geolocation) {
-		m_name = name;
-		m_pollingPackage = pollingPackageName;
-		m_area = area;
-		m_geolocation = geolocation;
+	public BaseLocation(LocationInfo info) {
+	    this(info, new LocationDetails());
 	}
 
-	public BaseLocation(String name, String pollingPackageName, String area, String geolocation, LocationMonitorState lms) {
-		this(name, pollingPackageName, area, geolocation);
-		m_locationMonitorState = lms;
+    public String getName() {
+		return m_locationInfo.getName();
 	}
 
-	public String getName() {
-		return m_name;
-	}
 	public void setName(final String name) {
-		m_name = name;
+		m_locationInfo.setName(name);
 	}
+
 	public String getPollingPackageName() {
-		return m_pollingPackage;
+		return m_locationInfo.getPollingPackageName();
 	}
-	public void setPollingPackageName(String pollingPackageName) {
-		m_pollingPackage = pollingPackageName;
+
+	public void setPollingPackageName(final String pollingPackageName) {
+		m_locationInfo.setPollingPackageName(pollingPackageName);
 	}
+
 	public String getArea() {
-		return m_area;
+		return m_locationInfo.getArea();
 	}
+
 	public void setArea(final String area) {
-		m_area = area;
+		m_locationInfo.setArea(area);
 	}
+
 	public String getGeolocation() {
-		return m_geolocation;
+		return m_locationInfo.getGeolocation();
 	}
+
 	public void setGeolocation(final String geolocation) {
-		m_geolocation = geolocation;
+		m_locationInfo.setGeolocation(geolocation);
 	}
-	public LocationMonitorState getLocationMonitorState() {
-		return m_locationMonitorState;
-	}
-	public void setLocationMonitorState(final LocationMonitorState lms) {
-		m_locationMonitorState = lms;
-	}
+
 	public GWTLatLng getLatLng() {
-		return m_latLng;
+		return GWTLatLng.fromCoordinates(m_locationInfo.getCoordinates());
 	}
+
 	public void setLatLng(GWTLatLng latLng) {
-		m_latLng = latLng;
+		m_locationInfo.setCoordinates(latLng.getCoordinates());
 	}
 
 	public String getImageURL() {
-		return null;
+		return m_locationInfo.getImageURL();
 	}
 
-	public void setImageUrl(String image) {
+	public LocationInfo getLocationInfo() {
+		return m_locationInfo;
+	}
+
+	public void setLocationInfo(final LocationInfo info) {
+		m_locationInfo = info;
+	}
+
+	public LocationDetails getLocationDetails() {
+		return m_locationDetails;
+	}
+
+	public void setLocationDetails(final LocationDetails details) {
+		m_locationDetails = details;
 	}
 
 	protected String getAttributeText() {
-		return "name=" + getName() + ",pollingPackage=" + getPollingPackageName() + ",area=" + getArea() + ",geolocation=" + getGeolocation() + ",locationMonitorState=" + m_locationMonitorState;
+		return "locationInfo=" + getLocationInfo() + ",locationDetails=" + getLocationDetails();
 	}
 
 	public String toString() {
-		return "BaseLocation["+getAttributeText()+"]";
+		return this.getClass().getName()+"["+getAttributeText()+"]";
 	}
+
+	public int compareTo(Location o) {
+		return this.getLocationInfo().getName().compareTo(o.getLocationInfo().getName());
+	}
+
+    protected boolean isVisible(GWTBounds bounds) {
+        return bounds.contains(getLocationInfo().getLatLng());
+    }
+
 }

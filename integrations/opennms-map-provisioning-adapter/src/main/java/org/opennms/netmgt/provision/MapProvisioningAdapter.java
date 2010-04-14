@@ -319,11 +319,10 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     }    
     
-    @SuppressWarnings("unchecked")
     private void reSyncMap(final Set<Integer> deletes,final Set<Integer> adds,final Set<Integer> updates) throws ProvisioningAdapterException {
         m_mapsAdapterConfig.rebuildPackageIpListMap();
         
-        m_template.execute(new TransactionCallback() {
+        m_template.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus arg0) {
                 try {
                     // first of all delete the element with nodeid ind deletes
@@ -550,11 +549,10 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
     
 
-    @SuppressWarnings("unchecked")
     private void syncMaps() throws ProvisioningAdapterException {
 
         try {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
 
                     log().info("syncMaps: acquiring lock...");
@@ -717,6 +715,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
                     return onmsIpInterface.getIpAddress();
             }
+            return "0.0.0.0";
         }
         return primaryInterface.getIpAddress();
     }

@@ -33,6 +33,7 @@
         <module>remote-poller-jnlp</module>
         <module>remote-poller-onejar</module>
         <module>remote-poller-gwt</module>
+        <module>remote-poller-standalone</module>
       </modules>
     </profile>
 

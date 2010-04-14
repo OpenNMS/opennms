@@ -105,7 +105,7 @@ function getMapString()
 			if(count>0)
 				query+="-";
 			var elem = map.mapElements[elemId];
-			query+= elemId+","+elem.x+","+elem.y+","+elem.icon;
+			query+= elemId+","+elem.x+","+elem.y+","+elem.icon.name;
 			count++;
 		}
 	}
@@ -281,4 +281,99 @@ function removeChilds(svgObject) {
           var obj = ls.item(0);
           svgObject.removeChild(obj);
         }
+}
+
+function assArrayPopulate(arrayKeys,arrayValues) {
+	var returnArray = new Array();
+	if (arrayKeys.length != arrayValues.length) {
+		alert("Error: arrays do not have same length");
+	}
+	else {
+		for (i=0;i<arrayKeys.length;i++) {
+			returnArray[arrayKeys[i]] = arrayValues[i];
+		}
+	}
+	return returnArray;
+}
+
+function windowsClean() {
+	var obj, ls;
+	ls = winSvgElement.childNodes;
+	while (ls.length > 0) {
+	  obj = ls.item(0);
+	  winSvgElement.removeChild(obj);
+	}		
+}
+
+function tabClean() {
+	var obj, ls;
+	ls = tabSvgElement.childNodes;
+	while (ls.length > 0) {
+	  obj = ls.item(0);
+	  tabSvgElement.removeChild(obj);
+	}		
+}
+
+function mapTabSetUp(mapName) {
+	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
+		mapTabTitles = new Array();
+	}
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==mapName ) {
+			mapTabGroup.activateTabByTitle(mapName,false);
+			return;
+		}
+	}
+	tabClean();
+	mapTabTitles.push(mapName);
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+	mapTabGroup.activateTabByTitle(mapName,false);
+}
+
+function mapTabClose(mapName) {
+	var tabs = new Array();
+	var index = 0;
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==mapName ) {
+			index = i;	
+		} else {
+			tabs.push(mapTabTitles[i]);
+		}
+	}
+	if (tabs.length == 0) {
+		tabs.push(MAP_NOT_OPENED_NAME);
+	}
+	if ( tabs.length == index )
+	   index--;
+
+	tabClean();
+	mapTabTitles=tabs;
+
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+
+	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
+			mapTabGroup.activateTabByIndex(index,false);
+	} else {
+		mapTabGroup.activateTabByIndex(index,true);
+	}
+}
+
+function mapTabRename(oldMapName,newMapName) {
+	var tabs = new Array();
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==oldMapName ) {
+			tabs.push(newMapName);
+		} else {
+			tabs.push(mapTabTitles[i])			
+		}
+	}
+
+	tabClean();
+	mapTabTitles=tabs;
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+	mapTabGroup.activateTabByTitle(newMapName,false);
+
 }

@@ -43,13 +43,13 @@
 <h3 class="o-box">Quick Search</h3>
 <div class="boxWrapper">
   <div class="searchHost" style="position:relative; left: 0px;">
-    <form action="element/nodeList.htm" method="GET">
+    <form action="element/nodeList.htm" method="get">
       <font style="font-size: 70%; line-height: 1.25em; align=left">Node label like:</font><br />
       <input type="hidden" name="listInterfaces" value="true"/>
       <input type="text" size="20" name="nodename" />
       <input type="submit" value="Search"/>
     </form>
-    <form action="element/nodeList.htm" method="GET">
+    <form action="element/nodeList.htm" method="get">
       <font style="font-size: 70%; line-height: 1.25em; align=left">TCP/IP Address like:</font><br />
       <input type="hidden" name="listInterfaces" value="false"/>
       <input type="text" name="iplike" value="*.*.*.*" />

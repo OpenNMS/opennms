@@ -5,18 +5,18 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class SmsServiceFactoryBean implements FactoryBean, InitializingBean {
+public class SmsServiceFactoryBean implements FactoryBean<SmsService>, InitializingBean {
 	private SmsService[] m_serviceList;
 
 	public void setSmsServiceList(SmsService[] serviceList) {
 		m_serviceList = serviceList;
 	}
 	
-	public Object getObject() throws Exception {
+	public SmsService getObject() throws Exception {
 		return m_serviceList[0];
 	}
 
-	public Class<?> getObjectType() {
+	public Class<? extends SmsService> getObjectType() {
 		return SmsService.class;
 	}
 
