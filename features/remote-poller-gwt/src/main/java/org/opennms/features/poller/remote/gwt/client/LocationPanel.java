@@ -9,9 +9,6 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.gen2.table.client.FixedWidthFlexTable;
-import com.google.gwt.gen2.table.client.FixedWidthGrid;
-import com.google.gwt.gen2.table.client.ScrollTable;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,17 +37,10 @@ public class LocationPanel extends Composite {
 	@UiField FlexTable m_locations;
 	@UiField SelectionStyle selectionStyle;
 	
-	ScrollTable m_scrollTable;
-    private FixedWidthGrid m_dataTable;
-    private FixedWidthFlexTable m_headerTable;
-	
 	public LocationPanel() {
 		super();
 		initWidget(BINDER.createAndBindUi(this));
 		
-		m_dataTable = new FixedWidthGrid();
-        m_headerTable = new FixedWidthFlexTable();
-        m_scrollTable = new ScrollTable(m_dataTable, m_headerTable);
 	}
 
 	@UiHandler("m_locations")
