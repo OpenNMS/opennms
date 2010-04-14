@@ -1,4 +1,5 @@
 function onMouseOverMapElement(evt) {
+	myMapApp.enableTooltips()
 	var id = evt.target.parentNode.getAttributeNS(null,"id");
 	var mapElement = map.mapElements[id];
 	var toolTipLabel = "";
@@ -13,6 +14,7 @@ function onMouseOverMapElement(evt) {
 }
 
 function onMouseOverLink(evt) {
+	myMapApp.enableTooltips()
 	var id = evt.target.parentNode.getAttributeNS(null,"id");
 
 	
@@ -91,6 +93,7 @@ function onClickMapElement(evt)
 
 	if (evt.detail == 2)
 	{
+		myMapApp.disableTooltips()
 		if(mapElement.isNode())
 		{
 			var nodeid = mapElement.getNodeId();
