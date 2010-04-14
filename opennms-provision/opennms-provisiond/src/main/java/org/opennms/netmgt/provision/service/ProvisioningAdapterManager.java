@@ -41,7 +41,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.ProvisioningAdapter;
@@ -64,13 +63,11 @@ public class ProvisioningAdapterManager implements InitializingBean {
     private Collection<ProvisioningAdapter> m_adapters;
     
     //may use this at some point
-    private volatile EventSubscriptionService m_eventSubscriptionService;
     private volatile EventForwarder m_eventForwarder;
     
     
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_pluginRegistry, "pluginRegistry must be set");
-        Assert.notNull(m_eventSubscriptionService);
         m_adapters =  m_pluginRegistry.getAllPlugins(ProvisioningAdapter.class);
     }
 
@@ -144,14 +141,6 @@ public class ProvisioningAdapterManager implements InitializingBean {
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
-    }
-
-    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
-        m_eventSubscriptionService = eventSubscriptionService;
-    }
-
-    public EventSubscriptionService getEventSubscriptionService() {
-        return m_eventSubscriptionService;
     }
 
     public void setEventForwarder(EventForwarder eventForwarder) {

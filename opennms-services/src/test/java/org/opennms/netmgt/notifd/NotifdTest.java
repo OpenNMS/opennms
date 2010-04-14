@@ -64,6 +64,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
@@ -98,10 +99,10 @@ public class NotifdTest extends NotificationsTestCase {
         long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "High loadavg5 Threshold exceeded on 192.168.1.1, loadavg5 with ", "InitialGroup", date, 0);
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
-        Event e = MockEventUtil.createInterfaceEvent("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
-        MockEventUtil.setEventTime(e, date);
-        MockEventUtil.addEventParm(e, "ds", "loadavg5");
-        m_eventMgr.sendEventToListeners(e);
+        EventBuilder e = MockEventUtil.createInterfaceEventBuilder("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
+        e.setTime(date);
+        e.addParam("ds", "loadavg5");
+        m_eventMgr.sendEventToListeners(e.getEvent());
         
         /*
          * This is the notification config that Wicktor sent when reporting this bug.
@@ -128,9 +129,9 @@ public class NotifdTest extends NotificationsTestCase {
         
         long finished = anticipateNotificationsForGroup("A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "InitialGroup", date, 0);
 
-        Event e = MockEventUtil.createNewSuspectEvent("test", "uei.opennms.org/internal/discovery/newSuspect", "10.1.1.1");
-        MockEventUtil.setEventTime(e, date);
-        m_eventMgr.sendEventToListeners(e);
+        EventBuilder e = MockEventUtil.createNewSuspectEventBuilder("test", "uei.opennms.org/internal/discovery/newSuspect", "10.1.1.1");
+        e.setTime(date);
+        m_eventMgr.sendEventToListeners(e.getEvent());
         
         verifyAnticipated(finished, 1000);
         
