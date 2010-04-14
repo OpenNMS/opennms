@@ -4,7 +4,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 
-import com.allen_sauer.gwt.log.client.Log;
+// import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -32,7 +32,7 @@ final class EventServiceInitializer extends InitializationCommand.DataLoader {
         
         m_locationManager.getRemoteService().start(new AsyncCallback<Void>() {
             public void onFailure(Throwable throwable) {
-                Log.debug("unable to start location even service backend", throwable);
+                // Log.debug("unable to start location even service backend", throwable);
                 Window.alert("unable to start location event service backend: " + throwable.getMessage());
                 throw new InitializationException("remote service start failed", throwable);
             }

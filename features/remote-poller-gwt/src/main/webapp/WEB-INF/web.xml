@@ -50,10 +50,12 @@
     <servlet-class>org.opennms.features.poller.remote.gwt.server.LocationStatusServiceImpl</servlet-class>
   </servlet>
 
+<!--
   <servlet>
     <servlet-name>gwt-log-remote-logger-servlet</servlet-name>
     <servlet-class>com.allen_sauer.gwt.log.server.RemoteLoggerServiceImpl</servlet-class>
   </servlet>
+-->
 
   <servlet-mapping>
     <servlet-name>EventService</servlet-name>

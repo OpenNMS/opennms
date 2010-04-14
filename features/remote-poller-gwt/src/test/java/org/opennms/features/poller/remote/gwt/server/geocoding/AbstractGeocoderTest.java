@@ -1,5 +1,7 @@
 package org.opennms.features.poller.remote.gwt.server.geocoding;
 
+import org.junit.Test;
+
 public class AbstractGeocoderTest {
 
 	protected boolean shouldRun() {
@@ -13,6 +15,10 @@ public class AbstractGeocoderTest {
 
 	protected String getApiKey() {
 		return System.getProperty("gwt.apikey");
+	}
+	
+	@Test
+	public void testNothing() throws Exception {
 	}
 
 }

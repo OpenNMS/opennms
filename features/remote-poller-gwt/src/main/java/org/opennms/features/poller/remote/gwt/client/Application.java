@@ -3,7 +3,7 @@ package org.opennms.features.poller.remote.gwt.client;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 
-import com.allen_sauer.gwt.log.client.Log;
+// import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
@@ -32,7 +32,7 @@ public class Application implements EntryPoint
    */
 	public void onModuleLoad()
 	{
-		Log.setUncaughtExceptionHandler();
+		// Log.setUncaughtExceptionHandler();
 
 		BINDER.createAndBindUi(this);
 
