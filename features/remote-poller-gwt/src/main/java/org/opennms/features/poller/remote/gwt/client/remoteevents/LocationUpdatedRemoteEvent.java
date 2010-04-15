@@ -1,6 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client.remoteevents;
 
-import org.opennms.features.poller.remote.gwt.client.LocationManager;
+import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 public class LocationUpdatedRemoteEvent implements MapRemoteEvent {
@@ -19,7 +19,7 @@ public class LocationUpdatedRemoteEvent implements MapRemoteEvent {
 		return m_locationInfo;
 	}
 
-	public void dispatch(LocationManager locationManager) {
+	public void dispatch(RemotePollerPresenter locationManager) {
 		locationManager.updateLocation(m_locationInfo);
 	}
 

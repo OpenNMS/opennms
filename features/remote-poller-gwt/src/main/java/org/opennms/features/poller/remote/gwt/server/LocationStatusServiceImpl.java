@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.BaseLocation;
 import org.opennms.features.poller.remote.gwt.client.Location;
-import org.opennms.features.poller.remote.gwt.client.LocationManager;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
+import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
@@ -130,15 +130,15 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 //				addEventUserSpecific(getLocation(def));
 //				addEvent(Location.LOCATION_EVENT_DOMAIN, getLocation(def));
 				if (locations.size() >= MAX_LOCATIONS_PER_EVENT) {
-					addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(new ArrayList<LocationInfo>(locations)));
+					addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(new ArrayList<LocationInfo>(locations)));
 					locations.clear();
 				}
 			}
 			if (locations.size() > 0) {
-				addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(locations));
+				addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(locations));
 			}
 			m_locationDataService.saveMonitoringLocationDefinitions(definitions);
-			addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new UpdateCompleteRemoteEvent());
+			addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new UpdateCompleteRemoteEvent());
 			m_inProgress.decrementAndGet();
 		}
 
@@ -156,7 +156,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			final Date startDate = lastUpdated;
 			final Date endDate   = new Date();
 
-			addEvent(LocationManager.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(m_locationDataService.getUpdatedLocationsBetween(startDate, endDate)));
+			addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(m_locationDataService.getUpdatedLocationsBetween(startDate, endDate)));
 
 			lastUpdated = endDate;
 			m_inProgress.decrementAndGet();

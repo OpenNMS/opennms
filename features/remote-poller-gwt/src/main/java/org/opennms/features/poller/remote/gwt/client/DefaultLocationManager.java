@@ -10,7 +10,10 @@ import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataL
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
+import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
@@ -20,8 +23,18 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
-
-public class DefaultLocationManager implements LocationManager {
+/**
+ * <p>This class implements both {@link LocationManager} (the model portion of the webapp) and
+ * {@link RemotePollerPresenter} (the controller portion of the webapp code). It is responsible
+ * for maintaining the knowledgebase of {@link Location} objects and responding to events triggered when:</p>
+ * <ul>
+ * <li>{@link Location} instances are added or updated</li>
+ * <li>the UI elements are clicked on by the user</li>
+ * </ul>
+ * 
+ * <p>If this class ever grows too large, we can split it into separate model and controller classes.</p>
+ */
+public class DefaultLocationManager implements LocationManager, RemotePollerPresenter {
 
 	protected final HandlerManager m_eventBus;
 
@@ -33,25 +46,33 @@ public class DefaultLocationManager implements LocationManager {
 	
 	private final MapPanel m_mapPanel;
 
-    private final SplitLayoutPanel m_panel;
+	private final LocationPanel m_locationPanel;
 
-    private boolean updated = false;
+	private final SplitLayoutPanel m_panel;
 
-	public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, MapPanel mapPanel) {
+	private boolean updated = false;
+
+	public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, final LocationPanel locationPanel, MapPanel mapPanel) {
 		m_eventBus = eventBus;
 		m_panel = panel;
+		m_locationPanel = locationPanel;
 		m_mapPanel = mapPanel;
+
+		// Register for all relevant events thrown by the UI components
+		m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this); 
+		m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this); 
+		m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this); 
 	}
 
     public void initialize() {
         DeferredCommand.addCommand(new InitializationCommand(this, createFinisher(), createDataLoaders()));
     }
     
-    public MapPanel getMapPanel() {
+    protected MapPanel getMapPanel() {
         return m_mapPanel;
     }
 
-    public Map<String, BaseLocation> getLocations() {
+    protected Map<String, BaseLocation> getLocations() {
         return m_locations;
     }
 
@@ -114,7 +135,7 @@ public class DefaultLocationManager implements LocationManager {
         return bldr.getBounds();
     }
 
-    protected Location createOrUpdateLocation(final LocationInfo info) {
+    public Location createOrUpdateLocation(final LocationInfo info) {
         BaseLocation location = getLocations().get(info.getName());
         if(location == null) {
             location = new BaseLocation(info);
@@ -131,11 +152,9 @@ public class DefaultLocationManager implements LocationManager {
 
     protected void initializeMapWidget() {
         getPanel().add(getMapPanel().getWidget());
-        
-        m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this); 
     }
 
-    public void fitToMap() {
+    public void fitMapToLocations() {
     	getMapPanel().setBounds(getLocationBounds());
     }
 
@@ -151,6 +170,9 @@ public class DefaultLocationManager implements LocationManager {
         return visibleLocations;
     }
 
+    /**
+     * Handler triggered when a user clicks on a specific location record.
+     */
     public void onLocationSelected(final LocationPanelSelectEvent event) {
         String locationName = event.getLocationName();
         final Location location = getLocations().get(locationName);
@@ -160,6 +182,24 @@ public class DefaultLocationManager implements LocationManager {
         getMapPanel().showLocationDetails(location);
     }
 
+    /**
+     * Refresh the list of locations whenever the map panel boundaries change.
+     */
+    public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
+        m_locationPanel.update(this);
+    }
+
+    /**
+     * Refresh the list of locations whenever they are updated.
+     */
+    public void onLocationsUpdated(final LocationsUpdatedEvent e) {
+        m_locationPanel.update(this);
+    }
+
+    /**
+     * Invoked by the {@link LocationUpdatedRemoteEvent} and {@link LocationsUpdatedRemoteEvent}
+     * events.
+     */
     public void updateLocation(final LocationInfo info) {
         if (info == null) return;
         
@@ -177,12 +217,15 @@ public class DefaultLocationManager implements LocationManager {
         return updated;
     }
 
+    /**
+     * Invoked by the {@link UpdateCompleteRemoteEvent} event.
+     */
     public void updateComplete() {
     	if (!isUpdated()) {
     		DeferredCommand.addPause();
     		DeferredCommand.addCommand(new IncrementalCommand() {
     			public boolean execute() {
-    				fitToMap();
+    				fitMapToLocations();
     				setUpdated(true);
     				return false;
     			}
