@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.control.LargeMapControl;
@@ -44,7 +44,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     
     private Map<String, Marker> m_markers = new HashMap<String, Marker>();
 
-    public GoogleMapsPanel() {
+    public GoogleMapsPanel(final HandlerManager eventBus) {
         initWidget(uiBinder.createAndBindUi(this));
         
         initializeMapPanel();
@@ -52,7 +52,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
 
             public void onMoveEnd(MapMoveEndEvent event) {
-                fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
+                eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
             
         });
@@ -88,10 +88,6 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     public void setBounds(GWTBounds b) {
         LatLngBounds bounds = toLatLngBounds(b);
     	getMapWidget().setCenter(bounds.getCenter(), getMapWidget().getBoundsZoomLevel(bounds));
-    }
-    
-    public void addMapPanelBoundsChangedEventHandler( MapPanelBoundsChangedEventHandler handler) {
-        addHandler(handler, MapPanelBoundsChangedEvent.TYPE);
     }
     
     private void initializeMapPanel() {

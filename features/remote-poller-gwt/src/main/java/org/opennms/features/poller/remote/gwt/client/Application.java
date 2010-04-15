@@ -40,8 +40,6 @@ public class Application implements EntryPoint
 		Window.enableScrolling(false);
 		Window.setMargin("0px");
 
-		locationPanel.setEventBus(m_eventBus);
-		
 		m_locationManager = new DefaultLocationManager(m_eventBus, splitPanel, createMapPanel());
 		
 		m_locationManager.addLocationManagerInitializationCompleteEventHandler(new LocationManagerInitializationCompleteEventHander() {
@@ -52,18 +50,18 @@ public class Application implements EntryPoint
                 RootPanel.get("remotePollerMap").add(splitPanel);
             }
         });
+		locationPanel.setEventBus(m_eventBus);
+		locationPanel.setLocationManager(m_locationManager);
 		
 		m_locationManager.initialize();
-
-		
 	}
 
 private MapPanel createMapPanel() {
     MapPanel mapPanel;
     if (getMapImplementationType().equals("Mapquest")) {
-        mapPanel = new MapQuestMapPanel();
+        mapPanel = new MapQuestMapPanel(m_eventBus);
     } else if (getMapImplementationType().equals("GoogleMaps")) {
-        mapPanel = new GoogleMapsPanel();
+        mapPanel = new GoogleMapsPanel(m_eventBus);
     } else {
     	Window.alert("unknown map implementation: " + getMapImplementationType());
     	throw new RuntimeException("unknown map implementation: " + getMapImplementationType());

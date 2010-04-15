@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
@@ -39,7 +39,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
     
     interface MapQuestMapPanelUiBinder extends UiBinder<Widget, MapQuestMapPanel> {}
 
-    public MapQuestMapPanel() {
+    public MapQuestMapPanel(final HandlerManager eventBus) {
         initWidget(uiBinder.createAndBindUi(this));
         m_map = MQATileMap.newInstance(getMapHolder().getElement());
         
@@ -48,7 +48,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         m_map.addZoomEndHandler(new ZoomEndHandler() {
             
             public void onZoomEnd(ZoomEndEvent event) {
-                fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
+                eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
                 
             }
         });
@@ -106,10 +106,6 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
 
     private MQAIcon createIcon(final LocationInfo locationInfo) {
         return MQAIcon.newInstance(locationInfo.getImageURL(), 32, 32);
-    }
-
-    public void addMapPanelBoundsChangedEventHandler(MapPanelBoundsChangedEventHandler handler) {
-        addHandler(handler, MapPanelBoundsChangedEvent.TYPE);
     }
 
     public GWTBounds getBounds() {
