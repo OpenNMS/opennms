@@ -10,17 +10,12 @@ import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataL
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
-import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
-import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -119,7 +114,7 @@ public class DefaultLocationManager implements LocationManager {
         return bldr.getBounds();
     }
 
-    protected Location getLocation(final LocationInfo info) {
+    protected Location createOrUpdateLocation(final LocationInfo info) {
         BaseLocation location = getLocations().get(info.getName());
         if(location == null) {
             location = new BaseLocation(info);
@@ -137,23 +132,7 @@ public class DefaultLocationManager implements LocationManager {
     protected void initializeMapWidget() {
         getPanel().add(getMapPanel().getWidget());
         
-        getMapPanel().addMapPanelBoundsChangedEventHandler(new MapPanelBoundsChangedEventHandler() {
-            
-            public void onBoundsChanged(MapPanelBoundsChangedEvent event) {
-                long start = System.currentTimeMillis();
-                m_eventBus.fireEvent(new LocationsUpdatedEvent(DefaultLocationManager.this));
-                long stop = System.currentTimeMillis();
-                
-                Window.alert("Total time for Bounds change Event Fire: "  + (stop - start));
-            }
-        });
-        
-        m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, new LocationPanelSelectEventHandler() {
-    
-            public void onLocationSelected(final LocationPanelSelectEvent event) {
-                selectLocation(event.getLocationName());
-            }
-        }); 
+        m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this); 
     }
 
     public void fitToMap() {
@@ -172,7 +151,8 @@ public class DefaultLocationManager implements LocationManager {
         return visibleLocations;
     }
 
-    public void selectLocation(String locationName) {
+    public void onLocationSelected(final LocationPanelSelectEvent event) {
+        String locationName = event.getLocationName();
         final Location location = getLocations().get(locationName);
         if (location == null) {
             return;
@@ -183,7 +163,7 @@ public class DefaultLocationManager implements LocationManager {
     public void updateLocation(final LocationInfo info) {
         if (info == null) return;
         
-        Location location = getLocation(info);
+        Location location = createOrUpdateLocation(info);
         
         getMapPanel().placeMarker(location);
         

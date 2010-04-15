@@ -1,16 +1,14 @@
 package org.opennms.features.poller.remote.gwt.client.events;
 
-import org.opennms.features.poller.remote.gwt.client.LocationManager;
-
 import com.google.gwt.event.shared.GwtEvent;
 
 public class LocationsUpdatedEvent extends GwtEvent<LocationsUpdatedEventHandler> {
     
     public static Type<LocationsUpdatedEventHandler> TYPE = new Type<LocationsUpdatedEventHandler>();
-    private LocationManager m_locationManager;
+
+    private String m_eventString = "You have got the event String";
     
-    public LocationsUpdatedEvent(final LocationManager locationManager) {
-        setLocationManager(locationManager);
+    public LocationsUpdatedEvent() {
     }
     
 	@Override
@@ -23,16 +21,11 @@ public class LocationsUpdatedEvent extends GwtEvent<LocationsUpdatedEventHandler
 		return TYPE;
 	}
 
-    public static com.google.gwt.event.shared.GwtEvent.Type<LocationsUpdatedEventHandler> getType(){
-        return TYPE;
+    public void setEventString(final String eventString) {
+        m_eventString = eventString;
     }
 
-    public void setLocationManager(final LocationManager locationManager) {
-        m_locationManager = locationManager;
+    public String getEventString() {
+        return m_eventString;
     }
-
-    public LocationManager getLocationManager() {
-        return m_locationManager;
-    }
-
 }
