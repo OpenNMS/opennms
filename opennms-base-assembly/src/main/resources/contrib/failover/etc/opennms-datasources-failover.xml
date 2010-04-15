@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
+                      http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
+  <jdbc-data-source name="opennms" 
+                    database-name="opennms_failover" 
+                    class-name="org.postgresql.Driver" 
+                    url="jdbc:postgresql://localhost:5432/opennms_failover"
+                    user-name="opennms"
+                    password="opennms" />
+
+  <!-- NOTE: This must be postgres, not template1, since template1 gets locked and
+       then can't be copied to create the opennms database if none exists. -->
+  <jdbc-data-source name="opennms-admin" 
+                    database-name="postgres" 
+                    class-name="org.postgresql.Driver" 
+                    url="jdbc:postgresql://localhost:5432/postgres"
+                    user-name="postgres"
+                    password="" />
+</datasource-configuration>
