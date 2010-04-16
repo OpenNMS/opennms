@@ -38,3 +38,8 @@ button {
   vertical-align: top;
   background-color: #4040ff;
 }
+
+.statusUninitialized td {
+  vertical-align: top;
+  background-color: #dddddd;
+}

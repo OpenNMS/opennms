@@ -15,8 +15,7 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private String m_area;
 	private String m_geolocation;
 	private String m_coordinates;
-	private Status m_monitorStatus;
-	private Status m_applicationStatus;
+	private Status m_status;
 	
 	public LocationInfo() {
 	}
@@ -31,8 +30,7 @@ public class LocationInfo implements IsSerializable, Serializable {
 	
 	public LocationInfo(LocationInfo info) {
 	    this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates());
-	    setMonitorStatus(info.getMonitorStatus());
-	    setApplicationStatus(info.getApplicationStatus());
+	    setStatus(info.getStatus());
 	}
 	
 	public String getName() {
@@ -75,20 +73,12 @@ public class LocationInfo implements IsSerializable, Serializable {
 		m_coordinates = coordinates;
 	}
 
-	public Status getMonitorStatus() {
-		return m_monitorStatus;
+	public Status getStatus() {
+		return m_status;
 	}
 
-	public void setMonitorStatus(final Status status) {
-		m_monitorStatus = status;
-	}
-	
-	public Status getApplicationStatus() {
-		return m_applicationStatus;
-	}
-	
-	public void setApplicationStatus(final Status status) {
-		m_applicationStatus = status;
+	public void setStatus(final Status status) {
+		m_status = status;
 	}
 
 	public GWTLatLng getLatLng() {
@@ -99,11 +89,11 @@ public class LocationInfo implements IsSerializable, Serializable {
 		return "LocationInfo[name=" + m_name + ",polling package=" + m_pollingPackage
 			+ ",area=" + m_area + ",geolocation=" + m_geolocation
 			+ ",coordinates=" + m_coordinates
-			+ ",monitorStatus=" + m_monitorStatus + ",applicationStatus=" + m_applicationStatus
+			+ ",status=" + m_status
 			+ ",imageURL=" + getImageURL() + "]";
 	}
 
     public String getImageURL() {
-        return "images/icon-" + getMonitorStatus() + ".png";
+        return "images/icon-" + getStatus() + ".png";
     }
 }

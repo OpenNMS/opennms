@@ -17,7 +17,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Widget;
@@ -126,13 +125,10 @@ public class LocationPanel extends Composite {
 		while (m_locations.getRowCount() > count) {
 			m_locations.removeRow(m_locations.getRowCount() - 1);
 		}
-
-		Window.alert("aTotal: " + aTotal + "\nbTotal: " + bTotal + "\ncTotal: " + cTotal + "\ndTotal: " + dTotal + "\neTotal: " + eTotal);
-		
 	}
 
     private String getStatusStyle(Location location) {
-        switch(location.getLocationInfo().getMonitorStatus()) {
+        switch(location.getLocationInfo().getStatus()) {
             case UP:
                  return selectionStyle.upStatus();
             case DOWN:

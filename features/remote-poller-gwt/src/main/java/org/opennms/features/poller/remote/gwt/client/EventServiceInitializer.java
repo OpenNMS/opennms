@@ -29,6 +29,7 @@ final class EventServiceInitializer extends InitializationCommand.DataLoader {
         LocationListener locationListener = new DefaultLocationListener(m_locationManager);
         final RemoteEventService eventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
         eventService.addListener(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, locationListener);
+        eventService.addListener(null, locationListener);
         
         m_locationManager.getRemoteService().start(new AsyncCallback<Void>() {
             public void onFailure(Throwable throwable) {

@@ -18,6 +18,7 @@ import org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus;
 import org.opennms.features.poller.remote.gwt.client.GWTMonitoredService;
 import org.opennms.features.poller.remote.gwt.client.GWTPollResult;
 import org.opennms.features.poller.remote.gwt.client.LocationMonitorState;
+import org.opennms.features.poller.remote.gwt.client.Status;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder;
@@ -32,10 +33,12 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
-public class DefaultLocationDataService implements LocationDataService {
+public class DefaultLocationDataService implements LocationDataService, InitializingBean {
 	private static final int AVAILABILITY_MS = 1000 * 60 * 60 * 24; // 1 day
 
 	@Autowired
@@ -52,6 +55,36 @@ public class DefaultLocationDataService implements LocationDataService {
 	public DefaultLocationDataService() {
 	}
 
+	public void afterPropertiesSet() {
+		Assert.notNull(m_locationDao);
+		Assert.notNull(m_applicationDao);
+		Assert.notNull(m_monitoredServiceDao);
+		Assert.notNull(m_geocoder);
+
+//		initialize();
+	}
+
+	public void initialize() {
+		new InitializationThread().start();
+	}
+
+	private class InitializationThread extends Thread {
+		public InitializationThread() {}
+		
+		public void run() {
+			LogUtils.infof(this, "geolocating monitoring location definitions");
+			final Collection<OnmsMonitoringLocationDefinition> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
+			for (final OnmsMonitoringLocationDefinition def : definitions) {
+				final GWTLatLng latLng = getLatLng(def);
+				if (latLng != null) {
+					def.setCoordinates(latLng.getCoordinates());
+				}
+			}
+			m_locationDao.saveMonitoringLocationDefinitions(definitions);
+			LogUtils.infof(this, "finished geolocating monitoring location definitions");
+		}
+	}
+
 	@Transactional
 	public LocationInfo getLocationInfo(final String locationName) {
 		final OnmsMonitoringLocationDefinition def = m_locationDao.findMonitoringLocationDefinition(locationName);
@@ -59,11 +92,16 @@ public class DefaultLocationDataService implements LocationDataService {
 			LogUtils.warnf(this, "no monitoring location found for name %s", locationName);
 			return null;
 		}
-		return getLocationInfo(m_locationDao.findMonitoringLocationDefinition(locationName));
+		return getLocationInfo(m_locationDao.findMonitoringLocationDefinition(locationName), null);
 	}
 
 	@Transactional
-	public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def) {
+	public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def, boolean includeStatus) {
+		return includeStatus ? getLocationInfo(def, null) : getLocationInfo(def, Status.UNINITIALIZED);
+	}
+
+	@Transactional
+	private LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def, final Status status) {
 		if (def == null) {
 			LogUtils.warnf(this, "no location definition specified");
 			return null;
@@ -78,10 +116,14 @@ public class DefaultLocationDataService implements LocationDataService {
 			def.setCoordinates(latLng.getCoordinates());
 		}
 		
-		final LocationDetails ld = getLocationDetails(def);
 		final LocationInfo locationInfo = new LocationInfo(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), latLng.getCoordinates());
-		locationInfo.setMonitorStatus(ld.getLocationMonitorState().getStatus());
-		locationInfo.setApplicationStatus(ld.getApplicationState().getStatus());
+
+		if (status == null) {
+			final LocationDetails ld = getLocationDetails(def);
+			locationInfo.setStatus(ld.getLocationMonitorState().getStatus());
+		} else {
+			locationInfo.setStatus(status);
+		}
 		LogUtils.debugf(this, "getLocation(" + def.getName() + ") returning %s", locationInfo.toString());
 		return locationInfo;
 	}
@@ -140,16 +182,6 @@ public class DefaultLocationDataService implements LocationDataService {
 	}
 
 	@Transactional
-	public Collection<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
-		return m_locationDao.findAllMonitoringLocationDefinitions();
-	}
-	
-	@Transactional
-	public void saveMonitoringLocationDefinitions(final Collection<OnmsMonitoringLocationDefinition> definitions) {
-		m_locationDao.saveMonitoringLocationDefinitions(definitions);
-	}
-
-	@Transactional
 	public Collection<LocationInfo> getUpdatedLocationsBetween(final Date startDate, final Date endDate) {
 		final Collection<LocationInfo> locations = new ArrayList<LocationInfo>();
 		final Map<String,OnmsMonitoringLocationDefinition> definitions = new HashMap<String,OnmsMonitoringLocationDefinition>();
@@ -174,20 +206,20 @@ public class DefaultLocationDataService implements LocationDataService {
 		}
 
 		for (final OnmsMonitoringLocationDefinition def : definitions.values()) {
-			final LocationInfo location = getLocationInfo(def);
+			final LocationInfo location = getLocationInfo(def, null);
 			locations.add(location);
 		}
 		
 		return locations;
 	}
 
-	private GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def) {
+	@Transactional
+	public GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def) {
 		GWTLatLng latLng = null;
 		final String coordinateMatchString = "^\\s*[\\-\\d\\.]+\\s*,\\s*[\\-\\d\\.]+\\s*$";
 
 		// first, see if we already have coordinates
 		if (def.getCoordinates() != null && def.getCoordinates().matches(coordinateMatchString)) {
-			LogUtils.debugf(this, "using coordinates: %s", def.getCoordinates());
 			final String[] coordinates = def.getCoordinates().split(",");
 			latLng = new GWTLatLng(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
 		}
@@ -201,6 +233,7 @@ public class DefaultLocationDataService implements LocationDataService {
 			}
 		}
 
+		// otherwise, try to geocode it
 		if (latLng == null && def.getGeolocation() != null && !def.getGeolocation().equals("")) {
 			try {
 				latLng = m_geocoder.geocode(def.getGeolocation());
@@ -211,6 +244,23 @@ public class DefaultLocationDataService implements LocationDataService {
 		}
 
 		return latLng;
+	}
+
+	@Transactional
+	public void handleAllMonitoringLocationDefinitions(final Collection<LocationDefHandler> handlers) {
+		final Collection<OnmsMonitoringLocationDefinition> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
+		for (LocationDefHandler handler : handlers) {
+			handler.start(definitions.size());
+		}
+		for (final OnmsMonitoringLocationDefinition def : definitions) {
+			for (LocationDefHandler handler : handlers) {
+				handler.handleLocation(def);
+			}
+		}
+		for (final LocationDefHandler handler : handlers) {
+			handler.finish();
+		}
+		m_locationDao.saveMonitoringLocationDefinitions(definitions);
 	}
 
 	private static GWTPollResult transformPollResult(final PollStatus pollStatus) {
