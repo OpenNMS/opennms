@@ -45,7 +45,7 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	this.image = document.createElementNS(svgNS,"image");
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);
-	this.image.setAttributeNS(null,this.attributeX, dimension/10);
+	this.image.setAttributeNS(null,this.attributeX, dimension/20);
 	this.image.setAttributeNS(null,this.attributeY, 0);
 	this.image.setAttributeNS(null,"preserveAspectRatio", "xMinYMin");
 	this.image.setAttributeNS(null,"cursor", "pointer");
@@ -56,24 +56,27 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	this.image.addEventListener("mouseup", this.onMouseUp, false);
 	this.image.addEventListener("mouseover", this.onMouseOver, false);
 	this.image.addEventListener("mouseout", this.onMouseOut, false);
-	this.svgNode.appendChild(this.image);
 	
 	var labelx = Math.round(this.width/3);
-	var labely = this.height + dimension*0.5;
+	var labely = this.height + dimension*0.7;
 	var labelSize = dimension/2;
 	var labelAnchor = "middle";
 
-    this.label = new Label(labelText, labelx, labely, labelSize, labelAnchor ,null);
-	this.svgNode.appendChild(this.label.getSvgNode());
+    this.label = new Label(labelText, labelx, labely, labelSize, labelAnchor);
 	
 	//renderize semaphore
-	var r=dimension/4;
-        var cx=this.width+r;
-	var cy=this.height-r;
+	//var r=dimension/4;
+    //var cx=this.width+r;
+	//var cy=this.height-r;
 
-	this.semaphore = new Semaphore(r, cx, cy, semaphoreColor, "black");
+//	this.semaphore = new Semaphore(r, cx, cy, semaphoreColor, "black");
+	this.semaphore = new Semaphore(this.width+dimension/10, this.height, 0, 0, semaphoreColor, "black");
 	this.semaphore.flash(semaphoreFlash);
+
 	this.svgNode.appendChild(this.semaphore.getSvgNode());
+	this.svgNode.appendChild(this.label.getSvgNode());
+	this.svgNode.appendChild(this.image);
+	
 	this.svgNode.setAttributeNS(null,"transform", "translate(" + this.x + "," + this.y + ")");
 	this.svgNode.setAttributeNS(null,"opacity", "0.9");
 }

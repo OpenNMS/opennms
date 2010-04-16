@@ -5,33 +5,36 @@ Semaphore.prototype = new MoveableSVGElement;
 Semaphore.superclass = MoveableSVGElement.prototype;
 
 // constructor
-function Semaphore(r, cx, cy, fill, stroke)
-{
-	if (arguments.length == 5)
+function Semaphore(width,height, x, y, fill, stroke)
+//function Semaphore(r, cx, cy, fill, stroke){
+	if (arguments.length == 6)
+//	if (arguments.length == 5)
 	{
 		this.animateTag = null; 
-		//Title.scale  = doc.getDocumentElement().getCurrentScale();     // scaling modified by zooming ..
-		//Title.offset = doc.getDocumentElement().getCurrentTranslate(); // offset modified by zooming ..
-		this.init(r, cx, cy, fill, stroke);
-		//doc.getDocumentElement().addEventListener("zoom", Title.Zoom, false);
+		this.init(width, height, x, y, fill, stroke);
+		//this.init(r, cx, cy, fill, stroke);
 	}
 	else
 		alert("Semaphore constructor call error");
 }
 
-// <circle r="*" cx="*" cy="*" stroke="*" fill="*">
-// 		<animate attributeName="fill" from="*" to="white" dur="400ms" repeatCount="indefinite" onrepeat="onRepeat(evt)"/>
-// </circle>
-Semaphore.prototype.init = function(r, cx, cy, fill, stroke)
+//Semaphore.prototype.init = function(r, cx, cy, fill, stroke)
+Semaphore.prototype.init = function(width, height, x, y, fill, stroke)
 {
-	Semaphore.superclass.init.call(this, "cx", "cy", cx, cy);
+//	Semaphore.superclass.init.call(this, "cx", "cy", cx, cy);
 	
-	this.svgNode = document.createElementNS(svgNS,"circle");
-	this.svgNode.setAttribute("r", r);	
-	this.svgNode.setAttribute(this.attributeX, cx);	
-	this.svgNode.setAttributeNS(null,this.attributeY, cy);
+//	this.svgNode = document.createElementNS(svgNS,"circle");
+//	this.svgNode.setAttribute("r", r);	
+	Semaphore.superclass.init.call(this, "x", "y", x, y);
+	
+	this.svgNode = document.createElementNS(svgNS,"rect");
+	this.svgNode.setAttributeNS(null,"width", width);	
+	this.svgNode.setAttributeNS(null,"height", height);	
+	this.svgNode.setAttribute(this.attributeX, x);	
+	this.svgNode.setAttributeNS(null,this.attributeY, y);
 	this.svgNode.setAttributeNS(null,"fill", fill);
 	this.svgNode.setAttributeNS(null,"stroke", stroke);
+//	this.svgNode.setAttributeNS(null,"stroke-width", 3);
 	this.animateTag = document.createElementNS(svgNS,"animate");
 	this.animateTag.setAttributeNS(null,"attributeName", "fill");	
 	this.animateTag.setAttributeNS(null,"from", fill);	

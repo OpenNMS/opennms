@@ -3,17 +3,17 @@
 Label.prototype = new MoveableSVGElement;
 Label.superclass = MoveableSVGElement.prototype;
 
-function Label(text, x, y, fontsize, anchor,linkToNodePage)
+function Label(text, x, y, fontsize, anchor)
 {
-	if (arguments.length == 6)
+	if (arguments.length == 5)
 	{
-	   this.init(text, x, y, fontsize, anchor, linkToNodePage);
+	   this.init(text, x, y, fontsize, anchor);
 	} 
 	else
 		alert("Label constructor call error");
 }
 
-Label.prototype.init = function(text, x, y, fontsize, anchor, linkToNodePage)
+Label.prototype.init = function(text, x, y, fontsize, anchor)
 {
 	this.text = text;
 	
