@@ -8,7 +8,7 @@ import de.novanic.eventservice.client.event.Event;
 
 public class DefaultLocationListener implements LocationListener {
 
-	private final LocationManager m_locationManager;
+	private final RemotePollerPresenter m_locationManager;
 
 	public void apply(final Event event) {
 		if (event == null) return;
@@ -19,7 +19,7 @@ public class DefaultLocationListener implements LocationListener {
 		}
 	}
 
-	public DefaultLocationListener(final LocationManager manager) {
+	public DefaultLocationListener(final RemotePollerPresenter manager) {
 		m_locationManager = manager;
 	}
 

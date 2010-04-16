@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
-public class LocationPanel extends Composite implements MapPanelBoundsChangedEventHandler, LocationsUpdatedEventHandler {
+public class LocationPanel extends Composite {
 
 	interface Binder extends UiBinder<Widget, LocationPanel> { }
 	interface SelectionStyle extends CssResource {
@@ -39,7 +39,6 @@ public class LocationPanel extends Composite implements MapPanelBoundsChangedEve
 	}
 
 	private static final Binder BINDER = GWT.create(Binder.class);
-	private transient LocationManager m_locationManager;
 	private transient HandlerManager m_eventBus;
 	private transient List<HandlerRegistration> eventRegistrations = new ArrayList<HandlerRegistration>();
 	
@@ -107,7 +106,7 @@ public class LocationPanel extends Composite implements MapPanelBoundsChangedEve
 		}
 	}
 
-	private void update(final LocationManager locationManager) {
+	public void update(final LocationManager locationManager) {
 		if (locationManager == null) {
 			throw new IllegalStateException("No LocationManager available inside LocationPanel");
 		}
@@ -175,31 +174,13 @@ public class LocationPanel extends Composite implements MapPanelBoundsChangedEve
         
     }
 
-    public void setLocationManager(final LocationManager locationManager) {
-        m_locationManager = locationManager;
-    }
-    
 	public void setEventBus(final HandlerManager eventBus) {
 	    // Remove any existing handler registrations
 	    for (HandlerRegistration registration : eventRegistrations) {
 	        registration.removeHandler();
 	    }
 	    m_eventBus = eventBus;
-	    eventRegistrations.add(m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this));
-	    eventRegistrations.add(m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this));
-	}
-	
-	/**
-	 * Refresh the list of locations whenever the map panel boundaries change.
-	 */
-    public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
-        update(m_locationManager);
-    }
-
-	/**
-	 * Refresh the list of locations whenever they are updated.
-	 */
-	public void onLocationsUpdated(final LocationsUpdatedEvent e) {
-		update(m_locationManager);
+	    // eventRegistrations.add(m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this));
+	    // eventRegistrations.add(m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this));
 	}
 }

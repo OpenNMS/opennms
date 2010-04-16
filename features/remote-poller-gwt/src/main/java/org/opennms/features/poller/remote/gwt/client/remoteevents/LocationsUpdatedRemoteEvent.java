@@ -2,7 +2,7 @@ package org.opennms.features.poller.remote.gwt.client.remoteevents;
 
 import java.util.Collection;
 
-import org.opennms.features.poller.remote.gwt.client.LocationManager;
+import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 public class LocationsUpdatedRemoteEvent implements MapRemoteEvent {
@@ -24,7 +24,7 @@ public class LocationsUpdatedRemoteEvent implements MapRemoteEvent {
 		m_locations = locations;
 	}
 
-	public void dispatch(LocationManager locationManager) {
+	public void dispatch(RemotePollerPresenter locationManager) {
 		for (LocationInfo location : m_locations) {
 			locationManager.updateLocation(location);
 		}

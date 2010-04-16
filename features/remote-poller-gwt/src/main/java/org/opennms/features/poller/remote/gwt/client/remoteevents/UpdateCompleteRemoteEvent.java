@@ -1,6 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client.remoteevents;
 
-import org.opennms.features.poller.remote.gwt.client.LocationManager;
+import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 
 public class UpdateCompleteRemoteEvent implements MapRemoteEvent {
 	private static final long serialVersionUID = 1L;
@@ -8,7 +8,7 @@ public class UpdateCompleteRemoteEvent implements MapRemoteEvent {
 	public UpdateCompleteRemoteEvent() {
 	}
 
-	public void dispatch(LocationManager locationManager) {
+	public void dispatch(RemotePollerPresenter locationManager) {
 		locationManager.updateComplete();
 	}
 

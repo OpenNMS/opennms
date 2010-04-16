@@ -40,7 +40,7 @@ public class Application implements EntryPoint
 		Window.enableScrolling(false);
 		Window.setMargin("0px");
 
-		m_locationManager = new DefaultLocationManager(m_eventBus, splitPanel, createMapPanel());
+		m_locationManager = new DefaultLocationManager(m_eventBus, splitPanel, locationPanel, createMapPanel());
 		
 		m_locationManager.addLocationManagerInitializationCompleteEventHandler(new LocationManagerInitializationCompleteEventHander() {
             
@@ -51,7 +51,6 @@ public class Application implements EntryPoint
             }
         });
 		locationPanel.setEventBus(m_eventBus);
-		locationPanel.setLocationManager(m_locationManager);
 		
 		m_locationManager.initialize();
 	}
