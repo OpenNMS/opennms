@@ -23,6 +23,7 @@
     <module>dnsjava</module>
     <module>gwt</module>
     <module>jinterop</module>
+    <module>jnlp</module>
     <module>jradius</module>
     <module>quartz</module>
     <module>rancid</module>
