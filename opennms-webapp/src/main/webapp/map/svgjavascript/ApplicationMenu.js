@@ -192,15 +192,18 @@ function instantiateViewGroup() {
 	var itemEl2id="ColorNodesByAvail";	
 	var itemEl3id="ColorNodesByStatus";
 	var subitems= new Array(itemEl1id,itemEl2id,itemEl3id);
+
 	var id="ToggleFullScreen";
 	viewMenu.addElement(id, "Toggle Screen", menuDeltaX,menuDeltaY,menuWidth,menuHeight,toggleScreenSetUp, subitems);
+
 	id = "SetDimension";	
 	viewMenu.addElement(id, "Set Dimension", menuDeltaX,2*menuDeltaY,menuWidth,menuHeight,addDimensionList, subitems);
+
 	viewMenu.addItem(itemId, "View by...", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, subitems);
 	viewMenu.addItemElement(itemEl1id, "Severity", menuDeltaX+menuWidth,3*menuDeltaY,menuWidth,menuHeight, viewBySeveritySetUp);
 	viewMenu.addItemElement(itemEl2id,    "Avail", menuDeltaX+menuWidth,4*menuDeltaY,menuWidth,menuHeight, viewByAvailSetUp);
 	viewMenu.addItemElement(itemEl3id,   "Status", menuDeltaX+menuWidth,5*menuDeltaY,menuWidth,menuHeight,viewByStatusSetUp);
-	
+	viewMenu.addElement(id, "Switch...", menuDeltaX,4*menuDeltaY,menuWidth,menuHeight,switchSemaphore, subitems);
 }
 
 // ***********functions called by Map Menu ************************
@@ -1082,6 +1085,19 @@ function toggleScreenSetUp() {
 	showMapInfo();
 	showHistory();
 }
+
+function switchSemaphore()  {
+	closeAllMenu();
+	if ( useSemaphore )
+	     useSemaphore=false;
+	else 
+	     useSemaphore=true;
+	     
+	for (var i in map.mapElements) {
+		map.mapElements[i].useSemaphore(useSemaphore);
+	}
+}
+
 // ***************function called by clicking on count down ******************
 function addRefreshTimeList()
 {	
