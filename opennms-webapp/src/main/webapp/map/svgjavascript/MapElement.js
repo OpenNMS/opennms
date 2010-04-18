@@ -69,7 +69,7 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	//renderize status with semaphore or inline
 	var r,cx,cy;
 	if ( this.usesemaphore ) {
-		r=dimension/4;
+		r=this.width/4;
     	cx=this.width+r; //dimension*5/4
 		cy=this.height-r; //15/12*dimension
 	} else {
@@ -97,7 +97,7 @@ MapElement.prototype.setDimension = function(dimension) {
 	this.label.setFontSize(dimension/2);
 	var r,cx,cy;
 	if ( this.usesemaphore ) {
-		r=dimension/4;
+		r=this.width/4;
     	cx=this.width+r; //dimension*5/4
 		cy=this.height-r; //15/12*dimension
 	} else {
@@ -183,7 +183,7 @@ MapElement.prototype.useSemaphore = function(usesemaphore)
 	if ( this.usesemaphore == usesemaphore ) return;	
 	this.usesemaphore = usesemaphore;
 	if ( this.usesemaphore ) {
-		r=dimension/4;
+		r=this.width/4;
     	cx=this.width+r; //dimension*5/4
 		cy=this.height-r; //15/12*dimension
 	} else {
