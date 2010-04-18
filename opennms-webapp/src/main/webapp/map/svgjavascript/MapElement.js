@@ -81,12 +81,12 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 }
 
 
-MapElement.prototype.setDimension = function(newDimension) {
-	this.width = newDimension;
-	this.height = newDimension*4/3;
+MapElement.prototype.setDimension = function(dimension) {
+	this.width = dimension;
+	this.height = dimension*4/3;
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);	
-	this.label.setFontSize(newDimension/2);
+	this.label.setFontSize(dimension/2);
 	var r=dimension/4;
     var cx=this.width+r; //dimension*5/4
 	var cy=this.height-r; //15/12*dimension
