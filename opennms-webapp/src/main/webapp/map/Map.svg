@@ -113,6 +113,7 @@ function handleInit(data) {
 		maxLinks = mapsPropertiesFactory.maxLinks;
 		summaryLinkId = mapsPropertiesFactory.summaryLink;
 		summaryLinkColor = mapsPropertiesFactory.summaryLinkColor;
+		useSemaphore=mapsPropertiesFactory.useSemaphore;
 		
 		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
 		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;

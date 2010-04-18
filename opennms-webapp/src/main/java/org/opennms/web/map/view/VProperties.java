@@ -24,6 +24,7 @@ public class VProperties {
 	boolean contextMenuEnabled=true;
     boolean availEnabled=true;
     
+    boolean useSemaphore=true;
 
     int unknownstatusid;
     int maxLinks;
@@ -237,5 +238,13 @@ public class VProperties {
     public void setDefaultMapElementDimension(int defaultMapElementDimension) {
         this.defaultMapElementDimension = defaultMapElementDimension;
     }
-    
+
+    public boolean isUseSemaphore() {
+        return useSemaphore;
+    }
+
+    public void setUseSemaphore(boolean useSemaphore) {
+        this.useSemaphore = useSemaphore;
+    }
+
 }

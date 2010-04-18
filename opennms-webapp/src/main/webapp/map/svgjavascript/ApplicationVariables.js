@@ -255,6 +255,9 @@ var myRefreshTimeMinsResult;
 // variable that stores if the user is Admin Role.
 var isUserAdmin;
 
+// variable to display semaphore or icon inline color
+var useSemaphore;
+
 // Define known statuses
 var STATUSES_TEXT= new Array();
 var STATUSES_COLOR= new Array();
