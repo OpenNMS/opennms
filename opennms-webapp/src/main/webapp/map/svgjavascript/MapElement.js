@@ -13,17 +13,17 @@ status=the element status at the moment of the creation
 avail=availability of the element at the moment of the creation
 */
 
-function MapElement(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity)
+function MapElement(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity,usesemaphore)
 {
-	if ( arguments.length == 11 )
+	if ( arguments.length == 12 )
 	{
-	   	this.init(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity);
+	   	this.init(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity,usesemaphore);
 	}
 	else
 		alert("MapElement constructor call error");
 }
 
-MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity)
+MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semaphoreFlash, x, y, dimension, status, avail, severity,usesemaphore)
 {
 
 	MapElement.superclass.init.call(this, "x", "y", x, y);
@@ -34,7 +34,9 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	this.avail = avail;
 	this.status = status;
 	this.severity = severity;
-        this.dimension = dimension;	
+	
+	this.usesemaphore=usesemaphore;
+	
 	//mantains the number of links on this elements
 	this.numOfLinks=0;
 	// renderize element
@@ -64,11 +66,17 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 
     this.label = new Label(labelText, labelx, labely, labelSize, labelAnchor);
 	
-	//renderize status with semaphore
-	var r=dimension/4;
-    var cx=this.width+r; //dimension*5/4
-	var cy=this.height-r; //15/12*dimension
-
+	//renderize status with semaphore or inline
+	var r,cx,cy;
+	if ( this.usesemaphore ) {
+		r=dimension/4;
+    	cx=this.width+r; //dimension*5/4
+		cy=this.height-r; //15/12*dimension
+	} else {
+		r=this.width/2;
+    	cx=this.width/2; //dimension/2
+		cy=this.height/2; //8/3*dimension
+	}
 	this.semaphore = new Semaphore(r, cx, cy, semaphoreColor, "black");
 	this.semaphore.flash(semaphoreFlash);
 
@@ -87,9 +95,16 @@ MapElement.prototype.setDimension = function(dimension) {
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);	
 	this.label.setFontSize(dimension/2);
-	var r=dimension/4;
-    var cx=this.width+r; //dimension*5/4
-	var cy=this.height-r; //15/12*dimension
+	var r,cx,cy;
+	if ( this.usesemaphore ) {
+		r=dimension/4;
+    	cx=this.width+r; //dimension*5/4
+		cy=this.height-r; //15/12*dimension
+	} else {
+		r=this.width/2;
+    	cx=this.width/2; //dimension/2
+		cy=this.height/2; //8/3*dimension
+	}
 	this.semaphore.setDimension(r,cx,cy);
 }
 
@@ -160,9 +175,25 @@ MapElement.prototype.getIcon = function()
 MapElement.prototype.setIcon = function(icon)
 {
 	this.icon = icon;
-	this.image.setAttributeNS(xlinkNS, "xlink:href", this.icon.getUrl());
-	
+	this.image.setAttributeNS(xlinkNS, "xlink:href", this.icon.getUrl());	
 }
+
+MapElement.prototype.useSemaphore = function(usesemaphore)
+{
+	if ( this.usesemaphore == usesemaphore ) return;	
+	this.usesemaphore = usesemaphore;
+	if ( this.usesemaphore ) {
+		r=dimension/4;
+    	cx=this.width+r; //dimension*5/4
+		cy=this.height-r; //15/12*dimension
+	} else {
+		r=this.width/2;
+    	cx=this.width/2; //dimension/2
+		cy=this.height/2; //8/3*dimension
+	}
+	this.semaphore.setDimension(r,cx,cy);
+}
+
 MapElement.prototype.getLabel = function()
 {
 	return this.label.text;

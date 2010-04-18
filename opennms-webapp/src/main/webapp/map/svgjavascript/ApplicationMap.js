@@ -258,7 +258,7 @@ function handleAddElementResponse(data) {
 			labelText=labelText.substr(0,ndxOf);
 
 		icon = new Icon(iconName,MEIconsSortAss[iconName]);
-		map.addMapElement(new MapElement(id,icon,labelText, getSemaphoreColorForNode(severity,avail,status), getSemaphoreFlash(severity,avail), point.x, point.y, mapElemDimension, status, avail,severity))
+		map.addMapElement(new MapElement(id,icon,labelText, getSemaphoreColorForNode(severity,avail,status), getSemaphoreFlash(severity,avail), point.x, point.y, mapElemDimension, status, avail,severity,useSemaphore))
 	}
 	var msg = "Added "+index+" nodes to the map";
 	if(index==0){
@@ -471,7 +471,7 @@ function handleLoadingMap(data) {
 			if (index > 0)
 				labelText=labelText.substr(0,index);
 		    
-		    map.addMapElement(new MapElement(elem,icon, labelText, semaphoreColor, semaphoreFlash, velem.x, velem.y, mapElemDimension, status, avail,severity));
+		    map.addMapElement(new MapElement(elem,icon, labelText, semaphoreColor, semaphoreFlash, velem.x, velem.y, mapElemDimension, status, avail,severity,useSemaphore));
 		} else if (velem.hideNode ) {
 			if (hideNodesIds == "")
 				hideNodesIds=velem.id;
@@ -765,7 +765,7 @@ function handleRefreshNodesResponse(data) {
 				var deleted = map.deleteMapElement(id);
 			}
 			if (deleted){
-				map.addMapElement(new MapElement(id,icon, labelText, getSemaphoreColorForNode(severity,avail,status), getSemaphoreFlash(severity,avail), posx, posy, mapElemDimension, status, avail,severity));
+				map.addMapElement(new MapElement(id,icon, labelText, getSemaphoreColorForNode(severity,avail,status), getSemaphoreFlash(severity,avail), posx, posy, mapElemDimension, status, avail,severity,useSemaphore));
 			}
 		} else if (testHideMap == -1 ){
 			var nodeid = id.substring(0,testHideNode);
