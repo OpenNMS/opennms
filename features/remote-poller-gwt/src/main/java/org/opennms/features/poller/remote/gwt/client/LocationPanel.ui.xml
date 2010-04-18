@@ -60,6 +60,7 @@
   </ui:style>
   
   <g:HTMLPanel >
+    <me:PageableLocationList ui:field="locationList"/>
   <g:ScrollPanel ui:field="m_scrollPanel" styleName="{style.scrollPanel}">
     <g:FlexTable ui:field='m_locations' styleName="{style.flexTable}" />
   </g:ScrollPanel>

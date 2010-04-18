@@ -42,6 +42,7 @@ public class LocationPanel extends Composite {
 	private transient HandlerManager m_eventBus;
 	private transient List<HandlerRegistration> eventRegistrations = new ArrayList<HandlerRegistration>();
 	
+	@UiField PageableLocationList locationList;
 	@UiField FlexTable m_locations;
 	@UiField SelectionStyle selectionStyle;
 	
@@ -114,47 +115,32 @@ public class LocationPanel extends Composite {
 		int count = 1;
 		List<Location> visibleLocations = locationManager.getVisibleLocations();
 		
-		long aTotal = 0;
-		long bTotal = 0;
-		long cTotal = 0;
-		long dTotal = 0;
-		long eTotal = 0;
+		locationList.updateList(visibleLocations);
 		
-        for (Location location : visibleLocations) {
-            
-            long aStart = System.currentTimeMillis();
-            String statusStyle = getStatusStyle(location);
-            aTotal += System.currentTimeMillis() - aStart;
-            
-            long cStart = System.currentTimeMillis();
-            
-            m_locations.setText(count, 1, location.getLocationInfo().getName());
-            cTotal += System.currentTimeMillis() - cStart;
-            
-            long bStart = System.currentTimeMillis();
-            m_locations.setText(count, 0, "&nbsp;");
-            m_locations.getCellFormatter().addStyleName(count, 0, statusStyle);
-            bTotal +=  System.currentTimeMillis() - bStart;
-            
-            long dStart = System.currentTimeMillis();
-		    m_locations.setText(count, 2, location.getLocationInfo().getArea());
-		    dTotal += System.currentTimeMillis() - dStart;
-		    
-		    long eStart = System.currentTimeMillis();
-		    if(count %2 != 0) {
-		        m_locations.getRowFormatter().addStyleName(count, selectionStyle.alternateRow());
-		    }
-		    eTotal += System.currentTimeMillis() - eStart;
-		    
-			count++;
-			
-		}
-		
-		while (m_locations.getRowCount() > count) {
-			m_locations.removeRow(m_locations.getRowCount() - 1);
-		}
+//        for (Location location : visibleLocations) {
+//            
+//            String statusStyle = getStatusStyle(location);
+//            
+//            
+//            m_locations.setText(count, 1, location.getLocationInfo().getName());
+//            
+//            m_locations.setText(count, 0, "&nbsp;");
+//            m_locations.getCellFormatter().addStyleName(count, 0, statusStyle);
+//            
+//		    m_locations.setText(count, 2, location.getLocationInfo().getArea());
+//		    
+//		    if(count %2 != 0) {
+//		        m_locations.getRowFormatter().addStyleName(count, selectionStyle.alternateRow());
+//		    }
+//		    
+//			count++;
+//			
+//		}
+//		
+//		while (m_locations.getRowCount() > count) {
+//			m_locations.removeRow(m_locations.getRowCount() - 1);
+//		}
 
-		Window.alert("aTotal: " + aTotal + "\nbTotal: " + bTotal + "\ncTotal: " + cTotal + "\ndTotal: " + dTotal + "\neTotal: " + eTotal);
 		
 	}
 
