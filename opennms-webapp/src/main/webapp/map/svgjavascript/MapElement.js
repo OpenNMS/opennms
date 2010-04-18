@@ -64,18 +64,17 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 
     this.label = new Label(labelText, labelx, labely, labelSize, labelAnchor);
 	
-	//renderize semaphore
-	//var r=dimension/4;
-    //var cx=this.width+r;
-	//var cy=this.height-r;
+	//renderize status with semaphore
+	var r=dimension/4;
+    var cx=this.width+r; //dimension*5/4
+	var cy=this.height-r; //15/12*dimension
 
-//	this.semaphore = new Semaphore(r, cx, cy, semaphoreColor, "black");
-	this.semaphore = new Semaphore(this.width+dimension/10, this.height, 0, 0, semaphoreColor, "black");
+	this.semaphore = new Semaphore(r, cx, cy, semaphoreColor, "black");
 	this.semaphore.flash(semaphoreFlash);
 
 	this.svgNode.appendChild(this.semaphore.getSvgNode());
-	this.svgNode.appendChild(this.label.getSvgNode());
 	this.svgNode.appendChild(this.image);
+	this.svgNode.appendChild(this.label.getSvgNode());
 	
 	this.svgNode.setAttributeNS(null,"transform", "translate(" + this.x + "," + this.y + ")");
 	this.svgNode.setAttributeNS(null,"opacity", "0.9");
@@ -88,7 +87,10 @@ MapElement.prototype.setDimension = function(newDimension) {
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);	
 	this.label.setFontSize(newDimension/2);
-	this.semaphore.setDimension(newDimension/4);
+	var r=dimension/4;
+    var cx=this.width+r; //dimension*5/4
+	var cy=this.height-r; //15/12*dimension
+	this.semaphore.setDimension(r,cx,cy);
 }
 
 MapElement.prototype.getMapId = function() {

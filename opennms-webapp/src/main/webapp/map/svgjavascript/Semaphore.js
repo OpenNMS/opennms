@@ -5,36 +5,27 @@ Semaphore.prototype = new MoveableSVGElement;
 Semaphore.superclass = MoveableSVGElement.prototype;
 
 // constructor
-function Semaphore(width,height, x, y, fill, stroke)
-//function Semaphore(r, cx, cy, fill, stroke){
-	if (arguments.length == 6)
-//	if (arguments.length == 5)
+function Semaphore(r, cx, cy, fill, stroke){
+	if (arguments.length == 5)
 	{
 		this.animateTag = null; 
-		this.init(width, height, x, y, fill, stroke);
-		//this.init(r, cx, cy, fill, stroke);
+		this.init(r, cx, cy, fill, stroke);
 	}
 	else
 		alert("Semaphore constructor call error");
 }
 
-//Semaphore.prototype.init = function(r, cx, cy, fill, stroke)
-Semaphore.prototype.init = function(width, height, x, y, fill, stroke)
+Semaphore.prototype.init = function(r, cx, cy, fill, stroke)
 {
-//	Semaphore.superclass.init.call(this, "cx", "cy", cx, cy);
+	Semaphore.superclass.init.call(this, "cx", "cy", cx, cy);
 	
-//	this.svgNode = document.createElementNS(svgNS,"circle");
-//	this.svgNode.setAttribute("r", r);	
-	Semaphore.superclass.init.call(this, "x", "y", x, y);
-	
-	this.svgNode = document.createElementNS(svgNS,"rect");
-	this.svgNode.setAttributeNS(null,"width", width);	
-	this.svgNode.setAttributeNS(null,"height", height);	
-	this.svgNode.setAttribute(this.attributeX, x);	
-	this.svgNode.setAttributeNS(null,this.attributeY, y);
+	this.svgNode = document.createElementNS(svgNS,"circle");
+	this.svgNode.setAttribute("r", r);	
+	this.svgNode.setAttribute(this.attributeX, cx);	
+	this.svgNode.setAttributeNS(null,this.attributeY, cy);
 	this.svgNode.setAttributeNS(null,"fill", fill);
 	this.svgNode.setAttributeNS(null,"stroke", stroke);
-//	this.svgNode.setAttributeNS(null,"stroke-width", 3);
+
 	this.animateTag = document.createElementNS(svgNS,"animate");
 	this.animateTag.setAttributeNS(null,"attributeName", "fill");	
 	this.animateTag.setAttributeNS(null,"from", fill);	
@@ -46,10 +37,18 @@ Semaphore.prototype.init = function(width, height, x, y, fill, stroke)
 	
 }
 
-Semaphore.prototype.setDimension = function(newDimension){
-	this.svgNode.setAttributeNS(null,"r", newDimension);
-	this.svgNode.setAttributeNS(null,this.attributeX, 5*newDimension);	
-	this.svgNode.setAttributeNS(null,this.attributeY, newDimension*16/3);	
+Semaphore.prototype.setDimension = function(r,cx,cy){
+	this.svgNode.setAttributeNS(null,"r", r);
+	this.svgNode.setAttributeNS(null,this.attributeX, cx);	
+	this.svgNode.setAttributeNS(null,this.attributeY, cy);	
+}
+
+Semaphore.prototype.setFillColor = function(fill){
+	this.svgNode.setAttributeNS(null,"fill", fill);
+}
+
+Semaphore.prototype.setStrokeColor = function(stroke){
+	this.svgNode.setAttributeNS(null,"stroke", stroke);
 }
 
 /*
