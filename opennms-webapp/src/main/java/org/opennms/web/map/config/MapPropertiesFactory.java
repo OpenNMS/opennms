@@ -780,7 +780,8 @@ public class MapPropertiesFactory extends Object {
         if (useSemaphoreString != null && useSemaphoreString.equalsIgnoreCase("false"))
             useSemaphore=false;
         else useSemaphore = true;
-
+        log.debug("use semaphore: "+useSemaphoreString);
+        
 		// look up background filenames
 		String[] bg = BundleLists
 				.parseBundleList(props.getProperty("bgimages"));
