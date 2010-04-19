@@ -28,8 +28,14 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 
 	MapElement.superclass.init.call(this, "x", "y", x, y);
 	this.id = new String(id);
+	
 	this.width = dimension;
 	this.height = dimension*6/5;
+	this.radius = dimension/2*1562/1000;
+   	this.cx=x+this.width/2;
+	this.cy=y+this.height/2;
+	
+	
 	this.icon = icon;
 	this.avail = avail;
 	this.status = status;
@@ -70,12 +76,12 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	var r,cx,cy;
 	if ( this.usesemaphore ) {
 		r=this.width/4;
-    	cx=this.width+r+2; //dimension*5/4
- 		cy=this.height-r; //15/12*dimension
+    	cx=this.width+r+2;
+ 		cy=this.height-r;
 	} else {
-		r=this.width/2*1562/1000;
-    	cx=this.width/2; //dimension/2
-		cy=this.height/2; //8/3*dimension
+		r=this.radius;
+    	cx=this.width/2;
+		cy=this.height/2;
 	}
 	this.semaphore = new Semaphore(r, cx, cy, semaphoreColor, "black");
 	this.semaphore.flash(semaphoreFlash);
@@ -90,20 +96,27 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 
 
 MapElement.prototype.setDimension = function(dimension) {
+
 	this.width = dimension;
 	this.height = dimension*6/5;
+	this.radius = dimension/2*1562/1000;
+   	this.cx=this.x+this.width/2;
+	this.cy=this.y+this.height/2;
+
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);	
+	
 	this.label.setFontSize(dimension/2);
+	
 	var r,cx,cy;
 	if ( this.usesemaphore ) {
 		r=this.width/4;
-    	cx=this.width+r+2; //dimension*5/4
- 		cy=this.height-r; //15/12*dimension
+    	cx=this.width+r+2;
+ 		cy=this.height-r;
 	} else {
-		r=this.width/2*1562/1000;
-    	cx=this.width/2; //dimension/2
-		cy=this.height/2; //8/3*dimension
+		r=this.radius;
+    	cx=this.width/2;
+		cy=this.height/2;
 	}
 	this.semaphore.setDimension(r,cx,cy);
 }
@@ -164,6 +177,8 @@ MapElement.prototype.move = function(x, y)
 {	
 	this.x = x;
 	this.y = y;
+   	this.cx=this.x+this.width/2;
+	this.cy=this.y+this.height/2;
 	this.svgNode.setAttributeNS(null,"transform", "translate(" + this.x + "," + this.y + ")");
 }
 
@@ -182,14 +197,15 @@ MapElement.prototype.useSemaphore = function(usesemaphore)
 {
 	if ( this.usesemaphore == usesemaphore ) return;	
 	this.usesemaphore = usesemaphore;
+	var r,cx,cy;
 	if ( this.usesemaphore ) {
 		r=this.width/4;
-    	cx=this.width+r+2; //dimension*5/4
- 		cy=this.height-r; //15/12*dimension
+    	cx=this.width+r+2;
+ 		cy=this.height-r;
 	} else {
-		r=this.width/2*1562/1000;
-    	cx=this.width/2; //dimension/2
-		cy=this.height/2; //8/3*dimension
+		r=this.radius;
+    	cx=this.width/2;
+		cy=this.height/2;
 	}
 	this.semaphore.setDimension(r,cx,cy);
 }
@@ -212,6 +228,21 @@ MapElement.prototype.getStatus = function()
 MapElement.prototype.getAvail = function()
 {
 	return this.avail;
+}
+
+MapElement.prototype.getRadius = function()
+{
+	return this.radius;
+}
+
+MapElement.prototype.getCX = function()
+{
+	return this.cx;
+}
+
+MapElement.prototype.getCY = function()
+{
+	return this.cy;
 }
 
 MapElement.prototype.getNumberOfLink = function()
