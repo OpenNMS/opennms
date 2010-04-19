@@ -211,6 +211,16 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         
     }
 
+    /**
+     * Invoked by the {@link ApplicationUpdatedRemoteEvent} and {@link ApplicationsUpdatedRemoteEvent}
+     * events.
+     */
+    public void updateApplication(final ApplicationInfo info) {
+    	if (info == null) return;
+
+    	// FIXME: implement
+    }
+    
     protected void setUpdated(boolean updated) {
         this.updated = updated;
     }

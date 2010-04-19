@@ -23,13 +23,13 @@ public class ApplicationStateTest {
 	static int count = 0;
 	static int monitorOffset = 0;
 	final static Random m_random = new Random();
-	Map<String,GWTApplication> m_applications = null;
+	Map<String,ApplicationInfo> m_applications = null;
 	Map<String,GWTMonitoredService> m_services = null;
 	Map<String,GWTLocationMonitor> m_monitors = null;
 
 	@Before
 	public void setup() {
-		m_applications = new HashMap<String,GWTApplication>();
+		m_applications = new HashMap<String,ApplicationInfo>();
 		m_services = new HashMap<String,GWTMonitoredService>();
 		m_monitors = new HashMap<String,GWTLocationMonitor>();
 	}
@@ -64,7 +64,7 @@ public class ApplicationStateTest {
 
 	@Test
 	public void testApplicationStateUnknown() {
-		Collection<GWTApplication> applications = new ArrayList<GWTApplication>();
+		Collection<ApplicationInfo> applications = new ArrayList<ApplicationInfo>();
 		applications.add(getApplication("TestApp1"));
 		applications.add(getApplication("TestApp2"));
 		
@@ -78,7 +78,7 @@ public class ApplicationStateTest {
 
 	@Test
 	public void testApplicationStateMarginal() {
-		Collection<GWTApplication> applications = new ArrayList<GWTApplication>();
+		Collection<ApplicationInfo> applications = new ArrayList<ApplicationInfo>();
 		applications.add(getApplication("TestApp1"));
 		applications.add(getApplication("TestApp2"));
 		
@@ -92,7 +92,7 @@ public class ApplicationStateTest {
 
 	@Test
 	public void testApplicationStateDown() {
-		Collection<GWTApplication> applications = new ArrayList<GWTApplication>();
+		Collection<ApplicationInfo> applications = new ArrayList<ApplicationInfo>();
 		applications.add(getApplication("TestApp1"));
 		applications.add(getApplication("TestApp2"));
 		
@@ -194,10 +194,10 @@ public class ApplicationStateTest {
 		return new GWTPollResult("Down", date, reason, null);
 	}
 
-	private GWTApplication getApplication(String name) {
-		GWTApplication app = m_applications.get(name);
+	private ApplicationInfo getApplication(String name) {
+		ApplicationInfo app = m_applications.get(name);
 		if (app == null) {
-			app = new GWTApplication();
+			app = new ApplicationInfo();
 			app.setId(count++);
 			app.setName(name);
 			Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();

@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.ApplicationState;
-import org.opennms.features.poller.remote.gwt.client.GWTApplication;
+import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus;
@@ -150,11 +150,11 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			monitors.add(transformLocationMonitor(mon));
 		}
 
-		final Set<GWTApplication> applications = new HashSet<GWTApplication>();
+		final Set<ApplicationInfo> applications = new HashSet<ApplicationInfo>();
 		final Map<String,Set<OnmsMonitoredService>> services = new HashMap<String,Set<OnmsMonitoredService>>();
 		
 		for (final OnmsApplication application : m_applicationDao.findAll()) {
-			applications.add(DefaultLocationDataService.transformApplication(m_monitoredServiceDao.findByApplication(application), application));
+			applications.add(transformApplication(m_monitoredServiceDao.findByApplication(application), application));
 		}
 
 		for (final OnmsMonitoredService service : m_monitoredServiceDao.findAll()) {
@@ -254,13 +254,38 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 		}
 		for (final OnmsMonitoringLocationDefinition def : definitions) {
 			for (LocationDefHandler handler : handlers) {
-				handler.handleLocation(def);
+				handler.handle(def);
 			}
 		}
 		for (final LocationDefHandler handler : handlers) {
 			handler.finish();
 		}
 		m_locationDao.saveMonitoringLocationDefinitions(definitions);
+	}
+
+	@Transactional
+	public void handleAllApplications(final Collection<ApplicationHandler> handlers) {
+		final Collection<OnmsApplication> apps = m_applicationDao.findAll();
+		for (final ApplicationHandler handler : handlers) {
+			handler.start(apps.size());
+		}
+		for (final OnmsApplication app : m_applicationDao.findAll()) {
+			final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+			final Set<String> locationNames = new HashSet<String>();
+			for (OnmsMonitoredService service : m_monitoredServiceDao.findByApplication(app)) {
+				services.add(transformMonitoredService(service));
+			}
+			for (final OnmsLocationMonitor mon : m_locationDao.findByApplication(app)) {
+				locationNames.add(mon.getDefinitionName());
+			}
+			final ApplicationInfo gwtApp = new ApplicationInfo(app.getId(), app.getName(), services, locationNames);
+			for (final ApplicationHandler handler : handlers) {
+				handler.handle(gwtApp);
+			}
+		}
+		for (final ApplicationHandler handler : handlers) {
+			handler.finish();
+		}
 	}
 
 	private static GWTPollResult transformPollResult(final PollStatus pollStatus) {
@@ -298,8 +323,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 		final GWTLocationSpecificStatus gStatus = new GWTLocationSpecificStatus();
 		gStatus.setId(status.getId());
 		gStatus.setLocationMonitor(transformLocationMonitor(status.getLocationMonitor()));
-		gStatus.setPollResult(DefaultLocationDataService.transformPollResult(status.getPollResult()));
-		gStatus.setMonitoredService(DefaultLocationDataService.transformMonitoredService(status.getMonitoredService()));
+		gStatus.setPollResult(transformPollResult(status.getPollResult()));
+		gStatus.setMonitoredService(transformMonitoredService(status.getMonitoredService()));
 		return gStatus;
 	}
 
@@ -313,13 +338,13 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 		return gMonitor;
 	}
 
-	private static GWTApplication transformApplication(final Collection<OnmsMonitoredService> services, final OnmsApplication application) {
-		final GWTApplication app = new GWTApplication();
+	private static ApplicationInfo transformApplication(final Collection<OnmsMonitoredService> services, final OnmsApplication application) {
+		final ApplicationInfo app = new ApplicationInfo();
 		app.setId(application.getId());
 		app.setName(application.getName());
 		final Set<GWTMonitoredService> s = new HashSet<GWTMonitoredService>();
 		for (final OnmsMonitoredService service : services) {
-			s.add(DefaultLocationDataService.transformMonitoredService(service));
+			s.add(transformMonitoredService(service));
 		}
 		app.setServices(s);
 		return app;

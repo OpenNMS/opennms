@@ -17,7 +17,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GWTApplicationStatus implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private String m_name;
-	private GWTApplication m_application;
+	private ApplicationInfo m_application;
 	private List<GWTLocationSpecificStatus> m_locationSpecificStatuses;
 	private Date m_statusFrom;
 	private Date m_statusTo;
@@ -29,7 +29,7 @@ public class GWTApplicationStatus implements Serializable, IsSerializable {
 		m_statusTo = null;
 	}
 
-	public GWTApplicationStatus(final GWTApplication application, final Date from, final Date to, final List<GWTLocationSpecificStatus> statuses) {
+	public GWTApplicationStatus(final ApplicationInfo application, final Date from, final Date to, final List<GWTLocationSpecificStatus> statuses) {
 		m_name = application.getName();
 		m_application = application;
 		m_statusFrom = from;

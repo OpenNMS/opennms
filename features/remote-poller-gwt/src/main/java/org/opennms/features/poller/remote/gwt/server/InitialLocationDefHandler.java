@@ -25,18 +25,10 @@ class InitialLocationDefHandler implements LocationDefHandler {
 		m_includeStatus = includeStatus;
 	}
 	
-	private void sendLocations() {
-		if (m_locations.size() > 0) {
-			final LocationsUpdatedRemoteEvent event = new LocationsUpdatedRemoteEvent(m_locations);
-			m_locations = new ArrayList<LocationInfo>();
-			m_eventService.addEventUserSpecific(event);
-		}
-	}
-
 	public void start(final int size) {
 	}
 
-	public void handleLocation(final OnmsMonitoringLocationDefinition def) {
+	public void handle(final OnmsMonitoringLocationDefinition def) {
 		m_locations.add(m_locationDataService.getLocationInfo(def, m_includeStatus));
 		if (m_locations.size() >= MAX_LOCATIONS_PER_EVENT) {
 			sendLocations();
@@ -46,4 +38,13 @@ class InitialLocationDefHandler implements LocationDefHandler {
 	public void finish() {
 		sendLocations();
 	}
+
+	private void sendLocations() {
+		if (m_locations.size() > 0) {
+			final LocationsUpdatedRemoteEvent event = new LocationsUpdatedRemoteEvent(m_locations);
+			m_locations = new ArrayList<LocationInfo>();
+			m_eventService.addEventUserSpecific(event);
+		}
+	}
+
 }
