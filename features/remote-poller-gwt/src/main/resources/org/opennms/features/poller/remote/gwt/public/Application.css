@@ -1,5 +1,11 @@
 /** Add css rules here for your application. */
 
+.gwt-Hyperlink {
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 13px;
+}
+
 button {
   display: block;
   font-size: 16pt
@@ -37,4 +43,9 @@ button {
 .statusUnknown td {
   vertical-align: top;
   background-color: #4040ff;
+}
+
+.statusUninitialized td {
+  vertical-align: top;
+  background-color: #dddddd;
 }

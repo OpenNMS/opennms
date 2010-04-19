@@ -10,8 +10,6 @@ public interface LocationStatusServiceAsync {
 
 	void getLocation(String locationName, AsyncCallback<Location> callback);
 
-	void getApiKey(AsyncCallback<String> callback);
-
 	void getLocationInfo(String locationName, AsyncCallback<LocationInfo> callback);
 
 	void getLocationDetails(String locationName, AsyncCallback<LocationDetails> callback);

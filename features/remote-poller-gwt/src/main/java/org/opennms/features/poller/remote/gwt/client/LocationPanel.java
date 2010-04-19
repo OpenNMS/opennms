@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
-import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
-import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.SortOrderUpdateEvent;
 
 import com.google.gwt.core.client.GWT;
@@ -145,7 +141,7 @@ public class LocationPanel extends Composite {
 	}
 
     private String getStatusStyle(Location location) {
-        switch(location.getLocationInfo().getMonitorStatus()) {
+        switch(location.getLocationInfo().getStatus()) {
             case UP:
                  return selectionStyle.upStatus();
             case DOWN:

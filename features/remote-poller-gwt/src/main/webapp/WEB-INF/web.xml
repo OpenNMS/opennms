@@ -72,6 +72,16 @@
 <!--    <url-pattern>/org.opennms.features.poller.remote.gwt.Application/gwt-log</url-pattern>-->
 <!--  </servlet-mapping>-->
 
+  <filter>
+    <filter-name>cache-filter</filter-name>
+    <filter-class>org.opennms.features.poller.remote.gwt.CacheFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>cache-filter</filter-name>
+    <url-pattern>/org.opennms.features.poller.remote.gwt.Application/*</url-pattern>
+  </filter-mapping>
+
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>

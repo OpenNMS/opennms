@@ -143,8 +143,7 @@ public class LocationDataServiceTest {
 	public void testLocationInfo() throws Exception {
 		LocationInfo li = m_locationDataService.getLocationInfo("RDU");
 		assertEquals("RDU", li.getName());
-		assertEquals(Status.UNKNOWN, li.getApplicationStatus());
-		assertEquals(Status.UNKNOWN, li.getMonitorStatus());
+		assertEquals(Status.UNKNOWN, li.getStatus());
 	}
 
 	@Test

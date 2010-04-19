@@ -11,7 +11,8 @@ public enum Status implements Serializable, IsSerializable {
 	UP,
 	MARGINAL,
 	DOWN,
-	UNKNOWN;
+	UNKNOWN,
+	UNINITIALIZED;
 
 	private String m_reason = "";
 
@@ -31,8 +32,10 @@ public enum Status implements Serializable, IsSerializable {
 			color = "#ffff00";
 		} else if (this.equals(Status.DOWN)) {
 			color = "#ff0000";
-		} else {
+		} else if (this.equals(Status.UNKNOWN)) {
 			color = "#0000ff";
+		} else {
+			color = "#dddddd";
 		}
 		return color;
 	}
@@ -45,8 +48,10 @@ public enum Status implements Serializable, IsSerializable {
 			cssClass = "statusMarginal";
 		} else if (this.equals(Status.DOWN)) {
 			cssClass = "statusDown";
-		} else {
+		} else if (this.equals(Status.UNKNOWN)){
 			cssClass = "statusUnknown";
+		} else {
+			cssClass = "statusUninitialized";
 		}
 		return cssClass;
 	}

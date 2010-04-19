@@ -13,6 +13,8 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectE
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 
 import com.google.gwt.core.client.GWT;

@@ -16,7 +16,6 @@
     <moduleName>org.opennms.features.poller.remote.gwt.client.Application</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
-    <gwt.style>DETAILED</gwt.style>
   </properties>
 
   <build>

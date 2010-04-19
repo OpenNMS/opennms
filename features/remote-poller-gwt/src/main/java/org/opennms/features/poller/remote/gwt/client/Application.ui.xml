@@ -1,18 +1,46 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
 	xmlns:g='urn:import:com.google.gwt.user.client.ui'
 	xmlns:me='urn:import:org.opennms.features.poller.remote.gwt.client'
 	xmlns:maps='urn:import:com.google.gwt.maps.client'
-	>
-
-	<g:SplitLayoutPanel ui:field='splitPanel'>
-		<g:west size="250">
-			<me:LocationPanel ui:field='locationPanel' />
-		</g:west>
-		<!-- 
- 		<g:center>
-			<maps:MapWidget ui:field='mapWidget' />
+>
+	<ui:style>
+		.linkBar {
+			background: #D5DDF3;
+		}
+		.linkBar DIV {
+			padding: 5px;
+		}
+		.fullWidth {
+			width:100%;
+		}
+		.linkBarDivider {
+		opacity: 0.3;
+		filter:literal("alpha(opacity=30)");
+		}
+	</ui:style>
+	<g:DockLayoutPanel ui:field="rootPanel">
+		<g:north size="25">
+			<!-- Wrapper bar to push the length to 100% -->
+			<g:HorizontalPanel horizontalAlignment="ALIGN_LEFT" verticalAlignment="ALIGN_MIDDLE" addStyleNames='{style.fullWidth} {style.linkBar}'>
+				<g:HorizontalPanel horizontalAlignment="ALIGN_LEFT" verticalAlignment="ALIGN_MIDDLE" addStyleNames='{style.linkBar}'>
+					<g:Hyperlink ui:field='locationLink' text="Locations" />
+					<g:Label addStyleNames="{style.linkBarDivider}">|</g:Label>
+					<g:Hyperlink ui:field='applicationLink' text="Applications" />
+				</g:HorizontalPanel>
+			</g:HorizontalPanel>
+		</g:north>
+		<g:center>
+			<g:SplitLayoutPanel ui:field='splitPanel'>
+				<g:west size="250">
+					<me:LocationPanel ui:field='locationPanel' />
+				</g:west>
+				<!-- 
+				<g:center>
+					<maps:MapWidget ui:field='mapWidget' />
+				</g:center>
+				-->
+			</g:SplitLayoutPanel>
 		</g:center>
-		-->
-	</g:SplitLayoutPanel>
-
+	</g:DockLayoutPanel>
 </ui:UiBinder>
