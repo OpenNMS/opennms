@@ -25,8 +25,8 @@
 			bottom: 5px;
 		}
 		
-		.tableStyle{
-		    width: 100%;	
+		.tableContainer{
+		    overflow-y: scroll;	
 		}
 		
 	</ui:style>
@@ -77,13 +77,22 @@
 	        background-color: #0000ff;
 	    }
 	</ui:style>
-	
-	   <g:FlowPanel width="100%" height="100%">
-	       <g:FlexTable ui:field="dataList" width="100%"/>
-	       <g:FlowPanel ui:field="pagingControls" >
-	           <g:Button ui:field="nextBtn" text="next" styleName="{style.nextBtnLayoutStyle}"/>
-	           <g:Label ui:field="pageStatsLabel" styleName="{style.labelLayoutStyle}"/>
-	           <g:Button ui:field="prevBtn" text="prev" styleName="{style.prevBtnLayoutStyle}"/>
-	       </g:FlowPanel>
-	   </g:FlowPanel>
+	   <g:DockLayoutPanel height="100%" width="100%" unit="PX">
+           <g:center>
+             <g:FlowPanel styleName="{style.tableContainer}">
+                <g:FlexTable ui:field="dataList" width="100%" />
+             </g:FlowPanel>
+           </g:center>
+           <g:south size="26">
+             <g:FlowPanel ui:field="pagingControls" >
+               <g:FlowPanel styleName="{style.nextBtnLayoutStyle}">
+                   <g:Button ui:field="nextBtn" text="next" />
+               </g:FlowPanel>
+               <g:Label ui:field="pageStatsLabel" styleName="{style.labelLayoutStyle}"/>
+               <g:FlowPanel styleName="{style.prevBtnLayoutStyle}">
+                   <g:Button ui:field="prevBtn" text="prev" />
+               </g:FlowPanel>
+             </g:FlowPanel>
+           </g:south>
+	   </g:DockLayoutPanel>
 </ui:UiBinder> 

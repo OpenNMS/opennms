@@ -2,6 +2,7 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.List;
 
+import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -19,6 +20,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class PageableLocationList extends Composite {
 
@@ -77,7 +79,7 @@ public class PageableLocationList extends Composite {
         }
 
         private String getStatusStyle(LocationInfo locationInfo) {
-            switch(locationInfo.getApplicationStatus()) {
+            switch(locationInfo.getStatus()) {
                 case UP:
                     return locationDetailStyle.upStatus();
                 
@@ -116,22 +118,28 @@ public class PageableLocationList extends Composite {
     
     public void updateList(List<Location> locations) {
         setLocations(locations);
-        
         setCurrentPageIndex(0);
     }
 
     private void updateListDisplay(int currentPageIndex) {
         dataList.removeAllRows();
-        
+
         int rowCount = 0;
-        int showableLocations = ((currentPageIndex + 1) * TOTAL_LOCATIONS) > getLocations().size() ? getLocations().size() : (currentPageIndex * TOTAL_LOCATIONS);
-        for(int i = currentPageIndex; i < showableLocations; i++) {
-            
+        int size = getLocations().size();
+        int showableLocations = ((currentPageIndex + 1) * TOTAL_LOCATIONS) > size ? size : ((currentPageIndex + 1) * TOTAL_LOCATIONS);
+        int startIndex = currentPageIndex * TOTAL_LOCATIONS; 
+
+        for(int i = startIndex; i < showableLocations; i++) {
             dataList.setWidget(rowCount, 0, new LocationInfoDisplay(getLocations().get(i).getLocationInfo()));
             rowCount++;
         }
         
-        setTotalPages( (int) Math.ceil(getLocations().size() / TOTAL_LOCATIONS) );
+        int totalPages = (int) Math.ceil(size / TOTAL_LOCATIONS) + 1;
+        if(totalPages == 0) {
+            totalPages = 1;
+        }
+        
+        setTotalPages( totalPages );
     }
     
     @UiHandler("prevBtn")
@@ -143,9 +151,22 @@ public class PageableLocationList extends Composite {
     public void onNextBtnClick(ClickEvent event) {
         setCurrentPageIndex(getCurrentPageIndex() + 1);
     }
+    
+    @UiHandler("dataList")
+    public void onItemClickHandler(final ClickEvent event) {
+        final Cell cell = dataList.getCellForEvent(event);
+        Location location = m_locations.get(cell.getRowIndex() + (getCurrentPageIndex() * TOTAL_LOCATIONS));
+        
+        fireEvent(new LocationPanelSelectEvent(location.getLocationInfo().getName()));
+    }
+    
 
     private void setCurrentPageIndex(int currentPageIndex) {
-        if(currentPageIndex >= 0 && currentPageIndex <= getTotalPages()) {
+        
+        if(currentPageIndex == 0) {
+            m_currentPageIndex = currentPageIndex;
+            updateListDisplay(m_currentPageIndex);
+        }else if(currentPageIndex > 0 && currentPageIndex < getTotalPages()) {
             m_currentPageIndex = currentPageIndex;
             updateListDisplay(m_currentPageIndex);
         }
@@ -161,7 +182,7 @@ public class PageableLocationList extends Composite {
     }
 
     private void updatePageStatsDisplay() {
-        pageStatsLabel.setText(getCurrentPageIndex() + " of " + getTotalPages());
+        pageStatsLabel.setText((getCurrentPageIndex() + 1) + " of " + getTotalPages());
     }
 
     private int getTotalPages() {
