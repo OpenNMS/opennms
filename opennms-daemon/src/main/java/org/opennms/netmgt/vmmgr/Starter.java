@@ -149,7 +149,10 @@ public class Starter {
             }
         }
 
-        CaptchaStds.captchaStdOut();
+	/*
+	 * This is causing infinite recursion on exit
+	 * CaptchaStds.captchaStdOut();
+	 */
     }
     
     
