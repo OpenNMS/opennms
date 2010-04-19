@@ -178,45 +178,51 @@ function getSemaphoreFlash(severity, avail){
 }
 
 //save the mapid and mapname in the map history
+function deleteMapInHistory() {
+		mapHistory.splice(mapHistoryIndex,1);
+		mapHistoryName.splice(mapHistoryIndex,1);
+}
+
 function saveMapInHistory(){
-	var found=false;
 	for(i in mapHistory){
 		if(mapHistory[i]==currentMapId){
-			found=true;
 			mapHistoryIndex=parseInt(i);
 			mapHistoryName[mapHistoryIndex]=currentMapName;
+			return;
 		}
 	}
-	if(currentMapId!=NEW_MAP && !found){
-		if(mapHistory.length==0){
-			mapHistory.push(currentMapId);
-			mapHistoryName.push(currentMapName);
-			mapHistoryIndex = 0;
-		}else{
-			//alert("mapHistoryIndex="+(mapHistoryIndex));
-			++mapHistoryIndex;
-			var firstPart = mapHistory.slice(0,mapHistoryIndex);
-			var secondPart = mapHistory.slice(mapHistoryIndex);
-			var center = new Array();
-			center.push(currentMapId);
-			firstPart=firstPart.concat(center,secondPart);
-			mapHistory=firstPart;
-			/*for(ind in mapHistory){
-				alert(ind+" "+mapHistory[ind]);
-			}*/
+	if (currentMapId == NEW_MAP )
+	 	return;
+	 	
+	top.savehistory(currentMapId);
+	
+	if(mapHistory.length==0){
+		mapHistory.push(currentMapId);
+		mapHistoryName.push(currentMapName);
+		mapHistoryIndex = 0;
+	}else{
+		//alert("mapHistoryIndex="+(mapHistoryIndex));
+		++mapHistoryIndex;
+		var firstPart = mapHistory.slice(0,mapHistoryIndex);
+		var secondPart = mapHistory.slice(mapHistoryIndex);
+		var center = new Array();
+		center.push(currentMapId);
+		firstPart=firstPart.concat(center,secondPart);
+		mapHistory=firstPart;
+		/*for(ind in mapHistory){
+			alert(ind+" "+mapHistory[ind]);
+		}*/
 
 
-			firstPart = mapHistoryName.slice(0,mapHistoryIndex);
-			secondPart = mapHistoryName.slice(mapHistoryIndex);
-			center = new Array();
-			center.push(currentMapName);
-			firstPart=firstPart.concat(center,secondPart);
-			mapHistoryName=firstPart;
-			/*for(ind in mapHistoryName){
-				alert(ind+" "+mapHistoryName[ind]);
-			}*/	
-		}
-
+		firstPart = mapHistoryName.slice(0,mapHistoryIndex);
+		secondPart = mapHistoryName.slice(mapHistoryIndex);
+		center = new Array();
+		center.push(currentMapName);
+		firstPart=firstPart.concat(center,secondPart);
+		mapHistoryName=firstPart;
+		/*for(ind in mapHistoryName){
+			alert(ind+" "+mapHistoryName[ind]);
+		}*/	
 	}
 }
 

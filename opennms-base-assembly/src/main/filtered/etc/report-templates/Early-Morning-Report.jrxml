@@ -1,0 +1,1761 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Early-Morning-Report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="19"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" isDefault="false" hAlign="Center"/>
+	<subDataset name="outages_24h">
+		<queryString>
+			<![CDATA[SELECT
+	detailed_outages_24h.unresolved AS unresolved, detailed_outages_24h.resolved AS resolved, SUM(detailed_outages_24h.node_outage) AS node_outages_24h, SUM(detailed_outages_24h.interface_outage) AS interface_outage_24h, SUM(detailed_outages_24h.service_outage) AS service_outages_24h, SUM(detailed_outages_24h.management_outage) AS management_outages_24h
+FROM
+	(SELECT
+		event_outages_24h.eventuei, event_outages_24h.servicename, event_outages_24h.duration, event_outages_24h.unresolved, event_outages_24h.resolved,
+		CASE
+			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outages_24h.servicename = 'StrafePing' THEN CAST('0' AS INTEGER)
+			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outages_24h.servicename = 'SNMP' THEN CAST('0' AS INTEGER)
+			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outages_24h.servicename != 'ICMP' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS service_outage,
+		CASE
+			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND (event_outages_24h.servicename = 'SNMP') THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS management_outage,
+		CASE
+			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND (event_outages_24h.servicename = 'ICMP') THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS interface_outage,
+		CASE
+			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeDown' AND (event_outages_24h.servicename = 'ICMP') THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS node_outage
+	FROM
+		(SELECT
+			outages_24h.nodeid, outages_24h.duration, outages_24h.unresolved, outages_24h.resolved, events.eventuei, outages_24h.svclosteventid, outages_24h.svcregainedeventid, outages_24h.servicename
+		FROM
+			(SELECT
+				outages.nodeid, outages.svclosteventid, outages.svcregainedeventid, outages.serviceid, service.servicename,
+				CASE
+					WHEN outages.ifregainedservice is null THEN now()-outages.iflostservice
+					ELSE outages.ifregainedservice-outages.iflostservice
+				END AS duration,
+				CASE
+					WHEN ifregainedservice is null THEN CAST('1' AS INTEGER)
+					ELSE CAST('0' AS INTEGER)
+				END AS unresolved,
+				CASE
+					WHEN ifregainedservice is not null THEN CAST('1' AS INTEGER)
+					ELSE CAST('0' AS INTEGER)
+				END AS resolved
+			FROM
+				outages
+			JOIN
+				service
+			ON
+				(outages.serviceid=service.serviceid)
+			WHERE
+				service.servicename not like 'StrafePing' AND
+				(outages.iflostservice > now()-INTERVAL '23 hours' OR
+				outages.ifregainedservice is null))
+			AS outages_24h
+		JOIN
+			events
+		ON
+			(outages_24h.svclosteventid = events.eventid))
+		AS event_outages_24h
+	JOIN
+		node
+	ON
+		event_outages_24h.nodeid = node.nodeid) AS detailed_outages_24h
+GROUP BY
+	detailed_outages_24h.unresolved, detailed_outages_24h.resolved]]>
+		</queryString>
+		<field name="unresolved" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="resolved" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="node_outages_24h" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="interface_outage_24h" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="service_outages_24h" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="management_outages_24h" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="notify_last24h">
+		<queryString>
+			<![CDATA[SELECT
+	COUNT
+		(CASE
+			WHEN notifications.answeredby is null THEN CAST('1' AS INTEGER)
+		END) AS unacknowledged,
+	COUNT
+		(CASE
+			WHEN notifications.answeredby is not null THEN CAST('1' AS INTEGER)
+		END) AS acknowledged
+FROM
+	notifications
+WHERE
+	notifications.pagetime > now() - INTERVAL '23 hour']]>
+		</queryString>
+		<field name="unacknowledged" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="acknowledged" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="events_histogramm_last24h">
+		<queryString>
+			<![CDATA[SELECT
+	series.day_hours, SUM(indeterminate) AS indeterminate, SUM(cleared) AS cleared, SUM(normal) AS normal, SUM(warning) AS warning, SUM(minor) AS minor, SUM(major) AS major, SUM(critical) AS critical
+FROM
+	(SELECT
+		generate_series(0,23) as day_hours) AS series
+LEFT JOIN
+	(SELECT
+		EXTRACT (hours from events.eventtime) AS eventtime_hour,
+		CASE
+			WHEN events.eventseverity = '1' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS indeterminate,
+		CASE
+			WHEN events.eventseverity = '2' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS cleared,
+		CASE
+			WHEN events.eventseverity = '3' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS normal,
+		CASE
+			WHEN events.eventseverity = '4' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS warning,
+		CASE
+			WHEN events.eventseverity = '5' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS minor,
+		CASE
+			WHEN events.eventseverity = '6' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS major,
+		CASE
+			WHEN events.eventseverity = '7' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS critical
+	FROM
+		events
+	WHERE
+		events.eventtime > now() - INTERVAL '23 hour') AS events_per_hour
+ON
+	(series.day_hours=events_per_hour.eventtime_hour)
+GROUP BY
+	day_hours
+ORDER BY
+	day_hours]]>
+		</queryString>
+		<field name="day_hours" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="indeterminate" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="cleared" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="normal" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="warning" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="minor" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="major" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="critical" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="top_20_event_nodes">
+		<queryString>
+			<![CDATA[SELECT
+	nodelabel, SUM(indeterminate) AS indeterminate, SUM(cleared) AS cleared, SUM(normal) AS normal, SUM(warning) AS warning, SUM(minor) AS minor, SUM(major) AS major, SUM(critical) AS critical, SUM(indeterminate + cleared + normal + warning + minor + major + critical) AS total
+FROM
+	(SELECT
+		node.nodelabel,
+		CASE
+			WHEN events.eventseverity = '1' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS indeterminate,
+		CASE
+			WHEN events.eventseverity = '2' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS cleared,
+		CASE
+			WHEN events.eventseverity = '3' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS normal,
+		CASE
+			WHEN events.eventseverity = '4' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS warning,
+		CASE
+			WHEN events.eventseverity = '5' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS minor,
+		CASE
+			WHEN events.eventseverity = '6' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS major,
+		CASE
+			WHEN events.eventseverity = '7' THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS critical
+	FROM
+		node, events
+	WHERE
+		events.nodeid = node.nodeid) AS node_events
+GROUP BY
+	nodelabel
+ORDER BY
+	total DESC
+LIMIT '20']]>
+		</queryString>
+		<field name="nodelabel" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="indeterminate" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="cleared" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="normal" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="warning" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="minor" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="major" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="critical" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="total" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="outages_details">
+		<queryString>
+			<![CDATA[SELECT
+		detailed_outages_24h.nodelabel, detailed_outages_24h.outage_status, COUNT(detailed_outages_24h.outage_type) AS count, detailed_outages_24h.outage_type
+	FROM
+		(SELECT
+			node.nodelabel, outages_24h.duration, outages_24h.outage_status, events.eventuei, outages_24h.servicename,
+			CASE
+				WHEN events.eventuei = 'uei.opennms.org/nodes/nodeDown' AND outages_24h.servicename != 'ICMP' THEN 'NULL'
+				WHEN events.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND outages_24h.servicename != 'ICMP' THEN 'NULL'
+				WHEN events.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND outages_24h.servicename = 'SNMP' THEN 'management'
+				WHEN events.eventuei = 'uei.opennms.org/nodes/nodeDown' AND outages_24h.servicename = 'ICMP' THEN 'node'
+				WHEN events.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND outages_24h.servicename = 'ICMP' THEN 'interface'
+				WHEN events.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND (outages_24h.servicename != 'ICMP' OR outages_24h.servicename != 'SNMP')THEN 'service'
+				ELSE 'NULL'
+			END AS outage_type
+		FROM
+			(SELECT
+				outages.nodeid, outages.svclosteventid, outages.svcregainedeventid, outages.serviceid, service.servicename,
+				CASE
+					WHEN outages.ifregainedservice is null THEN now()-outages.iflostservice
+					ELSE outages.ifregainedservice-outages.iflostservice
+				END AS duration,
+				CASE
+					WHEN ifregainedservice is null THEN 'unresolved'
+					ELSE 'resolved'
+				END AS outage_status
+			FROM
+				outages
+			JOIN
+				service
+			ON
+				(outages.serviceid=service.serviceid)
+			WHERE
+				service.servicename not like 'StrafePing' AND
+				(outages.iflostservice > now()-INTERVAL '23 hours' OR
+				outages.ifregainedservice is null))
+			AS outages_24h
+		JOIN
+			events
+		ON
+			(outages_24h.svclosteventid = events.eventid)
+		JOIN
+			node
+		ON
+			(outages_24h.nodeid = node.nodeid)) as detailed_outages_24h
+	WHERE
+		detailed_outages_24h.outage_type != 'NULL'
+	GROUP BY
+		detailed_outages_24h.nodelabel, detailed_outages_24h.outage_status, detailed_outages_24h.outage_type
+	ORDER BY
+		outage_type, nodelabel, outage_status]]>
+		</queryString>
+		<field name="nodelabel" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="outage_status" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="count" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="outage_type" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="outage_timeline_24h">
+		<queryString>
+			<![CDATA[SELECT
+	series.day_hours, SUM(CAST (resolved AS INTEGER)) AS resolved, SUM(CAST (current AS INTEGER)) AS current
+FROM
+	(SELECT
+		generate_series(0,23) as day_hours) AS series
+LEFT JOIN
+	(SELECT
+		EXTRACT (hours from outages.iflostservice) AS iflostservice_hour,
+		CASE
+			WHEN outages.ifregainedservice is null THEN '1'
+			ELSE '0'
+		END AS current,
+		CASE
+			WHEN outages.ifregainedservice is not null THEN '1'
+			ELSE '0'
+		END as resolved
+	FROM
+		outages
+	WHERE
+		iflostservice > now() - INTERVAL '24 hour' OR
+		ifregainedservice is null) AS outages_per_hour
+ON
+	(series.day_hours=outages_per_hour.iflostservice_hour)
+GROUP BY
+	day_hours
+ORDER BY
+	day_hours]]>
+		</queryString>
+		<field name="day_hours" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="resolved" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="current" class="java.lang.Long">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="outage_statistics">
+		<parameter name="outage_type" class="java.lang.String">
+			<defaultValueExpression><![CDATA["current"]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT
+	detailed_outage_24h.nodelabel,
+	detailed_outage_24h.outage_type,
+	detailed_outage_24h.state,
+	SUM(detailed_outage_24h.current)::INTEGER AS current,
+	SUM(detailed_outage_24h.resolved)::INTEGER AS resolved,
+	SUM(detailed_outage_24h.node_outage)::INTEGER AS node_outage_24h,
+	SUM(detailed_outage_24h.interface_outage)::INTEGER AS interface_outage_24h,
+	SUM(detailed_outage_24h.service_outage)::INTEGER AS service_outage_24h,
+	SUM(detailed_outage_24h.management_outage)::INTEGER AS management_outage_24h
+FROM
+	(SELECT
+		node.nodelabel, event_outage_24h.state,  event_outage_24h.current, event_outage_24h.resolved,
+		CASE
+			WHEN (event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outage_24h.servicename != 'SNMP') AND (event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outage_24h.servicename != 'ICMP') THEN CAST ('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS service_outage,
+		CASE
+			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND (event_outage_24h.servicename = 'SNMP') THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS management_outage,
+		CASE
+			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND (event_outage_24h.servicename = 'ICMP') THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS interface_outage,
+		CASE
+			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeDown' AND (event_outage_24h.servicename = 'ICMP') THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
+		END AS node_outage,
+		CASE
+			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND (event_outage_24h.servicename = 'SNMP') THEN 'management'
+			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND (event_outage_24h.servicename = 'ICMP') THEN 'interface'
+			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeDown' AND (event_outage_24h.servicename = 'ICMP') THEN 'node'
+			WHEN (event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outage_24h.servicename != 'SNMP') AND (event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outage_24h.servicename != 'ICMP') THEN 'service'
+			ELSE 'filtered'
+		END AS outage_type
+	FROM
+		(SELECT
+			outage_24h.nodeid, outage_24h.state, outage_24h.current, outage_24h.resolved, events.eventuei, outage_24h.svclosteventid, outage_24h.svcregainedeventid, outage_24h.servicename
+		FROM
+			(SELECT
+				outages.nodeid, outages.svclosteventid, outages.svcregainedeventid, outages.serviceid, service.servicename,
+				CASE
+					WHEN ifregainedservice is null THEN CAST('1' AS INTEGER)
+					ELSE CAST('0' AS INTEGER)
+				END AS current,
+				CASE
+					WHEN ifregainedservice is not null THEN CAST('1' AS INTEGER)
+					ELSE CAST('0' AS INTEGER)
+				END AS resolved,
+				CASE
+					WHEN ifregainedservice is null THEN 'current'
+					ELSE 'resolved'
+				END AS state
+			FROM
+				outages
+			JOIN
+				service
+			ON
+				(outages.serviceid=service.serviceid)
+			WHERE
+				service.servicename not like 'StrafePing' AND
+				(outages.iflostservice > now()-INTERVAL '23 hours' OR
+				outages.ifregainedservice is null))
+			AS outage_24h
+		JOIN
+			events
+		ON
+			(outage_24h.svclosteventid = events.eventid))
+		AS event_outage_24h
+	JOIN
+		node
+	ON
+		event_outage_24h.nodeid = node.nodeid) AS detailed_outage_24h
+WHERE
+	outage_type != 'filtered' AND
+	state = $P{outage_type}
+GROUP BY
+	detailed_outage_24h.nodelabel,
+	detailed_outage_24h.outage_type,
+	detailed_outage_24h.state
+ORDER BY
+	state, outage_type, nodelabel]]>
+		</queryString>
+		<field name="nodelabel" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="outage_type" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="state" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="current" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="resolved" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="node_outage_24h" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="interface_outage_24h" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="service_outage_24h" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="management_outage_24h" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<variable name="node_outages_SUM" class="java.lang.Integer" calculation="Sum">
+			<variableExpression><![CDATA[$F{node_outage_24h}]]></variableExpression>
+			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
+		</variable>
+		<variable name="interface_outages_SUM" class="java.lang.Integer" calculation="Sum">
+			<variableExpression><![CDATA[$F{interface_outage_24h}]]></variableExpression>
+			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
+		</variable>
+		<variable name="service_outages_SUM" class="java.lang.Integer" calculation="Sum">
+			<variableExpression><![CDATA[$F{service_outage_24h}]]></variableExpression>
+			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
+		</variable>
+		<variable name="management_outages_SUM" class="java.lang.Integer" calculation="Sum">
+			<variableExpression><![CDATA[$F{management_outage_24h}]]></variableExpression>
+			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
+		</variable>
+		<group name="node_outages">
+			<groupExpression><![CDATA[$F{node_outage_24h}]]></groupExpression>
+		</group>
+		<group name="interface_outages">
+			<groupExpression><![CDATA[$F{interface_outage_24h}]]></groupExpression>
+		</group>
+		<group name="service_outages">
+			<groupExpression><![CDATA[$F{service_outage_24h}]]></groupExpression>
+		</group>
+		<group name="management_outages">
+			<groupExpression><![CDATA[$F{management_outage_24h}]]></groupExpression>
+		</group>
+	</subDataset>
+	<subDataset name="notification_statistics">
+		<parameter name="notification_state" class="java.lang.String">
+			<defaultValueExpression><![CDATA["acknowledged"]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT
+	outstanding, acknowledged, state, userid, media
+FROM
+	(SELECT
+		CASE
+			WHEN notifications.answeredby is null THEN CAST('1' AS INTEGER)
+			END AS outstanding,
+		CASE
+			WHEN notifications.answeredby is not null THEN CAST('1' AS INTEGER)
+			END AS acknowledged,
+		CASE
+			WHEN notifications.answeredby is null THEN 'outstanding'
+			ELSE 'acknowledged'
+		END AS state,
+		userid,
+		media
+	FROM
+		notifications
+	JOIN
+		usersnotified
+	ON
+		(notifications.notifyid=usersnotified.notifyid)
+	WHERE
+		notifications.pagetime > now() - INTERVAL '23 hour'
+	ORDER BY
+		state, userid, media)
+	AS notifications_24h
+WHERE
+	state like $P{notification_state}]]>
+		</queryString>
+		<field name="outstanding" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="acknowledged" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="state" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="userid" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="media" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<variable name="notified_acked_SUM" class="java.lang.Integer" calculation="Sum">
+			<variableExpression><![CDATA[$F{acknowledged}]]></variableExpression>
+			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
+		</variable>
+		<variable name="notified_outstanding_SUM" class="java.lang.Integer" calculation="Sum">
+			<variableExpression><![CDATA[$F{outstanding}]]></variableExpression>
+			<initialValueExpression><![CDATA[new Integer("0")]]></initialValueExpression>
+		</variable>
+		<group name="notification_state">
+			<groupExpression><![CDATA[$F{state}]]></groupExpression>
+		</group>
+		<group name="notified_user">
+			<groupExpression><![CDATA[$F{userid}]]></groupExpression>
+		</group>
+		<group name="notification_media">
+			<groupExpression><![CDATA[$F{media}]]></groupExpression>
+		</group>
+	</subDataset>
+	<queryString>
+		<![CDATA[select now() as current_time;]]>
+	</queryString>
+	<field name="current_time" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="outage_overview">
+		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<groupHeader>
+			<band height="139">
+				<pie3DChart>
+					<chart theme="default">
+						<reportElement mode="Opaque" x="280" y="34" width="275" height="96"/>
+						<chartTitle>
+							<font fontName="Calibri" size="10" isBold="true"/>
+							<titleExpression><![CDATA["Resolved outages"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<font fontName="Calibri" size="8"/>
+							<subtitleExpression><![CDATA["begun in last 24 hours"]]></subtitleExpression>
+						</chartSubtitle>
+						<chartLegend position="Right">
+							<font fontName="Calibri" size="8"/>
+						</chartLegend>
+					</chart>
+					<pieDataset>
+						<dataset>
+							<datasetRun subDataset="outage_statistics">
+								<datasetParameter name="outage_type">
+									<datasetParameterExpression><![CDATA["resolved"]]></datasetParameterExpression>
+								</datasetParameter>
+							</datasetRun>
+						</dataset>
+						<pieSeries>
+							<keyExpression><![CDATA["node"]]></keyExpression>
+							<valueExpression><![CDATA[$V{node_outages_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{node_outages_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+						<pieSeries>
+							<keyExpression><![CDATA["interface"]]></keyExpression>
+							<valueExpression><![CDATA[$V{interface_outages_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{interface_outages_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+						<pieSeries>
+							<keyExpression><![CDATA["service"]]></keyExpression>
+							<valueExpression><![CDATA[$V{service_outages_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{service_outages_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+						<pieSeries>
+							<keyExpression><![CDATA["management"]]></keyExpression>
+							<valueExpression><![CDATA[$V{management_outages_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{management_outages_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+					</pieDataset>
+					<pie3DPlot isCircular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
+						<plot foregroundAlpha="0.7">
+							<seriesColor seriesOrder="0" color="#CD0200"/>
+							<seriesColor seriesOrder="1" color="#EE8900"/>
+							<seriesColor seriesOrder="2" color="#FCBE00"/>
+							<seriesColor seriesOrder="3" color="#B1A500"/>
+						</plot>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="Calibri" size="8"/>
+						</itemLabel>
+					</pie3DPlot>
+				</pie3DChart>
+				<pie3DChart>
+					<chart renderType="draw" theme="default">
+						<reportElement mode="Opaque" x="0" y="34" width="277" height="96"/>
+						<box>
+							<topPen lineWidth="0.0"/>
+							<bottomPen lineWidth="0.0"/>
+						</box>
+						<chartTitle position="Top">
+							<font fontName="Calibri" isBold="true" isItalic="false"/>
+							<titleExpression><![CDATA["Current outages"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<font fontName="Calibri" size="8"/>
+						</chartSubtitle>
+						<chartLegend position="Left">
+							<font fontName="Calibri" size="8"/>
+						</chartLegend>
+					</chart>
+					<pieDataset>
+						<dataset>
+							<datasetRun subDataset="outage_statistics">
+								<datasetParameter name="outage_type">
+									<datasetParameterExpression><![CDATA["current"]]></datasetParameterExpression>
+								</datasetParameter>
+							</datasetRun>
+						</dataset>
+						<pieSeries>
+							<keyExpression><![CDATA["node"]]></keyExpression>
+							<valueExpression><![CDATA[$V{node_outages_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{node_outages_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+						<pieSeries>
+							<keyExpression><![CDATA["interface"]]></keyExpression>
+							<valueExpression><![CDATA[$V{interface_outages_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{interface_outages_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+						<pieSeries>
+							<keyExpression><![CDATA["service"]]></keyExpression>
+							<valueExpression><![CDATA[$V{service_outages_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{service_outages_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+						<pieSeries>
+							<keyExpression><![CDATA["management"]]></keyExpression>
+							<valueExpression><![CDATA[$V{management_outages_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{management_outages_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+					</pieDataset>
+					<pie3DPlot isCircular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
+						<plot foregroundAlpha="0.7">
+							<seriesColor seriesOrder="0" color="#CD0200"/>
+							<seriesColor seriesOrder="1" color="#EE8900"/>
+							<seriesColor seriesOrder="2" color="#FCBE00"/>
+							<seriesColor seriesOrder="3" color="#B1A500"/>
+						</plot>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="Calibri" size="8"/>
+						</itemLabel>
+					</pie3DPlot>
+				</pie3DChart>
+				<elementGroup>
+					<rectangle radius="5">
+						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#EE8900"/>
+						<graphicElement>
+							<pen lineWidth="0.0"/>
+						</graphicElement>
+					</rectangle>
+					<staticText>
+						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Calibri" size="16" isBold="true" isItalic="false"/>
+						</textElement>
+						<text><![CDATA[Outage overview]]></text>
+					</staticText>
+				</elementGroup>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="outage_detail">
+		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<groupHeader>
+			<band height="78">
+				<crosstab>
+					<reportElement x="0" y="34" width="273" height="30"/>
+					<crosstabDataset>
+						<dataset>
+							<datasetRun subDataset="outage_statistics">
+								<datasetParameter name="outage_type">
+									<datasetParameterExpression><![CDATA["current"]]></datasetParameterExpression>
+								</datasetParameter>
+								<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+							</datasetRun>
+						</dataset>
+					</crosstabDataset>
+					<rowGroup name="outage_type" width="63" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.String"><![CDATA[$F{outage_type}]]></bucketExpression>
+						</bucket>
+						<crosstabRowHeader>
+							<cellContents backcolor="#EE8900" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="2" y="0" width="61" height="20"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA[$V{outage_type}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabRowHeader>
+						<crosstabTotalRowHeader>
+							<cellContents backcolor="#B9B9B9" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.5" lineStyle="Solid"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<staticText>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="249" height="10"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+									</textElement>
+									<text><![CDATA[Total current outages]]></text>
+								</staticText>
+							</cellContents>
+						</crosstabTotalRowHeader>
+					</rowGroup>
+					<rowGroup name="nodelabel" width="187" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></bucketExpression>
+						</bucket>
+						<crosstabRowHeader>
+							<cellContents backcolor="#E1E1E1" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="2" y="0" width="185" height="10"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA[$V{nodelabel}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabRowHeader>
+						<crosstabTotalRowHeader>
+							<cellContents backcolor="#CCCCCC" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="185" height="10"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA["Current " + $V{outage_type} + " outage(s)"]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabTotalRowHeader>
+					</rowGroup>
+					<columnGroup name="resolved" height="0" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.Integer"><![CDATA[$F{resolved}]]></bucketExpression>
+						</bucket>
+						<crosstabColumnHeader>
+							<cellContents backcolor="#9ACD32" mode="Opaque">
+								<box>
+									<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.0"/>
+									<leftPen lineWidth="0.0"/>
+									<bottomPen lineWidth="0.0"/>
+									<rightPen lineWidth="0.0"/>
+								</box>
+							</cellContents>
+						</crosstabColumnHeader>
+						<crosstabTotalColumnHeader>
+							<cellContents backcolor="#FFFFFF" mode="Transparent" style="Crosstab Data Text">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.0"/>
+									<leftPen lineWidth="0.0"/>
+									<bottomPen lineWidth="0.0"/>
+									<rightPen lineWidth="0.0"/>
+								</box>
+							</cellContents>
+						</crosstabTotalColumnHeader>
+					</columnGroup>
+					<measure name="resolvedMeasure" class="java.lang.Integer" calculation="Sum">
+						<measureExpression><![CDATA[$F{resolved}]]></measureExpression>
+					</measure>
+					<measure name="currentMeasure" class="java.lang.Integer" calculation="Count">
+						<measureExpression><![CDATA[$F{current}]]></measureExpression>
+					</measure>
+					<crosstabCell width="0" height="10">
+						<cellContents>
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="0" height="10" rowTotalGroup="outage_type">
+						<cellContents backcolor="#FFFFFF" mode="Transparent">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="22" height="10" columnTotalGroup="resolved">
+						<cellContents backcolor="#E1E1E1" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="22" height="10" forecolor="#CD0200"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="false" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{currentMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="22" height="10" rowTotalGroup="outage_type" columnTotalGroup="resolved">
+						<cellContents backcolor="#B9B9B9" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="22" height="10" forecolor="#CD0200"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{currentMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="0" height="10" rowTotalGroup="nodelabel">
+						<cellContents backcolor="#FFFFFF" mode="Transparent">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="22" height="10" rowTotalGroup="nodelabel" columnTotalGroup="resolved">
+						<cellContents backcolor="#CCCCCC" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="22" height="10" forecolor="#CD0200"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{currentMeasure_nodelabel_resolved_ALL}.toString()]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+				</crosstab>
+				<crosstab>
+					<reportElement x="281" y="34" width="273" height="30"/>
+					<crosstabDataset>
+						<dataset>
+							<datasetRun subDataset="outage_statistics">
+								<datasetParameter name="outage_type">
+									<datasetParameterExpression><![CDATA["resolved"]]></datasetParameterExpression>
+								</datasetParameter>
+								<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+							</datasetRun>
+						</dataset>
+					</crosstabDataset>
+					<rowGroup name="outage_type" width="63" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.String"><![CDATA[$F{outage_type}]]></bucketExpression>
+						</bucket>
+						<crosstabRowHeader>
+							<cellContents backcolor="#B1A500" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="2" y="0" width="61" height="10"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA[$V{outage_type}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabRowHeader>
+						<crosstabTotalRowHeader>
+							<cellContents backcolor="#B9B9B9" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.5" lineStyle="Solid"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<staticText>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="249" height="10"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+									</textElement>
+									<text><![CDATA[Total resolved outages]]></text>
+								</staticText>
+							</cellContents>
+						</crosstabTotalRowHeader>
+					</rowGroup>
+					<rowGroup name="nodelabel" width="188" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></bucketExpression>
+						</bucket>
+						<crosstabRowHeader>
+							<cellContents backcolor="#E1E1E1" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="2" y="0" width="186" height="10"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA[$V{nodelabel}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabRowHeader>
+						<crosstabTotalRowHeader>
+							<cellContents backcolor="#CCCCCC" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="186" height="10"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA["Resolved " + $V{outage_type} + " outage(s)"]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabTotalRowHeader>
+					</rowGroup>
+					<columnGroup name="resolved" height="0" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.Integer"><![CDATA[$F{resolved}]]></bucketExpression>
+						</bucket>
+						<crosstabColumnHeader>
+							<cellContents backcolor="#9ACD32" mode="Opaque">
+								<box>
+									<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.0"/>
+									<leftPen lineWidth="0.0"/>
+									<bottomPen lineWidth="0.0"/>
+									<rightPen lineWidth="0.0"/>
+								</box>
+							</cellContents>
+						</crosstabColumnHeader>
+						<crosstabTotalColumnHeader>
+							<cellContents backcolor="#FFFFFF" mode="Transparent" style="Crosstab Data Text">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.0"/>
+									<leftPen lineWidth="0.0"/>
+									<bottomPen lineWidth="0.0"/>
+									<rightPen lineWidth="0.0"/>
+								</box>
+							</cellContents>
+						</crosstabTotalColumnHeader>
+					</columnGroup>
+					<measure name="resolvedMeasure" class="java.lang.Integer" calculation="Sum">
+						<measureExpression><![CDATA[$F{resolved}]]></measureExpression>
+					</measure>
+					<crosstabCell width="0" height="10">
+						<cellContents>
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="0" height="10" rowTotalGroup="outage_type">
+						<cellContents backcolor="#FFFFFF" mode="Transparent">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="21" height="10" columnTotalGroup="resolved">
+						<cellContents backcolor="#E1E1E1" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="false" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{resolvedMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="21" height="10" rowTotalGroup="outage_type" columnTotalGroup="resolved">
+						<cellContents backcolor="#B9B9B9" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{resolvedMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="0" height="10" rowTotalGroup="nodelabel">
+						<cellContents backcolor="#FFFFFF" mode="Transparent">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="21" height="10" rowTotalGroup="nodelabel" columnTotalGroup="resolved">
+						<cellContents backcolor="#CCCCCC" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{resolvedMeasure_nodelabel_resolved_ALL}.toString()]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+				</crosstab>
+				<elementGroup>
+					<rectangle radius="5">
+						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#EE8900"/>
+						<graphicElement>
+							<pen lineWidth="0.0"/>
+						</graphicElement>
+					</rectangle>
+					<staticText>
+						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Calibri" size="16" isBold="true" isItalic="false"/>
+						</textElement>
+						<text><![CDATA[Outage details]]></text>
+					</staticText>
+				</elementGroup>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="outage_timeline">
+		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<groupHeader>
+			<band height="163">
+				<stackedBar3DChart>
+					<chart theme="default">
+						<reportElement x="0" y="34" width="555" height="114"/>
+						<chartTitle position="Top">
+							<font fontName="Calibri" size="10" isBold="true"/>
+							<titleExpression><![CDATA["Resolved outages"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<font fontName="Calibri" size="8"/>
+							<subtitleExpression><![CDATA["timeline last 24 hours"]]></subtitleExpression>
+						</chartSubtitle>
+						<chartLegend>
+							<font fontName="Calibri" size="6"/>
+						</chartLegend>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="outage_timeline_24h"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA["resolved"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{resolved}]]></valueExpression>
+							<labelExpression><![CDATA["resolved"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["current"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{current}]]></valueExpression>
+							<labelExpression><![CDATA["current"]]></labelExpression>
+						</categorySeries>
+					</categoryDataset>
+					<bar3DPlot>
+						<plot foregroundAlpha="0.7">
+							<seriesColor seriesOrder="0" color="#B1A500"/>
+							<seriesColor seriesOrder="1" color="#CD0200"/>
+						</plot>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="Calibri" size="6"/>
+						</itemLabel>
+						<categoryAxisFormat>
+							<axisFormat>
+								<labelFont>
+									<font fontName="Calibri" size="6"/>
+								</labelFont>
+								<tickLabelFont>
+									<font fontName="Helvetica Neue" size="6"/>
+								</tickLabelFont>
+							</axisFormat>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat>
+								<labelFont>
+									<font fontName="Calibri" size="8"/>
+								</labelFont>
+								<tickLabelFont>
+									<font fontName="Calibri" size="6"/>
+								</tickLabelFont>
+							</axisFormat>
+						</valueAxisFormat>
+						<rangeAxisMinValueExpression><![CDATA[new Integer("0")]]></rangeAxisMinValueExpression>
+					</bar3DPlot>
+				</stackedBar3DChart>
+				<elementGroup>
+					<rectangle radius="5">
+						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#EE8900"/>
+						<graphicElement>
+							<pen lineWidth="0.0"/>
+						</graphicElement>
+					</rectangle>
+					<staticText>
+						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Calibri" size="16" isBold="true" isItalic="false"/>
+						</textElement>
+						<text><![CDATA[Outage timeline]]></text>
+					</staticText>
+				</elementGroup>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="notifications">
+		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<groupHeader>
+			<band height="115">
+				<pie3DChart>
+					<chart theme="default">
+						<reportElement mode="Opaque" x="0" y="30" width="273" height="69"/>
+						<chartTitle position="Top">
+							<font fontName="Calibri" size="10" isBold="true"/>
+							<titleExpression><![CDATA["Notifications in last 24h"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<font fontName="Calibri" size="8"/>
+						</chartSubtitle>
+						<chartLegend position="Right">
+							<font fontName="Calibri" size="8"/>
+						</chartLegend>
+					</chart>
+					<pieDataset>
+						<dataset incrementType="Group" incrementGroup="notification_state">
+							<datasetRun subDataset="notification_statistics">
+								<datasetParameter name="notification_state">
+									<datasetParameterExpression><![CDATA["%"]]></datasetParameterExpression>
+								</datasetParameter>
+							</datasetRun>
+						</dataset>
+						<pieSeries>
+							<keyExpression><![CDATA["acknowledged"]]></keyExpression>
+							<valueExpression><![CDATA[$V{notified_acked_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{notified_acked_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+						<pieSeries>
+							<keyExpression><![CDATA["outstanding"]]></keyExpression>
+							<valueExpression><![CDATA[$V{notified_outstanding_SUM}]]></valueExpression>
+							<labelExpression><![CDATA[$V{notified_outstanding_SUM}.toString()]]></labelExpression>
+						</pieSeries>
+					</pieDataset>
+					<pie3DPlot isCircular="false" labelFormat="{1}" legendLabelFormat="{0} ({2})">
+						<plot foregroundAlpha="0.7">
+							<seriesColor seriesOrder="0" color="#009900"/>
+							<seriesColor seriesOrder="1" color="#CD0200"/>
+						</plot>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="Calibri" size="8"/>
+						</itemLabel>
+					</pie3DPlot>
+				</pie3DChart>
+				<elementGroup>
+					<rectangle radius="5">
+						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#AFA500"/>
+						<graphicElement>
+							<pen lineWidth="0.0"/>
+						</graphicElement>
+					</rectangle>
+					<staticText>
+						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Calibri" size="16" isBold="true" isItalic="false"/>
+						</textElement>
+						<text><![CDATA[Notification overview]]></text>
+					</staticText>
+				</elementGroup>
+				<crosstab>
+					<reportElement x="277" y="30" width="273" height="30"/>
+					<crosstabDataset>
+						<dataset>
+							<datasetRun subDataset="notification_statistics">
+								<datasetParameter name="notification_state">
+									<datasetParameterExpression><![CDATA["outstanding"]]></datasetParameterExpression>
+								</datasetParameter>
+								<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+							</datasetRun>
+						</dataset>
+					</crosstabDataset>
+					<rowGroup name="media_type" width="63" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.String"><![CDATA[$F{media}]]></bucketExpression>
+						</bucket>
+						<crosstabRowHeader>
+							<cellContents backcolor="#B1A500" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="2" y="0" width="61" height="20"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA[$V{media_type}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabRowHeader>
+						<crosstabTotalRowHeader>
+							<cellContents backcolor="#B9B9B9" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.5" lineStyle="Solid"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<staticText>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="249" height="10"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+									</textElement>
+									<text><![CDATA[Total outstanding notifications]]></text>
+								</staticText>
+							</cellContents>
+						</crosstabTotalRowHeader>
+					</rowGroup>
+					<rowGroup name="user" width="188" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.String"><![CDATA[$F{userid}]]></bucketExpression>
+						</bucket>
+						<crosstabRowHeader>
+							<cellContents backcolor="#E1E1E1" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="2" y="0" width="186" height="10"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA[$V{user}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabRowHeader>
+						<crosstabTotalRowHeader>
+							<cellContents backcolor="#CCCCCC" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.5"/>
+									<leftPen lineWidth="0.5"/>
+									<bottomPen lineWidth="0.5"/>
+									<rightPen lineWidth="0.5"/>
+								</box>
+								<textField>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="186" height="10"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font fontName="Calibri" size="7" isBold="true"/>
+									</textElement>
+									<textFieldExpression class="java.lang.String"><![CDATA["Outstanding notification via " + $V{media_type}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabTotalRowHeader>
+					</rowGroup>
+					<columnGroup name="outstanding" height="0" totalPosition="End">
+						<bucket>
+							<bucketExpression class="java.lang.Integer"><![CDATA[$F{outstanding}]]></bucketExpression>
+						</bucket>
+						<crosstabColumnHeader>
+							<cellContents backcolor="#9ACD32" mode="Opaque">
+								<box>
+									<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.0"/>
+									<leftPen lineWidth="0.0"/>
+									<bottomPen lineWidth="0.0"/>
+									<rightPen lineWidth="0.0"/>
+								</box>
+							</cellContents>
+						</crosstabColumnHeader>
+						<crosstabTotalColumnHeader>
+							<cellContents backcolor="#FFFFFF" mode="Transparent" style="Crosstab Data Text">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+									<topPen lineWidth="0.0"/>
+									<leftPen lineWidth="0.0"/>
+									<bottomPen lineWidth="0.0"/>
+									<rightPen lineWidth="0.0"/>
+								</box>
+							</cellContents>
+						</crosstabTotalColumnHeader>
+					</columnGroup>
+					<measure name="outstandingMeasure" class="java.lang.Integer" calculation="Sum">
+						<measureExpression><![CDATA[$F{outstanding}]]></measureExpression>
+					</measure>
+					<crosstabCell width="0" height="10">
+						<cellContents>
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="0" height="10" rowTotalGroup="media_type">
+						<cellContents backcolor="#FFFFFF" mode="Transparent">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="21" height="10" columnTotalGroup="outstanding">
+						<cellContents backcolor="#E1E1E1" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="false" isPdfEmbedded="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{outstandingMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="21" height="10" rowTotalGroup="media_type" columnTotalGroup="outstanding">
+						<cellContents backcolor="#B9B9B9" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{outstandingMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="0" height="10" rowTotalGroup="user">
+						<cellContents backcolor="#FFFFFF" mode="Transparent">
+							<box>
+								<pen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.0"/>
+								<leftPen lineWidth="0.0"/>
+								<bottomPen lineWidth="0.0"/>
+								<rightPen lineWidth="0.0"/>
+							</box>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="21" height="10" rowTotalGroup="user" columnTotalGroup="outstanding">
+						<cellContents backcolor="#CCCCCC" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Calibri" size="7" isBold="true" isItalic="false"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{outstandingMeasure_user_ALL}.toString()]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+				</crosstab>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="event_overview">
+		<groupExpression><![CDATA[$F{current_time}]]></groupExpression>
+		<groupHeader>
+			<band height="421">
+				<stackedBar3DChart>
+					<chart theme="default">
+						<reportElement x="-1" y="35" width="555" height="185"/>
+						<chartTitle>
+							<font fontName="Helvetica Neue" size="10" isBold="true"/>
+							<titleExpression><![CDATA["All Events in last 24h"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<font fontName="Helvetica Neue" size="8"/>
+							<subtitleExpression><![CDATA["Event in hour"]]></subtitleExpression>
+						</chartSubtitle>
+						<chartLegend>
+							<font fontName="Helvetica Neue" size="8"/>
+						</chartLegend>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="events_histogramm_last24h"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA["indeterminate"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{indeterminate}]]></valueExpression>
+							<labelExpression><![CDATA["indeterminate"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["cleared"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{cleared}]]></valueExpression>
+							<labelExpression><![CDATA["cleared"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["normal"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{normal}]]></valueExpression>
+							<labelExpression><![CDATA["normal"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["warning"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{warning}]]></valueExpression>
+							<labelExpression><![CDATA["warning"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["minor"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{minor}]]></valueExpression>
+							<labelExpression><![CDATA["minor"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["major"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{major}]]></valueExpression>
+							<labelExpression><![CDATA["major"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["critical"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{day_hours}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{critical}]]></valueExpression>
+							<labelExpression><![CDATA["critical"]]></labelExpression>
+						</categorySeries>
+					</categoryDataset>
+					<bar3DPlot>
+						<plot foregroundAlpha="0.7">
+							<seriesColor seriesOrder="0" color="#B1A500"/>
+							<seriesColor seriesOrder="1" color="#999999"/>
+							<seriesColor seriesOrder="2" color="#009900"/>
+							<seriesColor seriesOrder="3" color="#FCBE00"/>
+							<seriesColor seriesOrder="4" color="#EE8900"/>
+							<seriesColor seriesOrder="5" color="#E05000"/>
+							<seriesColor seriesOrder="6" color="#CD0200"/>
+						</plot>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="Helvetica Neue" size="8"/>
+						</itemLabel>
+						<categoryAxisFormat>
+							<axisFormat>
+								<labelFont>
+									<font fontName="Helvetica Neue" size="8"/>
+								</labelFont>
+								<tickLabelFont>
+									<font fontName="Helvetica Neue" size="8"/>
+								</tickLabelFont>
+							</axisFormat>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat>
+								<labelFont>
+									<font fontName="Helvetica Neue" size="8"/>
+								</labelFont>
+								<tickLabelFont>
+									<font fontName="Helvetica Neue" size="8"/>
+								</tickLabelFont>
+							</axisFormat>
+						</valueAxisFormat>
+						<rangeAxisMinValueExpression><![CDATA[new Integer("0")]]></rangeAxisMinValueExpression>
+					</bar3DPlot>
+				</stackedBar3DChart>
+				<elementGroup>
+					<rectangle radius="5">
+						<reportElement mode="Opaque" x="0" y="0" width="555" height="20" backcolor="#009900"/>
+						<graphicElement>
+							<pen lineWidth="0.0"/>
+						</graphicElement>
+					</rectangle>
+					<staticText>
+						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Calibri" size="16" isBold="true" isItalic="false"/>
+						</textElement>
+						<text><![CDATA[Event overview]]></text>
+					</staticText>
+				</elementGroup>
+				<stackedBar3DChart>
+					<chart theme="default">
+						<reportElement x="0" y="231" width="555" height="185"/>
+						<chartTitle>
+							<font fontName="Helvetica Neue" size="10" isBold="true"/>
+							<titleExpression><![CDATA["Top 20 Nodes with events"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<font fontName="Helvetica Neue" size="8"/>
+							<subtitleExpression><![CDATA["All events acknowledged and unacknowledged"]]></subtitleExpression>
+						</chartSubtitle>
+						<chartLegend>
+							<font fontName="Helvetica Neue" size="8"/>
+						</chartLegend>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="top_20_event_nodes"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA["indeterminate"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{indeterminate}]]></valueExpression>
+							<labelExpression><![CDATA["indeterminate"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["cleared"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{cleared}]]></valueExpression>
+							<labelExpression><![CDATA["cleared"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["normal"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{normal}]]></valueExpression>
+							<labelExpression><![CDATA["normal"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["warning"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{warning}]]></valueExpression>
+							<labelExpression><![CDATA["warning"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["minor"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{minor}]]></valueExpression>
+							<labelExpression><![CDATA["minor"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["major"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{major}]]></valueExpression>
+							<labelExpression><![CDATA["major"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["critical"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{critical}]]></valueExpression>
+							<labelExpression><![CDATA["critical"]]></labelExpression>
+						</categorySeries>
+					</categoryDataset>
+					<bar3DPlot>
+						<plot foregroundAlpha="0.7">
+							<seriesColor seriesOrder="0" color="#B1A500"/>
+							<seriesColor seriesOrder="1" color="#999999"/>
+							<seriesColor seriesOrder="2" color="#009900"/>
+							<seriesColor seriesOrder="3" color="#FCBE00"/>
+							<seriesColor seriesOrder="4" color="#EE8900"/>
+							<seriesColor seriesOrder="5" color="#E05000"/>
+							<seriesColor seriesOrder="6" color="#CD0200"/>
+						</plot>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="Helvetica Neue" size="8"/>
+						</itemLabel>
+						<categoryAxisFormat>
+							<axisFormat>
+								<labelFont>
+									<font fontName="Helvetica Neue" size="8"/>
+								</labelFont>
+								<tickLabelFont>
+									<font fontName="Helvetica Neue" size="8"/>
+								</tickLabelFont>
+							</axisFormat>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat>
+								<labelFont>
+									<font fontName="Helvetica Neue" size="8"/>
+								</labelFont>
+								<tickLabelFont>
+									<font fontName="Helvetica Neue" size="8"/>
+								</tickLabelFont>
+							</axisFormat>
+						</valueAxisFormat>
+					</bar3DPlot>
+				</stackedBar3DChart>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="62" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="46" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="0" width="236" height="30"/>
+				<textElement>
+					<font fontName="Calibri" size="24" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Early morning report]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="2" y="30" width="234" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Calibri"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{current_time}]]></textFieldExpression>
+			</textField>
+			<image isUsingCache="false">
+				<reportElement isPrintRepeatedValues="false" mode="Opaque" x="391" y="0" width="164" height="45"/>
+				<imageExpression class="java.lang.String"><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="4" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="13" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="1" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="4" width="555" height="8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Helvetica Neue" size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[OpenNMS Copyright 2002-2010 The OpenNMS Group, Inc. OpenNMS is a registered trademark of The OpenNMS Group, Inc.]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

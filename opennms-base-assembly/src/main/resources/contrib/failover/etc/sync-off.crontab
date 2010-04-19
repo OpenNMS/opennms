@@ -1,0 +1,4 @@
+#Crontab entry for automatic synchronization of OpenNMS
+MAILTO=root
+SYNC_USER=opennms
+#0 0 * * *	~$SYNC_USER/failover/scripts/sync.sh

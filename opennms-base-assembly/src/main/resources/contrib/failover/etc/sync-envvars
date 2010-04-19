@@ -1,0 +1,12 @@
+SYNC_USER=opennms
+SYNC_HOME=~$SYNC_USER/failover/
+PRIMARY_NMS=nms-01
+STANDBY_NMS=`host`
+OPENNMS_ETC=/etc/opennms
+OPENNMS_ETC_STANDBY=/etc/opennms-standby OPENNMS_ETC_FAILOVER=/etc/opennms-failover
+OPENNMS_ETC_FAILOVER=/etc/opennms-failover
+OPENNMS_RRD=/var/lib/opennms/rrd
+OPENNMS_RRD_STANDBY=/var/lib/opennms/rrd-standby
+OPENNMS_RRD_FAILOVER=/var/lib/opennms/rrd-failover
+OPENNMS_BIN=/usr/share/opennms/bin
+FAILOVER_DB=opennms_failover

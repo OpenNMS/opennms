@@ -985,6 +985,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jnlp-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jradius-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
