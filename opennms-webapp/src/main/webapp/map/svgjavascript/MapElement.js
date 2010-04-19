@@ -29,7 +29,7 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	MapElement.superclass.init.call(this, "x", "y", x, y);
 	this.id = new String(id);
 	this.width = dimension;
-	this.height = dimension*4/3;
+	this.height = dimension*6/5;
 	this.icon = icon;
 	this.avail = avail;
 	this.status = status;
@@ -70,10 +70,10 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	var r,cx,cy;
 	if ( this.usesemaphore ) {
 		r=this.width/4;
-    	cx=this.width+r; //dimension*5/4
-		cy=this.height-r; //15/12*dimension
+    	cx=this.width+r+2; //dimension*5/4
+ 		cy=this.height-r; //15/12*dimension
 	} else {
-		r=this.width/2;
+		r=this.width/2*1562/1000;
     	cx=this.width/2; //dimension/2
 		cy=this.height/2; //8/3*dimension
 	}
@@ -91,17 +91,17 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 
 MapElement.prototype.setDimension = function(dimension) {
 	this.width = dimension;
-	this.height = dimension*4/3;
+	this.height = dimension*6/5;
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);	
 	this.label.setFontSize(dimension/2);
 	var r,cx,cy;
 	if ( this.usesemaphore ) {
 		r=this.width/4;
-    	cx=this.width+r; //dimension*5/4
-		cy=this.height-r; //15/12*dimension
+    	cx=this.width+r+2; //dimension*5/4
+ 		cy=this.height-r; //15/12*dimension
 	} else {
-		r=this.width/2;
+		r=this.width/2*1562/1000;
     	cx=this.width/2; //dimension/2
 		cy=this.height/2; //8/3*dimension
 	}
@@ -184,10 +184,10 @@ MapElement.prototype.useSemaphore = function(usesemaphore)
 	this.usesemaphore = usesemaphore;
 	if ( this.usesemaphore ) {
 		r=this.width/4;
-    	cx=this.width+r; //dimension*5/4
-		cy=this.height-r; //15/12*dimension
+    	cx=this.width+r+2; //dimension*5/4
+ 		cy=this.height-r; //15/12*dimension
 	} else {
-		r=this.width/2;
+		r=this.width/2*1562/1000;
     	cx=this.width/2; //dimension/2
 		cy=this.height/2; //8/3*dimension
 	}
