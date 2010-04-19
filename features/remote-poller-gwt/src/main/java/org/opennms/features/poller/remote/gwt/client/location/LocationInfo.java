@@ -1,6 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client.location;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.Status;
@@ -16,11 +17,12 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private String m_geolocation;
 	private String m_coordinates;
 	private Status m_status;
+	private Set<String> m_tags;
 	
 	public LocationInfo() {
 	}
 	
-	public LocationInfo(String name, String pollingPackage, String area, String geolocation, String coordinates) {
+	public LocationInfo(final String name, final String pollingPackage, final String area, final String geolocation, final String coordinates) {
 	    m_name = name;
 	    m_pollingPackage = pollingPackage;
 	    m_area = area;
@@ -28,11 +30,21 @@ public class LocationInfo implements IsSerializable, Serializable {
 	    m_coordinates = coordinates;
 	}
 	
-	public LocationInfo(LocationInfo info) {
-	    this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates());
+	public LocationInfo(final LocationInfo info) {
+	    setName(info.getName());
+	    setPollingPackageName(info.getPollingPackageName());
+	    setArea(info.getArea());
+	    setGeolocation(info.getGeolocation());
+	    setCoordinates(info.getCoordinates());
 	    setStatus(info.getStatus());
+	    setTags(info.getTags());
 	}
 	
+	public LocationInfo(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates, final Set<String> tags) {
+		this(name, pollingPackageName, area, geolocation, coordinates);
+		setTags(tags);
+	}
+
 	public String getName() {
 		return m_name;
 	}
@@ -71,6 +83,14 @@ public class LocationInfo implements IsSerializable, Serializable {
 
 	public void setCoordinates(final String coordinates) {
 		m_coordinates = coordinates;
+	}
+
+	public Set<String> getTags() {
+		return m_tags;
+	}
+	
+	public void setTags(final Set<String> tags) {
+		m_tags = tags;
 	}
 
 	public Status getStatus() {

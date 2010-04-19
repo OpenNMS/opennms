@@ -116,7 +116,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			def.setCoordinates(latLng.getCoordinates());
 		}
 		
-		final LocationInfo locationInfo = new LocationInfo(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), latLng.getCoordinates());
+		final LocationInfo locationInfo = new LocationInfo(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), latLng.getCoordinates(), def.getTags());
 
 		if (status == null) {
 			final LocationDetails ld = getLocationDetails(def);
