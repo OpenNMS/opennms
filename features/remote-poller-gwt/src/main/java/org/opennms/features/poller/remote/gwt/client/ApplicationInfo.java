@@ -5,18 +5,21 @@ import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTApplication implements Serializable, IsSerializable {
+public class ApplicationInfo implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private Integer m_id;
 	private String m_name;
 	private Set<GWTMonitoredService> m_services;
+	private Set<String> m_locations;
+	private Status m_status = Status.UNINITIALIZED;
 
-	public GWTApplication() {}
+	public ApplicationInfo() {}
 
-	public GWTApplication(final int id, final String name, final Set<GWTMonitoredService> services) {
+	public ApplicationInfo(final int id, final String name, final Set<GWTMonitoredService> services, final Set<String> locationNames) {
 		m_id = id;
 		m_name = name;
 		m_services = services;
+		m_locations = locationNames;
 	}
 
 	public Integer getId() {
@@ -37,10 +40,25 @@ public class GWTApplication implements Serializable, IsSerializable {
 	public void setServices(final Set<GWTMonitoredService> services) {
 		m_services = services;
 	}
-
+	public Set<String> getLocations() {
+		return m_locations;
+	}
+	public void setLocations(final Set<String> locations) {
+		m_locations = locations;
+	}
+	public void addLocation(final String name) {
+		m_locations.add(name);
+	}
+	public Status getStatus() {
+		return m_status;
+	}
+	public void setStatus(final Status status) {
+		m_status = status;
+	}
+	
 	public boolean equals(Object o) {
-		if (!(o instanceof GWTApplication)) return false;
-		GWTApplication that = (GWTApplication)o;
+		if (!(o instanceof ApplicationInfo)) return false;
+		ApplicationInfo that = (ApplicationInfo)o;
 		if (this.getId() == null && that.getId() == null) {
 			return true;
 		} else if (this.getId() == null) {
@@ -50,6 +68,6 @@ public class GWTApplication implements Serializable, IsSerializable {
 	}
 
 	public String toString() {
-		return "GWTApplication[id=" + m_id + ",name=" + m_name + ",services=[" + Utils.join(m_services, ", ") + "]]";
+		return "ApplicationInfo[id=" + m_id + ",name=" + m_name + ",services=[" + Utils.join(m_services, ", ") + "]]";
 	}
 }

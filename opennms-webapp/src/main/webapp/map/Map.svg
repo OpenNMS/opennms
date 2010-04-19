@@ -40,7 +40,25 @@
 	
 <script type="text/ecmascript"><![CDATA[
 
+//top.$.history.callback = openMapSetUp;
+top.$.history.callback = historyCallBack;
 var MAPS_STARTUP_ACTION = "MapStartUp";
+
+var counter = 0;
+
+function historyCallBack(reinstate,cursor) {
+	 if (typeof(reinstate) == 'undefined')
+    	close();
+    else if (reinstate.mapid == MAP_NOT_OPENED )
+    	close();
+    else
+    	for ( var mapid in mapidSortAss ) {
+    		if ( mapid = reinstate.mapid) {
+				openMapSetUp(reinstate.mapid,true);
+				return;
+			}
+		}
+}
 
 function startUp() {
 	// Instantiate the default map
@@ -69,7 +87,7 @@ new Menu(menuSvgElement,viewMenuId,"View",viewMenuX,viewMenuY,menuWidth,menuHeig
 	refreshMenu = 
 new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWidth,menuHeight, menuStyle,menuTextStyle,menuMouseStyle,menuUpColor,menuDownColor,resetWorkPanel);
 	
-	
+		
 	loadMaps();
 	loadNodes();
 	loadDefaultMap();

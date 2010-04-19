@@ -25,9 +25,9 @@ function handleLoadDefaultMapResponse(data) {
 	assertLoading();
     
     if (defaultMap.getId() > 0 ) {
-    		mapTabSetUp(defaultMap.getName());
-            openMapSetUp(defaultMap.getId(),false);
-    }
+		mapTabSetUp(defaultMap.getName());
+        openMapSetUp(defaultMap.getId(),false);
+    } 
 }
 
 function loadMaps(){
@@ -366,9 +366,6 @@ function handleLoadingCloseMap(data) {
 		currentMapLastmodtime="";
 		currentMapType="";
 		savedMapString=getMapString();
-		mapHistory=new Array();
-		mapHistoryName=new Array();
-		mapHistoryIndex = 0;
 	
 		reloadGrid();
 		clearMapInfo();
@@ -431,7 +428,7 @@ function handleLoadingMap(data) {
 	hasHideMaps = false;
 
 	map.clear();
-
+		
 	currentMapId=openingMap.id
 
 	if(openingMap.background !="null")
@@ -605,7 +602,7 @@ function handleDeleteMapResponse(data) {
 		
 		mapTabClose(mapidSortAss[currentMapId]);
 		map.clear();
-		
+		deleteMapInHistory();		
 		currentMapId=MAP_NOT_OPENED;
 		currentMapBackGround=DEFAULT_BG_COLOR;
 		currentMapAccess="";
@@ -618,9 +615,6 @@ function handleDeleteMapResponse(data) {
 		map.render();
 	
 		loadMaps();
-	
-		mapHistory.splice(mapHistoryIndex,1);
-		mapHistoryName.splice(mapHistoryIndex,1);
 	
 		writeDownInfo("Map deleted.");
 		clearMapInfo();

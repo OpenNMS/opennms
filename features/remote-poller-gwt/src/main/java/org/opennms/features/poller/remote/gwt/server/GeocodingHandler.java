@@ -32,7 +32,7 @@ class GeocodingHandler implements LocationDefHandler {
 		m_eventService.addEventUserSpecific(new GeocodingUpdatingRemoteEvent(0, size));
 	}
 
-	public void handleLocation(final OnmsMonitoringLocationDefinition def) {
+	public void handle(final OnmsMonitoringLocationDefinition def) {
 		final GWTLatLng latLng = m_locationDataService.getLatLng(def);
 		if (latLng != null) {
 			def.setCoordinates(latLng.getCoordinates());

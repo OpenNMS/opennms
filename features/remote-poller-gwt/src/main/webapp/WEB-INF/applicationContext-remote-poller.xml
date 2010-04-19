@@ -19,6 +19,7 @@
     <property name="properties">
       <props>
         <prop key="gwt.geocoder.class">org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder</prop>
+        <prop key="gwt.apikey"></prop>
       </props>
     </property>
     <property name="locations">

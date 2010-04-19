@@ -33,6 +33,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jnlp-dependencies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
@@ -46,15 +50,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.samples.jnlp</groupId>
-      <artifactId>jnlp-servlet</artifactId>
-      <scope>runtime</scope>
     </dependency>
 
     <!-- test dependencies -->

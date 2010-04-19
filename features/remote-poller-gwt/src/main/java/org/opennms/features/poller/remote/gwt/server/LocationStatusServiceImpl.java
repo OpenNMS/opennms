@@ -111,10 +111,13 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	}
 
 	private void pushUninitializedLocations(final EventExecutorService service) {
-		final Collection<LocationDefHandler> handlers = new ArrayList<LocationDefHandler>();
-		handlers.add(new InitialLocationDefHandler(m_locationDataService, service, false));
-		handlers.add(new GeocodingHandler(m_locationDataService, service));
-		m_locationDataService.handleAllMonitoringLocationDefinitions(handlers);
+		final Collection<LocationDefHandler> locationHandlers = new ArrayList<LocationDefHandler>();
+		locationHandlers.add(new InitialLocationDefHandler(m_locationDataService, service, false));
+		locationHandlers.add(new GeocodingHandler(m_locationDataService, service));
+		m_locationDataService.handleAllMonitoringLocationDefinitions(locationHandlers);
+		final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
+		appHandlers.add(new InitialApplicationHandler(m_locationDataService, service));
+		m_locationDataService.handleAllApplications(appHandlers);
 	}
 
 	private void pushInitializedLocations(final EventExecutorService service) {

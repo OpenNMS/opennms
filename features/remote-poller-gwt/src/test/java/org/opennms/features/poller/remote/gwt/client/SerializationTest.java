@@ -85,13 +85,15 @@ public class SerializationTest {
 	}
 
 	private ApplicationState getApplicationState() {
-		final Collection<GWTApplication> applications = new ArrayList<GWTApplication>();
+		final Collection<ApplicationInfo> applications = new ArrayList<ApplicationInfo>();
 		final List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
 		final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+		final Set<String> locationNames = new HashSet<String>();
 		final Map<String,List<GWTLocationSpecificStatus>> applicationStatuses = new HashMap<String,List<GWTLocationSpecificStatus>>();
 
 		services.add(getMonitoredService());
-		applications.add(new GWTApplication(1, "TestApp1", services));
+		locationNames.add(getMonitor().getDefinitionName());
+		applications.add(new ApplicationInfo(1, "TestApp1", services, locationNames));
 		applicationStatuses.put("TestApp1", statuses);
 		statuses.add(getLocationSpecificStatus());
 		final Date to = new Date();

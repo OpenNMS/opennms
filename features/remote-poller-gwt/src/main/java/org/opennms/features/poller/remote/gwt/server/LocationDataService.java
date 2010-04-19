@@ -16,4 +16,5 @@ public interface LocationDataService {
 	public Collection<LocationInfo> getUpdatedLocationsBetween(final Date startDate, final Date endDate);
 	public GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def);
 	public void handleAllMonitoringLocationDefinitions(final Collection<LocationDefHandler> handlers);
+	public void handleAllApplications(final Collection<ApplicationHandler> appHandlers);
 }
