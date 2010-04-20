@@ -50,11 +50,12 @@ public class TagPanel extends Composite implements Collection<String> {
     @UiField 
     TagStyles tagStyles;
 
-    private interface TagSelectedEventHandler extends EventHandler {
+    public interface TagSelectedEventHandler extends EventHandler {
         public void onTagSelected(String tagName);
+        public void onTagCleared();
     }
 
-    private static class TagSelectedEvent extends GwtEvent<TagSelectedEventHandler>
+    public static class TagSelectedEvent extends GwtEvent<TagSelectedEventHandler>
     {
         public static Type<TagSelectedEventHandler> TYPE = new Type<TagSelectedEventHandler>();
 

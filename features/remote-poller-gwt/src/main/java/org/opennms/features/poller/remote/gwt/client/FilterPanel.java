@@ -30,13 +30,13 @@ public class FilterPanel extends Composite {
 
     private final MultiWordSuggestOracle applicationNames = new MultiWordSuggestOracle();
 
-    private interface FiltersChangedEventHandler extends EventHandler {
+    public interface FiltersChangedEventHandler extends EventHandler {
         public void onFiltersChanged(Filters filters);
     }
 
-    private static class Filters {}
+    public static class Filters {}
 
-    private static class FiltersChangedEvent extends GwtEvent<FiltersChangedEventHandler>
+    public static class FiltersChangedEvent extends GwtEvent<FiltersChangedEventHandler>
     {
         public static Type<FiltersChangedEventHandler> TYPE = new Type<FiltersChangedEventHandler>();
 

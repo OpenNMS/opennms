@@ -50,7 +50,7 @@
   <g:HTMLPanel >
     <me:FilterPanel/>
     <hr/>
-    <me:TagPanel/>
+    <me:TagPanel ui:field="tagPanel"/>
     <hr/>
     <g:ScrollPanel ui:field="m_scrollPanel" styleName="{style.scrollPanel}">
       <g:FlexTable ui:field='m_locations' styleName="{style.flexTable}" />

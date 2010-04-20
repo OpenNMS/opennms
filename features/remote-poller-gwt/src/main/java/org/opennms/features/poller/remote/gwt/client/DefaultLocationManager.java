@@ -6,13 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.poller.remote.gwt.client.FilterPanel.Filters;
+import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
+import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
@@ -46,6 +50,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 	
 	private final Map<String,BaseLocation> m_locations = new HashMap<String,BaseLocation>();
 	
+	private String m_selectedTag = null;
+	
 	private final MapPanel m_mapPanel;
 
 	private final LocationPanel m_locationPanel;
@@ -64,6 +70,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this); 
 		m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this); 
 		m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this); 
+        m_eventBus.addHandler(FiltersChangedEvent.TYPE, this); 
+        m_eventBus.addHandler(TagSelectedEvent.TYPE, this); 
 	}
 
     public void initialize() {
@@ -173,7 +181,16 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         GWTBounds bounds = getMapPanel().getBounds();
         for(BaseLocation location : getLocations().values()) {
             if(location.isVisible(bounds)) {
-                visibleLocations.add(location);
+                if (m_selectedTag == null) {
+                    visibleLocations.add(location);
+                } else {
+                    if (
+                            location.getLocationInfo().getTags() != null && 
+                            location.getLocationInfo().getTags().contains(m_selectedTag)
+                    ) {
+                        visibleLocations.add(location);
+                    }
+                }
             }
         }
     
@@ -253,4 +270,17 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     	}
     }
 
+    public void onFiltersChanged(Filters filters) {
+        // TODO: Update the map panel and LHN with filtered items
+    }
+
+    public void onTagSelected(String tagName) {
+        m_selectedTag = tagName;
+        m_locationPanel.update(this);
+    }
+
+    public void onTagCleared() {
+        m_selectedTag = null;
+        m_locationPanel.update(this);
+    }
  }

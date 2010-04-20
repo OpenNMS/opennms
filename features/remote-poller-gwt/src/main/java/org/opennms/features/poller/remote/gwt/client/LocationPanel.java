@@ -40,6 +40,7 @@ public class LocationPanel extends Composite {
 	
 	@UiField FlexTable m_locations;
 	@UiField SelectionStyle selectionStyle;
+	@UiField TagPanel tagPanel;
 	
 	public LocationPanel() {
 		super();
@@ -149,6 +150,8 @@ public class LocationPanel extends Composite {
 	        registration.removeHandler();
 	    }
 	    m_eventBus = eventBus;
+	    
+	    tagPanel.setEventBus(eventBus);
 	    // eventRegistrations.add(m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this));
 	    // eventRegistrations.add(m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this));
 	}
