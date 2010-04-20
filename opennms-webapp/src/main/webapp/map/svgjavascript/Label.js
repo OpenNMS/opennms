@@ -30,11 +30,8 @@ Label.prototype.init = function(text, x, y, fontsize, anchor)
 
 
 
-Label.prototype.setFontSize = function(newFontSize){
+Label.prototype.setFontSize = function(x,y,newFontSize){
 	this.svgNode.setAttributeNS(null,"font-size", newFontSize);
-	var x = Math.round(newFontSize/3)*2;
-	
-	var y = newFontSize*8/3 + newFontSize*2*0.7
 	this.svgNode.setAttributeNS(null,this.attributeX, x);	
 	this.svgNode.setAttributeNS(null,this.attributeY, y);	
 }

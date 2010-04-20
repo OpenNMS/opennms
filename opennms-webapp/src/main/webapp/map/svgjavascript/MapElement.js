@@ -65,7 +65,7 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	this.image.addEventListener("mouseover", this.onMouseOver, false);
 	this.image.addEventListener("mouseout", this.onMouseOut, false);
 	
-	var labelx = Math.round(this.width/3);
+	var labelx = Math.round(this.width/2);
 	var labely = this.height + dimension*0.7;
 	var labelSize = dimension/2;
 	var labelAnchor = "middle";
@@ -106,7 +106,11 @@ MapElement.prototype.setDimension = function(dimension) {
 	this.image.setAttributeNS(null,"width", this.width);
 	this.image.setAttributeNS(null,"height", this.height);	
 	
-	this.label.setFontSize(dimension/2);
+	var labelx = Math.round(this.width/2);
+	var labely = this.height + dimension*0.7;
+	var labelSize = dimension/2;
+	
+	this.label.setFontSize(labelx,labely,labelSize);
 	
 	var r,cx,cy;
 	if ( this.usesemaphore ) {
