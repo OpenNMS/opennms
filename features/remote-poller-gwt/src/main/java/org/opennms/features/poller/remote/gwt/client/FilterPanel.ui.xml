@@ -1,0 +1,51 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder 
+	xmlns:ui='urn:ui:com.google.gwt.uibinder' 
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' 
+	xmlns:me='urn:import:org.opennms.features.poller.remote.gwt.client'
+>
+
+	<ui:style>
+		.fullWidth {
+			width: 100%;
+		}
+		.selectorLabel {
+			font-weight: bold;
+			font-size: 10px;
+		}
+		.panelHeader {
+			font-weight: bold;
+			font-size: 13px;
+		}
+		.panelEntry {
+			font-weight: bold;
+			font-size: 11px;
+		}
+	</ui:style>
+
+	<g:VerticalPanel addStyleNames="{style.fullWidth}">
+		<g:Label addStyleNames="{style.selectorLabel}" text="Show statuses:"/>
+		<g:HorizontalPanel>
+			<g:ToggleButton text="Up" />
+			<g:ToggleButton text="Marginal" />
+			<g:ToggleButton text="Down" />
+			<g:ToggleButton text="Unknown" />
+		</g:HorizontalPanel>
+
+		<g:HTMLPanel><hr/></g:HTMLPanel>
+
+		<g:Label addStyleNames="{style.panelHeader}" text="Selected Applications"/>
+		<g:HTMLPanel>
+			<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">Internet</span>
+		</g:HTMLPanel>
+		<g:HTMLPanel>
+			<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">HR</span>
+		</g:HTMLPanel>
+		<g:HTMLPanel>
+			<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">Datacenter</span>
+		</g:HTMLPanel>
+		<g:Label addStyleNames="{style.selectorLabel}" text="Add application:"/>
+		<g:SuggestBox ui:field="applicationNameSuggestBox"/>
+	</g:VerticalPanel>
+
+</ui:UiBinder>
