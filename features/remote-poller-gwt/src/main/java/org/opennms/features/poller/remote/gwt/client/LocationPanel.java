@@ -1,7 +1,9 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
@@ -23,11 +25,13 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	private transient List<HandlerRegistration> eventRegistrations = new ArrayList<HandlerRegistration>();
 	
 	@UiField PageableLocationList locationList;
+	@UiField PageableApplicationList applicationList;
 	
 	public LocationPanel() {
 		super();
 		initWidget(BINDER.createAndBindUi(this));
 		locationList.addLocationPanelSelectEventHandler(this);
+		setVisible(applicationList.getElement(), false);
 	}
 
 	public void update(final LocationManager locationManager) {
@@ -38,10 +42,41 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		List<Location> visibleLocations = locationManager.getVisibleLocations();
 		
 		locationList.updateList(visibleLocations);
+		applicationList.updateList(getApplicationInfoTestData());
 			
 	}
 
-	public void setEventBus(final HandlerManager eventBus) {
+	private List<ApplicationInfo> getApplicationInfoTestData() {
+        List<ApplicationInfo> apps = new ArrayList<ApplicationInfo>();
+        
+        for(int i = 0; i < 10 ; i++) {
+            ApplicationInfo application = new ApplicationInfo();
+            application.setId(i);
+            application.setName("name: " + i);
+            application.setStatus(Status.UP);
+            application.setLocations(getLocationSetTestData());
+            application.setServices(getGWTMonitoredServiceTestData());
+            apps.add(application);
+        }
+        
+	    return apps;
+    }
+
+    private Set<GWTMonitoredService> getGWTMonitoredServiceTestData() {
+        Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+        GWTMonitoredService service = new GWTMonitoredService();
+        service.setServiceName("HTTP");
+        services.add(service);
+        return services;
+    }
+
+    private Set<String> getLocationSetTestData() {
+        Set<String> locations = new HashSet<String>();
+        locations.add("19");
+        return locations;
+    }
+
+    public void setEventBus(final HandlerManager eventBus) {
 	    // Remove any existing handler registrations
 	    for (HandlerRegistration registration : eventRegistrations) {
 	        registration.removeHandler();
@@ -59,13 +94,15 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
      * Switches view to Pageable Location List
      */
     public void showLocationList() {
-        
+        setVisible(locationList.getElement(), true);
+        setVisible(applicationList.getElement(), false);
     }
     
     /**
      * Switches view to the Pageable Application List
      */
     public void showApplicationList() {
-        
+        setVisible(locationList.getElement(), false);
+        setVisible(applicationList.getElement(), true);
     }
 }

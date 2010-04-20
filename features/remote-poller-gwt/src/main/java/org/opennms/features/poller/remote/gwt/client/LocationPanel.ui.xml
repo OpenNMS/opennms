@@ -18,7 +18,10 @@
             </g:HTMLPanel>
         </g:north>
         <g:center>
-            <me:PageableLocationList ui:field="locationList"/>
+            <g:FlowPanel>
+                <me:PageableApplicationList ui:field="applicationList"/>
+                <me:PageableLocationList ui:field="locationList"/>
+            </g:FlowPanel>
         </g:center>
     </g:DockLayoutPanel>
 
