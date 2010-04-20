@@ -8,12 +8,18 @@
   
   </ui:style>
 
-  <g:HTMLPanel >
-    <me:FilterPanel/>
-    <hr/>
-    <me:TagPanel/>
-    <hr/>
-    <me:PageableLocationList ui:field="locationList"/>
-  </g:HTMLPanel>
+    <g:DockLayoutPanel unit="PX">
+        <g:north size="255">
+            <g:HTMLPanel>
+                <me:FilterPanel/>
+                <hr/>
+                <me:TagPanel/>
+                <hr/>
+            </g:HTMLPanel>
+        </g:north>
+        <g:center>
+            <me:PageableLocationList ui:field="locationList"/>
+        </g:center>
+    </g:DockLayoutPanel>
 
 </ui:UiBinder>

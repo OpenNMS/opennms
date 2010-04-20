@@ -26,7 +26,7 @@
 		}
 		
 		.tableContainer{
-		    overflow-y: scroll;	
+		    overflow-y: scroll;
 		}
 		
 	</ui:style>
