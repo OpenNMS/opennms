@@ -671,11 +671,10 @@ function handleSwitchRole(data) {
 			showMapInfo();
 			showHistory();
 			removeLegend();
-			for (mapElemId in map.mapElements) {
+			for (var mapElemId in map.mapElements) {
 				map.mapElements[mapElemId].setSemaphoreColor(getSemaphoreColorForNode(0,0,0));
 				map.mapElements[mapElemId].setSemaphoreFlash(getSemaphoreFlash(0,0));
 			}
-			map.render();
 		}else{
 			addLegend();
 			if (currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP) {

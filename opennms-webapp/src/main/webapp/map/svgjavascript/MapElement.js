@@ -164,7 +164,7 @@ MapElement.prototype.getY = function(){
 }
 
 MapElement.prototype.setSemaphoreColor = function(semaphoreColor){
-	this.semaphore.svgNode.setAttributeNS(null,"fill", semaphoreColor);
+	this.semaphore.setFillColor(semaphoreColor);
 }
 
 MapElement.prototype.setSemaphoreFlash = function(flag)
