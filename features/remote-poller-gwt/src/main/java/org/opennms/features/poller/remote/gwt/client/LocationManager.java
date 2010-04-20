@@ -15,6 +15,7 @@ public interface LocationManager {
 	public void initialize();
 	public Location createOrUpdateLocation(final LocationInfo info);
 	public List<Location> getAllLocations();
+	public List<String> getAllLocationNames();
 	public List<Location> getVisibleLocations();
 	public void addLocationManagerInitializationCompleteEventHandler(LocationManagerInitializationCompleteEventHander handler);
 }

@@ -1,0 +1,87 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder 
+	xmlns:ui='urn:ui:com.google.gwt.uibinder' 
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' 
+	xmlns:me='urn:import:org.opennms.features.poller.remote.gwt.client'
+>
+	<ui:style>
+		.panelHeader {
+			font-weight: bold;
+			font-size: 13px;
+		}
+		.tagPanel {
+			width: 100%;
+			text-align: center;
+			vertical-align: middle;
+		}
+	</ui:style>
+
+	<ui:style field="tagStyles" type="org.opennms.features.poller.remote.gwt.client.TagPanel.TagStyles">
+		.tag0 {
+			font-size: 0.8em;
+			font-weight: 100;
+			display: inline;
+			padding: 3px;
+		}
+		.tag1 {
+			font-size: 0.9em;
+			font-weight: 100;
+			display: inline;
+			padding: 3px;
+		}
+		.tag2 {
+			font-size: 1.0em;
+			font-weight: 200;
+			display: inline;
+			padding: 3px;
+		}
+		.tag3 {
+			font-size: 1.2em;
+			font-weight: 200;
+			display: inline;
+			padding: 3px;
+		}
+		.tag4 {
+			font-size: 1.4em;
+			font-weight: 300;
+			display: inline;
+			padding: 3px;
+		}
+		.tag5 {
+			font-size: 1.6em;
+			font-weight: 300;
+			display: inline;
+			padding: 3px;
+		}
+		.tag6 {
+			font-size: 1.8em;
+			font-weight: 400;
+			display: inline;
+			padding: 3px;
+		}
+		.tag7 {
+			font-size: 2.0em;
+			font-weight: 400;
+			display: inline;
+			padding: 3px;
+		}
+		.tag8 {
+			font-size: 2.2em;
+			font-weight: 500;
+			display: inline;
+			padding: 3px;
+		}
+		.tag9 {
+			font-size: 2.4em;
+			font-weight: 500;
+			display: inline;
+			padding: 3px;
+		}
+	</ui:style>
+
+	<g:VerticalPanel addStyleNames="{style.tagPanel}">
+		<g:Label text="Tags" addStyleNames="{style.panelHeader}"/>
+		<g:FlowPanel addStyleNames="{style.tagPanel}" ui:field="tagPanel"/>
+	</g:VerticalPanel>
+
+</ui:UiBinder>

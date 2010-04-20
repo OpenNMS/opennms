@@ -15,8 +15,8 @@
 			width:100%;
 		}
 		.linkBarDivider {
-		opacity: 0.3;
-		filter:literal("alpha(opacity=30)");
+			opacity: 0.3;
+			filter:literal("alpha(opacity=30)");
 		}
 	</ui:style>
 	<g:DockLayoutPanel ui:field="rootPanel">
