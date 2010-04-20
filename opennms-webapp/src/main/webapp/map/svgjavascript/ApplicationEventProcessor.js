@@ -1,5 +1,5 @@
 function onMouseOverMapElement(evt) {
-	myMapApp.enableTooltips()
+	myMapApp.enableTooltips();
 	var id = evt.target.parentNode.getAttributeNS(null,"id");
 	var mapElement = map.mapElements[id];
 	var toolTipLabel = "";
@@ -14,7 +14,7 @@ function onMouseOverMapElement(evt) {
 }
 
 function onMouseOverLink(evt) {
-	myMapApp.enableTooltips()
+	myMapApp.enableTooltips();
 	var id = evt.target.parentNode.getAttributeNS(null,"id");
 
 	
@@ -31,11 +31,11 @@ function onMouseOverLink(evt) {
 }
 
 function onMouseOutMapElement(evt) {
-
+	myMapApp.disableTooltips();
 }
 
 function onMouseOutLink(evt) {
-
+	myMapApp.disableTooltips();
 }
 
 function onMouseDownOnSLink(evt) {
