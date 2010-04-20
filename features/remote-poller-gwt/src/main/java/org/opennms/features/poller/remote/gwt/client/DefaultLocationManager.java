@@ -129,6 +129,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     	return locations;
     }
 
+    public List<String> getAllLocationNames() {
+        List<String> retval = new ArrayList<String>();
+        for (Location location : this.getAllLocations()) {
+            retval.add(location.getLocationInfo().getName());
+        }
+        return retval;
+    }
+
     protected GWTBounds getLocationBounds() {
         BoundsBuilder bldr = new BoundsBuilder();
         for (Location l : getLocations().values()) {
