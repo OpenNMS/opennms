@@ -3,6 +3,7 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.util.List;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
+import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -64,7 +65,7 @@ public class PageableLocationList extends Composite {
             m_icon.setUrl(locationInfo.getImageURL());
             m_nameLabel.setText(locationInfo.getName());
             m_areaLabel.setText(locationInfo.getArea());
-            m_statusLabel.setText("This is the status text that will display");
+            m_statusLabel.setText(locationInfo.getStatus().getReason());
             
         }
 
@@ -99,7 +100,7 @@ public class PageableLocationList extends Composite {
         
     }
     
-    private static final int TOTAL_LOCATIONS = 20;
+    private static final int TOTAL_LOCATIONS = 10;
     
     @UiField FlexTable dataList;
     @UiField FlowPanel pagingControls;
@@ -140,6 +141,7 @@ public class PageableLocationList extends Composite {
         }
         
         setTotalPages( totalPages );
+        updatePageStatsDisplay(startIndex + 1, showableLocations, getLocations().size());
     }
     
     @UiHandler("prevBtn")
@@ -178,11 +180,10 @@ public class PageableLocationList extends Composite {
 
     private void setTotalPages(int totalPages) {
         m_totalPages = totalPages;
-        updatePageStatsDisplay();
     }
 
-    private void updatePageStatsDisplay() {
-        pageStatsLabel.setText((getCurrentPageIndex() + 1) + " of " + getTotalPages());
+    private void updatePageStatsDisplay(int startIndex, int endIndex, int total) {
+        pageStatsLabel.setText( startIndex + "-" + endIndex + " of " + total);
     }
 
     private int getTotalPages() {
@@ -195,6 +196,10 @@ public class PageableLocationList extends Composite {
 
     public List<Location> getLocations() {
         return m_locations;
+    }
+    
+    public void addLocationPanelSelectEventHandler(LocationPanelSelectEventHandler handler) {
+        addHandler(handler, LocationPanelSelectEvent.TYPE);
     }
 
 }

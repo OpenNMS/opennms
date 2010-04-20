@@ -5,65 +5,11 @@
   
   <ui:style>
   
-    .scrollPanel{
-  	    width: 100%;
-  	 }
-  	 
-  	 .flexTable{
-  	     width: 100%;
-  	     min-width: 200px;
-         border-collapse: collapse;	
-  	 }
   
   </ui:style>
 
-  <ui:style field='selectionStyle' type='org.opennms.features.poller.remote.gwt.client.LocationPanel.SelectionStyle'>
-    .selectedRow {
-        border-width: 1px;
-        border-style: inset;
-        border-color: #90a5d3;
-        opacity: .5;
-        filter:literal("alpha(opacity=50)");
-    }
-
-    .alternateRow{
-        background-color: #c8e1fe;
-    }
-    
-    .flexTableHeader{
-        font-weight: bold;
-        cursor: pointer;	
-    }
-    
-    .sortSelected{
-        background-color: gray;
-        background-image: url( "images/sort_desc.gif" ) ;
-        background-position: 10px right 40% top ;
-        background-repeat: no-repeat;	
-    }
-    
-    .upStatus{
-    	background-image: "images/icon-UP.png";
-    }
-    
-    .downStatus{
-    	background-image: "images/icon-DOWN.png";
-    }
-    
-    .marginalStatus{
-    	background-image: "images/icon-MARGINAL.png";
-    }
-    
-    .unknownStatus{
-        background-image: "images/icon-UNKNOWN.png";
-    }
-  </ui:style>
-  
   <g:HTMLPanel >
     <me:PageableLocationList ui:field="locationList"/>
-  <g:ScrollPanel ui:field="m_scrollPanel" styleName="{style.scrollPanel}">
-    <g:FlexTable ui:field='m_locations' styleName="{style.flexTable}" />
-  </g:ScrollPanel>
   </g:HTMLPanel>
 
 </ui:UiBinder>
