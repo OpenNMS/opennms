@@ -64,11 +64,13 @@ public class Application implements EntryPoint
 	@UiHandler("locationLink")
 	public void onLocationClick(ClickEvent event) {
 	    Window.alert("Show location panel");
+	    locationPanel.showLocationList();
 	}
 
     @UiHandler("applicationLink")
     public void onApplicationClick(ClickEvent event) {
         Window.alert("Show application panel");
+        locationPanel.showApplicationList();
     }
 
 private MapPanel createMapPanel() {
