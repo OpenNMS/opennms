@@ -9,11 +9,11 @@
   </ui:style>
 
   <g:HTMLPanel >
-    <me:PageableLocationList ui:field="locationList"/>
     <me:FilterPanel/>
     <hr/>
     <me:TagPanel/>
     <hr/>
+    <me:PageableLocationList ui:field="locationList"/>
   </g:HTMLPanel>
 
 </ui:UiBinder>
