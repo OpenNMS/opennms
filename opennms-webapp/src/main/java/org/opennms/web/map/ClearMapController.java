@@ -83,15 +83,8 @@ public class ClearMapController implements Controller {
 					.getOutputStream(), "UTF-8"));
 	
 		try {
-
-			if (request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				manager.clearMap();
-				bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLEAR_ACTION));
-			} else {
-	            log.warn("Cannot Clear maps because not admin role for user: " + request.getRemoteUser() );
-	            bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLEAR_ACTION));
-			}
-
+			manager.clearMap();
+			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLEAR_ACTION));
 		} catch (Exception e) {
 			log.error("Error while doing clear map ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLEAR_ACTION));

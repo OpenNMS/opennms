@@ -81,7 +81,7 @@ public class LoadDefaultMapController implements Controller {
 		
 		String user = request.getRemoteUser();
 
-	      log.debug("Loading Default Map for user: " + user);
+	    log.debug("Loading Default Map for user: " + user);
 
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {

@@ -81,13 +81,6 @@ public class SaveMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream(), "UTF-8"));
-		if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-			log.warn("User is not in Admin mode, cannot save");
-			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SAVEMAP_ACTION));
-			bw.close();
-			return null;
-			
-		}
 			
 		String mapName = request.getParameter("MapName");
 		String mapBackground = request.getParameter("MapBackground");
@@ -97,8 +90,8 @@ public class SaveMapController implements Controller {
 		String query = request.getQueryString();
 		String queryNodes = request.getParameter("Nodes");
 		
-			log.debug("Saving map " + mapName + " the query received is '" + query + "'");
-	        log.debug("Saving map " + mapName + " the data received is '" + queryNodes + "'");
+		log.debug("Saving map " + mapName + " the query received is '" + query + "'");
+        log.debug("Saving map " + mapName + " the data received is '" + queryNodes + "'");
 
 		try {
 			VMap map = manager.openMap();

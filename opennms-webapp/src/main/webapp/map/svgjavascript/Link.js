@@ -34,17 +34,48 @@ function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapEl
 		this.stroke =stroke;
 		this.stroke_width=stroke.width;
 		this.dash_array = dash_array;
-
-		var x1 = this.mapElement1.getX()+this.mapElement1.width/2;
-		var y1 = this.mapElement1.getY()+this.mapElement1.height/2+deltaLink*totalLinks;
-
-		var x2=this.mapElement2.getX()+this.mapElement2.width/2;
-		var y2=this.mapElement2.getY()+this.mapElement2.height/2+deltaLink*totalLinks;
 		
-		this.deltaX1FromElem1Center=x1-this.mapElement1.getX();
-		this.deltaY1FromElem1Center=y1-this.mapElement1.getY();
-		this.deltaX2FromElem2Center=x2-this.mapElement2.getX();
-		this.deltaY2FromElem2Center=y2-this.mapElement2.getY();
+		this.totalLinks = totalLinks;
+		this.deltaLink = deltaLink;
+
+		var alfa = Math.atan((this.mapElement2.getY()-this.mapElement1.getY())/(this.mapElement2.getX()-this.mapElement1.getX()));
+		
+		var delta1,delta2;
+		
+		if (totalLinks%2 == 0) {
+			delta1 = -1*totalLinks*deltaLink/2/this.mapElement1.getRadius();
+			delta2 = -1*totalLinks*deltaLink/2/this.mapElement2.getRadius();
+		} else {
+			delta1 = (totalLinks+1)*(deltaLink)/2/this.mapElement1.getRadius();
+			delta2 = (totalLinks+1)*(deltaLink)/2/this.mapElement2.getRadius();
+		}
+		
+		var x1,y1,x2,y2;
+		if ( this.mapElement2.getX() > this.mapElement1.getX() ) {
+			x1 = this.mapElement1.getCX()+(this.mapElement1.getRadius()*Math.cos(alfa+delta1));
+			y1 = this.mapElement1.getCY()+(this.mapElement1.getRadius()*Math.sin(alfa+delta1));
+	
+			x2 = this.mapElement2.getCX()-(this.mapElement2.getRadius()*Math.cos(alfa-delta2));
+			y2 = this.mapElement2.getCY()-(this.mapElement2.getRadius()*Math.sin(alfa-delta2));
+		} else 	if ( this.mapElement2.getX() == this.mapElement1.getX() && alfa < 0) {
+			x1 = this.mapElement1.getCX()+(this.mapElement1.getRadius()*Math.sin(delta1));
+			y1 = this.mapElement1.getCY()-(this.mapElement1.getRadius()*Math.cos(delta1));
+	
+			x2 = this.mapElement2.getCX()+(this.mapElement2.getRadius()*Math.sin(delta2));
+			y2 = this.mapElement2.getCY()+(this.mapElement2.getRadius()*Math.cos(delta2));
+		} else 	if ( this.mapElement2.getX() == this.mapElement1.getX() && alfa > 0) {
+			x1 = this.mapElement1.getCX()-(this.mapElement1.getRadius()*Math.sin(delta1));
+			y1 = this.mapElement1.getCY()+(this.mapElement1.getRadius()*Math.cos(delta1));
+	
+			x2 = this.mapElement2.getCX()-(this.mapElement2.getRadius()*Math.sin(delta2));
+			y2 = this.mapElement2.getCY()-(this.mapElement2.getRadius()*Math.cos(delta2));
+		} else {
+			x1 = this.mapElement1.getCX()-(this.mapElement1.getRadius()*Math.cos(alfa-delta1));
+			y1 = this.mapElement1.getCY()-(this.mapElement1.getRadius()*Math.sin(alfa-delta1));
+	
+			x2 = this.mapElement2.getCX()+(this.mapElement2.getRadius()*Math.cos(alfa+delta2));
+			y2 = this.mapElement2.getCY()+(this.mapElement2.getRadius()*Math.sin(alfa+delta2));			
+		}
 
 		this.init(id, x1, x2, y1, y2, stroke, stroke_width, dash_array, flash);
 	}
@@ -178,11 +209,43 @@ Link.prototype.getNumberOfLinks = function()
 // update link
 Link.prototype.update = function()
 {
-	var x1=this.mapElement1.getX()+this.deltaX1FromElem1Center;
-	var y1=this.mapElement1.getY()+this.deltaY1FromElem1Center;	
-	
-	var x2=this.mapElement2.getX()+this.deltaX2FromElem2Center;	
-	var y2=this.mapElement2.getY()+this.deltaY2FromElem2Center;	
+	var alfa = Math.atan((this.mapElement2.getY()-this.mapElement1.getY())/(this.mapElement2.getX()-this.mapElement1.getX()));
+
+	var delta1,delta2;
+	if (this.totalLinks%2 == 0) {
+		delta1 = -1*this.totalLinks*this.deltaLink/2/this.mapElement1.getRadius();
+		delta2 = -1*this.totalLinks*this.deltaLink/2/this.mapElement2.getRadius();
+	} else {
+		delta1 = (this.totalLinks+1)*(this.deltaLink)/2/this.mapElement1.getRadius();
+		delta2 = (this.totalLinks+1)*(this.deltaLink)/2/this.mapElement2.getRadius();
+	}
+
+	var x1,y1,x2,y2;
+	if ( this.mapElement2.getX() > this.mapElement1.getX() ) {
+		x1 = this.mapElement1.getCX()+(this.mapElement1.getRadius()*Math.cos(alfa+delta1));
+		y1 = this.mapElement1.getCY()+(this.mapElement1.getRadius()*Math.sin(alfa+delta1));
+
+		x2 = this.mapElement2.getCX()-(this.mapElement2.getRadius()*Math.cos(alfa-delta2));
+		y2 = this.mapElement2.getCY()-(this.mapElement2.getRadius()*Math.sin(alfa-delta2));
+	} else 	if ( this.mapElement2.getX() == this.mapElement1.getX() && alfa < 0) {
+		x1 = this.mapElement1.getCX()+(this.mapElement1.getRadius()*Math.sin(delta1));
+		y1 = this.mapElement1.getCY()-(this.mapElement1.getRadius()*Math.cos(delta1));
+
+		x2 = this.mapElement2.getCX()+(this.mapElement2.getRadius()*Math.sin(delta2));
+		y2 = this.mapElement2.getCY()+(this.mapElement2.getRadius()*Math.cos(delta2));
+	} else 	if ( this.mapElement2.getX() == this.mapElement1.getX() && alfa > 0) {
+		x1 = this.mapElement1.getCX()-(this.mapElement1.getRadius()*Math.sin(delta1));
+		y1 = this.mapElement1.getCY()+(this.mapElement1.getRadius()*Math.cos(delta1));
+
+		x2 = this.mapElement2.getCX()-(this.mapElement2.getRadius()*Math.sin(delta2));
+		y2 = this.mapElement2.getCY()-(this.mapElement2.getRadius()*Math.cos(delta2));
+	} else {
+		x1 = this.mapElement1.getCX()-(this.mapElement1.getRadius()*Math.cos(alfa-delta1));
+		y1 = this.mapElement1.getCY()-(this.mapElement1.getRadius()*Math.sin(alfa-delta1));
+
+		x2 = this.mapElement2.getCX()+(this.mapElement2.getRadius()*Math.cos(alfa+delta2));
+		y2 = this.mapElement2.getCY()+(this.mapElement2.getRadius()*Math.sin(alfa+delta2));			
+	}
 
 	this.line.setAttributeNS(null,"x1", x1);	
 	this.line.setAttributeNS(null,"x2", x2);	

@@ -22,16 +22,53 @@ function SLink(id, typology, mapElement1,mapElement2, stroke, stroke_width, dash
 		this.mapElement1 = mapElement1;
 		this.mapElement2 = mapElement2;
 		
-		this.x1 = this.mapElement1.getX()+this.mapElement1.width/2;
-		this.y1 = this.mapElement1.getY()+this.mapElement1.height/2+deltaLink*totalLinks;
+		this.totalLinks = totalLinks;
+		this.deltaLink = deltaLink;
 
-		this.x2=this.mapElement2.getX()+this.mapElement2.width/2;
-		this.y2=this.mapElement2.getY()+this.mapElement2.height/2+deltaLink*totalLinks;
 		
-		this.deltaX1FromElem1Center=this.x1-this.mapElement1.getX();
-		this.deltaY1FromElem1Center=this.y1-this.mapElement1.getY();
-		this.deltaX2FromElem2Center=this.x2-this.mapElement2.getX();
-		this.deltaY2FromElem2Center=this.y2-this.mapElement2.getY();
+		var alfa = Math.atan((this.mapElement2.getY()-this.mapElement1.getY())/(this.mapElement2.getX()-this.mapElement1.getX()));
+	
+		var delta1,delta2;
+		if (this.totalLinks%2 == 0) {
+			delta1 = -1*this.totalLinks*this.deltaLink/2/this.mapElement1.getRadius();
+			delta2 = -1*this.totalLinks*this.deltaLink/2/this.mapElement2.getRadius();
+		} else {
+			delta1 = (this.totalLinks+1)*(this.deltaLink)/2/this.mapElement1.getRadius();
+			delta2 = (this.totalLinks+1)*(this.deltaLink)/2/this.mapElement2.getRadius();
+		}
+	
+		var x1,y1,x2,y2;
+		if ( this.mapElement2.getX() > this.mapElement1.getX() ) {
+			x1 = this.mapElement1.getCX()+(this.mapElement1.getRadius()*Math.cos(alfa+delta1));
+			y1 = this.mapElement1.getCY()+(this.mapElement1.getRadius()*Math.sin(alfa+delta1));
+	
+			x2 = this.mapElement2.getCX()-(this.mapElement2.getRadius()*Math.cos(alfa-delta2));
+			y2 = this.mapElement2.getCY()-(this.mapElement2.getRadius()*Math.sin(alfa-delta2));
+		} else 	if ( this.mapElement2.getX() == this.mapElement1.getX() && alfa < 0) {
+			x1 = this.mapElement1.getCX()+(this.mapElement1.getRadius()*Math.sin(delta1));
+			y1 = this.mapElement1.getCY()-(this.mapElement1.getRadius()*Math.cos(delta1));
+	
+			x2 = this.mapElement2.getCX()+(this.mapElement2.getRadius()*Math.sin(delta2));
+			y2 = this.mapElement2.getCY()+(this.mapElement2.getRadius()*Math.cos(delta2));
+		} else 	if ( this.mapElement2.getX() == this.mapElement1.getX() && alfa > 0) {
+			x1 = this.mapElement1.getCX()-(this.mapElement1.getRadius()*Math.sin(delta1));
+			y1 = this.mapElement1.getCY()+(this.mapElement1.getRadius()*Math.cos(delta1));
+	
+			x2 = this.mapElement2.getCX()-(this.mapElement2.getRadius()*Math.sin(delta2));
+			y2 = this.mapElement2.getCY()-(this.mapElement2.getRadius()*Math.cos(delta2));
+		} else {
+			x1 = this.mapElement1.getCX()-(this.mapElement1.getRadius()*Math.cos(alfa-delta1));
+			y1 = this.mapElement1.getCY()-(this.mapElement1.getRadius()*Math.sin(alfa-delta1));
+	
+			x2 = this.mapElement2.getCX()+(this.mapElement2.getRadius()*Math.cos(alfa+delta2));
+			y2 = this.mapElement2.getCY()+(this.mapElement2.getRadius()*Math.sin(alfa+delta2));			
+		}
+
+		this.x1 = x1;
+		this.y1 = y1;
+
+		this.x2 = x2;
+		this.y2 = y2;
 
 		this.stroke =stroke;
 		this.stroke_width=stroke_width;
@@ -213,11 +250,49 @@ SLink.prototype.switchLink = function(linkId)
 // update link
 SLink.prototype.update = function()
 {
-	this.x1=this.mapElement1.getX()+this.deltaX1FromElem1Center;
-	this.y1=this.mapElement1.getY()+this.deltaY1FromElem1Center;	
-	
-	this.x2=this.mapElement2.getX()+this.deltaX2FromElem2Center;	
-	this.y2=this.mapElement2.getY()+this.deltaY2FromElem2Center;	
+	var alfa = Math.atan((this.mapElement2.getY()-this.mapElement1.getY())/(this.mapElement2.getX()-this.mapElement1.getX()));
+
+	var delta1,delta2;
+	if (this.totalLinks%2 == 0) {
+		delta1 = -1*this.totalLinks*this.deltaLink/2/this.mapElement1.getRadius();
+		delta2 = -1*this.totalLinks*this.deltaLink/2/this.mapElement2.getRadius();
+	} else {
+		delta1 = (this.totalLinks+1)*(this.deltaLink)/2/this.mapElement1.getRadius();
+		delta2 = (this.totalLinks+1)*(this.deltaLink)/2/this.mapElement2.getRadius();
+	}
+
+	var x1,y1,x2,y2;
+	if ( this.mapElement2.getX() > this.mapElement1.getX() ) {
+		x1 = this.mapElement1.getCX()+(this.mapElement1.getRadius()*Math.cos(alfa+delta1));
+		y1 = this.mapElement1.getCY()+(this.mapElement1.getRadius()*Math.sin(alfa+delta1));
+
+		x2 = this.mapElement2.getCX()-(this.mapElement2.getRadius()*Math.cos(alfa-delta2));
+		y2 = this.mapElement2.getCY()-(this.mapElement2.getRadius()*Math.sin(alfa-delta2));
+	} else 	if ( this.mapElement2.getX() == this.mapElement1.getX() && alfa < 0) {
+		x1 = this.mapElement1.getCX()+(this.mapElement1.getRadius()*Math.sin(delta1));
+		y1 = this.mapElement1.getCY()-(this.mapElement1.getRadius()*Math.cos(delta1));
+
+		x2 = this.mapElement2.getCX()+(this.mapElement2.getRadius()*Math.sin(delta2));
+		y2 = this.mapElement2.getCY()+(this.mapElement2.getRadius()*Math.cos(delta2));
+	} else 	if ( this.mapElement2.getX() == this.mapElement1.getX() && alfa > 0) {
+		x1 = this.mapElement1.getCX()-(this.mapElement1.getRadius()*Math.sin(delta1));
+		y1 = this.mapElement1.getCY()+(this.mapElement1.getRadius()*Math.cos(delta1));
+
+		x2 = this.mapElement2.getCX()-(this.mapElement2.getRadius()*Math.sin(delta2));
+		y2 = this.mapElement2.getCY()-(this.mapElement2.getRadius()*Math.cos(delta2));
+	} else {
+		x1 = this.mapElement1.getCX()-(this.mapElement1.getRadius()*Math.cos(alfa-delta1));
+		y1 = this.mapElement1.getCY()-(this.mapElement1.getRadius()*Math.sin(alfa-delta1));
+
+		x2 = this.mapElement2.getCX()+(this.mapElement2.getRadius()*Math.cos(alfa+delta2));
+		y2 = this.mapElement2.getCY()+(this.mapElement2.getRadius()*Math.sin(alfa+delta2));			
+	}
+
+	this.x1 = x1;
+	this.y1 = y1;
+
+	this.x2 = x2;
+	this.y2 = y2;
 
 	this.line.setAttributeNS(null,"x1", this.x1);	
 	this.line.setAttributeNS(null,"x2", this.x2);	

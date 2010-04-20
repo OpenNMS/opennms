@@ -1439,6 +1439,7 @@ public class ManagerDefaultImpl implements Manager {
         inObj.setMaxLinks(mapsPropertiesFactory.getMaxLinks());
         inObj.setSummaryLink(mapsPropertiesFactory.getSummaryLink());
         inObj.setSummaryLinkColor(mapsPropertiesFactory.getSummaryLinkColor());
+        inObj.setUseSemaphore(mapsPropertiesFactory.isUseSemaphore());
         return inObj;
     }
 
