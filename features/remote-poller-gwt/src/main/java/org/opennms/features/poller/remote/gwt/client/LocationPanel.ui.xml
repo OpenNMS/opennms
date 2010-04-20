@@ -5,56 +5,24 @@
   
   <ui:style>
   
-    .scrollPanel{
-  	    width: 100%;
-  	 }
-  	 
-  	 .flexTable{
-  	     width: 100%;
-  	     min-width: 200px;
-         border-collapse: collapse;	
-  	 }
   
   </ui:style>
 
-  <ui:style field='selectionStyle' type='org.opennms.features.poller.remote.gwt.client.LocationPanel.SelectionStyle'>
-    .selectedRow {
-        border-width: 1px;
-        border-style: inset;
-        border-color: #90a5d3;
-        opacity: .5;
-        filter:literal("alpha(opacity=50)");
-    }
-
-    .alternateRow{
-        background-color: #c8e1fe;
-    }
-    
-    .upStatus{
-    	background-image: "images/icon-UP.png";
-    }
-    
-    .downStatus{
-    	background-image: "images/icon-DOWN.png";
-    }
-    
-    .marginalStatus{
-    	background-image: "images/icon-MARGINAL.png";
-    }
-    
-    .unknownStatus{
-        background-image: "images/icon-UNKNOWN.png";
-    }
-  </ui:style>
-  
-  <g:HTMLPanel >
-    <me:FilterPanel/>
-    <hr/>
-    <me:TagPanel ui:field="tagPanel"/>
-    <hr/>
-    <g:ScrollPanel ui:field="m_scrollPanel" styleName="{style.scrollPanel}">
-      <g:FlexTable ui:field='m_locations' styleName="{style.flexTable}" />
-    </g:ScrollPanel>
-  </g:HTMLPanel>
+    <g:DockLayoutPanel unit="PX">
+        <g:north size="255">
+            <g:HTMLPanel>
+                <me:FilterPanel/>
+                <hr/>
+                <me:TagPanel ui:field="tagPanel"/>
+                <hr/>
+            </g:HTMLPanel>
+        </g:north>
+        <g:center>
+            <g:FlowPanel>
+                <me:PageableApplicationList ui:field="applicationList"/>
+                <me:PageableLocationList ui:field="locationList"/>
+            </g:FlowPanel>
+        </g:center>
+    </g:DockLayoutPanel>
 
 </ui:UiBinder>
