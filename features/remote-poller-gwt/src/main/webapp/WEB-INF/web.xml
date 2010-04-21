@@ -14,10 +14,13 @@
     </jsp-property-group>
   </jsp-config>
 
-  <!--  This is used by the Spring ContextLoaderListener <listener> below -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/applicationContext-remote-poller.xml</param-value>
+    <param-value>
+        <!-- WARMERGE: begin contextConfigLocation -->
+        /WEB-INF/applicationContext-remote-poller.xml
+        <!-- WARMERGE: end contextConfigLocation -->
+    </param-value>
   </context-param>
 
   <context-param>
@@ -26,12 +29,10 @@
   </context-param>
 
   <listener>
-    <!-- This listener handles our custom startup/shutdown behavior. -->
     <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
   </listener>
 
   <listener>
-    <!-- This listener handles our custom startup/shutdown behavior. -->
     <listener-class>org.opennms.web.DependencyCheckingContextListener</listener-class>
   </listener>
 
@@ -39,6 +40,7 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
+  <!-- WARMERGE: begin servlet -->
   <servlet>
     <servlet-name>EventService</servlet-name>
     <servlet-class>de.novanic.eventservice.service.EventServiceImpl</servlet-class>
@@ -49,14 +51,9 @@
     <servlet-name>LocationStatusService</servlet-name>
     <servlet-class>org.opennms.features.poller.remote.gwt.server.LocationStatusServiceImpl</servlet-class>
   </servlet>
+  <!-- WARMERGE: end servlet -->
 
-<!--
-  <servlet>
-    <servlet-name>gwt-log-remote-logger-servlet</servlet-name>
-    <servlet-class>com.allen_sauer.gwt.log.server.RemoteLoggerServiceImpl</servlet-class>
-  </servlet>
--->
-
+  <!-- WARMERGE: begin servlet-mapping -->
   <servlet-mapping>
     <servlet-name>EventService</servlet-name>
     <url-pattern>/org.opennms.features.poller.remote.gwt.Application/gwteventservice</url-pattern>
@@ -66,24 +63,25 @@
     <servlet-name>LocationStatusService</servlet-name>
     <url-pattern>/org.opennms.features.poller.remote.gwt.Application/locationStatus</url-pattern>
   </servlet-mapping>
+  <!-- WARMERGE: end servlet-mapping -->
 
-<!--  <servlet-mapping>-->
-<!--    <servlet-name>gwt-log-remote-logger-servlet</servlet-name>-->
-<!--    <url-pattern>/org.opennms.features.poller.remote.gwt.Application/gwt-log</url-pattern>-->
-<!--  </servlet-mapping>-->
-
+  <!-- WARMERGE: begin filter -->
   <filter>
     <filter-name>cache-filter</filter-name>
     <filter-class>org.opennms.features.poller.remote.gwt.CacheFilter</filter-class>
   </filter>
+  <!-- WARMERGE: end filter -->
 
+  <!-- WARMERGE: begin filter-mapping -->
   <filter-mapping>
     <filter-name>cache-filter</filter-name>
     <url-pattern>/org.opennms.features.poller.remote.gwt.Application/*</url-pattern>
   </filter-mapping>
+  <!-- WARMERGE: end filter-mapping -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
 
 </web-app>

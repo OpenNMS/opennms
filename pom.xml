@@ -432,30 +432,6 @@
           <finalName>${dist.name}</finalName>
         </configuration>
       </plugin>
-      <!--<plugin>
-        <inherited>false</inherited>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <phase>package</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-        <configuration>
-          <artifactItems>
-            <artifactItem>
-              <groupId>org.opennms</groupId>
-              <artifactId>opennms-webapp</artifactId>
-                  <version>${project.version}</version>
-              <type>war</type>
-            </artifactItem>
-          </artifactItems>
-        </configuration>
-          </execution>
-        </executions>
-      </plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -881,6 +857,12 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.api</artifactId>
         <version>${project.version}</version>
@@ -943,6 +925,11 @@
       <dependency>
         <groupId>org.opennms.features.sms-reflector</groupId>
         <artifactId>sms-monitor</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.webapp-full</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1312,6 +1299,12 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
