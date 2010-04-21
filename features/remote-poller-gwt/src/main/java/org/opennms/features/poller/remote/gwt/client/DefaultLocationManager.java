@@ -171,6 +171,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     	getMapPanel().setBounds(getLocationBounds());
     }
 
+    /**
+     * TODO: Figure out if this public function is necessary or if we can get by just responding to
+     * incoming events.
+     */
     public List<Location> getVisibleLocations() {
         List<Location> visibleLocations = new ArrayList<Location>();
         GWTBounds bounds = getMapPanel().getBounds();
@@ -208,7 +212,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Refresh the list of locations whenever the map panel boundaries change.
      */
     public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
-        // TODO: Update the tagPanel
+        // TODO: Update the contents of the tag panel
+        // TODO: Update the list of selectable applications based on the visible locations??
+        // Update the list of objects in the LHN
         m_locationPanel.update(this);
     }
 
@@ -216,6 +222,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Refresh the list of locations whenever they are updated.
      */
     public void onLocationsUpdated(final LocationsUpdatedEvent e) {
+        // TODO: Update the contents of the tag panel
         m_locationPanel.filterPanel.updateApplicationNames(this.getAllApplicationNames());
         m_locationPanel.update(this);
     }
@@ -226,11 +233,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     public void updateLocation(final LocationInfo info) {
         if (info == null) return;
-        
+
+        // Update the location information in the model
         Location location = createOrUpdateLocation(info);
-        
+
+        // TODO: Update the icon/caption in the LHN
+
+        // Update the icon in the map
         getMapPanel().placeMarker(location);
-        
     }
 
     /**
@@ -239,8 +249,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     public void updateApplication(final ApplicationInfo info) {
     	if (info == null) return;
-
-    	// FIXME: implement
+    	// TODO: Update the icon/caption in the LHN
+    	// TODO: Update the icon in the map
     }
 
     /**
@@ -260,20 +270,31 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void onFiltersChanged(Filters filters) {
-        // TODO: Update the map panel and LHN with filtered items
-        Window.alert("new FiltersChangedEvent(filters)");
+        // TODO: Update state inside of this object to track the filter state (if necessary)
+        // TODO: Update markers on the map panel
+        // TODO: Update the list of objects in the LHN
     }
 
     public void onTagSelected(String tagName) {
+        // Update state inside of this object to track the selected tag
         m_selectedTag = tagName;
+        // TODO: Update markers on the map panel
+        // Update the list of objects in the LHN
         m_locationPanel.update(this);
     }
 
     public void onTagCleared() {
+        // Update state inside of this object to track the selected tag
         m_selectedTag = null;
+        // TODO: Update markers on the map panel
+        // Update the list of objects in the LHN
         m_locationPanel.update(this);
     }
 
+    /**
+     * Fetch a list of all application names.
+     * TODO: Implement this with real data.
+     */
     public Set<String> getAllApplicationNames() {
         Set<String> retval = new TreeSet<String>();
         retval.addAll(Arrays.asList(new String[] {
@@ -289,6 +310,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return getLocations().get(locationName);
     }
 
+    /**
+     * TODO: Figure out if this public function is necessary or if we can get by just responding to
+     * incoming events.
+     */
     public List<ApplicationInfo> getVisibleApplications() {
         List<ApplicationInfo> retval = new ArrayList<ApplicationInfo>();
         for (Location location : getVisibleLocations()) {
@@ -296,4 +321,4 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }
         return retval;
     }
- }
+}
