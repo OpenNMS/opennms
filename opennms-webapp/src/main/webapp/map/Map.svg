@@ -42,7 +42,6 @@
 
 //top.$.history.callback = openMapSetUp;
 top.$.history.callback = historyCallBack;
-var MAPS_STARTUP_ACTION = "MapStartUp";
 
 var counter = 0;
 
