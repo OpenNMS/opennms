@@ -2,7 +2,6 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +102,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             new DataLoader() {
                 @Override
                 public void onLoaded() {
-                    initializeMapWidget();
+                    // Append the map panel to the main SplitPanel
+                    getPanel().add(getMapPanel().getWidget());
                 }
             },
              new EventServiceInitializer(this)
@@ -165,10 +165,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     public void reportError(final String errorMessage, final Throwable throwable) {
     	// FIXME: implement error reporting in UI
-    }
-
-    protected void initializeMapWidget() {
-        getPanel().add(getMapPanel().getWidget());
     }
 
     public void fitMapToLocations() {
@@ -245,25 +241,17 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     	// FIXME: implement
     }
-    
-    protected void setUpdated(boolean updated) {
-        this.updated = updated;
-    }
-
-    protected boolean isUpdated() {
-        return updated;
-    }
 
     /**
      * Invoked by the {@link UpdateCompleteRemoteEvent} event.
      */
     public void updateComplete() {
-    	if (!isUpdated()) {
+    	if (!updated) {
     		DeferredCommand.addPause();
     		DeferredCommand.addCommand(new IncrementalCommand() {
     			public boolean execute() {
     				fitMapToLocations();
-    				setUpdated(true);
+    				updated = true;
     				return false;
     			}
     		});
