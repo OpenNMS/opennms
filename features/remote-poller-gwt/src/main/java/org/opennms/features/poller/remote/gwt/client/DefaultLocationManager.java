@@ -208,6 +208,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Refresh the list of locations whenever the map panel boundaries change.
      */
     public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
+        // TODO: Update the tagPanel
         m_locationPanel.update(this);
     }
 

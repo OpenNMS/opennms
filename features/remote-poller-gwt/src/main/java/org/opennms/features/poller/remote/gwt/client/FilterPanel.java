@@ -1,6 +1,5 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import com.google.gwt.core.client.GWT;
@@ -11,9 +10,9 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
@@ -27,6 +26,8 @@ public class FilterPanel extends Composite {
 
     @UiField(provided = true)
     SuggestBox applicationNameSuggestBox;
+    @UiField
+    Panel applicationFilters;
 
     private final MultiWordSuggestOracle applicationNames = new MultiWordSuggestOracle();
 
@@ -74,6 +75,10 @@ public class FilterPanel extends Composite {
     public void updateApplicationNames(Collection<String> names) {
         applicationNames.clear();
         applicationNames.addAll(names);
+    }
+
+    public void showApplicationFilters(boolean showMe) {
+        applicationFilters.setVisible(showMe);
     }
 
     public void setEventBus(final HandlerManager eventBus) {

@@ -32,20 +32,22 @@
 			<g:ToggleButton text="Unknown" />
 		</g:HorizontalPanel>
 
-		<g:HTMLPanel><hr/></g:HTMLPanel>
+		<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationFilters">
+			<g:HTMLPanel><hr/></g:HTMLPanel>
 
-		<g:Label addStyleNames="{style.panelHeader}" text="Selected Applications"/>
-		<g:HTMLPanel>
-			<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">Internet</span>
-		</g:HTMLPanel>
-		<g:HTMLPanel>
-			<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">HR</span>
-		</g:HTMLPanel>
-		<g:HTMLPanel>
-			<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">Datacenter</span>
-		</g:HTMLPanel>
-		<g:Label addStyleNames="{style.selectorLabel}" text="Add application:"/>
-		<g:SuggestBox ui:field="applicationNameSuggestBox"/>
+			<g:Label addStyleNames="{style.panelHeader}" text="Selected Applications"/>
+			<g:HTMLPanel>
+				<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">Internet</span>
+			</g:HTMLPanel>
+			<g:HTMLPanel>
+				<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">HR</span>
+			</g:HTMLPanel>
+			<g:HTMLPanel>
+				<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">Datacenter</span>
+			</g:HTMLPanel>
+			<g:Label addStyleNames="{style.selectorLabel}" text="Add application:"/>
+			<g:SuggestBox ui:field="applicationNameSuggestBox"/>
+		</g:VerticalPanel>
 	</g:VerticalPanel>
 
 </ui:UiBinder>

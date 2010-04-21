@@ -33,8 +33,6 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		super();
 		initWidget(BINDER.createAndBindUi(this));
 		locationList.addLocationPanelSelectEventHandler(this);
-		// Show the location list by default
-		showLocationList();
 	}
 
 	public void update(final LocationManager locationManager) {

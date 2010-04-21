@@ -52,6 +52,8 @@ public class Application implements EntryPoint
             
             public void onInitializationComplete(LocationManagerInitializationCompleteEvent event) {
                 splitPanel.setWidgetMinSize(locationPanel, 200);
+                // Show the location list by default 
+                onLocationClick(null);
                 rootPanel.setSize("100%", "100%");
                 RootPanel.get("remotePollerMap").add(rootPanel);
             }
@@ -64,11 +66,13 @@ public class Application implements EntryPoint
 	@UiHandler("locationLink")
 	public void onLocationClick(ClickEvent event) {
 	    locationPanel.showLocationList();
+	    locationPanel.filterPanel.showApplicationFilters(false);
 	}
 
     @UiHandler("applicationLink")
     public void onApplicationClick(ClickEvent event) {
         locationPanel.showApplicationList();
+        locationPanel.filterPanel.showApplicationFilters(true);
     }
 
 private MapPanel createMapPanel() {
