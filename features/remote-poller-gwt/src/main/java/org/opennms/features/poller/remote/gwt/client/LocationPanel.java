@@ -26,13 +26,15 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	
 	@UiField PageableLocationList locationList;
 	@UiField PageableApplicationList applicationList;
+    @UiField FilterPanel filterPanel;
     @UiField TagPanel tagPanel;
 	
 	public LocationPanel() {
 		super();
 		initWidget(BINDER.createAndBindUi(this));
 		locationList.addLocationPanelSelectEventHandler(this);
-		setVisible(applicationList.getElement(), false);
+		// Show the location list by default
+		showLocationList();
 	}
 
 	public void update(final LocationManager locationManager) {
@@ -84,6 +86,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	    }
 	    m_eventBus = eventBus;
 	    
+        filterPanel.setEventBus(eventBus);
 	    tagPanel.setEventBus(eventBus);
 	    // eventRegistrations.add(m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this));
 	    // eventRegistrations.add(m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this));

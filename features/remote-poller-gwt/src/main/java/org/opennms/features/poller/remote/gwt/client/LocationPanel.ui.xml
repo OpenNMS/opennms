@@ -11,7 +11,7 @@
     <g:DockLayoutPanel unit="PX">
         <g:north size="255">
             <g:HTMLPanel>
-                <me:FilterPanel/>
+                <me:FilterPanel ui:field="filterPanel"/>
                 <hr/>
                 <me:TagPanel ui:field="tagPanel"/>
                 <hr/>

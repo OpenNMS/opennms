@@ -1,10 +1,13 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.Filters;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedEvent;
@@ -25,6 +28,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -131,15 +135,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return m_panel;
     }
 
-    public List<Location> getAllLocations() {
-    	final List<Location> locations = new ArrayList<Location>(getLocations().values());
-    	Collections.sort(locations);
-    	return locations;
-    }
-
-    public List<String> getAllLocationNames() {
-        List<String> retval = new ArrayList<String>();
-        for (Location location : this.getAllLocations()) {
+    public Set<String> getAllLocationNames() {
+        Set<String> retval = new TreeSet<String>();
+        for (Location location : this.getLocations().values()) {
             retval.add(location.getLocationInfo().getName());
         }
         return retval;
@@ -161,6 +159,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }else {
             location.setLocationInfo(info);
         }
+        m_locationPanel.filterPanel.updateApplicationNames(this.getAllApplicationNames());
         return location;
     }
 
@@ -220,6 +219,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Refresh the list of locations whenever they are updated.
      */
     public void onLocationsUpdated(final LocationsUpdatedEvent e) {
+        m_locationPanel.filterPanel.updateApplicationNames(this.getAllApplicationNames());
         m_locationPanel.update(this);
     }
 
@@ -272,6 +272,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     public void onFiltersChanged(Filters filters) {
         // TODO: Update the map panel and LHN with filtered items
+        Window.alert("new FiltersChangedEvent(filters)");
     }
 
     public void onTagSelected(String tagName) {
@@ -282,5 +283,28 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void onTagCleared() {
         m_selectedTag = null;
         m_locationPanel.update(this);
+    }
+
+    public Set<String> getAllApplicationNames() {
+        Set<String> retval = new TreeSet<String>();
+        retval.addAll(Arrays.asList(new String[] {
+                "Internet",
+                "HR",
+                "Datacenter",
+                "Corporate Email"
+        }));
+        return retval;
+    }
+
+    public Location getLocation(String locationName) {
+        return getLocations().get(locationName);
+    }
+
+    public List<ApplicationInfo> getVisibleApplications() {
+        List<ApplicationInfo> retval = new ArrayList<ApplicationInfo>();
+        for (Location location : getVisibleLocations()) {
+            // retval.add();
+        }
+        return retval;
     }
  }

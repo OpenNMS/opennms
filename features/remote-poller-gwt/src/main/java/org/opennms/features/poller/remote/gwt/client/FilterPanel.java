@@ -57,12 +57,6 @@ public class FilterPanel extends Composite {
 
     public FilterPanel() {
         super();
-        applicationNames.addAll(Arrays.asList(new String[] {
-                "Internet",
-                "HR",
-                "Datacenter",
-                "Corporate Email"
-        }));
         applicationNameSuggestBox = new SuggestBox(applicationNames);
         initWidget(BINDER.createAndBindUi(this));
     }
@@ -73,8 +67,6 @@ public class FilterPanel extends Composite {
         Filters filters = new Filters();
 
         // TODO: Create a new filters object
-
-        Window.alert("new FiltersChangedEvent(filters)");
 
         m_eventBus.fireEvent(new FiltersChangedEvent(filters));
     }
