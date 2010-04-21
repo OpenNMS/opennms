@@ -39,7 +39,7 @@ public class PageableLocationList extends PageableList {
             
             setStyles();
             
-            m_icon.setUrl(locationInfo.getImageURL());
+            m_icon.setUrl(locationInfo.getMarkerImageURL());
             m_nameLabel.setText(locationInfo.getName());
             m_areaLabel.setText(locationInfo.getArea());
             m_statusLabel.setText(locationInfo.getStatus().getReason());

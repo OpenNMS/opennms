@@ -110,10 +110,14 @@ public class LocationInfo implements IsSerializable, Serializable {
 			+ ",area=" + m_area + ",geolocation=" + m_geolocation
 			+ ",coordinates=" + m_coordinates
 			+ ",status=" + m_status
-			+ ",imageURL=" + getImageURL() + "]";
+			+ ",imageURL=" + getMarkerImageURL() + "]";
 	}
 
-    public String getImageURL() {
+    public String getMarkerImageURL() {
         return "images/icon-" + getStatus() + ".png";
+    }
+
+    public String getPointImageURL() {
+        return "images/point-" + getStatus() + ".png";
     }
 }

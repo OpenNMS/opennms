@@ -116,7 +116,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         final Icon icon = Icon.newInstance();
         icon.setIconSize(Size.newInstance(32, 32));
         icon.setIconAnchor(Point.newInstance(16, 32));
-        icon.setImageURL(locationInfo.getImageURL());
+        icon.setImageURL(locationInfo.getMarkerImageURL());
         
         final MarkerOptions markerOptions = MarkerOptions.newInstance();
         markerOptions.setAutoPan(true);
@@ -146,7 +146,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     }
 
     private void updateMarker(final Location location, Marker m) {
-        m.setImage(location.getLocationInfo().getImageURL());
+        m.setImage(location.getLocationInfo().getMarkerImageURL());
     }
 
     private final class DefaultMarkerClickHandler implements MarkerClickHandler {

@@ -105,7 +105,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
     }
 
     private MQAIcon createIcon(final LocationInfo locationInfo) {
-        return MQAIcon.newInstance(locationInfo.getImageURL(), 32, 32);
+        return MQAIcon.newInstance(locationInfo.getMarkerImageURL(), 32, 32);
     }
 
     public GWTBounds getBounds() {

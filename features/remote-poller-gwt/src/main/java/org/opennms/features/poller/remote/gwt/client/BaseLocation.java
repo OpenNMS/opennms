@@ -67,7 +67,7 @@ public class BaseLocation implements Event, IsSerializable, Location {
 	}
 
 	public String getImageURL() {
-		return m_locationInfo.getImageURL();
+		return m_locationInfo.getMarkerImageURL();
 	}
 
 	public LocationInfo getLocationInfo() {
