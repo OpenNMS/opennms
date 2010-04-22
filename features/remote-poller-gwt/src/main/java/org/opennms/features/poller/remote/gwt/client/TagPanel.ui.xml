@@ -21,10 +21,23 @@
 	</ui:style>
 
 	<ui:style field="tagStyles" type="org.opennms.features.poller.remote.gwt.client.TagPanel.TagStyles">
+		.selectedTag {
+			color: black;
+			font-weight: bold;
+		}
+		.selectedTag A,
+		.selectedTag A:hover,
+		.selectedTag A:visited
+		{
+			color: black;
+			font-weight: bold;
+		}
 		.tag0 {
 			cursor: pointer;
 			font-size: 0.8em;
+			/*
 			font-weight: 100;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -32,7 +45,9 @@
 		.tag1 {
 			cursor: pointer;
 			font-size: 0.9em;
+			/*
 			font-weight: 100;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -40,7 +55,9 @@
 		.tag2 {
 			cursor: pointer;
 			font-size: 1.0em;
+			/*
 			font-weight: 200;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -48,7 +65,9 @@
 		.tag3 {
 			cursor: pointer;
 			font-size: 1.2em;
+			/*
 			font-weight: 200;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -56,7 +75,9 @@
 		.tag4 {
 			cursor: pointer;
 			font-size: 1.4em;
+			/*
 			font-weight: 300;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -64,7 +85,9 @@
 		.tag5 {
 			cursor: pointer;
 			font-size: 1.6em;
+			/*
 			font-weight: 300;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -72,7 +95,9 @@
 		.tag6 {
 			cursor: pointer;
 			font-size: 1.8em;
+			/*
 			font-weight: 400;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -80,7 +105,9 @@
 		.tag7 {
 			cursor: pointer;
 			font-size: 2.0em;
+			/*
 			font-weight: 400;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -88,7 +115,9 @@
 		.tag8 {
 			cursor: pointer;
 			font-size: 2.2em;
+			/*
 			font-weight: 500;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;
@@ -96,7 +125,9 @@
 		.tag9 {
 			cursor: pointer;
 			font-size: 2.4em;
+			/*
 			font-weight: 500;
+			*/
 			display: inline;
 			padding: 3px;
 			text-decoration: none;

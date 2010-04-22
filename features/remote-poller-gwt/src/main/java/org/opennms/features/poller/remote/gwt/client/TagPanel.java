@@ -32,6 +32,7 @@ public class TagPanel extends Composite implements Collection<String> {
 
     interface TagStyles extends CssResource {
         public final static double COUNT = 10.0;
+        String selectedTag();
         String tag0();
         String tag1();
         String tag2();
@@ -108,6 +109,10 @@ public class TagPanel extends Composite implements Collection<String> {
 
     @UiHandler("clearTags")
     public void onClearTagsClick(ClickEvent event) {
+        // Remove the "selected" style from all tags
+        for (int i = 0; i < tagPanel.getWidgetCount(); i++) {
+            tagPanel.getWidget(i).removeStyleName(tagStyles.selectedTag());
+        }
         m_eventBus.fireEvent(new TagClearedEvent());
     }
 
@@ -198,6 +203,7 @@ public class TagPanel extends Composite implements Collection<String> {
             tagLabel.setText(entry.getKey());
             tagLabel.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
+                    tagLabel.addStyleName(tagStyles.selectedTag());
                     m_eventBus.fireEvent(new TagSelectedEvent(tagLabel.getText()));
                 }
             });
