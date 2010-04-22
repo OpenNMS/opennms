@@ -17,6 +17,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.maps.client.InfoWindowContent;
 import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.control.LargeMapControl;
+import com.google.gwt.maps.client.event.InfoWindowCloseClickHandler;
 import com.google.gwt.maps.client.event.MapMoveEndHandler;
 import com.google.gwt.maps.client.event.MarkerClickHandler;
 import com.google.gwt.maps.client.geom.LatLngBounds;
@@ -65,14 +66,17 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     }
 
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
-        //TODO: You are here we need to implements a String/HTML for content window
         final Marker m = getMarker(name);
 
+        getMapWidget().savePosition();
         getMapWidget().setCenter(m.getLatLng());
         if (m != null) {
-            //InfoWindowContent content = getInfoWindowForLocation(location);
-            InfoWindowContent content = new InfoWindowContent(name + " Wahoo!");
-            getMapWidget().getInfoWindow().open(m, content);
+            getMapWidget().getInfoWindow().open(m.getLatLng(), new InfoWindowContent(htmlContent));
+            getMapWidget().getInfoWindow().addInfoWindowCloseClickHandler(new InfoWindowCloseClickHandler() {
+				public void onCloseClick(InfoWindowCloseClickEvent event) {
+					getMapWidget().returnToSavedPosition();
+				}
+            });
         }
     }
 
