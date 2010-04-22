@@ -35,48 +35,6 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		locationList.addLocationPanelSelectEventHandler(this);
 	}
 
-	public void update(final LocationManager locationManager) {
-		if (locationManager == null) {
-			throw new IllegalStateException("No LocationManager available inside LocationPanel");
-		}
-		
-		List<Location> visibleLocations = locationManager.getVisibleLocations();
-		
-		locationList.updateList(visibleLocations);
-		applicationList.updateList(getApplicationInfoTestData());
-			
-	}
-
-	private List<ApplicationInfo> getApplicationInfoTestData() {
-        List<ApplicationInfo> apps = new ArrayList<ApplicationInfo>();
-        
-        for(int i = 0; i < 10 ; i++) {
-            ApplicationInfo application = new ApplicationInfo();
-            application.setId(i);
-            application.setName("name: " + i);
-            application.setStatus(Status.UP);
-            application.setLocations(getLocationSetTestData());
-            application.setServices(getGWTMonitoredServiceTestData());
-            apps.add(application);
-        }
-        
-	    return apps;
-    }
-
-    private Set<GWTMonitoredService> getGWTMonitoredServiceTestData() {
-        Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
-        GWTMonitoredService service = new GWTMonitoredService();
-        service.setServiceName("HTTP");
-        services.add(service);
-        return services;
-    }
-
-    private Set<String> getLocationSetTestData() {
-        Set<String> locations = new HashSet<String>();
-        locations.add("19");
-        return locations;
-    }
-
     public void setEventBus(final HandlerManager eventBus) {
 	    // Remove any existing handler registrations
 	    for (HandlerRegistration registration : eventRegistrations) {

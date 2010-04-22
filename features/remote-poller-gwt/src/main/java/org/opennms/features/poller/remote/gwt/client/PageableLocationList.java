@@ -1,6 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class PageableLocationList extends PageableList {
     
-    private List<Location> m_locations;
+    private ArrayList<? extends Location> m_locations;
 
     private class LocationInfoDisplay extends Widget{
         
@@ -62,16 +62,20 @@ public class PageableLocationList extends PageableList {
         return new LocationInfoDisplay(getLocations().get(rowIndex).getLocationInfo());
     }
     
-    public void updateList(List<Location> locations) {
+    /**
+     * TODO: Maybe enhance this so that it only adds/updates/deletes individual items
+     * TODO: Don't skip to the front page on every update
+     */
+    public void updateList(ArrayList<? extends Location> locations) {
         setLocations(locations);
         super.showFirstPage();
     }
     
-    private List<Location> getLocations() {
+    private ArrayList<? extends Location> getLocations() {
         return m_locations;
     }
     
-    private void setLocations(List<Location> locations) {
+    private void setLocations(ArrayList<? extends Location> locations) {
         m_locations = locations;
     }
 

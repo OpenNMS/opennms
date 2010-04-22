@@ -15,6 +15,7 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 public interface LocationManager {
 	public void initialize();
 	public Location createOrUpdateLocation(final LocationInfo info);
+	public void createOrUpdateApplication(final ApplicationInfo info);
 	public Location getLocation(String locationName);
 	// public List<Location> getAllLocations();
 	public Set<String> getAllLocationNames();

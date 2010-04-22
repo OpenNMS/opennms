@@ -28,6 +28,7 @@ public interface RemotePollerPresenter extends MapPanelBoundsChangedEventHandler
     public void updateLocation(LocationInfo locationInfo);
 
     public void updateApplication(ApplicationInfo applicationInfo);
+
     /**
      * This action is used to respond to server-side events sent when all initial location updates are complete.
      */
