@@ -7,8 +7,8 @@ import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toLa
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
-import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -43,8 +43,10 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     MapWidget m_mapWidget;
     
     private Map<String, Marker> m_markers = new HashMap<String, Marker>();
+    private HandlerManager m_eventBus;
 
     public GoogleMapsPanel(final HandlerManager eventBus) {
+        m_eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
         
         initializeMapPanel();
@@ -52,7 +54,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
 
             public void onMoveEnd(MapMoveEndEvent event) {
-                eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
+                m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
             
         });
@@ -62,23 +64,24 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         return m_mapWidget;
     }
 
-    public void showLocationDetails(final Location location) {
-        final Marker m = getMarker(location);
-        final GWTLatLng latLng = location.getLocationInfo().getLatLng();
-        getMapWidget().setCenter(toLatLng(latLng));
+    public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
+        //TODO: You are here we need to implements a String/HTML for content window
+        final Marker m = getMarker(name);
+
+        getMapWidget().setCenter(m.getLatLng());
         if (m != null) {
             //InfoWindowContent content = getInfoWindowForLocation(location);
-            InfoWindowContent content = new InfoWindowContent(location.getLocationInfo().getName() + " Wahoo!");
+            InfoWindowContent content = new InfoWindowContent(name + " Wahoo!");
             getMapWidget().getInfoWindow().open(m, content);
         }
     }
 
-    private Marker getMarker(final Location location) {
-        return m_markers.get(location.getLocationInfo().getName());
+    private Marker getMarker(String name) {
+        return m_markers.get(name);
     }
     
-    private void setMarker(final Location location, Marker m) {
-        m_markers.put(location.getLocationInfo().getName(), m);
+    private void setMarker(Marker m, GWTMarker marker) {
+        m_markers.put(marker.getName(), m);
     }
 
     public GWTBounds getBounds() {
@@ -110,54 +113,55 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         getMapWidget().addOverlay(newMarker);
     }
 
-    private Marker createMarker(final Location location) {
-        final LocationInfo locationInfo = location.getLocationInfo();
-        
+    private Marker createMarker(final GWTMarker marker) {
         final Icon icon = Icon.newInstance();
         icon.setIconSize(Size.newInstance(32, 32));
         icon.setIconAnchor(Point.newInstance(16, 32));
-        icon.setImageURL(locationInfo.getMarkerImageURL());
+        String markerImageURL = marker.getImageURL();
+        icon.setImageURL(markerImageURL);
         
         final MarkerOptions markerOptions = MarkerOptions.newInstance();
         markerOptions.setAutoPan(true);
         markerOptions.setClickable(true);
-        markerOptions.setTitle(locationInfo.getName());
+        markerOptions.setTitle(marker.getName());
         markerOptions.setIcon(icon);
         
-        Marker m = new Marker(toLatLng(locationInfo.getLatLng()), markerOptions);
-        m.addMarkerClickHandler(new DefaultMarkerClickHandler(location));
+        Marker m = new Marker(toLatLng(marker.getLatLng()), markerOptions);
+        m.addMarkerClickHandler(new DefaultMarkerClickHandler(marker));
         return m;
     }
 
-    public void placeMarker(final Location location) {
-        Marker m = getMarker(location);
+    public void placeMarker(final GWTMarker marker) {
+        
+        Marker m = getMarker(marker.getName());
         if (m == null) {
-            addMarker(location);
+            addMarker(marker);
         } else {
-        	updateMarker(location, m);
+        	updateMarker(m, marker);
         }
         
     }
 
-    private void addMarker(final Location location) {
-        Marker m = createMarker(location);
-        setMarker(location, m);
+    private void addMarker(GWTMarker marker) {
+        Marker m = createMarker(marker);
+        setMarker(m, marker);
         addOverlay(m);
     }
 
-    private void updateMarker(final Location location, Marker m) {
-        m.setImage(location.getLocationInfo().getMarkerImageURL());
+    private void updateMarker(Marker m, GWTMarker marker) {
+        m.setImage(marker.getImageURL());
     }
 
     private final class DefaultMarkerClickHandler implements MarkerClickHandler {
-        private final Location m_location;
+        private final GWTMarker m_marker;
     
-        DefaultMarkerClickHandler(final Location location) {
-            m_location = location;
+        DefaultMarkerClickHandler(GWTMarker marker) {
+            m_marker = marker;
         }
     
         public void onClick(final MarkerClickEvent mke) {
-            showLocationDetails(m_location);
+            //showLocationDetails(m_marker);
+            m_eventBus.fireEvent(new GWTMarkerClickedEvent(m_marker));
         }
     }
     

@@ -13,6 +13,7 @@ import org.opennms.features.poller.remote.gwt.client.FilterPanel.Filters;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
@@ -80,6 +81,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this); 
 		m_eventBus.addHandler(FiltersChangedEvent.TYPE, this); 
 		m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
+		m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
 
 		// Add some test data
 		m_applications.addAll(getApplicationInfoTestData());
@@ -222,7 +224,13 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         if (location == null) {
             return;
         }
-        getMapPanel().showLocationDetails(location);
+        
+        //TODO: Implement the content string for this method
+        showLocationDetails(locationName, location);
+    }
+
+    private void showLocationDetails(String locationName, final Location location) {
+        getMapPanel().showLocationDetails(locationName, locationName + "(" + location.getLocationInfo().getArea() + ")", "Need to implement content");
     }
 
     /**
@@ -265,7 +273,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_locationPanel.locationList.updateList(locationList);
 
         // Update the icon in the map
-        getMapPanel().placeMarker(location);
+        GWTMarker m = new GWTMarker(location);
+        getMapPanel().placeMarker(m);
     }
 
     /**
@@ -288,7 +297,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // TODO: Update the icon in the map
         // Pseudocode:
         // for (Location location : info.getAllLocations()) {
-        //   getMapPanel().placeMarker(location);
+        //    GWTMarker m = new GWTMarker(location);
+        //    getMapPanel().placeMarker(m);
         // }
     }
 
@@ -398,5 +408,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         Set<String> locations = new HashSet<String>();
         locations.add("19");
         return locations;
+    }
+
+    public void onGWTMarkerClicked(GWTMarkerClickedEvent event) {
+        GWTMarker marker = event.getMarker();
+        showLocationDetails(marker.getName(), marker.getLocation());
     }
 }

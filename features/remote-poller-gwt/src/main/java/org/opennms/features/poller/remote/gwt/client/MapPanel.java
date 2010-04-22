@@ -6,11 +6,12 @@ public interface MapPanel {
     
     public Widget getWidget();
 
-    public void showLocationDetails(Location location);
+    public void showLocationDetails(String name, String htmlTitle, String htmlContent);
 
     public GWTBounds getBounds();
 
     public void setBounds(GWTBounds locationBounds);
 
-    public void placeMarker(Location location);
+    public void placeMarker(GWTMarker marker);
+    
 }
