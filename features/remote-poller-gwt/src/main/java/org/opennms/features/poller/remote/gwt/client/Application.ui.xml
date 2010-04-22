@@ -19,6 +19,19 @@
 			filter:literal("alpha(opacity=30)");
 		}
 	</ui:style>
+	<ui:style field="linkStyles" type="org.opennms.features.poller.remote.gwt.client.Application.LinkStyles">
+		.activeLink {
+			font-weight: bold;
+			text-decoration: none;
+			color: black;
+		}
+		/* You must override this also; GWT has a global 'A' style */
+		.activeLink A {
+			font-weight: bold;
+			text-decoration: none;
+			color: black;
+		}
+	</ui:style>
 	<g:DockLayoutPanel ui:field="rootPanel">
 		<g:north size="25">
 			<!-- Wrapper bar to push the length to 100% -->

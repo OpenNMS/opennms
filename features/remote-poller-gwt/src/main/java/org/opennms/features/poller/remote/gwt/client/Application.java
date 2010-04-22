@@ -7,6 +7,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -27,11 +28,16 @@ public class Application implements EntryPoint
 	private LocationManager m_locationManager;
 	private final HandlerManager m_eventBus = new HandlerManager(null);
 
+    interface LinkStyles extends CssResource {
+        String activeLink();
+    }
+    
 	@UiField protected LocationPanel locationPanel;
 	@UiField protected DockLayoutPanel rootPanel;
     @UiField protected SplitLayoutPanel splitPanel;
     @UiField protected Hyperlink locationLink;
     @UiField protected Hyperlink applicationLink;
+    @UiField protected LinkStyles linkStyles;
 
   /**
    * This is the entry point method.
@@ -65,14 +71,26 @@ public class Application implements EntryPoint
 	
 	@UiHandler("locationLink")
 	public void onLocationClick(ClickEvent event) {
-	    locationPanel.showLocationList();
-	    locationPanel.filterPanel.showApplicationFilters(false);
+	    if (locationLink.getStyleName().contains(linkStyles.activeLink())) {
+	        // This link is already selected, do nothing
+	    } else {
+	        locationLink.addStyleName(linkStyles.activeLink());
+            applicationLink.removeStyleName(linkStyles.activeLink());
+	        locationPanel.showLocationList();
+	        locationPanel.filterPanel.showApplicationFilters(false);
+	    }
 	}
 
     @UiHandler("applicationLink")
     public void onApplicationClick(ClickEvent event) {
-        locationPanel.showApplicationList();
-        locationPanel.filterPanel.showApplicationFilters(true);
+        if (applicationLink.getStyleName().contains(linkStyles.activeLink())) {
+            // This link is already selected, do nothing
+        } else {
+            applicationLink.addStyleName(linkStyles.activeLink());
+            locationLink.removeStyleName(linkStyles.activeLink());
+            locationPanel.showApplicationList();
+            locationPanel.filterPanel.showApplicationFilters(true);
+        }
     }
 
 private MapPanel createMapPanel() {
