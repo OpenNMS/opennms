@@ -217,6 +217,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return visibleLocations;
     }
 
+    public List<String> getTagsOnVisibleLocations() {
+        List<String> retval = new ArrayList<String>();
+        for (Location location : this.getVisibleLocations()) {
+            retval.addAll(location.getLocationInfo().getTags());
+        }
+        return retval;
+    }
+
     /**
      * Handler triggered when a user clicks on a specific location record.
      */
@@ -239,7 +247,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Refresh the list of locations whenever the map panel boundaries change.
      */
     public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
-        // TODO: Update the contents of the tag panel
+        // Update the contents of the tag panel
+        m_locationPanel.tagPanel.clear();
+        m_locationPanel.tagPanel.addAll(this.getTagsOnVisibleLocations());
 
         // Update the list of objects in the LHN
         m_locationPanel.locationList.updateList(this.getVisibleLocations());
@@ -252,7 +262,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Refresh the list of locations whenever they are updated.
      */
     public void onLocationsUpdated(final LocationsUpdatedEvent e) {
-        // TODO: Update the contents of the tag panel
+        // Update the contents of the tag panel
+        m_locationPanel.tagPanel.clear();
+        m_locationPanel.tagPanel.addAll(this.getTagsOnVisibleLocations());
+
         m_locationPanel.filterPanel.updateApplicationNames(this.getAllApplicationNames());
         m_locationPanel.locationList.updateList(this.getVisibleLocations());
     }

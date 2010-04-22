@@ -100,31 +100,6 @@ public class TagPanel extends Composite implements Collection<String> {
     public TagPanel() {
         super();
         initWidget(BINDER.createAndBindUi(this));
-        this.add("Hello");
-        this.add("Hello");
-        this.add("Hello");
-        this.add("Hello");
-        this.add("Hello");
-        this.add("Hello");
-        this.add("Hello");
-        this.add("Hello");
-        this.add("World");
-        this.add("World");
-        this.add("World");
-        this.add("World");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
-        this.add("!");
     }
 
     public void setEventBus(final HandlerManager eventBus) {
