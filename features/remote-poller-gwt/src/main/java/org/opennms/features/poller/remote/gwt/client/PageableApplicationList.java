@@ -1,6 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 
@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class PageableApplicationList extends PageableList {
     
-    private List<ApplicationInfo> m_applications;
+    private ArrayList<ApplicationInfo> m_applications;
     
     private class ApplicationDetailView extends Widget{
         
@@ -50,7 +50,11 @@ public class PageableApplicationList extends PageableList {
         
     }
     
-    public void updateList(List<ApplicationInfo> applications) {
+    /**
+     * TODO: Maybe enhance this so that it only adds/updates/deletes individual items
+     * TODO: Don't skip to the front page on every update
+     */
+    public void updateList(ArrayList<ApplicationInfo> applications) {
         setApplications(applications);
         super.showFirstPage();
     }
@@ -61,12 +65,12 @@ public class PageableApplicationList extends PageableList {
     }
 
 
-    private void setApplications(List<ApplicationInfo> applications) {
+    private void setApplications(ArrayList<ApplicationInfo> applications) {
         m_applications = applications;
     }
 
 
-    private List<ApplicationInfo> getApplications() {
+    private ArrayList<ApplicationInfo> getApplications() {
         return m_applications;
     }
 
