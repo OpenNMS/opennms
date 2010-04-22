@@ -1,7 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -66,5 +65,25 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     public void showApplicationList() {
         setVisible(locationList.getElement(), false);
         setVisible(applicationList.getElement(), true);
+    }
+
+    public void updateApplicationNames(Set<String> allApplicationNames) {
+        filterPanel.updateApplicationNames(allApplicationNames);
+    }
+
+    public void updateApplicationList( ArrayList<ApplicationInfo> appList) {
+        applicationList.updateList(appList);
+    }
+
+    public void updateLocationList(ArrayList<Location> visibleLocations) {
+        locationList.updateList(visibleLocations);
+    }
+
+    public void clearTagPanel() {
+        tagPanel.clear();
+    }
+
+    public boolean addAllTags(List<String> tagsOnVisibleLocations) {
+        return tagPanel.addAll(tagsOnVisibleLocations);
     }
 }
