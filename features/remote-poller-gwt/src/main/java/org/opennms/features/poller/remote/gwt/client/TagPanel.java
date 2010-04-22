@@ -16,9 +16,11 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TagPanel extends Composite implements Collection<String> {
@@ -47,11 +49,17 @@ public class TagPanel extends Composite implements Collection<String> {
     @UiField
     FlowPanel tagPanel;
 
-    @UiField 
+    @UiField
     TagStyles tagStyles;
+
+    @UiField
+    Hyperlink clearTags;
 
     public interface TagSelectedEventHandler extends EventHandler {
         public void onTagSelected(String tagName);
+    }
+
+    public interface TagClearedEventHandler extends EventHandler {
         public void onTagCleared();
     }
 
@@ -70,6 +78,21 @@ public class TagPanel extends Composite implements Collection<String> {
         }
 
         public GwtEvent.Type<TagSelectedEventHandler> getAssociatedType() {
+            return TYPE;
+        }
+    }
+
+    public static class TagClearedEvent extends GwtEvent<TagClearedEventHandler>
+    {
+        public static Type<TagClearedEventHandler> TYPE = new Type<TagClearedEventHandler>();
+
+        public TagClearedEvent() {}
+
+        protected void dispatch(TagClearedEventHandler handler) {
+            handler.onTagCleared();
+        }
+
+        public GwtEvent.Type<TagClearedEventHandler> getAssociatedType() {
             return TYPE;
         }
     }
@@ -106,6 +129,11 @@ public class TagPanel extends Composite implements Collection<String> {
 
     public void setEventBus(final HandlerManager eventBus) {
         m_eventBus = eventBus;
+    }
+
+    @UiHandler("clearTags")
+    public void onClearTagsClick(ClickEvent event) {
+        m_eventBus.fireEvent(new TagClearedEvent());
     }
 
     public boolean add(String e) {

@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.Filters;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
+import org.opennms.features.poller.remote.gwt.client.TagPanel.TagClearedEvent;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
@@ -81,6 +82,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this); 
 		m_eventBus.addHandler(FiltersChangedEvent.TYPE, this); 
 		m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
+		m_eventBus.addHandler(TagClearedEvent.TYPE, this);
 		m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
 
 		// Add some test data
