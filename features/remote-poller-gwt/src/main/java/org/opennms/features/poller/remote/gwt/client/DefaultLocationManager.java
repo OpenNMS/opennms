@@ -12,6 +12,8 @@ import org.opennms.features.poller.remote.gwt.client.FilterPanel.Filters;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
@@ -27,7 +29,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -43,7 +44,7 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
  * 
  * <p>If this class ever grows too large, we can split it into separate model and controller classes.</p>
  */
-public class DefaultLocationManager implements LocationManager, RemotePollerPresenter {
+public class DefaultLocationManager implements LocationManager, RemotePollerPresenter, GWTMarkerClickedEventHandler {
 
 	protected final HandlerManager m_eventBus;
 
@@ -75,6 +76,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this); 
         m_eventBus.addHandler(FiltersChangedEvent.TYPE, this); 
         m_eventBus.addHandler(TagSelectedEvent.TYPE, this); 
+        m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
 	}
 
     public void initialize() {
@@ -205,7 +207,13 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         if (location == null) {
             return;
         }
-        getMapPanel().showLocationDetails(location);
+        
+        //TODO: Implement the content string for this method
+        showLocationDetails(locationName, location);
+    }
+
+    private void showLocationDetails(String locationName, final Location location) {
+        getMapPanel().showLocationDetails(locationName, locationName + "(" + location.getLocationInfo().getArea() + ")", "Need to implement content");
     }
 
     /**
@@ -236,11 +244,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Update the location information in the model
         Location location = createOrUpdateLocation(info);
-
-        // TODO: Update the icon/caption in the LHN
-
-        // Update the icon in the map
-        getMapPanel().placeMarker(location);
+        GWTMarker m = new GWTMarker(location);
+        getMapPanel().placeMarker(m);
+        
     }
 
     /**
@@ -321,4 +327,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }
         return retval;
     }
-}
+
+    public void onGWTMarkerClicked(GWTMarkerClickedEvent event) {
+        GWTMarker marker = event.getMarker();
+        showLocationDetails(marker.getName(), marker.getLocation());
+    }
+ }
