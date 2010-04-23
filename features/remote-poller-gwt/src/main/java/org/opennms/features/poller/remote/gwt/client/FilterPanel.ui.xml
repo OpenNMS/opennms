@@ -37,13 +37,13 @@
 
 			<g:Label addStyleNames="{style.panelHeader}" text="Selected Applications"/>
 			<g:HTMLPanel>
-				<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">Internet</span>
+				<img style="width: 16px" src="images/selected-UP.png"/><span class="{style.panelEntry}">Internet</span>
 			</g:HTMLPanel>
 			<g:HTMLPanel>
-				<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">HR</span>
+				<img style="width: 16px" src="images/selected-UP.png"/><span class="{style.panelEntry}">HR</span>
 			</g:HTMLPanel>
 			<g:HTMLPanel>
-				<img style="width: 16px" src="images/icon-UP.png"/><span class="{style.panelEntry}">Datacenter</span>
+				<img style="width: 16px" src="images/selected-UP.png"/><span class="{style.panelEntry}">Datacenter</span>
 			</g:HTMLPanel>
 			<g:Label addStyleNames="{style.selectorLabel}" text="Add application:"/>
 			<g:SuggestBox ui:field="applicationNameSuggestBox"/>

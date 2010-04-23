@@ -161,6 +161,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void createOrUpdateLocation(final LocationInfo info) {
     	m_locations.put(info.getName(), info);
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
+        if (info.getMarker() == null) {
+        	info.setMarker(getMarkerForLocation(info));
+        }
     }
 
     public void createOrUpdateApplication(ApplicationInfo info) {
@@ -429,7 +432,11 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     	if (location == null) {
     		return null;
     	}
-    	final GWTMarkerState state = new GWTMarkerState(location.getName(), location.getLatLng(), location.getStatus());
+    	GWTMarkerState state = location.getMarker();
+    	if (state == null) {
+    		state = new GWTMarkerState(location.getName(), location.getLatLng(), location.getStatus());
+    		location.setMarker(state);
+    	}
     	state.setVisible(m_selectedStatuses.contains(location.getStatus()));
     	return state;
 	}

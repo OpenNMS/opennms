@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.GWTBounds;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
+import org.opennms.features.poller.remote.gwt.client.GWTMarkerState;
 import org.opennms.features.poller.remote.gwt.client.Status;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -17,33 +18,26 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private String m_area;
 	private String m_geolocation;
 	private String m_coordinates;
+	private GWTMarkerState m_marker;
 	private Status m_status;
 	private Set<String> m_tags;
 	
 	public LocationInfo() {
 	}
-	
-	public LocationInfo(final String name, final String pollingPackage, final String area, final String geolocation, final String coordinates) {
-	    m_name = name;
-	    m_pollingPackage = pollingPackage;
-	    m_area = area;
-	    m_geolocation = geolocation;
-	    m_coordinates = coordinates;
-	}
-	
+
 	public LocationInfo(final LocationInfo info) {
-	    setName(info.getName());
-	    setPollingPackageName(info.getPollingPackageName());
-	    setArea(info.getArea());
-	    setGeolocation(info.getGeolocation());
-	    setCoordinates(info.getCoordinates());
-	    setStatus(info.getStatus());
-	    setTags(info.getTags());
+		this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getMarker(), info.getStatus(), info.getTags());
 	}
-	
-	public LocationInfo(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates, final Set<String> tags) {
-		this(name, pollingPackageName, area, geolocation, coordinates);
+
+	public LocationInfo(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates, GWTMarkerState marker, Status status, final Set<String> tags) {
+		setName(name);
+		setPollingPackageName(pollingPackageName);
+		setArea(area);
+		setGeolocation(geolocation);
+		setCoordinates(coordinates);
 		setTags(tags);
+		setMarker(marker);
+		setStatus(status);
 	}
 
 	public String getName() {
@@ -100,6 +94,17 @@ public class LocationInfo implements IsSerializable, Serializable {
 
 	public void setStatus(final Status status) {
 		m_status = status;
+		if (m_marker != null) {
+			m_marker.setStatus(status);
+		}
+	}
+
+	public GWTMarkerState getMarker() {
+		return m_marker;
+	}
+
+	public void setMarker(final GWTMarkerState marker) {
+		m_marker = marker;
 	}
 
 	public GWTLatLng getLatLng() {
@@ -115,14 +120,10 @@ public class LocationInfo implements IsSerializable, Serializable {
 			+ ",area=" + m_area + ",geolocation=" + m_geolocation
 			+ ",coordinates=" + m_coordinates
 			+ ",status=" + m_status
-			+ ",imageURL=" + getMarkerImageURL() + "]";
+			+ ",marker=" + m_marker + "]";
 	}
 
     public String getMarkerImageURL() {
-        return "images/icon-" + getStatus() + ".png";
-    }
-
-    public String getPointImageURL() {
-        return "images/point-" + getStatus() + ".png";
+    	return m_marker.getImageURL();
     }
 }

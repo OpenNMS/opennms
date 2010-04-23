@@ -1,13 +1,18 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.io.Serializable;
 
-public class GWTMarkerState {
-    
-    private Status m_status;
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+
+public class GWTMarkerState implements IsSerializable, Serializable {
+	private static final long serialVersionUID = 1L;
+
+	private Status m_status;
     private String m_name;
     private GWTLatLng m_latLng;
+    private boolean m_selected = true;
 	private boolean m_visible = true;
-    
 
 	public GWTMarkerState() {}
 
@@ -37,7 +42,7 @@ public class GWTMarkerState {
         return m_status;
     }
 
-	private void setStatus(Status status) {
+	public void setStatus(Status status) {
         m_status = status;
     }
 
@@ -49,7 +54,32 @@ public class GWTMarkerState {
 		m_visible  = visible;
 	}
 
-    public String getImageURL() {
-        return "images/icon-" + getStatus() + ".png";
+	public boolean isSelected() {
+		return m_selected;
+	}
+
+	public void setSelected(final boolean selected) {
+		m_selected = selected;
+	}
+
+	public String getImageURL() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("images/");
+		if (m_selected) {
+			sb.append("selected");
+		} else {
+			sb.append("deselected");
+		}
+		sb.append("-");
+		sb.append(getStatus().toString());
+		sb.append(".png");
+		return sb.toString();
     }
+	
+	public String toString() {
+		return "GWTMarkerState[name=" + m_name
+			+ ",latLng=" + m_latLng + ",status=" + m_status
+			+ ",visible=" + m_visible + ",selected=" + m_selected
+			+ "]";
+	}
 }
