@@ -25,8 +25,8 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	
 	@UiField PageableLocationList locationList;
 	@UiField PageableApplicationList applicationList;
-    @UiField FilterPanel filterPanel;
-    @UiField TagPanel tagPanel;
+	@UiField FilterPanel filterPanel;
+	@UiField TagPanel tagPanel;
 	
 	public LocationPanel() {
 		super();
@@ -41,8 +41,9 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	    }
 	    m_eventBus = eventBus;
 	    
-        filterPanel.setEventBus(eventBus);
+	    filterPanel.setEventBus(eventBus);
 	    tagPanel.setEventBus(eventBus);
+	    applicationList.setEventBus(eventBus);
 	    // eventRegistrations.add(m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this));
 	    // eventRegistrations.add(m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this));
 	}

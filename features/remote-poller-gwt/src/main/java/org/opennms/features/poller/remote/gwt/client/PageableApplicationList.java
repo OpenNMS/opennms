@@ -6,6 +6,7 @@ import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedE
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -15,6 +16,7 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 public class PageableApplicationList extends PageableList {
     
     private ArrayList<ApplicationInfo> m_applications;
+    private HandlerManager m_eventBus;
     
     private class ApplicationDetailView extends Widget{
         
@@ -86,7 +88,11 @@ public class PageableApplicationList extends PageableList {
         Cell cell = getCellForEvent(event);
         
         ApplicationInfo appInfo = getApplications().get(cell.getRowIndex());
-        fireEvent(new ApplicationSelectedEvent(appInfo));
+        m_eventBus.fireEvent(new ApplicationSelectedEvent(appInfo));
     }
 
+
+    public void setEventBus(final HandlerManager eventBus) {
+        m_eventBus = eventBus;
+    }
 }

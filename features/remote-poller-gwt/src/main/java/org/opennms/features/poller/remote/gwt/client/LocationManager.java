@@ -20,6 +20,7 @@ public interface LocationManager {
 	// public List<Location> getAllLocations();
 	public Set<String> getAllLocationNames();
 	public List<Location> getVisibleLocations();
+	public ApplicationInfo getApplicationInfo(String name);
 	public Set<String> getAllApplicationNames();
 	public List<ApplicationInfo> getVisibleApplications();
 	public List<String> getTagsOnVisibleLocations();

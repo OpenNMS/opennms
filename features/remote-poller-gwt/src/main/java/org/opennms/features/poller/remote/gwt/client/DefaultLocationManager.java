@@ -15,6 +15,7 @@ import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelection
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagClearedEvent;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
@@ -88,6 +89,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
 		m_eventBus.addHandler(TagClearedEvent.TYPE, this);
 		m_eventBus.addHandler(StatusSelectionChangedEvent.TYPE, this);
+		m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
 		m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
 
 		// Add some test data
@@ -369,6 +371,19 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return retval;
     }
 
+    public ApplicationInfo getApplicationInfo(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        for (ApplicationInfo app : m_applications) {
+            if (name.equals(app.getName())) {
+                return app;
+            }
+        }
+        return null;
+    }
+
     public Location getLocation(String locationName) {
         return getLocations().get(locationName);
     }
@@ -444,5 +459,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             m_selectedStatuses.remove(status);
         }
         // TODO: Call function to update relevant UI elements
+    }
+
+    public void onApplicationSelected(ApplicationSelectedEvent event) {
+        // TODO: Add the application to the selected application list
+        // m_locationPanel.filterPanel.SOMETHING
+        
+        Window.alert("YOU CLICKED ON " + event.getAppInfo().getName());
     }
 }
