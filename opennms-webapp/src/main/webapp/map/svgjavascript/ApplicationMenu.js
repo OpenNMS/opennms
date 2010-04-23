@@ -242,8 +242,9 @@ function addSearchMapList()
 function filterSearchMapSelectionList(textboxId,value,changeType) {
 		if (changeType == "change") {
 			var matchingMaps = new Array(); 
-			for(var label in nodeLabelMap) {
-				if (label.indexOf(value) >= 0) {
+			for(var i in nodeLabels) {
+				if (nodeLabels[i].indexOf(value) >= 0) {
+					var label = getLabel(nodeLabels[i]);
 				    var mapLbl = nodeLabelMap[label];
 				    if (mapLbl!=undefined) {
 						for (var j=0; j<mapLbl.length;j++ ){
