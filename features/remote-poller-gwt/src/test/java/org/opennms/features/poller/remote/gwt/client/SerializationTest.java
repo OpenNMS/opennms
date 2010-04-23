@@ -63,27 +63,6 @@ public class SerializationTest {
 		writer.writeObject(l);
 	}
 
-	@Test
-	public void testBaseLocation() throws Exception {
-		BaseLocation location = new BaseLocation();
-
-		LocationInfo info = new LocationInfo();
-		info.setArea("East Coast");
-		info.setGeolocation("RDU");
-		info.setCoordinates("0.0,0.0");
-		info.setName("Bob");
-		info.setPollingPackageName("Harry");
-
-		LocationDetails details = new LocationDetails();
-		details.setLocationMonitorState(getLocationMonitorState());
-		details.setApplicationState(getApplicationState());
-
-		location.setLocationInfo(info);
-		location.setLocationDetails(details);
-
-		writer.writeObject(location);
-	}
-
 	private ApplicationState getApplicationState() {
 		final Collection<ApplicationInfo> applications = new ArrayList<ApplicationInfo>();
 		final List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();

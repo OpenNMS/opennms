@@ -98,6 +98,10 @@ public class FilterPanel extends Composite {
         super();
         applicationNameSuggestBox = new SuggestBox(applicationNames);
         initWidget(BINDER.createAndBindUi(this));
+        upButton.setDown(true);
+        marginalButton.setDown(true);
+        downButton.setDown(true);
+        unknownButton.setDown(true);
     }
 
     @UiHandler("applicationNameSuggestBox") 

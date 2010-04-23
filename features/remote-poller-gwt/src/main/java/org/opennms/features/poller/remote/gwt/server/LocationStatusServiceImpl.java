@@ -9,8 +9,6 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.features.poller.remote.gwt.client.BaseLocation;
-import org.opennms.features.poller.remote.gwt.client.Location;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
 import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
@@ -93,21 +91,12 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		m_timer.schedule(uninitializedTask, PADDING_TIME);
 	}
 
-	public Location getLocation(final String locationName) {
-		initialize();
-		final BaseLocation l = new BaseLocation();
-		l.setLocationInfo(m_locationDataService.getLocationInfo(locationName));
-		return l;
-	}
-
 	public LocationInfo getLocationInfo(final String locationName) {
-		final Location l = getLocation(locationName);
-		return l.getLocationInfo();
+		return m_locationDataService.getLocationInfo(locationName);
 	}
 
 	public LocationDetails getLocationDetails(final String locationName) {
-		final Location l = getLocation(locationName);
-		return l.getLocationDetails();
+		return m_locationDataService.getLocationDetails(locationName);
 	}
 
 	private void pushUninitializedLocations(final EventExecutorService service) {

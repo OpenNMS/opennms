@@ -12,6 +12,6 @@ public interface MapPanel {
 
     public void setBounds(GWTBounds locationBounds);
 
-    public void placeMarker(GWTMarker marker);
+    public void placeMarker(GWTMarkerState marker);
     
 }

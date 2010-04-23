@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
@@ -76,7 +77,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         applicationList.updateList(appList);
     }
 
-    public void updateLocationList(ArrayList<Location> visibleLocations) {
+    public void updateLocationList(ArrayList<LocationInfo> visibleLocations) {
         locationList.updateList(visibleLocations);
     }
 

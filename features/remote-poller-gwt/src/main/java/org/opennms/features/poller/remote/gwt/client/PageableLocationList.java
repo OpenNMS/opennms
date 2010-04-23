@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 public class PageableLocationList extends PageableList {
     
-    private ArrayList<? extends Location> m_locations;
+    private ArrayList<? extends LocationInfo> m_locations;
 
     private class LocationInfoDisplay extends Widget{
         
@@ -59,23 +59,23 @@ public class PageableLocationList extends PageableList {
     
     @Override
     protected Widget getListItemWidget(int rowIndex) {
-        return new LocationInfoDisplay(getLocations().get(rowIndex).getLocationInfo());
+        return new LocationInfoDisplay(getLocations().get(rowIndex));
     }
     
     /**
      * TODO: Maybe enhance this so that it only adds/updates/deletes individual items
      * TODO: Don't skip to the front page on every update
      */
-    public void updateList(ArrayList<? extends Location> locations) {
+    public void updateList(ArrayList<? extends LocationInfo> locations) {
         setLocations(locations);
         super.showFirstPage();
     }
     
-    private ArrayList<? extends Location> getLocations() {
+    private ArrayList<? extends LocationInfo> getLocations() {
         return m_locations;
     }
     
-    private void setLocations(ArrayList<? extends Location> locations) {
+    private void setLocations(ArrayList<? extends LocationInfo> locations) {
         m_locations = locations;
     }
 
@@ -87,9 +87,9 @@ public class PageableLocationList extends PageableList {
     @Override
     public void onItemClickHandler(ClickEvent event) {
       final Cell cell = getCellForEvent(event);
-      Location location = m_locations.get(cell.getRowIndex() + (getCurrentPageIndex() * getTotalListItemsPerPage()));
+      LocationInfo location = m_locations.get(cell.getRowIndex() + (getCurrentPageIndex() * getTotalListItemsPerPage()));
       
-      fireEvent(new LocationPanelSelectEvent(location.getLocationInfo().getName()));
+      fireEvent(new LocationPanelSelectEvent(location.getName()));
         
     }
 

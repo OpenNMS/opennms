@@ -9,7 +9,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("locationStatus")
 public interface LocationStatusService extends RemoteService {
 	void start();
-	public Location getLocation(String locationName);
 	public LocationInfo getLocationInfo(String locationName);
 	public LocationDetails getLocationDetails(String locationName);
 }
