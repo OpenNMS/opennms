@@ -19,6 +19,7 @@ public interface LocationManager {
 	public LocationInfo getLocation(String locationName);
 	public Set<String> getAllLocationNames();
 	public List<LocationInfo> getVisibleLocations();
+	public ApplicationInfo getApplicationInfo(String name);
 	public Set<String> getAllApplicationNames();
 	public List<ApplicationInfo> getVisibleApplications();
 	public List<String> getTagsOnVisibleLocations();

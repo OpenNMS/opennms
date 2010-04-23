@@ -2,6 +2,8 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.Collection;
 
+import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -25,6 +27,7 @@ public class FilterPanel extends Composite {
     private static final Binder BINDER = GWT.create(Binder.class);
 
     private transient HandlerManager m_eventBus;
+    private transient LocationManager m_locationManager;
 
     @UiField(provided = true)
     SuggestBox applicationNameSuggestBox;
@@ -104,11 +107,8 @@ public class FilterPanel extends Composite {
     @UiHandler("applicationNameSuggestBox") 
     public void onApplicationSelect(final SelectionEvent<Suggestion> event) {
         Suggestion item = event.getSelectedItem();
-        Filters filters = new Filters();
-
-        // TODO: Create a new filters object
-
-        m_eventBus.fireEvent(new FiltersChangedEvent(filters));
+        ApplicationInfo app = m_locationManager.getApplicationInfo(item.getReplacementString());
+        m_eventBus.fireEvent(new ApplicationSelectedEvent(app));
     }
 
     @UiHandler("upButton") 
@@ -142,5 +142,9 @@ public class FilterPanel extends Composite {
 
     public void setEventBus(final HandlerManager eventBus) {
         m_eventBus = eventBus;
+    }
+
+    public void setLocationManager(final LocationManager manager) {
+        m_locationManager = manager;
     }
 }

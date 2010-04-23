@@ -65,6 +65,7 @@ public class Application implements EntryPoint
             }
         });
 		locationPanel.setEventBus(m_eventBus);
+		locationPanel.filterPanel.setLocationManager(m_locationManager);
 		
 		m_locationManager.initialize();
 	}

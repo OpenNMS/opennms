@@ -14,6 +14,7 @@ import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelection
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagClearedEvent;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
@@ -30,6 +31,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -82,6 +84,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
 		m_eventBus.addHandler(TagClearedEvent.TYPE, this);
 		m_eventBus.addHandler(StatusSelectionChangedEvent.TYPE, this);
+		m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
 		m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
 
 		// by default, we select all statuses
@@ -346,6 +349,19 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return retval;
     }
 
+    public ApplicationInfo getApplicationInfo(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        for (ApplicationInfo app : m_applications) {
+            if (name.equals(app.getName())) {
+                return app;
+            }
+        }
+        return null;
+    }
+
     public LocationInfo getLocation(String locationName) {
         return m_locations.get(locationName);
     }
@@ -446,5 +462,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     		final GWTMarkerState state = getMarkerForLocation(locationName);
     		m_mapPanel.placeMarker(state);
     	}
+    }
+
+    public void onApplicationSelected(ApplicationSelectedEvent event) {
+        // TODO: Add the application to the selected application list
+        // m_locationPanel.filterPanel.SOMETHING
+        
+        Window.alert("YOU CLICKED ON " + event.getAppInfo().getName());
     }
 }
