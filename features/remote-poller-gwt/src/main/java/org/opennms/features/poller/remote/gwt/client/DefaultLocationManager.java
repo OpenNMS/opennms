@@ -62,6 +62,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	private String m_selectedTag = null;
 	
+	private Status[] m_selectedStatuses = null;
+	
 	private final MapPanel m_mapPanel;
 
 	private LocationPanel m_locationPanel;
