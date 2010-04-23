@@ -176,6 +176,7 @@ function onMouseDownOnMapElement(evt)
 		if(deletingMapElem==true){
 			deleteMapElement(mapElement);
 			deleteMapElementSetUp();
+			myMapApp.disableTooltips();
 		}
 		
 		//add the element neighbors if flag 'addingMapElemNeighbors' is true

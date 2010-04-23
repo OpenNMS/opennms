@@ -66,6 +66,7 @@ function disableMenu(){
 
 function resetWorkPanel(menuName, menuOpening){
 	windowsClean();
+	myMapApp.disableTooltips();
 
 	if (menuOpening) {
 		hideMapInfo();
@@ -1799,16 +1800,16 @@ function getInfoOnLink(link)
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
 	
-	var speed = 'Undefined';
-	if (LINK_SPEED[link.getTypology()] > 0 )
-		speed = LINK_SPEED[link.getTypology()];
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+speed);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
-
+	if (LINK_SPEED[link.getTypology()] > 0 ) {
+		var speed = LINK_SPEED[link.getTypology()];
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode(" Speed: "+speed);
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);	
+	}
+	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
@@ -1847,15 +1848,15 @@ function getInfoOnSLink(slink)
 		text.appendChild(tspan);
 	}
 	
-	var speed = 'Undefined';
-	if (LINK_SPEED[slink.getTypology()] > 0 )
-		speed = LINK_SPEED[slink.getTypology()];
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+speed);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
+	if (LINK_SPEED[slink.getTypology()] > 0 ) {
+		var speed = LINK_SPEED[slink.getTypology()];
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode(" Speed: "+speed);
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);	
+	}
 
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
