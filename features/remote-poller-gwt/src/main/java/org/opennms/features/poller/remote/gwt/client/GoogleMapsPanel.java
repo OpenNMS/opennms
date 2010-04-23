@@ -44,6 +44,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     MapWidget m_mapWidget;
     
     private Map<String, Marker> m_markers = new HashMap<String, Marker>();
+    private Map<String, GWTMarkerState> m_markerStates = new HashMap<String,GWTMarkerState>();
     private HandlerManager m_eventBus;
 
     public GoogleMapsPanel(final HandlerManager eventBus) {
@@ -66,7 +67,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     }
 
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
-        final Marker m = getMarker(name);
+        final Marker m = m_markers.get(name);
 
         getMapWidget().savePosition();
         getMapWidget().setCenter(m.getLatLng());
@@ -78,14 +79,6 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
 				}
             });
         }
-    }
-
-    private Marker getMarker(String name) {
-        return m_markers.get(name);
-    }
-    
-    private void setMarker(Marker m, GWTMarker marker) {
-        m_markers.put(marker.getName(), m);
     }
 
     public GWTBounds getBounds() {
@@ -117,7 +110,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         getMapWidget().addOverlay(newMarker);
     }
 
-    private Marker createMarker(final GWTMarker marker) {
+    private Marker createMarker(final GWTMarkerState marker) {
         final Icon icon = Icon.newInstance();
         icon.setIconSize(Size.newInstance(32, 32));
         icon.setIconAnchor(Point.newInstance(16, 32));
@@ -131,48 +124,44 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         markerOptions.setIcon(icon);
         
         Marker m = new Marker(toLatLng(marker.getLatLng()), markerOptions);
+        m.setVisible(marker.isVisible());
         m.addMarkerClickHandler(new DefaultMarkerClickHandler(marker));
         return m;
     }
 
-    public void placeMarker(final GWTMarker marker) {
-        
-        Marker m = getMarker(marker.getName());
+    public void placeMarker(final GWTMarkerState marker) {
+    	m_markerStates.put(marker.getName(), marker);
+
+    	Marker m = m_markers.get(marker.getName());
         if (m == null) {
-            addMarker(marker);
+        	m = createMarker(marker);
+        	m_markers.put(marker.getName(), m);
+        	addOverlay(m);
         } else {
-        	updateMarker(m, marker);
+        	updateMarkerFromState(m, marker);
         }
-        
     }
 
-    private void addMarker(GWTMarker marker) {
-        Marker m = createMarker(marker);
-        setMarker(m, marker);
-        addOverlay(m);
-    }
-
-    private void updateMarker(Marker m, GWTMarker marker) {
+    private void updateMarkerFromState(Marker m, GWTMarkerState marker) {
         m.setImage(marker.getImageURL());
+        m.setVisible(marker.isVisible());
     }
 
     private final class DefaultMarkerClickHandler implements MarkerClickHandler {
-        private final GWTMarker m_marker;
-    
-        DefaultMarkerClickHandler(GWTMarker marker) {
+        private final GWTMarkerState m_marker;
+
+        DefaultMarkerClickHandler(GWTMarkerState marker) {
             m_marker = marker;
         }
-    
+
         public void onClick(final MarkerClickEvent mke) {
             //showLocationDetails(m_marker);
             m_eventBus.fireEvent(new GWTMarkerClickedEvent(m_marker));
         }
     }
-    
+
     public Widget getWidget() {
         return this;
     }
 
 }
-
-    

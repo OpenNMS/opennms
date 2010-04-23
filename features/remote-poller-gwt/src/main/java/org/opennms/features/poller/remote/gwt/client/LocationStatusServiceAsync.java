@@ -8,8 +8,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface LocationStatusServiceAsync {
     void start(AsyncCallback<Void> anAsyncCallback);
 
-	void getLocation(String locationName, AsyncCallback<Location> callback);
-
 	void getLocationInfo(String locationName, AsyncCallback<LocationInfo> callback);
 
 	void getLocationDetails(String locationName, AsyncCallback<LocationDetails> callback);

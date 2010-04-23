@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class ApplicationInfo implements Serializable, IsSerializable {
+public class ApplicationInfo implements Serializable, IsSerializable, Comparable<ApplicationInfo> {
 	private static final long serialVersionUID = 1L;
 	private Integer m_id;
 	private String m_name;
@@ -65,6 +65,14 @@ public class ApplicationInfo implements Serializable, IsSerializable {
 			return false;
 		}
 		return this.getId().equals(that.getId());
+	}
+
+	public int compareTo(final ApplicationInfo that) {
+		int compareVal = this.getName().compareTo(that.getName());
+		if (compareVal != 0) return compareVal;
+		compareVal = this.getStatus().compareTo(that.getStatus());
+		if (compareVal != 0) return compareVal;
+		return this.getId().compareTo(that.getId());
 	}
 
 	public String toString() {

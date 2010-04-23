@@ -33,9 +33,9 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
 
     private class DefaultMarkerClickHandler implements ClickHandler {
         
-        private GWTMarker m_marker;
+        private GWTMarkerState m_marker;
         
-        public DefaultMarkerClickHandler(GWTMarker marker) {
+        public DefaultMarkerClickHandler(GWTMarkerState marker) {
             setMarker(marker);
         }
 
@@ -43,11 +43,11 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
             m_eventBus.fireEvent(new GWTMarkerClickedEvent(getMarker()));
         }
 
-        public void setMarker(GWTMarker marker) {
+        public void setMarker(GWTMarkerState marker) {
             m_marker = marker;
         }
 
-        public GWTMarker getMarker() {
+        public GWTMarkerState getMarker() {
             return m_marker;
         }
 
@@ -90,14 +90,10 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
 
 
 
-    public MQATileMap getMapWidget() {
-        return m_map;
-    }
-
     public void initializeMap() {
         getMapHolder().setSize("100%", "100%");
-        getMapWidget().addControl(MQALargeZoomControl.newInstance());
-        getMapWidget().setZoomLevel(2);
+        m_map.addControl(MQALargeZoomControl.newInstance());
+        m_map.setZoomLevel(2);
         
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
@@ -109,11 +105,11 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
         final MQAPoi point = getMarker(name);
     	
-    	getMapWidget().setCenter(point.getLatLng());
+    	m_map.setCenter(point.getLatLng());
     	if (point != null) {
     		point.setInfoTitleHTML(htmlTitle);
     		point.setInfoContentHTML(htmlContent);
-    		final MQAInfoWindow window = getMapWidget().getInfoWindow();
+    		final MQAInfoWindow window = m_map.getInfoWindow();
     		window.hide();
     		point.showInfoWindow();
     	}
@@ -121,7 +117,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
 
 
 
-    private MQAPoi createMarker(GWTMarker marker) {
+    private MQAPoi createMarker(GWTMarkerState marker) {
         
         final MQALatLng latLng = toMQALatLng(marker.getLatLng());
         final MQAIcon icon = createIcon(marker);
@@ -132,7 +128,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         return point;
     }
 
-    private MQAIcon createIcon(GWTMarker marker) {
+    private MQAIcon createIcon(GWTMarkerState marker) {
         return MQAIcon.newInstance(marker.getImageURL(), 32, 32);
     }
 
@@ -175,39 +171,32 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
     }
 
     private void syncMapSizeWithParent() {
-        getMapWidget().setSize();
+        m_map.setSize();
         //getMapWidget().setSize(MQASize.newInstance(getMapHolder().getOffsetWidth(), getMapHolder().getOffsetHeight()));
     }
 
-    public void placeMarker(GWTMarker marker) {
+    public void placeMarker(GWTMarkerState marker) {
         MQAPoi m = getMarker(marker.getName());
         
         if(m == null) {
-            addMarker(marker);
+        	m = createMarker(marker);
+        	m_markers.put(marker.getName(), m);
+        	m_map.addShape(m);
         }else {
             updateMarker(m, marker);
         }
         
     }
 
-    private void updateMarker(MQAPoi m, GWTMarker marker) {
+    private void updateMarker(MQAPoi m, GWTMarkerState marker) {
         m.setIcon(createIcon(marker));
+        m.setVisible(marker.isVisible());
     }
 
-    private void addMarker(GWTMarker gwtMarker) {
-        MQAPoi marker = createMarker(gwtMarker);
-        setMarker(marker, gwtMarker);
-        getMapWidget().addShape(marker);
-    }
-    
     private MQAPoi getMarker(String name) {
         return m_markers.get(name);
     }
-    
-    private void setMarker(MQAPoi marker, GWTMarker gwtMarker) {
-        m_markers.put(gwtMarker.getName(), marker);
-    }
-    
+
     public Widget getWidget() {
         return this;
     }

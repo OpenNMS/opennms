@@ -26,10 +26,10 @@
 	<g:VerticalPanel addStyleNames="{style.fullWidth}">
 		<g:Label addStyleNames="{style.selectorLabel}" text="Show statuses:"/>
 		<g:HorizontalPanel>
-			<g:ToggleButton ui:field="upButton" text="Up" />
+			<g:ToggleButton ui:field="upButton"       text="Up"  />
 			<g:ToggleButton ui:field="marginalButton" text="Marginal" />
-			<g:ToggleButton ui:field="downButton" text="Down" />
-			<g:ToggleButton ui:field="unknownButton" text="Unknown" />
+			<g:ToggleButton ui:field="downButton"     text="Down" />
+			<g:ToggleButton ui:field="unknownButton"  text="Unknown" />
 		</g:HorizontalPanel>
 
 		<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationFilters">

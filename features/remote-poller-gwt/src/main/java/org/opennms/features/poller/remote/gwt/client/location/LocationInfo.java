@@ -3,6 +3,7 @@ package org.opennms.features.poller.remote.gwt.client.location;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.opennms.features.poller.remote.gwt.client.GWTBounds;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.Status;
 
@@ -103,6 +104,10 @@ public class LocationInfo implements IsSerializable, Serializable {
 
 	public GWTLatLng getLatLng() {
 		return GWTLatLng.fromCoordinates(getCoordinates());
+	}
+
+	public boolean isVisible(final GWTBounds bounds) {
+		return bounds.contains(getLatLng());
 	}
 
 	public String toString() {
