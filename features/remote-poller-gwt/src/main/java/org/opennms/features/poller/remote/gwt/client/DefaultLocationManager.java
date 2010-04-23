@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.Filters;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedEvent;
+import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagClearedEvent;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
@@ -30,6 +31,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -62,7 +64,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	private String m_selectedTag = null;
 	
-	private Status[] m_selectedStatuses = null;
+	private final Set<Status> m_selectedStatuses = new HashSet<Status>();
 	
 	private final MapPanel m_mapPanel;
 
@@ -85,6 +87,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		m_eventBus.addHandler(FiltersChangedEvent.TYPE, this); 
 		m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
 		m_eventBus.addHandler(TagClearedEvent.TYPE, this);
+		m_eventBus.addHandler(StatusSelectionChangedEvent.TYPE, this);
 		m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
 
 		// Add some test data
@@ -432,5 +435,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     LocationPanel getLocationPanel() {
         return m_locationPanel;
+    }
+
+    public void onStatusSelectionChanged(Status status, boolean selected) {
+        if (selected) {
+            m_selectedStatuses.add(status);
+        } else {
+            m_selectedStatuses.remove(status);
+        }
+        // TODO: Call function to update relevant UI elements
     }
 }
