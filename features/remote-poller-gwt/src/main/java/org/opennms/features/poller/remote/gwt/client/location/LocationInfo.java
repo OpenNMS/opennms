@@ -18,6 +18,7 @@ public class LocationInfo implements IsSerializable, Serializable {
 	private String m_area;
 	private String m_geolocation;
 	private String m_coordinates;
+	private Long m_priority = 100L;
 	private GWTMarkerState m_marker;
 	private Status m_status;
 	private Set<String> m_tags;
@@ -26,15 +27,16 @@ public class LocationInfo implements IsSerializable, Serializable {
 	}
 
 	public LocationInfo(final LocationInfo info) {
-		this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getMarker(), info.getStatus(), info.getTags());
+		this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getPriority(), info.getMarker(), info.getStatus(), info.getTags());
 	}
 
-	public LocationInfo(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates, GWTMarkerState marker, Status status, final Set<String> tags) {
+	public LocationInfo(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates, final Long priority, final GWTMarkerState marker, final Status status, final Set<String> tags) {
 		setName(name);
 		setPollingPackageName(pollingPackageName);
 		setArea(area);
 		setGeolocation(geolocation);
 		setCoordinates(coordinates);
+		setPriority(priority);
 		setTags(tags);
 		setMarker(marker);
 		setStatus(status);
@@ -78,6 +80,14 @@ public class LocationInfo implements IsSerializable, Serializable {
 
 	public void setCoordinates(final String coordinates) {
 		m_coordinates = coordinates;
+	}
+
+	public Long getPriority() {
+		return m_priority;
+	}
+
+	public void setPriority(final Long priority) {
+		m_priority = priority;
 	}
 
 	public Set<String> getTags() {

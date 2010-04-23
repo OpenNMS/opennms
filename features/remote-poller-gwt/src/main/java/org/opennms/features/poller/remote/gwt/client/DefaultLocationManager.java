@@ -1,6 +1,8 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -170,7 +172,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void createOrUpdateApplication(ApplicationInfo info) {
-        m_applications.remove(info);
         m_applications.add(info);
         m_locationPanel.updateApplicationNames(this.getAllApplicationNames());
     }
@@ -188,6 +189,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * incoming events.
      */
     public ArrayList<LocationInfo> getVisibleLocations() {
+        // Use an ArrayList so that it has good random-access efficiency
+        // since the pageable lists use get() to fetch based on index.
     	final ArrayList<LocationInfo> visibleLocations = new ArrayList<LocationInfo>();
         GWTBounds bounds = m_mapPanel.getBounds();
         for(LocationInfo location : m_locations.values()) {
@@ -203,7 +206,21 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
                 }
             }
         }
-    
+
+        // TODO: this should use the current filter set eventually, for now sort by priority, then name
+        Collections.sort(visibleLocations, new Comparator<LocationInfo>() {
+			public int compare(LocationInfo o1, LocationInfo o2) {
+				int compareVal = o1.getPriority().compareTo(o2.getPriority());
+				if (compareVal != 0) return compareVal;
+				compareVal = o1.getName().compareTo(o2.getName());
+				if (compareVal != 0) return compareVal;
+				compareVal = o1.getStatus().compareTo(o2.getStatus());
+				if (compareVal != 0) return compareVal;
+				compareVal = o1.getCoordinates().compareTo(o2.getCoordinates());
+				return compareVal;
+			}
+        });
+
         return visibleLocations;
     }
 
@@ -266,11 +283,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		createOrUpdateLocation(info);
 
         // Update the icon/caption in the LHN
-        // Use an ArrayList so that it has good random-access efficiency
-        // since the pageable lists use get() to fetch based on index.
-        ArrayList<LocationInfo> locationList = new ArrayList<LocationInfo>();
-        locationList.addAll(m_locations.values());
-        m_locationPanel.updateLocationList(locationList);
+        m_locationPanel.updateLocationList(this.getVisibleLocations());
 
         // Update the icon in the map
         GWTMarkerState m = getMarkerForLocation(info);
@@ -364,19 +377,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     public LocationInfo getLocation(String locationName) {
         return m_locations.get(locationName);
-    }
-
-    /**
-     * TODO: Figure out if this public function is necessary or if we can get by just responding to
-     * incoming events.
-     */
-    public ArrayList<ApplicationInfo> getVisibleApplications() {
-        // TODO: Apply selected sorting
-        ArrayList<ApplicationInfo> retval = new ArrayList<ApplicationInfo>();
-        for (LocationInfo location : getVisibleLocations()) {
-            // retval.add();
-        }
-        return retval;
     }
 
     /**
