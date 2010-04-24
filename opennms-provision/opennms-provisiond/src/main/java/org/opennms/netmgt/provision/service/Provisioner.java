@@ -48,6 +48,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Category;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -79,7 +80,9 @@ public class Provisioner implements SpringServiceDaemon {
     
     public static final String NAME = "Provisioner";
 
-    private List<Object> m_providers;
+    private DefaultTaskCoordinator m_taskCoordinator;
+    private CoreImportActivities m_importActivities;
+    private CoreScanActivities m_scanActivities;
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
     private ScheduledExecutorService m_scheduledExecutor;
@@ -109,12 +112,29 @@ public class Provisioner implements SpringServiceDaemon {
 	    m_lifeCycleRepository = lifeCycleRepository;
 	}
 
-	public void setProviders(List<Object> providers) {
-	    m_providers = providers;
-	}
-	
-    public void setImportSchedule(ImportScheduler schedule) {
+	public void setImportSchedule(ImportScheduler schedule) {
         m_importSchedule = schedule;
+    }
+
+    /**
+     * @param importActivities the importActivities to set
+     */
+    public void setImportActivities(CoreImportActivities importActivities) {
+        m_importActivities = importActivities;
+    }
+
+    /**
+     * @param scanActivities the scanActivities to set
+     */
+    public void setScanActivities(CoreScanActivities scanActivities) {
+        m_scanActivities = scanActivities;
+    }
+
+    /**
+     * @param taskCoordinator the taskCoordinator to set
+     */
+    public void setTaskCoordinator(DefaultTaskCoordinator taskCoordinator) {
+        m_taskCoordinator = taskCoordinator;
     }
 
     public ImportScheduler getImportSchedule() {
@@ -133,6 +153,9 @@ public class Provisioner implements SpringServiceDaemon {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
         Assert.notNull(m_lifeCycleRepository, "lifeCycleRepository property must be set");
+        Assert.notNull(m_importActivities, "importActivities property must be set");
+        Assert.notNull(m_scanActivities, "scanActivities property must be set");
+        Assert.notNull(m_taskCoordinator, "taskCoordinator property must be set");
         
 
         //since this class depends on the Import Schedule, the UrlFactory should already
@@ -165,7 +188,7 @@ public class Provisioner implements SpringServiceDaemon {
     
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
         log().warn("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_lifeCycleRepository, m_providers);
+        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_taskCoordinator, m_lifeCycleRepository, m_scanActivities);
     }
 
     //Helper functions for the schedule
@@ -255,7 +278,7 @@ public class Provisioner implements SpringServiceDaemon {
     private void doImport(Resource resource, final ProvisionMonitor monitor,
             ImportManager importManager) throws Exception {
         
-        LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_providers.toArray());
+        LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
         doImport.setAttribute("resource", resource);
         
         doImport.trigger();

@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
@@ -150,7 +151,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "import" )
-    public void relateNodes(final Phase currentPhase, final Requisition requisition) {
+    public void relateNodes(final BatchTask currentPhase, final Requisition requisition) {
         
         System.out.println("Running relate phase");
         

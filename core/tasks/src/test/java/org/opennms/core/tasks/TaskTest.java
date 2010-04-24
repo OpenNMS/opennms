@@ -70,7 +70,7 @@ public class TaskTest {
     @Before
     public void setUp() {
         m_executor = Executors.newFixedThreadPool(50);
-        m_coordinator = new DefaultTaskCoordinator(m_executor);
+        m_coordinator = new DefaultTaskCoordinator("TaskTest", m_executor);
     }
     
     @Test

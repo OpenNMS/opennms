@@ -69,6 +69,7 @@
   </bean>
   
   <bean id="taskCoordinator" class="org.opennms.core.tasks.DefaultTaskCoordinator">
+    <constructor-arg value="Provisiond" />
   	<property name="defaultExecutor" value="scan" />
   	<property name="executors">
   		<map>
@@ -173,12 +174,9 @@
     <property name="lifeCycleRepository" ref="lifeCycleRepository" />
     <property name="scheduledExecutor" ref="scheduledExecutor" />
     <property name="importSchedule" ref="provisiondImportSchedule" />
-    <property name="providers">
-    	<list>
-            <ref bean="coreImportActivities" />
-            <ref bean="coreScanActivities" />
-    	</list>
-    </property>
+    <property name="importActivities" ref="coreImportActivities" />
+    <property name="scanActivities" ref="coreScanActivities" />
+    <property name="taskCoordinator" ref="taskCoordinator" />
   </bean>
   
   <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">

@@ -41,6 +41,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.core.tasks.Async;
+import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -162,7 +163,7 @@ public class CoreScanActivities {
      */
     
     @Activity( lifecycle = "nodeScan", phase = "loadNode" ) 
-    public void loadNode(Phase currentPhase, NodeScan nodeScan) {
+    public void loadNode(BatchTask currentPhase, NodeScan nodeScan) {
         nodeScan.doLoadNode(currentPhase);
     }
 
@@ -185,7 +186,7 @@ public class CoreScanActivities {
     }
     
     @Activity( lifecycle = "nodeScan", phase = "scanCompleted" )
-    public void scanCompleted(Phase currentPhase, NodeScan nodeScan) {
+    public void scanCompleted(BatchTask currentPhase, NodeScan nodeScan) {
         if (!nodeScan.isAborted()) {
             EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond");
             bldr.setNodeid(nodeScan.getNodeId());
@@ -196,7 +197,7 @@ public class CoreScanActivities {
     }
 
     @Activity( lifecycle = "agentScan", phase = "collectNodeInfo" )
-    public void collectNodeInfo(Phase currentPhase, AgentScan agentScan) throws InterruptedException {
+    public void collectNodeInfo(BatchTask currentPhase, AgentScan agentScan) throws InterruptedException {
         
         Date scanStamp = new Date();
         agentScan.setScanStamp(scanStamp);
@@ -240,12 +241,12 @@ public class CoreScanActivities {
     }
 
     @Activity( lifecycle = "agentScan", phase = "persistNodeInfo", schedulingHint="write")
-    public void persistNodeInfo(Phase currentPhase, AgentScan agentScan) {
+    public void persistNodeInfo(BatchTask currentPhase, AgentScan agentScan) {
         agentScan.doPersistNodeInfo();
     }
 
     @Activity( lifecycle = "agentScan", phase = "detectPhysicalInterfaces" )
-    public void detectPhysicalInterfaces(final Phase currentPhase, final AgentScan agentScan) throws InterruptedException {
+    public void detectPhysicalInterfaces(final BatchTask currentPhase, final AgentScan agentScan) throws InterruptedException {
         if (agentScan.isAborted()) { return; }
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentScan.getAgentAddress());
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
@@ -373,7 +374,7 @@ public class CoreScanActivities {
     }
     
     @Activity( lifecycle = "agentScan", phase = "deleteObsoleteResources", schedulingHint="write")
-    public void deleteObsoleteResources(Phase currentPhase, AgentScan agentScan) {
+    public void deleteObsoleteResources(BatchTask currentPhase, AgentScan agentScan) {
         if (agentScan.isAborted()) { return; }
 
         m_provisionService.updateNodeScanStamp(agentScan.getNodeId(), agentScan.getScanStamp());
@@ -384,7 +385,7 @@ public class CoreScanActivities {
     }
     
     @Activity( lifecycle = "agentScan", phase = "agentScanCompleted", schedulingHint="write")
-    public void agentScanCompleted(Phase currentPhase, AgentScan agentScan) {
+    public void agentScanCompleted(BatchTask currentPhase, AgentScan agentScan) {
         if (!agentScan.isAborted()) {
             EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond");
             bldr.setNodeid(agentScan.getNodeId());
@@ -410,7 +411,7 @@ public class CoreScanActivities {
     }
     
     @Activity( lifecycle = "noAgent", phase = "deleteUnprovisionedInterfaces", schedulingHint="write")
-    public void deleteObsoleteResources(Phase currentPhase, NoAgentScan scan) {
+    public void deleteObsoleteResources(BatchTask currentPhase, NoAgentScan scan) {
 
         m_provisionService.updateNodeScanStamp(scan.getNodeId(), scan.getScanStamp());
         
@@ -422,7 +423,7 @@ public class CoreScanActivities {
     
     
     @Activity( lifecycle = "ipInterfaceScan", phase = "detectServices" )
-    public void detectServices(Phase currentPhase, IpInterfaceScan ifaceScan) throws InterruptedException {
+    public void detectServices(BatchTask currentPhase, IpInterfaceScan ifaceScan) {
         
         Collection<ServiceDetector> detectors = m_provisionService.getDetectorsForForeignSource(ifaceScan.getForeignSource());
         
@@ -436,7 +437,7 @@ public class CoreScanActivities {
         
     }
 
-    private void addServiceDetectorTask(Phase currentPhase, ServiceDetector detector, Integer nodeId, InetAddress ipAddress) {
+    private void addServiceDetectorTask(BatchTask currentPhase, ServiceDetector detector, Integer nodeId, InetAddress ipAddress) {
         if (detector instanceof SyncServiceDetector) {
             addSyncServiceDetectorTask(currentPhase, nodeId, ipAddress, (SyncServiceDetector)detector);
         } else {
@@ -444,11 +445,11 @@ public class CoreScanActivities {
         }
     }
 
-    private void addAsyncServiceDetectorTask(Phase currentPhase, Integer nodeId, InetAddress ipAddress, AsyncServiceDetector detector) {
+    private void addAsyncServiceDetectorTask(BatchTask currentPhase, Integer nodeId, InetAddress ipAddress, AsyncServiceDetector detector) {
         currentPhase.add(runDetector(ipAddress, detector), persistService(nodeId, ipAddress, detector));
     }
     
-    private void addSyncServiceDetectorTask(Phase currentPhase, final Integer nodeId, final InetAddress ipAddress, final SyncServiceDetector detector) {
+    private void addSyncServiceDetectorTask(BatchTask currentPhase, final Integer nodeId, final InetAddress ipAddress, final SyncServiceDetector detector) {
         currentPhase.add(runDetector(ipAddress, detector, persistService(nodeId, ipAddress, detector)));
     }
         

@@ -64,8 +64,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
      */
     private class RunnableActor extends Thread {
         private final BlockingQueue<Future<Runnable>> m_queue;
-        public RunnableActor(BlockingQueue<Future<Runnable>> queue) {
-            super("RunnableActor");
+        public RunnableActor(String name, BlockingQueue<Future<Runnable>> queue) {
+            super(name);
             m_queue = queue;
             start();
         }
@@ -103,14 +103,14 @@ public class DefaultTaskCoordinator implements InitializingBean {
     // This is used to adjust timing during testing
     private Long m_loopDelay;
 
-    public DefaultTaskCoordinator() {
+    public DefaultTaskCoordinator(String name) {
         m_queue = new LinkedBlockingQueue<Future<Runnable>>();
-        m_actor = new RunnableActor(m_queue);
+        m_actor = new RunnableActor(name+"-TaskScheduler", m_queue);
         addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor());
     }
     
-    public DefaultTaskCoordinator(Executor defaultExecutor) {
-        this();
+    public DefaultTaskCoordinator(String name, Executor defaultExecutor) {
+        this(name);
         m_defaultExecutor = SyncTask.DEFAULT_EXECUTOR;
         addExecutor(SyncTask.DEFAULT_EXECUTOR, defaultExecutor);
         afterPropertiesSet();

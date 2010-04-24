@@ -33,7 +33,6 @@ package org.opennms.netmgt.provision.service;
 
 import java.net.InetAddress;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -42,6 +41,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Category;
+import org.opennms.core.tasks.BatchTask;
+import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -58,21 +59,25 @@ public class NodeScan implements Runnable {
     private String m_foreignId;
     private ProvisionService m_provisionService;
     private EventForwarder m_eventForwarder;
+    private DefaultTaskCoordinator m_taskCoordinator;
     private LifeCycleRepository m_lifeCycleRepository;
-    private List<Object> m_providers;
+    private CoreScanActivities m_scanActivities;
+
     
     //NOTE TO SELF: This is referenced from the AgentScan inner class
     private boolean m_aborted = false;
     
     private OnmsNode m_node;
 
-    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, EventForwarder eventForwarder, LifeCycleRepository lifeCycleRepository, List<Object> providers) {
+    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, EventForwarder eventForwarder, DefaultTaskCoordinator taskCoordinator, LifeCycleRepository lifeCycleRepository, CoreScanActivities scanActivities) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
         m_provisionService = provisionService;
+        m_eventForwarder = eventForwarder;
+        m_taskCoordinator = taskCoordinator;
         m_lifeCycleRepository = lifeCycleRepository;
-        m_providers = providers;
+        m_scanActivities = scanActivities;
     }
     
     public String getForeignSource() {
@@ -130,7 +135,7 @@ public class NodeScan implements Runnable {
     private void doNodeScan() throws InterruptedException, ExecutionException {
         log().info(String.format("Scanning node (%s/%s)", m_foreignSource, m_foreignId));
 
-        LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_providers.toArray());
+        LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_scanActivities);
         doNodeScan.setAttribute("nodeScan", this);
         doNodeScan.trigger();
         doNodeScan.waitFor();
@@ -138,7 +143,7 @@ public class NodeScan implements Runnable {
         log().debug(String.format("Finished scanning node (%s/%s)", m_foreignSource, m_foreignId));
     }
 
-    public void doLoadNode(Phase loadNode) {
+    public void doLoadNode(BatchTask loadNode) {
         m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
         if (m_node == null) {
             abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
@@ -279,17 +284,27 @@ public class NodeScan implements Runnable {
             return m_node.getForeignId();
         }
 
-        public void doUpdateIPInterface(Phase currentPhase, OnmsIpInterface iface) {
+        public void doUpdateIPInterface(BatchTask currentPhase, OnmsIpInterface iface) {
             m_provisionService.updateIpInterfaceAttributes(getNodeId(), iface);
         }
 
-        public void triggerIPInterfaceScan(Phase currentPhase, InetAddress ipAddress) {
-            currentPhase.createNestedLifeCycle("ipInterfaceScan")
-                .setAttribute("ipInterfaceScan", createIpInterfaceScan(getNodeId(), ipAddress))
-                .setAttribute("foreignSource", getForeignSource())
-                .setAttribute("nodeId", getNodeId())
-                .setAttribute("ipAddress", ipAddress)
-                .trigger();
+        public void triggerIPInterfaceScan(final Phase currentPhase, final InetAddress ipAddress) {
+            
+            currentPhase.add(new Runnable() {
+
+                public void run() {
+                    m_scanActivities.detectServices(currentPhase, createIpInterfaceScan(getNodeId(), ipAddress));
+                }
+                
+            });
+            
+            
+//            currentPhase.createNestedLifeCycle("ipInterfaceScan")
+//                .setAttribute("ipInterfaceScan", createIpInterfaceScan(getNodeId(), ipAddress))
+//                .setAttribute("foreignSource", getForeignSource())
+//                .setAttribute("nodeId", getNodeId())
+//                .setAttribute("ipAddress", ipAddress)
+//                .trigger();
         }
 
         private IpInterfaceScan createIpInterfaceScan(Integer nodeId, InetAddress ipAddress) {
@@ -360,7 +375,6 @@ public class NodeScan implements Runnable {
             .append("foreign id", m_foreignId)
             .append("node id", m_nodeId)
             .append("aborted", m_aborted)
-            .append("providers", m_providers)
             .append("provision service", m_provisionService)
             .append("lifecycle repository", m_lifeCycleRepository)
             .toString();
@@ -372,7 +386,6 @@ public class NodeScan implements Runnable {
             .append(m_foreignId)
             .append(m_nodeId)
             .append(m_aborted)
-            .append(m_providers)
             .append(m_provisionService)
             .append(m_lifeCycleRepository)
             .toHashCode();
