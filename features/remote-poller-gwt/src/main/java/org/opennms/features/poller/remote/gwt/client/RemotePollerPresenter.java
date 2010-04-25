@@ -19,7 +19,16 @@ import de.novanic.eventservice.client.event.domain.DomainFactory;
  * This interface represents the controller methods that control the user interface. 
  * It extends several event handlers that the controller logic is expected to respond to.
  */
-public interface RemotePollerPresenter extends MapPanelBoundsChangedEventHandler, LocationsUpdatedEventHandler, LocationPanelSelectEventHandler, FiltersChangedEventHandler, TagSelectedEventHandler, TagClearedEventHandler, StatusSelectionChangedEventHandler, GWTMarkerClickedEventHandler, ApplicationSelectedEventHandler {
+public interface RemotePollerPresenter extends MapPanelBoundsChangedEventHandler,
+		LocationsUpdatedEventHandler,
+		LocationPanelSelectEventHandler,
+		FiltersChangedEventHandler,
+		TagSelectedEventHandler,
+		TagClearedEventHandler,
+		StatusSelectionChangedEventHandler,
+		GWTMarkerClickedEventHandler,
+		ApplicationSelectedEventHandler
+{
     public static final Domain LOCATION_EVENT_DOMAIN = DomainFactory.getDomain("location_event");
 
     public void fitMapToLocations();

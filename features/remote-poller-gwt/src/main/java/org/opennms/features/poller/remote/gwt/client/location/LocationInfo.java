@@ -10,7 +10,7 @@ import org.opennms.features.poller.remote.gwt.client.Status;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class LocationInfo implements IsSerializable, Serializable {
+public class LocationInfo implements IsSerializable, Serializable, Comparable<LocationInfo> {
 	private static final long serialVersionUID = 1L;
 
 	private String m_name;
@@ -123,6 +123,16 @@ public class LocationInfo implements IsSerializable, Serializable {
 
 	public boolean isVisible(final GWTBounds bounds) {
 		return bounds.contains(getLatLng());
+	}
+
+	public int compareTo(final LocationInfo that) {
+		int compareVal;
+		compareVal = this.getStatus().compareTo(that.getStatus());
+		if (compareVal != 0) return compareVal;
+		compareVal = this.getPriority().compareTo(that.getPriority());
+		if (compareVal != 0) return compareVal;
+		compareVal = this.getName().compareTo(that.getName());
+		return compareVal;
 	}
 
 	public String toString() {
