@@ -104,7 +104,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void initialize() {
         DeferredCommand.addCommand(new InitializationCommand(this, createFinisher(), createDataLoaders()));
     }
-    
+
     private Runnable createFinisher() {
         return new Runnable() {
             public void run() {
