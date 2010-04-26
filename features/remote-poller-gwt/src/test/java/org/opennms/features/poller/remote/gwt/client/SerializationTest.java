@@ -53,6 +53,7 @@ public class SerializationTest {
 		location.setGeolocation("RDU");
 		location.setCoordinates("0.0,0.0");
 		location.setStatus(Status.UP);
+		location.setMarker(getMarker(location));
 		writer.writeObject(location);
 	}
 
@@ -63,6 +64,10 @@ public class SerializationTest {
 		writer.writeObject(l);
 	}
 
+	private GWTMarkerState getMarker(LocationInfo info) {
+		GWTMarkerState marker = new GWTMarkerState(info.getName(), info.getLatLng(), info.getStatus());
+		return marker;
+	}
 	private ApplicationState getApplicationState() {
 		final Collection<ApplicationInfo> applications = new ArrayList<ApplicationInfo>();
 		final List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();

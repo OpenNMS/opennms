@@ -199,7 +199,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // Use an ArrayList so that it has good random-access efficiency
         // since the pageable lists use get() to fetch based on index.
     	final ArrayList<LocationInfo> visibleLocations = new ArrayList<LocationInfo>();
-        GWTBounds bounds = m_mapPanel.getBounds();
         for(LocationInfo location : m_locations.values()) {
         	final GWTMarkerState markerState = location.getMarker();
         	if (markerState.isSelected() && markerState.isVisible()) {

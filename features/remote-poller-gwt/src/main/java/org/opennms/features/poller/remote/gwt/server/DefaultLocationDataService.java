@@ -126,7 +126,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			latLng.getCoordinates(),
 			def.getPriority(),
 			state,
-			status, def.getTags()
+			status,
+			def.getTags()
 		);
 
 		if (status == null) {
