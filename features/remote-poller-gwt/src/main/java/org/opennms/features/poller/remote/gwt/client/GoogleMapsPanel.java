@@ -30,6 +30,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class GoogleMapsPanel extends Composite implements MapPanel {
@@ -72,7 +75,10 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         getMapWidget().savePosition();
         getMapWidget().setCenter(m.getLatLng());
         if (m != null) {
-            getMapWidget().getInfoWindow().open(m.getLatLng(), new InfoWindowContent(htmlContent));
+        	final VerticalPanel panel = new VerticalPanel();
+        	panel.add(new Label(htmlTitle));
+        	panel.add(new HTML(htmlContent));
+            getMapWidget().getInfoWindow().open(m.getLatLng(), new InfoWindowContent(panel.toString()));
             getMapWidget().getInfoWindow().addInfoWindowCloseClickHandler(new InfoWindowCloseClickHandler() {
 				public void onCloseClick(InfoWindowCloseClickEvent event) {
 					getMapWidget().returnToSavedPosition();

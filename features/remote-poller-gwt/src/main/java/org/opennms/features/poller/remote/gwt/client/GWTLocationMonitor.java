@@ -45,10 +45,22 @@ public class GWTLocationMonitor implements Serializable, IsSerializable, Compara
 	public void setLastCheckInTime(final Date lastCheckInTime) {
 		m_lastCheckInTime = lastCheckInTime;
 	}
-	
+
 	public String toString() {
 		return "GWTLocationMonitor[name=" + m_name + ",status=" + m_status + ",lastCheckInTime=" + m_lastCheckInTime + "]";
 	}
+
+	public boolean equals(Object o) {
+		if (!(o instanceof GWTLocationMonitor)) return false;
+		GWTLocationMonitor that = (GWTLocationMonitor)o;
+		if (this.getId().equals(that.getId())) return true;
+		return false;
+	}
+
+	public int hashCode() {
+		return 5 * this.getId().hashCode() + this.getName().hashCode() + this.getDefinitionName().hashCode();
+	}
+
 	public int compareTo(GWTLocationMonitor that) {
 		int lastCompare = this.getDefinitionName().compareTo(that.getDefinitionName());
 		if (lastCompare != 0) return lastCompare;

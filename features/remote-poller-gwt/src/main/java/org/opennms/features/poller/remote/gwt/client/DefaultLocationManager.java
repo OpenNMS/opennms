@@ -39,11 +39,9 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
+import com.googlecode.gwtmapquest.transaction.MQAInfoWindow;
 
 /**
  * <p>This class implements both {@link LocationManager} (the model portion of the webapp) and
@@ -290,7 +288,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 			public void onSuccess(final LocationDetails locationDetails) {
 		        m_mapPanel.showLocationDetails(
 		        	locationName,
-		        	locationName + "(" + loc.getArea() + ")",
+		        	locationName + " (" + loc.getArea() + ")",
 		        	getLocationInfoDetails(loc, locationDetails)
 		        );
 			}
@@ -447,48 +445,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return m_locations.get(locationName);
     }
 
-    /**
-     * Remove this function once we have real data.
-     */
-    @Deprecated
-    private static List<ApplicationInfo> getApplicationInfoTestData() {
-        List<ApplicationInfo> apps = new ArrayList<ApplicationInfo>();
-
-        for(int i = 0; i < 10 ; i++) {
-            ApplicationInfo application = new ApplicationInfo();
-            application.setId(i);
-            application.setName("name: " + i);
-            application.setStatus(Status.UP);
-            application.setLocations(getLocationSetTestData());
-            application.setServices(getGWTMonitoredServiceTestData());
-            apps.add(application);
-        }
-
-        return apps;
-    }
-
-    /**
-     * Remove this function once we have real data.
-     */
-    @Deprecated
-    private static Set<GWTMonitoredService> getGWTMonitoredServiceTestData() {
-        Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
-        GWTMonitoredService service = new GWTMonitoredService();
-        service.setServiceName("HTTP");
-        services.add(service);
-        return services;
-    }
-
-    /**
-     * Remove this function once we have real data.
-     */
-    @Deprecated
-    private static Set<String> getLocationSetTestData() {
-        Set<String> locations = new TreeSet<String>();
-        locations.add("19");
-        return locations;
-    }
-
     public void onGWTMarkerClicked(GWTMarkerClickedEvent event) {
         GWTMarkerState marker = event.getMarker();
         showLocationDetails(marker.getName());
@@ -556,55 +512,54 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {
 		final LocationMonitorState state = locationDetails.getLocationMonitorState();
-	
+
 		int pollersStarted = state.getMonitorsStarted();
 		int pollersStopped = state.getMonitorsStopped();
 		int pollersDisconnected = state.getMonitorsDisconnected();
 		Collection<String> serviceNames = state.getServiceNames();
 		int servicesWithOutages = state.getServicesDown().size();
 		int monitorsWithOutages = state.getMonitorsWithServicesDown().size();
-	
-		final VerticalPanel panel = new VerticalPanel();
-		panel.setStyleName("statusTable");
-		panel.add(new Label(locationInfo.getName()));
-	
-		final FlexTable table = new FlexTable();
-		table.setCellPadding(0);
-		table.setCellSpacing(0);
-		table.setStyleName("statusTable");
-		final RowFormatter rf = table.getRowFormatter();
-	
-		table.setText(0, 0, "Monitors:");
-		table.setHTML(0, 1, pollersStarted + " started");
-		table.setText(1, 0, "");
-		table.setHTML(1, 1, pollersStopped + " stopped");
-		table.setText(2, 0, "");
-		table.setHTML(2, 1, pollersDisconnected + " disconnected");
-	
-		for (int i = 0; i < 3; i++) {
-			rf.setStyleName(i, state.getStatus().getStyle());
-		}
-		
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("<div style=\"width: 200px\">");
+		sb.append("<dl class=\"statusContents\">\n");
+
+		sb	.append("<dt class=\"").append(state.getStatus().getStyle()).append(" statusDt\">")
+			.append("Monitors:")
+			.append("</dt>\n");
+		sb	.append("<dd class=\"").append(state.getStatus().getStyle()).append(" statusDd\">");
+		sb	.append(pollersStarted + " started")
+			.append("<br>\n");
+		sb	.append(pollersStopped + " stopped")
+			.append("<br>\n");
+		sb	.append(pollersDisconnected + " disconnected")
+			.append("\n");
+		sb	.append("</dd>\n");
+
 		if (pollersStarted > 0) {
 			// If pollers are started, add on service information
-			table.setText(3, 0, "Services:");
-			table.setHTML(3, 1, servicesWithOutages + " outages (of " + serviceNames.size() + " services)");
-			table.setText(4, 0, "");
-			table.setHTML(4, 1, monitorsWithOutages + " pollers reporting errors");
-	
-			for (int i = 3; i < 5; i++) {
-				rf.setStyleName(i, Status.UP.getStyle());
-				if (servicesWithOutages > 0) {
-					if (monitorsWithOutages == pollersStarted) {
-						rf.setStyleName(i, Status.DOWN.getStyle());
-					} else {
-						rf.setStyleName(i, Status.MARGINAL.getStyle());
-					}
+
+			String styleName = Status.UP.getStyle();
+			if (servicesWithOutages > 0) {
+				if (monitorsWithOutages == pollersStarted) {
+					styleName = Status.DOWN.getStyle();
+				} else {
+					styleName = Status.MARGINAL.getStyle();
 				}
 			}
+			sb	.append("<dt class=\"").append(styleName).append(" statusDt\">")
+				.append("Services:")
+				.append("</dt>\n");
+			sb	.append("<dd class=\"").append(styleName).append(" statusDd\">");
+			sb	.append(servicesWithOutages + " outages (of " + serviceNames.size() + " services)")
+				.append("<br>\n");
+			sb	.append(monitorsWithOutages + " pollers reporting errors")
+				.append("\n");
+			sb	.append("</dd>\n");
 		}
-	
-		panel.add(table);
-		return panel.toString();
+
+		sb.append("</div>");
+		return sb.toString();
 	}
 }

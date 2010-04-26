@@ -19,34 +19,41 @@ button {
   margin-top: 20px;
 }*/
 
-.statusTable td {
-  border: 0px;
-  padding: 3px;
-  margin: 0px;
+.statusPanel {
   width: 100%;
 }
 
-.statusUp td {
+.statusDt {
+  padding-left: 0px;
+  margin: 0px;
+}
+
+.statusDd {
+  padding-left: 20px;
+  margin: 0px;
+}
+
+.statusUp {
   vertical-align: top;
   background-color: #88ff88;
 }
 
-.statusMarginal td {
+.statusMarginal {
   vertical-align: top;
   background-color: #ffff88;
 }
 
-.statusDown td {
+.statusDown {
   vertical-align: top;
   background-color: #ff8888;
 }
 
-.statusUnknown td {
+.statusUnknown {
   vertical-align: top;
   background-color: #8888ff;
 }
 
-.statusUninitialized td {
+.statusUninitialized {
   vertical-align: top;
   background-color: #dddddd;
 }
