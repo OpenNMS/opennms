@@ -95,12 +95,6 @@ public class AddNodesController implements Controller {
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-	            if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-	                log.warn("Cannot add maps because not admin role for user: " + request.getRemoteUser() );
-	                throw new MapsException("User has not role admin");
-	            }
-			}
 			Integer[] nodeids = null;
 
 			boolean actionfound = false;

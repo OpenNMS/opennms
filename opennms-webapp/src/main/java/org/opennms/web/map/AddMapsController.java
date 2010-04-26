@@ -87,10 +87,6 @@ public class AddMapsController implements Controller {
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				log.warn("Cannot add maps because not admin role for user: " + request.getRemoteUser() );
-				throw new MapsException("User has not role admin");
-			}
 			VMap map = manager.openMap();
             List<VElement> velems = new ArrayList<VElement>();
             // response for addElement

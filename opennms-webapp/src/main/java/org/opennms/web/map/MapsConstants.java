@@ -77,17 +77,17 @@ public final class MapsConstants {
 
 	public static final String LOADLABELMAP_ACTION = "LoadLabelMap";
 	
-	public static final String NEWMAP_ACTION = "NewMap";
+	public static final String NEWMAP_ACTION = "admin/NewMap";
 
 	public static final String OPENMAP_ACTION = "OpenMap";
 	
 	public static final String CLOSEMAP_ACTION = "CloseMap";
 	
-	public static final String SAVEMAP_ACTION = "SaveMap";
+	public static final String SAVEMAP_ACTION = "admin/SaveMap";
 	
-	public static final String DELETEMAP_ACTION = "DeleteMap";	
+	public static final String DELETEMAP_ACTION = "admin/DeleteMap";	
 
-	public static final String CLEAR_ACTION = "ClearMap";
+	public static final String CLEAR_ACTION = "admin/ClearMap";
 
 	public static final String RELOAD_ACTION = "Reload";
 
@@ -95,9 +95,9 @@ public final class MapsConstants {
 	
 	public static final String ADDRANGE_ACTION = "AddRange";
 	
-	public static final String ADDNODES_ACTION = "AddNodes";
+	public static final String ADDNODES_ACTION = "admin/AddNodes";
 
-	public static final String ADDMAPS_ACTION = "AddMaps";
+	public static final String ADDMAPS_ACTION = "admin/AddMaps";
 	
 	public static final String SEARCHMAPS_ACTION = "SearchMap";
 
@@ -109,13 +109,13 @@ public final class MapsConstants {
 
 	public static final String ADDNODES_NEIG_ACTION = "AddNodesNeig";
 
-    public static final String DELETEELEMENT_ACTION = "DeleteElements";
+    public static final String DELETEELEMENT_ACTION = "admin/DeleteElements";
 
 	public static final String DELETENODES_ACTION = "DeleteNodes";
 
 	public static final String DELETEMAPS_ACTION = "DeleteMaps";
 	
-	public static final String SWITCH_MODE_ACTION = "SwitchRole";
+	public static final String SWITCH_MODE_ACTION = "admin/SwitchRole";
 		
     // map types
 	public static final String USER_GENERATED_MAP = "U";

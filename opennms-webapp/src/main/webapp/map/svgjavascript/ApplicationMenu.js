@@ -66,6 +66,7 @@ function disableMenu(){
 
 function resetWorkPanel(menuName, menuOpening){
 	windowsClean();
+	myMapApp.disableTooltips();
 
 	if (menuOpening) {
 		hideMapInfo();
@@ -192,15 +193,18 @@ function instantiateViewGroup() {
 	var itemEl2id="ColorNodesByAvail";	
 	var itemEl3id="ColorNodesByStatus";
 	var subitems= new Array(itemEl1id,itemEl2id,itemEl3id);
+
 	var id="ToggleFullScreen";
 	viewMenu.addElement(id, "Toggle Screen", menuDeltaX,menuDeltaY,menuWidth,menuHeight,toggleScreenSetUp, subitems);
+
 	id = "SetDimension";	
 	viewMenu.addElement(id, "Set Dimension", menuDeltaX,2*menuDeltaY,menuWidth,menuHeight,addDimensionList, subitems);
+
 	viewMenu.addItem(itemId, "View by...", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, subitems);
 	viewMenu.addItemElement(itemEl1id, "Severity", menuDeltaX+menuWidth,3*menuDeltaY,menuWidth,menuHeight, viewBySeveritySetUp);
 	viewMenu.addItemElement(itemEl2id,    "Avail", menuDeltaX+menuWidth,4*menuDeltaY,menuWidth,menuHeight, viewByAvailSetUp);
 	viewMenu.addItemElement(itemEl3id,   "Status", menuDeltaX+menuWidth,5*menuDeltaY,menuWidth,menuHeight,viewByStatusSetUp);
-	
+	viewMenu.addElement(id, "Switch...", menuDeltaX,4*menuDeltaY,menuWidth,menuHeight,switchSemaphore, subitems);
 }
 
 // ***********functions called by Map Menu ************************
@@ -237,13 +241,12 @@ function addSearchMapList()
 }
 
 function filterSearchMapSelectionList(textboxId,value,changeType) {
-		
 		if (changeType == "change") {
 			var matchingMaps = new Array(); 
-			for(var i=0;i<nodeLabels.length;i++) {
-			    var nodeLabel = nodeLabels[i];
-				if (nodeLabel.indexOf(value) >= 0) {
-				    var mapLbl = nodeLabelMap[nodeLabel];
+			for(var i in nodeLabels) {
+				if (nodeLabels[i].indexOf(value) >= 0) {
+					var label = getLabel(nodeLabels[i]);
+				    var mapLbl = nodeLabelMap[label];
 				    if (mapLbl!=undefined) {
 						for (var j=0; j<mapLbl.length;j++ ){
 					    	matchingMaps.push(mapLbl[j]);
@@ -1082,6 +1085,19 @@ function toggleScreenSetUp() {
 	showMapInfo();
 	showHistory();
 }
+
+function switchSemaphore()  {
+	closeAllMenu();
+	if ( useSemaphore )
+	     useSemaphore=false;
+	else 
+	     useSemaphore=true;
+	     
+	for (var i in map.mapElements) {
+		map.mapElements[i].useSemaphore(useSemaphore);
+	}
+}
+
 // ***************function called by clicking on count down ******************
 function addRefreshTimeList()
 {	
@@ -1784,16 +1800,16 @@ function getInfoOnLink(link)
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
 	
-	var speed = 'Undefined';
-	if (LINK_SPEED[link.getTypology()] > 0 )
-		speed = LINK_SPEED[link.getTypology()];
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+speed);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
-
+	if (LINK_SPEED[link.getTypology()] > 0 ) {
+		var speed = LINK_SPEED[link.getTypology()];
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode(" Speed: "+speed);
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);	
+	}
+	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
@@ -1832,15 +1848,15 @@ function getInfoOnSLink(slink)
 		text.appendChild(tspan);
 	}
 	
-	var speed = 'Undefined';
-	if (LINK_SPEED[slink.getTypology()] > 0 )
-		speed = LINK_SPEED[slink.getTypology()];
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+speed);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
+	if (LINK_SPEED[slink.getTypology()] > 0 ) {
+		var speed = LINK_SPEED[slink.getTypology()];
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode(" Speed: "+speed);
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);	
+	}
 
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");

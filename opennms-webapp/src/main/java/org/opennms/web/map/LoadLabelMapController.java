@@ -83,8 +83,7 @@ public class LoadLabelMapController extends SimpleFormController {
 		try{
 	        String user = request.getRemoteUser();
 
-	        if (log.isDebugEnabled()) 
-	            log.debug("Loading Label Map for user:" + user);
+            log.debug("Loading Label Map for user:" + user);
 
 			bw.write(ResponseAssembler.getLoadLabelMapResponse(manager.getNodeLabelToMaps(user)));
 		} catch (Exception e) {

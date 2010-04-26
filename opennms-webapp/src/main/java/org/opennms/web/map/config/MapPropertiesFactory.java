@@ -149,6 +149,8 @@ public class MapPropertiesFactory extends Object {
 	
 	protected  boolean contextMenuEnabled=true;
 	
+	protected boolean useSemaphore=true;
+	
 	protected  boolean reload=false;
 
 	protected  String severityMapAs = "avg"; 
@@ -774,6 +776,12 @@ public class MapPropertiesFactory extends Object {
         }
         log.debug("default map element dimension: "+defaultMapElementDimension);
 
+        String useSemaphoreString = props.getProperty("use.semaphore");
+        if (useSemaphoreString != null && useSemaphoreString.equalsIgnoreCase("false"))
+            useSemaphore=false;
+        else useSemaphore = true;
+        log.debug("use semaphore: "+useSemaphoreString);
+        
 		// look up background filenames
 		String[] bg = BundleLists
 				.parseBundleList(props.getProperty("bgimages"));
@@ -1007,5 +1015,8 @@ public class MapPropertiesFactory extends Object {
     public int getSummaryLink() {
         return summaryLink;
     }
-
+    
+    public boolean isUseSemaphore() {
+        return useSemaphore;
+    }
 }

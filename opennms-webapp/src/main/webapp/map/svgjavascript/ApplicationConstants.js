@@ -2,31 +2,35 @@
 // Here are defined all the global variables used in OpenNMS map application
 //ACTIONS
 
+var MAPS_STARTUP_ACTION = "MapStartUp";
+var SWITCH_MODE_ACTION = "admin/SwitchRole";
+var OPENMAP_ACTION = "OpenMap";
+var NEWMAP_ACTION = "admin/NewMap";
+var CLOSEMAP_ACTION = "CloseMap";
+var DELETEMAP_ACTION = "admin/DeleteMap";
+var CLEAR_ACTION = "admin/ClearMap";
+var SAVEMAP_ACTION = "admin/SaveMap";
+var LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
+var SEARCHMAPS_ACTION = "SearchMap";
 var LOADMAPS_ACTION = "LoadMaps";
 var LOADNODES_ACTION = "LoadNodes";
 var LOADLABELMAP_ACTION = "LoadLabelMap";
-var ADDNODES_ACTION = "AddNodes";
+var ADDNODES_ACTION = "admin/AddNodes";
+var ADDMAPS_ACTION = "admin/AddMaps";
+var DELETEELEMENT_ACTION = "admin/DeleteElements";
+var REFRESH_BASE_ACTION="RefreshMap";
+
 var ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
 var ADDNODES_BY_CATEGORY_ACTION = "AddNodesByCategory";
 var ADDNODES_BY_LABEL_ACTION = "AddNodesByLabel";
 var ADDNODES_NEIG_ACTION = "AddNodesNeig";
 var ADDRANGE_ACTION = "AddRange";
-var ADDMAPS_ACTION = "AddMaps";
-var SEARCHMAPS_ACTION = "SearchMap";
-var REFRESH_BASE_ACTION="RefreshMap";
+
 var REFRESH_ACTION = "Refresh";
 var RELOAD_ACTION = "Reload";
-var DELETEELEMENT_ACTION = "DeleteElements";
+
 var DELETENODES_ACTION = "DeleteNodes";
 var DELETEMAPS_ACTION = "DeleteMaps";
-var SWITCH_MODE_ACTION = "SwitchRole";
-var CLEAR_ACTION = "ClearMap";
-var DELETEMAP_ACTION = "DeleteMap";
-var LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
-var NEWMAP_ACTION = "NewMap";
-var OPENMAP_ACTION = "OpenMap";
-var CLOSEMAP_ACTION = "CloseMap";
-var SAVEMAP_ACTION = "SaveMap";
 
 //MAPS
 var MAP_NOT_OPENED = -1;
