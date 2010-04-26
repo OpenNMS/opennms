@@ -66,6 +66,7 @@ function disableMenu(){
 
 function resetWorkPanel(menuName, menuOpening){
 	windowsClean();
+	myMapApp.disableTooltips();
 
 	if (menuOpening) {
 		hideMapInfo();
@@ -240,13 +241,12 @@ function addSearchMapList()
 }
 
 function filterSearchMapSelectionList(textboxId,value,changeType) {
-		
 		if (changeType == "change") {
 			var matchingMaps = new Array(); 
-			for(var i=0;i<nodeLabels.length;i++) {
-			    var nodeLabel = nodeLabels[i];
-				if (nodeLabel.indexOf(value) >= 0) {
-				    var mapLbl = nodeLabelMap[nodeLabel];
+			for(var i in nodeLabels) {
+				if (nodeLabels[i].indexOf(value) >= 0) {
+					var label = getLabel(nodeLabels[i]);
+				    var mapLbl = nodeLabelMap[label];
 				    if (mapLbl!=undefined) {
 						for (var j=0; j<mapLbl.length;j++ ){
 					    	matchingMaps.push(mapLbl[j]);
@@ -1800,16 +1800,16 @@ function getInfoOnLink(link)
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
 	
-	var speed = 'Undefined';
-	if (LINK_SPEED[link.getTypology()] > 0 )
-		speed = LINK_SPEED[link.getTypology()];
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+speed);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
-
+	if (LINK_SPEED[link.getTypology()] > 0 ) {
+		var speed = LINK_SPEED[link.getTypology()];
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode(" Speed: "+speed);
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);	
+	}
+	
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
@@ -1848,15 +1848,15 @@ function getInfoOnSLink(slink)
 		text.appendChild(tspan);
 	}
 	
-	var speed = 'Undefined';
-	if (LINK_SPEED[slink.getTypology()] > 0 )
-		speed = LINK_SPEED[slink.getTypology()];
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode(" Speed: "+speed);
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);	
+	if (LINK_SPEED[slink.getTypology()] > 0 ) {
+		var speed = LINK_SPEED[slink.getTypology()];
+		tspan = document.createElementNS(svgNS,"tspan");
+		tspan.setAttributeNS(null, "x","3");
+		tspan.setAttributeNS(null, "dy","15");
+		tspanContent = document.createTextNode(" Speed: "+speed);
+		tspan.appendChild(tspanContent);
+		text.appendChild(tspan);	
+	}
 
 	tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");

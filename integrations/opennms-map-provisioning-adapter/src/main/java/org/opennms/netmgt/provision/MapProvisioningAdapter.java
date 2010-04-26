@@ -404,8 +404,15 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                             boolean elementExist = false;
                             for (OnmsMapElement elem: elements) {
                                 if (elem.getMap().getId() == onmsMap.getId() ) {
-                                    log().debug("reSyncMap: nodeid: " + nodeid + " is in map:" + mapName + ". skipping...");
                                     elementExist = true;
+                                    String label = getLabel(node.getLabel());
+                                    if (elem.getLabel().equals(label)) { 
+                                       log().debug("reSyncMap: nodeid: " + nodeid + " is in map:" + mapName + " and has the same label. skipping...");
+                                    } else {
+                                       log().debug("reSyncMap: nodeid: " + nodeid + " is in map:" + mapName + " and has not the same label. updating...");
+                                       elem.setLabel(label);
+                                       m_onmsMapElementDao.update(elem);
+                                    }
                                     continue;
                                 }
                                 tempElem.add(elem);

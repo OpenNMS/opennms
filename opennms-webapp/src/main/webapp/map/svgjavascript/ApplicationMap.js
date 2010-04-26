@@ -253,9 +253,7 @@ function handleAddElementResponse(data) {
 		severity=velem.severity;
 
 		//Adding only the node label without domain
-		var ndxOf = labelText.indexOf('.');
-		if (ndxOf > 0)
-			labelText=labelText.substr(0,ndxOf);
+		labelText=getLabel(labelText);
 
 		icon = new Icon(iconName,MEIconsSortAss[iconName]);
 		map.addMapElement(new MapElement(id,icon,labelText, getSemaphoreColorForNode(severity,avail,status), getSemaphoreFlash(severity,avail), point.x, point.y, mapElemDimension, status, avail,severity,useSemaphore))
@@ -467,10 +465,8 @@ function handleLoadingMap(data) {
     		labelText=velem.label;
 					
 			//Adding only the node label without domain
-			var index = labelText.indexOf('.');
-			if (index > 0)
-				labelText=labelText.substr(0,index);
-		    
+			labelText=getLabel(labelText);	
+				    
 		    map.addMapElement(new MapElement(elem,icon, labelText, semaphoreColor, semaphoreFlash, velem.x, velem.y, mapElemDimension, status, avail,severity,useSemaphore));
 		} else if (velem.hideNode ) {
 			if (hideNodesIds == "")
@@ -744,9 +740,7 @@ function handleRefreshNodesResponse(data) {
 		severity=velem.severity;
 
 		//Adding only the node label without domain
-		var ndxOf = labelText.indexOf('.');
-		if (ndxOf > 0)
-			labelText=labelText.substr(0,ndxOf);
+		labelText=getLabel(labelText);
 	
 		var testHideNode = id.indexOf('H');
 		var testHideMap = id.indexOf('W');
