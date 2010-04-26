@@ -9,14 +9,15 @@
         
         .nextBtnLayoutStyle{
             position: absolute;
-            right: 0px;
-            bottom: 0px;
+            right: 2px;
+            bottom: 5px;
         }
         
         .prevBtnLayoutStyle{
             position: absolute;
-            left: 0px;
-            bottom: 0px;
+            left: 2px;
+            bottom: 5px;
+            
         }
         
         .labelLayoutStyle{
@@ -66,7 +67,7 @@
        
     </ui:style>
     
-	<g:DockLayoutPanel height="100%" width="100%" unit="PCT">
+	<g:DockLayoutPanel height="100%" width="100%" unit="PX">
            <g:center>
              <g:FlowPanel styleName="{style.tableContainer}">
                 <g:FlexTable ui:field="dataList" width="100%" />
@@ -75,11 +76,11 @@
            <g:south size="26">
              <g:FlowPanel ui:field="pagingControls" >
                <g:FlowPanel styleName="{style.nextBtnLayoutStyle}">
-                   <g:Button ui:field="nextBtn" text="next" />
+                   <g:Hyperlink ui:field="nextBtn" text="next" />
                </g:FlowPanel>
                <g:Label ui:field="pageStatsLabel" styleName="{style.labelLayoutStyle}"/>
                <g:FlowPanel styleName="{style.prevBtnLayoutStyle}">
-                   <g:Button ui:field="prevBtn" text="prev" />
+                   <g:Hyperlink ui:field="prevBtn" text="prev" />
                </g:FlowPanel>
              </g:FlowPanel>
            </g:south>

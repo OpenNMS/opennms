@@ -48,6 +48,8 @@ public class FilterPanel extends Composite {
     SuggestBox applicationNameSuggestBox;
     @UiField
     Panel applicationTray;
+    @UiField 
+    Label noApplicationsCaption;
     @UiField
     Panel applicationFilters;
     @UiField
@@ -185,8 +187,13 @@ public class FilterPanel extends Composite {
     public void updateSelectedApplications(Collection<ApplicationInfo> apps) {
         // Update the contents of the application filter list
         applicationFilters.clear();
-        for (ApplicationInfo app : apps) {
-            applicationFilters.add(new ApplicationFilter(app));
+        if (apps.size() > 0) {
+            noApplicationsCaption.setVisible(false);
+            for (ApplicationInfo app : apps) {
+                applicationFilters.add(new ApplicationFilter(app));
+            }
+        } else {
+            noApplicationsCaption.setVisible(true);
         }
     }
 

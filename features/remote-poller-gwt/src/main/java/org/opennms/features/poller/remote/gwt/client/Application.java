@@ -57,7 +57,7 @@ public class Application implements EntryPoint
 		m_locationManager.addLocationManagerInitializationCompleteEventHandler(new LocationManagerInitializationCompleteEventHander() {
             
             public void onInitializationComplete(LocationManagerInitializationCompleteEvent event) {
-                splitPanel.setWidgetMinSize(locationPanel, 200);
+                splitPanel.setWidgetMinSize(locationPanel, 220);
                 // Show the location list by default 
                 rootPanel.setSize("100%", "100%");
                 RootPanel.get("remotePollerMap").add(rootPanel);

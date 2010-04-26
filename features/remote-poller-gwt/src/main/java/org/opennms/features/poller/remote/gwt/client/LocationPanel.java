@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
@@ -34,7 +35,9 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		super();
 		initWidget(BINDER.createAndBindUi(this));
 		locationList.addLocationPanelSelectEventHandler(this);
-		tagPanel.setWidth(String.valueOf(this.getOffsetWidth()));
+		// tagPanel.setWidth(String.valueOf(this.getOffsetWidth()));
+		// Blank out the selected applications list
+		this.updateSelectedApplications(new TreeSet<ApplicationInfo>());
 	}
 
     public void setEventBus(final HandlerManager eventBus) {
