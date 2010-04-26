@@ -72,6 +72,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	private boolean updated = false;
 
+	private Set<ApplicationInfo> m_selectedApplications = new TreeSet<ApplicationInfo>();
+
 	public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, final LocationPanel locationPanel, MapPanel mapPanel) {
 		m_eventBus = eventBus;
 		m_panel = panel;
@@ -500,9 +502,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void onApplicationSelected(ApplicationSelectedEvent event) {
-        // TODO: Add the application to the selected application list
-        // m_locationPanel.filterPanel.SOMETHING
-        
-        Window.alert("YOU CLICKED ON " + event.getAppInfo().getName());
+        // Add the application to the selected application list
+        m_selectedApplications.add(event.getAppInfo());
+        // Update the list of selected applications in the panel
+        m_locationPanel.updateSelectedApplications(m_selectedApplications);
     }
 }

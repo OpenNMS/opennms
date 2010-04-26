@@ -17,6 +17,8 @@
 			font-weight: bold;
 			font-size: 13px;
 		}
+	</ui:style>
+	<ui:style field="filterStyles" type="org.opennms.features.poller.remote.gwt.client.FilterPanel.FilterStyles">
 		.panelEntry {
 			font-weight: bold;
 			font-size: 11px;
@@ -32,19 +34,21 @@
 			<g:ToggleButton ui:field="unknownButton"  text="Unknown" />
 		</g:HorizontalPanel>
 
-		<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationFilters">
+		<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationTray">
 			<g:HTMLPanel><hr/></g:HTMLPanel>
 
 			<g:Label addStyleNames="{style.panelHeader}" text="Selected Applications"/>
-			<g:HTMLPanel>
-				<img style="width: 16px" src="images/selected-UP.png"/><span class="{style.panelEntry}">Internet</span>
-			</g:HTMLPanel>
-			<g:HTMLPanel>
-				<img style="width: 16px" src="images/selected-UP.png"/><span class="{style.panelEntry}">HR</span>
-			</g:HTMLPanel>
-			<g:HTMLPanel>
-				<img style="width: 16px" src="images/selected-UP.png"/><span class="{style.panelEntry}">Datacenter</span>
-			</g:HTMLPanel>
+			<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationFilters">
+				<g:HTMLPanel>
+					<img style="width: 16px" src="images/selected-UP.png"/><span class="{filterStyles.panelEntry}">Internet</span>
+				</g:HTMLPanel>
+				<g:HTMLPanel>
+					<img style="width: 16px" src="images/selected-UP.png"/><span class="{filterStyles.panelEntry}">HR</span>
+				</g:HTMLPanel>
+				<g:HTMLPanel>
+					<img style="width: 16px" src="images/selected-UP.png"/><span class="{filterStyles.panelEntry}">Datacenter</span>
+				</g:HTMLPanel>
+			</g:VerticalPanel>
 			<g:Label addStyleNames="{style.selectorLabel}" text="Add application:"/>
 			<g:SuggestBox ui:field="applicationNameSuggestBox"/>
 		</g:VerticalPanel>

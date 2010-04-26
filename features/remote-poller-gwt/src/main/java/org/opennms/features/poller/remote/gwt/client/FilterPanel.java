@@ -10,10 +10,13 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SuggestBox;
@@ -29,8 +32,16 @@ public class FilterPanel extends Composite {
     private transient HandlerManager m_eventBus;
     private transient LocationManager m_locationManager;
 
+    interface FilterStyles extends CssResource {
+        String panelEntry();
+    }
+
+    @UiField
+    FilterStyles filterStyles;
     @UiField(provided = true)
     SuggestBox applicationNameSuggestBox;
+    @UiField
+    Panel applicationTray;
     @UiField
     Panel applicationFilters;
     @UiField
@@ -43,6 +54,14 @@ public class FilterPanel extends Composite {
     ToggleButton unknownButton;
 
     private final MultiWordSuggestOracle applicationNames = new MultiWordSuggestOracle();
+    
+    private class ApplicationFilter extends FlowPanel {
+        public ApplicationFilter(ApplicationInfo app) {
+            Label appName = new Label(app.getName());
+            appName.addStyleName(filterStyles.panelEntry());
+            super.add(appName);
+        }
+    }
 
     public interface FiltersChangedEventHandler extends EventHandler {
         public void onFiltersChanged(Filters filters);
@@ -132,12 +151,21 @@ public class FilterPanel extends Composite {
     }
 
     public void updateApplicationNames(Collection<String> names) {
+        // Update the SuggestBox's Oracle
         applicationNames.clear();
         applicationNames.addAll(names);
     }
 
+    public void updateSelectedApplications(Collection<ApplicationInfo> apps) {
+        // Update the contents of the application filter list
+        applicationFilters.clear();
+        for (ApplicationInfo app : apps) {
+            applicationFilters.add(new ApplicationFilter(app));
+        }
+    }
+
     public void showApplicationFilters(boolean showMe) {
-        applicationFilters.setVisible(showMe);
+        applicationTray.setVisible(showMe);
     }
 
     public void setEventBus(final HandlerManager eventBus) {
