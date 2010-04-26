@@ -47,17 +47,8 @@
 			<g:HTMLPanel><hr/></g:HTMLPanel>
 
 			<g:Label addStyleNames="{style.panelHeader}" text="Selected Applications"/>
-			<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationFilters">
-				<g:HTMLPanel>
-					<img style="width: 16px" src="images/selected-UP.png"/><span class="{filterStyles.panelEntry}">Internet</span>
-				</g:HTMLPanel>
-				<g:HTMLPanel>
-					<img style="width: 16px" src="images/selected-UP.png"/><span class="{filterStyles.panelEntry}">HR</span>
-				</g:HTMLPanel>
-				<g:HTMLPanel>
-					<img style="width: 16px" src="images/selected-UP.png"/><span class="{filterStyles.panelEntry}">Datacenter</span>
-				</g:HTMLPanel>
-			</g:VerticalPanel>
+			<g:Label ui:field="noApplicationsCaption" addStyleNames="{filterStyles.panelEntry}" text="No applications selected" visible="false"/>
+			<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationFilters"/>
 			<g:Label addStyleNames="{style.selectorLabel}" text="Add application:"/>
 			<g:SuggestBox ui:field="applicationNameSuggestBox"/>
 		</g:VerticalPanel>
