@@ -19,7 +19,7 @@ public class LocationUpdatedRemoteEvent implements MapRemoteEvent {
 		return m_locationInfo;
 	}
 
-	public void dispatch(RemotePollerPresenter locationManager) {
+	public void dispatch(final RemotePollerPresenter locationManager) {
 		locationManager.updateLocation(m_locationInfo);
 	}
 

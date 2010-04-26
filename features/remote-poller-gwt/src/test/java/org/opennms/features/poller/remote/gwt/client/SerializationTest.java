@@ -1,7 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,10 +8,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Test;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.GeocodingFinishedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.GeocodingUpdatingRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 
 import com.google.gwt.user.server.rpc.impl.LegacySerializationPolicy;
 import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamWriter;
@@ -46,14 +52,7 @@ public class SerializationTest {
 
 	@Test
 	public void testLocationInfo() throws Exception {
-		LocationInfo location = new LocationInfo();
-		location.setName("Bob");
-		location.setPollingPackageName("Harry");
-		location.setArea("East Coast");
-		location.setGeolocation("RDU");
-		location.setCoordinates("0.0,0.0");
-		location.setStatus(Status.UP);
-		location.setMarker(getMarker(location));
+		LocationInfo location = getLocationInfo();
 		writer.writeObject(location);
 	}
 
@@ -64,15 +63,66 @@ public class SerializationTest {
 		writer.writeObject(l);
 	}
 
+	@Test
+	public void testApplicationStatus() throws Exception {
+		ApplicationState state = getApplicationState();
+		writer.writeObject(state);
+	}
+
+	@Test
+	public void testApplicationInfo() throws Exception {
+		final ApplicationInfo info = getApplicationInfo();
+		writer.writeObject(info);
+	}
+
+	@Test
+	public void testEvents() throws Exception {
+		final ApplicationUpdatedRemoteEvent aure = new ApplicationUpdatedRemoteEvent(getApplicationInfo());
+		writer.writeObject(aure);
+		final GeocodingUpdatingRemoteEvent gure = new GeocodingUpdatingRemoteEvent(0, 15);
+		writer.writeObject(gure);
+		final GeocodingFinishedRemoteEvent gfre = new GeocodingFinishedRemoteEvent(15);
+		writer.writeObject(gfre);
+		final LocationUpdatedRemoteEvent lure = new LocationUpdatedRemoteEvent(getLocationInfo());
+		writer.writeObject(lure);
+		Collection<LocationInfo> locations = new ArrayList<LocationInfo>();
+		locations.add(getLocationInfo());
+		final LocationsUpdatedRemoteEvent lsure = new LocationsUpdatedRemoteEvent(locations);
+		writer.writeObject(lsure);
+		final UpdateCompleteRemoteEvent ucre = new UpdateCompleteRemoteEvent();
+		writer.writeObject(ucre);
+	}
+
+	private LocationInfo getLocationInfo() {
+		LocationInfo location = new LocationInfo();
+		location.setName("Bob");
+		location.setPollingPackageName("Harry");
+		location.setArea("East Coast");
+		location.setGeolocation("RDU");
+		location.setCoordinates("0.0,0.0");
+		location.setStatus(Status.UP);
+		location.setMarker(getMarker(location));
+		return location;
+	}
+
 	private GWTMarkerState getMarker(LocationInfo info) {
 		GWTMarkerState marker = new GWTMarkerState(info.getName(), info.getLatLng(), info.getStatus());
 		return marker;
+	}
+	private ApplicationInfo getApplicationInfo() {
+		final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+		final Set<String> locationNames = new TreeSet<String>();
+
+		services.add(getMonitoredService());
+		locationNames.add(getMonitor().getDefinitionName());
+		final ApplicationInfo info = new ApplicationInfo(1, "TestApp1", services, locationNames);
+		return info;
 	}
 	private ApplicationState getApplicationState() {
 		final Collection<ApplicationInfo> applications = new ArrayList<ApplicationInfo>();
 		final List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
 		final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
-		final Set<String> locationNames = new HashSet<String>();
+		final Set<String> locationNames = new TreeSet<String>();
 		final Map<String,List<GWTLocationSpecificStatus>> applicationStatuses = new HashMap<String,List<GWTLocationSpecificStatus>>();
 
 		services.add(getMonitoredService());
@@ -121,10 +171,16 @@ public class SerializationTest {
 		service.setIpInterfaceId(2);
 		service.setNodeId(3);
 		service.setServiceName("HTTP");
-		service.setApplications(Arrays.asList("TestApp1","TestApp3"));
+		service.setApplications(getAppNames());
 		return service;
 	}
 
+	private Set<String> getAppNames() {
+		Set<String> appNames = new TreeSet<String>();
+		appNames.add("TestApp1");
+		appNames.add("TestApp3");
+		return appNames;
+	}
 	private GWTLocationMonitor getMonitor() {
 		GWTLocationMonitor monitor = new GWTLocationMonitor();
 		monitor.setDefinitionName("blah");

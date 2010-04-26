@@ -441,7 +441,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     @Deprecated
     private static Set<GWTMonitoredService> getGWTMonitoredServiceTestData() {
-        Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+        Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
         GWTMonitoredService service = new GWTMonitoredService();
         service.setServiceName("HTTP");
         services.add(service);
@@ -453,7 +453,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     @Deprecated
     private static Set<String> getLocationSetTestData() {
-        Set<String> locations = new HashSet<String>();
+        Set<String> locations = new TreeSet<String>();
         locations.add("19");
         return locations;
     }

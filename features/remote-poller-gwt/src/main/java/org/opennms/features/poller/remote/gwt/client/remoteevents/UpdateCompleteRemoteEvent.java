@@ -8,7 +8,7 @@ public class UpdateCompleteRemoteEvent implements MapRemoteEvent {
 	public UpdateCompleteRemoteEvent() {
 	}
 
-	public void dispatch(RemotePollerPresenter locationManager) {
+	public void dispatch(final RemotePollerPresenter locationManager) {
 		locationManager.updateComplete();
 	}
 

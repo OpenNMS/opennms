@@ -3,9 +3,11 @@
  */
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.io.Serializable;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTLatLng implements IsSerializable {
+public class GWTLatLng implements IsSerializable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Double m_latitude;
