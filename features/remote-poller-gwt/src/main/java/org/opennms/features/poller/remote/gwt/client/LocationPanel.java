@@ -1,6 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		super();
 		initWidget(BINDER.createAndBindUi(this));
 		locationList.addLocationPanelSelectEventHandler(this);
+		tagPanel.setWidth(String.valueOf(this.getOffsetWidth()));
 	}
 
     public void setEventBus(final HandlerManager eventBus) {
@@ -49,7 +51,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	    // eventRegistrations.add(m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this));
 	}
 
-    public void onLocationSelected(LocationPanelSelectEvent event) {
+    public void onLocationSelected(final LocationPanelSelectEvent event) {
         m_eventBus.fireEvent(event);
       
     }
@@ -69,15 +71,19 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         setVisible(applicationList.getElement(), true);
     }
 
-    public void updateApplicationNames(Set<String> allApplicationNames) {
+    public void updateSelectedApplications(final Set<ApplicationInfo> selectedApplications) {
+        filterPanel.updateSelectedApplications(selectedApplications);
+    }
+
+    public void updateApplicationNames(final Set<String> allApplicationNames) {
         filterPanel.updateApplicationNames(allApplicationNames);
     }
 
-    public void updateApplicationList( ArrayList<ApplicationInfo> appList) {
+    public void updateApplicationList(final ArrayList<ApplicationInfo> appList) {
         applicationList.updateList(appList);
     }
 
-    public void updateLocationList(ArrayList<LocationInfo> visibleLocations) {
+    public void updateLocationList(final ArrayList<LocationInfo> visibleLocations) {
         locationList.updateList(visibleLocations);
     }
 
@@ -85,7 +91,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         tagPanel.clear();
     }
 
-    public boolean addAllTags(List<String> tagsOnVisibleLocations) {
-        return tagPanel.addAll(tagsOnVisibleLocations);
+    public boolean addAllTags(final Collection<String> tags) {
+        return tagPanel.addAll(tags);
     }
 }

@@ -383,3 +383,12 @@ new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect
 	mapTabGroup.activateTabByTitle(newMapName,false);
 
 }
+
+function getLabel(labelText) {
+		var ndxOf = labelText.indexOf('.');
+		if (ndxOf > 0)
+			return labelText.substr(0,ndxOf);
+		else
+			return labelText;
+
+}

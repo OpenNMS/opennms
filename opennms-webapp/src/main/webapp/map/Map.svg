@@ -42,7 +42,6 @@
 
 //top.$.history.callback = openMapSetUp;
 top.$.history.callback = historyCallBack;
-var MAPS_STARTUP_ACTION = "MapStartUp";
 
 var counter = 0;
 
@@ -113,6 +112,7 @@ function handleInit(data) {
 		maxLinks = mapsPropertiesFactory.maxLinks;
 		summaryLinkId = mapsPropertiesFactory.summaryLink;
 		summaryLinkColor = mapsPropertiesFactory.summaryLinkColor;
+		useSemaphore=mapsPropertiesFactory.useSemaphore;
 		
 		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
 		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;

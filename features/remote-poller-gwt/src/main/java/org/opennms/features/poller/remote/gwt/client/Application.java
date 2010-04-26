@@ -59,9 +59,9 @@ public class Application implements EntryPoint
             public void onInitializationComplete(LocationManagerInitializationCompleteEvent event) {
                 splitPanel.setWidgetMinSize(locationPanel, 200);
                 // Show the location list by default 
-                onLocationClick(null);
                 rootPanel.setSize("100%", "100%");
                 RootPanel.get("remotePollerMap").add(rootPanel);
+                onLocationClick(null);
             }
         });
 		locationPanel.setEventBus(m_eventBus);
@@ -100,6 +100,8 @@ private MapPanel createMapPanel() {
         mapPanel = new MapQuestMapPanel(m_eventBus);
     } else if (getMapImplementationType().equals("GoogleMaps")) {
         mapPanel = new GoogleMapsPanel(m_eventBus);
+    } else if (getMapImplementationType().equals("OpenLayers")) {
+    	mapPanel = new OpenLayersMapPanel(m_eventBus);
     } else {
     	Window.alert("unknown map implementation: " + getMapImplementationType());
     	throw new RuntimeException("unknown map implementation: " + getMapImplementationType());

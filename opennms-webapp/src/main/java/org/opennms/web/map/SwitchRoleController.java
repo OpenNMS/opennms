@@ -86,12 +86,8 @@ public class SwitchRoleController implements Controller {
 			
 			if(adminModeStr!=null ){
 				adminMode=Boolean.parseBoolean(adminModeStr);
-				if (request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)){
-					log.info("Swithing to mode admin: "+!adminMode);
-					bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.SWITCH_MODE_ACTION));
-				} else {
-					throw new MapsManagementException("Non-admin user ("+request.getRemoteUser()+") invoking switch role action ");
-				}
+				log.info("Swithing to mode admin: "+!adminMode);
+				bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.SWITCH_MODE_ACTION));
 			} else{
 				throw new IllegalStateException("Parameter adminMode is null ");
 			}

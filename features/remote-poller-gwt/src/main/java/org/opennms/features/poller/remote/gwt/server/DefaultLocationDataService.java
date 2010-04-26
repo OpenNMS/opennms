@@ -15,6 +15,7 @@ import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus;
+import org.opennms.features.poller.remote.gwt.client.GWTMarkerState;
 import org.opennms.features.poller.remote.gwt.client.GWTMonitoredService;
 import org.opennms.features.poller.remote.gwt.client.GWTPollResult;
 import org.opennms.features.poller.remote.gwt.client.LocationMonitorState;
@@ -115,14 +116,22 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 		} else {
 			def.setCoordinates(latLng.getCoordinates());
 		}
-		
-		final LocationInfo locationInfo = new LocationInfo(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), latLng.getCoordinates(), def.getTags());
+
+		final GWTMarkerState state = new GWTMarkerState(def.getName(), latLng, status);
+		final LocationInfo locationInfo = new LocationInfo(
+			def.getName(),
+			def.getPollingPackageName(),
+			def.getArea(),
+			def.getGeolocation(),
+			latLng.getCoordinates(),
+			def.getPriority(),
+			state,
+			status, def.getTags()
+		);
 
 		if (status == null) {
 			final LocationDetails ld = getLocationDetails(def);
 			locationInfo.setStatus(ld.getLocationMonitorState().getStatus());
-		} else {
-			locationInfo.setStatus(status);
 		}
 		LogUtils.debugf(this, "getLocation(" + def.getName() + ") returning %s", locationInfo.toString());
 		return locationInfo;

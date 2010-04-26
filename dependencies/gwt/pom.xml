@@ -46,6 +46,11 @@
       <artifactId>gwteventservice</artifactId>
       <version>1.1.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.gwtopenmaps.openlayers</groupId>
+      <artifactId>gwt-openlayers</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
@@ -54,6 +59,13 @@
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>

@@ -67,7 +67,7 @@
        
     </ui:style>
     
-	<g:DockLayoutPanel height="100%" width="100%" unit="PX">
+	<g:DockLayoutPanel height="100%" width="100%" unit="PCT">
            <g:center>
              <g:FlowPanel styleName="{style.tableContainer}">
                 <g:FlexTable ui:field="dataList" width="100%" />

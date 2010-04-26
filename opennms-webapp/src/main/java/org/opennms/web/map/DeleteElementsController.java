@@ -88,10 +88,6 @@ public class DeleteElementsController implements Controller {
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-                log.warn("Cannot delete elements because not admin role for user: " + request.getRemoteUser() );
-				throw new MapsException("Cannot delete elements because not admin role for user: " + request.getRemoteUser());
-			}
 			VMap map = manager.openMap();
 			if(log.isDebugEnabled())
 				log.debug("Got map from manager "+map);
