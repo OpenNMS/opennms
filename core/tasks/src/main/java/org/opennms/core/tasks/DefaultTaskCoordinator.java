@@ -129,44 +129,54 @@ public class DefaultTaskCoordinator implements InitializingBean {
         
     }
     
-    public SyncTask createTask(ContainerTask parent, Runnable r) {
+    public SyncTask createTask(ContainerTask<?> parent, Runnable r) {
         return new SyncTask(this, parent, r);
     }
     
-    public SyncTask createTask(ContainerTask parent, Runnable r, String schedulingHint) {
+    public SyncTask createTask(ContainerTask<?> parent, Runnable r, String schedulingHint) {
         return new SyncTask(this, parent, r, schedulingHint);
     }
     
-    public <T> AsyncTask<T> createTask(ContainerTask parent, Async<T> async, Callback<T> cb) {
+    public <T> AsyncTask<T> createTask(ContainerTask<?> parent, Async<T> async, Callback<T> cb) {
         return new AsyncTask<T>(this, parent, async, cb);
     }
     
 
-    public BatchTask createBatch(ContainerTask parent) {
-        return new BatchTask(this, parent);
+    public TaskBuilder<BatchTask> createBatch(ContainerTask<?> parent) {
+        return new TaskBuilder<BatchTask>(new BatchTask(this, parent));
     }
     
-    public BatchTask createBatch() {
-        return createBatch(null);
+    public TaskBuilder<BatchTask> createBatch() {
+        return createBatch((ContainerTask<?>)null);
     }
     
-    public BatchTask createBatch(ContainerTask parent, Runnable... tasks) {
-        BatchTask batch = createBatch(parent);
-        for(Runnable r : tasks) {
-            batch.add(r);
-        }
-        parent.add(batch);
-        return batch;
+    public BatchTask createBatch(ContainerTask<?> parent, Runnable... tasks) {
+        return createBatch(parent).add(tasks).get(parent);
     }
 
     
-    public SequenceTask createSequence(ContainerTask parent) {
-        return new SequenceTask(this, parent);
+    public BatchTask createBatch(Runnable... tasks) {
+        return createBatch().add(tasks).get();
+    }
+
+    
+    public TaskBuilder<SequenceTask> createSequence(ContainerTask<?> parent) {
+        return new TaskBuilder<SequenceTask>(new SequenceTask(this, parent));
     }
     
-    public SequenceTask createSquence() {
-        return createSequence((ContainerTask)null);
+    public TaskBuilder<SequenceTask> createSequence() {
+        return createSequence((ContainerTask<?>)null);
     }
+    
+    public SequenceTask createSequence(ContainerTask<?> parent, Runnable... tasks) {
+        return createSequence(parent).add(tasks).get(parent);
+    }
+
+    
+    public SequenceTask createSquence(Runnable... tasks) {
+        return createSequence().add(tasks).get();
+    }
+
     
     
     public void setLoopDelay(long millis) {

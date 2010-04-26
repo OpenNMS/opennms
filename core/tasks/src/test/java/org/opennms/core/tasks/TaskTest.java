@@ -229,7 +229,7 @@ public class TaskTest {
         
         AtomicInteger counter = new AtomicInteger(0);
         
-        ContainerTask batch = new BatchTask(m_coordinator, null);
+        BatchTask batch = new BatchTask(m_coordinator, null);
 
         batch.add(incr(counter));
         batch.add(incr(counter));
@@ -381,7 +381,7 @@ public class TaskTest {
     }
 
     private SequenceTask createSequence() {
-        return m_coordinator.createSequence(null);
+        return m_coordinator.createSequence().get();
     }
     
     @Test
@@ -405,7 +405,7 @@ public class TaskTest {
         
     }
     
-    public Runnable scheduler(final ContainerTask container, final AtomicLong result, final long startIndex, final long count, final long remaining) {
+    public Runnable scheduler(final ContainerTask<?> container, final AtomicLong result, final long startIndex, final long count, final long remaining) {
         return new Runnable() {
             public void run() {
                 for(long i = startIndex; i < startIndex+count; i++) {

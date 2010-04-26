@@ -69,7 +69,7 @@ public abstract class Task {
     
     private final TaskMonitor m_monitor;
     
-    public Task(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+    public Task(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         m_coordinator = coordinator;
         m_monitor = parent != null 
             ? parent.getMonitor().getChildTaskMonitor(parent, this) 

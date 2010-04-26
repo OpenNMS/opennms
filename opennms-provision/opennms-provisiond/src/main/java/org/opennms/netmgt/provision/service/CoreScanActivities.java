@@ -62,7 +62,6 @@ import org.opennms.netmgt.provision.service.NodeScan.AgentScan;
 import org.opennms.netmgt.provision.service.NodeScan.BaseAgentScan;
 import org.opennms.netmgt.provision.service.NodeScan.IpInterfaceScan;
 import org.opennms.netmgt.provision.service.NodeScan.NoAgentScan;
-import org.opennms.netmgt.provision.service.lifecycle.Phase;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
@@ -168,7 +167,7 @@ public class CoreScanActivities {
     }
 
     @Activity( lifecycle = "nodeScan", phase = "detectAgents" )
-    public void detectAgents(Phase currentPhase, NodeScan nodeScan) {
+    public void detectAgents(BatchTask currentPhase, NodeScan nodeScan) {
         
         boolean foundAgent = false;
 

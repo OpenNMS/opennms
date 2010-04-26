@@ -43,6 +43,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Category;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.RunInBatch;
+import org.opennms.core.tasks.SequenceTask;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -51,7 +53,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
-import org.opennms.netmgt.provision.service.lifecycle.Phase;
 
 public class NodeScan implements Runnable {
     private Integer m_nodeId;
@@ -121,16 +122,26 @@ public class NodeScan implements Runnable {
         try {
             log().info(String.format("Scanning node (%s/%s)", m_foreignSource, m_foreignId));
 
-            // loadNode
-            // detectAgents
-            // scanCompleted
-
+            SequenceTask sequence = m_taskCoordinator.createSequence().add(
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            m_scanActivities.loadNode(phase, NodeScan.this);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            m_scanActivities.detectAgents(phase, NodeScan.this);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            m_scanActivities.scanCompleted(phase, NodeScan.this);
+                        }
+                    }
+            ).get();
             
-
-            LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_scanActivities);
-            doNodeScan.setAttribute("nodeScan", this);
-            doNodeScan.trigger();
-            doNodeScan.waitFor();
+            sequence.schedule();
+            sequence.waitFor();
             
             log().debug(String.format("Finished scanning node (%s/%s)", m_foreignSource, m_foreignId));
         } catch (InterruptedException e) {
@@ -152,56 +163,57 @@ public class NodeScan implements Runnable {
         }
     }
 
-    public void doAgentScan(final Phase currentPhase, InetAddress agentAddress, String agentType) {
+    public void doAgentScan(final BatchTask parent, InetAddress agentAddress, String agentType) {
         
         final AgentScan agentScan = createAgentScan(agentAddress, agentType);
         
-        currentPhase.addSequence(
-                new Runnable () {
-                    public void run() {
-                        m_scanActivities.collectNodeInfo(currentPhase, agentScan);
+        parent.getBuilder().addSequence(
+                new RunInBatch () {
+                    public void run(BatchTask phase) {
+                        m_scanActivities.collectNodeInfo(phase, agentScan);
                     }
                 },
-                new Runnable() {
-                    public void run() {
-                        m_scanActivities.persistNodeInfo(currentPhase, agentScan);
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        m_scanActivities.persistNodeInfo(phase, agentScan);
                     }
                 },
-                new Runnable() {
-                    public void run() {
-                        m_scanActivities.detectPhysicalInterfaces(currentPhase, agentScan);
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        m_scanActivities.detectPhysicalInterfaces(phase, agentScan);
                     }
                 },
-                new Runnable() {
-                    public void run() {
-                        m_scanActivities.detectIpInterfaces(currentPhase, agentScan);
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        m_scanActivities.detectIpInterfaces(phase, agentScan);
                     }
                 },
-                new Runnable() {
-                    public void run() {
-                        m_scanActivities.deleteObsoleteResources(currentPhase, agentScan);
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        m_scanActivities.deleteObsoleteResources(phase, agentScan);
                     }
                 },
-                new Runnable() {
-                    public void run() {
-                        m_scanActivities.agentScanCompleted(currentPhase, agentScan);
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        m_scanActivities.agentScanCompleted(phase, agentScan);
                     }
                 }
         );
     }
 
-    public void doNoAgentScan(final BatchTask phase) {
+    
+    public void doNoAgentScan(final BatchTask parent) {
         
         final NoAgentScan noAgentScan = new NoAgentScan(m_nodeId, m_node);
         
-        phase.addSequence(
-                new Runnable() {
-                    public void run() {
+        parent.getBuilder().addSequence(
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
                         m_scanActivities.stampProvisionedInterfaces(phase, noAgentScan);
                     }
                 },
-                new Runnable() {
-                    public void run() {
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
                         m_scanActivities.deleteObsoleteResources(phase, noAgentScan);
                     }
                 }

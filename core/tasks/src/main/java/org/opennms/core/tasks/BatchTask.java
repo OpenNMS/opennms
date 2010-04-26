@@ -32,9 +32,9 @@
 package org.opennms.core.tasks;
 
 
-public class BatchTask extends ContainerTask {
+public class BatchTask extends ContainerTask<BatchTask> {
     
-    public BatchTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+    public BatchTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
     }
     
