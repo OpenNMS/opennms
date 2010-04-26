@@ -98,10 +98,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		}
 
 		// Add some test data
-		m_applications.addAll(getApplicationInfoTestData());
-		ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
-		applicationList.addAll(m_applications);
-		m_locationPanel.updateApplicationList(applicationList);
+//		m_applications.addAll(getApplicationInfoTestData());
+//		ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
+//		applicationList.addAll(m_applications);
+//		m_locationPanel.updateApplicationList(applicationList);
 	}
 
     public void initialize() {
@@ -166,23 +166,27 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return bldr.getBounds();
     }
 
-    public void createOrUpdateLocation(final LocationInfo info) {
-    	m_locations.put(info.getName(), info);
+    public void createOrUpdateLocation(final LocationInfo locationInfo) {
+    	m_locations.put(locationInfo.getName(), locationInfo);
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
-        if (info.getMarker() == null) {
-        	info.setMarker(getMarkerForLocation(info));
+        if (locationInfo.getMarker() == null) {
+        	locationInfo.setMarker(getMarkerForLocation(locationInfo));
         }
     }
 
-    public void createOrUpdateApplication(ApplicationInfo info) {
-    	info.setPriority(0L);
-    	for (final String location : info.getLocations()) {
+    public void createOrUpdateApplication(ApplicationInfo applicationInfo) {
+    	if (applicationInfo.getLocations().size() == 0) {
+    		applicationInfo.setPriority(Long.MAX_VALUE);
+    	} else {
+    		applicationInfo.setPriority(0L);
+    	}
+    	for (final String location : applicationInfo.getLocations()) {
     		final LocationInfo locationInfo = m_locations.get(location);
     		if (locationInfo != null) {
-    			info.setPriority(info.getPriority() + locationInfo.getPriority());
+    			applicationInfo.setPriority(applicationInfo.getPriority() + locationInfo.getPriority());
     		}
     	}
-        m_applications.add(info);
+        m_applications.add(applicationInfo);
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
     }
 
@@ -312,10 +316,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // Update the location information in the model
 		createOrUpdateLocation(info);
 
+    	updateAllMarkerStates();
+
         // Update the icon/caption in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());
 
-        // Update the icon in the map
+    	// Update the icon in the map
         GWTMarkerState m = getMarkerForLocation(info);
         m_mapPanel.placeMarker(m);
     }
@@ -324,11 +330,13 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Invoked by the {@link ApplicationUpdatedRemoteEvent} and {@link ApplicationsUpdatedRemoteEvent}
      * events.
      */
-    public void updateApplication(final ApplicationInfo info) {
-        if (info == null) return;
+    public void updateApplication(final ApplicationInfo applicationInfo) {
+        if (applicationInfo == null) return;
 
         // Update the location information in the model
-        createOrUpdateApplication(info);
+        createOrUpdateApplication(applicationInfo);
+
+    	updateAllMarkerStates();
 
         // Update the icon/caption in the LHN
         // Use an ArrayList so that it has good random-access efficiency
@@ -337,12 +345,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         applicationList.addAll(m_applications);
         m_locationPanel.updateApplicationList(applicationList);
 
-        // TODO: Update the icon in the map
-        // Pseudocode:
-        // for (Location location : info.getAllLocations()) {
-        //    GWTMarkerState m = new GWTMarkerState(location);
-        //    getMapPanel().placeMarker(m);
-        // }
+        for (final String locationName : applicationInfo.getLocations()) {
+        	GWTMarkerState m = getMarkerForLocation(locationName);
+        	m_mapPanel.placeMarker(m);
+        }
     }
 
     /**
