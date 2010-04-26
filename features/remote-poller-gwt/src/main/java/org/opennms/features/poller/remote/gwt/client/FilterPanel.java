@@ -2,10 +2,12 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.Collection;
 
+import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -14,8 +16,10 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.Panel;
@@ -33,7 +37,9 @@ public class FilterPanel extends Composite {
     private transient LocationManager m_locationManager;
 
     interface FilterStyles extends CssResource {
+        String panelCaption();
         String panelEntry();
+        String panelIcon();
     }
 
     @UiField
@@ -55,11 +61,31 @@ public class FilterPanel extends Composite {
 
     private final MultiWordSuggestOracle applicationNames = new MultiWordSuggestOracle();
     
-    private class ApplicationFilter extends FlowPanel {
-        public ApplicationFilter(ApplicationInfo app) {
+    private class ApplicationFilter extends HorizontalPanel {
+        public ApplicationFilter(final ApplicationInfo app) {
+            Image appIcon = null;
+            if (app.getStatus() == Status.UP) {
+                appIcon = new Image("images/selected-UP.png");
+            } else if (app.getStatus() == Status.MARGINAL) {
+                appIcon = new Image("images/selected-MARGINAL.png");
+            } else if (app.getStatus() == Status.DOWN) {
+                appIcon = new Image("images/selected-DOWN.png");
+            } else if (app.getStatus() == Status.UNKNOWN) {
+                appIcon = new Image("images/selected-UNKNOWN.png");
+            }
+            appIcon.addStyleName(filterStyles.panelIcon());
+            super.add(appIcon);
             Label appName = new Label(app.getName());
-            appName.addStyleName(filterStyles.panelEntry());
+            appName.addStyleName(filterStyles.panelCaption());
             super.add(appName);
+            Anchor removeLink = new Anchor("remove");
+            removeLink.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    m_eventBus.fireEvent(new ApplicationDeselectedEvent(app));
+                }
+            });
+            super.add(removeLink);
+            super.addStyleName(filterStyles.panelEntry());
         }
     }
 

@@ -4,6 +4,7 @@ import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedE
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagClearedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEventHandler;
+import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselectedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
@@ -27,6 +28,7 @@ public interface RemotePollerPresenter extends MapPanelBoundsChangedEventHandler
 		TagClearedEventHandler,
 		StatusSelectionChangedEventHandler,
 		GWTMarkerClickedEventHandler,
+		ApplicationDeselectedEventHandler,
 		ApplicationSelectedEventHandler
 {
     public static final Domain LOCATION_EVENT_DOMAIN = DomainFactory.getDomain("location_event");

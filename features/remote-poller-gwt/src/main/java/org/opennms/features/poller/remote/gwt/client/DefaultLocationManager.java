@@ -16,6 +16,7 @@ import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelection
 import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagClearedEvent;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
@@ -33,7 +34,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
@@ -88,6 +88,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
 		m_eventBus.addHandler(TagClearedEvent.TYPE, this);
 		m_eventBus.addHandler(StatusSelectionChangedEvent.TYPE, this);
+		m_eventBus.addHandler(ApplicationDeselectedEvent.TYPE, this);
 		m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
 		m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
 
@@ -504,6 +505,13 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void onApplicationSelected(ApplicationSelectedEvent event) {
         // Add the application to the selected application list
         m_selectedApplications.add(event.getAppInfo());
+        // Update the list of selected applications in the panel
+        m_locationPanel.updateSelectedApplications(m_selectedApplications);
+    }
+
+    public void onApplicationDeselected(ApplicationDeselectedEvent event) {
+        // Remove the application from the selected application list
+        m_selectedApplications.remove(event.getAppInfo());
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
     }

@@ -19,8 +19,17 @@
 		}
 	</ui:style>
 	<ui:style field="filterStyles" type="org.opennms.features.poller.remote.gwt.client.FilterPanel.FilterStyles">
-		.panelEntry {
+		.panelIcon {
+			width: 16px;
+			padding-right: 3px;
+		}
+		.panelCaption {
 			font-weight: bold;
+			padding-right: 3px;
+		}
+		.panelEntry {
+			padding-top: 3px;
+			padding-bottom: 3px;
 			font-size: 11px;
 		}
 	</ui:style>
