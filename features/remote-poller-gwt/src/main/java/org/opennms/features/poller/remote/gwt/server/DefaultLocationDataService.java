@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.ApplicationState;
@@ -126,11 +127,13 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			latLng.getCoordinates(),
 			def.getPriority(),
 			state,
-			status, def.getTags()
+			status,
+			def.getTags()
 		);
 
 		if (status == null) {
 			final LocationDetails ld = getLocationDetails(def);
+			state.setStatus(ld.getLocationMonitorState().getStatus());
 			locationInfo.setStatus(ld.getLocationMonitorState().getStatus());
 		}
 		LogUtils.debugf(this, "getLocation(" + def.getName() + ") returning %s", locationInfo.toString());
@@ -279,8 +282,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			handler.start(apps.size());
 		}
 		for (final OnmsApplication app : m_applicationDao.findAll()) {
-			final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
-			final Set<String> locationNames = new HashSet<String>();
+			final Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
+			final Set<String> locationNames = new TreeSet<String>();
 			for (OnmsMonitoredService service : m_monitoredServiceDao.findByApplication(app)) {
 				services.add(transformMonitoredService(service));
 			}
@@ -351,11 +354,16 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 		final ApplicationInfo app = new ApplicationInfo();
 		app.setId(application.getId());
 		app.setName(application.getName());
-		final Set<GWTMonitoredService> s = new HashSet<GWTMonitoredService>();
+		final Set<GWTMonitoredService> s = new TreeSet<GWTMonitoredService>();
+		final Set<String> locations = new TreeSet<String>();
 		for (final OnmsMonitoredService service : services) {
+			for (final OnmsApplication oa : service.getApplications()) {
+				locations.add(oa.getName());
+			}
 			s.add(transformMonitoredService(service));
 		}
-		app.setServices(s);
+//		app.setServices(s);
+//		app.setLocations(locations);
 		return app;
 	}
 

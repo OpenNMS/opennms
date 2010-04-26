@@ -12,9 +12,10 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	private Set<GWTMonitoredService> m_services;
 	private Set<String> m_locations;
 	private Status m_status = Status.UNINITIALIZED;
-	private volatile Long m_priority = null;
+	private Long m_priority = null;
 
-	public ApplicationInfo() {}
+	public ApplicationInfo() {
+	}
 
 	public ApplicationInfo(final int id, final String name, final Set<GWTMonitoredService> services, final Set<String> locationNames) {
 		m_id = id;
@@ -76,16 +77,16 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 
 	public int compareTo(final ApplicationInfo that) {
 		int compareVal;
-		compareVal = this.getStatus().compareTo(that.getStatus());
+		compareVal = this.getStatus() == null? -1 : this.getStatus().compareTo(that.getStatus());
 		if (compareVal != 0) return compareVal;
 		compareVal = this.getPriority().compareTo(that.getPriority());
 		if (compareVal != 0) return compareVal;
-		compareVal = this.getName().compareTo(that.getName());
+		compareVal = this.getName() == null? -1 : this.getName().compareTo(that.getName());
 		if (compareVal != 0) return compareVal;
 		return this.getId().compareTo(that.getId());
 	}
 
 	public String toString() {
-		return "ApplicationInfo[id=" + m_id + ",name=" + m_name + ",services=[" + Utils.join(m_services, ", ") + "],locations=" + Utils.join(m_locations, ", ") + "]";
+		return "ApplicationInfo[id=" + m_id + ",name=" + m_name + ",services=[" + Utils.join(m_services, ", ") + "],locations=[" + Utils.join(m_locations, ", ") + "],status=" + getStatus() + ",priority=" + getPriority() + "]";
 	}
 }

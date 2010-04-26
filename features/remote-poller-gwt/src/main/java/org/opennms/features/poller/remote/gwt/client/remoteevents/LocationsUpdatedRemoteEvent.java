@@ -24,7 +24,7 @@ public class LocationsUpdatedRemoteEvent implements MapRemoteEvent {
 		m_locations = locations;
 	}
 
-	public void dispatch(RemotePollerPresenter locationManager) {
+	public void dispatch(final RemotePollerPresenter locationManager) {
 		for (LocationInfo location : m_locations) {
 			locationManager.updateLocation(location);
 		}

@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TagPanel extends Composite implements Collection<String> {
@@ -216,14 +217,15 @@ public class TagPanel extends Composite implements Collection<String> {
 
         tagPanel.clear();
 
-        for (Map.Entry<String, Integer> entry : tagCounts.entrySet()) {
+        for (final Map.Entry<String, Integer> entry : tagCounts.entrySet()) {
+            final String tagText = entry.getKey();
             final Anchor tagLabel = new Anchor();
             double rawValue = (double)(entry.getValue() - minCount) * TagStyles.COUNT / (double)(maxCount - minCount);
-            tagLabel.setText(entry.getKey());
+            tagLabel.setHTML(tagText.replace(" ", "&nbsp;"));
             tagLabel.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     tagLabel.addStyleName(tagStyles.selectedTag());
-                    m_eventBus.fireEvent(new TagSelectedEvent(tagLabel.getText()));
+                    m_eventBus.fireEvent(new TagSelectedEvent(tagText));
                 }
             });
             switch ((int)Math.round(rawValue)) {
@@ -261,6 +263,8 @@ public class TagPanel extends Composite implements Collection<String> {
                 tagLabel.addStyleName(tagStyles.tag9());
             }
             tagPanel.add(tagLabel);
+            // without this, the tag cloud doesn't wrap properly
+            tagPanel.add(new InlineHTML(" "));
         }
     }
 }

@@ -11,9 +11,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
@@ -40,7 +40,7 @@ public abstract class PageableList extends Composite {
     private static final int TOTAL_LOCATIONS = 10;
     
     @UiField FlexTable dataList;
-    @UiField FlowPanel pagingControls;
+    @UiField Panel pagingControls;
     @UiField Hyperlink nextBtn;
     @UiField Label pageStatsLabel;
     @UiField Hyperlink prevBtn;
@@ -51,8 +51,6 @@ public abstract class PageableList extends Composite {
 
     public PageableList() {
         initWidget(uiBinder.createAndBindUi(this));
-        nextBtn.setText("next>>");
-        prevBtn.setText("<<prev");
     }
     
     protected void showFirstPage() {
@@ -133,7 +131,11 @@ public abstract class PageableList extends Composite {
     }
 
     private void updatePageStatsDisplay(int startIndex, int endIndex, int total) {
-        pageStatsLabel.setText( startIndex + "-" + endIndex + " of " + total);
+        if (endIndex > 0) {
+            pageStatsLabel.setText( startIndex + "-" + endIndex + " of " + total);
+        } else {
+            pageStatsLabel.setText("No matching items");
+        }
     }
 
     private int getTotalPages() {

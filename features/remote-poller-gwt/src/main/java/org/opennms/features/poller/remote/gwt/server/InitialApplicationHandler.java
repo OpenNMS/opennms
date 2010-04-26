@@ -17,8 +17,8 @@ public class InitialApplicationHandler implements ApplicationHandler {
 	public void start(final int size) {
 	}
 
-	public void handle(final ApplicationInfo item) {
-		final ApplicationUpdatedRemoteEvent event = new ApplicationUpdatedRemoteEvent(item);
+	public void handle(final ApplicationInfo applicationInfo) {
+		final ApplicationUpdatedRemoteEvent event = new ApplicationUpdatedRemoteEvent(applicationInfo);
 		m_eventService.addEventUserSpecific(event);
 	}
 

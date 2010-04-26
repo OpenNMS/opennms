@@ -7,6 +7,8 @@ public class ApplicationUpdatedRemoteEvent implements MapRemoteEvent {
 	private static final long serialVersionUID = 1L;
 	private ApplicationInfo m_applicationInfo;
 
+	public ApplicationUpdatedRemoteEvent() {}
+
 	public ApplicationUpdatedRemoteEvent(final ApplicationInfo item) {
 		m_applicationInfo = item;
 	}

@@ -130,7 +130,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             for (final LocationDef def : defs) {
                 if (def.getLocationName().equals(onmsDef.getName())) {
                     def.setMonitoringArea(onmsDef.getArea());
-                    def.setPollingPackageName(onmsDef.getArea());
+                    def.setPollingPackageName(onmsDef.getPollingPackageName());
                     def.setGeolocation(onmsDef.getGeolocation());
                     def.setCoordinates(onmsDef.getCoordinates());
                     def.setPriority(onmsDef.getPriority());

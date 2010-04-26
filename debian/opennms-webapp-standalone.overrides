@@ -1,4 +1,3 @@
 opennms-webapp-standalone: file-in-usr-marked-as-conffile
 opennms-webapp-standalone: package-contains-empty-directory usr/share/opennms/webapps/opennms/WEB-INF/classes/
 opennms-webapp-standalone: package-contains-empty-directory usr/share/opennms/webapps/opennms-remoting/WEB-INF/classes/
-opennms-webapp-standalone: package-contains-empty-directory usr/share/opennms/webapps/opennms-remote-monitor-ui/WEB-INF/classes/

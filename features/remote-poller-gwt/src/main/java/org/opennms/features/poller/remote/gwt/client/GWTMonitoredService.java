@@ -1,7 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -15,7 +15,9 @@ public class GWTMonitoredService implements Serializable, IsSerializable, Compar
 	private String m_hostname;
 	private int m_nodeId;
 	private String m_serviceName;
-	private Collection<String> m_applications;
+	private Set<String> m_applications;
+
+	public GWTMonitoredService() {}
 
 	public void setId(final int id) {
 		m_id = id;
@@ -59,10 +61,10 @@ public class GWTMonitoredService implements Serializable, IsSerializable, Compar
 	public String getServiceName() {
 		return m_serviceName;
 	}
-	public Collection<String> getApplications() {
+	public Set<String> getApplications() {
 		return m_applications;
 	}
-	public void setApplications(final Collection<String> applications) {
+	public void setApplications(final Set<String> applications) {
 		m_applications = applications;
 	}
 
@@ -80,7 +82,7 @@ public class GWTMonitoredService implements Serializable, IsSerializable, Compar
 		lastCompare = this.getIpInterfaceId().compareTo(that.getIpInterfaceId());
 		if (lastCompare != 0) return lastCompare;
 
-		lastCompare = this.getApplications().toString().compareTo(that.getApplications().toString());
+		lastCompare = this.getApplications() == null? 0 : this.getApplications().toString().compareTo(that.getApplications().toString());
 		if (lastCompare != 0) return lastCompare;
 
 		lastCompare = Integer.valueOf(this.getId()).compareTo(that.getId());

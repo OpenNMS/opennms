@@ -8,6 +8,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
 import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
@@ -34,6 +36,8 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	private static volatile AtomicBoolean m_initializationComplete;
 
 	private void initialize() {
+		Logger.getLogger("com.google.gwt.user.client.rpc").setLevel(Level.TRACE);
+
 		if (m_context == null) {
 			LogUtils.infof(this, "initializing context");
 			m_context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
@@ -66,6 +70,11 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 					LogUtils.debugf(this, "checking for monitor status updates");
 					final Date endDate = new Date();
 					addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(m_locationDataService.getUpdatedLocationsBetween(m_lastUpdated, endDate)));
+
+					final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
+					appHandlers.add(new InitialApplicationHandler(m_locationDataService, service));
+					m_locationDataService.handleAllApplications(appHandlers);
+
 					m_lastUpdated = endDate;
 				}
 			}, UPDATE_PERIOD, UPDATE_PERIOD);
@@ -100,17 +109,21 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 	}
 
 	private void pushUninitializedLocations(final EventExecutorService service) {
+		LogUtils.debugf(this, "pushing uninitialized locations");
 		final Collection<LocationDefHandler> locationHandlers = new ArrayList<LocationDefHandler>();
-		locationHandlers.add(new InitialLocationDefHandler(m_locationDataService, service, false));
+		locationHandlers.add(new DefaultLocationDefHandler(m_locationDataService, service, false));
 		locationHandlers.add(new GeocodingHandler(m_locationDataService, service));
 		m_locationDataService.handleAllMonitoringLocationDefinitions(locationHandlers);
+
+		LogUtils.debugf(this, "pushing applications");
 		final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
 		appHandlers.add(new InitialApplicationHandler(m_locationDataService, service));
 		m_locationDataService.handleAllApplications(appHandlers);
 	}
 
 	private void pushInitializedLocations(final EventExecutorService service) {
-		final LocationDefHandler locationHandler = new InitialLocationDefHandler(m_locationDataService, service, true);
+		LogUtils.debugf(this, "pushing initialized locations");
+		final LocationDefHandler locationHandler = new DefaultLocationDefHandler(m_locationDataService, service, true);
 		m_locationDataService.handleAllMonitoringLocationDefinitions(Collections.singleton(locationHandler));
 	}
 

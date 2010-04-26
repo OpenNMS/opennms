@@ -1,5 +1,4 @@
 usr/share/lintian/overrides
 usr/share/opennms/webapps/opennms
 usr/share/opennms/webapps/opennms-remoting
-usr/share/opennms/webapps/opennms-remote-monitor-ui
 etc/tomcat5.5/policy.d

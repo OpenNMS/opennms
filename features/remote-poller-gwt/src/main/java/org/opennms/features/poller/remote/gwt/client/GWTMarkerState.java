@@ -11,8 +11,8 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 	private Status m_status;
     private String m_name;
     private GWTLatLng m_latLng;
-    private boolean m_selected = true;
-	private boolean m_visible = true;
+    private Boolean m_selected = true;
+	private Boolean m_visible = true;
 
 	public GWTMarkerState() {}
 

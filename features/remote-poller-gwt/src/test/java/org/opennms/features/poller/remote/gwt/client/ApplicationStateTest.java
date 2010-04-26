@@ -3,7 +3,6 @@ package org.opennms.features.poller.remote.gwt.client;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -200,7 +200,7 @@ public class ApplicationStateTest {
 			app = new ApplicationInfo();
 			app.setId(count++);
 			app.setName(name);
-			Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+			Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
 			services.add(getMonitoredService());
 			app.setServices(services);
 			m_applications.put(name, app);
@@ -226,7 +226,10 @@ public class ApplicationStateTest {
 		if (service == null) {
 			service = new GWTMonitoredService();
 			service.setId(count++);
-			service.setApplications(Arrays.asList(new String[] { "TestApp1", "TestApp3"}));
+			Set<String> appNames = new TreeSet<String>();
+			appNames.add("TestApp1");
+			appNames.add("TestApp3");
+			service.setApplications(appNames);
 			service.setHostname("localhost");
 			service.setIfIndex(count++);
 			service.setIpAddress("127.0.0.1");
