@@ -244,6 +244,7 @@ public class TagPanel extends Composite implements Collection<String> {
                 tagLabel.addStyleName(tagStyles.tag9());
             }
             tagPanel.add(tagLabel);
+            // without this, the tag cloud doesn't wrap properly
             tagPanel.add(new InlineHTML(" "));
         }
     }
