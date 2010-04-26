@@ -23,26 +23,27 @@ button {
   border: 0px;
   padding: 3px;
   margin: 0px;
+  width: 100%;
 }
 
 .statusUp td {
   vertical-align: top;
-  background-color: #40ff40;
+  background-color: #88ff88;
 }
 
 .statusMarginal td {
   vertical-align: top;
-  background-color: #ffff40;
+  background-color: #ffff88;
 }
 
 .statusDown td {
   vertical-align: top;
-  background-color: #ff4040;
+  background-color: #ff8888;
 }
 
 .statusUnknown td {
   vertical-align: top;
-  background-color: #4040ff;
+  background-color: #8888ff;
 }
 
 .statusUninitialized td {

@@ -1,6 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationManagerIniti
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
+import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
@@ -32,11 +34,16 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
 
 /**
  * <p>This class implements both {@link LocationManager} (the model portion of the webapp) and
@@ -267,10 +274,28 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         showLocationDetails(event.getLocationName());
     }
 
-    private void showLocationDetails(String locationName) {
+    private void showLocationDetails(final String locationName) {
     	// TODO: this needs a callback to get the location details, and fill in the content
     	final LocationInfo loc = m_locations.get(locationName);
-        m_mapPanel.showLocationDetails(locationName, locationName + "(" + loc.getArea() + ")", "Need to implement content");
+    	m_remoteService.getLocationDetails(locationName, new AsyncCallback<LocationDetails>() {
+			public void onFailure(final Throwable t) {
+				m_mapPanel.showLocationDetails(
+					locationName,
+					"Error Getting Location Details",
+					"<p>An error occurred getting the location details.</p>" +
+					"<pre>" + URL.encode(t.getMessage()) + "</pre>"
+				);
+			}
+
+			public void onSuccess(final LocationDetails locationDetails) {
+		        m_mapPanel.showLocationDetails(
+		        	locationName,
+		        	locationName + "(" + loc.getArea() + ")",
+		        	getLocationInfoDetails(loc, locationDetails)
+		        );
+			}
+    		
+    	});
     }
 
     /**
@@ -512,6 +537,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void onApplicationSelected(ApplicationSelectedEvent event) {
         // Add the application to the selected application list
         m_selectedApplications.add(event.getAppInfo());
+        
+        updateAllMarkerStates();
+
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
     }
@@ -519,7 +547,64 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void onApplicationDeselected(ApplicationDeselectedEvent event) {
         // Remove the application from the selected application list
         m_selectedApplications.remove(event.getAppInfo());
+
+        updateAllMarkerStates();
+
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
     }
+
+	public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {
+		final LocationMonitorState state = locationDetails.getLocationMonitorState();
+	
+		int pollersStarted = state.getMonitorsStarted();
+		int pollersStopped = state.getMonitorsStopped();
+		int pollersDisconnected = state.getMonitorsDisconnected();
+		Collection<String> serviceNames = state.getServiceNames();
+		int servicesWithOutages = state.getServicesDown().size();
+		int monitorsWithOutages = state.getMonitorsWithServicesDown().size();
+	
+		final VerticalPanel panel = new VerticalPanel();
+		panel.setStyleName("statusTable");
+		panel.add(new Label(locationInfo.getName()));
+	
+		final FlexTable table = new FlexTable();
+		table.setCellPadding(0);
+		table.setCellSpacing(0);
+		table.setStyleName("statusTable");
+		final RowFormatter rf = table.getRowFormatter();
+	
+		table.setText(0, 0, "Monitors:");
+		table.setHTML(0, 1, pollersStarted + " started");
+		table.setText(1, 0, "");
+		table.setHTML(1, 1, pollersStopped + " stopped");
+		table.setText(2, 0, "");
+		table.setHTML(2, 1, pollersDisconnected + " disconnected");
+	
+		for (int i = 0; i < 3; i++) {
+			rf.setStyleName(i, state.getStatus().getStyle());
+		}
+		
+		if (pollersStarted > 0) {
+			// If pollers are started, add on service information
+			table.setText(3, 0, "Services:");
+			table.setHTML(3, 1, servicesWithOutages + " outages (of " + serviceNames.size() + " services)");
+			table.setText(4, 0, "");
+			table.setHTML(4, 1, monitorsWithOutages + " pollers reporting errors");
+	
+			for (int i = 3; i < 5; i++) {
+				rf.setStyleName(i, Status.UP.getStyle());
+				if (servicesWithOutages > 0) {
+					if (monitorsWithOutages == pollersStarted) {
+						rf.setStyleName(i, Status.DOWN.getStyle());
+					} else {
+						rf.setStyleName(i, Status.MARGINAL.getStyle());
+					}
+				}
+			}
+		}
+	
+		panel.add(table);
+		return panel.toString();
+	}
 }
