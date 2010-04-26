@@ -336,6 +336,14 @@ public abstract class ThresholdingSet {
                 log().debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
             }
             boolean foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
+            if (!foundInPkg && Boolean.getBoolean("org.opennms.thresholds.filtersReloadEnabled")) {
+                // The interface might be a newly added one, rebuild the package
+                // to ipList mapping and again to verify if the interface is in
+                // the package.
+                log().info("getThresholdGroupNames: re-initializing filters.");
+                m_configManager.rebuildPackageIpListMap();
+                foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
+            }
             if (!foundInPkg) {
                 if (log().isDebugEnabled())
                     log().debug("getThresholdGroupNames: address/service: " + hostAddress + "/" + serviceName + " not scheduled, interface does not belong to package: " + pkg.getName());

@@ -1048,10 +1048,11 @@ public class Collectd extends AbstractServiceDaemon implements
     }
     
     private void handleReloadDaemonConfig(Event event) {
+        final String daemonName = "Threshd";
         boolean isTarget = false;
         List<Parm> parmCollection = event.getParms().getParmCollection();
         for (Parm parm : parmCollection) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Threshd".equalsIgnoreCase(parm.getValue().getContent())) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && daemonName.equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
             }
@@ -1073,12 +1074,14 @@ public class Collectd extends AbstractServiceDaemon implements
                     ThreshdConfigFactory.reload();
                 ebldr = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, "Collectd");
                 getEventIpcManager().sendNow(ebldr.getEvent());
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
             } catch (Exception e) {
                 log().error("handleReloadDaemonConfig: Error reloading configuration: " + e, e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
                 ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
             }
             if (ebldr != null) {
