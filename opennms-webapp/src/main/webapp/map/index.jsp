@@ -54,9 +54,12 @@
 
 <script type="text/javascript">
 
+var svgMapWidth,svgMapHeight;
+
+var resizing=false;
+
 $.history.callback = function ( reinstate, cursor ) {
-		window.historyCallBack(reinstate,cursor);
-};
+}
 
 function savehistory(mapid) {
  	$.history( {'mapid':mapid} );
@@ -69,15 +72,60 @@ function toggle(id)
 	el.style.display = display;
 }
 
-
-function emitSVG(embedAttrs) {
-    document.writeln('<embed '+embedAttrs+' width="'+parseInt(screen.availWidth*95/100)+'" height="'+parseInt(((screen.availWidth*95/100)-100)*3/4)+'">');
+window.onresize = function() {
+    if (resizing) return;
+    
+    resizing=true;
+	removeSVG();
+	writeReload();
+	timedResize(2000);
 }
 
-emitSVG('src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml"');
+function  writeReload() {
+	var o=document.getElementById('reloading');
+	o.appendChild(document.createTextNode("Resizing the maps....."));
+}
+
+
+function timedResize(timeout) {
+	setTimeout("window.location.href=window.location.href;",timeout);	
+}
+
+function setSvgWindowSize() {
+	if (window.innerWidth)  {
+		svgMapWidth=window.innerWidth-35;
+		svgMapHeight=window.innerHeight;
+	} else if (document.all) {
+		svgMapWidth=document.body.clientWidth-20;
+		svgMapHeight=document.body.clientHeight;
+	}
+	
+	if (svgMapWidth < 1072)
+		svgMapWidth=1072;
+	if (svgMapHeight < 600)
+		svgMapHeight=600;
+}
+
+function emitSVG() {
+	resizing=false;
+	setSvgWindowSize();
+	document.writeln('<embed id="opennmsSVGMaps" src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml" width="'+svgMapWidth+'" height="'+svgMapHeight+'">');
+}
+
+function removeSVG() {
+	var o=document.getElementById('opennmsSVGMaps');
+	if (o != undefined) 
+		o.parentNode.removeChild(o);
+}
+
+emitSVG();
 
 </script>
 </p>
+<center>
+<div id="reloading">
+</div>
+</center>
     <jsp:include page="/includes/footer.jsp" flush="false" >
       <jsp:param name="location" value="map" />
     </jsp:include>

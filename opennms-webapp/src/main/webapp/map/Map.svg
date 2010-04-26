@@ -40,7 +40,6 @@
 	
 <script type="text/ecmascript"><![CDATA[
 
-//top.$.history.callback = openMapSetUp;
 top.$.history.callback = historyCallBack;
 
 var counter = 0;
@@ -246,14 +245,8 @@ function load(evt){
 	// Reference var to the Windows SVG Object		
 	tabSvgElement = document.getElementById("TabPanel");
 
-	//WorkPanel data
-	var workPanelWidth = 3*menuWidth;
-	var workPanelHeight = 600;
-	var workPanelDelta = 2;
-
-	mapWidth=parseInt((screen.availWidth*97/100))-workPanelWidth-workPanelDelta;
-	mapHeight=parseInt(mapWidth*3/4);			
-	
+	mapWidth=top.svgMapWidth-workPanelWidth-workPanelDelta;
+	mapHeight=top.svgMapHeight;				
 	
 	// Define the position and dimension of the work panel objects
 	document.getElementById('WorkPanel').setAttributeNS(null,"x",mapWidth+workPanelDelta);
@@ -261,7 +254,6 @@ function load(evt){
 	document.getElementById('WorkPanel').setAttributeNS(null,"height",workPanelHeight);
 
 	document.getElementById('toolbar').setAttributeNS(null,"fill","navy");
-//	document.getElementById('toolbar').setAttributeNS(null,"stroke","blue");
 	document.getElementById('toolbar').setAttributeNS(null,"height",2*menuHeight+1);
 
 
@@ -302,6 +294,9 @@ function load(evt){
 
 	<!-- ******** WINDOWS P A N E L S ********* -->	
 	<svg id="Windows" x="0" y="20"/>
+	
+	<!-- ******** TOOLTIP P A N E L S ********* -->	
+	<g id="toolTip"/>
 	
 	<!-- ******** WORK P A N E L ********* -->	
 	<svg id="WorkPanel" y="0">
@@ -397,8 +392,6 @@ function load(evt){
 
  	</svg> <!-- End WorkPanel -->
 	
-	<!-- ******** TOOLTIP P A N E L S ********* -->	
-	<g id="toolTip"/>
 </svg>
 
 
