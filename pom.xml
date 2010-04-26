@@ -1256,8 +1256,8 @@
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jsp-2.1</artifactId>
-        <version>${jettyServletVersion}</version>
+        <artifactId>jsp-2.1-jetty</artifactId>
+        <version>${jettyVersion}</version>
       </dependency>
       <dependency>
         <groupId>jfree</groupId>
