@@ -471,6 +471,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }
 
         updateMapMarkers();
+
+        m_locationPanel.updateLocationList(getVisibleLocations());
     }
 
     private GWTMarkerState getMarkerForLocation(final String locationName) {
