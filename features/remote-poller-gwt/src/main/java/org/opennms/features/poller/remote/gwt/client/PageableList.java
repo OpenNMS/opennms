@@ -82,7 +82,6 @@ public abstract class PageableList extends Composite {
         if(totalPages == 0) {
             totalPages = 1;
         }
-        Window.alert("TotalPages: " + totalPages);
         setTotalPages( totalPages );
         updatePageStatsDisplay(startIndex + 1, showableLocations, getListSize());
     }

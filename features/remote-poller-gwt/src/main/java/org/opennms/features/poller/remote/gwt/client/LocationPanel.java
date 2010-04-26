@@ -35,7 +35,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		super();
 		initWidget(BINDER.createAndBindUi(this));
 		locationList.addLocationPanelSelectEventHandler(this);
-		tagPanel.setWidth(String.valueOf(this.getOffsetWidth()));
+		// tagPanel.setWidth(String.valueOf(this.getOffsetWidth()));
 		// Blank out the selected applications list
 		this.updateSelectedApplications(new TreeSet<ApplicationInfo>());
 	}
