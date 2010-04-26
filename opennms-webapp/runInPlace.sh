@@ -1,16 +1,27 @@
 #!/bin/sh
 
+if [ -z "$OPENNMS_ROOT" ]; then
+	OPENNMS_ROOT=`ls -d ../target/opennms-*-SNAPSHOT 2>/dev/null | sort -u | tail -n 1`
+	OPENNMS_ROOT=`cd $OPENNMS_ROOT; pwd`
+fi
+
 function err() {
     echo "$@" 1>&2
 }
 
 function warInPlace() {
-    ../build.sh -o  compile war:inplace
+	if $OFFLINE; then
+        OFFLINE_ARGS="-o"
+    fi
+    ../build.sh $OFFLINE_ARGS $DEFINES compile war:inplace
 }
 
 function runInPlace() {
     local PORT=$1
-    ../build.sh -o -Dweb.port=$PORT jetty:run
+	if $OFFLINE; then
+        OFFLINE_ARGS="-o"
+    fi
+    ../build.sh $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT jetty:run-exploded
 }
 
 function removeGwtModuleFiles() {
@@ -47,8 +58,11 @@ function clean() {
     removeGwtFiles
     rm -f src/main/webapp/WEB-INF/version.properties
     rm -f src/main/webapp/WEB-INF/configuration.properties
-
-    ../build.sh clean
+	
+	if $OFFLINE; then
+        OFFLINE_ARGS="-o"
+    fi
+    ../build.sh $OFFLINE_ARGS clean
 }
 
 function usage() {
@@ -59,6 +73,7 @@ function usage() {
     err "\t-c : remove WEB-INF/lib, WEB-INF/classes and META_INF dirs"
     err "\t-g : remove gwt generated files"
     err "\t-n : no-run: this is useful if you want to only build in place"
+	err "\t-o : offline: run in offline mode"
     err "\t-p portnum : the port to run the webapp at"
     exit 1
 }
@@ -67,8 +82,10 @@ WAR_INPLACE=false
 RUN_INPLACE=true
 REMOVE_GWT_FILES=false
 REMOVE_CODE=false
+OFFLINE=false
 CLEAN=false
 WEB_PORT=8080
+DEFINES=""
 
 while getopts bcChgnp: OPT; do
     case $OPT in
@@ -78,9 +95,13 @@ while getopts bcChgnp: OPT; do
 	    ;;
 	C)  CLEAN=true
 	    ;;
+	D)  DEFINES="$DEFINES -D$OPTARG"
+	    ;;
 	g)  REMOVE_GWT_FILES=true
 	    ;;
 	n)  RUN_INPLACE=false
+	    ;;
+	o)  OFFLINE=true
 	    ;;
 	p)  WEB_PORT=$OPTARG
 	    ;;
