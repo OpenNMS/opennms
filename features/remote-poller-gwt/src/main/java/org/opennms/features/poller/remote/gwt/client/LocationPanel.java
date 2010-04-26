@@ -71,6 +71,10 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         setVisible(applicationList.getElement(), true);
     }
 
+    public void updateSelectedApplications(final Set<ApplicationInfo> selectedApplications) {
+        filterPanel.updateSelectedApplications(selectedApplications);
+    }
+
     public void updateApplicationNames(final Set<String> allApplicationNames) {
         filterPanel.updateApplicationNames(allApplicationNames);
     }
