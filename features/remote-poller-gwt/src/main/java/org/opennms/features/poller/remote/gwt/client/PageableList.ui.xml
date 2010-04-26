@@ -2,28 +2,24 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
-           
-        .controlLayoutStyle{
-              width: 100%;  
+        .pagingControls{
+            padding-top: 3px;
+            width: 100%;
         }
         
         .nextBtnLayoutStyle{
-            position: absolute;
-            right: 2px;
-            bottom: 5px;
+            text-align: right;
+            text-decoration: none;
         }
         
         .prevBtnLayoutStyle{
-            position: absolute;
-            left: 2px;
-            bottom: 5px;
-            
+            text-align: left;
+            text-decoration: none;
         }
         
         .labelLayoutStyle{
-            position: absolute;
-            left: 40%;
-            bottom: 5px;
+            text-align: center;
+            width: 100%;
         }
         
         .tableContainer{
@@ -74,15 +70,11 @@
              </g:FlowPanel>
            </g:center>
            <g:south size="26">
-             <g:FlowPanel ui:field="pagingControls" >
-               <g:FlowPanel styleName="{style.nextBtnLayoutStyle}">
-                   <g:Hyperlink ui:field="nextBtn" text="next" />
-               </g:FlowPanel>
-               <g:Label ui:field="pageStatsLabel" styleName="{style.labelLayoutStyle}"/>
-               <g:FlowPanel styleName="{style.prevBtnLayoutStyle}">
-                   <g:Hyperlink ui:field="prevBtn" text="prev" />
-               </g:FlowPanel>
-             </g:FlowPanel>
+             <g:HorizontalPanel ui:field="pagingControls" addStyleNames="{style.pagingControls}">
+               <g:Hyperlink ui:field="prevBtn" addStyleNames="{style.prevBtnLayoutStyle}" text="&laquo; prev" />
+               <g:Label ui:field="pageStatsLabel" addStyleNames="{style.labelLayoutStyle}"/>
+               <g:Hyperlink ui:field="nextBtn" addStyleNames="{style.nextBtnLayoutStyle}" text="next &raquo;" />
+             </g:HorizontalPanel>
            </g:south>
        </g:DockLayoutPanel>
 </ui:UiBinder> 
