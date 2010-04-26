@@ -63,6 +63,10 @@ public class TagPanel extends Composite implements Collection<String> {
     public interface TagClearedEventHandler extends EventHandler {
         public void onTagCleared();
     }
+    
+    public interface TagResizeEventHandler extends EventHandler{
+        public void onTagPanelResize();
+    }
 
     public static class TagSelectedEvent extends GwtEvent<TagSelectedEventHandler>
     {
@@ -96,6 +100,21 @@ public class TagPanel extends Composite implements Collection<String> {
         public GwtEvent.Type<TagClearedEventHandler> getAssociatedType() {
             return TYPE;
         }
+    }
+    
+    public static class TagResizeEvent extends GwtEvent<TagResizeEventHandler>{
+
+        public static Type<TagResizeEventHandler> TYPE = new Type<TagResizeEventHandler>();
+        @Override
+        protected void dispatch(TagResizeEventHandler handler) {
+            handler.onTagPanelResize();
+        }
+
+        @Override
+        public com.google.gwt.event.shared.GwtEvent.Type<TagResizeEventHandler> getAssociatedType() {
+            return TYPE;
+        }
+        
     }
 
     public TagPanel() {

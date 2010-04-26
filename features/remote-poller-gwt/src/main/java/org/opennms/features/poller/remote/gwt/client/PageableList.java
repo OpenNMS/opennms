@@ -9,7 +9,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -78,11 +77,14 @@ public abstract class PageableList extends Composite {
             rowCount++;
         }
         
-        int totalPages = (int) Math.ceil(size / getTotalListItemsPerPage());
-        if(totalPages == 0) {
-            totalPages = 1;
+        if(size > getTotalListItemsPerPage()) {
+            int totalPages = (int) Math.ceil(size / getTotalListItemsPerPage());
+            if(totalPages == 0) {
+                totalPages = 1;
+            }
+            setTotalPages( totalPages );
+            
         }
-        setTotalPages( totalPages );
         updatePageStatsDisplay(startIndex + 1, showableLocations, getListSize());
     }
 
@@ -112,10 +114,11 @@ public abstract class PageableList extends Composite {
     }
     
     private void setCurrentPageIndex(int currentPageIndex) {
-        if(currentPageIndex == 0 ) {
+
+        if(currentPageIndex == 0  ) {
             m_currentPageIndex = currentPageIndex;
             updateListDisplay(m_currentPageIndex);
-        }else if(currentPageIndex > 0 && currentPageIndex < getTotalPages()) {
+        }else if(currentPageIndex > 0 && currentPageIndex <= getTotalPages()) {
             m_currentPageIndex = currentPageIndex;
             updateListDisplay(m_currentPageIndex);
         }

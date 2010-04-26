@@ -78,7 +78,8 @@ public class Application implements EntryPoint
 	        locationLink.addStyleName(linkStyles.activeLink());
             applicationLink.removeStyleName(linkStyles.activeLink());
 	        locationPanel.showLocationList();
-	        locationPanel.filterPanel.showApplicationFilters(false);
+	        locationPanel.showApplicationFilters(false);
+	        locationPanel.resizeDockPanel();
 	    }
 	}
 
@@ -90,11 +91,12 @@ public class Application implements EntryPoint
             applicationLink.addStyleName(linkStyles.activeLink());
             locationLink.removeStyleName(linkStyles.activeLink());
             locationPanel.showApplicationList();
-            locationPanel.filterPanel.showApplicationFilters(true);
+            locationPanel.showApplicationFilters(true);
+            locationPanel.resizeDockPanel();
         }
     }
 
-private MapPanel createMapPanel() {
+    private MapPanel createMapPanel() {
     MapPanel mapPanel;
     if (getMapImplementationType().equals("Mapquest")) {
         mapPanel = new MapQuestMapPanel(m_eventBus);

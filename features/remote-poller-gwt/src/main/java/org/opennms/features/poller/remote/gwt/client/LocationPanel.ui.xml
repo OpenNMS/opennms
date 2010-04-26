@@ -7,22 +7,22 @@
   
   
   </ui:style>
-
-    <g:DockLayoutPanel unit="PX">
-        <g:north size="255">
-            <g:HTMLPanel>
-                <me:FilterPanel ui:field="filterPanel"/>
-                <hr/>
-                <me:TagPanel ui:field="tagPanel"/>
-                <hr/>
-            </g:HTMLPanel>
-        </g:north>
-        <g:center>
-            <g:FlowPanel>
-                <me:PageableApplicationList ui:field="applicationList"/>
-                <me:PageableLocationList ui:field="locationList"/>
-            </g:FlowPanel>
-        </g:center>
+  
+  <g:DockLayoutPanel unit="PX" ui:field="dockPanel">
+    <g:north size="102">
+      <g:HTMLPanel ui:field="filterOptionsPanel">
+        <me:FilterPanel ui:field="filterPanel"/>
+        <hr/>
+        <me:TagPanel ui:field="tagPanel"/>
+        <hr/>
+        </g:HTMLPanel>
+      </g:north>
+      <g:center>
+        <g:FlowPanel ui:field="listsPanel">
+          <me:PageableApplicationList ui:field="applicationList"/>
+          <me:PageableLocationList ui:field="locationList"/>
+        </g:FlowPanel>
+      </g:center>
     </g:DockLayoutPanel>
 
 </ui:UiBinder>

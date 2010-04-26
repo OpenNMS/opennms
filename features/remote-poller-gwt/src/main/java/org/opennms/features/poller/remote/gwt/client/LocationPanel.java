@@ -16,10 +16,13 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class LocationPanel extends Composite implements LocationPanelSelectEventHandler {
-
+    
 	interface Binder extends UiBinder<Widget, LocationPanel> { }
 
 	private static final Binder BINDER = GWT.create(Binder.class);
@@ -30,6 +33,9 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	@UiField PageableApplicationList applicationList;
 	@UiField FilterPanel filterPanel;
 	@UiField TagPanel tagPanel;
+	@UiField DockLayoutPanel dockPanel;
+	@UiField HTMLPanel filterOptionsPanel;
+	@UiField FlowPanel listsPanel;
 	
 	public LocationPanel() {
 		super();
@@ -38,6 +44,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		// tagPanel.setWidth(String.valueOf(this.getOffsetWidth()));
 		// Blank out the selected applications list
 		this.updateSelectedApplications(new TreeSet<ApplicationInfo>());
+		
 	}
 
     public void setEventBus(final HandlerManager eventBus) {
@@ -97,4 +104,22 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     public boolean addAllTags(final Collection<String> tags) {
         return tagPanel.addAll(tags);
     }
+
+    public void showApplicationFilters(boolean isApplicationView) {
+        filterPanel.showApplicationFilters(isApplicationView);
+    }
+
+    public void resizeDockPanel() {
+        int verticalSpacer = 23;
+        int newSize = tagPanel.getOffsetHeight() + filterPanel.getOffsetHeight() + verticalSpacer;
+        
+        dockPanel.remove(listsPanel);
+        dockPanel.remove(filterOptionsPanel);
+        
+        dockPanel.addNorth(filterOptionsPanel, newSize);
+        dockPanel.add(listsPanel);
+    }
+    
+   
+
 }
