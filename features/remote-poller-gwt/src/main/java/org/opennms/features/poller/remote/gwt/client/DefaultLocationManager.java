@@ -201,17 +201,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     	final ArrayList<LocationInfo> visibleLocations = new ArrayList<LocationInfo>();
         GWTBounds bounds = m_mapPanel.getBounds();
         for(LocationInfo location : m_locations.values()) {
-            if(location.isVisible(bounds)) {
-                if (m_selectedTag == null) {
-                    visibleLocations.add(location);
-                } else {
-                    if (
-                            location.getTags() != null && location.getTags().contains(m_selectedTag)
-                    ) {
-                        visibleLocations.add(location);
-                    }
-                }
-            }
+        	final GWTMarkerState markerState = location.getMarker();
+        	if (markerState.isSelected() && markerState.isVisible()) {
+        		visibleLocations.add(location);
+        	}
         }
 
         // TODO: this should use the current filter set eventually, for now sort by priority, then name
@@ -223,6 +216,34 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         });
 
         return visibleLocations;
+    }
+
+    private void updateAllMarkerStates() {
+    	for (final LocationInfo location : m_locations.values()) {
+        	final GWTMarkerState markerState = location.getMarker();
+
+        	// if it's within the map bounds, it's visible
+        	markerState.setVisible(location.isVisible(m_mapPanel.getBounds()));
+        	if (markerState.isVisible()) {
+        		// unless it's not in the list of selected statuses
+    			markerState.setVisible(m_selectedStatuses.contains(location.getStatus()));
+        	}
+
+        	if (m_selectedTag == null) {
+        		markerState.setSelected(true);
+        	} else {
+        		markerState.setSelected(location.getTags() != null && location.getTags().contains(m_selectedTag));
+        	}
+        	m_mapPanel.placeMarker(markerState);
+    	}
+    }
+
+    public List<String> getAllTags() {
+    	final List<String> retval = new ArrayList<String>();
+    	for (final LocationInfo location : m_locations.values()) {
+    		retval.addAll(location.getTags());
+    	}
+    	return retval;
     }
 
     public List<String> getTagsOnVisibleLocations() {
@@ -250,9 +271,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Refresh the list of locations whenever the map panel boundaries change.
      */
     public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
+    	// make sure each location's marker is up-to-date
+    	updateAllMarkerStates();
+
         // Update the contents of the tag panel
         m_locationPanel.clearTagPanel();
-        m_locationPanel.addAllTags(getTagsOnVisibleLocations());
+        m_locationPanel.addAllTags(getAllTags());
 
         // Update the list of objects in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());
@@ -265,9 +289,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Refresh the list of locations whenever they are updated.
      */
     public void onLocationsUpdated(final LocationsUpdatedEvent e) {
+    	// make sure each location's marker is up-to-date
+    	updateAllMarkerStates();
+
         // Update the contents of the tag panel
         m_locationPanel.clearTagPanel();
-        m_locationPanel.addAllTags(getTagsOnVisibleLocations());
+        m_locationPanel.addAllTags(getAllTags());
 
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
         m_locationPanel.updateLocationList(getVisibleLocations());
@@ -341,12 +368,19 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void onTagSelected(String tagName) {
         // Update state inside of this object to track the selected tag
         m_selectedTag = tagName;
+    	// make sure each location's marker is up-to-date
+    	updateAllMarkerStates();
+
         m_locationPanel.updateLocationList(getVisibleLocations());
     }
 
     public void onTagCleared() {
         // Update state inside of this object to track the selected tag
         m_selectedTag = null;
+
+    	// make sure each location's marker is up-to-date
+    	updateAllMarkerStates();
+
         // TODO: Update markers on the map panel
         // Update the list of objects in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());

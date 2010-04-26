@@ -1,6 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -86,7 +87,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         tagPanel.clear();
     }
 
-    public boolean addAllTags(final List<String> tagsOnVisibleLocations) {
-        return tagPanel.addAll(tagsOnVisibleLocations);
+    public boolean addAllTags(final Collection<String> tags) {
+        return tagPanel.addAll(tags);
     }
 }
