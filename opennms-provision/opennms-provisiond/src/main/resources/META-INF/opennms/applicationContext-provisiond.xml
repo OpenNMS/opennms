@@ -117,6 +117,7 @@
                     </list>
                 </constructor-arg>
             </bean>
+<!--
             <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
                 <constructor-arg value="agentScan" />
                 <constructor-arg>
@@ -147,6 +148,7 @@
                     </list>
                 </constructor-arg>
             </bean>
+-->
   		</list>
   	</property>
   </bean> 

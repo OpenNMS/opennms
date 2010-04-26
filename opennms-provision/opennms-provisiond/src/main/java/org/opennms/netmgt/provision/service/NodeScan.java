@@ -119,7 +119,20 @@ public class NodeScan implements Runnable {
 
     public void run() {
         try {
-            doNodeScan();
+            log().info(String.format("Scanning node (%s/%s)", m_foreignSource, m_foreignId));
+
+            // loadNode
+            // detectAgents
+            // scanCompleted
+
+            
+
+            LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_scanActivities);
+            doNodeScan.setAttribute("nodeScan", this);
+            doNodeScan.trigger();
+            doNodeScan.waitFor();
+            
+            log().debug(String.format("Finished scanning node (%s/%s)", m_foreignSource, m_foreignId));
         } catch (InterruptedException e) {
             log().warn("The node scan was interrupted", e);
         } catch (ExecutionException e) {
@@ -132,17 +145,6 @@ public class NodeScan implements Runnable {
         return future;
     }
 
-    private void doNodeScan() throws InterruptedException, ExecutionException {
-        log().info(String.format("Scanning node (%s/%s)", m_foreignSource, m_foreignId));
-
-        LifeCycleInstance doNodeScan = m_lifeCycleRepository.createLifeCycleInstance("nodeScan", m_scanActivities);
-        doNodeScan.setAttribute("nodeScan", this);
-        doNodeScan.trigger();
-        doNodeScan.waitFor();
-
-        log().debug(String.format("Finished scanning node (%s/%s)", m_foreignSource, m_foreignId));
-    }
-
     public void doLoadNode(BatchTask loadNode) {
         m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
         if (m_node == null) {
@@ -150,34 +152,69 @@ public class NodeScan implements Runnable {
         }
     }
 
-    public void doAgentScan(Phase detectAgents, InetAddress agentAddress, String agentType) {
-        detectAgents.createNestedLifeCycle("agentScan")
-            .setAttribute("agentScan", createAgentScan(agentAddress, agentType))
-            .setAttribute("agentType", agentType)
-            .setAttribute("node", getNode())
-            .setAttribute("foreignSource", getForeignSource())
-            .setAttribute("foreignId", getForeignId())
-            .setAttribute("primaryAddress", agentAddress)
-            .trigger();
+    public void doAgentScan(final Phase currentPhase, InetAddress agentAddress, String agentType) {
+        
+        final AgentScan agentScan = createAgentScan(agentAddress, agentType);
+        
+        currentPhase.addSequence(
+                new Runnable () {
+                    public void run() {
+                        m_scanActivities.collectNodeInfo(currentPhase, agentScan);
+                    }
+                },
+                new Runnable() {
+                    public void run() {
+                        m_scanActivities.persistNodeInfo(currentPhase, agentScan);
+                    }
+                },
+                new Runnable() {
+                    public void run() {
+                        m_scanActivities.detectPhysicalInterfaces(currentPhase, agentScan);
+                    }
+                },
+                new Runnable() {
+                    public void run() {
+                        m_scanActivities.detectIpInterfaces(currentPhase, agentScan);
+                    }
+                },
+                new Runnable() {
+                    public void run() {
+                        m_scanActivities.deleteObsoleteResources(currentPhase, agentScan);
+                    }
+                },
+                new Runnable() {
+                    public void run() {
+                        m_scanActivities.agentScanCompleted(currentPhase, agentScan);
+                    }
+                }
+        );
     }
 
-    public void doNoAgentScan(Phase detectAgents) {
-        // we could not find an agent so do a noAgent lifecycle
-        detectAgents.createNestedLifeCycle("noAgent")
-            .setAttribute("noAgentScan",createNoAgentScan())
-            .trigger();
+    public void doNoAgentScan(final BatchTask phase) {
+        
+        final NoAgentScan noAgentScan = new NoAgentScan(m_nodeId, m_node);
+        
+        phase.addSequence(
+                new Runnable() {
+                    public void run() {
+                        m_scanActivities.stampProvisionedInterfaces(phase, noAgentScan);
+                    }
+                },
+                new Runnable() {
+                    public void run() {
+                        m_scanActivities.deleteObsoleteResources(phase, noAgentScan);
+                    }
+                }
+        );
+
     }
 
 
-    private BaseAgentScan createAgentScan(InetAddress agentAddress, String agentType) {
+    private AgentScan createAgentScan(InetAddress agentAddress, String agentType) {
         return new AgentScan(m_nodeId, m_node, agentAddress, agentType);
     }
     
     
-    private BaseAgentScan createNoAgentScan() {
-        return new NoAgentScan(m_nodeId, m_node);
-    }
- 
     private Category log() {
         return ThreadCategory.getInstance(NodeScan.class);
     }
@@ -288,29 +325,14 @@ public class NodeScan implements Runnable {
             m_provisionService.updateIpInterfaceAttributes(getNodeId(), iface);
         }
 
-        public void triggerIPInterfaceScan(final Phase currentPhase, final InetAddress ipAddress) {
-            
+        public void triggerIPInterfaceScan(final BatchTask currentPhase, final InetAddress ipAddress) {
             currentPhase.add(new Runnable() {
-
                 public void run() {
-                    m_scanActivities.detectServices(currentPhase, createIpInterfaceScan(getNodeId(), ipAddress));
+                    m_scanActivities.detectServices(currentPhase, new IpInterfaceScan(getNodeId(), ipAddress));
                 }
-                
             });
-            
-            
-//            currentPhase.createNestedLifeCycle("ipInterfaceScan")
-//                .setAttribute("ipInterfaceScan", createIpInterfaceScan(getNodeId(), ipAddress))
-//                .setAttribute("foreignSource", getForeignSource())
-//                .setAttribute("nodeId", getNodeId())
-//                .setAttribute("ipAddress", ipAddress)
-//                .trigger();
         }
 
-        private IpInterfaceScan createIpInterfaceScan(Integer nodeId, InetAddress ipAddress) {
-            return new IpInterfaceScan(nodeId, ipAddress);
-        }
-        
         public String toString() {
             return new ToStringBuilder(this)
                 .append("foreign source", getForeignSource())

@@ -146,6 +146,22 @@ public class ContainerTask extends Task {
         add(task);
         return task;
     }
+    
+    public SequenceTask addSequence(Runnable... tasks) {
+        SequenceTask sequence = getCoordinator().createSequence(this);
+        for(Runnable r : tasks) {
+            sequence.add(r);
+        }
+        add(sequence);
+        return sequence;
+    }
+    
+    public BatchTask addBatch(Runnable... tasks) {
+        DefaultTaskCoordinator coordinator = getCoordinator();
+        ContainerTask parent = this;
+        return coordinator.createBatch(parent, tasks);
+        
+    }
 
     private SyncTask createTask(Runnable runnable) {
         return getCoordinator().createTask(this, runnable);

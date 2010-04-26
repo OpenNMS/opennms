@@ -146,9 +146,28 @@ public class DefaultTaskCoordinator implements InitializingBean {
         return new BatchTask(this, parent);
     }
     
+    public BatchTask createBatch() {
+        return createBatch(null);
+    }
+    
+    public BatchTask createBatch(ContainerTask parent, Runnable... tasks) {
+        BatchTask batch = createBatch(parent);
+        for(Runnable r : tasks) {
+            batch.add(r);
+        }
+        parent.add(batch);
+        return batch;
+    }
+
+    
     public SequenceTask createSequence(ContainerTask parent) {
         return new SequenceTask(this, parent);
     }
+    
+    public SequenceTask createSquence() {
+        return createSequence((ContainerTask)null);
+    }
+    
     
     public void setLoopDelay(long millis) {
         m_loopDelay = millis;
@@ -294,4 +313,5 @@ public class DefaultTaskCoordinator implements InitializingBean {
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
+
 }

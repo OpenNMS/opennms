@@ -197,7 +197,7 @@ public class CoreScanActivities {
     }
 
     @Activity( lifecycle = "agentScan", phase = "collectNodeInfo" )
-    public void collectNodeInfo(BatchTask currentPhase, AgentScan agentScan) throws InterruptedException {
+    public void collectNodeInfo(BatchTask currentPhase, AgentScan agentScan)  {
         
         Date scanStamp = new Date();
         agentScan.setScanStamp(scanStamp);
@@ -211,32 +211,37 @@ public class CoreScanActivities {
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "systemGroup", systemGroup);
         walker.start();
         
-        walker.waitFor();
-        
-        if (walker.timedOut()) {
-            agentScan.abort("Aborting node scan : Agent timedout while scanning the system table");
-        }
-        else if (walker.failed()) {
-            agentScan.abort("Aborting node scan : Agent failed while scanning the system table: " + walker.getErrorMessage());
-        } else {
-        
-            systemGroup.updateSnmpDataForNode(agentScan.getNode());
+        try {
 
-            List<NodePolicy> nodePolicies = m_provisionService.getNodePoliciesForForeignSource(agentScan.getForeignSource());
+            walker.waitFor();
 
-            OnmsNode node = agentScan.getNode();
-            for(NodePolicy policy : nodePolicies) {
-                if (node != null) {
-                    node = policy.apply(node);
-                }
+            if (walker.timedOut()) {
+                agentScan.abort("Aborting node scan : Agent timedout while scanning the system table");
             }
-
-            if (node == null) {
-                agentScan.abort("Aborted scan of node due to configured policy");
+            else if (walker.failed()) {
+                agentScan.abort("Aborting node scan : Agent failed while scanning the system table: " + walker.getErrorMessage());
             } else {
-                agentScan.setNode(node);
+
+                systemGroup.updateSnmpDataForNode(agentScan.getNode());
+
+                List<NodePolicy> nodePolicies = m_provisionService.getNodePoliciesForForeignSource(agentScan.getForeignSource());
+
+                OnmsNode node = agentScan.getNode();
+                for(NodePolicy policy : nodePolicies) {
+                    if (node != null) {
+                        node = policy.apply(node);
+                    }
+                }
+
+                if (node == null) {
+                    agentScan.abort("Aborted scan of node due to configured policy");
+                } else {
+                    agentScan.setNode(node);
+                }
+
             }
-        
+        } catch (InterruptedException e) {
+            agentScan.abort("Aborting node scan : Scan thread interrupted!");
         }
     }
 
@@ -246,7 +251,7 @@ public class CoreScanActivities {
     }
 
     @Activity( lifecycle = "agentScan", phase = "detectPhysicalInterfaces" )
-    public void detectPhysicalInterfaces(final BatchTask currentPhase, final AgentScan agentScan) throws InterruptedException {
+    public void detectPhysicalInterfaces(final BatchTask currentPhase, final AgentScan agentScan) {
         if (agentScan.isAborted()) { return; }
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentScan.getAgentAddress());
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
@@ -285,21 +290,26 @@ public class CoreScanActivities {
         
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", physIfTracker);
         walker.start();
-        walker.waitFor();
+        
+        try {
+            walker.waitFor();
 
-        if (walker.timedOut()) {
-            agentScan.abort("Aborting node scan : Agent timedout while scanning the interfaces table");
-        }
-        else if (walker.failed()) {
-            agentScan.abort("Aborting node scan : Agent failed while scanning the interfaces table: " + walker.getErrorMessage());
-        }
-        else {
-            debug("Finished phase " + currentPhase);
+            if (walker.timedOut()) {
+                agentScan.abort("Aborting node scan : Agent timedout while scanning the interfaces table");
+            }
+            else if (walker.failed()) {
+                agentScan.abort("Aborting node scan : Agent failed while scanning the interfaces table: " + walker.getErrorMessage());
+            }
+            else {
+                debug("Finished phase " + currentPhase);
+            }
+        } catch (InterruptedException e) {
+            agentScan.abort("Aborting node scan : Scan thread interrupted while waiting for interfaces table");
         }
     }
 
     @Activity( lifecycle = "agentScan", phase = "detectIpInterfaces" )
-    public void detectIpInterfaces(final Phase currentPhase, final AgentScan agentScan) throws InterruptedException {
+    public void detectIpInterfaces(final BatchTask currentPhase, final AgentScan agentScan) {
         if (agentScan.isAborted()) { return; }
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentScan.getAgentAddress());
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
@@ -346,30 +356,35 @@ public class CoreScanActivities {
         
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipIfTracker);
         walker.start();
-        walker.waitFor();
         
-        if (walker.timedOut()) {
-            agentScan.abort("Aborting node scan : Agent timedout while scanning the ipAddrTable");
-        }
-        else if (walker.failed()) {
-            agentScan.abort("Aborting node scan : Agent failed while scanning the ipAddrTable : " + walker.getErrorMessage());
-        }
-        else {
+        try {
+            walker.waitFor();
+
+            if (walker.timedOut()) {
+                agentScan.abort("Aborting node scan : Agent timedout while scanning the ipAddrTable");
+            }
+            else if (walker.failed()) {
+                agentScan.abort("Aborting node scan : Agent failed while scanning the ipAddrTable : " + walker.getErrorMessage());
+            }
+            else {
 
 
-            // After processing the snmp provided interfaces then we need to scan any that 
-            // were provisioned but missing from the ip table
-            for(String ipAddr : provisionedIps) {
-                OnmsIpInterface iface = agentScan.getNode().getIpInterfaceByIpAddress(ipAddr);
-                iface.setIpLastCapsdPoll(agentScan.getScanStamp());
-                iface.setIsManaged("M");
+                // After processing the snmp provided interfaces then we need to scan any that 
+                // were provisioned but missing from the ip table
+                for(String ipAddr : provisionedIps) {
+                    OnmsIpInterface iface = agentScan.getNode().getIpInterfaceByIpAddress(ipAddr);
+                    iface.setIpLastCapsdPoll(agentScan.getScanStamp());
+                    iface.setIsManaged("M");
 
-                currentPhase.add(ipUpdater(currentPhase, agentScan, iface), "write");
+                    currentPhase.add(ipUpdater(currentPhase, agentScan, iface), "write");
+
+                }
+
+                debug("Finished phase " + currentPhase);
 
             }
-
-            debug("Finished phase " + currentPhase);
-
+        } catch (InterruptedException e) {
+            agentScan.abort("Aborting node scan : Scan thread failed while waiting for ipAddrTable");
         }
     }
     
@@ -396,7 +411,7 @@ public class CoreScanActivities {
     }
     
     @Activity( lifecycle = "noAgent", phase = "stampProvisionedInterfaces", schedulingHint="write")
-    public void stampProvisionedInterfaces(Phase currentPhase, NoAgentScan scan) {
+    public void stampProvisionedInterfaces(BatchTask currentPhase, NoAgentScan scan) {
         if (scan.isAborted()) { return; }
         
         scan.setScanStamp(new Date());
@@ -534,7 +549,7 @@ public class CoreScanActivities {
         
     }
     
-    private Runnable ipUpdater(final Phase currentPhase,
+    private Runnable ipUpdater(final BatchTask currentPhase,
             final BaseAgentScan agentScan, final OnmsIpInterface iface) {
         Runnable r = new Runnable() {
             public void run() {
