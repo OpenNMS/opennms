@@ -8,7 +8,6 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -101,7 +100,6 @@ public class PageableLocationList extends PageableList {
       final Cell cell = getCellForEvent(event);
       LocationInfo location = m_locations.get(cell.getRowIndex() + (getCurrentPageIndex() * getTotalListItemsPerPage()));
       LocationInfoDisplay widget =  (LocationInfoDisplay) dataList.getWidget(cell.getRowIndex(), 0);
-      Window.alert("widget.getHeight(): " + widget.getHeight());
       fireEvent(new LocationPanelSelectEvent(location.getName()));
         
     }
