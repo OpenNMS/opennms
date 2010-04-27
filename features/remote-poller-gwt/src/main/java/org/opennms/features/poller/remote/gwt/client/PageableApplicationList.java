@@ -31,7 +31,12 @@ public class PageableApplicationList extends PageableList {
             DOM.appendChild(this.getElement(), m_nameLabel.getElement());
             DOM.appendChild(this.getElement(), m_statusLabel.getElement());
             
-            int calculatedHeight = m_statusLabel.getOffsetHeight();
+            
+        }
+        
+        @Override
+        protected void onLoad() {
+            int calculatedHeight = m_nameLabel.getOffsetHeight() + m_statusLabel.getOffsetHeight();
             int newHeight = calculatedHeight > 60 ? calculatedHeight : 60;
             setHeight(Integer.toString(newHeight));
         }
