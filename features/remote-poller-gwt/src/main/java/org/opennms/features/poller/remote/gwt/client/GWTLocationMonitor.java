@@ -58,7 +58,9 @@ public class GWTLocationMonitor implements Serializable, IsSerializable, Compara
 	}
 
 	public int hashCode() {
-		return 5 * this.getId().hashCode() + this.getName().hashCode() + this.getDefinitionName().hashCode();
+		return 5 * (this.getId() == null? 1 : this.getId().hashCode()) +
+			(this.getName() == null? 1 : this.getName().hashCode()) +
+			(this.getDefinitionName() == null? 1 : this.getDefinitionName().hashCode());
 	}
 
 	public int compareTo(GWTLocationMonitor that) {
