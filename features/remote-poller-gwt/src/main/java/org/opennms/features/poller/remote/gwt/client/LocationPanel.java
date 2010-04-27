@@ -87,6 +87,9 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 
     public void updateSelectedApplications(final Set<ApplicationInfo> selectedApplications) {
         filterPanel.updateSelectedApplications(selectedApplications);
+        
+        //Trigger the resize of the panel
+        resizeDockPanel();
     }
 
     public void updateApplicationNames(final Set<String> allApplicationNames) {
