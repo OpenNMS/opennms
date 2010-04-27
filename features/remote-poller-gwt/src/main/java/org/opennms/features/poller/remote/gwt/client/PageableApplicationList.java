@@ -30,6 +30,10 @@ public class PageableApplicationList extends PageableList {
             DOM.appendChild(this.getElement(), m_icon.getElement());
             DOM.appendChild(this.getElement(), m_nameLabel.getElement());
             DOM.appendChild(this.getElement(), m_statusLabel.getElement());
+            
+            int calculatedHeight = m_statusLabel.getOffsetHeight();
+            int newHeight = calculatedHeight > 60 ? calculatedHeight : 60;
+            setHeight(Integer.toString(newHeight));
         }
         
         
