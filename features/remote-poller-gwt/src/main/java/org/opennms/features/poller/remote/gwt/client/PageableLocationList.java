@@ -97,7 +97,7 @@ public class PageableLocationList extends PageableList {
     public void onItemClickHandler(ClickEvent event) {
       final Cell cell = getCellForEvent(event);
       LocationInfo location = m_locations.get(cell.getRowIndex() + (getCurrentPageIndex() * getTotalListItemsPerPage()));
-      //Testing take out once complete;
+
       fireEvent(new LocationPanelSelectEvent(location.getName()));
     }
 

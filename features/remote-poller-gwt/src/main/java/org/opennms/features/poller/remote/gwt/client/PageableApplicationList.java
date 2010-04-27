@@ -38,16 +38,18 @@ public class PageableApplicationList extends PageableList {
         
         public ApplicationDetailView(ApplicationInfo applicationInfo) {
             setElement(Document.get().createDivElement());
-            setStyles();
+            
             
             m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
+            setStyles();
             m_nameLabel.setText(applicationInfo.getName());
             m_statusLabel.setText(applicationInfo.getStatus().getReason());
         }
         
         private void setStyles() {
             setStyleName(locationDetailStyle.detailContainerStyle());
-            m_icon.addStyleName(locationDetailStyle.iconStyle());
+            String iconStyle = locationDetailStyle.iconStyle();
+            m_icon.addStyleName(iconStyle);
             m_nameLabel.addStyleName(locationDetailStyle.nameStyle());
             m_statusLabel.addStyleName(locationDetailStyle.statusStyle());
             
