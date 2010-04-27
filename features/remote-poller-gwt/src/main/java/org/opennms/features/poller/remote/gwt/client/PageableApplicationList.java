@@ -20,9 +20,9 @@ public class PageableApplicationList extends PageableList {
     
     private class ApplicationDetailView extends Widget{
         
-        Image m_icon = new Image();
-        Label m_nameLabel = new Label();
-        Label m_statusLabel = new Label();
+        final Image m_icon;
+        final Label m_nameLabel = new Label();
+        final Label m_statusLabel = new Label();
         
         @Override
         protected void doAttachChildren() {
@@ -40,7 +40,7 @@ public class PageableApplicationList extends PageableList {
             setElement(Document.get().createDivElement());
             setStyles();
             
-            m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
+            m_icon = new Image(applicationInfo.getMarkerState().getImageURL());
             m_nameLabel.setText(applicationInfo.getName());
             m_statusLabel.setText(applicationInfo.getStatus().getReason());
         }

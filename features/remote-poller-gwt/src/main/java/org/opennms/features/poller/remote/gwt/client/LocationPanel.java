@@ -17,8 +17,8 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,9 +35,10 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	@UiField PageableApplicationList applicationList;
 	@UiField FilterPanel filterPanel;
 	@UiField TagPanel tagPanel;
-	@UiField DockLayoutPanel dockPanel;
+	//@UiField DockLayoutPanel dockPanel;
 	@UiField HTMLPanel filterOptionsPanel;
 	@UiField FlowPanel listsPanel;
+    private boolean m_isResizing = false;
 	
 	public LocationPanel() {
 		super();
@@ -113,14 +114,12 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     }
 
     public void resizeDockPanel() {
+
         int verticalSpacer = 23;
         int newSize = tagPanel.getOffsetHeight() + filterPanel.getOffsetHeight() + verticalSpacer;
-
-        dockPanel.remove(listsPanel);
-        dockPanel.remove(filterOptionsPanel);
         
-        dockPanel.addNorth(filterOptionsPanel, newSize);
-        dockPanel.add(listsPanel);
+        Element element = listsPanel.getElement();
+        element.setAttribute("style", "position: absolute; top: " + newSize + "px; left: 0px; right: 0px; bottom: 0px;");
     }
 
     public void onTagPanelResize() {
