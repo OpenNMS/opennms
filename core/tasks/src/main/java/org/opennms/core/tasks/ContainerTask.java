@@ -56,16 +56,26 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
 
     protected final Task m_triggerTask;
     private final List<Task> m_children = Collections.synchronizedList(new ArrayList<Task>());
+    private final TaskBuilder<T> m_builder;
     
     public ContainerTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
+        m_builder = createBuilder();
         m_triggerTask = new TaskTrigger(coordinator, this);
 
     }
-    
+
+
+
     @SuppressWarnings("unchecked")
+    private TaskBuilder<T> createBuilder() {
+        return new TaskBuilder<T>((T)this);
+    }
+    
+    
+    
     public TaskBuilder<T> getBuilder() {
-        return new TaskBuilder<T>((T) this);
+        return m_builder;
     }
     
     @Override
@@ -108,6 +118,14 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
         }
         
     }
+    
+    public void add(RunInBatch runInBatch) {
+        getBuilder().add(runInBatch);
+    }
+    
+    public void add(NeedsContainer needsContainer) {
+        getBuilder().add(needsContainer);
+    }
 
     protected Task getTriggerTask() {
         return m_triggerTask;
@@ -139,7 +157,7 @@ public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
         add(task);
         return task;
     }
-
+    
     public SyncTask add(Runnable runnable, String schedulingHint) {
         SyncTask task = createTask(runnable, schedulingHint);
         add(task);
