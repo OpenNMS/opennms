@@ -109,7 +109,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
     	if (point != null) {
     		point.setInfoTitleHTML(htmlTitle);
     		point.setInfoContentHTML(htmlContent);
-    		final MQAInfoWindow window = m_map.getInfoWindow();
+    		MQAInfoWindow window = m_map.getInfoWindow();
     		window.hide();
     		point.showInfoWindow();
     	}

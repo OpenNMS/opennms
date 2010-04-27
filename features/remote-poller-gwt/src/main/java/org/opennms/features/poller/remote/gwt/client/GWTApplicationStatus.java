@@ -309,7 +309,7 @@ public class GWTApplicationStatus implements Serializable, IsSerializable {
 			return "GWTServiceOutage[monitor=" + m_monitor + ",service=" + m_service + ",from=" + m_from + ",to=" + m_to + "]";
 		}
 
-		public int compareTo(GWTServiceOutage that) {
+		public int compareTo(final GWTServiceOutage that) {
 			int lastCompare;
 			lastCompare = this.getService().compareTo(that.getService());
 			if (lastCompare != 0) return lastCompare;
@@ -326,7 +326,7 @@ public class GWTApplicationStatus implements Serializable, IsSerializable {
 
 	private static class LocationSpecificStatusComparator implements Comparator<GWTLocationSpecificStatus> {
 
-		public int compare(GWTLocationSpecificStatus a, GWTLocationSpecificStatus b) {
+		public int compare(final GWTLocationSpecificStatus a, final GWTLocationSpecificStatus b) {
 			int lastCompare;
 			lastCompare = a.getMonitoredService().compareTo(b.getMonitoredService());
 			if (lastCompare != 0) return lastCompare;
