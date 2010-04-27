@@ -72,7 +72,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 					addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(m_locationDataService.getUpdatedLocationsBetween(m_lastUpdated, endDate)));
 
 					final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
-					appHandlers.add(new InitialApplicationHandler(m_locationDataService, service));
+					appHandlers.add(new InitialApplicationHandler(m_locationDataService, service, true));
 					m_locationDataService.handleAllApplications(appHandlers);
 
 					m_lastUpdated = endDate;
@@ -117,7 +117,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 
 		LogUtils.debugf(this, "pushing applications");
 		final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
-		appHandlers.add(new InitialApplicationHandler(m_locationDataService, service));
+		appHandlers.add(new InitialApplicationHandler(m_locationDataService, service, false));
 		m_locationDataService.handleAllApplications(appHandlers);
 	}
 
@@ -125,6 +125,11 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		LogUtils.debugf(this, "pushing initialized locations");
 		final LocationDefHandler locationHandler = new DefaultLocationDefHandler(m_locationDataService, service, true);
 		m_locationDataService.handleAllMonitoringLocationDefinitions(Collections.singleton(locationHandler));
+
+		LogUtils.debugf(this, "pushing applications");
+		final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
+		appHandlers.add(new InitialApplicationHandler(m_locationDataService, service, true));
+		m_locationDataService.handleAllApplications(appHandlers);
 	}
 
 }

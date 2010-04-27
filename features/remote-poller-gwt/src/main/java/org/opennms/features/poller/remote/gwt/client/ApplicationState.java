@@ -12,7 +12,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ApplicationState implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
-	private Map<String,GWTApplicationStatus> m_statuses = new HashMap<String,GWTApplicationStatus>();
+	private Map<String,ApplicationDetails> m_statuses = new HashMap<String,ApplicationDetails>();
 
 	private Status m_status;
 
@@ -20,7 +20,7 @@ public class ApplicationState implements Serializable, IsSerializable {
 
 	public ApplicationState(final Date from, final Date to, final Collection<ApplicationInfo> applications, final Map<String, List<GWTLocationSpecificStatus>> statuses) {
 		for (final ApplicationInfo app : applications) {
-			m_statuses.put(app.getName(), new GWTApplicationStatus(app, from, to, statuses.get(app.getName())));
+			m_statuses.put(app.getName(), new ApplicationDetails(app, from, to, statuses.get(app.getName())));
 		}
 	}
 
@@ -39,7 +39,7 @@ public class ApplicationState implements Serializable, IsSerializable {
 		final List<String> m_applicationsDown     = new ArrayList<String>();
 		final List<String> m_applicationsMarginal = new ArrayList<String>();
 		for (final String appName : m_statuses.keySet()) {
-			final GWTApplicationStatus status = m_statuses.get(appName);
+			final ApplicationDetails status = m_statuses.get(appName);
 			switch(status.getStatus()) {
 				case UNKNOWN: {
 					m_applicationsUnknown.add(appName);

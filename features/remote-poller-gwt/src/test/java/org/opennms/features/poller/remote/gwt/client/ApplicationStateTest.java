@@ -36,13 +36,13 @@ public class ApplicationStateTest {
 
 	@Test
 	public void testApplicationStatusUnknown() {
-		GWTApplicationStatus appStatus = new GWTApplicationStatus(getApplication("TestApp1"), m_from, m_to, null);
+		ApplicationDetails appStatus = new ApplicationDetails(getApplication("TestApp1"), m_from, m_to, null);
 		assertEquals(Status.UNKNOWN, appStatus.getStatus());
 	}
 
 	@Test
 	public void testApplicationStatusUp() {
-		GWTApplicationStatus status = getUpApplicationStatus("TestApp1");
+		ApplicationDetails status = getUpApplicationStatus("TestApp1");
 		
 		assertEquals(Status.UP, status.getStatus());
 		assertEquals(Double.valueOf(100.0), status.getAvailability());
@@ -50,14 +50,14 @@ public class ApplicationStateTest {
 
 	@Test
 	public void testApplicationStatusMarginal() {
-		GWTApplicationStatus status = getMarginalApplicationStatus("TestApp1");
+		ApplicationDetails status = getMarginalApplicationStatus("TestApp1");
 		
 		assertEquals(Status.MARGINAL, status.getStatus());
 	}
 
 	@Test
 	public void testApplicationStatusDown() {
-		GWTApplicationStatus status = getDownApplicationStatus("TestApp1");
+		ApplicationDetails status = getDownApplicationStatus("TestApp1");
 		
 		assertEquals(Status.DOWN, status.getStatus());
 	}
@@ -104,10 +104,10 @@ public class ApplicationStateTest {
 		assertEquals(Status.DOWN, appState.getStatus());
 	}
 	
-	private GWTApplicationStatus getDownApplicationStatus(final String appName) {
+	private ApplicationDetails getDownApplicationStatus(final String appName) {
 		List<GWTLocationSpecificStatus> statuses = getDownStatusList();
 		
-		GWTApplicationStatus status = new GWTApplicationStatus(getApplication(appName), m_from, m_to, statuses);
+		ApplicationDetails status = new ApplicationDetails(getApplication(appName), m_from, m_to, statuses);
 		return status;
 	}
 
@@ -140,9 +140,9 @@ public class ApplicationStateTest {
 		return statuses;
 	}
 
-	private GWTApplicationStatus getUpApplicationStatus(final String appName) {
+	private ApplicationDetails getUpApplicationStatus(final String appName) {
 		List<GWTLocationSpecificStatus> statuses = getUpStatusList();
-		GWTApplicationStatus status = new GWTApplicationStatus(getApplication(appName), m_from, m_to, statuses);
+		ApplicationDetails status = new ApplicationDetails(getApplication(appName), m_from, m_to, statuses);
 		return status;
 	}
 
@@ -157,9 +157,9 @@ public class ApplicationStateTest {
 		return statuses;
 	}
 
-	private GWTApplicationStatus getMarginalApplicationStatus(final String appName) {
+	private ApplicationDetails getMarginalApplicationStatus(final String appName) {
 		List<GWTLocationSpecificStatus> statuses = getMarginalStatusList();
-		GWTApplicationStatus status = new GWTApplicationStatus(getApplication(appName), m_from, m_to, statuses);
+		ApplicationDetails status = new ApplicationDetails(getApplication(appName), m_from, m_to, statuses);
 		return status;
 	}
 

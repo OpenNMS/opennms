@@ -17,11 +17,12 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	public ApplicationInfo() {
 	}
 
-	public ApplicationInfo(final int id, final String name, final Set<GWTMonitoredService> services, final Set<String> locationNames) {
+	public ApplicationInfo(final int id, final String name, final Set<GWTMonitoredService> services, final Set<String> locationNames, final Status status) {
 		m_id = id;
 		m_name = name;
 		m_services = services;
 		m_locations = locationNames;
+		m_status = status;
 	}
 
 	public Integer getId() {
@@ -62,6 +63,9 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	}
 	public void setPriority(final Long priority) {
 		m_priority = priority;
+	}
+	public GWTMarkerState getMarkerState() {
+		return new GWTMarkerState(m_name, null, m_status);
 	}
 
 	public boolean equals(Object o) {

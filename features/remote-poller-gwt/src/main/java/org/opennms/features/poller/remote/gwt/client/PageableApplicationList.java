@@ -36,12 +36,11 @@ public class PageableApplicationList extends PageableList {
             setHeight(Integer.toString(newHeight));
         }
         
-        
         public ApplicationDetailView(ApplicationInfo applicationInfo) {
             setElement(Document.get().createDivElement());
             setStyles();
             
-//            m_icon.setUrl(applicationInfo.get)
+            m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
             m_nameLabel.setText(applicationInfo.getName());
             m_statusLabel.setText(applicationInfo.getStatus().getReason());
         }

@@ -14,30 +14,29 @@ import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class GWTApplicationStatus implements Serializable, IsSerializable {
+public class ApplicationDetails implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private String m_name;
 	private ApplicationInfo m_application;
 	private List<GWTLocationSpecificStatus> m_locationSpecificStatuses;
 	private Date m_statusFrom;
 	private Date m_statusTo;
+	private Status m_status;
 
-	public GWTApplicationStatus() {
+	public ApplicationDetails() {
 		m_name = null;
 		m_locationSpecificStatuses = null;
 		m_statusFrom = null;
 		m_statusTo = null;
 	}
 
-	public GWTApplicationStatus(final ApplicationInfo application, final Date from, final Date to, final List<GWTLocationSpecificStatus> statuses) {
+	public ApplicationDetails(final ApplicationInfo application, final Date from, final Date to, final List<GWTLocationSpecificStatus> statuses) {
 		m_name = application.getName();
 		m_application = application;
 		m_statusFrom = from;
 		m_statusTo = to;
 		m_locationSpecificStatuses = statuses;
-		if (m_locationSpecificStatuses != null) {
-			Collections.sort(m_locationSpecificStatuses, new LocationSpecificStatusComparator());
-		}
+		if (m_locationSpecificStatuses != null) Collections.sort(m_locationSpecificStatuses, new LocationSpecificStatusComparator());
 	}
 
 	private Map<Integer,Map<Integer,List<GWTServiceOutage>>> getOutages() {
@@ -138,6 +137,13 @@ public class GWTApplicationStatus implements Serializable, IsSerializable {
 	}
 
 	public Status getStatus() {
+		if (m_status == null) {
+			m_status = getStatusUncached();
+		}
+		return m_status;
+	}
+
+	private Status getStatusUncached() {
 		if (m_locationSpecificStatuses == null || m_locationSpecificStatuses.size() == 0) {
 			return Status.unknown("No status updates for application " + m_name);
 		}
@@ -249,7 +255,7 @@ public class GWTApplicationStatus implements Serializable, IsSerializable {
 	}
 
 	public String toString() {
-		return "GWTApplicationStatus[name=" + m_name + ",range=" + m_statusFrom + "-" + m_statusTo + ",statuses=" + m_locationSpecificStatuses + "]";
+		return "ApplicationDetails[name=" + m_name + ",range=" + m_statusFrom + "-" + m_statusTo + ",statuses=" + m_locationSpecificStatuses + "]";
 	}
 
 	public class GWTServiceOutage implements Serializable, IsSerializable, Comparable<GWTServiceOutage> {
