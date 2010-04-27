@@ -31,47 +31,30 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.LogUtils.debugf;
+import static org.opennms.core.utils.LogUtils.infof;
+
 import java.net.InetAddress;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.IpInterfacePolicy;
-import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
-import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.service.NodeScan.AgentScan;
-import org.opennms.netmgt.provision.service.NodeScan.BaseAgentScan;
 import org.opennms.netmgt.provision.service.NodeScan.IpInterfaceScan;
-import org.opennms.netmgt.provision.service.NodeScan.NoAgentScan;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.ActivityProvider;
-import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.util.Assert;
 
 /**
  * CoreImportActivities
@@ -87,9 +70,6 @@ public class CoreScanActivities {
     @Autowired
     @Qualifier("standard")
     private EventForwarder m_eventForwarder;
-    
-    @Autowired
-    private SnmpAgentConfigFactory m_agentConfigFactory;
     
     /*
      * load the node from the database (or maybe the requistion)
@@ -174,16 +154,17 @@ public class CoreScanActivities {
         if (!nodeScan.isAborted()) {
             OnmsIpInterface primaryIface = nodeScan.getNode().getPrimaryInterface();
             if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-                nodeScan.doAgentScan(currentPhase, primaryIface.getInetAddress(), "SNMP");
+                // Make AgentScan a NeedContainer class and have that call run
+                nodeScan.createAgentScan(primaryIface.getInetAddress(), "SNMP").run(currentPhase);
                 foundAgent = true;
             }
             
             if (!foundAgent) {
-                nodeScan.doNoAgentScan(currentPhase);
+                currentPhase.add(nodeScan.createNoAgentScan());
             }
         }
     }
-    
+
     @Activity( lifecycle = "nodeScan", phase = "scanCompleted" )
     public void scanCompleted(BatchTask currentPhase, NodeScan nodeScan) {
         if (!nodeScan.isAborted()) {
@@ -195,247 +176,6 @@ public class CoreScanActivities {
         }
     }
 
-    @Activity( lifecycle = "agentScan", phase = "collectNodeInfo" )
-    public void collectNodeInfo(BatchTask currentPhase, AgentScan agentScan)  {
-        
-        Date scanStamp = new Date();
-        agentScan.setScanStamp(scanStamp);
-        
-        InetAddress primaryAddress = agentScan.getAgentAddress();
-        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(primaryAddress);
-        Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
-        
-        SystemGroup systemGroup = new SystemGroup(primaryAddress);
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "systemGroup", systemGroup);
-        walker.start();
-        
-        try {
-
-            walker.waitFor();
-
-            if (walker.timedOut()) {
-                agentScan.abort("Aborting node scan : Agent timedout while scanning the system table");
-            }
-            else if (walker.failed()) {
-                agentScan.abort("Aborting node scan : Agent failed while scanning the system table: " + walker.getErrorMessage());
-            } else {
-
-                systemGroup.updateSnmpDataForNode(agentScan.getNode());
-
-                List<NodePolicy> nodePolicies = m_provisionService.getNodePoliciesForForeignSource(agentScan.getForeignSource());
-
-                OnmsNode node = agentScan.getNode();
-                for(NodePolicy policy : nodePolicies) {
-                    if (node != null) {
-                        node = policy.apply(node);
-                    }
-                }
-
-                if (node == null) {
-                    agentScan.abort("Aborted scan of node due to configured policy");
-                } else {
-                    agentScan.setNode(node);
-                }
-
-            }
-        } catch (InterruptedException e) {
-            agentScan.abort("Aborting node scan : Scan thread interrupted!");
-        }
-    }
-
-    @Activity( lifecycle = "agentScan", phase = "persistNodeInfo", schedulingHint="write")
-    public void persistNodeInfo(BatchTask currentPhase, AgentScan agentScan) {
-        agentScan.doPersistNodeInfo();
-    }
-
-    @Activity( lifecycle = "agentScan", phase = "detectPhysicalInterfaces" )
-    public void detectPhysicalInterfaces(final BatchTask currentPhase, final AgentScan agentScan) {
-        if (agentScan.isAborted()) { return; }
-        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentScan.getAgentAddress());
-        Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
-        
-        final PhysInterfaceTableTracker physIfTracker = new PhysInterfaceTableTracker() {
-            @Override
-            public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
-                System.out.println("Processing row for ifIndex "+row.getIfIndex());
-                OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
-                snmpIface.setLastCapsdPoll(agentScan.getScanStamp());
-                
-                List<SnmpInterfacePolicy> policies = m_provisionService.getSnmpInterfacePoliciesForForeignSource(agentScan.getForeignSource());
-                for(SnmpInterfacePolicy policy : policies) {
-                    if (snmpIface != null) {
-                        snmpIface = policy.apply(snmpIface);
-                    }
-                }
-                
-                if (snmpIface != null) {
-                    final OnmsSnmpInterface snmpIfaceResult = snmpIface;
-
-                    // add call to the snmp interface collection enable policies
-
-                    Runnable r = new Runnable() {
-                        public void run() {
-                            System.out.println("Saving OnmsSnmpInterface "+snmpIfaceResult);
-                            m_provisionService.updateSnmpInterfaceAttributes(
-                                                                             agentScan.getNodeId(),
-                                                                             snmpIfaceResult);
-                        }
-                    };
-                    currentPhase.add(r, "write");
-                }
-            }
-        };
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", physIfTracker);
-        walker.start();
-        
-        try {
-            walker.waitFor();
-
-            if (walker.timedOut()) {
-                agentScan.abort("Aborting node scan : Agent timedout while scanning the interfaces table");
-            }
-            else if (walker.failed()) {
-                agentScan.abort("Aborting node scan : Agent failed while scanning the interfaces table: " + walker.getErrorMessage());
-            }
-            else {
-                debug("Finished phase " + currentPhase);
-            }
-        } catch (InterruptedException e) {
-            agentScan.abort("Aborting node scan : Scan thread interrupted while waiting for interfaces table");
-        }
-    }
-
-    @Activity( lifecycle = "agentScan", phase = "detectIpInterfaces" )
-    public void detectIpInterfaces(final BatchTask currentPhase, final AgentScan agentScan) {
-        if (agentScan.isAborted()) { return; }
-        SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(agentScan.getAgentAddress());
-        Assert.notNull(m_agentConfigFactory, "agentConfigFactory was not injected");
-
-        // mark all provisioned interfaces as 'in need of scanning' so we can mark them
-        // as scanned during ipAddrTable processing
-        final Set<String> provisionedIps = new HashSet<String>();
-        for(OnmsIpInterface provisioned : agentScan.getNode().getIpInterfaces()) {
-            provisionedIps.add(provisioned.getIpAddress());
-        }
-        
-        
-        final IPInterfaceTableTracker ipIfTracker = new IPInterfaceTableTracker() {
-            @Override
-            public void processIPInterfaceRow(IPInterfaceRow row) {
-                System.out.println("Processing row with ipAddr "+row.getIpAddress());
-                if (!row.getIpAddress().startsWith("127.0.0")) {
-                    
-                    // mark any provisioned interface as scanned
-                    provisionedIps.remove(row.getIpAddress());
-                    
-                    // save the interface
-                    OnmsIpInterface iface = row.createInterfaceFromRow();
-                    iface.setIpLastCapsdPoll(agentScan.getScanStamp());
-                    
-                    // add call to the ip interface is managed policies
-                    iface.setIsManaged("M");
-                    
-                    List<IpInterfacePolicy> policies = m_provisionService.getIpInterfacePoliciesForForeignSource(agentScan.getForeignSource());
-                    
-                    for(IpInterfacePolicy policy : policies) {
-                        if (iface != null) {
-                            iface = policy.apply(iface);
-                        }
-                    }
-                    
-                    if (iface != null) {
-                        currentPhase.add(ipUpdater(currentPhase, agentScan, iface), "write");
-                    }
-                    
-                }
-            }
-        };
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipIfTracker);
-        walker.start();
-        
-        try {
-            walker.waitFor();
-
-            if (walker.timedOut()) {
-                agentScan.abort("Aborting node scan : Agent timedout while scanning the ipAddrTable");
-            }
-            else if (walker.failed()) {
-                agentScan.abort("Aborting node scan : Agent failed while scanning the ipAddrTable : " + walker.getErrorMessage());
-            }
-            else {
-
-
-                // After processing the snmp provided interfaces then we need to scan any that 
-                // were provisioned but missing from the ip table
-                for(String ipAddr : provisionedIps) {
-                    OnmsIpInterface iface = agentScan.getNode().getIpInterfaceByIpAddress(ipAddr);
-                    iface.setIpLastCapsdPoll(agentScan.getScanStamp());
-                    iface.setIsManaged("M");
-
-                    currentPhase.add(ipUpdater(currentPhase, agentScan, iface), "write");
-
-                }
-
-                debug("Finished phase " + currentPhase);
-
-            }
-        } catch (InterruptedException e) {
-            agentScan.abort("Aborting node scan : Scan thread failed while waiting for ipAddrTable");
-        }
-    }
-    
-    @Activity( lifecycle = "agentScan", phase = "deleteObsoleteResources", schedulingHint="write")
-    public void deleteObsoleteResources(BatchTask currentPhase, AgentScan agentScan) {
-        if (agentScan.isAborted()) { return; }
-
-        m_provisionService.updateNodeScanStamp(agentScan.getNodeId(), agentScan.getScanStamp());
-        
-        m_provisionService.deleteObsoleteInterfaces(agentScan.getNodeId(), agentScan.getScanStamp());
-        
-        debug("Finished phase " + currentPhase);
-    }
-    
-    @Activity( lifecycle = "agentScan", phase = "agentScanCompleted", schedulingHint="write")
-    public void agentScanCompleted(BatchTask currentPhase, AgentScan agentScan) {
-        if (!agentScan.isAborted()) {
-            EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond");
-            bldr.setNodeid(agentScan.getNodeId());
-            bldr.setInterface(agentScan.getAgentAddress().getHostAddress());
-            m_eventForwarder.sendNow(bldr.getEvent());
-        }
-        
-    }
-    
-    @Activity( lifecycle = "noAgent", phase = "stampProvisionedInterfaces", schedulingHint="write")
-    public void stampProvisionedInterfaces(BatchTask currentPhase, NoAgentScan scan) {
-        if (scan.isAborted()) { return; }
-        
-        scan.setScanStamp(new Date());
-        
-        for(OnmsIpInterface iface : scan.getNode().getIpInterfaces()) {
-            iface.setIpLastCapsdPoll(scan.getScanStamp());
-            
-            currentPhase.add(ipUpdater(currentPhase, scan, iface), "write");
-            
-        }
-        
-    }
-    
-    @Activity( lifecycle = "noAgent", phase = "deleteUnprovisionedInterfaces", schedulingHint="write")
-    public void deleteObsoleteResources(BatchTask currentPhase, NoAgentScan scan) {
-
-        m_provisionService.updateNodeScanStamp(scan.getNodeId(), scan.getScanStamp());
-        
-        m_provisionService.deleteObsoleteInterfaces(scan.getNodeId(), scan.getScanStamp());
-        
-        debug("Finished phase " + currentPhase);
-    }
-    
-    
-    
     @Activity( lifecycle = "ipInterfaceScan", phase = "detectServices" )
     public void detectServices(BatchTask currentPhase, IpInterfaceScan ifaceScan) {
         
@@ -443,8 +183,9 @@ public class CoreScanActivities {
         
         Integer nodeId = ifaceScan.getNodeId();
         InetAddress ipAddress = ifaceScan.getAddress();
-
-        debug("detectServices for %d : %s: found %d detectors", nodeId, ipAddress.getHostAddress(), detectors.size());
+        
+        debugf(this, "detectServices for %d : %s: found %d detectors", nodeId, ipAddress.getHostAddress(), detectors.size());
+        
         for(ServiceDetector detector : detectors) {
             addServiceDetectorTask(currentPhase, detector, nodeId, ipAddress);
         }
@@ -470,13 +211,15 @@ public class CoreScanActivities {
     private Callback<Boolean> persistService(final Integer nodeId, final InetAddress ipAddress, final ServiceDetector detector) {
         return new Callback<Boolean>() {
             public void complete(Boolean serviceDetected) {
-                info("Attempted to detect service %s on address %s: %s", detector.getServiceName(), ipAddress.getHostAddress(), serviceDetected);
+                Object[] args = { detector.getServiceName(), ipAddress.getHostAddress(), serviceDetected };
+                infof(this, "Attempted to detect service %s on address %s: %s", args);
                 if (serviceDetected) {
                     m_provisionService.addMonitoredService(nodeId, ipAddress.getHostAddress(), detector.getServiceName());
                 }
             }
             public void handleException(Throwable t) {
-                info(t, "Exception occurred trying to detect service %s on address %s", detector.getServiceName(), ipAddress.getHostAddress());
+                Object[] args = { detector.getServiceName(), ipAddress.getHostAddress() };
+                infof(this, t, "Exception occurred trying to detect service %s on address %s", args);
             }
         };
     }
@@ -489,7 +232,8 @@ public class CoreScanActivities {
         return new Runnable() {
             public void run() {
                 try {
-                    info("Attemping to detect service %s on address %s", detector.getServiceName(), ipAddress.getHostAddress());
+                    Object[] args = { detector.getServiceName(), ipAddress.getHostAddress() };
+                    infof(this, "Attemping to detect service %s on address %s", args);
                     cb.complete(detector.isServiceDetected(ipAddress, new NullDetectorMonitor()));
                 } catch (Throwable t) {
                     cb.handleException(t);
@@ -517,7 +261,8 @@ public class CoreScanActivities {
 
         public void submit(Callback<Boolean> cb) {
             try {
-                info("Attemping to detect service %s on address %s", m_detector.getServiceName(), m_ipAddress.getHostAddress());
+                Object[] args = { m_detector.getServiceName(), m_ipAddress.getHostAddress() };
+                infof(this, "Attemping to detect service %s on address %s", args);
                 DetectFuture future = m_detector.isServiceDetected(m_ipAddress, new NullDetectorMonitor());
                 future.addListener(listener(cb));
             } catch (Throwable e) {
@@ -546,52 +291,6 @@ public class CoreScanActivities {
             };
         }
         
-    }
-    
-    private Runnable ipUpdater(final BatchTask currentPhase,
-            final BaseAgentScan agentScan, final OnmsIpInterface iface) {
-        Runnable r = new Runnable() {
-            public void run() {
-                agentScan.doUpdateIPInterface(currentPhase, iface);
-                if (iface.isManaged()) {
-                    agentScan.triggerIPInterfaceScan(currentPhase, iface.getInetAddress());
-                }
-            }
-        };
-        return r;
-    }
-    
-    
-
-    
-    @SuppressWarnings("unused")
-    private void error(Throwable t, String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
-        log.error(String.format(format, args), t);
-    }
-
-    private void debug(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(format, args));
-        };
-    }
-    private void info(Throwable t, String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args), t);
-        }
-    }
-    private void info(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args));
-        }
-    }
-    @SuppressWarnings("unused")
-    private void error(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
-        log.error(String.format(format, args));
     }
 
 }

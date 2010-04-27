@@ -31,8 +31,15 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.LogUtils.debugf;
+import static org.opennms.core.utils.LogUtils.infof;
+import static org.opennms.core.utils.LogUtils.warnf;
+
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -40,19 +47,29 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.log4j.Category;
 import org.opennms.core.tasks.BatchTask;
+import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.SequenceTask;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
+import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.NodePolicy;
+import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
+import org.opennms.netmgt.provision.service.snmp.SystemGroup;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
+import org.springframework.util.Assert;
 
 public class NodeScan implements Runnable {
     private Integer m_nodeId;
@@ -60,6 +77,7 @@ public class NodeScan implements Runnable {
     private String m_foreignId;
     private ProvisionService m_provisionService;
     private EventForwarder m_eventForwarder;
+    private SnmpAgentConfigFactory m_agentConfigFactory;
     private DefaultTaskCoordinator m_taskCoordinator;
     private LifeCycleRepository m_lifeCycleRepository;
     private CoreScanActivities m_scanActivities;
@@ -70,12 +88,13 @@ public class NodeScan implements Runnable {
     
     private OnmsNode m_node;
 
-    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, EventForwarder eventForwarder, DefaultTaskCoordinator taskCoordinator, LifeCycleRepository lifeCycleRepository, CoreScanActivities scanActivities) {
+    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, EventForwarder eventForwarder, SnmpAgentConfigFactory agentConfigFactory, DefaultTaskCoordinator taskCoordinator, LifeCycleRepository lifeCycleRepository, CoreScanActivities scanActivities) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
+        m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
         m_lifeCycleRepository = lifeCycleRepository;
         m_scanActivities = scanActivities;
@@ -104,7 +123,7 @@ public class NodeScan implements Runnable {
     public void abort(String reason) {
         m_aborted = true;
         
-        log().info(String.format("Aborting Scan of node %d for the following reason: %s", m_nodeId, reason));
+        infof(this, "Aborting Scan of node %d for the following reason: %s", m_nodeId, reason);
         
         EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_ABORTED_UEI, "Provisiond");
         if (m_nodeId != null) {
@@ -120,7 +139,7 @@ public class NodeScan implements Runnable {
 
     public void run() {
         try {
-            log().info(String.format("Scanning node (%s/%s)", m_foreignSource, m_foreignId));
+            infof(this, "Scanning node (%s/%s)", m_foreignSource, m_foreignId);
 
             SequenceTask sequence = m_taskCoordinator.createSequence().add(
                     new RunInBatch() {
@@ -143,11 +162,11 @@ public class NodeScan implements Runnable {
             sequence.schedule();
             sequence.waitFor();
             
-            log().debug(String.format("Finished scanning node (%s/%s)", m_foreignSource, m_foreignId));
+            debugf(this, "Finished scanning node (%s/%s)", m_foreignSource, m_foreignId);
         } catch (InterruptedException e) {
-            log().warn("The node scan was interrupted", e);
+            warnf(this, e, "The node scan was interrupted");
         } catch (ExecutionException e) {
-            log().warn(String.format("An error occurred while scanning node (%s/%s)", m_foreignSource, m_foreignId), e);
+            warnf(this, e, "An error occurred while scanning node (%s/%s)", m_foreignSource, m_foreignId);
         }
     }
     
@@ -163,80 +182,21 @@ public class NodeScan implements Runnable {
         }
     }
 
-    public void doAgentScan(final BatchTask parent, InetAddress agentAddress, String agentType) {
-        
-        final AgentScan agentScan = createAgentScan(agentAddress, agentType);
-        
-        parent.getBuilder().addSequence(
-                new RunInBatch () {
-                    public void run(BatchTask phase) {
-                        m_scanActivities.collectNodeInfo(phase, agentScan);
-                    }
-                },
-                new RunInBatch() {
-                    public void run(BatchTask phase) {
-                        m_scanActivities.persistNodeInfo(phase, agentScan);
-                    }
-                },
-                new RunInBatch() {
-                    public void run(BatchTask phase) {
-                        m_scanActivities.detectPhysicalInterfaces(phase, agentScan);
-                    }
-                },
-                new RunInBatch() {
-                    public void run(BatchTask phase) {
-                        m_scanActivities.detectIpInterfaces(phase, agentScan);
-                    }
-                },
-                new RunInBatch() {
-                    public void run(BatchTask phase) {
-                        m_scanActivities.deleteObsoleteResources(phase, agentScan);
-                    }
-                },
-                new RunInBatch() {
-                    public void run(BatchTask phase) {
-                        m_scanActivities.agentScanCompleted(phase, agentScan);
-                    }
-                }
-        );
-    }
-
-    
-    public void doNoAgentScan(final BatchTask parent) {
-        
-        final NoAgentScan noAgentScan = new NoAgentScan(m_nodeId, m_node);
-        
-        parent.getBuilder().addSequence(
-                new RunInBatch() {
-                    public void run(BatchTask phase) {
-                        m_scanActivities.stampProvisionedInterfaces(phase, noAgentScan);
-                    }
-                },
-                new RunInBatch() {
-                    public void run(BatchTask phase) {
-                        m_scanActivities.deleteObsoleteResources(phase, noAgentScan);
-                    }
-                }
-        );
-
-    }
-
-
-    private AgentScan createAgentScan(InetAddress agentAddress, String agentType) {
+    public AgentScan createAgentScan(InetAddress agentAddress, String agentType) {
         return new AgentScan(m_nodeId, m_node, agentAddress, agentType);
     }
     
-    
-    private Category log() {
-        return ThreadCategory.getInstance(NodeScan.class);
+    NoAgentScan createNoAgentScan() {
+        return new NoAgentScan(m_nodeId, m_node);
     }
+    
 
     /**
      * AgentScan
      *
      * @author brozow
      */
-    public class AgentScan extends BaseAgentScan {
+    public class AgentScan extends BaseAgentScan implements NeedsContainer {
 
         private InetAddress m_agentAddress;
         private String m_agentType;
@@ -279,13 +239,300 @@ public class NodeScan implements Runnable {
                 .append(m_agentType)
                 .toHashCode();
         }
+
+        public EventForwarder getEventForwarder() {
+            return m_eventForwarder;
+        }
+
+        void completed() {
+            if (!isAborted()) {
+                EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond");
+                bldr.setNodeid(getNodeId());
+                bldr.setInterface(getAgentAddress().getHostAddress());
+                getEventForwarder().sendNow(bldr.getEvent());
+            }
+        }
+
+        void deleteObsoleteResources() {
+            if (!isAborted()) {
+            
+                getProvisionService().updateNodeScanStamp(getNodeId(), getScanStamp());
+            
+                getProvisionService().deleteObsoleteInterfaces(getNodeId(), getScanStamp());
+            
+                debugf(this, "Finished deleteObsoleteResources for %s", this);
+            }
+        }
+
+        public SnmpAgentConfigFactory getAgentConfigFactory() {
+            return m_agentConfigFactory;
+        }
+
+        public void detectIpInterfaces(final BatchTask currentPhase) {
+            if (!isAborted()) { 
+                SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
+                Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
+        
+                // mark all provisioned interfaces as 'in need of scanning' so we can mark them
+                // as scanned during ipAddrTable processing
+                final Set<String> provisionedIps = new HashSet<String>();
+                for(OnmsIpInterface provisioned : getNode().getIpInterfaces()) {
+                    provisionedIps.add(provisioned.getIpAddress());
+                }
+        
+        
+                final IPInterfaceTableTracker ipIfTracker = new IPInterfaceTableTracker() {
+                    @Override
+                    public void processIPInterfaceRow(IPInterfaceRow row) {
+                        System.out.println("Processing row with ipAddr "+row.getIpAddress());
+                        if (!row.getIpAddress().startsWith("127.0.0")) {
+        
+                            // mark any provisioned interface as scanned
+                            provisionedIps.remove(row.getIpAddress());
+        
+                            // save the interface
+                            OnmsIpInterface iface = row.createInterfaceFromRow();
+                            iface.setIpLastCapsdPoll(getScanStamp());
+        
+                            // add call to the ip interface is managed policies
+                            iface.setIsManaged("M");
+        
+                            List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource());
+        
+                            for(IpInterfacePolicy policy : policies) {
+                                if (iface != null) {
+                                    iface = policy.apply(iface);
+                                }
+                            }
+        
+                            if (iface != null) {
+                                currentPhase.add(ipUpdater(currentPhase, iface), "write");
+                            }
+        
+                        }
+                    }
+                };
+        
+                SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipIfTracker);
+                walker.start();
+        
+                try {
+                    walker.waitFor();
+        
+                    if (walker.timedOut()) {
+                        abort("Aborting node scan : Agent timedout while scanning the ipAddrTable");
+                    }
+                    else if (walker.failed()) {
+                        abort("Aborting node scan : Agent failed while scanning the ipAddrTable : " + walker.getErrorMessage());
+                    }
+                    else {
+        
+        
+                        // After processing the snmp provided interfaces then we need to scan any that 
+                        // were provisioned but missing from the ip table
+                        for(String ipAddr : provisionedIps) {
+                            OnmsIpInterface iface = getNode().getIpInterfaceByIpAddress(ipAddr);
+                            iface.setIpLastCapsdPoll(getScanStamp());
+                            iface.setIsManaged("M");
+        
+                            currentPhase.add(ipUpdater(currentPhase, iface), "write");
+        
+                        }
+        
+                        debugf(this, "Finished phase %s", currentPhase);
+        
+                    }
+                } catch (InterruptedException e) {
+                    abort("Aborting node scan : Scan thread failed while waiting for ipAddrTable");
+                }
+        
+            }
+        }
+
+        public void detectPhysicalInterfaces(final BatchTask currentPhase) {
+            if (isAborted()) { return; }
+            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
+            Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
+            
+            final PhysInterfaceTableTracker physIfTracker = new PhysInterfaceTableTracker() {
+                @Override
+                public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
+                    System.out.println("Processing row for ifIndex "+row.getIfIndex());
+                    OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
+                    snmpIface.setLastCapsdPoll(getScanStamp());
+                    
+                    List<SnmpInterfacePolicy> policies = getProvisionService().getSnmpInterfacePoliciesForForeignSource(getForeignSource());
+                    for(SnmpInterfacePolicy policy : policies) {
+                        if (snmpIface != null) {
+                            snmpIface = policy.apply(snmpIface);
+                        }
+                    }
+                    
+                    if (snmpIface != null) {
+                        final OnmsSnmpInterface snmpIfaceResult = snmpIface;
+        
+                        // add call to the snmp interface collection enable policies
+        
+                        Runnable r = new Runnable() {
+                            public void run() {
+                                getProvisionService().updateSnmpInterfaceAttributes(
+                                                                                 getNodeId(),
+                                                                                 snmpIfaceResult);
+                            }
+                        };
+                        currentPhase.add(r, "write");
+                    }
+                }
+            };
+            
+            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", physIfTracker);
+            walker.start();
+            
+            try {
+                walker.waitFor();
+        
+                if (walker.timedOut()) {
+                    abort("Aborting node scan : Agent timedout while scanning the interfaces table");
+                }
+                else if (walker.failed()) {
+                    abort("Aborting node scan : Agent failed while scanning the interfaces table: " + walker.getErrorMessage());
+                }
+                else {
+                    debugf(this, "Finished phase %s", currentPhase);
+                }
+            } catch (InterruptedException e) {
+                abort("Aborting node scan : Scan thread interrupted while waiting for interfaces table");
+            }
+        }
+
+        public void collectNodeInfo(BatchTask currentPhase)  {
+            
+            Date scanStamp = new Date();
+            setScanStamp(scanStamp);
+            
+            InetAddress primaryAddress = getAgentAddress();
+            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(primaryAddress);
+            Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
+            
+            SystemGroup systemGroup = new SystemGroup(primaryAddress);
+            
+            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "systemGroup", systemGroup);
+            walker.start();
+            
+            try {
+        
+                walker.waitFor();
+        
+                if (walker.timedOut()) {
+                    abort("Aborting node scan : Agent timedout while scanning the system table");
+                }
+                else if (walker.failed()) {
+                    abort("Aborting node scan : Agent failed while scanning the system table: " + walker.getErrorMessage());
+                } else {
+        
+                    systemGroup.updateSnmpDataForNode(getNode());
+        
+                    List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource());
+        
+                    OnmsNode node = getNode();
+                    for(NodePolicy policy : nodePolicies) {
+                        if (node != null) {
+                            node = policy.apply(node);
+                        }
+                    }
+        
+                    if (node == null) {
+                        abort("Aborted scan of node due to configured policy");
+                    } else {
+                        setNode(node);
+                    }
+        
+                }
+            } catch (InterruptedException e) {
+                abort("Aborting node scan : Scan thread interrupted!");
+            }
+        }
+
+        public void run(ContainerTask<?> parent) {
+            parent.getBuilder().addSequence(
+                    new RunInBatch () {
+                        public void run(BatchTask phase) {
+                            collectNodeInfo(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            doPersistNodeInfo();
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            detectPhysicalInterfaces(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            detectIpInterfaces(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            deleteObsoleteResources();
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            completed();
+                        }
+                    }
+            );
+        }
     }
     
-    public class NoAgentScan extends BaseAgentScan {
+    public class NoAgentScan extends BaseAgentScan implements NeedsContainer {
         
 
         private NoAgentScan(Integer nodeId, OnmsNode node) {
             super(nodeId, node);
+        }
+
+        void stampProvisionedInterfaces(BatchTask phase) {
+            if (!isAborted()) { 
+            
+                setScanStamp(new Date());
+            
+                for(OnmsIpInterface iface : getNode().getIpInterfaces()) {
+                    iface.setIpLastCapsdPoll(getScanStamp());
+            
+                    phase.add(ipUpdater(phase, iface), "write");
+            
+                }
+            
+            }
+        }
+
+        void deleteObsoleteResources(BatchTask phase) {
+            
+            getProvisionService().updateNodeScanStamp(getNodeId(), getScanStamp());
+            
+            getProvisionService().deleteObsoleteInterfaces(getNodeId(), getScanStamp());
+            
+            LogUtils.debugf(this, "Finished phase " + phase);
+        }
+
+        public void run(ContainerTask<?> parent) {
+            parent.getBuilder().addSequence(
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            stampProvisionedInterfaces(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            deleteObsoleteResources(phase);
+                        }
+                    }
+            );
         }
         
     }
@@ -332,6 +579,10 @@ public class NodeScan implements Runnable {
         public String getForeignId() {
             return m_node.getForeignId();
         }
+        
+        public ProvisionService getProvisionService() {
+            return m_provisionService;
+        }
 
         public void doUpdateIPInterface(BatchTask currentPhase, OnmsIpInterface iface) {
             m_provisionService.updateIpInterfaceAttributes(getNodeId(), iface);
@@ -359,6 +610,22 @@ public class NodeScan implements Runnable {
                 .append(m_nodeId)
                 .append(m_scanStamp)
                 .toHashCode();
+        }
+
+        void updateIpInterface(final BatchTask currentPhase, final OnmsIpInterface iface) {
+            doUpdateIPInterface(currentPhase, iface);
+            if (iface.isManaged()) {
+                triggerIPInterfaceScan(currentPhase, iface.getInetAddress());
+            }
+        }
+
+        protected Runnable ipUpdater(final BatchTask currentPhase, final OnmsIpInterface iface) {
+            Runnable r = new Runnable() {
+                public void run() {
+                    updateIpInterface(currentPhase, iface);
+                }
+            };
+            return r;
         }
         
     }
@@ -424,4 +691,5 @@ public class NodeScan implements Runnable {
             .append(m_lifeCycleRepository)
             .toHashCode();
     }
+
 }

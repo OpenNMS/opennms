@@ -179,6 +179,7 @@
     <property name="importActivities" ref="coreImportActivities" />
     <property name="scanActivities" ref="coreScanActivities" />
     <property name="taskCoordinator" ref="taskCoordinator" />
+    <property name="agentConfigFactory" ref="snmpPeerFactory" />
   </bean>
   
   <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">

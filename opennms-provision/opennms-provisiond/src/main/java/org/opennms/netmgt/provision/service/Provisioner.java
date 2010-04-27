@@ -52,6 +52,7 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -88,6 +89,7 @@ public class Provisioner implements SpringServiceDaemon {
     private ScheduledExecutorService m_scheduledExecutor;
     private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
     private volatile EventForwarder m_eventForwarder;
+    private SnmpAgentConfigFactory m_agentConfigFactory;
     
     private volatile TimeTrackingMonitor m_stats;
     
@@ -136,6 +138,15 @@ public class Provisioner implements SpringServiceDaemon {
     public void setTaskCoordinator(DefaultTaskCoordinator taskCoordinator) {
         m_taskCoordinator = taskCoordinator;
     }
+    
+
+
+    /**
+     * @param agentConfigFactory the agentConfigFactory to set
+     */
+    public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
+        m_agentConfigFactory = agentConfigFactory;
+    }
 
     public ImportScheduler getImportSchedule() {
         return m_importSchedule;
@@ -156,6 +167,7 @@ public class Provisioner implements SpringServiceDaemon {
         Assert.notNull(m_importActivities, "importActivities property must be set");
         Assert.notNull(m_scanActivities, "scanActivities property must be set");
         Assert.notNull(m_taskCoordinator, "taskCoordinator property must be set");
+        Assert.notNull(m_agentConfigFactory, "agentConfigFactory property must be set");
         
 
         //since this class depends on the Import Schedule, the UrlFactory should already
@@ -188,7 +200,7 @@ public class Provisioner implements SpringServiceDaemon {
     
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
         log().warn("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_taskCoordinator, m_lifeCycleRepository, m_scanActivities);
+        return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_lifeCycleRepository, m_scanActivities);
     }
 
     //Helper functions for the schedule
