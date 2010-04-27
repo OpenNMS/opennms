@@ -4,25 +4,26 @@
   xmlns:me='urn:import:org.opennms.features.poller.remote.gwt.client'>
   
   <ui:style>
-  
+    .topLevelContainer{
+        position: relative;
+    }
   
   </ui:style>
   
-  <g:DockLayoutPanel unit="PX" ui:field="dockPanel">
-    <g:north size="102">
-      <g:HTMLPanel ui:field="filterOptionsPanel">
+  <g:FlowPanel styleName="{style.topLevelContainer}">
+    <g:FlowPanel>
+        <g:HTMLPanel ui:field="filterOptionsPanel">
         <me:FilterPanel ui:field="filterPanel"/>
         <hr/>
         <me:TagPanel ui:field="tagPanel"/>
         <hr/>
         </g:HTMLPanel>
-      </g:north>
-      <g:center>
-        <g:FlowPanel ui:field="listsPanel">
-          <me:PageableApplicationList ui:field="applicationList"/>
-          <me:PageableLocationList ui:field="locationList"/>
-        </g:FlowPanel>
-      </g:center>
-    </g:DockLayoutPanel>
+    </g:FlowPanel>
+    <g:FlowPanel ui:field="listsPanel" >
+      <me:PageableApplicationList ui:field="applicationList"/>
+      <me:PageableLocationList ui:field="locationList"/>
+    </g:FlowPanel>
+  </g:FlowPanel>
+  
 
 </ui:UiBinder>
