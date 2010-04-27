@@ -11,8 +11,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.features.poller.remote.gwt.client.ApplicationState;
+import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
+import org.opennms.features.poller.remote.gwt.client.ApplicationState;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor;
 import org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus;
@@ -94,7 +95,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			LogUtils.warnf(this, "no monitoring location found for name %s", locationName);
 			return null;
 		}
-		return getLocationInfo(m_locationDao.findMonitoringLocationDefinition(locationName), null);
+		return getLocationInfo(def, null);
 	}
 
 	@Transactional
@@ -136,8 +137,48 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			state.setStatus(ld.getLocationMonitorState().getStatus());
 			locationInfo.setStatus(ld.getLocationMonitorState().getStatus());
 		}
-		LogUtils.debugf(this, "getLocation(" + def.getName() + ") returning %s", locationInfo.toString());
+		LogUtils.debugf(this, "getLocationInfo(" + def.getName() + ") returning %s", locationInfo.toString());
 		return locationInfo;
+	}
+
+	@Transactional
+	public ApplicationInfo getApplicationInfo(final String applicationName) {
+		final OnmsApplication app = m_applicationDao.findByName(applicationName);
+		if (app == null) {
+			LogUtils.warnf(this, "no application found with name '%s'", applicationName);
+		}
+		return getApplicationInfo(app, null);
+	}
+	
+	@Transactional
+	public ApplicationInfo getApplicationInfo(final OnmsApplication app, boolean includeStatus) {
+		return includeStatus ? getApplicationInfo(app, null) : getApplicationInfo(app, Status.UNINITIALIZED);
+	}
+
+	@Transactional
+	private ApplicationInfo getApplicationInfo(final OnmsApplication app, final Status status) {
+		if (app == null) {
+			LogUtils.warnf(this, "no application specified");
+		}
+
+		final Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
+		final Set<String> locationNames = new TreeSet<String>();
+		for (OnmsMonitoredService service : m_monitoredServiceDao.findByApplication(app)) {
+			services.add(transformMonitoredService(service));
+		}
+		for (final OnmsLocationMonitor mon : m_locationDao.findByApplication(app)) {
+			locationNames.add(mon.getDefinitionName());
+		}
+		
+		
+		final ApplicationInfo applicationInfo = new ApplicationInfo(app.getId(), app.getName(), services, locationNames, status);
+		
+		if (status == null) {
+			final ApplicationDetails details = getApplicationDetails(app);
+			applicationInfo.setStatus(details.getStatus());
+		}
+		LogUtils.debugf(this, "getApplicationInfo(" + app.getName() + ") returning %s", applicationInfo.toString());
+		return applicationInfo;
 	}
 
 	@Transactional
@@ -191,6 +232,33 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 		ld.setLocationMonitorState(new LocationMonitorState(monitors, mst.drain()));
 		ld.setApplicationState(new ApplicationState(from, to, applications, ast.drainStatuses()));
 		return ld;
+	}
+
+	@Transactional
+	public ApplicationDetails getApplicationDetails(final String applicationName) {
+		final OnmsApplication app = m_applicationDao.findByName(applicationName);
+		return getApplicationDetails(app);
+	}
+
+	@Transactional
+	public ApplicationDetails getApplicationDetails(final OnmsApplication app) {
+		final ApplicationInfo applicationInfo = getApplicationInfo(app, false);
+		List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+
+		final Date to = new Date();
+		final Date from = new Date(to.getTime() - AVAILABILITY_MS);
+		for (OnmsMonitoredService service : m_monitoredServiceDao.findByApplication(app)) {
+			service.getStatus();
+		}
+
+		for (final OnmsLocationMonitor monitor : m_locationDao.findByApplication(app)) {
+			for (final OnmsLocationSpecificStatus locationSpecificStatus : m_locationDao.getStatusChangesForLocationBetween(from, to, monitor.getDefinitionName())) {
+				statuses.add(transformLocationSpecificStatus(locationSpecificStatus));
+			}
+		}
+
+		ApplicationDetails details = new ApplicationDetails(applicationInfo, from, to, statuses);
+		return details;
 	}
 
 	@Transactional
@@ -282,17 +350,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			handler.start(apps.size());
 		}
 		for (final OnmsApplication app : m_applicationDao.findAll()) {
-			final Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
-			final Set<String> locationNames = new TreeSet<String>();
-			for (OnmsMonitoredService service : m_monitoredServiceDao.findByApplication(app)) {
-				services.add(transformMonitoredService(service));
-			}
-			for (final OnmsLocationMonitor mon : m_locationDao.findByApplication(app)) {
-				locationNames.add(mon.getDefinitionName());
-			}
-			final ApplicationInfo gwtApp = new ApplicationInfo(app.getId(), app.getName(), services, locationNames);
 			for (final ApplicationHandler handler : handlers) {
-				handler.handle(gwtApp);
+				handler.handle(app);
 			}
 		}
 		for (final ApplicationHandler handler : handlers) {
@@ -362,12 +421,16 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			}
 			s.add(transformMonitoredService(service));
 		}
-//		app.setServices(s);
-//		app.setLocations(locations);
+		app.setServices(s);
+		app.setLocations(locations);
 		return app;
 	}
 
-	private static class MonitorStatusTracker {
+	private static interface StatusTracker {
+		public void onStatus(final OnmsLocationSpecificStatus status);
+	}
+
+	private static class MonitorStatusTracker implements StatusTracker {
 		private transient final Map<Integer,OnmsLocationSpecificStatus> m_statuses = new HashMap<Integer,OnmsLocationSpecificStatus>();
 		private transient final String m_locationName;
 
@@ -396,7 +459,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 		}
 	}
 
-	private static class ApplicationStatusTracker {
+	private static class ApplicationStatusTracker implements StatusTracker {
 		private String m_name;
 		private Map<String,Collection<OnmsLocationSpecificStatus>> m_statuses = new HashMap<String,Collection<OnmsLocationSpecificStatus>>();
 		

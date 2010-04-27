@@ -20,7 +20,7 @@ public class PageableApplicationList extends PageableList {
     
     private class ApplicationDetailView extends Widget{
         
-        final Image m_icon;
+        final Image m_icon = new Image();
         final Label m_nameLabel = new Label();
         final Label m_statusLabel = new Label();
         
@@ -41,16 +41,11 @@ public class PageableApplicationList extends PageableList {
             setHeight(Integer.toString(newHeight));
         }
         
-        
         public ApplicationDetailView(ApplicationInfo applicationInfo) {
             setElement(Document.get().createDivElement());
             
             
-            GWTMarkerState marker = new GWTMarkerState();
-            marker.setSelected(true);
-            marker.setVisible(true);
-            marker.setStatus(applicationInfo.getStatus());
-            m_icon = new Image(marker.getImageURL());
+            m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
             setStyles();
             m_nameLabel.setText(applicationInfo.getName());
             m_statusLabel.setText(applicationInfo.getStatus().getReason());
@@ -71,18 +66,18 @@ public class PageableApplicationList extends PageableList {
      * TODO: Maybe enhance this so that it only adds/updates/deletes individual items
      * TODO: Don't skip to the front page on every update
      */
-    public void updateList(ArrayList<ApplicationInfo> applications) {
+    public void updateList(final ArrayList<ApplicationInfo> applications) {
         setApplications(applications);
         super.showFirstPage();
     }
     
     @Override
-    protected Widget getListItemWidget(int index) {
+    protected Widget getListItemWidget(final int index) {
         return new ApplicationDetailView(getApplications().get(index));
     }
 
 
-    private void setApplications(ArrayList<ApplicationInfo> applications) {
+    private void setApplications(final ArrayList<ApplicationInfo> applications) {
         m_applications = applications;
     }
 
@@ -99,10 +94,10 @@ public class PageableApplicationList extends PageableList {
 
 
     @Override
-    public void onItemClickHandler(ClickEvent event) {
-        Cell cell = getCellForEvent(event);
-        
-        ApplicationInfo appInfo = getApplications().get(cell.getRowIndex());
+    public void onItemClickHandler(final ClickEvent event) {
+    	final Cell cell = getCellForEvent(event);
+
+    	final ApplicationInfo appInfo = getApplications().get(cell.getRowIndex());
         m_eventBus.fireEvent(new ApplicationSelectedEvent(appInfo));
     }
 

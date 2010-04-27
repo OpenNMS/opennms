@@ -115,7 +115,7 @@ public class SerializationTest {
 
 		services.add(getMonitoredService());
 		locationNames.add(getMonitor().getDefinitionName());
-		final ApplicationInfo info = new ApplicationInfo(1, "TestApp1", services, locationNames);
+		final ApplicationInfo info = new ApplicationInfo(1, "TestApp1", services, locationNames, Status.UNINITIALIZED);
 		return info;
 	}
 	private ApplicationState getApplicationState() {
@@ -127,7 +127,7 @@ public class SerializationTest {
 
 		services.add(getMonitoredService());
 		locationNames.add(getMonitor().getDefinitionName());
-		applications.add(new ApplicationInfo(1, "TestApp1", services, locationNames));
+		applications.add(new ApplicationInfo(1, "TestApp1", services, locationNames, Status.UNINITIALIZED));
 		applicationStatuses.put("TestApp1", statuses);
 		statuses.add(getLocationSpecificStatus());
 		final Date to = new Date();
@@ -149,7 +149,6 @@ public class SerializationTest {
 		status.setLocationMonitor(getMonitor());
 		status.setMonitoredService(getMonitoredService());
 		status.setPollResult(getPollResult());
-		status.setPollTime(new Date());
 		return status;
 	}
 

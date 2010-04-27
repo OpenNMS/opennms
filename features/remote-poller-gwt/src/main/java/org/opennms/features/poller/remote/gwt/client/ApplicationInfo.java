@@ -17,11 +17,12 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	public ApplicationInfo() {
 	}
 
-	public ApplicationInfo(final int id, final String name, final Set<GWTMonitoredService> services, final Set<String> locationNames) {
+	public ApplicationInfo(final int id, final String name, final Set<GWTMonitoredService> services, final Set<String> locationNames, final Status status) {
 		m_id = id;
 		m_name = name;
 		m_services = services;
 		m_locations = locationNames;
+		m_status = status;
 	}
 
 	public Integer getId() {
@@ -63,29 +64,39 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	public void setPriority(final Long priority) {
 		m_priority = priority;
 	}
+	public GWTMarkerState getMarkerState() {
+		return new GWTMarkerState(m_name, null, m_status);
+	}
 
-	public boolean equals(Object o) {
-		if (!(o instanceof ApplicationInfo)) return false;
-		ApplicationInfo that = (ApplicationInfo)o;
-		if (this.getId() == null && that.getId() == null) {
-			return true;
-		} else if (this.getId() == null) {
-			return false;
-		}
-		return this.getId().equals(that.getId());
+	public boolean equals(Object aThat) {
+		if (this == aThat) return true;
+		if (!(aThat instanceof ApplicationInfo)) return false;
+		ApplicationInfo that = (ApplicationInfo)aThat;
+		return
+			EqualsUtil.areEqual(this.getId(), that.getId()) &&
+			EqualsUtil.areEqual(this.getName(), that.getName())
+		;
+	}
+
+	public int hashCode() {
+		return 2 * (this.getId() == null? 1 : this.getId().hashCode() + this.getName() == null? 1 : this.getName().hashCode());
 	}
 
 	public int compareTo(final ApplicationInfo that) {
 		int compareVal;
-		compareVal = this.getStatus() == null? -1 : this.getStatus().compareTo(that.getStatus());
+		compareVal = this.getStatus() == null? 0 : this.getStatus().compareTo(that.getStatus());
 		if (compareVal != 0) return compareVal;
 		compareVal = this.getPriority().compareTo(that.getPriority());
 		if (compareVal != 0) return compareVal;
-		compareVal = this.getName() == null? -1 : this.getName().compareTo(that.getName());
+		compareVal = this.getName() == null? 0 : this.getName().compareTo(that.getName());
 		if (compareVal != 0) return compareVal;
 		return this.getId().compareTo(that.getId());
 	}
 
+	public String summary() {
+		return "ApplicationInfo[id=" + m_id + ",name=" + m_name + "]";
+	}
+	
 	public String toString() {
 		return "ApplicationInfo[id=" + m_id + ",name=" + m_name + ",services=[" + Utils.join(m_services, ", ") + "],locations=[" + Utils.join(m_locations, ", ") + "],status=" + getStatus() + ",priority=" + getPriority() + "]";
 	}

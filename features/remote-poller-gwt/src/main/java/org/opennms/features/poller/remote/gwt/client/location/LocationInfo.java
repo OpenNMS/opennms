@@ -3,6 +3,7 @@ package org.opennms.features.poller.remote.gwt.client.location;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.opennms.features.poller.remote.gwt.client.EqualsUtil;
 import org.opennms.features.poller.remote.gwt.client.GWTBounds;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTMarkerState;
@@ -123,6 +124,17 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 
 	public boolean isVisible(final GWTBounds bounds) {
 		return bounds.contains(getLatLng());
+	}
+
+	public boolean equals(Object aThat) {
+		if (this == aThat) return true;
+		if (!(aThat instanceof LocationInfo)) return false;
+		LocationInfo that = (LocationInfo)aThat;
+		return EqualsUtil.areEqual(this.getName(), that.getName());
+	}
+
+	public int hashCode() {
+		return 7 * this.getName().hashCode();
 	}
 
 	public int compareTo(final LocationInfo that) {

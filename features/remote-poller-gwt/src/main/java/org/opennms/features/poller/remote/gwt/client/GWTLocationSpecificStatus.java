@@ -12,8 +12,9 @@ public class GWTLocationSpecificStatus implements Serializable, IsSerializable {
     private GWTLocationMonitor m_locationMonitor;
 	private GWTPollResult m_pollResult;
 	private GWTMonitoredService m_monitoredService;
-	private Date m_pollTime;
 	
+	public GWTLocationSpecificStatus() {}
+
     public Integer getId() {
 		return m_id;
 	}
@@ -39,10 +40,7 @@ public class GWTLocationSpecificStatus implements Serializable, IsSerializable {
 		m_pollResult = pollResult;
 	}
 	public Date getPollTime() {
-		return m_pollTime;
-	}
-	public void setPollTime(final Date date) {
-		m_pollTime = date;
+		return m_pollResult == null? null : m_pollResult.getTimestamp();
 	}
 
 	public String toString() {

@@ -1,6 +1,6 @@
 package org.opennms.features.poller.remote.gwt.server;
 
-import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
+import org.opennms.netmgt.model.OnmsApplication;
 
-public interface ApplicationHandler extends InitializationHandler<ApplicationInfo> {
+public interface ApplicationHandler extends InitializationHandler<OnmsApplication> {
 }
