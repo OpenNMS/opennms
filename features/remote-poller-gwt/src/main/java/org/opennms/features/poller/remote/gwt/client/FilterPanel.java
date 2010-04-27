@@ -74,6 +74,8 @@ public class FilterPanel extends Composite {
                 appIcon = new Image("images/selected-DOWN.png");
             } else if (app.getStatus() == Status.UNKNOWN) {
                 appIcon = new Image("images/selected-UNKNOWN.png");
+            } else {
+                appIcon = new Image("images/selected-UNINITIALIZED.png");
             }
             appIcon.addStyleName(filterStyles.panelIcon());
             super.add(appIcon);

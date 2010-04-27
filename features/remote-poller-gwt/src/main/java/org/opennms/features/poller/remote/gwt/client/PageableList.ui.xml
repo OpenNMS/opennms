@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
         .pagingControls{
-            padding-top: 3px;
+            padding-top: 5px;
             width: 100%;
         }
         
