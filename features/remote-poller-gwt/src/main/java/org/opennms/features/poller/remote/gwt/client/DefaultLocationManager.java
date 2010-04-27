@@ -37,11 +37,11 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
-import com.googlecode.gwtmapquest.transaction.MQAInfoWindow;
 
 /**
  * <p>This class implements both {@link LocationManager} (the model portion of the webapp) and
@@ -365,6 +365,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // Use an ArrayList so that it has good random-access efficiency
         // since the pageable lists use get() to fetch based on index.
         ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
+        /*
+        for (final ApplicationInfo ai : m_applications) {
+        	Window.alert(applicationInfo.summary() + " " + (applicationInfo.equals(ai)? "=" : "!=") + " " + ai.summary());
+        }
+        */
+//        Window.alert("applications = " + m_applications);
         applicationList.addAll(m_applications);
         m_locationPanel.updateApplicationList(applicationList);
 

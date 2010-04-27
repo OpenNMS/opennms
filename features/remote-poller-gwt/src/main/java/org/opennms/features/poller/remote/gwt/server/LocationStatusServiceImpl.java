@@ -67,13 +67,14 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 					if (m_lastUpdated == null) {
 						return;
 					}
-					LogUtils.debugf(this, "checking for monitor status updates");
+					LogUtils.debugf(this, "pushing monitor status updates");
 					final Date endDate = new Date();
 					addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(m_locationDataService.getUpdatedLocationsBetween(m_lastUpdated, endDate)));
+					LogUtils.debugf(this, "finished pushing monitor status updates");
 
-					final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
-					appHandlers.add(new InitialApplicationHandler(m_locationDataService, service, true));
-					m_locationDataService.handleAllApplications(appHandlers);
+//					final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
+//					appHandlers.add(new InitialApplicationHandler(m_locationDataService, service, true));
+//					m_locationDataService.handleAllApplications(appHandlers);
 
 					m_lastUpdated = endDate;
 				}
@@ -114,22 +115,26 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		locationHandlers.add(new DefaultLocationDefHandler(m_locationDataService, service, false));
 		locationHandlers.add(new GeocodingHandler(m_locationDataService, service));
 		m_locationDataService.handleAllMonitoringLocationDefinitions(locationHandlers);
+		LogUtils.debugf(this, "finished pushing uninitialized locations");
 
-		LogUtils.debugf(this, "pushing applications");
+		LogUtils.debugf(this, "pushing uninitialized applications");
 		final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
 		appHandlers.add(new InitialApplicationHandler(m_locationDataService, service, false));
 		m_locationDataService.handleAllApplications(appHandlers);
+		LogUtils.debugf(this, "finished pushing uninitialized applications");
 	}
 
 	private void pushInitializedLocations(final EventExecutorService service) {
 		LogUtils.debugf(this, "pushing initialized locations");
 		final LocationDefHandler locationHandler = new DefaultLocationDefHandler(m_locationDataService, service, true);
 		m_locationDataService.handleAllMonitoringLocationDefinitions(Collections.singleton(locationHandler));
+		LogUtils.debugf(this, "finished pushing initialized locations");
 
-		LogUtils.debugf(this, "pushing applications");
+		LogUtils.debugf(this, "pushing initialized applications");
 		final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
 		appHandlers.add(new InitialApplicationHandler(m_locationDataService, service, true));
 		m_locationDataService.handleAllApplications(appHandlers);
+		LogUtils.debugf(this, "finished pushing initialized applications");
 	}
 
 }

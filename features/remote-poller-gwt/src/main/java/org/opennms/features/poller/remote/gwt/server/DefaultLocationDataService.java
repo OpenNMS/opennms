@@ -137,7 +137,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			state.setStatus(ld.getLocationMonitorState().getStatus());
 			locationInfo.setStatus(ld.getLocationMonitorState().getStatus());
 		}
-		LogUtils.debugf(this, "getLocation(" + def.getName() + ") returning %s", locationInfo.toString());
+		LogUtils.debugf(this, "getLocationInfo(" + def.getName() + ") returning %s", locationInfo.toString());
 		return locationInfo;
 	}
 
@@ -177,6 +177,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			final ApplicationDetails details = getApplicationDetails(app);
 			applicationInfo.setStatus(details.getStatus());
 		}
+		LogUtils.debugf(this, "getApplicationInfo(" + app.getName() + ") returning %s", applicationInfo.toString());
 		return applicationInfo;
 	}
 

@@ -50,7 +50,7 @@ public class GWTLatLng implements IsSerializable, Serializable {
 	@Override
 	public boolean equals(final Object o) {
 		if (o == null) return false;
-		if (!this.getClass().equals(o.getClass())) return false;
+		if (!(o instanceof GWTLatLng)) return false;
 		final GWTLatLng that = (GWTLatLng)o;
 		return (
 			(this.getLongitude().equals(that.getLongitude())) &&

@@ -299,12 +299,12 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 		public boolean equals(Object o) {
 			if (!(o instanceof GWTServiceOutage)) return false;
 			GWTServiceOutage that = (GWTServiceOutage)o;
-			if (this.getMonitor().getId().equals(that.getMonitor().getId())
-				&& this.getService().getId().equals(that.getService().getId())
-				&& this.getFrom().equals(that.getFrom())
-				&& this.getTo().equals(that.getTo())
-			) return true;
-			return false;
+			return 
+				EqualsUtil.areEqual(this.getMonitor().getId(), that.getMonitor().getId()) &&
+				EqualsUtil.areEqual(this.getService().getId(), that.getService().getId()) &&
+				EqualsUtil.areEqual(this.getFrom(), that.getFrom()) &&
+				EqualsUtil.areEqual(this.getTo(), that.getTo())
+			;
 		}
 
 		public int hashCode() {
@@ -338,7 +338,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 			if (lastCompare != 0) return lastCompare;
 			lastCompare = a.getLocationMonitor().getDefinitionName().compareTo(b.getLocationMonitor().getDefinitionName());
 			if (lastCompare != 0) return lastCompare;
-			lastCompare = a.getPollTime().compareTo(b.getPollTime());
+			lastCompare = a.getPollTime() == null? 0 : a.getPollTime().compareTo(b.getPollTime());
 			if (lastCompare != 0) return lastCompare;
 			lastCompare = a.getLocationMonitor().compareTo(b.getLocationMonitor());
 			if (lastCompare != 0) return lastCompare;

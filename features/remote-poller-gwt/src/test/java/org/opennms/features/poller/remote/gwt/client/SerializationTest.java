@@ -149,7 +149,6 @@ public class SerializationTest {
 		status.setLocationMonitor(getMonitor());
 		status.setMonitoredService(getMonitoredService());
 		status.setPollResult(getPollResult());
-		status.setPollTime(new Date());
 		return status;
 	}
 

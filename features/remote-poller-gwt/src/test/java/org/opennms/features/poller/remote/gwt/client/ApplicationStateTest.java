@@ -213,7 +213,6 @@ public class ApplicationStateTest {
 		status.setLocationMonitor(getLocationMonitor(date, monitorName, monitorId, "STARTED"));
 		status.setMonitoredService(getMonitoredService());
 		status.setPollResult(result);
-		status.setPollTime(date);
 		return status;
 	}
 
