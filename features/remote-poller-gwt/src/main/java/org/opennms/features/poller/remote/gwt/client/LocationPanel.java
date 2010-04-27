@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.opennms.features.poller.remote.gwt.client.TagPanel.TagResizeEvent;
+import org.opennms.features.poller.remote.gwt.client.TagPanel.TagResizeEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
@@ -21,7 +23,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class LocationPanel extends Composite implements LocationPanelSelectEventHandler {
+public class LocationPanel extends Composite implements LocationPanelSelectEventHandler, TagResizeEventHandler {
     
 	interface Binder extends UiBinder<Widget, LocationPanel> { }
 
@@ -53,6 +55,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	        registration.removeHandler();
 	    }
 	    m_eventBus = eventBus;
+	    m_eventBus.addHandler(TagResizeEvent.TYPE, this);
 	    
 	    filterPanel.setEventBus(eventBus);
 	    tagPanel.setEventBus(eventBus);
@@ -112,12 +115,16 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     public void resizeDockPanel() {
         int verticalSpacer = 23;
         int newSize = tagPanel.getOffsetHeight() + filterPanel.getOffsetHeight() + verticalSpacer;
-        
+
         dockPanel.remove(listsPanel);
         dockPanel.remove(filterOptionsPanel);
         
         dockPanel.addNorth(filterOptionsPanel, newSize);
         dockPanel.add(listsPanel);
+    }
+
+    public void onTagPanelResize() {
+        resizeDockPanel();
     }
     
    

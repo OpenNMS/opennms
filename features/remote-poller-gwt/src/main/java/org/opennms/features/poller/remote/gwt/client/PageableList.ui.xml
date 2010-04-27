@@ -32,7 +32,6 @@
        
        .detailContainerStyle{
            position: relative;
-           height: 60px;
         }
        
        .iconStyle{

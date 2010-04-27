@@ -8,6 +8,7 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -24,6 +25,7 @@ public class PageableLocationList extends PageableList {
         Label m_nameLabel = new Label();
         Label m_areaLabel = new Label();
         Label m_statusLabel = new Label();
+        int m_storedHeight = 0;
         
         @Override
         protected void doAttachChildren() {
@@ -32,6 +34,12 @@ public class PageableLocationList extends PageableList {
             DOM.appendChild(this.getElement(), m_nameLabel.getElement());
             DOM.appendChild(this.getElement(), m_areaLabel.getElement());
             DOM.appendChild(this.getElement(), m_statusLabel.getElement());
+            
+            int calculatedHeight = m_statusLabel.getOffsetHeight();
+            
+            int newHeight = calculatedHeight > 60 ? calculatedHeight : 60;
+            m_storedHeight = newHeight;
+            setHeight(Integer.toString(newHeight));
         }
 
         public LocationInfoDisplay(LocationInfo locationInfo) {
@@ -53,6 +61,10 @@ public class PageableLocationList extends PageableList {
             m_areaLabel.addStyleName(locationDetailStyle.areaStyle());
             m_statusLabel.addStyleName(locationDetailStyle.statusStyle());
             
+        }
+        
+        public int getHeight() {
+            return m_storedHeight;
         }
         
     }
@@ -88,7 +100,8 @@ public class PageableLocationList extends PageableList {
     public void onItemClickHandler(ClickEvent event) {
       final Cell cell = getCellForEvent(event);
       LocationInfo location = m_locations.get(cell.getRowIndex() + (getCurrentPageIndex() * getTotalListItemsPerPage()));
-      
+      LocationInfoDisplay widget =  (LocationInfoDisplay) dataList.getWidget(cell.getRowIndex(), 0);
+      Window.alert("widget.getHeight(): " + widget.getHeight());
       fireEvent(new LocationPanelSelectEvent(location.getName()));
         
     }

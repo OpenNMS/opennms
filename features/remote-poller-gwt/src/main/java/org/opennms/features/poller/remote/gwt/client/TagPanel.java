@@ -145,6 +145,7 @@ public class TagPanel extends Composite implements Collection<String> {
     public boolean addAll(Collection<? extends String> c) {
         boolean retval = m_delegate.addAll(c);
         updatePanel();
+        m_eventBus.fireEvent(new TagResizeEvent());
         return retval;
     }
 
@@ -265,6 +266,7 @@ public class TagPanel extends Composite implements Collection<String> {
             tagPanel.add(tagLabel);
             // without this, the tag cloud doesn't wrap properly
             tagPanel.add(new InlineHTML(" "));
+            
         }
     }
 }
