@@ -335,15 +335,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void updateLocation(final LocationInfo info) {
         if (info == null) return;
 
-        DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				// Update the location information in the model
-				createOrUpdateLocation(info);
-			}
-        });
+        // Update the location information in the model
+        createOrUpdateLocation(info);
+
+    	// Update the icon in the map
+        GWTMarkerState m = getMarkerForLocation(info);
+        m_mapPanel.placeMarker(m);
 
 		if (!updated) {
-			DeferredCommand.addPause();
 			return;
 		}
 
@@ -351,10 +350,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Update the icon/caption in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());
-
-    	// Update the icon in the map
-        GWTMarkerState m = getMarkerForLocation(info);
-        m_mapPanel.placeMarker(m);
     }
 
     /**
@@ -364,16 +359,11 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void updateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo == null) return;
 
-        DeferredCommand.addCommand(new Command() {
-			public void execute() {
-		        // Update the location information in the model
-		        createOrUpdateApplication(applicationInfo);
-			}
-        	
-        });
+        // Update the application information in the model
+        createOrUpdateApplication(applicationInfo);
 
         if (!updated) {
-        	DeferredCommand.addPause();
+//        	DeferredCommand.addPause();
         	return;
         }
 
@@ -402,18 +392,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     public void updateComplete() {
     	if (!updated) {
-    		DeferredCommand.addPause();
-    		DeferredCommand.addCommand(new Command() {
-				public void execute() {
-    				updateAllMarkerStates();
-				}
-    		});
-    		DeferredCommand.addCommand(new Command() {
-    			public void execute() {
-    				fitMapToLocations();
-    				updated = true;
-    			}
-    		});
+    		updateAllMarkerStates();
+    		fitMapToLocations();
     	}
     }
 
