@@ -1,8 +1,8 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toGWTBounds;
-import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toLatLng;
-import static org.opennms.features.poller.remote.gwt.client.GoogleMapsUtils.toLatLngBounds;
+import static org.opennms.features.poller.remote.gwt.client.utils.GoogleMapsUtils.toGWTBounds;
+import static org.opennms.features.poller.remote.gwt.client.utils.GoogleMapsUtils.toLatLng;
+import static org.opennms.features.poller.remote.gwt.client.utils.GoogleMapsUtils.toLatLngBounds;
 
 import java.util.HashMap;
 import java.util.Map;

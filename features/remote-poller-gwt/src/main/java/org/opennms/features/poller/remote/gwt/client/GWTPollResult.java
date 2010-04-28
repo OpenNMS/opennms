@@ -82,6 +82,6 @@ public class GWTPollResult implements Serializable, IsSerializable, Comparable<G
 			.append(this.getStatus(), that.getStatus())
 			.append(this.getResponseTime(), that.getResponseTime())
 			.append(this.getReason(), that.getReason())
-			.compare();
+			.toComparison();
 	}
 }

@@ -1,12 +1,12 @@
 /**
  * 
  */
-package org.opennms.features.poller.remote.gwt.client;
+package org.opennms.features.poller.remote.gwt.client.utils;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-public class Utils {
+public class StringUtils {
 	public static String join(Collection<?> s, String delimiter) {
 		if (s == null) {
 			return "null";

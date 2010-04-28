@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ApplicationState implements Serializable, IsSerializable {
@@ -56,13 +58,13 @@ public class ApplicationState implements Serializable, IsSerializable {
 			}
 		}
 		if (m_applicationsUnknown.size() > 0) {
-			return Status.unknown("The following applications are reporting an unknown status: " + Utils.join(m_applicationsUnknown, ", "));
+			return Status.unknown("The following applications are reporting an unknown status: " + StringUtils.join(m_applicationsUnknown, ", "));
 		}
 		if (m_applicationsDown.size() > 0) {
-			return Status.down("The following applications are reported as down: " + Utils.join(m_applicationsDown, ", "));
+			return Status.down("The following applications are reported as down: " + StringUtils.join(m_applicationsDown, ", "));
 		}
 		if (m_applicationsMarginal.size() > 0) {
-			return Status.marginal("The following applications are reported as marginal: " + Utils.join(m_applicationsMarginal, ", "));
+			return Status.marginal("The following applications are reported as marginal: " + StringUtils.join(m_applicationsMarginal, ", "));
 		}
 		return Status.UP;
 	}

@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class LocationMonitorState implements Serializable, IsSerializable {
@@ -221,14 +223,14 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 				if (servicesDown.size() == 1) {
 					return Status.down(servicesDown.iterator().next() + " has been reported down by all monitors.");
 				} else {
-					return Status.down("The following services are reported down by all monitors: " + Utils.join(servicesDown, ", ") + ".");
+					return Status.down("The following services are reported down by all monitors: " + StringUtils.join(servicesDown, ", ") + ".");
 				}
 			}
 		}
 		
 		// yellow/marginal: If some (but not all) started monitors report "down" for the same service
 		if (anyDown.size() > 0) {
-			return Status.marginal("The following services are reported down by at least one monitor: " + Utils.join(anyDown, ", ") + ".");
+			return Status.marginal("The following services are reported down by at least one monitor: " + StringUtils.join(anyDown, ", ") + ".");
 		}
 
 		return Status.up("There are no current service outages for this location.");

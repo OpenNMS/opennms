@@ -1,4 +1,7 @@
-package org.opennms.features.poller.remote.gwt.client;
+package org.opennms.features.poller.remote.gwt.client.utils;
+
+import org.opennms.features.poller.remote.gwt.client.GWTBounds;
+import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
 public class BoundsBuilder {
     

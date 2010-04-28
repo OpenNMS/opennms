@@ -12,6 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
+import org.opennms.features.poller.remote.gwt.client.utils.EqualsUtil;
+import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
+import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ApplicationDetails implements Serializable, IsSerializable {
@@ -216,15 +221,15 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 		}
 
 		if (unmonitoredServiceNames.size() > 0) {
-			return Status.unknown("The following services were not being reported on by any monitor: " + Utils.join(unmonitoredServiceNames, ", "));
+			return Status.unknown("The following services were not being reported on by any monitor: " + StringUtils.join(unmonitoredServiceNames, ", "));
 		}
 		
 		if (servicesDown.size() > 0) {
-			return Status.down("The following services were reported as down by all monitors: " + Utils.join(serviceNamesDown, ","));
+			return Status.down("The following services were reported as down by all monitors: " + StringUtils.join(serviceNamesDown, ","));
 		}
 
 		if (servicesWithOutages.size() == m_application.getServices().size()) {
-			return Status.marginal("The following services were reported to have outages in this application: " + Utils.join(serviceNamesWithOutages, ", "));
+			return Status.marginal("The following services were reported to have outages in this application: " + StringUtils.join(serviceNamesWithOutages, ", "));
 		}
 
 		return Status.UP;
@@ -308,7 +313,12 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 		}
 
 		public int hashCode() {
-			return 3 * this.getMonitor().hashCode() + this.getService().hashCode() + this.getFrom().hashCode() + this.getTo().hashCode();
+			return new HashCodeBuilder()
+				.append(this.getMonitor())
+				.append(this.getService())
+				.append(this.getFrom())
+				.append(this.getTo())
+				.toHashcode();
 		}
 
 		public String toString() {
@@ -316,15 +326,12 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 		}
 
 		public int compareTo(final GWTServiceOutage that) {
-			int lastCompare;
-			lastCompare = this.getService().compareTo(that.getService());
-			if (lastCompare != 0) return lastCompare;
-			lastCompare = this.getFrom().compareTo(that.getFrom());
-			if (lastCompare != 0) return lastCompare;
-			lastCompare = this.getMonitor().compareTo(that.getMonitor());
-			if (lastCompare != 0) return lastCompare;
-			lastCompare = this.getTo().compareTo(that.getTo());
-			return lastCompare;
+			return new CompareToBuilder()
+				.append(this.getService(), that.getService())
+				.append(this.getFrom(), that.getFrom())
+				.append(this.getMonitor(), that.getMonitor())
+				.append(this.getTo(), that.getTo())
+				.toComparison();
 		}
 		
 		
@@ -333,17 +340,12 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 	private static class LocationSpecificStatusComparator implements Comparator<GWTLocationSpecificStatus> {
 
 		public int compare(final GWTLocationSpecificStatus a, final GWTLocationSpecificStatus b) {
-			int lastCompare;
-			lastCompare = a.getMonitoredService().compareTo(b.getMonitoredService());
-			if (lastCompare != 0) return lastCompare;
-			lastCompare = a.getLocationMonitor().getDefinitionName().compareTo(b.getLocationMonitor().getDefinitionName());
-			if (lastCompare != 0) return lastCompare;
-			lastCompare = a.getPollTime() == null? 0 : a.getPollTime().compareTo(b.getPollTime());
-			if (lastCompare != 0) return lastCompare;
-			lastCompare = a.getLocationMonitor().compareTo(b.getLocationMonitor());
-			if (lastCompare != 0) return lastCompare;
-			lastCompare = a.getPollResult().compareTo(b.getPollResult());
-			return lastCompare;
+			return new CompareToBuilder()
+				.append(a.getMonitoredService(), b.getMonitoredService())
+				.append(a.getLocationMonitor().getDefinitionName(), b.getLocationMonitor().getDefinitionName())
+				.append(a.getPollTime(), b.getPollTime())
+				.append(a.getLocationMonitor(), b.getLocationMonitor())
+				.toComparison();
 		}
 
 	}
