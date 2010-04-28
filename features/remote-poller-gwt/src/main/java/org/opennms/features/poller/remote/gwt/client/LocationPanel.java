@@ -38,7 +38,6 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	//@UiField DockLayoutPanel dockPanel;
 	@UiField HTMLPanel filterOptionsPanel;
 	@UiField FlowPanel listsPanel;
-    private boolean m_isResizing = false;
 	
 	public LocationPanel() {
 		super();

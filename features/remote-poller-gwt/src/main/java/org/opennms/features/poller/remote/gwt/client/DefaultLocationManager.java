@@ -46,7 +46,7 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
  * {@link RemotePollerPresenter} (the controller portion of the webapp code). It is responsible
  * for maintaining the knowledgebase of {@link Location} objects and responding to events triggered when:</p>
  * <ul>
- * <li>{@link Location} instances are added or updated</li>
+ * <li>{@link Location} instances are added or m_updated</li>
  * <li>the UI elements are clicked on by the user</li>
  * </ul>
  * 
@@ -73,7 +73,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	private final SplitLayoutPanel m_panel;
 
-	private boolean updated = false;
+	private boolean m_updated = false;
+	private boolean m_locationViewActive = true;
 
 	private Set<ApplicationInfo> m_selectedApplications = new HashSet<ApplicationInfo>();
 
@@ -232,11 +233,23 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     			markerState.setVisible(m_selectedStatuses.contains(location.getStatus()));
         	}
 
-        	if (m_selectedTag == null) {
-        		markerState.setSelected(true);
+        	boolean selected = false;
+        	if (m_locationViewActive || m_selectedApplications.size() == 0) {
+        		selected = true;
         	} else {
-        		markerState.setSelected(location.getTags() != null && location.getTags().contains(m_selectedTag));
+	        	for (final ApplicationInfo app : m_selectedApplications) {
+	        		if (app.getLocations().contains(location.getName())) {
+	        			selected = true;
+	        			break;
+	        		}
+	        	}
         	}
+        	if (selected) {
+	        	if (m_selectedTag != null) {
+	        		selected = location.getTags() != null && location.getTags().contains(m_selectedTag);
+	        	}
+        	}
+        	markerState.setSelected(selected);
         	m_mapPanel.placeMarker(markerState);
     	}
     }
@@ -307,7 +320,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /**
-     * Refresh the list of locations whenever they are updated.
+     * Refresh the list of locations whenever they are m_updated.
      */
     public void onLocationsUpdated(final LocationsUpdatedEvent e) {
     	// make sure each location's marker is up-to-date
@@ -335,7 +348,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         GWTMarkerState m = getMarkerForLocation(info);
         m_mapPanel.placeMarker(m);
 
-		if (!updated) {
+		if (!m_updated) {
 			return;
 		}
 
@@ -367,7 +380,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         Collections.sort(applicationList);
         m_locationPanel.updateApplicationList(applicationList);
 
-        if (!updated) {
+        if (!m_updated) {
         	return;
         }
 
@@ -383,7 +396,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Invoked by the {@link UpdateCompleteRemoteEvent} event.
      */
     public void updateComplete() {
-    	if (!updated) {
+    	if (!m_updated) {
     		updateAllMarkerStates();
     		fitMapToLocations();
     	}
@@ -492,7 +505,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void onApplicationSelected(ApplicationSelectedEvent event) {
         // Add the application to the selected application list
         m_selectedApplications.add(event.getAppInfo());
-        
+
         updateAllMarkerStates();
 
         // Update the list of selected applications in the panel
@@ -507,6 +520,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
+    }
+
+    public void locationClicked() {
+    	m_locationViewActive = true;
+    }
+
+    public void applicationClicked() {
+    	m_locationViewActive = false;
     }
 
 	public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {

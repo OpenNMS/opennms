@@ -23,4 +23,6 @@ public interface LocationManager {
 	public Set<String> getAllApplicationNames();
 	public List<String> getTagsOnVisibleLocations();
 	public void addLocationManagerInitializationCompleteEventHandler(LocationManagerInitializationCompleteEventHander handler);
+	public void locationClicked();
+	public void applicationClicked();
 }

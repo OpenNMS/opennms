@@ -75,6 +75,7 @@ public class Application implements EntryPoint
 	    if (locationLink.getStyleName().contains(linkStyles.activeLink())) {
 	        // This link is already selected, do nothing
 	    } else {
+	    	m_locationManager.locationClicked();
 	        locationLink.addStyleName(linkStyles.activeLink());
             applicationLink.removeStyleName(linkStyles.activeLink());
 	        locationPanel.showLocationList();
@@ -88,6 +89,7 @@ public class Application implements EntryPoint
         if (applicationLink.getStyleName().contains(linkStyles.activeLink())) {
             // This link is already selected, do nothing
         } else {
+        	m_locationManager.applicationClicked();
             applicationLink.addStyleName(linkStyles.activeLink());
             locationLink.removeStyleName(linkStyles.activeLink());
             locationPanel.showApplicationList();
