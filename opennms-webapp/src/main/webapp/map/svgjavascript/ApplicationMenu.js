@@ -370,7 +370,7 @@ function openMapSetUp(mapId,setuptab) {
 	windowsClean();
 	clearTopInfo();
 	clearDownInfo();
-	openMap(mapToOpen);	
+	top.$j.history.load(mapToOpen);
 }
 
 // Close Map

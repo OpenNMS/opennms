@@ -49,8 +49,8 @@
 		</jsp:include>
 <p>
 
-<script language="JavaScript" type="text/javascript" src="map/js/jquery.js"></script>
-<script language="JavaScript" type="text/javascript" src="map/js/jquery.history.js"></script>
+<script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.js"></script>
+<script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.history.js"></script>
 
 <script type="text/javascript">
 
@@ -58,13 +58,9 @@ var svgMapWidth,svgMapHeight;
 
 var resizing=false;
 
-$.history.callback = function ( reinstate, cursor ) {
-}
-
-function savehistory(mapid) {
- 	$.history( {'mapid':mapid} );
-}
-
+var $j = jQuery.noConflict();
+var $ = {};
+	
 function toggle(id)
 {
 	el = document.getElementById(id);
@@ -121,11 +117,12 @@ function removeSVG() {
 emitSVG();
 
 </script>
-</p>
 <center>
 <div id="reloading">
 </div>
-</center>
+</center>	
+</p>
+
     <jsp:include page="/includes/footer.jsp" flush="false" >
       <jsp:param name="location" value="map" />
     </jsp:include>
