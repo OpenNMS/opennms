@@ -31,7 +31,15 @@ public class PageableApplicationList extends PageableList {
             DOM.appendChild(this.getElement(), m_nameLabel.getElement());
             DOM.appendChild(this.getElement(), m_statusLabel.getElement());
             
-            int calculatedHeight = m_statusLabel.getOffsetHeight();
+        }
+        
+        @Override
+        protected void onLoad() {
+            resizeToFit();
+        }
+
+        private void resizeToFit() {
+            int calculatedHeight = m_nameLabel.getOffsetHeight() + m_statusLabel.getOffsetHeight();
             int newHeight = calculatedHeight > 60 ? calculatedHeight : 60;
             setHeight(Integer.toString(newHeight));
         }
@@ -39,7 +47,7 @@ public class PageableApplicationList extends PageableList {
         public ApplicationDetailView(ApplicationInfo applicationInfo) {
             setElement(Document.get().createDivElement());
             setStyles();
-
+            
             m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
             m_nameLabel.setText(applicationInfo.getName());
             m_statusLabel.setText(applicationInfo.getStatus().getReason());
