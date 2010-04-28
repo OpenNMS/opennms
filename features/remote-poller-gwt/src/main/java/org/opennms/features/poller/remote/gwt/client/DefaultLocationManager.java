@@ -36,7 +36,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
@@ -76,8 +75,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	private boolean m_updated = false;
 	private boolean m_locationViewActive = true;
-
-	private static boolean m_alert = true;
 
 	private Set<ApplicationInfo> m_selectedApplications = new HashSet<ApplicationInfo>();
 
@@ -346,11 +343,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         info.getStatus().setReason(info.getReason());
         info.getMarkerState().getStatus().setReason(info.getReason());
-
-        if (m_alert) {
-    		Window.alert("a location = " + info.toString());
-    		m_alert = false;
-        }
 
         // Update the location information in the model
         createOrUpdateLocation(info);
