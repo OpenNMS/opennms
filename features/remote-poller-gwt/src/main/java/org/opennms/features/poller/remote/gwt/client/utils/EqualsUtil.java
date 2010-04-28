@@ -1,7 +1,4 @@
-/**
- * 
- */
-package org.opennms.features.poller.remote.gwt.client;
+package org.opennms.features.poller.remote.gwt.client.utils;
 
 public class EqualsUtil {
 	static public boolean areEqual(boolean aThis, boolean aThat){

@@ -3,12 +3,14 @@ package org.opennms.features.poller.remote.gwt.client.location;
 import java.io.Serializable;
 import java.util.Set;
 
-import org.opennms.features.poller.remote.gwt.client.EqualsUtil;
 import org.opennms.features.poller.remote.gwt.client.GWTBounds;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTMarkerState;
 import org.opennms.features.poller.remote.gwt.client.Status;
-import org.opennms.features.poller.remote.gwt.client.Utils;
+import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
+import org.opennms.features.poller.remote.gwt.client.utils.EqualsUtil;
+import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
+import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -144,17 +146,17 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	}
 
 	public int hashCode() {
-		return 7 * this.getName().hashCode();
+		return new HashCodeBuilder()
+			.append(this.getName())
+			.toHashcode();
 	}
 
 	public int compareTo(final LocationInfo that) {
-		int compareVal;
-		compareVal = this.getStatus().compareTo(that.getStatus());
-		if (compareVal != 0) return compareVal;
-		compareVal = this.getPriority().compareTo(that.getPriority());
-		if (compareVal != 0) return compareVal;
-		compareVal = this.getName().compareTo(that.getName());
-		return compareVal;
+		return new CompareToBuilder()
+			.append(this.getStatus(), that.getStatus())
+			.append(this.getPriority(), that.getPriority())
+			.append(this.getName(), that.getName())
+			.toComparison();
 	}
 
 	public String toString() {
@@ -166,7 +168,7 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 			+ ",priority=" + m_priority
 			+ ",status=" + m_status.toString() + (m_status == null? "" : ("(" + m_reason + ")"))
 			+ ",marker=" + m_markerState
-			+ ",tags=[" + Utils.join(m_tags, ",")
+			+ ",tags=[" + StringUtils.join(m_tags, ",")
 			+ "]";
 	}
 

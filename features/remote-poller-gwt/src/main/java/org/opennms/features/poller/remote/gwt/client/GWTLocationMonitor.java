@@ -3,6 +3,9 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
+import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class GWTLocationMonitor implements Serializable, IsSerializable, Comparable<GWTLocationMonitor> {
@@ -59,22 +62,19 @@ public class GWTLocationMonitor implements Serializable, IsSerializable, Compara
 	}
 
 	public int hashCode() {
-		return 5 * (this.getId() == null? 1 : this.getId().hashCode()) +
-			(this.getName() == null? 1 : this.getName().hashCode()) +
-			(this.getDefinitionName() == null? 1 : this.getDefinitionName().hashCode());
+		return new HashCodeBuilder()
+			.append(this.getId())
+			.append(this.getName())
+			.append(this.getDefinitionName())
+			.toHashcode();
 	}
 
 	public int compareTo(GWTLocationMonitor that) {
-		int lastCompare = this.getDefinitionName().compareTo(that.getDefinitionName());
-		if (lastCompare != 0) return lastCompare;
-		
-		lastCompare = this.getName().compareTo(that.getName());
-		if (lastCompare != 0) return lastCompare;
-
-		lastCompare = this.getStatus().compareTo(that.getStatus());
-		if (lastCompare != 0) return lastCompare;
-		
-		lastCompare = this.getLastCheckInTime().compareTo(that.getLastCheckInTime());
-		return lastCompare;
+		return new CompareToBuilder()
+			.append(this.getDefinitionName(), that.getDefinitionName())
+			.append(this.getName(), that.getName())
+			.append(this.getStatus(), that.getStatus())
+			.append(this.getLastCheckInTime(), that.getLastCheckInTime())
+			.toComparison();
 	}
 }

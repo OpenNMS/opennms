@@ -1,5 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
+
 public class GWTBounds {
     
     GWTLatLng m_northEastCorner;
@@ -41,7 +43,7 @@ public class GWTBounds {
     public GWTLatLng getNorthEastCorner() {
         return m_northEastCorner;
     }
-    
+
     public boolean equals(Object o) {
         if (o instanceof GWTBounds) {
             GWTBounds b = (GWTBounds)o;
@@ -49,11 +51,14 @@ public class GWTBounds {
         }
         return false;
     }
-    
+
     public int hashCode() {
-        return m_southWestCorner.hashCode() * 31 + m_northEastCorner.hashCode();
+    	return new HashCodeBuilder()
+    		.append(m_southWestCorner)
+    		.append(m_northEastCorner)
+    		.toHashcode();
     }
-    
+
     public String toString() {
         StringBuilder bldr = new StringBuilder();
         bldr.append("((");
@@ -63,7 +68,4 @@ public class GWTBounds {
         bldr.append("))");
         return bldr.toString();
     }
-    
-    
-
 }

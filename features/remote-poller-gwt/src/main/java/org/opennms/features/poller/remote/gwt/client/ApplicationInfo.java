@@ -3,6 +3,11 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
+import org.opennms.features.poller.remote.gwt.client.utils.EqualsUtil;
+import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
+import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ApplicationInfo implements Serializable, IsSerializable, Comparable<ApplicationInfo> {
@@ -87,18 +92,19 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	}
 
 	public int hashCode() {
-		return 2 * (this.getId() == null? 1 : this.getId().hashCode() + this.getName() == null? 1 : this.getName().hashCode());
+		return new HashCodeBuilder()
+			.append(this.getId())
+			.append(this.getName())
+			.toHashcode();
 	}
 
 	public int compareTo(final ApplicationInfo that) {
-		int compareVal;
-		compareVal = this.getStatus() == null? 0 : this.getStatus().compareTo(that.getStatus());
-		if (compareVal != 0) return compareVal;
-		compareVal = this.getPriority().compareTo(that.getPriority());
-		if (compareVal != 0) return compareVal;
-		compareVal = this.getName() == null? 0 : this.getName().compareTo(that.getName());
-		if (compareVal != 0) return compareVal;
-		return this.getId().compareTo(that.getId());
+		return new CompareToBuilder()
+			.append(this.getStatus(), that.getStatus())
+			.append(this.getPriority(), that.getPriority())
+			.append(this.getName(), that.getName())
+			.append(this.getId(), that.getId())
+			.toComparison();
 	}
 
 	public String summary() {
@@ -108,8 +114,8 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	public String toString() {
 		return "ApplicationInfo[id=" + m_id
 			+ ",name=" + m_name
-			+ ",services=[" + Utils.join(m_services, ", ")
-			+ "],locations=[" + Utils.join(m_locations, ", ")
+			+ ",services=[" + StringUtils.join(m_services, ", ")
+			+ "],locations=[" + StringUtils.join(m_locations, ", ")
 			+ "],status=" + getStatus()
 			+ ",priority=" + getPriority() + "]";
 	}

@@ -32,10 +32,10 @@ public class GWTLatLng implements IsSerializable, Serializable {
 		return new GWTLatLng(Double.valueOf(coords[0]), Double.valueOf(coords[1]));
 	}
 
-	Double getLatitude() {
+	public Double getLatitude() {
 		return m_latitude;
 	}
-	Double getLongitude() {
+	public Double getLongitude() {
 		return m_longitude;
 	}
 
