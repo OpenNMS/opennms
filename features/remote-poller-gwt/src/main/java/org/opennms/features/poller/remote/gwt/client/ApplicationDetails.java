@@ -21,7 +21,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 	private List<GWTLocationSpecificStatus> m_locationSpecificStatuses;
 	private Date m_statusFrom;
 	private Date m_statusTo;
-	private Status m_status;
+	private transient Status m_status;
 
 	public ApplicationDetails() {
 		m_name = null;

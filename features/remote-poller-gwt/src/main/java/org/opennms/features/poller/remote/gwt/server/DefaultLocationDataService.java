@@ -129,13 +129,16 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 			def.getPriority(),
 			state,
 			status,
+			status == null? "" : status.getReason(),
 			def.getTags()
 		);
 
 		if (status == null) {
 			final LocationDetails ld = getLocationDetails(def);
-			state.setStatus(ld.getLocationMonitorState().getStatus());
-			locationInfo.setStatus(ld.getLocationMonitorState().getStatus());
+			final Status monitorStatus = ld.getLocationMonitorState().getStatus();
+			state.setStatus(monitorStatus);
+			locationInfo.setStatus(monitorStatus);
+			locationInfo.setReason(monitorStatus.getReason());
 		}
 		LogUtils.debugf(this, "getLocationInfo(" + def.getName() + ") returning %s", locationInfo.toString());
 		return locationInfo;
@@ -171,11 +174,19 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 		}
 		
 		
-		final ApplicationInfo applicationInfo = new ApplicationInfo(app.getId(), app.getName(), services, locationNames, status);
+		final ApplicationInfo applicationInfo = new ApplicationInfo(
+			app.getId(),
+			app.getName(),
+			services,
+			locationNames,
+			status,
+			status == null? "" : status.getReason()
+		);
 		
 		if (status == null) {
 			final ApplicationDetails details = getApplicationDetails(app);
 			applicationInfo.setStatus(details.getStatus());
+			applicationInfo.setReason(details.getStatus().getReason());
 		}
 		LogUtils.debugf(this, "getApplicationInfo(" + app.getName() + ") returning %s", applicationInfo.toString());
 		return applicationInfo;

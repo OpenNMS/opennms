@@ -78,8 +78,10 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 	
 	public String toString() {
 		return "GWTMarkerState[name=" + m_name
-			+ ",latLng=" + m_latLng + ",status=" + m_status
-			+ ",visible=" + m_visible + ",selected=" + m_selected
+			+ ",latLng=" + m_latLng
+			+ ",status=" + m_status + "(" + (m_status == null? "" : m_status.getReason()) + ")"
+			+ ",visible=" + m_visible
+			+ ",selected=" + m_selected
 			+ "]";
 	}
 }

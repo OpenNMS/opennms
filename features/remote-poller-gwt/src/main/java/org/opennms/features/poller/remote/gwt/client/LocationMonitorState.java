@@ -21,7 +21,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	private Collection<GWTLocationSpecificStatus> m_locationStatuses;
 	private Set<String> m_services = new HashSet<String>();
 
-	private transient Status m_status;
+	private Status m_status;
 
 	public LocationMonitorState() { }
 

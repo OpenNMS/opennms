@@ -30,7 +30,7 @@ public class GWTMarkerClickedEvent extends GwtEvent<GWTMarkerClickedEventHandler
         m_marker = marker;
     }
 
-    public GWTMarkerState getMarker() {
+    public GWTMarkerState getMarkerState() {
         return m_marker;
     }
 

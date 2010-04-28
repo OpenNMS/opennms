@@ -28,22 +28,22 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
     private class DefaultMarkerClickHandler implements ClickHandler {
         
-        private GWTMarkerState m_marker;
+        private GWTMarkerState m_markerState;
         
-        public DefaultMarkerClickHandler(GWTMarkerState marker) {
-            setMarker(marker);
+        public DefaultMarkerClickHandler(GWTMarkerState markerState) {
+            setMarkerState(markerState);
         }
 
         public void onClick(ClickEvent event) {
-            m_eventBus.fireEvent(new GWTMarkerClickedEvent(getMarker()));
+            m_eventBus.fireEvent(new GWTMarkerClickedEvent(getMarkerState()));
         }
 
-        public void setMarker(GWTMarkerState marker) {
-            m_marker = marker;
+        public void setMarkerState(GWTMarkerState markerState) {
+            m_markerState = markerState;
         }
 
-        public GWTMarkerState getMarker() {
-            return m_marker;
+        public GWTMarkerState getMarkerState() {
+            return m_markerState;
         }
 
     }

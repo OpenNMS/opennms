@@ -36,6 +36,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
@@ -75,6 +76,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	private boolean m_updated = false;
 	private boolean m_locationViewActive = true;
+
+	private static boolean m_alert = true;
 
 	private Set<ApplicationInfo> m_selectedApplications = new HashSet<ApplicationInfo>();
 
@@ -165,11 +168,11 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void createOrUpdateLocation(final LocationInfo locationInfo) {
+        if (locationInfo.getMarkerState() == null) {
+        	locationInfo.setMarkerState(getMarkerForLocation(locationInfo));
+        }
     	m_locations.put(locationInfo.getName(), locationInfo);
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
-        if (locationInfo.getMarker() == null) {
-        	locationInfo.setMarker(getMarkerForLocation(locationInfo));
-        }
     }
 
     public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
@@ -205,7 +208,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // since the pageable lists use get() to fetch based on index.
     	final ArrayList<LocationInfo> visibleLocations = new ArrayList<LocationInfo>();
         for(LocationInfo location : m_locations.values()) {
-        	final GWTMarkerState markerState = location.getMarker();
+        	final GWTMarkerState markerState = location.getMarkerState();
         	if (markerState.isSelected() && markerState.isVisible()) {
         		visibleLocations.add(location);
         	}
@@ -224,7 +227,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     private void updateAllMarkerStates() {
     	for (final LocationInfo location : m_locations.values()) {
-        	final GWTMarkerState markerState = location.getMarker();
+        	final GWTMarkerState markerState = location.getMarkerState();
 
         	// if it's within the map bounds, it's visible
         	markerState.setVisible(location.isVisible(m_mapPanel.getBounds()));
@@ -341,6 +344,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void updateLocation(final LocationInfo info) {
         if (info == null) return;
 
+        info.getStatus().setReason(info.getReason());
+        info.getMarkerState().getStatus().setReason(info.getReason());
+
+        if (m_alert) {
+    		Window.alert("a location = " + info.toString());
+    		m_alert = false;
+        }
+
         // Update the location information in the model
         createOrUpdateLocation(info);
 
@@ -364,6 +375,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     public void updateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo == null) return;
+
+        applicationInfo.getStatus().setReason(applicationInfo.getReason());
+        applicationInfo.getMarkerState().getStatus().setReason(applicationInfo.getReason());
 
         // Update the application information in the model
         createOrUpdateApplication(applicationInfo);
@@ -458,8 +472,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void onGWTMarkerClicked(GWTMarkerClickedEvent event) {
-        GWTMarkerState marker = event.getMarker();
-        showLocationDetails(marker.getName());
+        GWTMarkerState markerState = event.getMarkerState();
+        showLocationDetails(markerState.getName());
     }
 
     public void onStatusSelectionChanged(Status status, boolean selected) {
@@ -486,10 +500,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     	if (location == null) {
     		return null;
     	}
-    	GWTMarkerState state = location.getMarker();
+    	GWTMarkerState state = location.getMarkerState();
     	if (state == null) {
     		state = new GWTMarkerState(location.getName(), location.getLatLng(), location.getStatus());
-    		location.setMarker(state);
+    		location.setMarkerState(state);
     	}
     	state.setVisible(m_selectedStatuses.contains(location.getStatus()));
     	return state;
@@ -524,10 +538,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     public void locationClicked() {
     	m_locationViewActive = true;
+    	updateAllMarkerStates();
     }
 
     public void applicationClicked() {
     	m_locationViewActive = false;
+    	updateAllMarkerStates();
     }
 
 	public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {

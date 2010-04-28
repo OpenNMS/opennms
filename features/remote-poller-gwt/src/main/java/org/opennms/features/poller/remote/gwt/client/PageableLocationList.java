@@ -46,9 +46,9 @@ public class PageableLocationList extends PageableList {
 
         public LocationInfoDisplay(LocationInfo locationInfo) {
             setElement(DOM.createDiv());
-            
+
             setStyles();
-            
+
             m_icon.setUrl(locationInfo.getMarkerImageURL());
             m_nameLabel.setText(locationInfo.getName());
             m_areaLabel.setText(locationInfo.getArea());
@@ -65,12 +65,12 @@ public class PageableLocationList extends PageableList {
         }
         
     }
-    
+
     @Override
     protected Widget getListItemWidget(int rowIndex) {
         return new LocationInfoDisplay(getLocations().get(rowIndex));
     }
-    
+
     /**
      * TODO: Maybe enhance this so that it only adds/updates/deletes individual items
      * TODO: Don't skip to the front page on every update
@@ -83,7 +83,7 @@ public class PageableLocationList extends PageableList {
     private ArrayList<? extends LocationInfo> getLocations() {
         return m_locations;
     }
-    
+
     private void setLocations(ArrayList<? extends LocationInfo> locations) {
         m_locations = locations;
     }

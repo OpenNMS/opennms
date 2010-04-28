@@ -101,7 +101,7 @@ public class SerializationTest {
 		location.setGeolocation("RDU");
 		location.setCoordinates("0.0,0.0");
 		location.setStatus(Status.UP);
-		location.setMarker(getMarker(location));
+		location.setMarkerState(getMarker(location));
 		return location;
 	}
 
@@ -115,7 +115,7 @@ public class SerializationTest {
 
 		services.add(getMonitoredService());
 		locationNames.add(getMonitor().getDefinitionName());
-		final ApplicationInfo info = new ApplicationInfo(1, "TestApp1", services, locationNames, Status.UNINITIALIZED);
+		final ApplicationInfo info = new ApplicationInfo(1, "TestApp1", services, locationNames, Status.UNINITIALIZED, "");
 		return info;
 	}
 	private ApplicationState getApplicationState() {
@@ -127,7 +127,7 @@ public class SerializationTest {
 
 		services.add(getMonitoredService());
 		locationNames.add(getMonitor().getDefinitionName());
-		applications.add(new ApplicationInfo(1, "TestApp1", services, locationNames, Status.UNINITIALIZED));
+		applications.add(new ApplicationInfo(1, "TestApp1", services, locationNames, Status.UNINITIALIZED, ""));
 		applicationStatuses.put("TestApp1", statuses);
 		statuses.add(getLocationSpecificStatus());
 		final Date to = new Date();

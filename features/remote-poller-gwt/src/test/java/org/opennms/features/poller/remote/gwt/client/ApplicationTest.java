@@ -108,10 +108,10 @@ public class ApplicationTest {
 	public void testSet() {
 		final Set<ApplicationInfo> applicationSet = new HashSet<ApplicationInfo>();
 
-		final ApplicationInfo ai1u = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.UNINITIALIZED);
-		final ApplicationInfo ai2u = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.UNINITIALIZED);
-		final ApplicationInfo ai1d = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.DOWN);
-		final ApplicationInfo ai2d = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.DOWN);
+		final ApplicationInfo ai1u = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.UNINITIALIZED, "");
+		final ApplicationInfo ai2u = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.UNINITIALIZED, "");
+		final ApplicationInfo ai1d = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.DOWN, "busted");
+		final ApplicationInfo ai2d = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.DOWN, "busted");
 		applicationSet.add(ai1u);
 		applicationSet.add(ai2u);
 		applicationSet.add(ai1d);
@@ -219,7 +219,7 @@ public class ApplicationTest {
 			services.add(getMonitoredService());
 			Set<String> locationNames = new TreeSet<String>();
 			locationNames.add("TestApp1");
-			app = new ApplicationInfo(count++, name, services, locationNames, Status.DOWN);
+			app = new ApplicationInfo(count++, name, services, locationNames, Status.DOWN, "busted");
 			m_applications.put(name, app);
 		}
 		return app;
