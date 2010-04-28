@@ -35,8 +35,8 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
@@ -335,8 +335,17 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void updateLocation(final LocationInfo info) {
         if (info == null) return;
 
-        // Update the location information in the model
-		createOrUpdateLocation(info);
+        DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				// Update the location information in the model
+				createOrUpdateLocation(info);
+			}
+        });
+
+		if (!updated) {
+			DeferredCommand.addPause();
+			return;
+		}
 
     	updateAllMarkerStates();
 
@@ -355,10 +364,20 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void updateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo == null) return;
 
-        // Update the location information in the model
-        createOrUpdateApplication(applicationInfo);
+        DeferredCommand.addCommand(new Command() {
+			public void execute() {
+		        // Update the location information in the model
+		        createOrUpdateApplication(applicationInfo);
+			}
+        	
+        });
 
-    	updateAllMarkerStates();
+        if (!updated) {
+        	DeferredCommand.addPause();
+        	return;
+        }
+
+        updateAllMarkerStates();
 
         /* Update the icon/caption in the LHN
          * Use an ArrayList so that it has good random-access efficiency
@@ -384,11 +403,15 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void updateComplete() {
     	if (!updated) {
     		DeferredCommand.addPause();
-    		DeferredCommand.addCommand(new IncrementalCommand() {
-    			public boolean execute() {
+    		DeferredCommand.addCommand(new Command() {
+				public void execute() {
+    				updateAllMarkerStates();
+				}
+    		});
+    		DeferredCommand.addCommand(new Command() {
+    			public void execute() {
     				fitMapToLocations();
     				updated = true;
-    				return false;
     			}
     		});
     	}
