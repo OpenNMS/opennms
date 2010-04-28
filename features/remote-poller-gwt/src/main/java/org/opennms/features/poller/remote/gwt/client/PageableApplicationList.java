@@ -50,7 +50,7 @@ public class PageableApplicationList extends PageableList {
             
             m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
             m_nameLabel.setText(applicationInfo.getName());
-            m_statusLabel.setText(applicationInfo.getStatus().getReason());
+            m_statusLabel.setText(applicationInfo.getReason());
         }
         
         private void setStyles() {

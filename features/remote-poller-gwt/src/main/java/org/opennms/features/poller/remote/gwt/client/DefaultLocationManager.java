@@ -227,8 +227,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         	final GWTMarkerState markerState = location.getMarkerState();
 
         	// if it's within the map bounds, it's visible
-        	// markerState.setVisible(location.isVisible(m_mapPanel.getBounds()));
-        	markerState.setVisible(true);
+        	 markerState.setVisible(location.isVisible(m_mapPanel.getBounds()));
+        	//markerState.setVisible(true);
         	if (markerState.isVisible()) {
         		// unless it's not in the list of selected statuses
     			markerState.setVisible(m_selectedStatuses.contains(location.getStatus()));
@@ -342,7 +342,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void updateLocation(final LocationInfo info) {
         if (info == null) return;
 
-        info.getStatus().setReason(info.getReason());
+        info.setReason(info.getReason());
         info.getMarkerState().getStatus().setReason(info.getReason());
 
         // Update the location information in the model
@@ -368,8 +368,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     public void updateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo == null) return;
-
-        applicationInfo.getStatus().setReason(applicationInfo.getReason());
+        
+        applicationInfo.setReason(applicationInfo.getReason());
         applicationInfo.getMarkerState().getStatus().setReason(applicationInfo.getReason());
 
         // Update the application information in the model
@@ -528,6 +528,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
+        //m_remoteService.getApplicationDetails(applicationName, callback)
     }
 
     public void locationClicked() {
