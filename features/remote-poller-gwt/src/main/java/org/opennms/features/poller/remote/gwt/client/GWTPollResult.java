@@ -3,6 +3,8 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class GWTPollResult implements Serializable, IsSerializable, Comparable<GWTPollResult> {
@@ -75,13 +77,11 @@ public class GWTPollResult implements Serializable, IsSerializable, Comparable<G
 	}
 
 	public int compareTo(GWTPollResult that) {
-		int lastCompare = this.getTimestamp().compareTo(that.getTimestamp());
-		if (lastCompare != 0) return lastCompare;
-		lastCompare = this.getStatus().compareTo(that.getStatus());
-		if (lastCompare != 0) return lastCompare;
-		lastCompare = this.getResponseTime().compareTo(that.getResponseTime());
-		if (lastCompare != 0) return lastCompare;
-		lastCompare = this.getReason().compareTo(that.getReason());
-		return lastCompare;
+		return new CompareToBuilder()
+			.append(this.getTimestamp(), that.getTimestamp())
+			.append(this.getStatus(), that.getStatus())
+			.append(this.getResponseTime(), that.getResponseTime())
+			.append(this.getReason(), that.getReason())
+			.compare();
 	}
 }

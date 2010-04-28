@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
+import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
 import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
@@ -111,6 +113,14 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 
 	public LocationDetails getLocationDetails(final String locationName) {
 		return m_locationDataService.getLocationDetails(locationName);
+	}
+
+	public ApplicationInfo getApplicationInfo(final String applicationName) {
+		return m_locationDataService.getApplicationInfo(applicationName);
+	}
+	
+	public ApplicationDetails getApplicationDetails(final String applicationName) {
+		return m_locationDataService.getApplicationDetails(applicationName);
 	}
 
 	@SuppressWarnings("unused")

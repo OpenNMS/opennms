@@ -227,7 +227,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         	final GWTMarkerState markerState = location.getMarkerState();
 
         	// if it's within the map bounds, it's visible
-        	markerState.setVisible(location.isVisible(m_mapPanel.getBounds()));
+        	// markerState.setVisible(location.isVisible(m_mapPanel.getBounds()));
+        	markerState.setVisible(true);
         	if (markerState.isVisible()) {
         		// unless it's not in the list of selected statuses
     			markerState.setVisible(m_selectedStatuses.contains(location.getStatus()));
@@ -405,6 +406,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     	if (!m_updated) {
     		updateAllMarkerStates();
     		fitMapToLocations();
+    		m_updated = true;
     	}
     }
 
