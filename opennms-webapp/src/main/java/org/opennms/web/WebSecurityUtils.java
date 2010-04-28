@@ -45,7 +45,7 @@ public class WebSecurityUtils {
 	
 	private final static Pattern ILLEGAL_IN_INTEGER = Pattern.compile("[^0-9+-]");
 	
-	private final static Pattern ILLEGAL_IN_FLOAT = Pattern.compile("[^0-9.Ee+-]");
+	private final static Pattern ILLEGAL_IN_FLOAT = Pattern.compile("[^0-9.+-]");
 	
 	private final static Pattern ILLEGAL_IN_COLUMN_NAME_PATTERN = Pattern.compile("[^A-Za-z0-9_]");
 	
@@ -64,9 +64,8 @@ public class WebSecurityUtils {
     
     public static String sanitizeString(String raw, boolean allowHTML)
     {
-        if (raw==null || raw.length()==0) {
+        if (raw==null || raw.length()==0)
             return raw;
-        }
 
         Matcher scriptMatcher = scriptPattern.matcher(raw);
         String next = scriptMatcher.replaceAll("&#x73;cript");
@@ -74,16 +73,6 @@ public class WebSecurityUtils {
             next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         }
         return next;
-    }
-
-    public static int[] safeParseInt(String[] dirty) throws NumberFormatException {
-        final int[] clean = new int[dirty.length];
-        String cleanString;
-        for (int i = 0; i < dirty.length; i++) {
-            cleanString = ILLEGAL_IN_INTEGER.matcher(dirty[i]).replaceAll("");
-            clean[i] = Integer.parseInt(cleanString);
-        }
-        return clean;
     }
 
 	public static int safeParseInt(String dirty) throws NumberFormatException {
