@@ -37,7 +37,6 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
@@ -63,7 +62,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 	private final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 	
 	private final Map<String,LocationInfo> m_locations = new HashMap<String,LocationInfo>();
-	private final Set<ApplicationInfo> m_applications = new TreeSet<ApplicationInfo>();
+	private final Set<ApplicationInfo> m_applications = new HashSet<ApplicationInfo>();
 
 	private String m_selectedTag = null;
 	
@@ -77,7 +76,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	private boolean updated = false;
 
-	private Set<ApplicationInfo> m_selectedApplications = new TreeSet<ApplicationInfo>();
+	private Set<ApplicationInfo> m_selectedApplications = new HashSet<ApplicationInfo>();
 
 	public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, final LocationPanel locationPanel, MapPanel mapPanel) {
 		m_eventBus = eventBus;
@@ -361,17 +360,16 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     	updateAllMarkerStates();
 
-        // Update the icon/caption in the LHN
-        // Use an ArrayList so that it has good random-access efficiency
-        // since the pageable lists use get() to fetch based on index.
+        /* Update the icon/caption in the LHN
+         * Use an ArrayList so that it has good random-access efficiency
+         * since the pageable lists use get() to fetch based on index.
+    	 * Note, that m_applications is a *HashSet* not a *TreeSet* since
+    	 * TreeSets consider duplicates based on Comparable, not equals
+    	 */
+    	
         ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
-        /*
-        for (final ApplicationInfo ai : m_applications) {
-        	Window.alert(applicationInfo.summary() + " " + (applicationInfo.equals(ai)? "=" : "!=") + " " + ai.summary());
-        }
-        */
-//        Window.alert("applications = " + m_applications);
         applicationList.addAll(m_applications);
+        Collections.sort(applicationList);
         m_locationPanel.updateApplicationList(applicationList);
 
         for (final String locationName : applicationInfo.getLocations()) {
