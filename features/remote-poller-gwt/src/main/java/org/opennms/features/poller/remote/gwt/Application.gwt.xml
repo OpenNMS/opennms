@@ -16,7 +16,7 @@
   <inherits name='com.google.gwt.maps.GoogleMaps' />
   <inherits name='com.google.gwt.maps.utility.GoogleMapsUtility' />
   <inherits name='com.googlecode.gwtmapquest.GWTMapquest' />
-  <inherits name='org.gwtopenmaps.openlayers.OpenLayers' />
+<!-- <inherits name='org.gwtopenmaps.openlayers.OpenLayers' /> -->
 
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='Application.css' />

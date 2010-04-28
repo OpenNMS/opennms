@@ -3,19 +3,8 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gwtopenmaps.openlayers.client.MapOptions;
-import org.gwtopenmaps.openlayers.client.MapWidget;
-import org.gwtopenmaps.openlayers.client.Marker;
-import org.gwtopenmaps.openlayers.client.OpenLayers;
-import org.gwtopenmaps.openlayers.client.control.MousePosition;
-import org.gwtopenmaps.openlayers.client.control.PanZoomBar;
-import org.gwtopenmaps.openlayers.client.event.MapZoomListener;
-import org.gwtopenmaps.openlayers.client.feature.Feature;
-import org.gwtopenmaps.openlayers.client.layer.Layer;
-import org.gwtopenmaps.openlayers.client.layer.Markers;
-import org.gwtopenmaps.openlayers.client.popup.Popup;
+//import org.gwtopenmaps.openlayers.client.MapOptions;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,15 +19,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwtmapquest.transaction.MQAIcon;
-import com.googlecode.gwtmapquest.transaction.MQAInfoWindow;
-import com.googlecode.gwtmapquest.transaction.MQALargeZoomControl;
 import com.googlecode.gwtmapquest.transaction.MQALatLng;
 import com.googlecode.gwtmapquest.transaction.MQAPoi;
 import com.googlecode.gwtmapquest.transaction.MQAPoint;
 import com.googlecode.gwtmapquest.transaction.MQARectLL;
-import com.googlecode.gwtmapquest.transaction.MQATileMap;
-import com.googlecode.gwtmapquest.transaction.event.ZoomEndEvent;
-import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
 
 public class OpenLayersMapPanel extends Composite implements MapPanel {
 
@@ -70,9 +54,11 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     @UiField
     SimplePanel m_mapHolder;
 
+    /*
     private MapWidget m_mapWidget;
     private org.gwtopenmaps.openlayers.client.Map m_map;
 	private Markers m_markersLayer;
+	*/
     private Map<String, MQAPoi> m_markers = new HashMap<String, MQAPoi>();
     private HandlerManager m_eventBus;
     
@@ -80,19 +66,23 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         m_eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
 
+        /*
         final MapOptions mo = new MapOptions();
         mo.setProjection("EPSG:4326");
         m_mapWidget = new MapWidget("100%", "100%", mo);
         m_map = m_mapWidget.getMap();
         m_markersLayer = new Markers("default");
+        */
 
         initializeMap();
 
+        /*
         m_map.addMapZoomListener(new MapZoomListener() {
 			public void onMapZoom(MapZoomEvent eventObject) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
 			}
         });
+        */
     }
     
     
@@ -107,9 +97,11 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
     public void initializeMap() {
         getMapHolder().setSize("100%", "100%");
+        /*
         m_map.addControl(new PanZoomBar());
         m_map.addControl(new MousePosition());
         m_map.zoomTo(2);
+        */
         
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
