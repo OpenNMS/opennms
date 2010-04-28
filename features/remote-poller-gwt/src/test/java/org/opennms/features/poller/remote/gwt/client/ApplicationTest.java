@@ -16,7 +16,7 @@ import java.util.TreeSet;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ApplicationStateTest {
+public class ApplicationTest {
 	final Date m_to = new Date();
 	final Date m_from = new Date(m_to.getTime() - (1000 * 60 * 60 * 24));
 	final static long FIVE_MINUTES = 1000 * 60 * 5;
@@ -104,6 +104,24 @@ public class ApplicationStateTest {
 		assertEquals(Status.DOWN, appState.getStatus());
 	}
 	
+	@Test
+	public void testSet() {
+		final Set<ApplicationInfo> applicationSet = new HashSet<ApplicationInfo>();
+
+		final ApplicationInfo ai1u = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.UNINITIALIZED);
+		final ApplicationInfo ai2u = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.UNINITIALIZED);
+		final ApplicationInfo ai1d = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.DOWN);
+		final ApplicationInfo ai2d = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), Status.DOWN);
+		applicationSet.add(ai1u);
+		applicationSet.add(ai2u);
+		applicationSet.add(ai1d);
+		applicationSet.add(ai2d);
+
+		assertEquals("applications should be equal", ai1u, ai1d);
+		assertEquals("hashcodes should be equal", ai1u.hashCode(), ai1d.hashCode());
+		assertEquals(2, applicationSet.size());
+	}
+
 	private ApplicationDetails getDownApplicationStatus(final String appName) {
 		List<GWTLocationSpecificStatus> statuses = getDownStatusList();
 		
@@ -197,12 +215,11 @@ public class ApplicationStateTest {
 	private ApplicationInfo getApplication(String name) {
 		ApplicationInfo app = m_applications.get(name);
 		if (app == null) {
-			app = new ApplicationInfo();
-			app.setId(count++);
-			app.setName(name);
 			Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
 			services.add(getMonitoredService());
-			app.setServices(services);
+			Set<String> locationNames = new TreeSet<String>();
+			locationNames.add("TestApp1");
+			app = new ApplicationInfo(count++, name, services, locationNames, Status.DOWN);
 			m_applications.put(name, app);
 		}
 		return app;

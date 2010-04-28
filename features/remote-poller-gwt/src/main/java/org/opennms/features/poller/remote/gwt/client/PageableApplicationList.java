@@ -43,10 +43,9 @@ public class PageableApplicationList extends PageableList {
         
         public ApplicationDetailView(ApplicationInfo applicationInfo) {
             setElement(Document.get().createDivElement());
-            
-            
-            m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
             setStyles();
+
+            m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
             m_nameLabel.setText(applicationInfo.getName());
             m_statusLabel.setText(applicationInfo.getStatus().getReason());
         }
@@ -67,7 +66,7 @@ public class PageableApplicationList extends PageableList {
      * TODO: Don't skip to the front page on every update
      */
     public void updateList(final ArrayList<ApplicationInfo> applications) {
-        setApplications(applications);
+    	setApplications(applications);
         super.showFirstPage();
     }
     

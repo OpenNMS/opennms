@@ -85,10 +85,13 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 			@Override
 			public void run() {
 				pushInitializedLocations(service);
+				service.addEventUserSpecific(new UpdateCompleteRemoteEvent());
 				m_lastUpdated = new Date();
 				m_initializationComplete.set(true);
 			}
 		};
+
+		/*
 		final TimerTask uninitializedTask = new TimerTask() {
 			@Override
 			public void run() {
@@ -97,8 +100,9 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 				m_timer.schedule(initializedTask, PADDING_TIME);
 			}
 		};
+		*/
 
-		m_timer.schedule(uninitializedTask, PADDING_TIME);
+		m_timer.schedule(initializedTask, PADDING_TIME);
 	}
 
 	public LocationInfo getLocationInfo(final String locationName) {
@@ -109,6 +113,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
 		return m_locationDataService.getLocationDetails(locationName);
 	}
 
+	@SuppressWarnings("unused")
 	private void pushUninitializedLocations(final EventExecutorService service) {
 		LogUtils.debugf(this, "pushing uninitialized locations");
 		final Collection<LocationDefHandler> locationHandlers = new ArrayList<LocationDefHandler>();

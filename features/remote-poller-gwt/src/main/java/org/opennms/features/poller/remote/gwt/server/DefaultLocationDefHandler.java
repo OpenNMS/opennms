@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 
@@ -30,10 +31,21 @@ class DefaultLocationDefHandler implements LocationDefHandler {
 	}
 
 	public void handle(final OnmsMonitoringLocationDefinition def) {
+		final LocationUpdatedRemoteEvent event = new LocationUpdatedRemoteEvent(m_locationDataService.getLocationInfo(def, m_includeStatus));
+		getEventService().addEventUserSpecific(event);
+		/* // not really the issue
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		*/
+		/*
 		m_locations.add(m_locationDataService.getLocationInfo(def, m_includeStatus));
 		if (m_locations.size() >= MAX_LOCATIONS_PER_EVENT) {
 			sendLocations();
 		}
+		*/
 	}
 	
 	public void finish() {

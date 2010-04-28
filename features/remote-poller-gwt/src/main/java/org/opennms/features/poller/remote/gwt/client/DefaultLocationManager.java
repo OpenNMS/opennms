@@ -36,8 +36,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
@@ -48,7 +46,7 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
  * {@link RemotePollerPresenter} (the controller portion of the webapp code). It is responsible
  * for maintaining the knowledgebase of {@link Location} objects and responding to events triggered when:</p>
  * <ul>
- * <li>{@link Location} instances are added or updated</li>
+ * <li>{@link Location} instances are added or m_updated</li>
  * <li>the UI elements are clicked on by the user</li>
  * </ul>
  * 
@@ -63,7 +61,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 	private final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 	
 	private final Map<String,LocationInfo> m_locations = new HashMap<String,LocationInfo>();
-	private final Set<ApplicationInfo> m_applications = new TreeSet<ApplicationInfo>();
+	private final Set<ApplicationInfo> m_applications = new HashSet<ApplicationInfo>();
 
 	private String m_selectedTag = null;
 	
@@ -75,9 +73,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
 	private final SplitLayoutPanel m_panel;
 
-	private boolean updated = false;
+	private boolean m_updated = false;
+	private boolean m_locationViewActive = true;
 
-	private Set<ApplicationInfo> m_selectedApplications = new TreeSet<ApplicationInfo>();
+	private Set<ApplicationInfo> m_selectedApplications = new HashSet<ApplicationInfo>();
 
 	public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, final LocationPanel locationPanel, MapPanel mapPanel) {
 		m_eventBus = eventBus;
@@ -101,12 +100,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		for (final Status s : Status.values()) {
 			m_selectedStatuses.add(s);
 		}
-
-		// Add some test data
-//		m_applications.addAll(getApplicationInfoTestData());
-//		ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
-//		applicationList.addAll(m_applications);
-//		m_locationPanel.updateApplicationList(applicationList);
 	}
 
     public void initialize() {
@@ -179,7 +172,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }
     }
 
-    public void createOrUpdateApplication(ApplicationInfo applicationInfo) {
+    public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
     	if (applicationInfo.getLocations().size() == 0) {
     		applicationInfo.setPriority(Long.MAX_VALUE);
     	} else {
@@ -240,11 +233,23 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     			markerState.setVisible(m_selectedStatuses.contains(location.getStatus()));
         	}
 
-        	if (m_selectedTag == null) {
-        		markerState.setSelected(true);
+        	boolean selected = false;
+        	if (m_locationViewActive || m_selectedApplications.size() == 0) {
+        		selected = true;
         	} else {
-        		markerState.setSelected(location.getTags() != null && location.getTags().contains(m_selectedTag));
+	        	for (final ApplicationInfo app : m_selectedApplications) {
+	        		if (app.getLocations().contains(location.getName())) {
+	        			selected = true;
+	        			break;
+	        		}
+	        	}
         	}
+        	if (selected) {
+	        	if (m_selectedTag != null) {
+	        		selected = location.getTags() != null && location.getTags().contains(m_selectedTag);
+	        	}
+        	}
+        	markerState.setSelected(selected);
         	m_mapPanel.placeMarker(markerState);
     	}
     }
@@ -315,7 +320,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /**
-     * Refresh the list of locations whenever they are updated.
+     * Refresh the list of locations whenever they are m_updated.
      */
     public void onLocationsUpdated(final LocationsUpdatedEvent e) {
     	// make sure each location's marker is up-to-date
@@ -337,16 +342,20 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         if (info == null) return;
 
         // Update the location information in the model
-		createOrUpdateLocation(info);
+        createOrUpdateLocation(info);
+
+    	// Update the icon in the map
+        GWTMarkerState m = getMarkerForLocation(info);
+        m_mapPanel.placeMarker(m);
+
+		if (!m_updated) {
+			return;
+		}
 
     	updateAllMarkerStates();
 
         // Update the icon/caption in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());
-
-    	// Update the icon in the map
-        GWTMarkerState m = getMarkerForLocation(info);
-        m_mapPanel.placeMarker(m);
     }
 
     /**
@@ -356,23 +365,26 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void updateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo == null) return;
 
-        // Update the location information in the model
+        // Update the application information in the model
         createOrUpdateApplication(applicationInfo);
 
-    	updateAllMarkerStates();
-
-        // Update the icon/caption in the LHN
-        // Use an ArrayList so that it has good random-access efficiency
-        // since the pageable lists use get() to fetch based on index.
+        /* Update the icon/caption in the LHN
+         * Use an ArrayList so that it has good random-access efficiency
+         * since the pageable lists use get() to fetch based on index.
+    	 * Note, that m_applications is a *HashSet* not a *TreeSet* since
+    	 * TreeSets consider duplicates based on Comparable, not equals
+    	 */
+    	
         ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
-        /*
-        for (final ApplicationInfo ai : m_applications) {
-        	Window.alert(applicationInfo.summary() + " " + (applicationInfo.equals(ai)? "=" : "!=") + " " + ai.summary());
-        }
-        */
-//        Window.alert("applications = " + m_applications);
         applicationList.addAll(m_applications);
+        Collections.sort(applicationList);
         m_locationPanel.updateApplicationList(applicationList);
+
+        if (!m_updated) {
+        	return;
+        }
+
+        updateAllMarkerStates();
 
         for (final String locationName : applicationInfo.getLocations()) {
         	GWTMarkerState m = getMarkerForLocation(locationName);
@@ -384,15 +396,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Invoked by the {@link UpdateCompleteRemoteEvent} event.
      */
     public void updateComplete() {
-    	if (!updated) {
-    		DeferredCommand.addPause();
-    		DeferredCommand.addCommand(new IncrementalCommand() {
-    			public boolean execute() {
-    				fitMapToLocations();
-    				updated = true;
-    				return false;
-    			}
-    		});
+    	if (!m_updated) {
+    		updateAllMarkerStates();
+    		fitMapToLocations();
     	}
     }
 
@@ -499,7 +505,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void onApplicationSelected(ApplicationSelectedEvent event) {
         // Add the application to the selected application list
         m_selectedApplications.add(event.getAppInfo());
-        
+
         updateAllMarkerStates();
 
         // Update the list of selected applications in the panel
@@ -514,6 +520,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
+    }
+
+    public void locationClicked() {
+    	m_locationViewActive = true;
+    }
+
+    public void applicationClicked() {
+    	m_locationViewActive = false;
     }
 
 	public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {
