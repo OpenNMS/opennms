@@ -74,17 +74,12 @@ window.onresize = function() {
     resizing=true;
 	removeSVG();
 	writeReload();
-	timedResize(2000);
+	setTimeout("window.location.reload();",1000);	
 }
 
 function  writeReload() {
 	var o=document.getElementById('reloading');
 	o.appendChild(document.createTextNode("Resizing the maps....."));
-}
-
-
-function timedResize(timeout) {
-	setTimeout("window.location.href=window.location.href;",timeout);	
 }
 
 function setSvgWindowSize() {

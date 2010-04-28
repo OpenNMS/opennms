@@ -47,7 +47,7 @@ function historyCallBack(hash) {
 		if(hash) {
 	    	setTimeout('openBookMarkedMap('+hash+');',1000);
 		} else {
-			loadDefaultMap();		
+			setTimeout('loadDefaultMap();',1000);		
 		}
 		startingup=false;
 		return;
