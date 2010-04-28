@@ -35,7 +35,6 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -100,12 +99,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 		for (final Status s : Status.values()) {
 			m_selectedStatuses.add(s);
 		}
-
-		// Add some test data
-//		m_applications.addAll(getApplicationInfoTestData());
-//		ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
-//		applicationList.addAll(m_applications);
-//		m_locationPanel.updateApplicationList(applicationList);
 	}
 
     public void initialize() {
@@ -178,7 +171,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }
     }
 
-    public void createOrUpdateApplication(ApplicationInfo applicationInfo) {
+    public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
     	if (applicationInfo.getLocations().size() == 0) {
     		applicationInfo.setPriority(Long.MAX_VALUE);
     	} else {
@@ -362,13 +355,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // Update the application information in the model
         createOrUpdateApplication(applicationInfo);
 
-        if (!updated) {
-//        	DeferredCommand.addPause();
-        	return;
-        }
-
-        updateAllMarkerStates();
-
         /* Update the icon/caption in the LHN
          * Use an ArrayList so that it has good random-access efficiency
          * since the pageable lists use get() to fetch based on index.
@@ -380,6 +366,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         applicationList.addAll(m_applications);
         Collections.sort(applicationList);
         m_locationPanel.updateApplicationList(applicationList);
+
+        if (!updated) {
+        	return;
+        }
+
+        updateAllMarkerStates();
 
         for (final String locationName : applicationInfo.getLocations()) {
         	GWTMarkerState m = getMarkerForLocation(locationName);
