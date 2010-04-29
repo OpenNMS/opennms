@@ -14,15 +14,24 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <archiveClasses>true</archiveClasses>
+          <webappDirectory>${project.build.directory}/warmerge-temp</webappDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>opennms-warmerge-plugin</artifactId>
-        <version>0.1</version>
+        <version>0.3</version>
         <executions>
           <execution>
             <goals><goal>warmerge</goal></goals>
           </execution>
         </executions>
         <configuration>
+          <webappDirectory>${project.build.directory}/warmerge-temp</webappDirectory>
           <primaryWar>org.opennms:opennms-webapp</primaryWar>
         </configuration>
       </plugin>
