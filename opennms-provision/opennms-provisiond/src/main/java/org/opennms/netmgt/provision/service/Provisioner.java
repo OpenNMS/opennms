@@ -83,7 +83,6 @@ public class Provisioner implements SpringServiceDaemon {
 
     private DefaultTaskCoordinator m_taskCoordinator;
     private CoreImportActivities m_importActivities;
-    private CoreScanActivities m_scanActivities;
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
     private ScheduledExecutorService m_scheduledExecutor;
@@ -126,13 +125,6 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     /**
-     * @param scanActivities the scanActivities to set
-     */
-    public void setScanActivities(CoreScanActivities scanActivities) {
-        m_scanActivities = scanActivities;
-    }
-
-    /**
      * @param taskCoordinator the taskCoordinator to set
      */
     public void setTaskCoordinator(DefaultTaskCoordinator taskCoordinator) {
@@ -165,7 +157,6 @@ public class Provisioner implements SpringServiceDaemon {
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
         Assert.notNull(m_lifeCycleRepository, "lifeCycleRepository property must be set");
         Assert.notNull(m_importActivities, "importActivities property must be set");
-        Assert.notNull(m_scanActivities, "scanActivities property must be set");
         Assert.notNull(m_taskCoordinator, "taskCoordinator property must be set");
         Assert.notNull(m_agentConfigFactory, "agentConfigFactory property must be set");
         

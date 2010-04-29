@@ -163,9 +163,6 @@
     <constructor-arg ref="provisionService" />
   </bean>
   
-  <!--  autowired -->
-  <bean id="coreScanActivities" class="org.opennms.netmgt.provision.service.CoreScanActivities" />
-
   <bean id="adapterManager" class="org.opennms.netmgt.provision.service.ProvisioningAdapterManager" >
     <property name="pluginRegistry" ref="pluginRegistry" />
   </bean>
@@ -177,7 +174,6 @@
     <property name="scheduledExecutor" ref="scheduledExecutor" />
     <property name="importSchedule" ref="provisiondImportSchedule" />
     <property name="importActivities" ref="coreImportActivities" />
-    <property name="scanActivities" ref="coreScanActivities" />
     <property name="taskCoordinator" ref="taskCoordinator" />
     <property name="agentConfigFactory" ref="snmpPeerFactory" />
   </bean>
