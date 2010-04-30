@@ -53,6 +53,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.collectd.IfInfo;
@@ -82,6 +83,7 @@ import org.springframework.dao.DataAccessException;
  * (so perhaps needs a better name than ThresholdingVisitor)
  * 
  * @author <a href="mailto:craig@opennms.org>Craig Miskell</a>
+ * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
  *
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
@@ -154,7 +156,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     //Holds the IfInfo of the currently processed resource if it is an interface.
     private Map<String,String> m_currentIfInfo;
 
-    public static ThresholdingVisitor createThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo, Map params, long interval) {
+    public static ThresholdingVisitor createThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo, Map<String,String> params, long interval) {
         Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
         
         // Use the "thresholding-enable" to use Thresholds processing on Collectd
@@ -257,8 +259,10 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * When called, we're starting a new resource.  Clears out any stored attribute values from previous resource visits
      */
     public void visitResource(CollectionResource resource) {
-        if (resource.getResourceTypeName().equals("if")) {
+        if (resource instanceof IfInfo) {
             m_currentIfInfo = ((IfInfo) resource).getAttributesMap();
+        } else if (resource instanceof AliasedResource) {
+            m_currentIfInfo = ((AliasedResource) resource).getIfInfo().getAttributesMap();
         } else {
             m_currentIfInfo = null;
         }
