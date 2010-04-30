@@ -58,6 +58,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.AttributeGroupType;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GenericIndexResource;
@@ -1013,6 +1014,50 @@ public class ThresholdingVisitorTest {
         String ifName = "wlan0";
         addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
         runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-bug3664.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
+     */
+    @Test
+    public void testBug3664() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3664.xml");
+        Integer ifIndex = 1;
+        Long ifSpeed = 10000000l;
+        String ifName = "wlan0";
+        String domain = "myDomain";
+        String ifAlias = ifName;
+        String ifAliasComment = "#";
+
+        String label = domain + "/" + ifAlias;
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", null, "ifOutOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", null, "ifInOctets", label, ifIndex.toString());
+
+        ThresholdingVisitor visitor = createVisitor();
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
+        CollectionAgent agent = createCollectionAgent();
+        IfResourceType resourceType = createInterfaceResourceType(agent);
+
+        // Step 1
+        IfInfo ifInfo = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 10000);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 10000);
+        AliasedResource resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
+        resource.visit(visitor);
+
+        // Step 2 - Increment Counters
+        ifInfo = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 46000);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
+        resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
