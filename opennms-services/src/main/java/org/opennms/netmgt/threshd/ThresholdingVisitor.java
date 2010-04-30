@@ -263,6 +263,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             m_currentIfInfo = ((IfInfo) resource).getAttributesMap();
         } else if (resource instanceof AliasedResource) {
             m_currentIfInfo = ((AliasedResource) resource).getIfInfo().getAttributesMap();
+            m_currentIfInfo.put("domain", ((AliasedResource) resource).getDomain());
         } else {
             m_currentIfInfo = null;
         }
