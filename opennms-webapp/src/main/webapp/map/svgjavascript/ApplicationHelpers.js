@@ -348,7 +348,6 @@ function mapTabClose(mapName) {
 	}
 	if (tabs.length == 0) {
 		tabs.push(MAP_NOT_OPENED_NAME);
-		top.$j.history.load('');
 	}
 	if ( tabs.length == index )
 	   index--;
