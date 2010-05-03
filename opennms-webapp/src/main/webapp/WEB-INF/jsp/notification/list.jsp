@@ -217,7 +217,7 @@
           <th class="noWrap">Event ID</th>
           <th>Severity</th>
           <th><%=this.makeSortLink( parms, SortStyle.PAGETIME,    SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"    )%></th>
-          <th><%=this.makeSortLink( parms, SortStyle.RESPONDER,   SortStyle.REVERSE_RESPONDER,   "asweredby",   "Responder"    )%></th>
+          <th><%=this.makeSortLink( parms, SortStyle.RESPONDER,   SortStyle.REVERSE_RESPONDER,   "answeredby",  "Responder"    )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.RESPONDTIME, SortStyle.REVERSE_RESPONDTIME, "respondtime", "Respond Time" )%></th>  
           <th><%=this.makeSortLink( parms, SortStyle.NODE,        SortStyle.REVERSE_NODE,        "node",        "Node"         )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.INTERFACE,   SortStyle.REVERSE_INTERFACE,   "interface",   "Interface"    )%></th>
