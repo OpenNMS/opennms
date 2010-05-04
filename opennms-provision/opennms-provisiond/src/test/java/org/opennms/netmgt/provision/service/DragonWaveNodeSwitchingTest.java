@@ -3,6 +3,8 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -19,6 +21,9 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -82,24 +87,37 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     @Test
     @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:/dw/walks/node1-walk.properties")
     public void testInitialSetup() throws Exception{
+        assertEquals(".1.3.6.1.4.1.7262.2.3", getSnmpValue("192.168.255.22", ".1.3.6.1.2.1.1.2.0").toDisplayString());
         
         importResource("classpath:/dw/import/dw_test_import.xml");
         
-        OnmsNode onmsNode = m_nodeDao.get(1);
+        OnmsNode onmsNode = m_nodeDao.findByForeignId("dw", "arthur");
+        
+        NodeScan scan = m_provisioner.createNodeScan(onmsNode.getId(), onmsNode.getForeignSource(), onmsNode.getForeignId());
+        scan.run();
+        
         String sysObjectId = onmsNode.getSysObjectId();
         assertEquals(".1.3.6.1.4.1.7262.2.3", sysObjectId);
         
-        int nodeId = onmsNode.getId();
-        
         m_snmpAgent.updateValuesFromResource(m_resourceLoader.getResource("classpath:/dw/walks/node3-walk.properties"));
         
-        m_provisioner.scheduleRescanForExistingNodes();
-        //importResource("classpath:/dw/import/dw_test_import.xml");
+        //Make sure agent reports the proper OID
+        assertEquals(".1.3.6.1.4.1.7262.1", getSnmpValue("192.168.255.22", ".1.3.6.1.2.1.1.2.0").toDisplayString());
         
-        OnmsNode node = m_nodeDao.get(1);
+        NodeScan scan2 = m_provisioner.createNodeScan(onmsNode.getId(), onmsNode.getForeignSource(), onmsNode.getForeignId());
+        scan2.run();
+        
+        m_nodeDao.flush();
+        
+        OnmsNode node = m_nodeDao.findByForeignId("dw", "arthur");
         
         String sysObjectId2 = node.getSysObjectId();
         assertEquals(".1.3.6.1.4.1.7262.1", sysObjectId2);
+    }
+
+    private SnmpValue getSnmpValue(String host, String oid)
+            throws UnknownHostException {
+        return SnmpUtils.get(SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(host)), SnmpObjId.get(oid));
     }
     
     @Test

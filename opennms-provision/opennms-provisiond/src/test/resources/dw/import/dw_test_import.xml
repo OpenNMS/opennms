@@ -5,8 +5,8 @@
     <!ENTITY uuml    "&#252;" >
     <!ENTITY szlig   "&#223;" >
   ]>
-<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2006-03-09T00:03:09" foreign-source="matt:">
-	<node node-label="horizon" foreign-id="1272916408727" building="NewGroup">
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2006-03-09T00:03:09" foreign-source="dw">
+	<node node-label="horizon" foreign-id="arthur" building="NewGroup">
         <interface status="1" snmp-primary="P" ip-addr="192.168.255.40" descr="">
             <monitored-service service-name="SNMP"/>
             <monitored-service service-name="ICMP"/>
