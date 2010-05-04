@@ -1,8 +1,11 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.io.Serializable;
+import java.util.Date;
 
-public class GWTLocationSpecificStatus implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class GWTLocationSpecificStatus implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
     private Integer m_id;
@@ -10,6 +13,8 @@ public class GWTLocationSpecificStatus implements Serializable {
 	private GWTPollResult m_pollResult;
 	private GWTMonitoredService m_monitoredService;
 	
+	public GWTLocationSpecificStatus() {}
+
     public Integer getId() {
 		return m_id;
 	}
@@ -33,6 +38,9 @@ public class GWTLocationSpecificStatus implements Serializable {
 	}
 	public void setPollResult(final GWTPollResult pollResult) {
 		m_pollResult = pollResult;
+	}
+	public Date getPollTime() {
+		return m_pollResult == null? null : m_pollResult.getTimestamp();
 	}
 
 	public String toString() {

@@ -1,117 +1,146 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.opennms.features.poller.remote.gwt.client.TagPanel.TagResizeEvent;
+import org.opennms.features.poller.remote.gwt.client.TagPanel.TagResizeEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
-import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
+import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
-public class LocationPanel extends Composite {
-
+public class LocationPanel extends Composite implements LocationPanelSelectEventHandler, TagResizeEventHandler, RequiresResize {
+    
 	interface Binder extends UiBinder<Widget, LocationPanel> { }
-	interface SelectionStyle extends CssResource {
-		String selectedRow();
-		String alternateRow();
-	}
 
 	private static final Binder BINDER = GWT.create(Binder.class);
-	private static final int MAX_ROWS = 20;
-	private int startIndex = 0;
 	private transient HandlerManager m_eventBus;
+	private transient List<HandlerRegistration> eventRegistrations = new ArrayList<HandlerRegistration>();
 	
-	@UiField FlexTable locations;
-	@UiField SelectionStyle selectionStyle;
-
+	@UiField PageableLocationList locationList;
+	@UiField PageableApplicationList applicationList;
+	@UiField FilterPanel filterPanel;
+	@UiField TagPanel tagPanel;
+	@UiField HTMLPanel filterOptionsPanel;
+	@UiField FlowPanel listsPanel;
+	
 	public LocationPanel() {
 		super();
 		initWidget(BINDER.createAndBindUi(this));
-	}
+		locationList.addLocationPanelSelectEventHandler(this);
 
-	@UiHandler("locations")
-	void onTableClicked(final ClickEvent event) {
-		final Cell cell = locations.getCellForEvent(event);
+		// Blank out the selected applications list
+		this.updateSelectedApplications(new TreeSet<ApplicationInfo>());
 		
-	    if (cell != null) {
-	    	final int row = cell.getRowIndex();
-	    	final String locationName = locations.getText(row, 0);
-	    	styleRow(row);
-	    	selectLocation(locationName);
-	    }
 	}
 
-	private void selectLocation(final String locationName) {
-	    m_eventBus.fireEvent(new LocationPanelSelectEvent(locationName));
+    public void setEventBus(final HandlerManager eventBus) {
+	    // Remove any existing handler registrations
+	    for (HandlerRegistration registration : eventRegistrations) {
+	        registration.removeHandler();
+	    }
+	    m_eventBus = eventBus;
+	    m_eventBus.addHandler(TagResizeEvent.TYPE, this);
+	    
+	    filterPanel.setEventBus(eventBus);
+	    tagPanel.setEventBus(eventBus);
+	    applicationList.setEventBus(eventBus);
+	    // eventRegistrations.add(m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this));
+	    // eventRegistrations.add(m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this));
+	}
+
+    public void onLocationSelected(final LocationPanelSelectEvent event) {
+        m_eventBus.fireEvent(event);
+      
+    }
+    /**
+     * Switches view to Pageable Location List
+     */
+    public void showLocationList() {
+        setVisible(locationList.getElement(), true);
+        setVisible(applicationList.getElement(), false);
+    }
+    
+    /**
+     * Switches view to the Pageable Application List
+     */
+    public void showApplicationList() {
+        setVisible(locationList.getElement(), false);
+        setVisible(applicationList.getElement(), true);
+        applicationList.refreshApplicationListResize();
     }
 
-	private void styleRow(final int row) {
-		if (row != -1) {
-			final String style = selectionStyle.selectedRow();
-			
-			for(int i = 0; i < locations.getRowCount(); i++) {
-			    if(i == row) {
-			        locations.getRowFormatter().addStyleName(i, style);
-			    }else {
-			        locations.getRowFormatter().removeStyleName(i, style);
-			    }
-			}
-			
-		}
-	}
+    public void updateSelectedApplications(final Set<ApplicationInfo> selectedApplications) {
+        filterPanel.updateSelectedApplications(selectedApplications);
+        
+        //Trigger the resize of the panel
+        resizeDockPanel();
+    }
 
+    public void updateApplicationNames(final Set<String> allApplicationNames) {
+        filterPanel.updateApplicationNames(allApplicationNames);
+    }
 
-	public void update(final LocationManager locationManager) {
-		if (locationManager == null) {
-			return;
-		}
-		
-		int count = 0;
-		for (Location location : locationManager.getLocations(startIndex, MAX_ROWS)) {
-		    Image icon = new Image();
-            icon.setUrl(location.getMarker().getIcon().getImageURL());
-            
-            locations.setWidget(count, 0, icon);
-            locations.setText(count, 1, location.getName());
-		    locations.setText(count, 2, location.getArea());
-		    
-		    if(count %2 != 0) {
-		        locations.getRowFormatter().addStyleName(count, selectionStyle.alternateRow());
-		    }
-		    
-			count++;
-		}
+    public void updateApplicationList(final ArrayList<ApplicationInfo> appList) {
+        applicationList.updateList(appList);
+    }
 
-		while (locations.getRowCount() > count) {
-			locations.removeRow(locations.getRowCount() - 1);
-		}
-		
-	}
+    public void updateLocationList(final ArrayList<LocationInfo> visibleLocations) {
+        locationList.updateList(visibleLocations);
+    }
 
+    public void selectTag(String tag) {
+        tagPanel.selectTag(tag);
+    }
 
+    public void clearTagPanel() {
+        tagPanel.clear();
+    }
 
-	public void setEventBus(final HandlerManager eventBus) {
-	    m_eventBus = eventBus;
-	    addEventHandlers(m_eventBus);
-	}
-	
-	private void addEventHandlers(final HandlerManager eventBus) {
-	    eventBus.addHandler(LocationsUpdatedEvent.getType(), new LocationsUpdatedEventHandler() {
-            
-            public void onLocationsUpdated(final LocationsUpdatedEvent e) {
-                update(e.getLocationManager());
-            }
-            
-        });
-	}
+    public boolean addAllTags(final Collection<String> tags) {
+        return tagPanel.addAll(tags);
+    }
+
+    public void showApplicationFilters(boolean isApplicationView) {
+        filterPanel.showApplicationFilters(isApplicationView);
+    }
+
+    public void resizeDockPanel() {
+
+        int verticalSpacer = 3;
+        int newSize = tagPanel.getOffsetHeight() + filterPanel.getOffsetHeight() + verticalSpacer;
+        
+        Element element = listsPanel.getElement();
+        element.setAttribute("style", "position: absolute; top: " + newSize + "px; left: 0px; right: 0px; bottom: 0px;");
+    }
+
+    public void onTagPanelResize() {
+        resizeDockPanel();
+    }
+
+    public void onResize() {
+        if(applicationList.isVisible()) {
+            applicationList.refreshApplicationListResize();
+        }else if(locationList.isVisible()) {
+            locationList.refreshLocationListResize();
+        }
+    }
+    
+   
 
 }

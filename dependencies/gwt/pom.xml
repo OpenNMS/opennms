@@ -44,8 +44,15 @@
     <dependency>
       <groupId>de.novanic</groupId>
       <artifactId>gwteventservice</artifactId>
-      <version>1.1-java15</version>
+      <version>1.1.1</version>
     </dependency>
+<!--
+    <dependency>
+      <groupId>org.gwtopenmaps.openlayers</groupId>
+      <artifactId>gwt-openlayers</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+-->
   </dependencies>
   <repositories>
     <repository>
@@ -56,9 +63,16 @@
       <url>http://repo.opennms.org/maven2</url>
     </repository>
     <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
+    </repository>
+    <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
-      <id>fhosted.tennera.svn</id>
+      <id>hosted.tennera.svn</id>
       <name>Tennera release repository on fedorahosted.org</name>
       <url>http://svn.fedorahosted.org/svn/tennera/m2repo</url>
     </repository>

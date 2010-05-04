@@ -420,14 +420,20 @@
           <property name="locationMatch" value="distributedstatus"/>
           <property name="locationMonitorDao" ref="locationMonitorDao"/>
         </bean>
-                
+
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Distributed Map"/>
+          <property name="url" value="RemotePollerMap/index.jsp"/>
+          <property name="locationMatch" value="RemotePollerMap"/>
+        </bean>
+
         <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
           <property name="name" value="Vulnerabilities"/>
           <property name="url" value="vulnerability/index.jsp"/>
           <property name="locationMatch" value="vulnerability"/>
           <property name="file" value="${opennms.home}/etc/vulnerabilities.enable"/>
         </bean>
-                
+
         <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
           <property name="name" value="Map"/>
           <property name="url" value="map/index.jsp"/>

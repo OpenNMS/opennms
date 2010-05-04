@@ -1,158 +1,145 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import com.google.gwt.ajaxloader.client.AjaxLoader;
+import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
+import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.maps.client.MapWidget;
-import com.google.gwt.maps.client.control.LargeMapControl;
-import com.google.gwt.maps.utility.client.DefaultPackage;
-import com.google.gwt.maps.utility.client.GoogleMapsUtility;
-import com.google.gwt.maps.utility.client.markermanager.MarkerManager;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
-
-import de.novanic.eventservice.client.event.RemoteEventService;
-import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Application implements EntryPoint
-{
-	interface Binder extends UiBinder<SplitLayoutPanel, Application> { }
-	private static final Binder BINDER = GWT.create(Binder.class);
-	private static int utilityCounter = 0;
-	private final HandlerManager m_eventBus = new HandlerManager(null);
-	private final LocationStatusServiceAsync remoteService = GWT.create(LocationStatusService.class);
+public class Application implements EntryPoint {
+    interface Binder extends UiBinder<DockLayoutPanel, Application> {
+    }
 
-	@UiField protected LocationPanel locationPanel;
-	@UiField protected SplitLayoutPanel splitPanel;
-	@UiField protected MapWidget mapWidget;
+    private static final Binder BINDER = GWT.create(Binder.class);
 
-  /**
-   * This is the entry point method.
-   */
-	public void onModuleLoad()
-	{
-		Window.setTitle("OpenNMS - Remote Monitor");
-		remoteService.getApiKey(new ConfigureMapsAsyncCallback(this));
+    private LocationManager m_locationManager;
+    private final HandlerManager m_eventBus = new HandlerManager(null);
 
-	}
+    interface LinkStyles extends CssResource {
+        String activeLink();
+    }
 
-	private void init() {
-		if (--utilityCounter == 0) {
-			mapWidget.checkResizeAndCenter();
+    @UiField
+    protected LocationPanel locationPanel;
+    @UiField
+    protected DockLayoutPanel mainPanel;
+    @UiField
+    protected SplitLayoutPanel splitPanel;
+    @UiField
+    protected Hyperlink locationLink;
+    @UiField
+    protected Hyperlink applicationLink;
+    @UiField
+    protected LinkStyles linkStyles;
 
-			final MarkerManager markerManager = MarkerManager.newInstance(mapWidget);
-			final DefaultLocationManager manager = new DefaultLocationManager(m_eventBus, mapWidget, markerManager);
-			locationPanel.setEventBus(m_eventBus);
+    /**
+     * This is the entry point method.
+     */
+    public void onModuleLoad() {
+        // Log.setUncaughtExceptionHandler();
 
-			final DefaultLocationListener locationListener = new DefaultLocationListener(manager);
+        BINDER.createAndBindUi(this);
 
-			final RemoteEventService eventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
-			eventService.addListener(Location.LOCATION_EVENT_DOMAIN, locationListener);
-
-			remoteService.start(new VoidAsyncCallback());
-		}
-	}
-
-	private final class VoidAsyncCallback implements AsyncCallback<Void> {
-		public void onFailure(final Throwable throwable) {
-			GWT.log("failed to start location status service", throwable);
-		}
-
-		public void onSuccess(final Void arg) {
-			GWT.log("started location status service");
-		}
-	}
-
-	private final class ConfigureMapsAsyncCallback implements AsyncCallback<String> {
-		private final String m_mapsUrl = "http://maps.google.com/maps?gwt=1&file=api&v=2";
-		private Application m_application;
-
-		public ConfigureMapsAsyncCallback(Application app) {
-			m_application = app;
-		}
-
-		public void onFailure(Throwable throwable) {
-			GWT.log("failed to get API key", throwable);
-			doUpdate(null);
-		}
-
-		public void onSuccess(String apiKey) {
-			doUpdate(apiKey);
-		}
-		
-		public void doUpdate(String apiKey) {
-			if (apiKey != null) {
-				AjaxLoader.init(apiKey);
+        Window.setTitle("OpenNMS - Remote Monitor");
+        Window.enableScrolling(false);
+        Window.setMargin("0px");
+        Window.addResizeHandler(new ResizeHandler() {
+			public void onResize(final ResizeEvent event) {
+				mainPanel.setHeight(getAppHeight().toString());
 			}
+        });
 
-			AjaxLoader.loadApi("maps", "2", new PostInitialization(m_application), null);
-		}
-	}
+        m_locationManager = new DefaultLocationManager(m_eventBus, splitPanel, locationPanel, createMapPanel());
 
-	private final class PostInitialization implements Runnable {
-		private Application m_application;
+        m_locationManager.addLocationManagerInitializationCompleteEventHandler(new LocationManagerInitializationCompleteEventHander() {
 
-		public PostInitialization(Application application) {
-			m_application = application;
-		}
+                    public void onInitializationComplete(LocationManagerInitializationCompleteEvent event) {
+                        splitPanel.setWidgetMinSize(locationPanel, 255);
+                        mainPanel.setSize("100%", "100%");
+                        RootPanel.get("remotePollerMap").add(mainPanel);
+                        mainPanel.setSize("100%", getAppHeight().toString());
+                        mainPanel.forceLayout();
+                        onLocationClick(null);
+                    }
+                });
+        locationPanel.setEventBus(m_eventBus);
+        locationPanel.filterPanel.setLocationManager(m_locationManager);
 
-		public void run() {
-			SplitLayoutPanel outer = BINDER.createAndBindUi(m_application);
+        m_locationManager.initialize();
+        
+    }
 
-			// Set up maps
-			mapWidget.setSize("100%", "100%");
-			mapWidget.setUIToDefault();
-			mapWidget.addControl(new LargeMapControl());
-//			mapWidget.setZoomLevel(4);
-			mapWidget.setContinuousZoom(true);
-			mapWidget.setScrollWheelZoomEnabled(true);
+    private Integer getAppHeight() {
+    	final com.google.gwt.user.client.Element e = mainPanel.getElement();
+		int extraHeight = e.getAbsoluteTop();
+		return Window.getClientHeight() - extraHeight;
+    }
 
-			RootPanel.get("remotePollerMap").add(outer);
+    @UiHandler("locationLink")
+    public void onLocationClick(ClickEvent event) {
+        if (locationLink.getStyleName().contains(linkStyles.activeLink())) {
+            // This link is already selected, do nothing
+        } else {
+            m_locationManager.locationClicked();
+            locationLink.addStyleName(linkStyles.activeLink());
+            applicationLink.removeStyleName(linkStyles.activeLink());
+            locationPanel.showLocationList();
+            locationPanel.showApplicationFilters(false);
+            locationPanel.resizeDockPanel();
+        }
+    }
 
-			UtilityApiInitializer markerInitializer = new UtilityApiInitializer();
-			UtilityApiInitializer iconInitializer   = new UtilityApiInitializer();
-			
-			GoogleMapsUtility.loadUtilityApi(markerInitializer, DefaultPackage.MARKER_MANAGER);
-			GoogleMapsUtility.loadUtilityApi(iconInitializer, DefaultPackage.MAP_ICON_MAKER);
+    @UiHandler("applicationLink")
+    public void onApplicationClick(ClickEvent event) {
+        if (applicationLink.getStyleName().contains(linkStyles.activeLink())) {
+            // This link is already selected, do nothing
+        } else {
+            m_locationManager.applicationClicked();
+            applicationLink.addStyleName(linkStyles.activeLink());
+            locationLink.removeStyleName(linkStyles.activeLink());
+            locationPanel.showApplicationList();
+            locationPanel.showApplicationFilters(true);
+            locationPanel.resizeDockPanel();
+        }
+    }
 
-			// Set the window to be full-sized and handle resizes
-			outer.setSize("100%", "100%");
-			outer.setWidgetMinSize(locationPanel, 200);
+    private MapPanel createMapPanel() {
+        MapPanel mapPanel;
+        if (getMapImplementationType().equals("Mapquest")) {
+            mapPanel = new MapQuestMapPanel(m_eventBus);
+        } else if (getMapImplementationType().equals("GoogleMaps")) {
+            mapPanel = new GoogleMapsPanel(m_eventBus);
+        } else if (getMapImplementationType().equals("OpenLayers")) {
+            mapPanel = new OpenLayersMapPanel(m_eventBus);
+        } else {
+            Window.alert("unknown map implementation: " + getMapImplementationType());
+            throw new RuntimeException("unknown map implementation: " + getMapImplementationType());
+        }
+        return mapPanel;
+    }
 
-			Window.enableScrolling(false);
-			Window.setMargin("0px");
-			Window.addResizeHandler(new ResizeHandler() {
-				public void onResize(final ResizeEvent resizeEvent) {
-					if (mapWidget != null) {
-						mapWidget.checkResizeAndCenter();
-					}
-				}
-			});
-		}
-		
-	}
-	private final class UtilityApiInitializer implements Runnable {
-		public UtilityApiInitializer() {
-			utilityCounter++;
-		}
-
-		public void run() {
-			init();
-		}
-	}
-
+    public native String getMapImplementationType() /*-{
+		return $wnd.mapImplementation;
+	}-*/;
 }

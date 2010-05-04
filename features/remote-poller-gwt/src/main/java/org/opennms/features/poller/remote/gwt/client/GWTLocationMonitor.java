@@ -3,7 +3,12 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.io.Serializable;
 import java.util.Date;
 
-public class GWTLocationMonitor implements Serializable {
+import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
+import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class GWTLocationMonitor implements Serializable, IsSerializable, Comparable<GWTLocationMonitor> {
 	private static final long serialVersionUID = 1L;
 
 	private Integer m_id;
@@ -12,7 +17,7 @@ public class GWTLocationMonitor implements Serializable {
 	private String m_name;
 	private Date m_lastCheckInTime;
 
-	public int getId() {
+	public Integer getId() {
 		return m_id;
 	}
 	public void setId(final Integer id) {
@@ -43,8 +48,33 @@ public class GWTLocationMonitor implements Serializable {
 	public void setLastCheckInTime(final Date lastCheckInTime) {
 		m_lastCheckInTime = lastCheckInTime;
 	}
-	
+
 	public String toString() {
-		return "GWTLocationMonitor[id=" + m_id + ",status=" + m_status + ",definitionName=" + m_definitionName + ",name=" + m_name + ",lastCheckInTime=" + m_lastCheckInTime + "]";
+		return "GWTLocationMonitor[name=" + m_name + ",status=" + m_status + ",lastCheckInTime=" + m_lastCheckInTime + "]";
+	}
+
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (!(o instanceof GWTLocationMonitor)) return false;
+		GWTLocationMonitor that = (GWTLocationMonitor)o;
+		if (this.getId().equals(that.getId())) return true;
+		return false;
+	}
+
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(this.getId())
+			.append(this.getName())
+			.append(this.getDefinitionName())
+			.toHashcode();
+	}
+
+	public int compareTo(GWTLocationMonitor that) {
+		return new CompareToBuilder()
+			.append(this.getDefinitionName(), that.getDefinitionName())
+			.append(this.getName(), that.getName())
+			.append(this.getStatus(), that.getStatus())
+			.append(this.getLastCheckInTime(), that.getLastCheckInTime())
+			.toComparison();
 	}
 }

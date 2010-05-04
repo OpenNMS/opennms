@@ -1,4 +1,3 @@
 usr/share/lintian/overrides
 usr/share/opennms/jetty-webapps/opennms
 usr/share/opennms/jetty-webapps/opennms-remoting
-usr/share/opennms/jetty-webapps/opennms-remote-monitor-ui

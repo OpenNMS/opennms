@@ -1,14 +1,26 @@
-<!DOCTYPE web-app PUBLIC
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
 
-<web-app>
+<web-app id="opennms-remote-monitor-ui" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
   <display-name>Remote Poller Map</display-name>	
 
-  <!--  This is used by the Spring ContextLoaderListener <listener> below -->
+  <jsp-config>
+    <jsp-property-group>
+        <url-pattern>*.jsp</url-pattern>
+        <page-encoding>UTF-8</page-encoding>
+    </jsp-property-group>
+  </jsp-config>
+
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/applicationContext-remote-poller.xml</param-value>
+    <param-value>
+        <!-- WARMERGE: begin contextConfigLocation -->
+        /WEB-INF/applicationContext-remote-poller.xml
+        <!-- WARMERGE: end contextConfigLocation -->
+    </param-value>
   </context-param>
 
   <context-param>
@@ -17,12 +29,10 @@
   </context-param>
 
   <listener>
-    <!-- This listener handles our custom startup/shutdown behavior. -->
     <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
   </listener>
 
   <listener>
-    <!-- This listener handles our custom startup/shutdown behavior. -->
     <listener-class>org.opennms.web.DependencyCheckingContextListener</listener-class>
   </listener>
 
@@ -30,6 +40,7 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
+  <!-- WARMERGE: begin servlet -->
   <servlet>
     <servlet-name>EventService</servlet-name>
     <servlet-class>de.novanic.eventservice.service.EventServiceImpl</servlet-class>
@@ -40,19 +51,38 @@
     <servlet-name>LocationStatusService</servlet-name>
     <servlet-class>org.opennms.features.poller.remote.gwt.server.LocationStatusServiceImpl</servlet-class>
   </servlet>
+  <!-- WARMERGE: end servlet -->
 
+  <!-- WARMERGE: begin servlet-mapping -->
   <servlet-mapping>
     <servlet-name>EventService</servlet-name>
-    <url-pattern>/org.opennms.features.poller.remote.gwt.Application/gwteventservice</url-pattern>
+    <url-pattern>/RemotePollerMap/gwteventservice</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>LocationStatusService</servlet-name>
-    <url-pattern>/org.opennms.features.poller.remote.gwt.Application/locationStatus</url-pattern>
+    <url-pattern>/RemotePollerMap/locationStatus</url-pattern>
   </servlet-mapping>
+  <!-- WARMERGE: end servlet-mapping -->
+
+  <!-- WARMERGE: begin filter -->
+  <filter>
+    <filter-name>cache-filter</filter-name>
+    <filter-class>org.opennms.features.poller.remote.gwt.CacheFilter</filter-class>
+  </filter>
+  <!-- WARMERGE: end filter -->
+
+  <!-- WARMERGE: begin filter-mapping -->
+  <filter-mapping>
+    <filter-name>cache-filter</filter-name>
+    <url-pattern>/RemotePollerMap/*</url-pattern>
+  </filter-mapping>
+  <!-- WARMERGE: end filter-mapping -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>frontPage.jsp</welcome-file>
   </welcome-file-list>
 
 </web-app>

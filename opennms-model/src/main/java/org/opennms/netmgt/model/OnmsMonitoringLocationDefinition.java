@@ -32,46 +32,56 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OnmsMonitoringLocationDefinition implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
     private String m_area;
-
     private String m_name;
-
     private String m_pollingPackageName;
-
-	private String m_geolocation;
+    private String m_geolocation;
+    private String m_coordinates;
+    private Long m_priority;
+    private Set<String> m_tags = new HashSet<String>();
     
     public OnmsMonitoringLocationDefinition() {
         
     }
     
-    public OnmsMonitoringLocationDefinition(String name, String pollingPackageName) {
+    public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName) {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
     }
     
-    public OnmsMonitoringLocationDefinition(String name, String pollingPackageName, String area) {
+    public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area) {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
         m_area = area;
     }
 
-    public OnmsMonitoringLocationDefinition(String name, String pollingPackageName, String area, String geolocation) {
+    public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area, final String geolocation) {
     	m_name = name;
     	m_pollingPackageName = pollingPackageName;
     	m_area = area;
     	m_geolocation = geolocation;
     }
 
+    public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates) {
+    	m_name = name;
+    	m_pollingPackageName = pollingPackageName;
+    	m_area = area;
+    	m_geolocation = geolocation;
+    	m_coordinates = coordinates;
+    }
+
     public String getArea() {
         return m_area;
     }
 
-    public void setArea(String area) {
+    public void setArea(final String area) {
         m_area = area;
     }
 
@@ -79,7 +89,7 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
         return m_name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         m_name = name;
     }
 
@@ -87,20 +97,44 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
         return m_pollingPackageName;
     }
 
-    public void setPollingPackageName(String pollingPackageName) {
+    public void setPollingPackageName(final String pollingPackageName) {
         m_pollingPackageName = pollingPackageName;
     }
     
-	public void setGeolocation(String location) {
-		m_geolocation = location;
-	}
-	
 	public String getGeolocation() {
 		return m_geolocation;
 	}
 
-    @Override
+	public void setGeolocation(final String location) {
+		m_geolocation = location;
+	}
+	
+	public String getCoordinates() {
+		return m_coordinates;
+	}
+
+	public void setCoordinates(final String coordinates) {
+		m_coordinates = coordinates;
+	}
+	
+	public Long getPriority() {
+		return m_priority;
+	}
+	
+	public void setPriority(final Long priority) {
+		m_priority = priority;
+	}
+	
+	public Set<String> getTags() {
+		return m_tags;
+	}
+	
+	public void setTags(final Set<String> tags) {
+		m_tags = tags;
+	}
+
+	@Override
     public String toString() {
-        return "OnmsMonitoringLocationDefinition@" + Integer.toHexString(hashCode()) + ": Name \"" + m_name + "\", polling package name \"" + m_pollingPackageName + "\", area \"" + m_area + "\", geolocation \"" + m_geolocation + "\"";
+        return "OnmsMonitoringLocationDefinition@" + Integer.toHexString(hashCode()) + ": Name \"" + m_name + "\", polling package name \"" + m_pollingPackageName + "\", area \"" + m_area + "\", geolocation \"" + m_geolocation + "\", coordinates \"" + m_coordinates + "\"";
     }
 }

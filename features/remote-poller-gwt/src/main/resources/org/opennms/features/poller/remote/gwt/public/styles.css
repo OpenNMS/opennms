@@ -1,0 +1,120 @@
+body {
+	margin: 0px;
+	padding: 0px;
+	background: #FFF;
+	color: #000;
+	font-family: "Lucida Grande", Verdana, sans-serif;
+	height: 100%;
+}
+#header {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	background-color: #333;
+	background-image: url(../images/headerbg.png);
+	background-repeat: repeat-x;
+	color: #FFF;
+	font-family: "Lucida Grande", Verdana, sans-serif;
+	font-size: 119%;
+}
+#header a {
+	color:#FFF;
+	text-decoration: none;
+}
+#header a:hover {
+	text-decoration: underline;
+}
+#header img {
+	border: 0 none;
+}
+#header hr {
+	clear:both;
+	height:0;
+	margin:0;
+	padding:0;
+	position:relative;
+	visibility:hidden;
+}
+#headerlogo {
+	position: absolute;
+	z-index: 2;
+	margin: 0;
+	padding: 0;
+	left: 15px;
+	top: 13px;
+}
+#headerinfo {
+	position: relative;
+	margin: 0;
+	padding: 10px;
+	text-align: right;
+	padding-bottom: 20px;
+}
+#headerinfo h1,h2,h3,h4,h5,h6 {
+	font-size: 100%;
+}
+#headerinfo h2 {
+	margin: 0;
+	padding: 0;
+}
+#headerinfo p,td,th,li {
+	margin: 0;
+	padding: 0;
+	font-size:70%;
+	line-height:1.25em;
+}
+#headerdate {
+	float: right;
+	text-align: right;
+	font-weight: bold;
+	vertical-align: middle;
+}
+
+#headernavbarright {
+	position: relative;
+	float: right;
+	padding: 2px 0px 5px 0px;
+}
+.navbar ul
+{ 
+	list-style: none;
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+
+.navbar li
+{ 
+	padding: 0 10px 5px 0;
+	list-style: none;
+	display: inline;
+	color: #999;
+}
+
+#linkbar
+{
+	padding: 0 0 1em 0;
+}
+
+#linkbar ul
+{ 
+	list-style: none;
+	display: inline;
+	padding: 0 0 0 0;
+}
+
+#linkbar li
+{ 
+	list-style: none;
+	display: inline;
+	padding-right: 0.75em;
+}
+#content
+{
+	background-image: url("../images/mainbg.png");
+	background-repeat: repeat-x;
+	background-color: #eeeeee;
+	margin:0;
+	padding: 0;
+/*	padding:15px 20px 30px; */
+}

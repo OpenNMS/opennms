@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-qosdaemon</artifactId>
-  <name>OpenNMS OSS/J interface</name>
+  <name>OpenNMS OSS-J interface</name>
   <!--  <packaging>jar</packaging> -->
   <url>http://sourceforge.net/projects/opennms</url>
   <description>

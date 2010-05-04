@@ -1,38 +1,28 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEvent;
+
 import com.google.gwt.core.client.GWT;
 
 import de.novanic.eventservice.client.event.Event;
 
-public class DefaultLocationListener extends BaseLocationListener {
+public class DefaultLocationListener implements LocationListener {
 
-	private final LocationManager m_locationManager;
+	private final RemotePollerPresenter m_locationManager;
 
-	public DefaultLocationListener(final LocationManager manager) {
+	public void apply(final Event event) {
+		if (event == null) return;
+		if (event instanceof MapRemoteEvent) {
+			((MapRemoteEvent)event).dispatch(m_locationManager);
+		} else {
+			onEvent(event);
+		}
+	}
+
+	public DefaultLocationListener(final RemotePollerPresenter manager) {
 		m_locationManager = manager;
 	}
-	
-	public void onLocationDelete(final DeleteLocation location) {
-		if (location == null) {
-			return;
-		}
 
-		m_locationManager.removeLocation(location);
-	}
-
-	public void onLocationUpdate(final UpdateLocation location) {
-		if (location == null) {
-			return;
-		}
-		m_locationManager.updateLocation(location);
-	}
-	
-	public void onUpdateComplete(final UpdateComplete event) {
-		if (event == null) {
-			return;
-		}
-		m_locationManager.updateComplete();
-	}
 	public void onEvent(final Event event) {
 		if (event == null) {
 			return;
