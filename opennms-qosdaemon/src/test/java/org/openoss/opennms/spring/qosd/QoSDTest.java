@@ -75,10 +75,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 /*
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
-		"classpath*:/META-INF/opennms/component-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
-		"classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
+		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
+		"classpath:org/openoss/opennms/spring/qosd/qosd-spring-context.xml",
+		"classpath:org/openoss/opennms/spring/qosdrx/qosdrx-spring-context.xml"
 })
 */
 @ContextConfiguration
@@ -92,16 +93,6 @@ public class QoSDTest {
 
 	@Before
 	public void setUp() throws Exception {
-		/*
-		System.setProperty("opennms.home", "target/test-classes");
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {
-			"META-INF/opennms/applicationContext-dao.xml",
-			"META-INF/opennms/component-dao.xml",
-			"org/openoss/opennms/spring/qosd/qosd-spring-context.xml"
-		});
-		m_qosd = context.getBean(QoSD.class);
-		m_qosdrx = context.getBean(QoSDrx.class);
-		*/
 	}
 
 	@After
@@ -110,7 +101,6 @@ public class QoSDTest {
 
 	@Test
 	public final void testContext() {
-		// assertEquals("target/test-classes", System.getProperty("opennms.home"));
 		//assertNotNull(m_qosdrx);
 		assertNotNull(m_qosd);
 	}

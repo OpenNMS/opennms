@@ -7,7 +7,7 @@
 	<import resource="applicationContext-dao.xml" />
   -->
 	
-	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<bean id="qosdConfigProperty" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
 		<property name="properties">
 			<props>
@@ -16,7 +16,7 @@
 		</property>
 	</bean>
 
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" depends-on="qosdConfigProperty">
 		<property name="location" value="file:${qosd.config.directory}/qosd.properties"/>
 	</bean>
 
@@ -27,7 +27,7 @@
 			<property name="assetRecordDao" ref="assetRecordDao" />
 			<property name="alarmListConnectionManager" ref="AlarmListConnectionManagerSpringImpl" />
 			<property name="onmsAlarmOssjMapper" ref="onmsAlarmOssjMapper" />
-			<property name="ossDao" ref="ossDao" />		
+			<property name="ossDao" ref="ossDao" />
 	</bean>
 	
 	<!-- Old Class

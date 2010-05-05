@@ -7,7 +7,7 @@
 	<import resource="applicationContext-dao.xml" />
  -->
 
-	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<bean id="qosdConfigProperty" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
 		<property name="properties">
 			<props>
@@ -16,7 +16,7 @@
 		</property>
 	</bean>
 	
-	<bean id="propertyConfigurerRx" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<bean id="propertyConfigurerRx" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" depends-on="qosdConfigProperty">
 		<property name="location" value="file:${qosd.config.directory}/qosdrx.properties"/>
 	</bean>
 
@@ -31,7 +31,7 @@
 		class="org.openoss.ossj.fm.monitor.spring.OssBeanRunnerImpl">
 		<property name="ossBeanRunnerSpringContextXml">
 		<list>
-			<value>file:${opennms.home}/etc/QoSDrxOssBeanRunnerSpringContext.xml</value>
+			<value>file:${qosd.config.directory}/QoSDrxOssBeanRunnerSpringContext.xml</value>
 		</list>
 		</property>
 	</bean>
