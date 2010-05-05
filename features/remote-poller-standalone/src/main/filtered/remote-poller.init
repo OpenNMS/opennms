@@ -27,7 +27,7 @@ DESC="OpenNMS Remote Poller"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 PIDFILE="/var/run/$NAME.pid"
 OPENNMS_HOME="${install.dir}"
-JVM_ARGS=""
+JVM_ARGS="-Dpoller.logfile=/var/log/opennms-remote-poller.log"
 EXTRA_ARGS=""
 URI="http://localhost:8980/opennms-remoting"
 LOCATION="Default"
@@ -103,14 +103,16 @@ case "$1" in
 
 		echo -n "Starting $DESC: "
 		if [ -x /sbin/start-stop-daemon ]; then
-			start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE $CHUID --startas /usr/sbin/opennms-remote-poller -- $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null
+			start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --make-pidfile $CHUID --startas $OPENNMS_HOME/bin/remote-poller.sh -- $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null
 		else
-			$SUDO_PREFIX $OPENNMS_HOME/bin/remote-poller.sh $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS
-			RETVAL="$?"
-			POLLER_PID="$!"
-			echo "$POLLER_PID" > "$PIDFILE"
-			echo "OK"
-			exit 0
+			if $SUDO_PREFIX $OPENNMS_HOME/bin/remote-poller.sh $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null; then
+				echo "OK"
+				exit 0
+			else
+				RETVAL="$?"
+				echo "FAILED"
+				exit $RETVAL
+			fi
 		fi
 		echo "."
 		;;
