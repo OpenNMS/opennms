@@ -68,7 +68,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
-import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
+import org.openoss.opennms.spring.dao.OssDao;
 import org.openoss.ossj.jvt.fm.monitor.OOSSAlarmValue;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -134,13 +134,13 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 
 	// ---------------SPRING DAO DECLARATIONS----------------
 
-	private static OssDaoOpenNMSImpl ossDao;
+	private static OssDao ossDao;
 
 	/**
 	 * provides an interface to OpenNMS which provides a unified api 
 	 * @param ossDao the ossDao to set
 	 */
-	public void setossDao(OssDaoOpenNMSImpl _ossDao) {
+	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
 	}
 
@@ -167,7 +167,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 * @param ar 
 	 */
-	public void setassetRecordDao(AssetRecordDao ar){
+	public void setAssetRecordDao(AssetRecordDao ar){
 		assetRecordDao = ar;
 	}
 
@@ -182,7 +182,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Used by Spring Application context to pass in NodeDaof
 	 * @param nodedao 
 	 */
-	public void setnodeDao( NodeDao nodedao){
+	public void setNodeDao( NodeDao nodedao){
 		nodeDao = nodedao;
 	}
 
@@ -196,7 +196,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Used by Spring Application context to pass in EventIpcManager
 	 * @param eventIpcManager
 	 */
-	public void seteventIpcManager( EventIpcManager evtIpcManager){
+	public void setEventIpcManager( EventIpcManager evtIpcManager){
 		eventIpcManager = evtIpcManager;
 	}
 
@@ -211,7 +211,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Used by Spring Application context to pass in alarmDao
 	 * @param alarmDao
 	 */
-	public void setalarmDao( AlarmDao almDao){
+	public void setAlarmDao( AlarmDao almDao){
 		alarmDao = almDao;
 	}
 
@@ -226,7 +226,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Used by Spring Application context to pass in AlarmListConnectionManager
 	 * @param alcm
 	 */
-	public void setalarmListConnectionManager( AlarmListConnectionManager alcm) {
+	public void setAlarmListConnectionManager( AlarmListConnectionManager alcm) {
 		alarmListConnectionManager =alcm;
 	}
 
@@ -239,7 +239,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 * @param m_context - application conext for this bean to use
 	 */
-	public  void setapplicationcontext(ClassPathXmlApplicationContext m_context){
+	public void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
 	}
 

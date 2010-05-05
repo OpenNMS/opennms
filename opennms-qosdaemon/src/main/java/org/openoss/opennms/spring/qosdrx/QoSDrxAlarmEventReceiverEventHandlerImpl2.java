@@ -61,7 +61,7 @@ import java.util.HashMap;
 public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventReceiverEventHandler{
 
 	private static final String LOG4J_CATEGORY = "OpenOSS.QoSDrx";
-	private static boolean initialised=false; // true if init() has initialised class
+	private boolean initialised = false; // true if init() has initialised class
 
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
@@ -96,7 +96,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * determines the alarm update behaviour. Must be set to <code>SPECIFY_OUTSTATION</code> or
 	 * <code>USE_TYPE_INSTANCE</code>
 	 */
-	private static Integer almUpdateBehaviour= null;
+	private Integer almUpdateBehaviour= null;
 
 	/*
 	 * string value of almUpdateBehaviour. Must be set to 
@@ -133,7 +133,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * @see org.opennms.netmgt.dao.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
-	private static AssetRecordDao _assetRecordDao;
+	private AssetRecordDao _assetRecordDao;
 
 
 	/**
@@ -149,7 +149,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * @see org.opennms.netmgt.dao.NodeDao 
 	 */
 	@SuppressWarnings("unused")
-	private static NodeDao _nodeDao;
+	private NodeDao _nodeDao;
 
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
@@ -164,7 +164,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * @see org.opennms.netmgt.dao.AlarmDao
 	 */
 	@SuppressWarnings("unused")
-	private static AlarmDao _alarmDao;
+	private AlarmDao _alarmDao;
 
 	/**
 	 * Used by Spring Application context to pass in alarmDao
@@ -177,7 +177,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
 	 */
-	private static DistPollerDao distPollerDao;
+	private DistPollerDao distPollerDao;
 	
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
@@ -186,7 +186,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 		 distPollerDao =  _distPollerDao;
 	}	
 
-	private static OssDaoOpenNMSImpl ossDao;
+	private OssDaoOpenNMSImpl ossDao;
 
 // TODO remove
 //	private static boolean ossDaoIsInitialised=false; // TODO - may want this in the spring initialisation
@@ -199,7 +199,8 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 		ossDao = _ossDao;
 	}
 
-	private static OnmsAlarmOssjMapper onmsAlarmOssjMapper; 
+	@SuppressWarnings("unused")
+	private OnmsAlarmOssjMapper onmsAlarmOssjMapper; 
 
 	/**
 	 * Used by Spring Application context to pass in OnmsAlarmOssjMapper
@@ -208,7 +209,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 */
 	public void setOnmsAlarmOssjMapper(
 			OnmsAlarmOssjMapper onmsAlarmOssjMapper) {
-		QoSDrxAlarmEventReceiverEventHandlerImpl2.onmsAlarmOssjMapper = onmsAlarmOssjMapper;
+		this.onmsAlarmOssjMapper = onmsAlarmOssjMapper;
 	}
 
 	/**
@@ -276,7 +277,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 //				} else {
 				alarm=new OnmsAlarm();
 				
-				alarm.setUei(onmsAlarmOssjMapper.ossjAlarmTypeToUei(nnae.getAlarmType()));
+				alarm.setUei(OnmsAlarmOssjMapper.ossjAlarmTypeToUei(nnae.getAlarmType()));
 				
 				alarm.setX733AlarmType((nnae.getAlarmType()==null) ? "" : nnae.getAlarmType());
 				alarm.setX733ProbableCause(nnae.getProbableCause());
@@ -290,7 +291,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 				OnmsSeverity onmsseverity;
 				try{
-					onmsseverity= onmsAlarmOssjMapper.ossjSeveritytoOnmsSeverity(nnae.getPerceivedSeverity());
+					onmsseverity= OnmsAlarmOssjMapper.ossjSeveritytoOnmsSeverity(nnae.getPerceivedSeverity());
 				} catch (IllegalArgumentException iae){
 					log.error(logheader+" problem setting severity used default:'WARNING'. Exception:"+ iae);
 					onmsseverity=OnmsSeverity.WARNING;

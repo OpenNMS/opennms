@@ -162,7 +162,7 @@ public class QoSD implements QoSDMBean {
 	 */
 	private org.openoss.opennms.spring.qosd.QoSD getQoSD() {
 		org.openoss.opennms.spring.qosd.QoSD qosd = (org.openoss.opennms.spring.qosd.QoSD)m_context.getBean("QoSD");
-		qosd.setapplicationcontext(m_context); // pass in local spring application context
+		qosd.setApplicationContext(m_context); // pass in local spring application context
 		return qosd;
 	}
 

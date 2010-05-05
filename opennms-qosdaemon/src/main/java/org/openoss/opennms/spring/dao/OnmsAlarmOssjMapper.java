@@ -70,8 +70,7 @@ public class OnmsAlarmOssjMapper {
 
 	// pattern for recognising simple <HTML> tags ; 
 	// used to strip HTML characters from log messages etc
-	private Pattern p= Pattern.compile("<[^>]*>"); 
-	private Matcher matcher;
+	private static Pattern p= Pattern.compile("<[^>]*>"); 
 	// p= Pattern.compile("\\Q&lt;\\E[^\\Q&gt;\\E]*\\Q&gt;\\E");  
 	// NOT USED Alternative pattern for matching
 	// <HTML> tags in openNMS logs and eui data
@@ -84,12 +83,12 @@ public class OnmsAlarmOssjMapper {
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
 	 */
-	private static DistPollerDao distPollerDao;
+	private DistPollerDao distPollerDao;
 
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
 	 */
-	public  void setdistPollerDao(DistPollerDao _distPollerDao) {
+	public void setDistPollerDao(DistPollerDao _distPollerDao) {
 		distPollerDao =  _distPollerDao;
 	}
 
@@ -98,13 +97,13 @@ public class OnmsAlarmOssjMapper {
 	 * @see org.opennms.netmgt.dao.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
-	private static AssetRecordDao _assetRecordDao;
+	private AssetRecordDao _assetRecordDao;
 
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 * @param ar 
 	 */
-	public  void setassetRecordDao(AssetRecordDao ar){
+	public void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
 	}
 
@@ -113,23 +112,23 @@ public class OnmsAlarmOssjMapper {
 	 * @see org.opennms.netmgt.dao.NodeDao 
 	 */
 	@SuppressWarnings("unused")
-	private static NodeDao _nodeDao;
+	private NodeDao _nodeDao;
 
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
 	 * @param nodedao 
 	 */
-	public  void setnodeDao( NodeDao nodedao){
+	public void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
 	}
 
-	private static OssDaoOpenNMSImpl ossDao;
+	private OssDao ossDao;
 
 	/**
 	 * provides an interface to OpenNMS which provides a unified api 
 	 * @param ossDao the ossDao to set
 	 */
-	public void setossDao(OssDaoOpenNMSImpl _ossDao) {
+	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
 	}
 
@@ -158,7 +157,7 @@ public class OnmsAlarmOssjMapper {
 	 * SPECIFY_OUTSTATION, or USE_TYPE_INSTANCE
 	 * @return
 	 */
-	public static String getAlarmUpdateBehaviourForInt(Integer aub) {
+	private static String getAlarmUpdateBehaviourForInt(Integer aub) {
 		try {
 			return alarmUpdateBehaviourStr[aub];
 		}
@@ -175,7 +174,7 @@ public class OnmsAlarmOssjMapper {
 	 * or
 	 * <code>"SPECIFY_OUTSTATION"</code>
 	 */
-	public static Integer getalarmUpdateBehaviourForString(String _alarmUpdateBehaviour){
+	private static Integer getAlarmUpdateBehaviourForString(String _alarmUpdateBehaviour){
 		Integer almUpdateBehaviour=null;
 		if (_alarmUpdateBehaviour==null) throw new IllegalArgumentException("getalarmUpdateBehaviourForString: Null value for alarmUpdateBehaviour");
 		if (_alarmUpdateBehaviour.equals("USE_TYPE_INSTANCE")) {
@@ -208,7 +207,7 @@ public class OnmsAlarmOssjMapper {
 	 * 
 	 * @return the OnmsAlarm populated with OSS/J NotifyNewAlarmEvent data
 	 */
-	public  OnmsAlarm populateOnmsAlarmFromOssjAlarm(OnmsAlarm onmsAlarm, AlarmValue alarmValue, Integer almUpdateBehaviour, String defaultUpdateNodeLabel  )throws IllegalArgumentException, UnsupportedAttributeException {
+	public OnmsAlarm populateOnmsAlarmFromOssjAlarm(OnmsAlarm onmsAlarm, AlarmValue alarmValue, Integer almUpdateBehaviour, String defaultUpdateNodeLabel  )throws IllegalArgumentException, UnsupportedAttributeException {
 		Logger log = getLog();
 		String logheader="\t\t"+this.getClass().getSimpleName()+"populateOnmsAlarmFromOssjAlarm():";
 
@@ -389,7 +388,7 @@ public class OnmsAlarmOssjMapper {
 	 * @param alarmValueSpecification AlarmValue object to be populated - Invariant (Specifcation) values should be already populated
 	 * @rerun the _av OSS/J AlarmValue populated with opennms data
 	 */
-	public  AlarmValue populateOssjAlarmFromOpenNMSAlarm(AlarmValue alarmValueSpecification, OnmsAlarm _openNMSalarm) throws IllegalArgumentException, UnsupportedAttributeException {
+	public AlarmValue populateOssjAlarmFromOpenNMSAlarm(AlarmValue alarmValueSpecification, OnmsAlarm _openNMSalarm) throws IllegalArgumentException, UnsupportedAttributeException {
 		Logger log = getLog();
 		String logheader="\t\t"+this.getClass().getSimpleName()+"populateOssjAlarmFromOpenNMSAlarm():";
 
@@ -459,6 +458,7 @@ public class OnmsAlarmOssjMapper {
 		}
 
 
+		Matcher matcher = null;
 		String _uei_no_html ="NOT_SET";
 		try{
 			String uei = _openNMSalarm.getUei();
@@ -681,7 +681,7 @@ public class OnmsAlarmOssjMapper {
 	 * @param ossjseverity the severity value according to ossj / X733
 	 * @return the severity value according to opennms
 	 */
-	public OnmsSeverity ossjSeveritytoOnmsSeverity(short ossjseverity) throws IllegalArgumentException{
+	public static OnmsSeverity ossjSeveritytoOnmsSeverity(short ossjseverity) throws IllegalArgumentException{
 
 		OnmsSeverity onmsseverity;
 
@@ -727,7 +727,7 @@ public class OnmsAlarmOssjMapper {
 	 * @return  the severity value according to ossj / X733
 	 * 
 	 */
-	public short onmsSeverityToOssjSeverity(OnmsSeverity onmsSeverity ) throws IllegalArgumentException{
+	private static short onmsSeverityToOssjSeverity(OnmsSeverity onmsSeverity ) throws IllegalArgumentException{
 
 		short ossjseverity=0;
 
@@ -766,7 +766,7 @@ public class OnmsAlarmOssjMapper {
 	 * @param alarmType String representing OSS/J alarm Type
 	 * @return string representing equivilent OpenNMS uei
 	 */
-	public String ossjAlarmTypeToUei(String alarmType){
+	public static String ossjAlarmTypeToUei(String alarmType){
 
 		if (alarmType==null) {
 			return "uei.openoss.org.alarm/unknown";
