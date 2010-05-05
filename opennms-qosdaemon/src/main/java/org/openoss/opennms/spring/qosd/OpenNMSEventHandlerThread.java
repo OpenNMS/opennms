@@ -42,7 +42,6 @@ import org.openoss.opennms.spring.dao.OssDao;
  *
  */
 public class OpenNMSEventHandlerThread extends Thread {
-	private static final String LOG4J_CATEGORY = "OpenOSS.QoSD";
 
 	// ---------------SPRING DAO DECLARATIONS----------------
 
@@ -53,7 +52,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * provides an interface to OpenNMS which provides a unified api 
 	 * @param ossDao the ossDao to set
 	 */
-	public void setossDao(OssDao _ossDao) {
+	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
 	}
 
@@ -174,8 +173,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	}
 
 	private static Logger getLog() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return (Logger)ThreadCategory.getInstance(QoSDimpl2.class);	
+		return (Logger)ThreadCategory.getInstance(OpenNMSEventHandlerThread.class);	
 	}
 
 }

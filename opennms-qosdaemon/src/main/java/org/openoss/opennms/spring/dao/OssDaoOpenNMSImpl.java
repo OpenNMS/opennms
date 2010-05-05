@@ -82,8 +82,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
 	private static Logger getLog() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return (Logger)ThreadCategory.getInstance(QoSDrx.class);	
+		return (Logger)ThreadCategory.getInstance(OssDaoOpenNMSImpl.class);	
 	}
 
 	// ****************

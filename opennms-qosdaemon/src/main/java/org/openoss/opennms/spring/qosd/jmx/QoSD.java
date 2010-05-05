@@ -26,38 +26,38 @@
 
 package org.openoss.opennms.spring.qosd.jmx;
 
-import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.access.DefaultLocatorFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * This JMX bean loads the QoSD daemon as a spring bean using the 
  * qosd-context.xml file.
  * 
  */
-public class QoSD implements QoSDMBean {
+public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
+
+	public QoSD() {
+		super(NAME);
+	}
 
 	private static final String NAME = org.openoss.opennms.spring.qosd.QoSDimpl2.NAME;
 
 	private ClassPathXmlApplicationContext m_context;
-	int m_status = Fiber.START_PENDING;
-
 
 	// used only for testing
 	ApplicationContext getContext() {
 		return m_context;
 	}
 
-	public void init() {
-		ThreadCategory.setPrefix(QoSD.NAME);
-	}
+	protected void onInit() {}
 
 
-	public void start() {
+	protected void onStart() {
 
 
 //TODO REMOVE EXAMPLE IMPORTER CODE
@@ -73,8 +73,6 @@ public class QoSD implements QoSDMBean {
 //		ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
 //		m_status = Fiber.RUNNING;
 
-		ThreadCategory.setPrefix(QoSD.NAME);
-		m_status = Fiber.STARTING;
 		ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());
 
 		// finds the already instantiated OpenNMS daoContext
@@ -101,8 +99,6 @@ public class QoSD implements QoSDMBean {
 		getQoSD().init();
 		getQoSD().start();
 
-
-		m_status = Fiber.RUNNING;    	
 
 //		TODO remove original code    	
 //		ThreadCategory.setPrefix(QoSD.NAME);
@@ -132,24 +128,10 @@ public class QoSD implements QoSDMBean {
 	}
 
 
-	public void stop() {
-		ThreadCategory.setPrefix(QoSD.NAME);
-		m_status = Fiber.STOP_PENDING;
-
+	protected void onStop() {
 		getQoSD().stop();
 
 		m_context.close();
-
-		m_status = Fiber.STOPPED;
-	}
-
-	public String status() {
-		ThreadCategory.setPrefix(QoSD.NAME);
-		return Fiber.STATUS_NAMES[m_status];
-	}
-
-	public int getStatus() {
-		return m_status;
 	}
 
 	public String getStats() {

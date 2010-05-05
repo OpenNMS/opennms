@@ -30,6 +30,10 @@
 
 package org.openoss.opennms.spring.qosdrx;
 
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Date;
+import java.util.HashMap;
+
 import javax.oss.fm.monitor.NotifyAckStateChangedEvent;
 import javax.oss.fm.monitor.NotifyAlarmCommentsEvent;
 import javax.oss.fm.monitor.NotifyAlarmListRebuiltEvent;
@@ -37,6 +41,7 @@ import javax.oss.fm.monitor.NotifyChangedAlarmEvent;
 import javax.oss.fm.monitor.NotifyClearedAlarmEvent;
 import javax.oss.fm.monitor.NotifyNewAlarmEvent;
 import javax.oss.util.IRPEvent;
+
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AlarmDao;
@@ -47,12 +52,10 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
+import org.openoss.opennms.spring.dao.OssDao;
 import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
-import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
 import org.openoss.ossj.fm.monitor.spring.AlarmEventReceiverEventHandler;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Date;
-import java.util.HashMap;
+import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
 
 
 /**
@@ -60,15 +63,13 @@ import java.util.HashMap;
  */
 public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventReceiverEventHandler{
 
-	private static final String LOG4J_CATEGORY = "OpenOSS.QoSDrx";
 	private boolean initialised = false; // true if init() has initialised class
 
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
 	private static Logger getLog() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return (Logger)ThreadCategory.getInstance(QoSDrx.class);	
+		return (Logger)ThreadCategory.getInstance(QoSDrxAlarmEventReceiverEventHandlerImpl2.class);
 	}
 
 	// ************************
@@ -140,7 +141,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 * @param ar 
 	 */
-	public  void setassetRecordDao(AssetRecordDao ar){
+	public  void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
 	}
 
@@ -155,7 +156,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * Used by Spring Application context to pass in NodeDaof
 	 * @param nodedao 
 	 */
-	public  void setnodeDao( NodeDao nodedao){
+	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
 	}
 
@@ -170,7 +171,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * Used by Spring Application context to pass in alarmDao
 	 * @param alarmDao
 	 */
-	public  void setalarmDao( AlarmDao alarmDao){
+	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
 	}
 	
@@ -182,11 +183,11 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
 	 */
-	public  void setdistPollerDao(DistPollerDao _distPollerDao) {
+	public  void setDistPollerDao(DistPollerDao _distPollerDao) {
 		 distPollerDao =  _distPollerDao;
 	}	
 
-	private OssDaoOpenNMSImpl ossDao;
+	private OssDao ossDao;
 
 // TODO remove
 //	private static boolean ossDaoIsInitialised=false; // TODO - may want this in the spring initialisation
@@ -195,7 +196,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	 * provides an interface to OpenNMS which provides a unified api 
 	 * @param ossDao the ossDao to set
 	 */
-	public void setossDao(OssDaoOpenNMSImpl _ossDao) {
+	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
 	}
 
@@ -428,7 +429,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 					OnmsAlarm updatedAlarm = ossDao.addCurrentAlarmForUniqueKey(alarm);
 					if (log.isDebugEnabled()) {
 						log.debug(logheader+": Created alarm:"
-								+ ossDao.alarmToString(updatedAlarm));
+								+ OssDaoOpenNMSImpl.alarmToString(updatedAlarm));
 					}
 				}
 				catch ( Exception ex ) {
@@ -514,13 +515,13 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 					try {
 						if (log.isDebugEnabled()) {
-							log.debug(logheader+": Alarm before update:"+ ossDao.alarmToString(alarm));
+							log.debug(logheader+": Alarm before update:"+ OssDaoOpenNMSImpl.alarmToString(alarm));
 						}
 						if (log.isDebugEnabled()) log.debug(logheader+": Updating Alarm using ossDao.updateCurrentAlarmForUniqueKey" );
 						OnmsAlarm updatedAlarm = ossDao.updateCurrentAlarmForUniqueKey(alarm);
 						if (log.isDebugEnabled()) {
 							log.debug(logheader+": Updated alarm:"
-									+ ossDao.alarmToString(updatedAlarm));
+									+ OssDaoOpenNMSImpl.alarmToString(updatedAlarm));
 						}
 					}
 					catch ( Exception ex ) {

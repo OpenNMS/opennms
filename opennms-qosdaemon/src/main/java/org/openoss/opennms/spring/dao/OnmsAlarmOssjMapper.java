@@ -58,14 +58,11 @@ import org.openoss.ossj.jvt.fm.monitor.OOSSProbableCause;
 
 public class OnmsAlarmOssjMapper {
 
-	private static final String LOG4J_CATEGORY = "OpenOSS.QoSD";
-
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
 	private static Logger getLog() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return (Logger)ThreadCategory.getInstance(QoSDrx.class);	
+		return (Logger)ThreadCategory.getInstance(OnmsAlarmOssjMapper.class);	
 	}
 
 	// pattern for recognising simple <HTML> tags ; 
