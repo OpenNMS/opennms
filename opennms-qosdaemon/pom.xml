@@ -171,6 +171,14 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <qosd.config.directory>${project.build.testOutputDirectory}</qosd.config.directory>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   

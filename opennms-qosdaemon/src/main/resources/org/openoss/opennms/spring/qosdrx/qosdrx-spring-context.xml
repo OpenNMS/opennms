@@ -6,9 +6,18 @@
 <!-- 
 	<import resource="applicationContext-dao.xml" />
  -->
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<property name="properties">
+			<props>
+				<prop key="qosd.config.directory">${opennms.home}/etc</prop>
+			</props>
+		</property>
+	</bean>
 	
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="file:${opennms.home}/etc/qosdrx.properties"/>
+	<bean id="propertyConfigurerRx" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="file:${qosd.config.directory}/qosdrx.properties"/>
 	</bean>
 
 	<bean id="QoSDrx" class="org.openoss.opennms.spring.qosdrx.QoSDrx">
@@ -61,7 +70,8 @@
 	</bean>	
 	
 	<bean id="QoSDrxAlarmEventReceiverEventHandler"
-	   class="org.openoss.opennms.spring.qosdrx.QoSDrxAlarmEventReceiverEventHandlerImpl2">
+	   class="org.openoss.opennms.spring.qosdrx.QoSDrxAlarmEventReceiverEventHandlerImpl2"
+	   depends-on="propertyConfigurerRx">
 	   <property name="alarmUpdateBehaviour" value="${org.openoss.opennms.qosdrx.alarmupdatebehaviour}" />
 	   <property name="nodeDao" ref="nodeDao" />
 	   <property name="alarmDao" ref="alarmDao" />
