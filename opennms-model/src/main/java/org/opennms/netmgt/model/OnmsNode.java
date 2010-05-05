@@ -653,37 +653,37 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     }
 
     public void mergeAgentAttributes(OnmsNode scannedNode) {
-        if (!hasNewValue(getSysContact(), scannedNode.getSysContact())) {
+        if (hasNewValue(scannedNode.getSysContact(), getSysContact())) {
         	setSysContact(scannedNode.getSysContact());
         }
        
-        if (!hasNewValue(getSysDescription(), scannedNode.getSysDescription())) {
+        if (hasNewValue(scannedNode.getSysDescription(), getSysDescription())) {
         	setSysDescription(scannedNode.getSysDescription());
         }
        
-        if (!hasNewValue(getSysLocation(), scannedNode.getSysLocation())) {
+        if (hasNewValue(scannedNode.getSysLocation(), getSysLocation())) {
         	setSysLocation(scannedNode.getSysLocation());
         }
        
-        if (!hasNewValue(getSysName(), scannedNode.getSysName())) {
+        if (hasNewValue(scannedNode.getSysName(), getSysName())) {
         	setSysName(scannedNode.getSysName());
         }
        
-        if (!hasNewValue(getSysObjectId(), scannedNode.getSysObjectId())) {
+        if (hasNewValue(scannedNode.getSysObjectId(), getSysObjectId())) {
         	setSysObjectId(scannedNode.getSysObjectId());
         }
     }
 
     public void mergeNodeAttributes(OnmsNode scannedNode) {
-        if (hasNewValue(getLabel(), scannedNode.getLabel())) {
+        if (hasNewValue(scannedNode.getLabel(), getLabel())) {
             setLabel(scannedNode.getLabel());
         }
     
-        if (hasNewValue(getForeignSource(), scannedNode.getForeignSource())) {
+        if (hasNewValue(scannedNode.getForeignSource(), getForeignSource())) {
             setForeignSource(scannedNode.getForeignSource());
         }
     
-        if (hasNewValue(getForeignId(), scannedNode.getForeignId())) {
+        if (hasNewValue(scannedNode.getForeignId(), getForeignId())) {
             setForeignId(scannedNode.getForeignId());
         }
         
