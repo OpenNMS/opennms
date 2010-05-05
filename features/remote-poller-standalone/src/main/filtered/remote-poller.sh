@@ -16,7 +16,7 @@ JAVA_CONF="$OPENNMS_HOME/etc/java.conf"
 
 MONITOR_JAR="$OPENNMS_HOME/bin/remote-poller.jar"
 RMI_PORT=1099
-JVM_ARGS="-Xmx384m -Dlog4j.logger=DEBUG"
+JVM_ARGS="-Xmx384m"
 EXTRA_ARGS=""
 
 if [ -f "$JAVA_CONF" ]; then
@@ -92,8 +92,8 @@ if [ "$REMOTE_URI" = "" ]; then
 fi
 
 #log_file="poll.log.`date '+%Y%m%d-%H%M%S'`"
-log_file="/tmp/poll.log"
-#log_file="/dev/null"
+#log_file="/tmp/poll.log"
+log_file="/dev/null"
 
 if [ -n "$REMOTE_USERNAME" ]; then
 	EXTRA_ARGS="$EXTRA_ARGS -n $REMOTE_USERNAME"
