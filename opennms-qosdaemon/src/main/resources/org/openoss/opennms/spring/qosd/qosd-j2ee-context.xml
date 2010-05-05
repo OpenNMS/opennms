@@ -47,11 +47,9 @@
 	</bean>
 
 	<bean id="eventIpcManager"
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		depends-on="eventIpcManager-init">
-		<property name="staticMethod"
-			value="org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager" />
-	</bean>
+		class="org.opennms.netmgt.eventd.EventIpcManagerFactory"
+		depends-on="eventIpcManager-init"
+		factory-method="getIpcManager"/>
 
 <!--
 	<bean id="alarmDao"
@@ -80,11 +78,9 @@
 	</bean>
 
 	<bean id="ossDao" 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		depends-on="ossDao-init">
-		<property name="staticMethod"
-			value="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton.getInstance" />
-	</bean>
+		class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton"
+		depends-on="ossDao-init"
+		factory-method="getInstance"/>
 	
 	<bean id="onmsAlarmOssjMapper"
 		class="org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper">
