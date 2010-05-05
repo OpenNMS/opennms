@@ -104,18 +104,13 @@ public class Linkd extends AbstractServiceDaemon {
 	private List<String> m_newSuspenctEventsIpAddr = null;
 	
 	public Linkd() {
-		super("OpenNMS.Linkd");
+		super(LOG4J_CATEGORY);
 	}
 
 	public static Linkd getInstance() {
 		return m_singleton;
 	}
 
-	public Category log() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return ThreadCategory.getInstance();
-	}
-	
 	protected void onInit() {
 
         Assert.state(m_queryMgr != null, "must set the queryManager property");
@@ -201,7 +196,7 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 	}
 	
-	public synchronized void onStart() {
+	protected synchronized void onStart() {
 
 		// start the scheduler
 		//
@@ -214,7 +209,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
-	public synchronized void onStop() {
+	protected synchronized void onStop() {
 
 		// Stop the scheduler
 		m_scheduler.stop();
@@ -225,11 +220,11 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
-	public synchronized void onPause() {
+	protected synchronized void onPause() {
 		m_scheduler.pause();
 	}
 
-	public synchronized void onResume() {
+	protected synchronized void onResume() {
 		m_scheduler.resume();
 	}
 
