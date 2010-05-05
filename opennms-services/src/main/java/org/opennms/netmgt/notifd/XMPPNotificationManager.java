@@ -29,13 +29,12 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 //
-/**
- * 
- */
+
 package org.opennms.netmgt.notifd;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
@@ -63,10 +62,9 @@ import org.opennms.netmgt.ConfigFileConstants;
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
-
 public class XMPPNotificationManager {
 
-	private Properties props = new Properties();
+	private final Properties props = new Properties();
 
 	private static final String LOG4J_CATEGORY = "OpenNMS.Notifd";
 
@@ -76,21 +74,21 @@ public class XMPPNotificationManager {
 
 	private static final String XMPP_PORT = "5222";
 
-	private static XMPPConnection xmpp = null;
+	private final XMPPConnection xmpp;
 
-	private static ConnectionConfiguration xmppConfig = null; 
+	private final ConnectionConfiguration xmppConfig; 
 
-	private String xmppServer;
+	private final String xmppServer;
 
-	private String xmppServiceName;
+	private final String xmppServiceName;
 	
-	private String xmppUser;
+	private final String xmppUser;
 
-	private String xmppPassword;
+	private final String xmppPassword;
 
-	private int xmppPort;
+	private final int xmppPort;
 
-	private HashMap<String, MultiUserChat> rooms;
+	private final HashMap<String, MultiUserChat> rooms = new HashMap<String, MultiUserChat>();
 
 	private static XMPPNotificationManager instance = null;
 
@@ -122,72 +120,77 @@ public class XMPPNotificationManager {
 	protected XMPPNotificationManager() {
 
 		// get the category logger
-		
+		String oldPrefix = ThreadCategory.getPrefix();
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		
-		// Load up some properties
 
-	    File config = null;
-	    try {
-	        config = ConfigFileConstants.getFile(ConfigFileConstants.XMPP_CONFIG_FILE_NAME);
-	    } catch (IOException e) {
-	        log().warn(ConfigFileConstants.XMPP_CONFIG_FILE_NAME + " not readable", e);
-	    }
-		if (Boolean.getBoolean("useSystemXMPPConfig") || !config.canRead()) {
-		    this.props = System.getProperties();
-		} else {
-		    FileInputStream fis = null;
-		    try {
-		        fis = new FileInputStream(config);
-		        this.props.load(fis);
-		    } catch (IOException e) {
-		        log().warn("unable to load " + config, e);
-		    } finally {
-		        IOUtils.closeQuietly(fis);
-		    }
+		try {
+			// Load up some properties
+
+			File config = null;
+			try {
+				config = ConfigFileConstants.getFile(ConfigFileConstants.XMPP_CONFIG_FILE_NAME);
+			} catch (IOException e) {
+				log().warn(ConfigFileConstants.XMPP_CONFIG_FILE_NAME + " not readable", e);
+			}
+			if (Boolean.getBoolean("useSystemXMPPConfig") || !config.canRead()) {
+				this.props.putAll(System.getProperties());
+			} else {
+				FileInputStream fis = null;
+				try {
+					fis = new FileInputStream(config);
+					this.props.load(fis);
+				} catch (FileNotFoundException e) {
+					log().warn("unable to load " + config, e);
+				} catch (IOException e) {
+					log().warn("unable to load " + config, e);
+				} finally {
+					IOUtils.closeQuietly(fis);
+				}
+			}
+
+			xmppServer = this.props.getProperty("xmpp.server");
+			xmppServiceName = this.props.getProperty("xmpp.servicename", xmppServer);
+			xmppUser = this.props.getProperty("xmpp.user");
+			xmppPassword = this.props.getProperty("xmpp.pass");
+			xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port", XMPP_PORT));
+
+			xmppConfig = new ConnectionConfiguration(xmppServer, xmppPort, xmppServiceName);
+
+			boolean debuggerEnabled = Boolean.parseBoolean(props.getProperty("xmpp.debuggerEnabled"));
+			xmppConfig.setDebuggerEnabled(debuggerEnabled);
+			if (debuggerEnabled) {
+				log().setLevel(Level.DEBUG);
+			}
+
+			xmppConfig.setSASLAuthenticationEnabled(Boolean.parseBoolean(props.getProperty("xmpp.SASLEnabled", "true")));
+			xmppConfig.setSelfSignedCertificateEnabled(Boolean.parseBoolean(props.getProperty("xmpp.selfSignedCertificateEnabled")));
+
+			if (Boolean.parseBoolean(props.getProperty("xmpp.TLSEnabled"))) {
+				xmppConfig.setSecurityMode(SecurityMode.enabled);
+			} else {
+				xmppConfig.setSecurityMode(SecurityMode.disabled);
+			}
+			if (this.props.containsKey("xmpp.truststorePassword")) {
+				xmppConfig.setTruststorePassword(this.props.getProperty("xmpp.truststorePassword"));
+			} else {
+				xmppConfig.setTruststorePassword(TRUST_STORE_PASSWORD);
+			}
+
+			if (log().isDebugEnabled()) {
+				log().debug("XMPP Manager connection config: " + xmppConfig.toString());
+			}
+
+			xmpp = new XMPPConnection(xmppConfig);
+
+			// Connect to xmpp server
+			connectToServer();
+		} finally {
+			ThreadCategory.setPrefix(oldPrefix);
 		}
-
-		xmppServer = this.props.getProperty("xmpp.server");
-		xmppServiceName = this.props.getProperty("xmpp.servicename", xmppServer);
-		xmppUser = this.props.getProperty("xmpp.user");
-		xmppPassword = this.props.getProperty("xmpp.pass");
-		xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port", XMPP_PORT));
-
-		xmppConfig = new ConnectionConfiguration(xmppServer, xmppPort, xmppServiceName);
-
-		boolean debuggerEnabled = Boolean.parseBoolean(props.getProperty("xmpp.debuggerEnabled"));
-		xmppConfig.setDebuggerEnabled(debuggerEnabled);
-		if (debuggerEnabled) {
-		    log().setLevel(Level.DEBUG);
-		}
-
-		xmppConfig.setSASLAuthenticationEnabled(Boolean.parseBoolean(props.getProperty("xmpp.SASLEnabled", "true")));
-		xmppConfig.setSelfSignedCertificateEnabled(Boolean.parseBoolean(props.getProperty("xmpp.selfSignedCertificateEnabled")));
-
-		if (Boolean.parseBoolean(props.getProperty("xmpp.TLSEnabled"))) {
-			xmppConfig.setSecurityMode(SecurityMode.enabled);
-		} else {
-		    xmppConfig.setSecurityMode(SecurityMode.disabled);
-		}
-		if (this.props.containsKey("xmpp.truststorePassword")) {
-			xmppConfig.setTruststorePassword(this.props.getProperty("xmpp.truststorePassword"));
-		} else {
-			xmppConfig.setTruststorePassword(TRUST_STORE_PASSWORD);
-		}
-
-		if (log().isDebugEnabled()) {
-		    log().debug("XMPP Manager connection config: " + xmppConfig.toString());
-		}
-
-        xmpp = new XMPPConnection(xmppConfig);
-
-        // Connect to xmpp server
-		connectToServer();
-
 	}
 
-    private void connectToServer() {
-        try {
+	private void connectToServer() {
+		try {
 			log().debug("Attempting vanilla XMPP Connection to " + xmppServer + ":" + xmppPort);
 			xmpp.connect();
 			if (xmpp.isConnected()) {
@@ -207,7 +210,7 @@ public class XMPPNotificationManager {
 		} catch (Exception e) {
 			log().fatal("XMPP Manager unable to connect", e);
 		}
-    }
+	}
 
     /**
      * Check if manager is logged in to xmpp server.
@@ -220,7 +223,7 @@ public class XMPPNotificationManager {
             if (xmpp.isConnected()) {
                 log().debug("XMPP Manager logging in");
                 xmpp.login(xmppUser, xmppPassword, XMPP_RESOURCE);
-                rooms = new HashMap<String, MultiUserChat>();
+                rooms.clear();
             } else {
                 log().debug("XMPP Manager unable to login: Not connected to XMPP server");
             }
@@ -297,7 +300,7 @@ public class XMPPNotificationManager {
 			groupChat = rooms.get(xmppChatRoom);
 		} else {
 			log().debug("Adding room: " + xmppChatRoom);
-            groupChat = new MultiUserChat(xmpp, xmppChatRoom);
+			groupChat = new MultiUserChat(xmpp, xmppChatRoom);
 			rooms.put(xmppChatRoom, groupChat);
 		}
 
@@ -324,6 +327,6 @@ public class XMPPNotificationManager {
 	}
 	
 	protected Category log() {
-    	return ThreadCategory.getInstance();
-    }
+		return ThreadCategory.getInstance(this.getClass());
+	}
 }

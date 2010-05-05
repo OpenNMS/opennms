@@ -269,7 +269,7 @@ final class TcpServer implements Runnable {
                 }
 
                 log().debug("The socket has been closed");
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().warn("An exception occured closing the socket: " + e, e);
             }
 
