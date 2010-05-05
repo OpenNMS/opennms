@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<snmp-config port="163" retry="3" timeout="800"
+             read-community="public" 
+             version="v1" 
+             max-vars-per-pdu="10" >
+             
+    <definition version="v1" proxy-host="127.0.0.1" read-community="public" retry="3" timeout="800" max-vars-per-pdu="10" port="9161">
+        <specific>192.168.255.22</specific>
+    </definition>
+    
+    <definition version="v1" proxy-host="127.0.0.1" read-community="public" retry="3" timeout="800" max-vars-per-pdu="10" port="9163">
+        <specific>192.168.255.40</specific>
+    </definition>
+
+</snmp-config>
+
