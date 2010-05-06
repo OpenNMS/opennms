@@ -189,7 +189,7 @@
     <dependency>
       <groupId>net.simon04.jelementtree</groupId>
       <artifactId>jelementtree</artifactId>
-      <version>20100325</version>
+      <version>20100506</version>
     </dependency>
 
     <!-- technically for testing (making a full war)... -->
