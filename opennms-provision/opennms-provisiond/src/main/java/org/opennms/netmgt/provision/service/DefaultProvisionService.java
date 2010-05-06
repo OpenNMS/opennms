@@ -64,6 +64,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -726,5 +727,25 @@ public class DefaultProvisionService implements ProvisionService {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args));
         }
+    }
+
+    @Transactional
+    public OnmsIpInterface setPrimaryInterfaceIfNoneSet(OnmsMonitoredService detachedSvc) {
+        
+        OnmsMonitoredService svc = m_monitoredServiceDao.get(detachedSvc.getId());
+        OnmsIpInterface svcIface = svc.getIpInterface();
+        OnmsIpInterface primaryIface = null;
+        if (svcIface.isPrimary()) {
+            primaryIface = svcIface;
+        } 
+        
+        if (svcIface.getNode().getPrimaryInterface() == null) {
+            svcIface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+            m_ipInterfaceDao.saveOrUpdate(svcIface);
+            primaryIface= svcIface;
+        }
+        
+        m_ipInterfaceDao.initialize(primaryIface);
+        return primaryIface;
     }
 }

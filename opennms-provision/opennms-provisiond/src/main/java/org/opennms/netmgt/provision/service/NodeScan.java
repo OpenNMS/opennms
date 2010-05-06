@@ -60,6 +60,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -70,7 +71,6 @@ import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
@@ -83,27 +83,28 @@ public class NodeScan implements Runnable {
     private Integer m_nodeId;
     private String m_foreignSource;
     private String m_foreignId;
+    private Date m_scanStamp;
     private ProvisionService m_provisionService;
     private EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_agentConfigFactory;
     private DefaultTaskCoordinator m_taskCoordinator;
-    private LifeCycleRepository m_lifeCycleRepository;
 
     
     //NOTE TO SELF: This is referenced from the AgentScan inner class
     private boolean m_aborted = false;
     
     private OnmsNode m_node;
+    private boolean m_agentFound = false;
 
-    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, EventForwarder eventForwarder, SnmpAgentConfigFactory agentConfigFactory, DefaultTaskCoordinator taskCoordinator, LifeCycleRepository lifeCycleRepository) {
+    public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, EventForwarder eventForwarder, SnmpAgentConfigFactory agentConfigFactory, DefaultTaskCoordinator taskCoordinator) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
+        m_scanStamp = new Date();
         m_provisionService = provisionService;
         m_eventForwarder = eventForwarder;
         m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
-        m_lifeCycleRepository = lifeCycleRepository;
     }
     
     public String getForeignSource() {
@@ -121,6 +122,26 @@ public class NodeScan implements Runnable {
     public OnmsNode getNode() {
         return m_node;
     }
+    
+    /**
+     * @param agentFound the agentFound to set
+     */
+    private void setAgentFound(boolean agentFound) {
+        m_agentFound = agentFound;
+    }
+
+    /**
+     * @return the agentFound
+     */
+    private boolean isAgentFound() {
+        return m_agentFound;
+    }
+
+    public Date getScanStamp() {
+        return m_scanStamp;
+    }
+
+
 
     /**
      * @return the provisionService
@@ -164,12 +185,17 @@ public class NodeScan implements Runnable {
             SequenceTask sequence = m_taskCoordinator.createSequence().add(
                     new RunInBatch() {
                         public void run(BatchTask phase) {
-                            doLoadNode(phase);
+                            loadNode(phase);
                         }
                     },
                     new RunInBatch() {
                         public void run(BatchTask phase) {
                             detectAgents(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            handleAgentUndetected(phase);
                         }
                     },
                     new RunInBatch() {
@@ -190,16 +216,22 @@ public class NodeScan implements Runnable {
         }
     }
     
+
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
         ScheduledFuture<?> future = executor.scheduleWithFixedDelay(this, schedule.getInitialDelay().getMillis(), schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
         return future;
     }
 
-    public void doLoadNode(BatchTask loadNode) {
+    public void loadNode(BatchTask loadNode) {
         m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
         if (m_node == null) {
             abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
+        } else {
+            for(OnmsIpInterface iface : m_node.getIpInterfaces()) {
+                loadNode.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress()));
+            }
         }
+        
     }
 
     public AgentScan createAgentScan(InetAddress agentAddress, String agentType) {
@@ -285,31 +317,31 @@ public class NodeScan implements Runnable {
             if (!isAborted()) { 
                 SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
                 Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
-        
+
                 // mark all provisioned interfaces as 'in need of scanning' so we can mark them
                 // as scanned during ipAddrTable processing
                 final Set<String> provisionedIps = new HashSet<String>();
                 for(OnmsIpInterface provisioned : getNode().getIpInterfaces()) {
                     provisionedIps.add(provisioned.getIpAddress());
                 }
-        
-        
+
+
                 final IPInterfaceTableTracker ipIfTracker = new IPInterfaceTableTracker() {
                     @Override
                     public void processIPInterfaceRow(IPInterfaceRow row) {
                         System.out.println("Processing row with ipAddr "+row.getIpAddress());
                         if (!row.getIpAddress().startsWith("127.0.0")) {
-        
+
                             // mark any provisioned interface as scanned
                             provisionedIps.remove(row.getIpAddress());
-        
+
                             // save the interface
                             OnmsIpInterface iface = row.createInterfaceFromRow();
                             iface.setIpLastCapsdPoll(getScanStamp());
-        
+
                             // add call to the ip interface is managed policies
                             iface.setIsManaged("M");
-        
+
                             List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource());
         
                             for(IpInterfacePolicy policy : policies) {
@@ -420,9 +452,6 @@ public class NodeScan implements Runnable {
 
         public void collectNodeInfo(BatchTask currentPhase)  {
             
-            Date scanStamp = new Date();
-            setScanStamp(scanStamp);
-            
             InetAddress primaryAddress = getAgentAddress();
             SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(primaryAddress);
             Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
@@ -512,8 +541,6 @@ public class NodeScan implements Runnable {
         void stampProvisionedInterfaces(BatchTask phase) {
             if (!isAborted()) { 
             
-                setScanStamp(new Date());
-            
                 for(OnmsIpInterface iface : getNode().getIpInterfaces()) {
                     iface.setIpLastCapsdPoll(getScanStamp());
             
@@ -552,17 +579,12 @@ public class NodeScan implements Runnable {
     
     public class BaseAgentScan {
 
-        private Date m_scanStamp;
         private OnmsNode m_node;
         private Integer m_nodeId;
         
         private BaseAgentScan(Integer nodeId, OnmsNode node) {
             m_nodeId = nodeId;
             m_node = node;
-        }
-
-        public void setScanStamp(Date scanStamp) {
-            m_scanStamp = scanStamp;
         }
 
         public Date getScanStamp() {
@@ -658,12 +680,16 @@ public class NodeScan implements Runnable {
                 .toString();
         }
 
-        public Callback<Boolean> servicePersister(final String serviceName) {
+        public Callback<Boolean> servicePersister(final ContainerTask<?> currentPhase, final String serviceName) {
             return new Callback<Boolean>() {
                 public void complete(Boolean serviceDetected) {
                     infof(IpInterfaceScan.this, "Attempted to detect service %s on address %s: %s", serviceName, getAddress().getHostAddress(), serviceDetected);
                     if (serviceDetected) {
-                        getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
+                        OnmsMonitoredService svc = getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
+                        
+                        if ("SNMP".equals(serviceName)) {
+                            OnmsIpInterface primaryIface = getProvisionService().setPrimaryInterfaceIfNoneSet(svc);
+                        }
                     }
                 }
                 public void handleException(Throwable t) {
@@ -705,15 +731,15 @@ public class NodeScan implements Runnable {
         }
 
         private Task createAsyncDetectorTask(ContainerTask<?> currentPhase, AsyncServiceDetector asyncDetector) {
-            return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector), servicePersister(asyncDetector.getServiceName()));
+            return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector), servicePersister(currentPhase, asyncDetector.getServiceName()));
         }
 
         private Task createSyncDetectorTask(ContainerTask<?> currentPhase, SyncServiceDetector syncDetector) {
-            return currentPhase.getCoordinator().createTask(currentPhase, runDetector(syncDetector, servicePersister(syncDetector.getServiceName())));
+            return currentPhase.getCoordinator().createTask(currentPhase, runDetector(syncDetector, servicePersister(currentPhase, syncDetector.getServiceName())));
         }
 
         public void run(ContainerTask<?> currentPhase) {
-            
+
             Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource());
             
             debugf(this, "detectServices for %d : %s: found %d detectors", getNodeId(), getAddress().getHostAddress(), detectors.size());
@@ -733,30 +759,34 @@ public class NodeScan implements Runnable {
             .append("node id", m_nodeId)
             .append("aborted", m_aborted)
             .append("provision service", m_provisionService)
-            .append("lifecycle repository", m_lifeCycleRepository)
             .toString();
     }
 
-    @Activity( lifecycle = "nodeScan", phase = "detectAgents" )
+
     public void detectAgents(BatchTask currentPhase) {
         
-        boolean foundAgent = false;
-    
         if (!isAborted()) {
             OnmsIpInterface primaryIface = getNode().getPrimaryInterface();
             if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-                // Make AgentScan a NeedContainer class and have that call run
-                currentPhase.add(createAgentScan(primaryIface.getInetAddress(), "SNMP"));
-                foundAgent = true;
-            }
-            
-            if (!foundAgent) {
-                currentPhase.add(createNoAgentScan());
+                onAgentFound(currentPhase, primaryIface);
             }
         }
     }
+    
+    public void handleAgentUndetected(BatchTask currentPhase) {
+        
+        if (!isAgentFound()) {
+            currentPhase.add(createNoAgentScan());
+        }
+        
+    }
 
-    @Activity( lifecycle = "nodeScan", phase = "scanCompleted" )
+    private void onAgentFound(ContainerTask<?> currentPhase, OnmsIpInterface primaryIface) {
+        // Make AgentScan a NeedContainer class and have that call run
+        currentPhase.add(createAgentScan(primaryIface.getInetAddress(), "SNMP"));
+        setAgentFound(true);
+    }
+
     public void scanCompleted(BatchTask currentPhase) {
         if (!isAborted()) {
             EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond");

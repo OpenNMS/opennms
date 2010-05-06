@@ -11,26 +11,6 @@
   <tx:annotation-driven />
   <context:annotation-config/>
   
-  <context:property-placeholder location="file:${opennms.home}/etc/model-importer.properties" />
-
-<!-- 
-  <bean id="importThreads" class="java.lang.Integer">
-    <constructor-arg><value>${importer.importThreads}</value></constructor-arg>
-  </bean>
-  
-  <bean id="scanThreads" class="java.lang.Integer">
-    <constructor-arg><value>${importer.scanThreads}</value></constructor-arg>
-  </bean>
-  
-  <bean id="writeThreads" class="java.lang.Integer">
-    <constructor-arg><value>${importer.writeThreads}</value></constructor-arg>
-  </bean>
-  
-  <bean id="rescanThreads" class="java.lang.Integer">
-    <constructor-arg><value>10</value></constructor-arg>
-  </bean>
--->
-  
   <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
   </bean>
@@ -107,6 +87,7 @@
                     </list>
                 </constructor-arg>
             </bean>
+<!--
             <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
                 <constructor-arg value="nodeScan" />
                 <constructor-arg>
@@ -117,7 +98,6 @@
                     </list>
                 </constructor-arg>
             </bean>
-<!--
             <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
                 <constructor-arg value="agentScan" />
                 <constructor-arg>

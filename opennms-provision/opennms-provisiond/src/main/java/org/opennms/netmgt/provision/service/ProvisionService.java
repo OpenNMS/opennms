@@ -210,5 +210,7 @@ public interface ProvisionService {
     @Transactional
     public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
 
+    public abstract OnmsIpInterface setPrimaryInterfaceIfNoneSet(OnmsMonitoredService svc);
+
 
 }
