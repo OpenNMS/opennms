@@ -38,6 +38,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.NotificationCriteria.BaseNotificationCriteriaVisitor;
@@ -110,7 +111,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
                 criteria.visit(new BaseNotificationCriteriaVisitor<SQLException>(){
                     @Override
                     public void visitFilter(org.opennms.web.filter.Filter filter) throws SQLException{
-                        System.out.println("filter sql: " + filter.getSql());
+                        LogUtils.infof(this, "filter sql: " + filter.getSql());
                         paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });
