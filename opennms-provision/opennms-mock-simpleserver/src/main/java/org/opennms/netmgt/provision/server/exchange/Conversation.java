@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 public class Conversation {    
@@ -78,7 +79,7 @@ public class Conversation {
            try { 
                 if(m_conversation.size() == 0) { return; }
                 String line  = in.readLine();
-                System.out.println("Server line read: " + line);
+                LogUtils.infof(this, "Server line read: " + line);
                 
                 if(line == null) {
                     return;
@@ -110,11 +111,11 @@ public class Conversation {
             if(!ex.processResponse(in)) {
                return false; 
             }
-            System.out.println("processed response successfully");
+            LogUtils.infof(this, "processed response successfully");
             if(!ex.sendRequest(out)) {
                 return false;
             }
-            System.out.println("send request if there was a request");
+            LogUtils.infof(this, "send request if there was a request");
         }
         
         return true;

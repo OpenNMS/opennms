@@ -2,6 +2,8 @@ package org.opennms.netmgt.provision.detector.simple.response;
 
 import java.util.regex.Pattern;
 
+import org.opennms.core.utils.LogUtils;
+
 
 
 public class HttpStatusResponse extends LineOrientedResponse {
@@ -19,7 +21,7 @@ public class HttpStatusResponse extends LineOrientedResponse {
         String codeStr = Integer.toString(maxRetCode);
         String[] codeArray = codeStr.split("");
         if(codeArray.length < 3) {
-            throw new Exception("Max Ret Code is too Short");
+            throw new IllegalArgumentException("Maximum HTTP return code is too short, must be at least 3 digits");
         }
         String REGEX = String.format("([H][T][T][P+]/[1].[0-1]) ([0-%s][0-2][0-%s]) ([a-zA-Z ]+)", codeArray[1], codeArray[3]);
         
@@ -27,7 +29,7 @@ public class HttpStatusResponse extends LineOrientedResponse {
             REGEX = "([H][T][T][P+]/[1].[0-1]) ([0-6]+) ([a-zA-Z ]+)";
         }
         
-        System.out.printf("REGEX: %s\n", REGEX);
+        LogUtils.infof(this, "HTTP status regex: %s\n", REGEX);
         return Pattern.matches(REGEX, getResponse().trim());
     }
 
