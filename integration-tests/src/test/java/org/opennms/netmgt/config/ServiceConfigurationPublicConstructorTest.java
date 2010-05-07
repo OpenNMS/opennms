@@ -51,6 +51,11 @@ import org.opennms.test.PublicConstructorTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+/**
+ * This class uses the ServiceConfigFactory to fetch the list of reflection-instantiated
+ * classes that are started by the OpenNMS daemon process. It inspects each class to make
+ * sure that it has a public constructor so that OpenNMS startup will work properly. 
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
 	OpenNMSConfigurationExecutionListener.class

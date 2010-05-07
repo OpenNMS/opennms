@@ -38,6 +38,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+/**
+ * This JUnit test simply checks for public constructors on the list of classes
+ * that are returned by the {@link #getClasses()} method.
+ * 
+ * @author Seth
+ */
 public abstract class PublicConstructorTest {
 	@Test
 	public void testPublicConstructors() throws NoSuchMethodException, Exception {
@@ -53,5 +59,9 @@ public abstract class PublicConstructorTest {
 		}
 	}
 
+	/**
+	 * This method should return a list of classes that you wish to inspect for public
+	 * constructors.
+	 */
 	protected abstract List<Class<? extends Object>> getClasses() throws Exception;
 }
