@@ -44,6 +44,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
@@ -54,14 +55,16 @@ import org.opennms.netmgt.passive.PassiveStatusKeeper;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class PassiveStatusd implements PassiveStatusdMBean {
-    public final static String LOG4J_CATEGORY = "OpenNMS.PassiveStatus";
+public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStatusdMBean {
 
-    public void init() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    protected PassiveStatusd() {
+        super(NAME);
+    }
 
-        Category log = ThreadCategory.getInstance();
+    public final static String NAME = "OpenNMS.PassiveStatus";
+
+    protected void onInit() {
+        Category log = ThreadCategory.getInstance(this.getClass());
         try {
             DataSourceFactory.init();
         } catch (MarshalException e) {
@@ -88,47 +91,19 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         keeper.init();
     }
 
-    public void start() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
+    protected void onStart() {
         getPassiveStatusKeeper().start();
     }
 
-    public void stop() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
+    protected void onStop() {
         getPassiveStatusKeeper().stop();
     }
 
     public int getStatus() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
         return getPassiveStatusKeeper().getStatus();
     }
 
-    public String status() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
-    public String getStatusText() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
     private PassiveStatusKeeper getPassiveStatusKeeper() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
         return PassiveStatusKeeper.getInstance();
     }
-
-
 }
