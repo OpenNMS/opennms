@@ -68,11 +68,13 @@ public class JasperReportService implements ReportService {
 
     private JasperReportConfigDao m_jasperReportConfigDao;
 
-    private Category log;
+    private final Category log;
 
     public JasperReportService() {
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(JasperReportService.class);
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     public List<ReportFormat> getFormats(String reportId) {
