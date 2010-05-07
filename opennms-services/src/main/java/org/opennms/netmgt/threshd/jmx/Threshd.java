@@ -35,26 +35,25 @@ package org.opennms.netmgt.threshd.jmx;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 
-public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
-
-    public Threshd() {
-        super(NAME);
-    }
-
+public class Threshd implements ThreshdMBean {
     /**
      * Log4j category
      */
-    private final static String NAME = "OpenNMS.Threshd";
+    private final static String LOG4J_CATEGORY = "OpenNMS.Threshd";
 
-    protected void onInit() {
+    public void init() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        
         // Load threshd configuration file
         //
         try {
@@ -93,19 +92,46 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
         getInstance().init();
     }
 
+    private Category log() {
+        return ThreadCategory.getInstance();
+    }
+
     private org.opennms.netmgt.threshd.Threshd getInstance() {
         return org.opennms.netmgt.threshd.Threshd.getInstance();
     }
 
-    protected void onStart() {
+    public void start() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         getInstance().start();
     }
 
-    protected void onStop() {
+    public void stop() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         getInstance().stop();
     }
 
     public int getStatus() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         return getInstance().getStatus();
+    }
+
+    public String status() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    public String getStatusText() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 }

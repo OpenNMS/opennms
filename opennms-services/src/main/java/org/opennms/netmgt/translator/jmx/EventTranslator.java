@@ -44,7 +44,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventTranslatorConfigFactory;
-import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
@@ -55,16 +54,16 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
-public class EventTranslator extends AbstractServiceDaemon implements EventTranslatorMBean {
+public class EventTranslator implements EventTranslatorMBean {
 
-    protected EventTranslator() {
-        super(NAME);
-    }
+    public final static String LOG4J_CATEGORY = "OpenNMS.EventTranslator";
 
-    public final static String NAME = "OpenNMS.EventTranslator";
+    public void init() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-    protected void onInit() {
-        Category log = ThreadCategory.getInstance(this.getClass());
+
+        Category log = ThreadCategory.getInstance();
         try {
             DataSourceFactory.init();
             EventTranslatorConfigFactory.init();
@@ -98,19 +97,47 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
         keeper.init();
     }
 
-    protected void onStart() {
+    public void start() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         getEventTranslator().start();
     }
 
-    protected void onStop() {
+    public void stop() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         getEventTranslator().stop();
     }
 
     public int getStatus() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         return getEventTranslator().getStatus();
     }
 
+    public String status() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    public String getStatusText() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
     private org.opennms.netmgt.translator.EventTranslator getEventTranslator() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         return org.opennms.netmgt.translator.EventTranslator.getInstance();
     }
+
+
 }
