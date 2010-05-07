@@ -35,26 +35,20 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
+
 /**
  * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  * 
  */
-public interface UdpEventReceiverMBean {
-    void init();
-
+public interface UdpEventReceiverMBean extends BaseOnmsMBean {
     void destroy();
-
-    void start();
-
-    void stop();
 
     void setPort(Integer port);
 
     Integer getPort();
-
-    int getStatus();
 
     void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
 

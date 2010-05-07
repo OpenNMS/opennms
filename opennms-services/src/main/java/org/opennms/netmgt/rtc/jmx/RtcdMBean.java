@@ -34,16 +34,7 @@
 
 package org.opennms.netmgt.rtc.jmx;
 
-public interface RtcdMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    int getStatus();
-
-    String status();
-
-    String getStatusText();
+public interface RtcdMBean extends BaseOnmsMBean {
 }

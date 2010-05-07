@@ -37,13 +37,7 @@
 //
 package org.opennms.netmgt.passive.jmx;
 
-public interface PassiveStatusdMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    String status();
-
+public interface PassiveStatusdMBean extends BaseOnmsMBean {
 }

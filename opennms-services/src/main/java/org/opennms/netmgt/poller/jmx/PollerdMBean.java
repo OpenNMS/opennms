@@ -36,16 +36,7 @@
 
 package org.opennms.netmgt.poller.jmx;
 
-public interface PollerdMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    int getStatus();
-
-    String status();
-
-    String getStatusText();
+public interface PollerdMBean extends BaseOnmsMBean {
 }

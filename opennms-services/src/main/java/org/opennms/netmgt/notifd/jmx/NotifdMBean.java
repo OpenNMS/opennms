@@ -34,16 +34,7 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
-public interface NotifdMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    int getStatus();
-
-    String status();
-
-    String getStatusText();
+public interface NotifdMBean extends BaseOnmsMBean {
 }
