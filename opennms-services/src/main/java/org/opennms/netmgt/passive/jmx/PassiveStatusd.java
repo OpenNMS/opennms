@@ -57,7 +57,7 @@ import org.opennms.netmgt.passive.PassiveStatusKeeper;
  */
 public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStatusdMBean {
 
-    protected PassiveStatusd() {
+    public PassiveStatusd() {
         super(NAME);
     }
 

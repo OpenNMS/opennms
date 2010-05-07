@@ -57,7 +57,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  */
 public class EventTranslator extends AbstractServiceDaemon implements EventTranslatorMBean {
 
-    protected EventTranslator() {
+    public EventTranslator() {
         super(NAME);
     }
 
