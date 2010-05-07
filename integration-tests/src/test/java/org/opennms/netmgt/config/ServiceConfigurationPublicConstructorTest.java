@@ -1,21 +1,14 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * Modifications:
- *
- * 2008 Oct 24: Eliminate warnings when using Readers. - dj@opennms.org
- * 2008 Jun 05: Add discovery-configuration.xml as an example. - dj@opennms.org
- * 2008 Jan 25: Add Hyperic tests and test for subdirectories in examples. - dj@opennms.org
- * 2007 Aug 03: Created this file. - dj@opennms.org
- *
- * Copyright (C) 2007 Daniel J. Gregor, Jr.  All rights reserved.
+ * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +47,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
  * This class uses the ServiceConfigFactory to fetch the list of reflection-instantiated
  * classes that are started by the OpenNMS daemon process. It inspects each class to make
- * sure that it has a public constructor so that OpenNMS startup will work properly. 
+ * sure that it has a public constructor so that OpenNMS startup will work properly.
+ * 
+ * @author Seth
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
