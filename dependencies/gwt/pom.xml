@@ -46,13 +46,6 @@
       <artifactId>gwteventservice</artifactId>
       <version>1.1.1</version>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.gwtopenmaps.openlayers</groupId>
-      <artifactId>gwt-openlayers</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
--->
   </dependencies>
   <repositories>
     <repository>

@@ -37,7 +37,7 @@ function removeGwtModuleFiles() {
 }
 
 function removeGwtFiles() {
-    removeGwtModuleFiles org.opennms.features.poller.remote.gwt.client.Application
+    removeGwtModuleFiles RemotePollerMap
 
     rm -f src/main/webapp/*.cache.*
     rm -f src/main/webapp/*.nocache.*

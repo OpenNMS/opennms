@@ -31,6 +31,8 @@ import com.googlecode.gwtmapquest.transaction.MQAPoi;
 import com.googlecode.gwtmapquest.transaction.MQAPoint;
 import com.googlecode.gwtmapquest.transaction.MQARectLL;
 import com.googlecode.gwtmapquest.transaction.MQATileMap;
+import com.googlecode.gwtmapquest.transaction.event.MoveEndEvent;
+import com.googlecode.gwtmapquest.transaction.event.MoveEndHandler;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndEvent;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
 
@@ -75,17 +77,18 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         m_map = MQATileMap.newInstance(getMapHolder().getElement());
         
         initializeMap();
-        
+
+        m_map.addMoveEndHandler(new MoveEndHandler() {
+            public void onMoveEnd(final MoveEndEvent event) {
+                m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
+            }
+        });
         m_map.addZoomEndHandler(new ZoomEndHandler() {
-            
             public void onZoomEnd(ZoomEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
-                
             }
         });
     }
-    
-    
 
     @Override
     protected void onLoad() {

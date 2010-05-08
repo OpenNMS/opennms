@@ -59,14 +59,6 @@
         <version>7.0.1.v20091125</version>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
-<!--
-          <connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>${web.port}</port>
-              <maxIdleTime>60000</maxIdleTime>
-            </connector>
-          </connectors>
--->
           <systemProperties>
             <systemProperty>
               <name>log4j.configuration</name>
@@ -145,13 +137,19 @@
     <dependency>
       <groupId>com.google.code</groupId>
       <artifactId>gwt-mapquest</artifactId>
-      <version>1.1</version>
+      <version>1.2-20100507</version>
       <exclusions>
       	<exclusion>
       		<groupId>com.google.gwt</groupId>
       		<artifactId>gwt-user</artifactId>
       	</exclusion>
       </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gwtopenmaps.openlayers</groupId>
+      <artifactId>openlayers_gwt</artifactId>
+      <version>0.5-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -252,5 +250,22 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+      <id>openlayers-repo</id>
+      <name>OpenLayers Repository</name>
+      <url>http://repo.logical-analytics.co.uk/artifactory/repo</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+  </repositories>
 
 </project>
