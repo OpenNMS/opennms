@@ -283,8 +283,8 @@ Comparable<OnmsMonitoredService> {
     @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
                name="application_service_map",
-               joinColumns={@JoinColumn(name="ifserviceid")},
-               inverseJoinColumns={@JoinColumn(name="appid")}
+               joinColumns={@JoinColumn(name="ifserviceid", referencedColumnName="id", table="applications")},
+               inverseJoinColumns={@JoinColumn(name="appid", referencedColumnName="id", table="ifservices")}
     )
     public Set<OnmsApplication> getApplications() {
         return m_applications;

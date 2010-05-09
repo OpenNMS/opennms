@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-SNAPSHOT</version>
+    <version>1.7.11-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
@@ -272,6 +272,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jcommon</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
@@ -287,7 +292,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>openldap</groupId>
+      <groupId>com.novell.ldap</groupId>
       <artifactId>jldap</artifactId>
       <scope>compile</scope>
     </dependency>

@@ -84,7 +84,7 @@
     </table>
     
     <c:if test="${isAdmin}">
-      <script language="Javascript" type="text/javascript" >
+      <script type="text/javascript" >
           function confirmDelete() {
               if (confirm("Are you sure you want to proceed? This action will permanently delete all data for this location monitor in the database and cannot be undone.")) {
                   document.deleteForm.submit();

@@ -36,8 +36,6 @@ package org.opennms.netmgt.notifd.jmx;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
@@ -46,74 +44,76 @@ import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
-public class Notifd implements NotifdMBean {
+public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * Logging category for log4j
      */
     private static String LOG4J_CATEGORY = "OpenNMS.Notifd";
 
-    public void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(getClass());
+    public Notifd() {
+        super(LOG4J_CATEGORY);
+    }
 
+    protected void onInit() {
         EventIpcManagerFactory.init();
 
         try {
             NotifdConfigFactory.init();
         } catch (Throwable t) {
-            log.error("start: Failed to init NotifdConfigFactory.", t);
+            log().error("start: Failed to init NotifdConfigFactory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
         try {
             NotificationFactory.init();
         } catch (Throwable t) {
-            log.error("start: Failed to init NotificationFactory.", t);
+            log().error("start: Failed to init NotificationFactory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
         try {
             DataSourceFactory.init();
         } catch (Throwable t) {
-            log.error("start: Failed to init database connection factory.", t);
+            log().error("start: Failed to init database connection factory.", t);
             throw new UndeclaredThrowableException(t);
         }
 
         try {
             GroupFactory.init();
         } catch (Throwable t) {
-            log.error("start: Failed to init group factory.", t);
+            log().error("start: Failed to init group factory.", t);
             throw new UndeclaredThrowableException(t);
         }
 
         try {
             UserFactory.init();
         } catch (Throwable t) {
-            log.error("start: Failed to init user factory.", t);
+            log().error("start: Failed to init user factory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
         try {
             DestinationPathFactory.init();
         } catch (Throwable t) {
-            log.error("start: Failed to init destination path factory.", t);
+            log().error("start: Failed to init destination path factory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
         try {
             NotificationCommandFactory.init();
         } catch (Throwable t) {
-            log.error("start: Failed to init notification command factory.", t);            
+            log().error("start: Failed to init notification command factory.", t);
             throw new UndeclaredThrowableException(t);
         }
 
         try {
             PollOutagesConfigFactory.init();
         } catch (Throwable t) {
-            log.error("start: Failed to init poll outage config factory.", t);
+            log().error("start: Failed to init poll outage config factory.", t);
             throw new UndeclaredThrowableException(t);
         }
         
@@ -127,40 +127,28 @@ public class Notifd implements NotifdMBean {
         getNotifd().setPollOutagesConfigManager(PollOutagesConfigFactory.getInstance());
         getNotifd().setNodeDao(new NodeDaoHibernate());
         getNotifd().init();
-        
     }
 
     /**
-     * @return
+     * @return Notifd instance
      */
     private org.opennms.netmgt.notifd.Notifd getNotifd() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
         return org.opennms.netmgt.notifd.Notifd.getInstance();
     }
 
-    public void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    protected void onStart() {
         getNotifd().start();
     }
 
-    public void stop() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    protected void onStop() {
         getNotifd().stop();
     }
 
+    /**
+     * Override {@link AbstractServiceDaemon#getStatus()} to use the status of
+     * the {@link org.opennms.netmgt.notifd.Notifd} instance. 
+     */
     public int getStatus() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
         return getNotifd().getStatus();
-    }
-
-    public String status() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
-    public String getStatusText() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 }

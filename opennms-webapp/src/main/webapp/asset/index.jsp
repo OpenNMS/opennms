@@ -83,7 +83,7 @@
   <div class="TwoColLeft">
     <h3>Search Asset Information</h3>
     <div class="boxWrapper">
-      <form action="asset/nodelist.jsp" method="GET">
+      <form action="asset/nodelist.jsp" method="get">
         <p align="right">Assets in category: 
         <input type="hidden" name="column" value="category" />
         <select name="searchvalue" size="1">

@@ -70,7 +70,7 @@
     <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
 
-<script language="javascript">
+<script type="text/javascript">
 
 function checkIpAddress(ip){
 	var ipArr = ip.split(".");
@@ -181,7 +181,7 @@ function doCommand(){
       <td align="left">
         <table >
           <tr>
-            <td>Ip Address: </td>
+            <td>IP Address: </td>
 	    <td><select id="address" name="address">
 	<%
     String ipAddress = null;              

@@ -79,17 +79,12 @@ public class LoadNodesController implements Controller {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-		String like = request.getParameter("like");
-		log.debug("Loading Nodes like "+like );
+		log.debug("Loading Nodes" );
 		
 		String user = request.getRemoteUser();
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-			VElementInfo[] elemInfos = null;
-			if(like==null)
-				elemInfos = manager.getAllElementInfo();
-			else elemInfos = manager.getElementInfoLike(like);
-			bw.write(ResponseAssembler.getLoadNodesResponse(MapsConstants.LOADNODES_ACTION, elemInfos));
+			bw.write(ResponseAssembler.getLoadNodesResponse(manager.getElementInfo()));
 		} catch (Exception e) {
 			log.error("Error while loading visible maps for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADNODES_ACTION));

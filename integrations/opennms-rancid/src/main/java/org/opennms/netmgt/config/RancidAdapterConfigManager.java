@@ -37,6 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,6 +63,7 @@ import org.opennms.netmgt.config.rancid.adapter.IncludeRange;
 import org.opennms.netmgt.config.rancid.adapter.PolicyManage;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.Schedule;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
@@ -82,7 +84,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @throws ValidationException
      * @throws IOException
      */
-   public RancidAdapterConfigManager(Reader reader,String serverName, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+   public RancidAdapterConfigManager(InputStream reader,String serverName, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = serverName;
         m_verifyServer = verifyServer;
         reloadXML(reader);
@@ -125,8 +127,8 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      }
     
 
-    protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (RancidConfiguration) Unmarshaller.unmarshal(RancidConfiguration.class, reader);
+    protected synchronized void reloadXML(InputStream reader) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(RancidConfiguration.class, reader);
         createPolicyNamePkgMap();
         createUrlIpMap();
         createPackageIpListMap();

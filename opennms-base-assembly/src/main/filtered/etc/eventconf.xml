@@ -718,10 +718,10 @@
       &lt;/p&gt;
       &lt;p&gt;Params %parm[all]% &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>Operational status Down: interface: ifname=%parm[snmpifname]% ifindex=%parm[snmpifindex]% ifdescr=%parm[snmpifdescr]%
+    <logmsg dest='logndisplay'>Operational status Down on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
     </logmsg>
     <severity>Minor</severity>
-        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/snmp/interfaceAdminDown</uei>
@@ -732,10 +732,10 @@
       &lt;/p&gt;
       &lt;p&gt;Params %parm[all]% &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>Administration status Down: interface: ifname=%parm[snmpifname]% ifindex=%parm[snmpifindex]% ifdescr=%parm[snmpifdescr]%
+    <logmsg dest='logndisplay'>Administration status Down on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
     </logmsg>
     <severity>Minor</severity>
-        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
@@ -818,10 +818,10 @@
       &lt;/p&gt;
       &lt;p&gt;Params %parm[all]% &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>Operational status Up: interface: ifname=%parm[snmpifname]% ifindex=%parm[snmpifindex]% ifdescr=%parm[snmpifdescr]%
+    <logmsg dest='logndisplay'>Operational status Up on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
     </logmsg>
     <severity>Normal</severity>
-        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceUp:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/snmp/interfaceAdminUp</uei>
@@ -832,10 +832,10 @@
       &lt;/p&gt;
       &lt;p&gt;Params %parm[all]% &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>Administration status Up: interface: ifname=%parm[snmpifname]% ifindex=%parm[snmpifindex]% ifdescr=%parm[snmpifdescr]%
+    <logmsg dest='logndisplay'>Administration status Up on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
     </logmsg>
     <severity>Normal</severity>
-        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceUp:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceAdminDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeAdded</uei>

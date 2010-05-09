@@ -150,7 +150,7 @@ public class XmpMonitor extends IPv4Monitor {
         InetAddress ipaddr = (InetAddress) iface.getAddress();
 
         Category log = ThreadCategory.getInstance(getClass());
-        XmpConfig protoConfig = XmpConfigFactory.getXmpConfig();
+        XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;
         SocketOpts sockopts = new SocketOpts();
         // TODO how to apply timeout and retry to XMP operations?

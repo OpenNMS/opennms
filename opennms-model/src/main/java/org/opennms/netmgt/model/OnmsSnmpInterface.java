@@ -111,6 +111,10 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     private Date m_lastCapsdPoll;
 
     private String m_collect = "N";
+    
+    private String m_poll = "N";
+
+    private Date m_lastSnmpPoll;
 
     private OnmsNode m_node;
 
@@ -273,7 +277,27 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     public void setCollect(String collect) {
         m_collect = collect;
     }
+
+    @Column(name="snmpPoll")
+    @XmlAttribute(name="pollFlag")
+    public String getPoll() {
+        return m_poll;
+    }
     
+    public void setPoll(String poll) {
+        m_poll = poll;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="snmpLastSnmpPoll")
+    public Date getLastSnmpPoll() {
+        return m_lastSnmpPoll;
+    }
+    
+    public void setLastSnmpPoll(Date lastSnmpPoll) {
+        m_lastSnmpPoll = lastSnmpPoll;
+    }
+
     @Transient
     public boolean isCollectionUserSpecified(){
         return m_collect.startsWith("U");
@@ -295,6 +319,12 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
        }else if(!m_collect.startsWith("U")){
            m_collect = shouldCollect ? "C" : "N";
        }
+    }
+
+    @Transient
+    @XmlAttribute(name="poll")
+    public boolean isPollEnabled() {
+        return "P".equals(m_poll);
     }
 
     @XmlIDREF

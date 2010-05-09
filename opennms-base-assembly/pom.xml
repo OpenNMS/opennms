@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.7.10-SNAPSHOT</version>
+    <version>1.7.11-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -96,6 +96,24 @@
 	         </configuration>
           </execution>
           <execution>
+            <id>unpack-remote-poller</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+	         <configuration>
+	           <outputDirectory>${project.build.directory}</outputDirectory>
+	           <artifactItems>
+	             <artifactItem>
+	               <groupId>org.opennms.features</groupId>
+	               <artifactId>org.opennms.features.remote-poller-standalone</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>remote-poller</classifier>
+	             </artifactItem>
+	           </artifactItems>
+	         </configuration>
+	       </execution>
+          <execution>
             <id>unpack-jnlp</id>
             <phase>process-resources</phase>
             <goals>
@@ -123,8 +141,8 @@
 	           <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
 	           <artifactItems>
 	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-webapp</artifactId>
+	               <groupId>org.opennms.features</groupId>
+	               <artifactId>org.opennms.features.webapp-full</artifactId>
                   <version>${project.version}</version>
 	               <type>war</type>
 	             </artifactItem>

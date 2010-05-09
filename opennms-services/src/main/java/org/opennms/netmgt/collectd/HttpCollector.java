@@ -267,7 +267,8 @@ public class HttpCollector implements ServiceCollector {
         HttpCollectionResource m_resource;
         HttpCollectionAttributeType m_attribType;
         
-        HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, Number value) { 
+        HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, Number value) {
+            super();
             m_resource=resource;
             m_attribType=attribType;
             m_alias = alias;
@@ -276,6 +277,7 @@ public class HttpCollector implements ServiceCollector {
         }
 
         HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String alias, String type, String value) { 
+            super();
             m_resource=resource;
             m_attribType=attribType;
             m_alias = alias;

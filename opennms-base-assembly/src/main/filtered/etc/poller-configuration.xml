@@ -208,7 +208,7 @@
       <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
       <parameter key="ds-name" value="opennms-jvm"/>
       <parameter key="friendly-name" value="opennms-jvm"/>
-     </service>
+    </service>
 
     <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
     <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->

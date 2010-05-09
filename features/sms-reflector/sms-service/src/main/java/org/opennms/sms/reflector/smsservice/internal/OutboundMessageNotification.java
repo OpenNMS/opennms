@@ -38,7 +38,6 @@ public class OutboundMessageNotification implements IOutboundMessageNotification
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private Collection<IOutboundMessageNotification> getListeners() {
 		if (m_listenerList == null) {
 			m_listenerList = m_applicationContext.getBeansOfType(IOutboundMessageNotification.class).values();

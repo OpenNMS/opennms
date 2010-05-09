@@ -155,9 +155,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private Date m_alarmAckTime;
 
     /** nullable persistent field */
-    private String m_clearUei;
-    
-    /** nullable persistent field */
     private String m_clearKey;
 
     /** persistent field */
@@ -184,35 +181,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private int m_x733ProbableCause = 0;
     
 	private Map<String, String> m_details;
-
-    /** full constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, TroubleTicketState tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, OnmsEvent event) {
-        this.m_id = alarmid;
-        this.m_uei = eventuei;
-        this.m_distPoller = distPoller;
-        this.m_node = node;
-        this.m_ipAddr = ipaddr;
-        this.m_serviceType = serviceType;
-        this.m_reductionKey = reductionkey;
-        this.m_alarmType = alarmtype;
-        this.m_counter = counter;
-        this.m_severity = OnmsSeverity.get(severity);
-        this.m_firstEventTime = firsteventtime;
-        this.m_description = description;
-        this.m_logMsg = logmsg;
-        this.m_operInstruct = operinstruct;
-        this.m_tTicketId = tticketid;
-        this.m_tTicketState = tticketstate;
-        this.m_mouseOverText = mouseovertext;
-        this.m_suppressedUntil = suppresseduntil;
-        this.m_suppressedUser = suppresseduser;
-        this.m_suppressedTime = suppressedtime;
-        this.m_alarmAckUser = alarmackuser;
-        this.m_alarmAckTime = alarmacktime;
-        this.m_clearUei = clearuei;
-        this.m_lastEvent = event;
-        this.m_managedObjectInstance = managedObjectInstance;
-    }
 
     /** default constructor */
     public OnmsAlarm() {
@@ -263,7 +231,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_distPoller = distPoller;
     }
 
-    // TODO change this to an Entity anre remove nodeid, ipaddr, serviceid
+    // TODO change this to an Entity and remove nodeid, ipaddr, serviceid
 	@XmlTransient
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
@@ -477,16 +445,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     public void setAlarmAckTime(Date alarmacktime) {
         this.m_alarmAckTime = alarmacktime;
-    }
-
-    @XmlElement(name="clearUei")
-    @Column(name="clearUEI", length=256)
-    public String getClearUei() {
-        return this.m_clearUei;
-    }
-
-    public void setClearUei(String clearuei) {
-        this.m_clearUei = clearuei;
     }
 
     @XmlElement(name="clearKey")

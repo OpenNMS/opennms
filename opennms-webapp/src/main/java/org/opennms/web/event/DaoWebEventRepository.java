@@ -124,7 +124,7 @@ public class DaoWebEventRepository implements WebEventRepository {
                     criteria.addOrder(Order.desc("serviceType.name"));
                     break;
                 case REVERSE_SEVERITY:
-                    criteria.addOrder(Order.asc("severity"));
+                    criteria.addOrder(Order.asc("eventSeverity"));
                     break;
                 case REVERSE_TIME:
                     criteria.addOrder(Order.asc("eventTime"));
@@ -148,6 +148,7 @@ public class DaoWebEventRepository implements WebEventRepository {
         event.createTime = onmsEvent.getEventCreateTime();
         event.description = onmsEvent.getEventDescr();
         event.dpName = onmsEvent.getDistPoller() != null ? onmsEvent.getDistPoller().getName() : "";
+        event.eventDisplay = Boolean.valueOf(onmsEvent.getEventDisplay().equals("Y"));
         event.forward = onmsEvent.getEventForward();
         event.host = onmsEvent.getEventHost();
         event.id = onmsEvent.getId();

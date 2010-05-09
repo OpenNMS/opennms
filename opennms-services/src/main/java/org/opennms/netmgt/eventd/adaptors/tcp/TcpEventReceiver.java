@@ -234,6 +234,14 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
         return m_status;
     }
 
+    public String getStatusText() {
+        return STATUS_NAMES[getStatus()];
+    }
+
+    public String status() {
+        return getStatusText();
+    }
+
     /**
      * Called when the fiber is initialized
      */

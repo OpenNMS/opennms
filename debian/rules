@@ -53,6 +53,7 @@ clean:
 	dh_testdir
 	dh_testroot
 	sh ./build.sh -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	rm -f opennms-remote-poller.{init,default}
 	dh_clean
 	rm -f $(STAMP_BUILD)
 
@@ -114,23 +115,30 @@ install: build
 	##
 	## Setup the opennms-remote-poller package
 	##
+	install -d -m 755 debian/opennms-remote-poller/usr/share/opennms/bin debian/opennms-remote-poller/usr/sbin
 	install -m 755 debian/opennms-remote-poller.bin debian/opennms-remote-poller/usr/sbin/opennms-remote-poller
-	install -m 644 features/remote-poller-onejar/target/*remote-poller-*-signed-jar-with-dependencies.jar \
-		debian/opennms-remote-poller/usr/share/java/opennms-remote-poller.jar
+	mv debian/opennms-common/usr/share/opennms/bin/remote-poller.* debian/opennms-remote-poller/usr/share/opennms/bin/
+	install -m 755 debian/temp/contrib/remote-poller/remote-poller.init debian/opennms-remote-poller.init
+	install -m 640 debian/temp/contrib/remote-poller/remote-poller.sysconfig debian/opennms-remote-poller.default
+	rm -rf debian/temp/contrib/remote-poller
 
 	##
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
+	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,opennms-remoting}
 	mv debian/temp/jetty-webapps/opennms/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
-	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms -type f -execdir chmod 644 {} \;
+	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms-remoting/
+	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
 	## Setup the opennms-webapp-standalone package
 	##
 	install -m 644 debian/opennms-webapp-standalone.overrides debian/opennms-webapp-standalone/usr/share/lintian/overrides/opennms-webapp-standalone
+	install -d -m 755 debian/opennms-webapp-standalone/usr/share/opennms/webapps/{opennms,opennms-remoting}
 	mv debian/temp/webapps/opennms/* debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms/
-	find debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms -type f -execdir chmod 644 {} \;
+	mv debian/temp/webapps/opennms-remoting/* debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms-remoting/
+	find debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms* -type f -execdir chmod 644 {} \;
 	install -m 644 debian/opennms-webapp-standalone.policy debian/opennms-webapp-standalone/etc/tomcat5.5/policy.d/99opennms.policy
 
 	# Adjust the port numbers in the default post-back URLs to account for

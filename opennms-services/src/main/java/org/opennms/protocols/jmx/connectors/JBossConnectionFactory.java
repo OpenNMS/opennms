@@ -121,7 +121,7 @@ public class JBossConnectionFactory {
 
             try {
                 
-                Hashtable props = new Hashtable();
+                Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.NamingContextFactory");
                 props.put(Context.PROVIDER_URL,            "jnp://" + address.getHostAddress() + ":" + port);
                 props.put(Context.URL_PKG_PREFIXES,        "org.jboss.naming:org.jnp.interfaces" );
@@ -150,7 +150,7 @@ public class JBossConnectionFactory {
 
             try {
                 
-                Hashtable props = new Hashtable();
+                Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.HttpNamingContextFactory");
                 props.put(Context.PROVIDER_URL,            "http://" + address.getHostAddress() + ":" + port + "/invoker/JNDIFactory");
                 props.put("jnp.sotimeout",                 timeout );

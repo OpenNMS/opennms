@@ -18,7 +18,7 @@
 </c:if>
 
 <div class="formOnly">
-  <form action="<c:url value='j_spring_security_check'/>" method="POST">
+  <form action="<c:url value='j_spring_security_check'/>" method="post">
     <p>
       User: <input type="text" id="input_j_username" name="j_username" <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if> /><br />
       Password: <input type='password' name='j_password'>

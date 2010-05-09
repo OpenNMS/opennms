@@ -93,18 +93,15 @@ public class OpenMapController implements Controller {
 		
 		String user = request.getRemoteUser();
 		
-		String role = MapsConstants.ROLE_USER;
-
 		if ((request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE))) {
-			role=MapsConstants.ROLE_ADMIN;
-			log.info(user + " has Admin mode");
+			log.info(user + " has Admin admin Role");
 		}					
 
 		float widthFactor = 1;
 		float heightFactor =1;
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 
 		try {
 			int mapWidth = WebSecurityUtils.safeParseInt(mapWidthStr);
@@ -129,27 +126,30 @@ public class OpenMapController implements Controller {
 			 
 
 			if(map != null){
-				int oldMapWidth = map.getWidth();
-				int oldMapHeight = map.getHeight();
-				widthFactor = (float) mapWidth / oldMapWidth;
-				heightFactor = (float) mapHeight / oldMapHeight;
+				int dbMapWidth = map.getWidth();
+				int dbMapHeight = map.getHeight();
+				widthFactor = (float) mapWidth / dbMapWidth;
+				heightFactor = (float) mapHeight / dbMapHeight;
 
-				log.debug("Old saved mapWidth=" + oldMapWidth
-						+ " and MapHeight=" + oldMapHeight);
+				log.debug("Old saved mapWidth=" + dbMapWidth
+						+ " and MapHeight=" + dbMapHeight);
 				log.debug("widthFactor=" + widthFactor);
 				log.debug("heightFactor=" + heightFactor);
 				log.debug("Setting new width and height to the session map");
 				
 				map.setHeight(mapHeight);
 				map.setWidth(mapWidth);
-				map.setAccessMode(role);
 				
+				for (VElement ve : map.getElements().values()) {
+				    ve.setX((int) (ve.getX() * widthFactor));
+                    ve.setY((int) (ve.getY() * heightFactor));
+				}
 			}
 			
-			bw.write(ResponseAssembler.getMapResponse(MapsConstants.OPENMAP_ACTION, map,widthFactor,heightFactor,true));
+			bw.write(ResponseAssembler.getMapResponse(map));
 
 		} catch (Exception e) {
-			log.error("Error while opening map with id:"+mapIdStr+", for user:"+user+", and role:"+role,e);
+			log.error("Error while opening map with id:"+mapIdStr+", for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.OPENMAP_ACTION));
 		} finally {
 			bw.close();

@@ -34,16 +34,7 @@
 
 package org.opennms.netmgt.eventd.jmx;
 
-public interface EventdMBean {
-    public void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    public void start();
-
-    public void stop();
-
-    public int getStatus();
-
-    public String status();
-
-    public String getStatusText();
+public interface EventdMBean extends BaseOnmsMBean {
 }

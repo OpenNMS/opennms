@@ -48,8 +48,19 @@
 		  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
 		</jsp:include>
 <p>
+
+<script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.js"></script>
+<script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.history.js"></script>
+
 <script type="text/javascript">
 
+var svgMapWidth,svgMapHeight;
+
+var resizing=false;
+
+var $j = jQuery.noConflict();
+var $ = {};
+	
 function toggle(id)
 {
 	el = document.getElementById(id);
@@ -57,16 +68,56 @@ function toggle(id)
 	el.style.display = display;
 }
 
-
-function emitSVG(embedAttrs) {
-    document.writeln('<embed '+embedAttrs+' width="'+parseInt(screen.availWidth*95/100)+'" height="'+parseInt(((screen.availWidth*95/100)-100)*3/4)+'">');
+window.onresize = function() {
+    if (resizing) return;
+    
+    resizing=true;
+	removeSVG();
+	writeReload();
+	setTimeout("window.location.reload();",1000);	
 }
-</script>
 
-<script language="JavaScript">
-emitSVG('src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml"');
+function  writeReload() {
+	var o=document.getElementById('reloading');
+	o.appendChild(document.createTextNode("Resizing the maps....."));
+}
+
+function setSvgWindowSize() {
+	if (window.innerWidth)  {
+		svgMapWidth=window.innerWidth-35;
+		svgMapHeight=window.innerHeight;
+	} else if (document.all) {
+		svgMapWidth=document.body.clientWidth-20;
+		svgMapHeight=document.body.clientHeight;
+	}
+	
+	if (svgMapWidth < 1072)
+		svgMapWidth=1072;
+	if (svgMapHeight < 600)
+		svgMapHeight=600;
+}
+
+function emitSVG() {
+	resizing=false;
+	setSvgWindowSize();
+	document.writeln('<embed id="opennmsSVGMaps" src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml" width="'+svgMapWidth+'" height="'+svgMapHeight+'">');
+}
+
+function removeSVG() {
+	var o=document.getElementById('opennmsSVGMaps');
+	if (o != undefined) 
+		o.parentNode.removeChild(o);
+}
+
+emitSVG();
+
 </script>
+<center>
+<div id="reloading">
+</div>
+</center>	
 </p>
+
     <jsp:include page="/includes/footer.jsp" flush="false" >
       <jsp:param name="location" value="map" />
     </jsp:include>

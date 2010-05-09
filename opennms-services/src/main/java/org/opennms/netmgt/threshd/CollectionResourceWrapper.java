@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.collectd.IfInfo;
@@ -57,6 +58,11 @@ public class CollectionResourceWrapper {
         m_resource = resource;
         m_attributes = attributes;
         if (isAnInterfaceResource()) {
+            if (resource instanceof AliasedResource) { // TODO What about AliasedResource's custom attributes?
+                m_iflabel = ((AliasedResource) resource).getLabel();
+                m_ifInfo = ((AliasedResource) resource).getIfInfo().getAttributesMap();
+                m_ifInfo.put("domain", ((AliasedResource) resource).getDomain());
+            }
             if (resource instanceof IfInfo) {
                 m_iflabel = ((IfInfo) resource).getLabel();
                 m_ifInfo = ((IfInfo) resource).getAttributesMap();
@@ -209,9 +215,11 @@ public class CollectionResourceWrapper {
         if (log().isDebugEnabled()) {
             log().debug("getLabelValue: Getting Value for " + m_resource.getResourceTypeName() + "::" + ds);
         }
+        if ("iflabel".equals(ds))
+            return getIfLabel();
         String value = null;
         File resourceDirectory = m_resource.getResourceDir(m_repository);
-        if (ds.equals("ID")) {
+        if ("ID".equals(ds)) {
             return resourceDirectory.getName();
         }
         try {

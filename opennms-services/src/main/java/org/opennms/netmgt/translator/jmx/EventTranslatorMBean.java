@@ -33,17 +33,11 @@
  */
 package org.opennms.netmgt.translator.jmx;
 
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
+
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public interface EventTranslatorMBean {
-    public void init();
-
-    public void start();
-
-    public void stop();
-
-    public String status();
-
+public interface EventTranslatorMBean extends BaseOnmsMBean {
 }

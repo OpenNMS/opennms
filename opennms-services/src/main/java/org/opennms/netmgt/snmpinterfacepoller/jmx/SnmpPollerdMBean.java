@@ -33,16 +33,7 @@
  */
 package org.opennms.netmgt.snmpinterfacepoller.jmx;
 
-public interface SnmpPollerdMBean {
-    public void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    public void start();
-
-    public void stop();
-
-    public int getStatus();
-
-    public String status();
-
-    public String getStatusText();
+public interface SnmpPollerdMBean extends BaseOnmsMBean {
 }

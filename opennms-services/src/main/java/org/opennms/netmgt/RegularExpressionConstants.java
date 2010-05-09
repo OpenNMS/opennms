@@ -38,7 +38,7 @@ package org.opennms.netmgt;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.2
  */
-public class RegularExpressionConstants {
+public abstract class RegularExpressionConstants {
 
     /**
      * A regular expression for matching interface addresses. Will strictly

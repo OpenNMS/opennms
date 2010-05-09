@@ -93,6 +93,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.springframework.util.Assert;
 
 /**
  * 
@@ -726,7 +727,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
+    static Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
         Map<String, String> paramMap = new HashMap<String, String>();
         
         NotificationManager.addNotificationParams(paramMap, notification);
@@ -737,6 +738,7 @@ public final class BroadcastEventProcessor implements EventListener {
         // throw away any expansion strings it doesn't recognize!
 
         paramMap.put("noticeid", Integer.toString(noticeId));
+        // Replace the %noticeid% param
         String textMessage = expandNotifParms((nullSafeTextMsg(notification)), paramMap);
         String numericMessage = expandNotifParms((nullSafeNumerMsg(notification, noticeId)), paramMap);
         String subjectLine = expandNotifParms((nullSafeSubj(notification, noticeId)), paramMap);
@@ -756,20 +758,20 @@ public final class BroadcastEventProcessor implements EventListener {
         
     }
 
-    private void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
+    private static void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
         String result = EventUtil.expandParms(value, event);
         paramMap.put(key, (result == null ? value : result));
     }
 
-    private String nullSafeSubj(Notification notification, int noticeId) {
+    private static String nullSafeSubj(Notification notification, int noticeId) {
         return notification.getSubject() != null ? notification.getSubject() : "Notice #" + noticeId;
     }
 
-    private String nullSafeNumerMsg(Notification notification, int noticeId) {
+    private static String nullSafeNumerMsg(Notification notification, int noticeId) {
         return notification.getNumericMessage() != null ? notification.getNumericMessage() : "111-" + noticeId;
     }
 
-    private String nullSafeTextMsg(Notification notification) {
+    private static String nullSafeTextMsg(Notification notification) {
         return notification.getTextMessage() != null ? notification.getTextMessage() : "No text message supplied.";
     }
 
@@ -777,16 +779,21 @@ public final class BroadcastEventProcessor implements EventListener {
      * A parameter expansion algorithm, designed to replace strings delimited by
      * percent signs '%' with a value supplied by a Map object.
      * 
+     * <p>NOTE: This function only replaces one particular parameter, the 
+     * <code>%noticeid%</code> parameter.</p> 
+     * 
      * @param input
      *            the input string
      * @param paramMap
      *            a map that will supply the substitution values
      */
-    public String expandNotifParms(final String input, final Map<String, String> paramMap) {
+    public static String expandNotifParms(final String input, final Map<String, String> paramMap) {
         String expanded = new String(input);
 
         if (m_expandRE.match(expanded)) {
-            String replace = paramMap.get(m_expandRE.getParen(1));
+            String key = m_expandRE.getParen(1);
+            Assert.isTrue("noticeid".equals(key));
+            String replace = paramMap.get(key);
             if (replace != null) {
                 expanded = m_expandRE.subst(expanded, replace);
             }

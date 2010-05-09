@@ -196,7 +196,7 @@ public class NodeRestService extends OnmsRestService {
     
     private void sendEvent(String uei, int nodeId) throws EventProxyException {
         Event e = new Event();
-        e.setUei(EventConstants.NODE_DELETED_EVENT_UEI);
+        e.setUei(uei);
         e.setNodeid(nodeId);
         e.setSource(getClass().getName());
         e.setTime(EventConstants.formatToString(new java.util.Date()));

@@ -37,16 +37,7 @@
 //
 package org.opennms.netmgt.xmlrpcd.jmx;
 
-public interface XmlrpcdMBean {
-    public void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    public void start();
-
-    public void stop();
-
-    public int getStatus();
-
-    public String status();
-
-    public String getStatusText();
+public interface XmlrpcdMBean extends BaseOnmsMBean {
 }

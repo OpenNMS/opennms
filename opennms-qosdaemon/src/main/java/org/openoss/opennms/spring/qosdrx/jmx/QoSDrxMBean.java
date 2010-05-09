@@ -36,19 +36,9 @@
 
 package org.openoss.opennms.spring.qosdrx.jmx;
 
-/**
- * 
- */
-public interface QoSDrxMBean {
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    
-    public void init();
-    public void start();
-    public void stop();
-    public int getStatus();
-    public String status();
+public interface QoSDrxMBean extends BaseOnmsMBean {
 	public String getStats();
 	public String getRuntimeStatistics();
-	
-
 }

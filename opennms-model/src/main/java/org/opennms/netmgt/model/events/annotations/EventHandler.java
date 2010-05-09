@@ -49,6 +49,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface EventHandler {
 
+    public static final String ALL_UEIS = "*";
+
     String uei();
 
 }

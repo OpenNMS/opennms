@@ -170,7 +170,7 @@ public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvalua
         
         private Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource) {
             Map<String,String> params = new HashMap<String,String>();
-            params.put("previousValue", Double.toString(getPreviousTriggeringSample()));
+            params.put("previousValue", formatValue(getPreviousTriggeringSample()));
             params.put("threshold", Double.toString(getThresholdConfig().getValue()));
             params.put("trigger", Integer.toString(getThresholdConfig().getTrigger()));
             // params.put("rearm", Double.toString(getThresholdConfig().getRearm()));

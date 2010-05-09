@@ -63,6 +63,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     public BasePersister(ServiceParameters params, RrdRepository repository) {
+        super();
         m_params = params;
         m_repository = repository;
     }

@@ -48,7 +48,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.web.map.MapsConstants;
-import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.view.*;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -59,21 +58,12 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  * @author mmigliore
  * 
  */
+@SuppressWarnings("deprecation")
 public class MapStartUpController extends SimpleFormController {
 	Category log; 
 
 	private Manager manager;
 		
-	private MapPropertiesFactory mapsPropertiesFactory;
-	
-	public MapPropertiesFactory getMapsPropertiesFactory() {
-		return mapsPropertiesFactory;
-	}
-
-	public void setMapsPropertiesFactory(MapPropertiesFactory mapsPropertiesFactory) {
-		this.mapsPropertiesFactory = mapsPropertiesFactory;
-	}
-
 	public Manager getManager() {
 		return manager;
 	}
@@ -86,7 +76,7 @@ public class MapStartUpController extends SimpleFormController {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
 		
@@ -95,10 +85,9 @@ public class MapStartUpController extends SimpleFormController {
 
 	        if (log.isDebugEnabled()) 
 	            log.debug("MapStartUp for user:" + user);
-	    
-			bw.write(ResponseAssembler.getStartupResponse(MapsConstants.MAPS_STARTUP_ACTION, mapsPropertiesFactory,
-			                                              manager,
-			                                              request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)));
+
+			bw.write(ResponseAssembler.getStartupResponse(manager.getProperties(
+			                          request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE))));
 		} catch (Exception e) {
 			log.error("Error in map's startup",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.MAPS_STARTUP_ACTION));

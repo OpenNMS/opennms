@@ -49,7 +49,6 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.Tl1ConfigurationDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -69,7 +68,6 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
      */
     private volatile int m_status = START_PENDING;
     private volatile Thread m_tl1MesssageProcessor;
-    private volatile EventSubscriptionService m_eventSubscriptionService;
     private volatile EventForwarder m_eventForwarder;
 	private volatile Tl1ConfigurationDao m_configurationDao;
 
@@ -304,14 +302,6 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         return m_eventForwarder;
     }
 
-    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
-        m_eventSubscriptionService = eventSubscriptionService;
-    }
-
-    public EventSubscriptionService getEventSubscriptionService() {
-        return m_eventSubscriptionService;
-    }
-    
     public void setConfigurationDao(Tl1ConfigurationDao configurationDao) {
         m_configurationDao = configurationDao;
     }

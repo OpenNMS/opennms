@@ -39,10 +39,11 @@
 package org.opennms.reporting.availability;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -58,15 +59,15 @@ import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 
 /**
- * AvailabilityCalculator is a partial refectoring of AvailabilityReport that
+ * AvailabilityCalculator is a partial refactoring of AvailabilityReport that
  * removes the responsibility for rendering the report. This can now be found
  * in the ReportRenderer implementations HTMLReportRenderer and
  * PDFReportRenderer (for batch-mode report rendering) and in the availability
  * report viewer service and its associated views. Depending on the type of
- * reportStore configured, Availability Calulator will marshall the
+ * reportStore configured, Availability Calculator will marshal the
  * availability report to either a predefined file on disk, or a file on disk
  * with attendant report locator table entry. This table entry can be used
- * later to retrive the ready run report. The castor generated object created needs a string
+ * later to retrieve the ready run report. The castor generated object created needs a string
  * representation for the month in the year. This is unnecessarily complex for
  * the information that it conveys and should be changed.
  * 
@@ -303,7 +304,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
     public void marshal(File outputFile)
             throws AvailabilityCalculationException {
         try {
-            FileWriter fileWriter = new FileWriter(outputFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);
@@ -325,7 +326,7 @@ public void writeXML(String outputFileName) throws AvailabilityCalculationExcept
     private void marshal(OutputStream outputStream) 
             throws AvailabilityCalculationException {
         try {
-            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
             Marshaller marshaller = new Marshaller(writer);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(m_report);

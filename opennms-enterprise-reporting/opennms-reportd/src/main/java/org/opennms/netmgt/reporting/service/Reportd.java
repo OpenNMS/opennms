@@ -52,13 +52,16 @@ public class Reportd implements SpringServiceDaemon {
       
     public void runReport(Report report) {
         String originalName = ThreadCategory.getPrefix();
-        ThreadCategory.setPrefix(NAME);    
-        LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
-        String fileName = m_reportService.runReport(report,reportDirectory);
-        LogUtils.debugf(this,"reportd -- delivering report %s", report.getReportName());
-        m_reportDeliveryService.deliverReport(report, fileName);
-        LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
-        ThreadCategory.setPrefix(originalName);
+        try {
+            ThreadCategory.setPrefix(NAME);
+            LogUtils.debugf(this, "reportd -- running job %s", report.getReportName() );
+            String fileName = m_reportService.runReport(report,reportDirectory);
+            LogUtils.debugf(this,"reportd -- delivering report %s", report.getReportName());
+            m_reportDeliveryService.deliverReport(report, fileName);
+            LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
+        } finally {
+            ThreadCategory.setPrefix(originalName);
+        }
     }
  
     

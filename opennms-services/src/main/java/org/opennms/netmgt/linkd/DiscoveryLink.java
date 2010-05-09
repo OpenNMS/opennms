@@ -241,6 +241,13 @@ public final class DiscoveryLink implements ReadyRunnable {
 						macsExcluded.add(macAddress);
 						continue;
 					}
+                    if (macAddress.indexOf("00000c07ac") == 0) {
+                       log().info("run: at interface "
+                                   + macAddress
+                                   + " is cisco hsrp address! Not adding to discoverable atinterface.");
+                       macsExcluded.add(macAddress); 
+                       continue; 
+                    }
 					List<AtInterface> ats = macToAtinterface.get(macAddress);
 					if (ats == null) ats = new ArrayList<AtInterface>();
 					if (log().isInfoEnabled()) 
@@ -478,7 +485,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 									+ " and with stp designated port "
 									+ stpPortDesignatedPort);
 
-						if (stpPortDesignatedBridge.equals("0000000000000000")) {
+						if (stpPortDesignatedBridge.equals("0000000000000000")
+						        || stpPortDesignatedBridge.equals("")) {
 							log().warn("run: designated bridge is invalid "
 									+ stpPortDesignatedBridge);
 							continue;

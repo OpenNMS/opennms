@@ -103,11 +103,8 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
 
     protected C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         log().info("C3P0ConnectionFactory: setting up data sources from reader argument.");
-        try {
-            JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
-            initializePool(ds);
-        } finally {
-        }
+        JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
+        initializePool(ds);
     }
 
     protected C3P0ConnectionFactory(String configFile, String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {

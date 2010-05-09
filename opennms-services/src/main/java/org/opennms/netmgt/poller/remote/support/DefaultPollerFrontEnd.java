@@ -50,8 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -69,13 +68,10 @@ import org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
@@ -177,13 +173,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         }
 
         @Override
-        public void register(String location) {
+        public void register(final String location) {
             try {
                 doRegister(location);
                 setState(new Running());
             } catch(Exception e) {
-                log().fatal("Unexpected exception occurred loading the configs", e);
-                setState(new FatalExceptionOccurred());
+            	LogUtils.warnf(this, e, "Unable to register");
+                setState(new Disconnected());
             }
         }
     }
@@ -217,14 +213,14 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
                 }
             } catch (Exception e) {
-                log().fatal("Unexpected exception occurred loading the configs", e);
+            	LogUtils.fatalf(this, e, "Unexpected exception occurred loading the configs");
                 setState(new FatalExceptionOccurred());
             }
             String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
             if (! "".equals(killSwitchFileName) && killSwitchFileName != null) {
                 File killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
                 if (!killSwitch.exists()) {
-                    log().info("Kill-switch file " + killSwitch.getPath() + " does not exist, stopping.");
+                	LogUtils.infof(this, "Kill-switch file %s does not exist, stopping.", killSwitch.getPath());
                     doStop();
                 }
             }
@@ -241,7 +237,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
                 doStop();
                 setState(new Registering());
             } catch(Exception e) {
-                log().fatal("Unexpected exception occurred loading the configs", e);
+            	LogUtils.fatalf(this, e, "Unexpected exception occurred loading the configs");
                 setState(new FatalExceptionOccurred());
             }
         }
@@ -276,7 +272,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
             try {
                 doPollService(polledServiceId);
             } catch(Exception e) {
-                log().fatal("Unexpected exception occurred loading the configs", e);
+            	LogUtils.fatalf(this, e, "Unexpected exception occurred loading the configs");
                 setState(new FatalExceptionOccurred());
             }
                 
@@ -468,7 +464,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         m_backEnd.reportResult(getMonitorId(), polledServiceId, result);
     }
 
-    public void doRegister(String location) {
+    public void doRegister(final String location) {
 
         int monitorId = m_backEnd.registerLocationMonitor(location);
         setMonitorId(monitorId);
@@ -687,10 +683,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
     private boolean isInitialized() {
         return m_state.isInitialized();
-    }
-
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     private void setState(State newState) {

@@ -39,9 +39,11 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -75,12 +77,6 @@ public class DestinationPathFactory extends DestinationPathManager {
      * 
      */
     private static long m_lastModified;
-
-    /**
-     * 
-     */
-    public DestinationPathFactory() {
-    }
 
     /**
      * 
@@ -126,7 +122,7 @@ public class DestinationPathFactory extends DestinationPathManager {
      */
     protected void saveXML(String writerString) throws IOException {
         if (writerString != null) {
-            FileWriter fileWriter = new FileWriter(m_pathsConfFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_pathsConfFile), "UTF-8");
             fileWriter.write(writerString);
             fileWriter.flush();
             fileWriter.close();

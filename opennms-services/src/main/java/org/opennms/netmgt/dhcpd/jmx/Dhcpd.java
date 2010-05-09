@@ -37,6 +37,10 @@ package org.opennms.netmgt.dhcpd.jmx;
 import org.opennms.core.utils.ThreadCategory;
 
 public class Dhcpd implements DhcpdMBean {
+    public void init() {
+        // No initialization necessary
+    }
+
     public void start() {
         org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
         dhcpd.start();

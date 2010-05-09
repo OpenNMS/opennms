@@ -49,7 +49,7 @@ public class MsgTrackerCommands implements CommandProvider
         }
         
         public MobileMsgResponse getResponse() {
-            return m_response = m_response;
+            return m_response;
         }
         
     }

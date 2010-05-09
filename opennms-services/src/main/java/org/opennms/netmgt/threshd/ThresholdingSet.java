@@ -250,6 +250,8 @@ public abstract class ThresholdingSet {
             log().debug("passedThresholdFilters: applying " + filters.length + " filters to resource " + resource);
         }
         int count = 1;
+        String operator = thresholdEntity.getThresholdConfig().getBasethresholddef().getFilterOperator().toLowerCase();
+        boolean andResult = true;
         for (ResourceFilter f : filters) {
             if (log().isDebugEnabled()) {
                 log().debug("passedThresholdFilters: filter #" + count + ": field=" + f.getField() + ", regex='" + f.getContent() + "'");
@@ -265,8 +267,13 @@ public abstract class ThresholdingSet {
                     if (log().isDebugEnabled()) {
                         log().debug("passedThresholdFilters: the value of " + f.getField() + " is " + attr + ". Pass filter? " + pass);
                     }
-                    if (pass) {
+                    if (operator.equals("or") && pass) {
                         return true;
+                    }
+                    if (operator.equals("and")) {
+                        andResult = andResult && pass;
+                        if (andResult == false)
+                            return false;
                     }
                 } catch (PatternSyntaxException e) {
                     log().warn("passedThresholdFilters: the regular expression " + f.getContent() + " is invalid: " + e.getMessage(), e);
@@ -276,6 +283,8 @@ public abstract class ThresholdingSet {
                 log().warn("passedThresholdFilters: can't find value of " + f.getField() + " for resource " + resource);
             }
         }
+        if (operator.equals("and") && andResult)
+            return true;
         return false;
     }
     
@@ -327,10 +336,11 @@ public abstract class ThresholdingSet {
                 log().debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
             }
             boolean foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
-            if (!foundInPkg) {
+            if (!foundInPkg && Boolean.getBoolean("org.opennms.thresholds.filtersReloadEnabled")) {
                 // The interface might be a newly added one, rebuild the package
                 // to ipList mapping and again to verify if the interface is in
                 // the package.
+                log().info("getThresholdGroupNames: re-initializing filters.");
                 m_configManager.rebuildPackageIpListMap();
                 foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
             }
@@ -373,7 +383,7 @@ public abstract class ThresholdingSet {
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                log().warn("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
+                log().info("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();

@@ -215,13 +215,13 @@ public class EventconfFactoryTest {
         Event event = new Event();
         AlarmData data = new AlarmData();
         data.setAlarmType(2);
-        data.setClearUei("uei.opennms.org.testUei");
+        data.setClearKey("uei.opennms.org.testUei:localhost:1");
         data.setReductionKey("reduceme");
         event.setAlarmData(data);
         
         int i = event.getAlarmData().getAlarmType();
         assertEquals(2, i);
-        assertTrue("uei.opennms.org.testUei".equals(event.getAlarmData().getClearUei()));
+        assertTrue("uei.opennms.org.testUei:localhost:1".equals(event.getAlarmData().getClearKey()));
         assertTrue("reduceme".equals(event.getAlarmData().getReductionKey()));
     }
     

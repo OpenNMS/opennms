@@ -35,6 +35,6 @@ import org.opennms.netmgt.model.OnmsServiceType;
 
 public interface ServiceTypeDao extends OnmsDao<OnmsServiceType, Integer> {
     
-    public abstract OnmsServiceType findByName(String name);
+    OnmsServiceType findByName(String name);
 
 }

@@ -40,6 +40,6 @@ import org.opennms.netmgt.model.ReportCatalogEntry;
 
 public interface ReportCatalogDao extends OnmsDao<ReportCatalogEntry, Integer>{
     
-    public abstract void delete(Integer id);
+    void delete(Integer id);
 
 }

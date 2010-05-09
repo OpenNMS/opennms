@@ -34,16 +34,7 @@
 
 package org.opennms.netmgt.actiond.jmx;
 
-public interface ActiondMBean {
-    public void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    public void start();
-
-    public void stop();
-
-    public int getStatus();
-
-    public String getStatusText();
-
-    public String status();
+public interface ActiondMBean extends BaseOnmsMBean {
 }

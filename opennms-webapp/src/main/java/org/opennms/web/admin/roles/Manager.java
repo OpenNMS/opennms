@@ -334,7 +334,6 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
             super.setUsers(users);
         }
         
-        @SuppressWarnings("unchecked")
         private List<String> getUsers(Group group) {
             return group.getUserCollection();
         }

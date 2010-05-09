@@ -69,10 +69,6 @@ public class SyslogTimeStamp extends Format {
         return new SyslogTimeStamp();
     }
 
-    public SyslogTimeStamp() {
-        super();
-    }
-
     public String format(Date date) throws IllegalArgumentException {
         TimeZone tz = TimeZone.getTimeZone(SyslogTimeStamp.DEFAULT_GMT_TZID);
 

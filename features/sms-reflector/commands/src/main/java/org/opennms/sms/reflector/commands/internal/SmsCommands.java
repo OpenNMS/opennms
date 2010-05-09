@@ -59,7 +59,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             try {
                 m_service.stopService();
             } catch (Exception e) {
-                debugf("Exception Stopping Service Occurred: %s", e.getStackTrace());
+                ThreadCategory.getInstance(SmsCommands.class).debug("Exception Stopping Service Occurred", e);
                 //intp.printStackTrace(e);
             }
         }

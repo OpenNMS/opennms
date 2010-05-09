@@ -35,8 +35,8 @@
 
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.ClickListenerCollection;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -51,8 +51,6 @@ public class Pager extends Composite {
     
     private class PageControl extends Composite {
         
-        ClickListenerCollection m_listeners = new ClickListenerCollection();
-        
         Label m_label;
         int m_direction;
         
@@ -61,9 +59,9 @@ public class Pager extends Composite {
             m_label.addStyleName(direction > 0 ? "pagerRight" : "pagerLeft");
             m_direction = direction;
             
-            m_label.addClickListener(new ClickListener() {
+            m_label.addClickHandler(new ClickHandler() {
 
-                public void onClick(Widget sender) {
+                public void onClick(ClickEvent sender) {
                     adjustPage(m_direction);
                     
                 }

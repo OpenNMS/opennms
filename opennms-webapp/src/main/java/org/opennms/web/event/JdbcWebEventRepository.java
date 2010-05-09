@@ -46,6 +46,7 @@ import org.opennms.web.event.filter.EventCriteria.BaseEventCriteriaVisitor;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -247,21 +248,20 @@ public class JdbcWebEventRepository implements WebEventRepository {
         jdbc().update(sql, paramSetter(criteria));
     }
     
-    private int queryForInt(String sql, PreparedStatementSetter setter) {
-        Number number = (Number) queryForObject(sql, setter, new SingleColumnRowMapper(Integer.class));
+    private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
+        Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
     }
     
-    @SuppressWarnings("unchecked")
-    private Object queryForObject(String sql, PreparedStatementSetter setter, RowMapper rowMapper) {
-        return DataAccessUtils.requiredSingleResult((List) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rowMapper, 1)));
+    private <T> T queryForObject(String sql, PreparedStatementSetter setter, RowMapper<T> rowMapper) throws DataAccessException {
+        return DataAccessUtils.requiredSingleResult(jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
+    }
+
+
+    private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
+        return jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
     }
     
-    @SuppressWarnings("unchecked")
-    private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
-        return (List<T>) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rm));
-     }
-
     private JdbcOperations jdbc() {
         return m_simpleJdbcTemplate.getJdbcOperations();
     }

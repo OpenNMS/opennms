@@ -52,6 +52,7 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface.Snm
  * plug-ins by the service poller framework.
  * </P>
  * 
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * 
  */
 

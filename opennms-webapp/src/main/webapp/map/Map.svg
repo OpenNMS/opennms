@@ -13,6 +13,7 @@
 	<script type="text/ecmascript" xlink:href="ECMAScript/textbox.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/button.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/selectionList.js"/>
+	<script type="text/ecmascript" xlink:href="ECMAScript/tabgroup.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/Window.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/Point2D.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/PickColor.js"/>	
@@ -27,21 +28,53 @@
 	<script type="text/ecmascript" xlink:href="svgjavascript/Node.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Label.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Link.js"/>
+	<script type="text/ecmascript" xlink:href="svgjavascript/SLink.js"/>
+	<script type="text/ecmascript" xlink:href="svgjavascript/Icon.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/MapElement.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Semaphore.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ElemMap.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationMap.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationMenu.js"/>
-	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationWin.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ContextMenu.js"/>	
 	
 	
 <script type="text/ecmascript"><![CDATA[
 
+var startingup=true;
+
+function historyCallBack(hash) {
+	if (startingup) {
+		if(hash) {
+	    	setTimeout('openBookMarkedMap('+hash+');',1000);
+		} else {
+			loadDefaultMap();		
+		}
+		startingup=false;
+		return;
+	}
+	if(hash) {
+		openBookMarkedMap(hash);
+	} else {
+		close();
+	}
+	
+}
+
+function openBookMarkedMap(mapId) {
+	mapTabSetUp(mapidSortAss[mapId]);
+	openMap(mapId);
+}
+
 function startUp() {
 	// Instantiate the default map
-	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0);
+	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0, maxLinks,summaryLinkId,summaryLinkColor,LINK_WIDTH[summaryLinkId],LINK_DASHARRAY[summaryLinkId]);
+	
 	mapSvgElement.appendChild(map.getSvgNode());
+
+	// Instantiate the tabPanel
+	mapTabTitles.push(MAP_NOT_OPENED_NAME);
+	mapTabGroup = 
+	new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
 
 	defaultMap = new ElemMap(-2, null, null);
 	
@@ -59,10 +92,8 @@ new Menu(menuSvgElement,viewMenuId,"View",viewMenuX,viewMenuY,menuWidth,menuHeig
 	refreshMenu = 
 new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWidth,menuHeight, menuStyle,menuTextStyle,menuMouseStyle,menuUpColor,menuDownColor,resetWorkPanel);
 	
-	
 	loadMaps();
 	loadNodes();
-	loadDefaultMap();
 		
 	addLegend();
 
@@ -71,6 +102,17 @@ new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWid
 	displayCountDown("Set Refresh Time",true);
 	
 	myMapApp.initTooltips("toolTip",tooltipTextStyles,tooltipRectStyles,10,5,3);
+
+	top.$j(document).ready(function() {
+		top.$j.history.init(historyCallBack);
+		
+		top.$j("a[@rel='history']").click(function(){
+			var hash = this.href;
+			hash = hash.replace(/^.*#/, '');
+			top.$j.history.load(hash);
+			return false;
+		});
+	});
 }
 
 function handleInit(data) {
@@ -80,7 +122,22 @@ function handleInit(data) {
 		reloadMap = mapsPropertiesFactory.reload;
 		contextMenuEnabled = mapsPropertiesFactory.contextMenuEnabled;
 		doubleClickEnabled = mapsPropertiesFactory.doubleClickEnabled;
-		UNKNOWN_STATUS = mapsPropertiesFactory.unknownStatus.id;
+		UNKNOWN_STATUS = mapsPropertiesFactory.unknownstatusid;
+		mapElemDimension = mapsPropertiesFactory.defaultMapElementDimension;
+		maxLinks = mapsPropertiesFactory.maxLinks;
+		summaryLinkId = mapsPropertiesFactory.summaryLink;
+		summaryLinkColor = mapsPropertiesFactory.summaryLinkColor;
+		useSemaphore=mapsPropertiesFactory.useSemaphore;
+		
+		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
+		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;
+		DEFAULT_BG_COLOR = mapsPropertiesFactory.defaultBackgroundColor;
+		
+		currentMapBackGround = DEFAULT_BG_COLOR;
+		
+		currentMapId = MAP_NOT_OPENED;
+		
+
 		var i=0;
 		
 		for (i=0;i<mapsPropertiesFactory.contextMenu.entries.length;i++) 
@@ -132,13 +189,10 @@ function handleInit(data) {
             AVAIL_FLASH[avail.id]=avail.flash;
 		}
 	
-		mapElemDimension=mapsPropertiesFactory.defaultMapElementDimension;
-		mapScale=mapsPropertiesFactory.mapScale;
-		
 		for(var icon in mapsPropertiesFactory.icons)
 		{
             MEIcons.push(icon);
-	    MEIconsSorts.push(mapsPropertiesFactory.icons[icon]);
+		    MEIconsSorts.push(IMAGES_ELEMENTS_FOLDER+mapsPropertiesFactory.icons[icon]);
         }
               
 		for (var image in mapsPropertiesFactory.backgroundImages)
@@ -173,17 +227,7 @@ function handleInit(data) {
 		refreshTimeMinsSorts.push(1200);
 		
 		refreshTimeMinsSortAss = assArrayPopulate(refreshTimeMins,refreshTimeMinsSorts);        
-               				
-		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
-		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;
-		DEFAULT_BG_COLOR = mapsPropertiesFactory.defaultBackgroundColor;
-		NODE_TYPE = mapsPropertiesFactory.NODE_TYPE;
-		MAP_TYPE= mapsPropertiesFactory.MAP_TYPE;
-		MAP_NOT_OPENED = mapsPropertiesFactory.MAP_NOT_OPENED;
-		NEW_MAP = mapsPropertiesFactory.NEW_MAP;
-		currentMapId = MAP_NOT_OPENED;
-		currentMapBackGround = DEFAULT_BG_COLOR;
-		categorySortAss = assArrayPopulate(categories,categorySorts);
+   		categorySortAss = assArrayPopulate(categories,categorySorts);
     	BGImagesSortAss = assArrayPopulate(BGImages,BGImagesSorts);		
     	MapElemDimSortAss = assArrayPopulate(MapElemDim,MapElemDimSorts);	
     	MEIconsSortAss = assArrayPopulate(MEIcons,MEIconsSorts);
@@ -196,10 +240,8 @@ function handleInit(data) {
 	    myMapElemDimResult = new MapElemDimResult();
 	    myMEIconsResult = new MEIconsResult();
 		myRefreshTimeMinsResult = new refreshTimeMinsResult();
-		
-		colorSemaphoreBy='S';
-					
-		startUp();
+	
+		startUp();					
 	}else{
 		alert("Initialization failed.");
 	}	
@@ -207,8 +249,7 @@ function handleInit(data) {
 
 function load(evt){
 	
-	// Reference var to the Menu SVG Object
-	
+	// Reference var to the Menu SVG Object	
 	menuSvgElement = document.getElementById("Menu");
 	
 	// Reference var to the MapPanel SVG Object		
@@ -217,14 +258,11 @@ function load(evt){
 	// Reference var to the Windows SVG Object		
 	winSvgElement = document.getElementById("Windows");
 
-	//WorkPanel data
-	var workPanelWidth = 3*menuWidth;
-	var workPanelHeight = 600;
-	var workPanelDelta = 2;
+	// Reference var to the Windows SVG Object		
+	tabSvgElement = document.getElementById("TabPanel");
 
-	mapWidth=parseInt((screen.availWidth*97/100))-workPanelWidth-workPanelDelta;
-	mapHeight=parseInt(mapWidth*3/4);			
-	
+	mapWidth=top.svgMapWidth-workPanelWidth-workPanelDelta;
+	mapHeight=top.svgMapHeight;				
 	
 	// Define the position and dimension of the work panel objects
 	document.getElementById('WorkPanel').setAttributeNS(null,"x",mapWidth+workPanelDelta);
@@ -232,7 +270,6 @@ function load(evt){
 	document.getElementById('WorkPanel').setAttributeNS(null,"height",workPanelHeight);
 
 	document.getElementById('toolbar').setAttributeNS(null,"fill","navy");
-//	document.getElementById('toolbar').setAttributeNS(null,"stroke","blue");
 	document.getElementById('toolbar').setAttributeNS(null,"height",2*menuHeight+1);
 
 
@@ -255,18 +292,26 @@ function load(evt){
 	document.getElementById('TopInfoText').setAttributeNS(null,"font-family",textFamily);
 	document.getElementById('TopInfoText').setAttributeNS(null, "font-size",titleFontSize);
 
-	
 	postMapRequestAll( "MapStartUp."+suffix, "GET", null, handleInit, "text/xml", null, true );
 }
 
 ]]></script>
 
+	<!-- ******** TAB P A N E L ********* -->	
+
+	<svg id="TabPanel"/>
+
+
+
 	<!-- ******** MAP P A N E L ********* -->	
 
-	<svg id="MapPanel"/>
+	<svg id="MapPanel" x="0" y="20"/>
 
 	<!-- ******** WINDOWS P A N E L S ********* -->	
-	<svg id="Windows" x="0" y="0"/>
+	<svg id="Windows" x="0" y="20"/>
+	
+	<!-- ******** TOOLTIP P A N E L S ********* -->	
+	<g id="toolTip"/>
 	
 	<!-- ******** WORK P A N E L ********* -->	
 	<svg id="WorkPanel" y="0">
@@ -362,8 +407,6 @@ function load(evt){
 
  	</svg> <!-- End WorkPanel -->
 	
-	<!-- ******** TOOLTIP P A N E L S ********* -->	
-	<g id="toolTip"/>
 </svg>
 
 

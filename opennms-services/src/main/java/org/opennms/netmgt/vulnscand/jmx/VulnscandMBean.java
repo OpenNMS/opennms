@@ -32,17 +32,7 @@
 
 package org.opennms.netmgt.vulnscand.jmx;
 
-public interface VulnscandMBean {
-	
-	public void init();
-	
-    public void start();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    public void stop();
-
-    public int getStatus();
-
-    public String status();
-
-    public String getStatusText();
+public interface VulnscandMBean extends BaseOnmsMBean {
 }

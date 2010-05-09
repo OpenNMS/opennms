@@ -136,6 +136,36 @@ public class NetworkElementFactory {
         return (label);
     }
 
+    /**
+     * Translate a node id into a human-readable ipaddress. Note these values
+     * are not cached.
+     * 
+     * @return A human-readable node name or null if the node id given does not
+     *         specify a real node.
+     */
+    public static String getIpPrimaryAddress(int nodeId) throws SQLException {
+        String label = null;
+
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
+        try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            PreparedStatement stmt = conn.prepareStatement("SELECT IPADDR FROM ipinterface WHERE NODEID = ? and isSnmpPrimary='P'");
+            d.watch(stmt);
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+
+            if (rs.next()) {
+                label = rs.getString("IPADDR");
+            }
+        } finally {
+            d.cleanUp();
+        }
+
+        return (label);
+    }
+
     public static Node getNode(int nodeId) throws SQLException {
         Node node = null;
 
@@ -1111,6 +1141,21 @@ public class NetworkElementFactory {
             intf.m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
             intf.m_snmpIfAlias = rs.getString("snmpIfAlias");
             
+            Object element = rs.getString("snmpPoll");
+            if (element != null) {
+                intf.m_isSnmpPoll = ((String) element).charAt(0);
+            }
+
+            element = rs.getTimestamp("snmpLastCapsdPoll");
+            if (element != null) {
+                intf.m_snmpLastCapsdPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+            }
+
+            element = rs.getTimestamp("snmpLastSnmpPoll");
+            if (element != null) {
+                intf.m_snmpLastSnmpPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+            }
+
             intfs.add(intf);
         }
 
@@ -1150,6 +1195,22 @@ public class NetworkElementFactory {
                         intfs[i].m_snmpIfSpeed = rs.getLong("snmpIfSpeed");
                         intfs[i].m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
                         intfs[i].m_snmpIfAlias = rs.getString("snmpIfAlias");
+                        
+                        Object element = rs.getString("snmpPoll");
+                        if (element != null) {
+                            intfs[i].m_isSnmpPoll = ((String) element).charAt(0);
+                        }
+
+                        element = rs.getTimestamp("snmpLastCapsdPoll");
+                        if (element != null) {
+                            intfs[i].m_snmpLastCapsdPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+                        }
+
+                        element = rs.getTimestamp("snmpLastSnmpPoll");
+                        if (element != null) {
+                            intfs[i].m_snmpLastSnmpPoll = Util.formatDateToUIString(new Date(((Timestamp) element).getTime()));
+                        }
+
                     }
 
                     pstmt = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=? AND ipaddr=?");
@@ -2507,9 +2568,9 @@ public class NetworkElementFactory {
 
 
     public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final boolean onlyNodesWithDownAggregateStatus) {
-    	return (Node[])transTemplate.execute(new TransactionCallback() {
+    	return transTemplate.execute(new TransactionCallback<Node[]>() {
 
-			public Object doInTransaction(TransactionStatus arg0) {
+			public Node[] doInTransaction(TransactionStatus arg0) {
 				return getNodesWithCategories(nodeDao, categoryDao, categories1, onlyNodesWithDownAggregateStatus);	
 			}
     		
@@ -2541,9 +2602,9 @@ public class NetworkElementFactory {
     }
 
     public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
-    	return (Node[])transTemplate.execute(new TransactionCallback() {
+    	return transTemplate.execute(new TransactionCallback<Node[]>() {
 
-			public Object doInTransaction(TransactionStatus arg0) {
+			public Node[] doInTransaction(TransactionStatus arg0) {
 				return getNodesWithCategories(nodeDao, categoryDao, categories1, categories2, onlyNodesWithDownAggregateStatus);	
 			}
     		

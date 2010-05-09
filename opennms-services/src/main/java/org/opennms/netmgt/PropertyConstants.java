@@ -83,7 +83,7 @@ public final class PropertyConstants {
      * @return The value that is mapped by the passed property key.
      * 
      */
-    public static final String lookup(String property) {
+    public static String lookup(String property) {
         return System.getProperty(property);
     }
 }

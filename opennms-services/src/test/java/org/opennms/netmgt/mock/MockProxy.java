@@ -167,15 +167,16 @@ public class MockProxy implements CommandResponder {
      * @param request
      * @return
      */
+    @SuppressWarnings("unchecked")
     private PDU processGet(PDU request) {
         PDU response = request;
         response.setErrorIndex(0);
         response.setErrorStatus(0);
         response.setType(PDU.RESPONSE);
         
-        Vector varBinds = response.getVariableBindings();
+        Vector<VariableBinding> varBinds = response.getVariableBindings();
         for(int i = 0; i < varBinds.size(); i++) {
-            VariableBinding varBind = (VariableBinding)varBinds.get(i);
+            VariableBinding varBind = varBinds.get(i);
             VariableBinding nextVarBind = m_agent.get(varBind.getOid());
             if (nextVarBind == null) {
                 if (response instanceof PDUv1) {
@@ -198,15 +199,16 @@ public class MockProxy implements CommandResponder {
      * @param request
      * @return
      */
+    @SuppressWarnings("unchecked")
     private PDU processGetNext(PDU request) {
         PDU response = request;
         response.setErrorIndex(0);
         response.setErrorStatus(0);
         response.setType(PDU.RESPONSE);
         
-        Vector varBinds = response.getVariableBindings();
+        Vector<VariableBinding> varBinds = response.getVariableBindings();
         for(int i = 0; i < varBinds.size(); i++) {
-            VariableBinding varBind = (VariableBinding)varBinds.get(i);
+            VariableBinding varBind = varBinds.get(i);
             VariableBinding nextVarBind = m_agent.getNext(varBind.getOid());
             if (nextVarBind == null) {
                 if (response instanceof PDUv1) {

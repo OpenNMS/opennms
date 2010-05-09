@@ -37,8 +37,8 @@ package org.opennms.netmgt.alarmd;
 
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.model.events.EventSubscriptionService;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.DisposableBean;
 
@@ -47,16 +47,16 @@ import org.springframework.beans.factory.DisposableBean;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class Alarmd implements EventListener, SpringServiceDaemon, DisposableBean {
-	
-	public static final String NAME = "Alarmd";
+@EventListener(name=Alarmd.NAME)
+public class Alarmd implements SpringServiceDaemon, DisposableBean {
 
-	private volatile EventSubscriptionService m_eventSubscriptionService;
-	private volatile EventForwarder m_eventForwarder;
-	
-	private AlarmPersister m_persister;
-	            
-	public EventForwarder getEventForwarder() {
+    public static final String NAME = "Alarmd";
+
+    private volatile EventForwarder m_eventForwarder;
+
+    private AlarmPersister m_persister;
+
+    public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
@@ -64,29 +64,21 @@ public class Alarmd implements EventListener, SpringServiceDaemon, DisposableBea
         m_eventForwarder = eventForwarder;
     }
 
-    public EventSubscriptionService getEventSubscriptionService() {
-	    return m_eventSubscriptionService;
-	}
+    public void afterPropertiesSet() throws Exception {
+    }
 
-	public void setEventSubscriptionService(EventSubscriptionService eventManager) {
-		m_eventSubscriptionService = eventManager;
-	}
+    public void destroy() throws Exception {
+    }
 
-	//Get all events
-	public void afterPropertiesSet() throws Exception {
-	    m_eventSubscriptionService.addEventListener(this);
-	}
-
-	public void destroy() throws Exception {
-	}
-
-	public String getName() {
-		return NAME;
-	}
+    public String getName() {
+        return NAME;
+    }
 
     public void start() throws Exception {
     }
 
+    //Get all events
+    @EventHandler(uei = EventHandler.ALL_UEIS)
     public void onEvent(Event e) {
         m_persister.persist(e);
     }
@@ -98,5 +90,4 @@ public class Alarmd implements EventListener, SpringServiceDaemon, DisposableBea
     public AlarmPersister getPersister() {
         return m_persister;
     }
-
 }

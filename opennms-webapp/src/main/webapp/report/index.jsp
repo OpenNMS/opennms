@@ -64,12 +64,12 @@
   <div class="TwoColLeft">
     <h3>Reports</h3>
     <div class="boxWrapper">
-      <form action="graph/index.jsp" method="GET">
+      <form action="graph/index.jsp" method="get">
         <p align="right">Name contains
         <input type="text" name="match" size="16" />
         <input type="submit" value="Resource Graphs"/></p>
       </form>
-      <form action="KSC/index.htm" method="GET">
+      <form action="KSC/index.htm" method="get">
         <p align="right">Name contains
         <input type="text" name="match" />
         <input type="submit" value="KSC Reports"/></p>

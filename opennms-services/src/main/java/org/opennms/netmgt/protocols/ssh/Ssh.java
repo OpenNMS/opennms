@@ -40,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -224,6 +225,10 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
             return true;
         } catch (NumberFormatException e) {
             log().debug("unable to parse server version", e);
+            setError(e);
+            disconnect();
+        } catch (ConnectException e) {
+            log().debug("connection failed: " + e.getMessage());
             setError(e);
             disconnect();
         } catch (Exception e) {

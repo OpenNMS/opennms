@@ -1,5 +1,6 @@
 package org.opennms.netmgt.model.events;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -18,7 +19,7 @@ public class UpdateEventVisitor extends AbstractEntityVisitor {
     
     @Override
     public void visitNode(OnmsNode node) {
-        System.out.printf("Sending nodeAdded Event for %s\n", node);
+        LogUtils.infof(this, "Sending nodeAdded Event for %s\n", node);
         m_eventForwarder.sendNow(createNodeUpdatedEvent(node));
     }
 

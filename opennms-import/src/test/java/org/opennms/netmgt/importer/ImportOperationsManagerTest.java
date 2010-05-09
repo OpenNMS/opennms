@@ -173,8 +173,8 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
     public void testSaveThenUpdate() throws Exception {
     	
     	
-        m_transTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
+        m_transTemplate.execute(new TransactionCallback<OnmsNode>() {
+            public OnmsNode doInTransaction(TransactionStatus status) {
             	OnmsServiceType icmp = getServiceTypeDao().findByName("ICMP");
             	OnmsServiceType snmp = getServiceTypeDao().findByName("SNMP");
                 OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
@@ -191,7 +191,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         
         //getDistPollerDao().clear();
 
-        m_transTemplate.execute(new TransactionCallback() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
                 OnmsNode node = getNodeDao().findByForeignId("imported:", "7");
             	assertNotNull(node);
@@ -277,7 +277,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         opsMgr.setScanThreads(scanThreads);
         opsMgr.setForeignSource(specFile.getForeignSource());
         
-        m_transTemplate.execute(new TransactionCallback() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
                 AbstractImportVisitor accountant = new ImportAccountant(opsMgr);
@@ -292,10 +292,9 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
     }
 
 
-    @SuppressWarnings("unchecked")
     private Map<String, Integer> getAssetNumberMapInTransaction(final SpecFile specFile) {
-        Map<String, Integer> assetNumbers = (Map<String, Integer>) m_transTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
+        Map<String, Integer> assetNumbers = m_transTemplate.execute(new TransactionCallback<Map<String, Integer>>() {
+            public Map<String, Integer> doInTransaction(TransactionStatus status) {
                 return getAssetNumberMap(specFile.getForeignSource());
             }
         });

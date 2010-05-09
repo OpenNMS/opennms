@@ -313,7 +313,7 @@ public class DefaultNodeLinkServiceTest {
     }
     
     public void addPrimaryServiceToNode(final int nodeId, final String serviceName){
-        m_transactionTemplate.execute(new TransactionCallback() {
+        m_transactionTemplate.execute(new TransactionCallback<Object>() {
             
             public Object doInTransaction(TransactionStatus status) {
                 OnmsServiceType svcType = m_serviceTypeDao.findByName(serviceName);
@@ -340,7 +340,7 @@ public class DefaultNodeLinkServiceTest {
     }
     
     public void saveLinkState(final OnmsLinkState linkState){
-        m_transactionTemplate.execute(new TransactionCallback() {
+        m_transactionTemplate.execute(new TransactionCallback<Object>() {
             
             public Object doInTransaction(TransactionStatus status) {
                 m_linkStateDao.saveOrUpdate(linkState);

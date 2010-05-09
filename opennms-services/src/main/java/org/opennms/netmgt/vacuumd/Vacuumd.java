@@ -49,7 +49,6 @@ import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
@@ -118,7 +117,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             throw new UndeclaredThrowableException(ex);
         }
 
-        log().info("Vaccumd initialization complete");
+        log().info("Vacuumd initialization complete");
 
         createScheduler();
         scheduleAutomations();
@@ -167,7 +166,6 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
      * @see java.lang.Runnable#run()
      */
     public void run() {
-        ThreadCategory.setPrefix(getName());
         log().info("Vacuumd scheduling started");
 
         long now = System.currentTimeMillis();

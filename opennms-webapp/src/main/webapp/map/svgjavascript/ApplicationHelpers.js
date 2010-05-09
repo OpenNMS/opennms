@@ -105,7 +105,7 @@ function getMapString()
 			if(count>0)
 				query+="-";
 			var elem = map.mapElements[elemId];
-			query+= elemId+","+elem.x+","+elem.y+","+elem.icon;
+			query+= elemId+","+elem.x+","+elem.y+","+elem.icon.name;
 			count++;
 		}
 	}
@@ -178,45 +178,50 @@ function getSemaphoreFlash(severity, avail){
 }
 
 //save the mapid and mapname in the map history
+function deleteMapInHistory() {
+		mapHistory.splice(mapHistoryIndex,1);
+		mapHistoryName.splice(mapHistoryIndex,1);
+}
+
 function saveMapInHistory(){
-	var found=false;
+	if (currentMapId == NEW_MAP )
+	 	return;
+
 	for(i in mapHistory){
 		if(mapHistory[i]==currentMapId){
-			found=true;
 			mapHistoryIndex=parseInt(i);
 			mapHistoryName[mapHistoryIndex]=currentMapName;
+			return;
 		}
 	}
-	if(currentMapId!=NEW_MAP && !found){
-		if(mapHistory.length==0){
-			mapHistory.push(currentMapId);
-			mapHistoryName.push(currentMapName);
-			mapHistoryIndex = 0;
-		}else{
-			//alert("mapHistoryIndex="+(mapHistoryIndex));
-			++mapHistoryIndex;
-			var firstPart = mapHistory.slice(0,mapHistoryIndex);
-			var secondPart = mapHistory.slice(mapHistoryIndex);
-			var center = new Array();
-			center.push(currentMapId);
-			firstPart=firstPart.concat(center,secondPart);
-			mapHistory=firstPart;
-			/*for(ind in mapHistory){
-				alert(ind+" "+mapHistory[ind]);
-			}*/
+	 		
+	if(mapHistory.length==0){
+		mapHistory.push(currentMapId);
+		mapHistoryName.push(currentMapName);
+		mapHistoryIndex = 0;
+	}else{
+		//alert("mapHistoryIndex="+(mapHistoryIndex));
+		++mapHistoryIndex;
+		var firstPart = mapHistory.slice(0,mapHistoryIndex);
+		var secondPart = mapHistory.slice(mapHistoryIndex);
+		var center = new Array();
+		center.push(currentMapId);
+		firstPart=firstPart.concat(center,secondPart);
+		mapHistory=firstPart;
+		/*for(ind in mapHistory){
+			alert(ind+" "+mapHistory[ind]);
+		}*/
 
 
-			firstPart = mapHistoryName.slice(0,mapHistoryIndex);
-			secondPart = mapHistoryName.slice(mapHistoryIndex);
-			center = new Array();
-			center.push(currentMapName);
-			firstPart=firstPart.concat(center,secondPart);
-			mapHistoryName=firstPart;
-			/*for(ind in mapHistoryName){
-				alert(ind+" "+mapHistoryName[ind]);
-			}*/	
-		}
-
+		firstPart = mapHistoryName.slice(0,mapHistoryIndex);
+		secondPart = mapHistoryName.slice(mapHistoryIndex);
+		center = new Array();
+		center.push(currentMapName);
+		firstPart=firstPart.concat(center,secondPart);
+		mapHistoryName=firstPart;
+		/*for(ind in mapHistoryName){
+			alert(ind+" "+mapHistoryName[ind]);
+		}*/	
 	}
 }
 
@@ -281,4 +286,108 @@ function removeChilds(svgObject) {
           var obj = ls.item(0);
           svgObject.removeChild(obj);
         }
+}
+
+function assArrayPopulate(arrayKeys,arrayValues) {
+	var returnArray = new Array();
+	if (arrayKeys.length != arrayValues.length) {
+		alert("Error: arrays do not have same length");
+	}
+	else {
+		for (i=0;i<arrayKeys.length;i++) {
+			returnArray[arrayKeys[i]] = arrayValues[i];
+		}
+	}
+	return returnArray;
+}
+
+function windowsClean() {
+	var obj, ls;
+	ls = winSvgElement.childNodes;
+	while (ls.length > 0) {
+	  obj = ls.item(0);
+	  winSvgElement.removeChild(obj);
+	}		
+}
+
+function tabClean() {
+	var obj, ls;
+	ls = tabSvgElement.childNodes;
+	while (ls.length > 0) {
+	  obj = ls.item(0);
+	  tabSvgElement.removeChild(obj);
+	}		
+}
+
+function mapTabSetUp(mapName) {
+	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
+		mapTabTitles = new Array();
+	}
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==mapName ) {
+			mapTabGroup.activateTabByTitle(mapName,false);
+			return;
+		}
+	}
+	tabClean();
+	mapTabTitles.push(mapName);
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+	mapTabGroup.activateTabByTitle(mapName,false);
+}
+
+function mapTabClose(mapName) {
+	var tabs = new Array();
+	var index = 0;
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==mapName ) {
+			index = i;	
+		} else {
+			tabs.push(mapTabTitles[i]);
+		}
+	}
+	if (tabs.length == 0) {
+		tabs.push(MAP_NOT_OPENED_NAME);
+	}
+	if ( tabs.length == index )
+	   index--;
+
+	tabClean();
+	mapTabTitles=tabs;
+
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+
+	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
+			mapTabGroup.activateTabByIndex(index,false);
+	} else {
+		mapTabGroup.activateTabByIndex(index,true);
+	}
+}
+
+function mapTabRename(oldMapName,newMapName) {
+	var tabs = new Array();
+	for ( var i in mapTabTitles) {
+		if ( mapTabTitles[i]==oldMapName ) {
+			tabs.push(newMapName);
+		} else {
+			tabs.push(mapTabTitles[i])			
+		}
+	}
+
+	tabClean();
+	mapTabTitles=tabs;
+	mapTabGroup = 
+new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
+	mapTabGroup.activateTabByTitle(newMapName,false);
+
+}
+
+function getLabel(labelText) {
+		var ndxOf = labelText.indexOf('.');
+		if (ndxOf > 0)
+			return labelText.substr(0,ndxOf);
+		else
+			return labelText;
+
 }

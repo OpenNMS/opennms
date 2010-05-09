@@ -1,0 +1,63 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder 
+	xmlns:ui='urn:ui:com.google.gwt.uibinder' 
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' 
+	xmlns:me='urn:import:org.opennms.features.poller.remote.gwt.client'
+>
+
+	<ui:style>
+		.fullWidth {
+			width: 100%;
+		}
+		.selectorLabel {
+			font-weight: bold;
+			font-size: 10px;
+		}
+		.panelHeader {
+			font-weight: bold;
+			font-size: 13px;
+		}
+		.panelPadding {
+			padding: 10px;
+		}
+	</ui:style>
+	<ui:style field="filterStyles" type="org.opennms.features.poller.remote.gwt.client.FilterPanel.FilterStyles">
+		.panelIcon {
+			width: 14px;
+			padding-right: 3px;
+		}
+		.panelCaption {
+			font-weight: bold;
+			padding-right: 3px;
+		}
+		.panelEntry {
+			padding-top: 3px;
+			padding-bottom: 3px;
+			font-size: small;
+		}
+	</ui:style>
+
+	<g:VerticalPanel addStyleNames="{style.fullWidth}">
+		<g:VerticalPanel addStyleNames="{style.fullWidth} {style.panelPadding}">
+			<g:Label addStyleNames="{style.selectorLabel}" text="Show statuses:"/>
+			<g:HorizontalPanel>
+				<g:ToggleButton ui:field="upButton"       text="Up"  />
+				<g:ToggleButton ui:field="marginalButton" text="Marginal" />
+				<g:ToggleButton ui:field="downButton"     text="Down" />
+				<g:ToggleButton ui:field="unknownButton"  text="Unknown" />
+			</g:HorizontalPanel>
+		</g:VerticalPanel>
+
+		<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationTray">
+			<g:HTMLPanel><hr/></g:HTMLPanel>
+			<g:VerticalPanel addStyleNames="{style.panelPadding}">
+				<g:Label addStyleNames="{style.panelHeader}" text="Selected Applications"/>
+				<g:Label ui:field="noApplicationsCaption" addStyleNames="{filterStyles.panelEntry}" text="No applications selected." visible="false"/>
+				<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationFilters"/>
+				<g:Label addStyleNames="{style.selectorLabel}" text="Add application:"/>
+				<g:SuggestBox ui:field="applicationNameSuggestBox"/>
+			</g:VerticalPanel>
+		</g:VerticalPanel>
+	</g:VerticalPanel>
+
+</ui:UiBinder>

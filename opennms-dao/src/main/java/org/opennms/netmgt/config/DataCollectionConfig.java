@@ -39,16 +39,16 @@ import org.opennms.netmgt.model.RrdRepository;
 
 public interface DataCollectionConfig {
     
-    public static final int NODE_ATTRIBUTES = -1;
-    public static final int ALL_IF_ATTRIBUTES = -2;
+    static final int NODE_ATTRIBUTES = -1;
+    static final int ALL_IF_ATTRIBUTES = -2;
 
     String getSnmpStorageFlag(String collectionName);
 
-    public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType);
+    List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType);
 
-    public Map<String,ResourceType> getConfiguredResourceTypes();
+    Map<String,ResourceType> getConfiguredResourceTypes();
     
-    public RrdRepository getRrdRepository(String collectionName);
+    RrdRepository getRrdRepository(String collectionName);
     
     int getStep(String collectionName);
 

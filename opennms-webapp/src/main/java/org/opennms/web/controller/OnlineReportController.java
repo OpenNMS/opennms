@@ -103,7 +103,7 @@ public class OnlineReportController extends SimpleFormController {
             response.setHeader("Cache-Control", "cache");
             response.setHeader("Cache-Control", "must-revalidate");
         }
-        m_reportWrapperService.runAndRender(parameters.getReportParms(), parameters.getReportId(), parameters.getFormat(), response.getOutputStream());
+        m_reportWrapperService.runAndRender(parameters, response.getOutputStream());        
         return null;
     }
     

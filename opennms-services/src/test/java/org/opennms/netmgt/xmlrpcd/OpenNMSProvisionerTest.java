@@ -49,9 +49,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import org.easymock.EasyMock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
@@ -74,7 +72,6 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
-import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
@@ -422,7 +419,7 @@ public class OpenNMSProvisionerTest {
     }
     
     private void expectUpdateEvent() {
-        m_eventManager.getEventAnticipator().anticipateEvent(MockEventUtil.createEvent("Test", EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI));
+        m_eventManager.getEventAnticipator().anticipateEvent(MockEventUtil.createEventBuilder("Test", EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI).getEvent());
     }
 
     private void verifyEvents() {

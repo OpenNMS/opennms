@@ -109,21 +109,21 @@
     <input type="hidden" name="node" value="<%=nodeId%>" />
 
   <strong>User Defined</strong>
-  <br>
+  <br/>
   <input type="radio" name="labeltype" value="user" <%=(currentLabel.getSource() == NodeLabel.SOURCE_USERDEFINED) ? "checked" : ""%> />
   <input type="text" name="userlabel" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
 
-  <br>
-  <br>
+  <br/>
+  <br/>
 
   <strong>Automatic</strong>
-  <br>
+  <br/>
   <input type="radio" name="labeltype" value="auto" <%=(currentLabel.getSource() != NodeLabel.SOURCE_USERDEFINED) ? "checked" : ""%> />
 
     <%=autoLabel.getLabel()%> (<%=typeMap.get(new Character(autoLabel.getSource()))%>)
 
-  <br>
-  <br>
+  <br/>
+  <br/>
 
   <input type="submit" value="Change Label" />
   <input type="reset" />

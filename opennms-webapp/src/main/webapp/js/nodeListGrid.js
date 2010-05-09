@@ -192,7 +192,7 @@ var tb = new Ext.Toolbar({
 
 var filterMenuItems = [
     new Ext.menu.CheckItem({ 
-        text: 'Ip Address', 
+        text: 'IP Address', 
         checked: true, 
         group: 'filter',
         id: 'ipAddress',

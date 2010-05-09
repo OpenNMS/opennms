@@ -49,6 +49,8 @@
 		session="true"
 		import="org.opennms.netmgt.config.PollerConfigFactory,
 				org.opennms.netmgt.config.PollerConfig,
+				org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory,
+				org.opennms.netmgt.config.SnmpInterfacePollerConfig,
 				java.util.*,
                 org.opennms.core.utils.SIUtils,
                 org.opennms.netmgt.model.OnmsResource,
@@ -122,6 +124,10 @@
     PollerConfigFactory.init();
     PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
+    
+    SnmpInterfacePollerConfigFactory.init();
+    SnmpInterfacePollerConfig snmpPollerCfgFactory = SnmpInterfacePollerConfigFactory.getInstance();
+    snmpPollerCfgFactory.rebuildPackageIpListMap();
 %>
 
 <%
@@ -177,7 +183,7 @@ function doDelete() {
         if (! ipAddr.equals("0.0.0.0")) {
         %>
 	<li>
-        <a href="<%=eventUrl1%>">View Events by Ip address</a>
+        <a href="<%=eventUrl1%>">View Events by IP Address</a>
 	</li>
 		<% } %>
 		
@@ -292,6 +298,21 @@ function doDelete() {
                 <th>Last Service Scan</th>
                 <td><%=intf_db.getLastCapsdPoll()%></td>
               </tr>
+			  <tr>
+	            <th>Snmp Polling Status</th>
+	            <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
+	          </tr>  
+       <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+              <tr>
+                <th>Snmp Polling Package</th>
+                <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
+                snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId))%></td>
+              </tr>
+	   <% } %>
+              <tr> 
+                <th>Last Snmp Poll</th>
+    	        <td><%=(intf_db.getSnmpLastSnmpPoll() == null) ? "&nbsp;" : intf_db.getSnmpLastSnmpPoll()%></td>
+        	  </tr>
               
             </table>
             
@@ -347,8 +368,8 @@ function doDelete() {
 		                  &nbsp;
 		                <% } %>
 		              </td>
-		            </tr>
-                  </table>
+		            </tr>		            
+		            </table>
             <% } %>
 
 
@@ -364,7 +385,7 @@ function doDelete() {
           
             <!-- events list box 1 using ipaddress-->
             <% if (!ipAddr.equals("0.0.0.0")) {
-            	String eventHeader1 = "<a href='" + eventUrl1 + "'>Recent Events (Using Filter Ip address:" + ipAddr + ")</a>"; %>
+            	String eventHeader1 = "<a href='" + eventUrl1 + "'>Recent Events (Using Filter IP Address:" + ipAddr + ")</a>"; %>
             <% String moreEventsUrl1 = eventUrl1; %>
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />

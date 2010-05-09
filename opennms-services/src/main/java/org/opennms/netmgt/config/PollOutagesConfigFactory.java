@@ -40,10 +40,12 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -161,7 +163,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
     protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
 
-        FileWriter fileWriter = new FileWriter(cfgFile);
+        Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
         fileWriter.write(xmlString);
         fileWriter.flush();
         fileWriter.close();

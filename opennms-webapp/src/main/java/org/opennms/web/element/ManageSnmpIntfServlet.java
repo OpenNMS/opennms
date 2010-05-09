@@ -98,7 +98,6 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 
-    	ThreadCategory.setPrefix("OpenNMS.WEB");
 		Category log = ThreadCategory.getInstance();
 
 		HttpSession userSession = request.getSession(false);

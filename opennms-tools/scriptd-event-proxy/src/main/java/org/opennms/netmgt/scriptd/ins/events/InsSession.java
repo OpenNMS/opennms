@@ -24,7 +24,6 @@ import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -308,18 +307,9 @@ class InsSession extends InsAbstractSession {
             log.info("No Event severity found.");
         }
 
-          if (ev.getIfIndex() != null) {
+          if (ev.getIfIndex() != null && ev.getIfIndex() > 0 ) {
               e.setIfIndex(ev.getIfIndex());
               e.setIfAlias(getIfAlias(ev.getNode().getId(),ev.getIfIndex()));
-          } else if (ev.getIpAddr() != null && !ev.getIpAddr().equals("0.0.0.0")) {
-              OnmsSnmpInterface iface = getIfAlias(ev.getNode().getId(), ev.getIpAddr());
-              if (iface != null) {
-                  e.setIfIndex(iface.getIfIndex());
-                  e.setIfAlias(iface.getIfAlias());
-              } else {
-                  e.setIfIndex(-1);
-                  e.setIfAlias("-1");
-              }
           } else {
               e.setIfIndex(-1);
               e.setIfAlias("-1");
@@ -370,7 +360,8 @@ class InsSession extends InsAbstractSession {
         return e;
     }
 	
-	private void getEventsByCriteria() {
+	@SuppressWarnings("unchecked")
+    private void getEventsByCriteria() {
         Category log = getLog();
         log.debug("Entering getEventsByCriteria.....");
         log.debug("clearing events");

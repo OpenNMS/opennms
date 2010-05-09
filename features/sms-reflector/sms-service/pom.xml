@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.7.10-SNAPSHOT</version>
+    <version>1.7.11-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -138,7 +138,7 @@
     <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.5</version>
+      <version>0.6</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 
 import junit.framework.TestCase;
 
@@ -54,7 +55,6 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
@@ -84,12 +84,6 @@ public class CollectorConfigDaoImplTest extends TestCase {
         super.tearDown();
 	}
 	
-	public Reader getReaderForFile(String fileName) {
-		InputStream is = getInputStreamForFile(fileName);
-		assertNotNull("could not get file resource '" + fileName + "'", is);
-		return new InputStreamReader(is);
-	}
-
     private InputStream getInputStreamForFile(String fileName) {
         return getClass().getResourceAsStream(fileName);
     }

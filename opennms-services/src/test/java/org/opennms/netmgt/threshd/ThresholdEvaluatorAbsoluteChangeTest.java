@@ -278,13 +278,4 @@ public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvalu
         assertEquals("UEI should be the "+triggeredUEI, triggeredUEI, event.getUei());
        
     }
-    
-    @SuppressWarnings("unchecked")
-    private static Collection<Parm> getParmCollection(Event event) {
-        if (event.getParms() == null) {
-            return new ArrayList<Parm>();
-        }
-        
-        return event.getParms().getParmCollection();
-    }
 }

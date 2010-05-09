@@ -82,73 +82,42 @@ public class AddMapsController implements Controller {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
-		String action = request.getParameter("action");
 		String elems = request.getParameter("elems");
-		log.debug("Adding Maps; action:"+action+", elems="+elems );
+		log.debug("Adding Maps: elems="+elems );
 		
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				log.warn(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
-				throw new MapsException(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
-			}
 			VMap map = manager.openMap();
-			if(log.isDebugEnabled())
-				log.debug("Got map from manager "+map);
+            List<VElement> velems = new ArrayList<VElement>();
+            // response for addElement
+            List<Integer> mapsWithLoop = new ArrayList<Integer>();
+			log.debug("Got map from manager "+map);
 			
-			String type = VElement.MAP_TYPE;
-			
-			if (! action.equals(MapsConstants.ADDMAPS_ACTION))
-                throw new MapsException(request.getRemoteUser() +": Cannot add maps because user role is:" + MapsConstants.ROLE_USER);
 			log.debug("Adding maps by id: "+ elems);
 			String[] smapids = elems.split(",");
-	         List<Integer> mapids = new ArrayList<Integer>(smapids.length);			
+
 			for (int i = 0; i<smapids.length;i++) {
-				mapids.add(new Integer(smapids[i]));
-			}
-			
-			List<VElement> velems = new ArrayList<VElement>();
-			List<VLink> links = new ArrayList<VLink>();
-			// response for addElement
-			List<Integer> mapsWithLoop = new ArrayList<Integer>();
-				
-			for (Integer id : mapids) {
-				if (map.containsElement(id, type)) {
-					log.debug("Action: " + action + " . Map Contains Element: " + id+type);
+			    Integer id = new Integer(smapids[i]);
+				if (map.containsElement(id, MapsConstants.MAP_TYPE)) {
+					log.debug(" Map Contains Element: " + id+MapsConstants.MAP_TYPE);
 					continue;
 					
 				}
 				boolean foundLoop = manager.foundLoopOnMaps(map,id);
-					
 
 				if(foundLoop) {
 					mapsWithLoop.add(id);
 				} else {
-				    VElement ve = manager.newElement(id, type);
-	                try {
-	                    VElement hve = manager.getElement(map.getId(), id, VElement.MAP_HIDE_TYPE);
-	                    if (hve.getLabel() != null) {
-	                        ve.setLabel(hve.getLabel());
-	                        log.debug("preserving label map is hidden: label found: " + hve.getLabel());
-	                    }
-	                } catch (Exception e) {
-	                   log.debug("No Hidden Map found for id: " +id); 
-                    }
-	                log.debug("adding map element to map with id: " +id+type);
-					velems.add(ve);
+				    velems.add(manager.newElement(map.getId(),id, MapsConstants.MAP_TYPE));
 				}
 			} // end for
 
-				//get links and add elements to map
-			if (velems != null) {
-				map.addElements(velems);
-				links = manager.getLinks(map.getAllElements());
-			}
-			log.debug("After getting/adding links");
-			bw.write(ResponseAssembler.getAddMapsResponse(action, mapsWithLoop,velems, links));
+			//get map
+			map = manager.addElements(map, velems);
+			bw.write(ResponseAssembler.getAddElementResponse(mapsWithLoop,velems,map.getLinks().values()));
 		} catch (Exception e) {
-			log.error("Error while adding Maps for action: "+action,e);
-			bw.write(ResponseAssembler.getMapErrorResponse(action));
+			log.error("Error while adding Maps: ",e);
+			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.ADDMAPS_ACTION));
 		} finally {
 			bw.close();
 		}

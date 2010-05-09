@@ -32,5 +32,24 @@
 		</preConditions>
 		<dropTable tableName="reportlocator" />
 	</changeSet>
+
+	<changeSet author="rssntn67" id="1.7.10-snmp-poll">
+
+		<addColumn tableName="snmpinterface">
+                        <column name="snmppoll" type="varchar(1)" defaultValue="N"/>
+                </addColumn>
+		<addColumn tableName="snmpinterface">
+                        <column name="snmplastsnmppoll" type="DATETIME" />
+                </addColumn>
+
+
+		<rollback>
+			<dropColumn tableName="qrtz_triggers" columnName="priority" />
+			<dropColumn tableName="qrtz_fired_triggers" columnName="priority" />
+    		<dropColumn tableName="snmpinterface" columnName="snmppoll"/>
+    		<dropColumn tableName="snmpinterface" columnName="snmplastsnmppoll"/>
+		</rollback>
+
+	</changeSet>
 	
 </databaseChangeLog>

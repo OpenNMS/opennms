@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.7.10-SNAPSHOT</version>
+    <version>1.7.11-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -19,6 +19,7 @@
     <module>sms-reflector</module>
     <module>reporting</module>
     <module>springframework-security</module>
+    <module>webapp-full</module>
   </modules>
 
   <profiles>
@@ -32,6 +33,8 @@
         <module>remote-poller</module>
         <module>remote-poller-jnlp</module>
         <module>remote-poller-onejar</module>
+        <module>remote-poller-gwt</module>
+        <module>remote-poller-standalone</module>
       </modules>
     </profile>
 

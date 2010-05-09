@@ -38,6 +38,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.alarm.filter.AlarmCriteria;
@@ -266,7 +267,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), new SeverityBetweenFilter(OnmsSeverity.NORMAL, OnmsSeverity.CRITICAL));
         
         String sql = getSql("UPDATE ALARMS SET SEVERITY =?, ALARMTYPE =? ", criteria);
-        System.out.println(sql);
+        LogUtils.infof(this, sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), Alarm.RESOLUTION_TYPE));
         
     }
@@ -279,24 +280,22 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), orCondFilter);
         
         String sql = getSql("UPDATE ALARMS SET SEVERITY = ( CASE WHEN SEVERITY =? THEN ? ELSE ( CASE WHEN SEVERITY <? THEN SEVERITY + 1 ELSE ? END) END), ALARMTYPE =? ", criteria);
-        System.out.println(sql);
+        LogUtils.infof(this, sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), Alarm.PROBLEM_TYPE));
     }
     
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
-        Number number = (Number) queryForObject(sql, setter, new SingleColumnRowMapper(Integer.class));
+        Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
     }
     
-    @SuppressWarnings("unchecked")
-    private Object queryForObject(String sql, PreparedStatementSetter setter, RowMapper rowMapper) throws DataAccessException {
-        return DataAccessUtils.requiredSingleResult((List) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rowMapper, 1)));
+    private <T> T queryForObject(String sql, PreparedStatementSetter setter, RowMapper<T> rowMapper) throws DataAccessException {
+        return DataAccessUtils.requiredSingleResult(jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
     }
 
 
-    @SuppressWarnings("unchecked")
     private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
-        return (List<T>) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rm));
+        return jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
     }
     
     private JdbcOperations jdbc() {

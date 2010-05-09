@@ -1,3 +1,27 @@
+opennms (1.7.90-0) unstable; urgency=low
+
+  * Rearranged remote poller packaging.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 05 Apr 2010 12:00:00 -0500
+
+opennms (1.7.10-3) unstable; urgency=low
+
+  * Include small fix for RXTX native libraries.
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 18 Mar 2010 10:30:00 -0500
+
+opennms (1.7.10-2) unstable; urgency=low
+
+  * Fix jar filenames.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 11 Mar 2010 17:49:00 -0500
+
+opennms (1.7.10-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 11 Mar 2010 10:35:00 -0500
+
 opennms (1.7.9-1) unstable; urgency=medium
 
   * New upstream release.

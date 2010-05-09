@@ -335,7 +335,6 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
         }
     }
     
-    @SuppressWarnings("unchecked")
     private static List<ObjectError> getErrorList(Errors errors) {
         return (List<ObjectError>) errors.getAllErrors();
     }

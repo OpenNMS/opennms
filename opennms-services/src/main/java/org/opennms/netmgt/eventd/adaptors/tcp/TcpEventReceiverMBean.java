@@ -37,33 +37,13 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
-public interface TcpEventReceiverMBean {
-    /**
-     * Starts the current managed bean.
-     */
-    public void start();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    /**
-     * Stops the current managed bean.
-     */
-    public void stop();
-
-    /**
-     * Invoked prior to start
-     */
-    public void init();
-
+public interface TcpEventReceiverMBean extends BaseOnmsMBean{
     /**
      * Invoked prior to garbage collection.
      */
-    public void destroy();
-
-    /**
-     * The current status of the managed bean. This is a representation of the
-     * managed bean's run state as defined by the <code>Fiber</code>
-     * interface.
-     */
-    public int getStatus();
+    void destroy();
 
     /**
      * Sets the port where new requests will be handled. This can only be done
@@ -73,14 +53,14 @@ public interface TcpEventReceiverMBean {
      * @param port
      *            The port to listen on.
      */
-    public void setPort(Integer port);
+    void setPort(Integer port);
 
     /**
      * Returns the where a listener is waiting to process new request.
      * 
      * @return The listening port.
      */
-    public Integer getPort();
+    Integer getPort();
 
     /**
      * Adds a new event handler by its managed name.
@@ -93,7 +73,7 @@ public interface TcpEventReceiverMBean {
      * @throws javax.management.InstanceNotFoundException
      *             Thrown if no managed bean can be found that matches the name.
      */
-    public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
+    void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
 
     /**
      * Removes an event handler. The passed name must be a valid JMX object
@@ -107,12 +87,12 @@ public interface TcpEventReceiverMBean {
      * @throws javax.management.InstanceNotFoundException
      *             Thrown if no managed bean can be found that matches the name.
      */
-    public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
+    void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
 
     /**
      * The logging prefix to use
      */
-    public void setLogPrefix(String prefix);
+    void setLogPrefix(String prefix);
 
     /**
      * The number of event records a new connection is allowed to send before
@@ -122,5 +102,5 @@ public interface TcpEventReceiverMBean {
      * @param number
      *            The number of event records.
      */
-    public void setEventsPerConnection(Integer number);
+    void setEventsPerConnection(Integer number);
 }

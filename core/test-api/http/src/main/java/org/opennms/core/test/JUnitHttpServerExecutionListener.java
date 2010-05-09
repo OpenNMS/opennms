@@ -16,7 +16,12 @@ import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.core.test.annotations.Webapp;
 import org.opennms.core.utils.LogUtils;
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListener;
 
+/**
+ * This {@link TestExecutionListener} looks for the {@link JUnitHttpServer} annotation
+ * and uses attributes on it to launch a temporary HTTP server for use during unit tests.
+ */
 public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecutionListener {
     private Server m_server;
     

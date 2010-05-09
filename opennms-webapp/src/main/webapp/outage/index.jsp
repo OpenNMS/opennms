@@ -56,7 +56,7 @@
   <div class="TwoColLeft">
       <h3>Outage Menu</h3>    
 		<div class="boxWrapper">
-        <form method="GET" action="outage/detail.htm" >
+        <form method="get" action="outage/detail.htm" >
           <p align="right">Outage ID:
 				<input type="text" name="id" />
 				<input type="submit" value="Get details" /></p>

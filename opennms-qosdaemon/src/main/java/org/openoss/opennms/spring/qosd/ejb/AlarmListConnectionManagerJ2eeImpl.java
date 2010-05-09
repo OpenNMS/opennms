@@ -110,8 +110,8 @@ public class AlarmListConnectionManagerJ2eeImpl implements AlarmListConnectionMa
 	 * @param m_context - application conext for this bean to use
 	 * SPRING DAO SETTERS - NOT USED IN THIS VERSION
 	 */
-	public  void setapplicationcontext(ClassPathXmlApplicationContext m_context){
-		cmt.setapplicationcontext(m_context);
+	public  void setApplicationContext(ClassPathXmlApplicationContext m_context){
+		cmt.setApplicationContext(m_context);
 	}
 
 }

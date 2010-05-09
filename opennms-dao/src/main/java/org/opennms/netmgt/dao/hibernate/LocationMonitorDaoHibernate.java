@@ -30,9 +30,11 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +42,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -48,10 +51,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
+import org.opennms.netmgt.config.tags.Tag;
+import org.opennms.netmgt.config.tags.Tags;
 import org.opennms.netmgt.dao.CastorDataAccessFailureException;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -83,25 +89,33 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         }
     }
     
-    @SuppressWarnings("unchecked")
     public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
         assertPropertiesSet();
         
-        List<OnmsMonitoringLocationDefinition> onmsDefs = new ArrayList();
         final List<LocationDef> locationDefCollection = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
         if (locationDefCollection != null) {
-            onmsDefs = convertDefs(locationDefCollection);
+        	return convertDefs(locationDefCollection);
         }
-        return onmsDefs;
+        return new ArrayList<OnmsMonitoringLocationDefinition>();
     }
     
-    private List<OnmsMonitoringLocationDefinition> convertDefs(List<LocationDef> defs) {
-        List<OnmsMonitoringLocationDefinition> onmsDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
-        for (LocationDef def : defs) {
-            OnmsMonitoringLocationDefinition onmsDef = new OnmsMonitoringLocationDefinition();
+    private List<OnmsMonitoringLocationDefinition> convertDefs(final List<LocationDef> defs) {
+    	final List<OnmsMonitoringLocationDefinition> onmsDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
+        for (final LocationDef def : defs) {
+        	final OnmsMonitoringLocationDefinition onmsDef = new OnmsMonitoringLocationDefinition();
             onmsDef.setArea(def.getMonitoringArea());
             onmsDef.setName(def.getLocationName());
             onmsDef.setPollingPackageName(def.getPollingPackageName());
+            onmsDef.setGeolocation(def.getGeolocation());
+            onmsDef.setCoordinates(def.getCoordinates());
+            onmsDef.setPriority(def.getPriority());
+            if (def.getTags() != null) {
+            	final Set<String> tags = new HashSet<String>();
+            	for (final Tag t : def.getTags().getTagCollection()) {
+            		tags.add(t.getName());
+            	}
+            	onmsDef.setTags(tags);
+            }
             onmsDefs.add(onmsDef);
         }
         return onmsDefs;
@@ -110,25 +124,46 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     /**
      * Don't call this for now.
      */
-    public void saveMonitoringLocationDefinitions(Collection<OnmsMonitoringLocationDefinition> onmsDefs) {
-        Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
-        for (OnmsMonitoringLocationDefinition onmsDef : onmsDefs) {
-            for (LocationDef def : defs) {
+    public void saveMonitoringLocationDefinitions(final Collection<OnmsMonitoringLocationDefinition> onmsDefs) {
+    	final Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
+        for (final OnmsMonitoringLocationDefinition onmsDef : onmsDefs) {
+            for (final LocationDef def : defs) {
                 if (def.getLocationName().equals(onmsDef.getName())) {
                     def.setMonitoringArea(onmsDef.getArea());
-                    def.setPollingPackageName(onmsDef.getArea());
+                    def.setPollingPackageName(onmsDef.getPollingPackageName());
+                    def.setGeolocation(onmsDef.getGeolocation());
+                    def.setCoordinates(onmsDef.getCoordinates());
+                    def.setPriority(onmsDef.getPriority());
+                    
+                    final Tags tags = new Tags();
+                    for (final String tag : onmsDef.getTags()) {
+                    	final Tag t = new Tag();
+                    	t.setName(tag);
+                    	tags.addTag(t);
+                    }
+                    def.setTags(tags);
                 }
             }
         }
         saveMonitoringConfig();
     }
 
-    public void saveMonitoringLocationDefinition(OnmsMonitoringLocationDefinition onmsDef) {
-        Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
-        for (LocationDef def : defs) {
+    public void saveMonitoringLocationDefinition(final OnmsMonitoringLocationDefinition onmsDef) {
+    	final Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
+        for (final LocationDef def : defs) {
             if (onmsDef.getName().equals(def.getLocationName())) {
                 def.setMonitoringArea(onmsDef.getArea());
                 def.setPollingPackageName(onmsDef.getPollingPackageName());
+                def.setGeolocation(onmsDef.getGeolocation());
+                def.setCoordinates(onmsDef.getCoordinates());
+                def.setPriority(onmsDef.getPriority());
+                final Tags tags = new Tags();
+                for (final String tag : onmsDef.getTags()) {
+                	final Tag t = new Tag();
+                	t.setName(tag);
+                	tags.addTag(t);
+                }
+                def.setTags(tags);
             }
         }
         saveMonitoringConfig();
@@ -142,26 +177,26 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      */
     protected void saveMonitoringConfig() {
         String xml = null;
-        StringWriter writer = new StringWriter();
+        final StringWriter writer = new StringWriter();
         try {
-            Marshaller.marshal(m_monitoringLocationsConfiguration, writer);
+        	Marshaller.marshal(m_monitoringLocationsConfiguration, writer);
             xml = writer.toString();
             saveXml(xml);
-        } catch (MarshalException e) {
+        } catch (final MarshalException e) {
             throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't marshal confg: \n"+
                    (xml != null ? xml : ""), e);
-        } catch (ValidationException e) {
+        } catch (final ValidationException e) {
             throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't validate confg: \n"+
                     (xml != null ? xml : ""), e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't write confg: \n"+
                     (xml != null ? xml : ""), e);
         }
     }
     
-    protected void saveXml(String xml) throws IOException {
+    protected void saveXml(final String xml) throws IOException {
         if (xml != null) {
-            FileWriter fileWriter = new FileWriter(m_monitoringLocationConfigResource.getFile());
+        	final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_monitoringLocationConfigResource.getFile()), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
@@ -174,14 +209,12 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      * @return
      */
     private LocationDef getLocationDef(final String definitionName) {
-        Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
-        LocationDef matchingDef = null;
-        for (LocationDef def : defs) {
+        for (final LocationDef def : m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection()) {
             if (def.getLocationName().equals(definitionName)) {
-                matchingDef = def;
+            	return def;
             }
         }
-        return matchingDef;
+        return null;
     }
 
 
@@ -207,17 +240,15 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     
     public Collection<OnmsMonitoringLocationDefinition> findAllLocationDefinitions() {
         assertPropertiesSet();
-        List<OnmsMonitoringLocationDefinition> eDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
-        Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
-        for (LocationDef def : defs) {
+        final List<OnmsMonitoringLocationDefinition> eDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
+        for (final LocationDef def : m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection()) {
             eDefs.add(createEntityDef(def));
         }
         return eDefs;
     }
 
     private void assertPropertiesSet() {
-        if (m_monitoringLocationConfigResource == null
-                && m_monitoringLocationsConfiguration == null) {
+        if (m_monitoringLocationConfigResource == null && m_monitoringLocationsConfiguration == null) {
             throw new IllegalStateException("either "
                                             + "monitoringLocationConfigResource "
                                             + "or monitorLocationsConfiguration "
@@ -226,11 +257,21 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         
     }
 
-    private OnmsMonitoringLocationDefinition createEntityDef(LocationDef def) {
-        OnmsMonitoringLocationDefinition eDef = new OnmsMonitoringLocationDefinition();
+    private OnmsMonitoringLocationDefinition createEntityDef(final LocationDef def) {
+    	final OnmsMonitoringLocationDefinition eDef = new OnmsMonitoringLocationDefinition();
         eDef.setArea(def.getMonitoringArea());
         eDef.setName(def.getLocationName());
         eDef.setPollingPackageName(def.getPollingPackageName());
+        eDef.setGeolocation(def.getGeolocation());
+        eDef.setCoordinates(def.getCoordinates());
+        eDef.setPriority(def.getPriority());
+        if (def.getTags() != null) {
+            final Set<String> tags = new HashSet<String>();
+            for (final Tag t : def.getTags().getTagCollection()) {
+            	tags.add(t.getName());
+            }
+            eDef.setTags(tags);
+        }
         return eDef;
     }
 
@@ -238,8 +279,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         return m_monitoringLocationsConfiguration;
     }
 
-    public void setMonitoringLocationsConfiguration(
-            MonitoringLocationsConfiguration monitoringLocationsConfiguration) {
+    public void setMonitoringLocationsConfiguration(final MonitoringLocationsConfiguration monitoringLocationsConfiguration) {
         m_monitoringLocationsConfiguration = monitoringLocationsConfiguration;
     }
     
@@ -247,17 +287,17 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         return m_monitoringLocationConfigResource;
     }
 
-    public void setMonitoringLocationConfigResource(Resource monitoringLocationResource) {
+    public void setMonitoringLocationConfigResource(final Resource monitoringLocationResource) {
         m_monitoringLocationConfigResource = monitoringLocationResource;
         initializeMonitoringLocationDefinition();
     }
 
-    public OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(String monitoringLocationDefinitionName) {
+    public OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(final String monitoringLocationDefinitionName) {
         if (monitoringLocationDefinitionName == null) {
             throw new IllegalArgumentException("monitoringLocationDefinitionName must not be null");
         }
         assertPropertiesSet();
-        LocationDef locationDef = getLocationDef(monitoringLocationDefinitionName);
+        final LocationDef locationDef = getLocationDef(monitoringLocationDefinitionName);
         if (locationDef == null) {
             return null;
         }
@@ -265,11 +305,10 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
 
     public OnmsLocationSpecificStatus getMostRecentStatusChange(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monSvc) {
-        HibernateCallback callback = new HibernateCallback() {
+    	final HibernateCallback<OnmsLocationSpecificStatus> callback = new HibernateCallback<OnmsLocationSpecificStatus>() {
 
-            public Object doInHibernate(Session session)
-                    throws HibernateException, SQLException {
-                return session.createQuery("from OnmsLocationSpecificStatus status where status.locationMonitor = :locationMonitor and status.monitoredService = :monitoredService order by status.pollResult.timestamp desc")
+            public OnmsLocationSpecificStatus doInHibernate(final Session session) throws HibernateException, SQLException {
+                return (OnmsLocationSpecificStatus)session.createQuery("from OnmsLocationSpecificStatus status where status.locationMonitor = :locationMonitor and status.monitoredService = :monitoredService order by status.pollResult.timestamp desc")
                     .setEntity("locationMonitor", locationMonitor)
                     .setEntity("monitoredService", monSvc)
                     .setMaxResults(1)
@@ -277,14 +316,25 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             }
 
         };
-        return (OnmsLocationSpecificStatus)getHibernateTemplate().execute(callback);
+        return getHibernateTemplate().execute(callback);
     }
 
-    public void saveStatusChange(OnmsLocationSpecificStatus statusChange) {
+    public void saveStatusChange(final OnmsLocationSpecificStatus statusChange) {
         getHibernateTemplate().save(statusChange);
     }
 
-    public Collection<OnmsLocationMonitor> findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition) {
+    public Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application) {
+    	final Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+    	for (final OnmsLocationSpecificStatus status : getAllMostRecentStatusChanges()) {
+    		if (status.getMonitoredService().getApplications() != null
+    				&& status.getMonitoredService().getApplications().contains(application)) {
+    			monitors.add(status.getLocationMonitor());
+    		}
+    	}
+    	return monitors;
+    }
+    
+    public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocationDefinition locationDefinition) {
     	return (Collection<OnmsLocationMonitor>)find("from OnmsLocationMonitor as mon where mon.definitionName = ?", locationDefinition.getName());
     }
 
@@ -292,7 +342,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     	return getAllStatusChangesAt(new Date());
     }
     
-    public Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(Date timestamp) {
+    public Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(final Date timestamp) {
     	return findObjects(OnmsLocationSpecificStatus.class,
     			"from OnmsLocationSpecificStatus as status " +
     			"where status.pollResult.timestamp = ( " +
@@ -306,7 +356,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     			timestamp); 
     }
     
-    public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate) {
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(final Date startDate, final Date endDate) {
     	return findObjects(OnmsLocationSpecificStatus.class,
     			"from OnmsLocationSpecificStatus as status " +
     			"where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ?",
@@ -314,16 +364,24 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     			);
     }
 
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationName) {
+    	return findObjects(OnmsLocationSpecificStatus.class,
+    			"from OnmsLocationSpecificStatus as status " +
+    			"where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ? and status.locationMonitor.definitionName = ?",
+    			startDate, endDate, locationName
+    			);
+    }
+
     @SuppressWarnings("unchecked")
-    public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(int nodeId) {
-        List l = getHibernateTemplate().find(
+    public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
+    	final List l = getHibernateTemplate().find(
                         "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
                         "where status.monitoredService.ipInterface.node.id = ?",
                         nodeId
                         );
         
-        HashSet<LocationMonitorIpInterface> ret = new HashSet<LocationMonitorIpInterface>();
-        for (Object o : l) {
+    	final HashSet<LocationMonitorIpInterface> ret = new HashSet<LocationMonitorIpInterface>();
+        for (final Object o : l) {
             OnmsLocationMonitor mon = (OnmsLocationMonitor) ((Object[]) o)[0];
             OnmsIpInterface ip = (OnmsIpInterface) ((Object[]) o)[1];
             ret.add(new LocationMonitorIpInterface(mon, ip));

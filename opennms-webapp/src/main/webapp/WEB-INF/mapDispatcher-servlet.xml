@@ -74,11 +74,10 @@
   </bean -->
 
   <bean name="/MapStartUp.map" class="org.opennms.web.map.MapStartUpController">
-    <property name="mapsPropertiesFactory" ref="mapsPropertiesFactory"/>
     <property name="manager" ref="manager"/>
   </bean>
 
-  <bean name="/SwitchRole.map" class="org.opennms.web.map.SwitchRoleController">
+  <bean name="/admin/SwitchRole.map" class="org.opennms.web.map.SwitchRoleController">
     <property name="manager" ref="manager" />
   </bean>
  
@@ -86,7 +85,7 @@
     <property name="manager" ref="manager" />
   </bean>
 
-  <bean name="/NewMap.map" class="org.opennms.web.map.NewMapController">
+  <bean name="/admin/NewMap.map" class="org.opennms.web.map.NewMapController">
     <property name="manager" ref="manager" />
   </bean>
 
@@ -94,15 +93,15 @@
     <property name="manager" ref="manager" />
   </bean>
   
-  <bean name="/DeleteMap.map" class="org.opennms.web.map.DeleteMapController">
+  <bean name="/admin/DeleteMap.map" class="org.opennms.web.map.DeleteMapController">
     <property name="manager" ref="manager" />
   </bean>
 
-  <bean name="/ClearMap.map" class="org.opennms.web.map.ClearMapController">
+  <bean name="/admin/ClearMap.map" class="org.opennms.web.map.ClearMapController">
     <property name="manager" ref="manager" />
   </bean>
 
-  <bean name="/SaveMap.map" class="org.opennms.web.map.SaveMapController">
+  <bean name="/admin/SaveMap.map" class="org.opennms.web.map.SaveMapController">
     <property name="manager" ref="manager" />
   </bean>
   
@@ -110,6 +109,9 @@
     <property name="manager" ref="manager" />
   </bean>
 
+  <bean name="/SearchMap.map" class="org.opennms.web.map.SearchMapsController">
+    <property name="manager" ref="manager" />
+  </bean>
 
   <bean name="/LoadMaps.map" class="org.opennms.web.map.LoadMapsController">
     <property name="manager" ref="manager" />
@@ -119,15 +121,20 @@
     <property name="manager" ref="manager" />
   </bean>
 
-  <bean name="/AddNodes.map" class="org.opennms.web.map.AddNodesController">
+  <bean name="/LoadLabelMap.map" class="org.opennms.web.map.LoadLabelMapController">
+    <property name="manager" ref="manager" />
+  </bean>
+
+
+  <bean name="/admin/AddNodes.map" class="org.opennms.web.map.AddNodesController">
     <property name="manager" ref="manager" />
   </bean>
   
-  <bean name="/AddMaps.map" class="org.opennms.web.map.AddMapsController">
+  <bean name="/admin/AddMaps.map" class="org.opennms.web.map.AddMapsController">
     <property name="manager" ref="manager" />
   </bean> 
   
-  <bean name="/DeleteElements.map" class="org.opennms.web.map.DeleteElementsController">
+  <bean name="/admin/DeleteElements.map" class="org.opennms.web.map.DeleteElementsController">
     <property name="manager" ref="manager" />
   </bean>  
   

@@ -87,7 +87,6 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         log().debug("Found "+m_correlationEngines.size()+" engines");
     }
 
-    @SuppressWarnings("unchecked")
     private Map<String, CorrelationEngine> getBeans() {
         return BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, CorrelationEngine.class);
     }

@@ -38,31 +38,25 @@ package org.opennms.netmgt.syslogd;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
+
 /**
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
-public interface SyslogHandlerMBean {
-    public void init();
+public interface SyslogHandlerMBean extends BaseOnmsMBean {
+    void destroy();
 
-    public void destroy();
+    void setPort(Integer port);
 
-    public void start();
+    Integer getPort();
 
-    public void stop();
-
-    public void setPort(Integer port);
-
-    public Integer getPort();
-
-    public int getStatus();
-
-    public void addEventHandler(String name)
+    void addEventHandler(String name)
             throws MalformedObjectNameException, InstanceNotFoundException;
 
-    public void removeEventHandler(String name)
+    void removeEventHandler(String name)
             throws MalformedObjectNameException, InstanceNotFoundException;
 
-    public void setLogPrefix(String prefix);
+    void setLogPrefix(String prefix);
 }

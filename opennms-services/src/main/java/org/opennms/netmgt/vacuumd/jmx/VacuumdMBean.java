@@ -36,22 +36,12 @@
 
 package org.opennms.netmgt.vacuumd.jmx;
 
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
+
 /**
  * This interface represents the methods available for the Vacuumd MBean
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  */
-public interface VacuumdMBean {
-    public void init();
-
-    public void start();
-
-    public void stop();
-
-    public int getStatus();
-
-    public String status();
-
-    public String getStatusText();
-
+public interface VacuumdMBean extends BaseOnmsMBean {
 }

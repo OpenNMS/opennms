@@ -38,6 +38,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.web.notification.filter.NotificationCriteria;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.NotificationCriteria.BaseNotificationCriteriaVisitor;
@@ -110,7 +111,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
                 criteria.visit(new BaseNotificationCriteriaVisitor<SQLException>(){
                     @Override
                     public void visitFilter(org.opennms.web.filter.Filter filter) throws SQLException{
-                        System.out.println("filter sql: " + filter.getSql());
+                        LogUtils.infof(this, "filter sql: " + filter.getSql());
                         paramIndex += filter.bindParam(ps, paramIndex);
                     }
                 });
@@ -180,19 +181,17 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
     }
     
     private int queryForInt(String sql, PreparedStatementSetter setter) throws DataAccessException {
-        Number number = (Number) queryForObject(sql, setter, new SingleColumnRowMapper(Integer.class));
+        Integer number = queryForObject(sql, setter, new SingleColumnRowMapper<Integer>(Integer.class));
         return (number != null ? number.intValue() : 0);
     }
     
-    @SuppressWarnings("unchecked")
-    private Object queryForObject(String sql, PreparedStatementSetter setter, RowMapper rowMapper) throws DataAccessException {
-        return DataAccessUtils.requiredSingleResult((List) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rowMapper, 1)));
+    private <T> T queryForObject(String sql, PreparedStatementSetter setter, RowMapper<T> rowMapper) throws DataAccessException {
+        return DataAccessUtils.requiredSingleResult(jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rowMapper, 1)));
     }
 
 
-    @SuppressWarnings("unchecked")
     private <T> List<T> queryForList(String sql, PreparedStatementSetter setter, ParameterizedRowMapper<T> rm) {
-        return (List<T>) jdbc().query(sql, setter, new RowMapperResultSetExtractor(rm));
+        return jdbc().query(sql, setter, new RowMapperResultSetExtractor<T>(rm));
     }
     
     private JdbcOperations jdbc(){

@@ -59,9 +59,6 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     
     private GroupManager m_groupManager;
     
-    public GroupManagerGroupDao() {
-    }
-
     public void deleteGroup(String name) {
         try {
             m_groupManager.deleteGroup(name);

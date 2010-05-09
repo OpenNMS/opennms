@@ -1,0 +1,206 @@
+#!/bin/sh -
+#
+# Original Debian version written by Jonathan Oddy <jonathan.oddy@truphone.com>
+# Adapted to work with RedHat and friends as well.
+
+# chkconfig:   345 99 01
+# description: Starts and stops the OpenNMS remote poller
+# processname: java
+# pidfile:     /var/run/opennms-remote-poller.pid
+#
+### BEGIN INIT INFO
+# Provides:          opennms-remote-poller
+# Required-Start:    $network $time
+# Required-Stop:     $network
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: OpenNMS - Open Source Network Management System remote poller
+# Description:       Enterprise grade open-source network management platform,
+#                    providing service polling, data collection, and event
+#                    and notification management. Remote poller service.
+### END INIT INFO
+
+NAME="opennms-remote-poller"
+DESC="OpenNMS Remote Poller"
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+PIDFILE="/var/run/$NAME.pid"
+OPENNMS_HOME="${install.dir}"
+JVM_ARGS="-Dpoller.logfile=/var/log/opennms-remote-poller.log"
+EXTRA_ARGS=""
+URI="http://localhost:8980/opennms-remoting"
+LOCATION="Default"
+GUI="false"
+RUNAS="root"
+START_POLLER=0
+
+JAVA_CONF="$OPENNMS_HOME/etc/java.conf"
+
+if [ -f "$JAVA_CONF" ]; then
+	JAVA_EXE="`cat $JAVA_CONF`"
+fi
+
+CONFFILE="/etc/default/$NAME"
+
+if [ -f $CONFFILE ]; then
+	. $CONFFILE
+elif [ -f "/etc/sysconfig/$NAME" ]; then
+	CONFFILE="/etc/sysconfig/$NAME"
+	. $CONFFILE
+fi
+
+if [ x$JAVA_EXE = x ]; then
+	if [ x$JAVA_HOME = x ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+		echo "ERROR: $JAVA_CONF file not found, and \$JAVA_HOME is not set to a valid JDK."
+		echo "Try running $OPENNMS_HOME/bin/runjava if OpenNMS is installed, or set JAVA_HOME in $CONFFILE."
+		exit 1
+	else
+		JAVA_EXE="$JAVA_HOME/bin/java"
+	fi
+fi
+
+if [ -z "$CONFFILE" ] || [ $START_POLLER -eq 0 ]; then
+	echo "Remote poller init not configured.  Please edit $CONFFILE and restart."
+	exit 0
+fi
+
+export JAVA_HOME PIDFILE
+
+if [ x$GUI = xtrue ]; then
+	EXTRA_ARGS="$EXTRA_ARGS --gui"
+fi
+
+if [ x$USERNAME != x ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -n $USERNAME"
+fi
+
+if [ x$PASSWORD != x ]; then
+	EXTRA_ARGS="$EXTRA_ARGS -p $PASSWORD"
+fi
+
+# When this function returns:
+# - if POLLER_PID is null, then the process is dead and the pidfile does not exist
+# - if POLLER_PID is not null, then the process is alive with that PID
+pid_running() {
+	if [ -f "$PIDFILE" ]; then
+		# Pull the PID out of the pidfile
+		POLLER_PID=`cat $PIDFILE`
+		if [ ! -z $POLLER_PID ]; then
+			# Check to see if the process is still alive
+			ps -p $POLLER_PID >/dev/null 2>&1
+			# If it is dead, then unset POLLER_PID
+			if [ $? -gt 0 ]; then
+				rm -f "$PIDFILE"
+				unset POLLER_PID
+				return
+			fi
+
+			return 
+		fi
+	else
+		# Attempt to find an existing remote poller process
+		POLLER_PID=$(ps -efww | grep remote-poller.jar | grep -v grep | awk '{print $2}')
+		if [ ! -z $POLLER_PID ]; then
+			kill $POLLER_PID
+			# Give it a few seconds to die
+			sleep 5
+			POLLER_PID=$(ps -efww | grep remote-poller.jar | grep -v grep | awk '{print $2}')
+			if [ ! -z $POLLER_PID ]; then
+				kill -9 $POLLER_PID
+			fi
+			unset POLLER_PID
+		fi
+	fi
+	return
+}
+
+case "$1" in
+
+	start)
+		pid_running
+		if [ ! -z $POLLER_PID ]; then
+			echo "$DESC is running."
+			exit 0
+		fi
+
+		if [ x$RUNAS != xroot ]; then
+			SUDO_PREFIX="sudo -u $RUNAS"
+			CHUID="--chuid $RUNAS"
+		fi
+
+		echo -n "Starting $DESC: "
+		if [ -x /sbin/start-stop-daemon ]; then
+			start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --make-pidfile $CHUID --startas $OPENNMS_HOME/bin/remote-poller.sh -- $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null
+		else
+			if $SUDO_PREFIX $OPENNMS_HOME/bin/remote-poller.sh $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null; then
+				echo "OK"
+				exit 0
+			else
+				RETVAL="$?"
+				echo "FAILED"
+				exit $RETVAL
+			fi
+		fi
+		echo "."
+		;;
+
+	stop)
+		echo -n "Stopping $DESC: "
+		if [ -x /sbin/start-stop-daemon ]; then
+			start-stop-daemon --stop --quiet --retry 15 --pidfile $PIDFILE > /dev/null
+			echo "."
+		else
+			pid_running
+			if [ ! -z $POLLER_PID ]; then
+				kill `cat $PIDFILE`
+				rm -f "$PIDFILE" 2>&1
+			else 
+				echo "FAILED: $DESC is not running."
+				exit 1
+			fi
+
+			echo "OK"
+			exit 0
+		fi
+		;;
+
+	restart)
+		$0 stop
+		sleep 2
+		$0 start
+		exit $?
+		;;
+
+	try-restart)
+		pid_running
+		if [ ! -z $POLLER_PID ]; then
+			$0 restart
+			exit $?
+		fi
+		echo "$DESC not running."
+		exit 0
+		;;
+
+
+	force-reload)
+		$0 try-restart
+		exit $?
+		;;
+
+	status)
+		pid_running
+		if [ ! -z $POLLER_PID ]; then
+			echo "$DESC is running."
+			exit 0
+		else
+			echo "$DESC is stopped."
+			exit 3
+		fi
+		;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart|try-restart|force-reload|status}" >&2
+		exit 1
+		;;
+esac

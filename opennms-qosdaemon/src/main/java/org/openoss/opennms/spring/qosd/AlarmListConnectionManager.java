@@ -117,6 +117,6 @@ public interface AlarmListConnectionManager {
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 * @param m_context - application context for this bean to use
 	 */
-	public abstract void setapplicationcontext(ClassPathXmlApplicationContext m_context);
+	public abstract void setApplicationContext(ClassPathXmlApplicationContext m_context);
 
 }

@@ -47,6 +47,7 @@ import org.opennms.protocols.jmx.connectors.JBossConnectionFactory;
 public class JBossCollector  extends JMXCollector {
 
     public JBossCollector() {
+        super();
         setServiceName("jboss");
     }
 

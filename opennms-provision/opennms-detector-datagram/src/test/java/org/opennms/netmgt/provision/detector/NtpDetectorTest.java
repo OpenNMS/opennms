@@ -114,7 +114,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
         m_server.startServer();
         
         m_detector.setPort(m_server.getPort());
-        m_detector.setIpToValidate("127.0.0.1");
+        m_detector.setIpToValidate("127.0.0.10");
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
     }

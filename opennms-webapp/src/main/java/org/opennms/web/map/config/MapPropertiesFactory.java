@@ -97,7 +97,7 @@ public class MapPropertiesFactory extends Object {
 
 	protected  Avail[] orderedAvails = null;
 
-	protected  Map<String,Icon> iconsMap = null;
+	protected  Map<String,String> iconsMap = null;
 
 	protected Map<String,String> iconsBySysoidMap = null;
 	
@@ -114,12 +114,20 @@ public class MapPropertiesFactory extends Object {
 	protected  String defaultMapIcon = null;
 	
     protected  int defaultMapElementDimension = 25;
+    
+    protected int maxLinks = 3;
+    
+    protected int summaryLink = -1;
+    
+    protected String summaryLinkColor = "yellow";
 
-	public static final  String MULTILINK_BEST_STATUS ="best"; 
+    public static final  String MULTILINK_BEST_STATUS ="best"; 
 	
 	public static final  String MULTILINK_WORST_STATUS ="worst";
 	
-	protected  String multilinkStatus = MULTILINK_BEST_STATUS;
+    public static final  String MULTILINK_IGNORE_STATUS ="ignore";
+
+    protected  String multilinkStatus = MULTILINK_BEST_STATUS;
 	
 	protected  int defaultLink = -1;
 
@@ -141,15 +149,14 @@ public class MapPropertiesFactory extends Object {
 	
 	protected  boolean contextMenuEnabled=true;
 	
+	protected boolean useSemaphore=true;
+	
 	protected  boolean reload=false;
 
 	protected  String severityMapAs = "avg"; 
 
 	protected  ContextMenu cmenu;
-	
-	protected String mapScale ="disabled"; 
-	
-	
+		
 	public String getMapPropertiesFileString() {
 		return mapPropertiesFileString;
 	}
@@ -397,7 +404,7 @@ public class MapPropertiesFactory extends Object {
 		severitiesMap = new HashMap<String,Severity>();
 		statusesMap = new HashMap<String,Status>();
 		availsMap = new HashMap<String,Avail>();
-		iconsMap = new HashMap<String,Icon>();
+		iconsMap = new HashMap<String,String>();
 		iconsBySysoidMap = new HashMap<String,String>();
 		bgImagesMap = new HashMap<String,String>();
 		linksMap = new HashMap<Integer,Link>();
@@ -594,13 +601,28 @@ public class MapPropertiesFactory extends Object {
 			LinkStatus ls = new LinkStatus(linkStatuses[i],color,flashBool);
 			linkStatusesMap.put(linkStatuses[i], ls);
 		}		
-		
+
+        if(props.getProperty("summarylink.id")!=null){
+            summaryLink = WebSecurityUtils.safeParseInt(props.getProperty("summarylink.id"));    
+        }
+        log.debug("found summarylink.id: "+summaryLink);
+
+        if(props.getProperty("summarylink.color")!=null){
+            summaryLinkColor = props.getProperty("summarylink.color");    
+        }
+        log.debug("found summarylink.color: "+summaryLinkColor);
+
+        if(props.getProperty("max.links")!=null){
+            maxLinks = WebSecurityUtils.safeParseInt(props.getProperty("max.links"));    
+        }
+        log.debug("found max.links: "+maxLinks);
+
 		
 		if(props.getProperty("multilink.status")!=null){
 			multilinkStatus = props.getProperty("multilink.status"); 	
 		}
-		if(!multilinkStatus.equals("best") && !multilinkStatus.equals("worst")){
-			log.error("multilink.status property must be 'best' or 'worst'... using default ('best')");
+		if(!multilinkStatus.equals(MULTILINK_BEST_STATUS) && !multilinkStatus.equals(MULTILINK_IGNORE_STATUS) && !multilinkStatus.equals(MULTILINK_WORST_STATUS)){
+			log.error("multilink.status property must be 'best' or 'worst' or 'ignore' ... using default ('best')");
 			multilinkStatus=MULTILINK_BEST_STATUS;
 		}
 		log.debug("found multilink.status:"+multilinkStatus);
@@ -717,21 +739,10 @@ public class MapPropertiesFactory extends Object {
 			
 			String baseProperty = "icon." + icons[i] + ".";
 			
-			Icon icon = new Icon(props.getProperty(baseProperty + "filename"),
-			                     props.getProperty(baseProperty + "width"),
-			                     props.getProperty(baseProperty + "height"),
-			                     props.getProperty(baseProperty + "semaphore.radius"),
-			                     props.getProperty(baseProperty + "semaphore.x"),
-			                     props.getProperty(baseProperty + "semaphore.y"),
-			                     props.getProperty(baseProperty + "label.x"),
-			                     props.getProperty(baseProperty + "label.y"),
-			                     props.getProperty(baseProperty + "label.size"),
-			                     props.getProperty(baseProperty + "label.align")
-			                    );
-			
-			log.debug("found icon " + icons[i] + " with filename=" + icon.getFileName()
+			String filename =  props.getProperty(baseProperty + "filename");
+			log.debug("found icon " + icons[i] + " with filename=" + filename
 					+ ". Adding it.");
-			iconsMap.put(icons[i], icon);
+			iconsMap.put(icons[i], filename);
 		}
 		
 		// look up sysoid icons
@@ -758,16 +769,19 @@ public class MapPropertiesFactory extends Object {
 					"Required Default Icon Node not found.");
 		}
 		log.debug("default node icon: "+defaultNodeIcon);
-		
-		mapScale = props.getProperty("icon.default.scale");
-		
-		
+				
 		String defaultMapElementDimensionString = props.getProperty("icon.default.mapelementdimension");
         if (defaultMapElementDimensionString != null) {
             defaultMapElementDimension = WebSecurityUtils.safeParseInt(defaultMapElementDimensionString);
         }
         log.debug("default map element dimension: "+defaultMapElementDimension);
 
+        String useSemaphoreString = props.getProperty("use.semaphore");
+        if (useSemaphoreString != null && useSemaphoreString.equalsIgnoreCase("false"))
+            useSemaphore=false;
+        else useSemaphore = true;
+        log.debug("use semaphore: "+useSemaphoreString);
+        
 		// look up background filenames
 		String[] bg = BundleLists
 				.parseBundleList(props.getProperty("bgimages"));
@@ -779,19 +793,13 @@ public class MapPropertiesFactory extends Object {
 					+ ". Adding it.");
 			bgImagesMap.put(bg[i], filename);
 		}
-
-//		propertiesMaps = new Map[] { severitiesMap, statusesMap, availsMap,
-//				iconsMap, bgImagesMap};
-
-//		return (propertiesMaps);
 	}
 
+	public String getSummaryLinkColor() {
+        return summaryLinkColor;
+    }
 
-	public Map<String,Icon> getIconsMap() {
-		return iconsMap;
-	}
-	
-	public Map<String,String> getIconsBySysoidMap() {
+    public Map<String,String> getIconsBySysoidMap() {
 	    return iconsBySysoidMap;
 	}
 
@@ -807,10 +815,6 @@ public class MapPropertiesFactory extends Object {
 		return defaultNodeIcon;
 	}
 
-	public String getMapScale() {
-	    return mapScale;
-	}
-	
 	/**
 	 * Gets the array of ordered Severity by id.
 	 * 
@@ -961,8 +965,8 @@ public class MapPropertiesFactory extends Object {
     	return sevs;
     }
     
-    public java.util.Map<String,Icon> getIcons() throws MapsException{
-    	return getIconsMap();
+    public java.util.Map<String,String> getIcons() throws MapsException{
+    	return iconsMap;
     }
     
     public java.util.Map<String,String> getIconsBySysoid() throws MapsException{
@@ -980,9 +984,9 @@ public class MapPropertiesFactory extends Object {
     public int getDefaultStatusId() {
     	return getDefaultStatus().getId();
     }
-    
-    public String getDefaultSemaphoreColorBy() {
-    	return MapsConstants.COLOR_SEMAPHORE_BY_SEVERITY;
+
+    public int getUnknownStatusId() {
+        return getUnknownStatus().getId();
     }
 
     public java.util.Map<String, String> getMapElementDimensions() {
@@ -1004,7 +1008,15 @@ public class MapPropertiesFactory extends Object {
     	return defaultMapElementDimension;
     }
     
+    public int getMaxLinks() {
+        return maxLinks;
+    }
 
-
-
+    public int getSummaryLink() {
+        return summaryLink;
+    }
+    
+    public boolean isUseSemaphore() {
+        return useSemaphore;
+    }
 }

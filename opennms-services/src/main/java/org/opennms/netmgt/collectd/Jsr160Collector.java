@@ -47,6 +47,7 @@ import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
 public class Jsr160Collector extends JMXCollector {
 
     public Jsr160Collector() {
+        super();
         setServiceName("jsr160");
         setUseFriendlyName(true);
     }

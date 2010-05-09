@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.7.10-SNAPSHOT</version>
+    <version>1.7.11-SNAPSHOT</version>
   </parent>
   <artifactId>opennms-doc</artifactId>
   <packaging>tgz</packaging>
@@ -82,6 +82,7 @@
       </plugin>
     </plugins>
   </build>
+<!--
   <repositories>
     <repository>
       <id>agile-repo</id>
@@ -94,4 +95,5 @@
       <url>http://agilejava.com/maven</url>
     </pluginRepository>
   </pluginRepositories>
+-->
 </project>

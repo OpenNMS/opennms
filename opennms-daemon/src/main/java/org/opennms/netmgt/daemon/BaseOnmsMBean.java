@@ -41,12 +41,26 @@ package org.opennms.netmgt.daemon;
  */
 public interface BaseOnmsMBean {
 
+    /**
+     * Initialization invoked prior to start.
+     */
     public abstract void init();
 
+    /**
+     * Starts the current managed bean.
+     */
     public abstract void start();
 
+    /**
+     * Starts the current managed bean.
+     */
     public abstract void stop();
 
+    /**
+     * The current status of the managed bean. This is a representation of the
+     * managed bean's run state as defined by the {@link Fiber}
+     * interface.
+     */
     public abstract int getStatus();
 
     public abstract String status();

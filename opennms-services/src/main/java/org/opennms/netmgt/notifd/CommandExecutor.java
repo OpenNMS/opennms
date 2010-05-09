@@ -111,7 +111,7 @@ public class CommandExecutor implements ExecutorStrategy {
             // see if we have streamed arguments
             if (streamed) {
                 // make sure the output we are writting is buffered
-                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream()));
+                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), "UTF-8"));
 
                 // put the streamed arguments into the stream
                 if (log.isDebugEnabled()) {
@@ -132,7 +132,7 @@ public class CommandExecutor implements ExecutorStrategy {
             while ((System.currentTimeMillis() - start) < timeout) {
                 try {
                     returnCode = command.exitValue();
-                    commandResult = "Command completed with return code " + returnCode;
+                    commandResult = "Command-line binary completed with return code " + returnCode;
                     break;
                 } catch (IllegalThreadStateException e) {
                 }
@@ -144,9 +144,9 @@ public class CommandExecutor implements ExecutorStrategy {
 
             log.debug(commandResult);
         } catch (IOException e) {
-            log.error("Error executing command " + commandLine, e);
+            log.error("Error executing command-line binary: " + commandLine, e);
         } catch (InterruptedException e) {
-            log.error("Error executing command " + commandLine, e);
+            log.error("Error executing command-line binary: " + commandLine, e);
         }
 
         return returnCode;

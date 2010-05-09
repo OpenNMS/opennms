@@ -49,7 +49,7 @@ threshold. The error message is: %parm[#7]%.
                 </maskelement>
 		<varbind>
 			<vbnumber>1</vbnumber>
-			<vbvalue>process table</vbvalue>
+			<vbvalue>procTable</vbvalue>
 		</varbind>
         </mask>
         <uei>uei.opennms.org/standard/netsnmp/traps/procTableAlertFired</uei>
@@ -95,6 +95,39 @@ The error message is: %parm[#7]%.
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         Net-SNMP Event: A extTable alert has fired for script 
                         %parm[#6]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>1</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>logMatchTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/logMatchTableAlertFired</uei>
+        <event-label>NET-SNMP: A logMatchTable Alert has been triggered.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected an error with the configured logMatchTable entry %parm[#6]%.
+The log file %parm[#7]% contains entries matching the pattern &quot;%parm[#8]%&quot;.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A logMatchTable alert has fired for entry %parm[#6]%
+                        in log file %parm[#7]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />

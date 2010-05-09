@@ -56,7 +56,6 @@ public class RunnableConsumerThreadPoolFactoryBean implements FactoryBean, Initi
         return m_pool;
     }
 
-    @SuppressWarnings("unchecked")
     public Class getObjectType() {
         return (m_pool == null ? RunnableConsumerThreadPoolFactoryBean.class : m_pool.getClass());
     }

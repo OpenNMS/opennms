@@ -2,7 +2,7 @@ Source: opennms
 Section: contrib/net
 Priority: optional
 Maintainer: Jeff Gehlbach <jeffg@opennms.org>
-Build-Depends: sun-java6-jdk | sun-java5-jdk | openjdk-6-jdk (>= 6b11-9.1), debhelper (>= 5.0.42), po-debconf (>= 1.0.5)
+Build-Depends: sun-java6-jdk | sun-java5-jdk | openjdk-6-jdk (>= 6b11-9.1), debhelper (>= 5.0.42), po-debconf (>= 1.0.5), rsync
 Standards-Version: 3.7.3
 
 Package: opennms
@@ -23,7 +23,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Full Inst
 
 Package: opennms-db
 Architecture: all
-Depends: postgresql-8.3 | postgresql-8.2 | postgresql-8.1 | postgresql-7.4, iplike-pgsql83 (>= 1.0.8) | iplike-pgsql82 (>= 1.0.8) | iplike-pgsql81 (>= 1.0.8) | iplike-pgsql74 (>= 1.0.8), debconf
+Depends: postgresql-8.4 (>= 8.4.1) | postgresql-8.3 | postgresql-8.2 | postgresql-8.1 | postgresql-7.4, iplike-pgsql84 (>= 1.0.8) | iplike-pgsql83 (>= 1.0.8) | iplike-pgsql82 (>= 1.0.8) | iplike-pgsql81 (>= 1.0.8) | iplike-pgsql74 (>= 1.0.8), debconf
 Description: Enterprise-grade Open-source Network Management Platform (Database)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -41,7 +41,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Database)
 Package: opennms-server
 Architecture: all
 Depends: opennms-common (=${binary:Version}), libopennms-java (=${binary:Version}), libopennmsdeps-java (=${binary:Version}), mailx, metamail
-Suggests: jrrd, rrdtool, postgresql-client-8.2
+Suggests: jrrd, rrdtool, postgresql-client-8.4
 Description: Enterprise-grade Open-source Network Management Platform (Daemon)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -93,7 +93,7 @@ Architecture: all
 Depends: opennms-common (=${binary:Version}), tomcat5.5 (>= 5.5.20), sun-java6-jdk | sun-java5-jdk | openjdk-6-jdk (>= 6b11-9.1), adduser
 Conflicts: opennms-webapp
 Replaces: opennms-webapp
-Suggests: jrrd, rrdtool, postgresql-client-8.2
+Suggests: jrrd, rrdtool, postgresql-client-8.4
 Description: Enterprise-grade Open-source Network Management Platform (Standalone Web UI)
  OpenNMS is an enterprise-grade network management system written in Java.
  .

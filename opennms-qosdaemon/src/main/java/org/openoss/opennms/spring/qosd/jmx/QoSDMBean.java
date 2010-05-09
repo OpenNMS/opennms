@@ -36,15 +36,7 @@
 
 package org.openoss.opennms.spring.qosd.jmx;
 
-/**
- */
-public interface QoSDMBean {
-    
-    public void init();
-    public void start();
-    public void stop();
-    public int getStatus();
-    public String status();
-	public String getStats();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+public interface QoSDMBean extends BaseOnmsMBean {
 }

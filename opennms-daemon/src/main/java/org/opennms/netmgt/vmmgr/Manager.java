@@ -91,7 +91,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  */
 public class Manager implements ManagerMBean {
     /**
-     * The log4j category used to log debug messsages and statements.
+     * The log4j category used to log debug messages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
 
@@ -247,7 +247,6 @@ public class Manager implements ManagerMBean {
         return ThreadCategory.getInstance(getClass());
     }
 
-    @SuppressWarnings("unchecked")
     private List<MBeanServer> getMBeanServers() {
         return MBeanServerFactory.findMBeanServer(null);
     }

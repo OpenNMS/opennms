@@ -253,8 +253,7 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		assertLoadAll(OnmsUserNotification.class, new NullChecker<OnmsUserNotification>());
 	}
 	
-	@SuppressWarnings("unchecked")
-    private <T> void assertLoadAll(Class<T> annotatedClass, Checker<T> checker) {
+	private <T> void assertLoadAll(Class<T> annotatedClass, Checker<T> checker) {
 		HibernateTemplate template = new HibernateTemplate(m_sessionFactory);
 		Collection<T> results = template.loadAll(annotatedClass);
 		assertNotNull(results);

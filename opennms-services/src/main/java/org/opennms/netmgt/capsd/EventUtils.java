@@ -45,9 +45,7 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -56,13 +54,9 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
-import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Forward;
-import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Script;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 
@@ -73,7 +67,7 @@ import org.opennms.netmgt.xml.event.Value;
  * @author brozow
  * 
  */
-public class EventUtils {
+public abstract class EventUtils {
 
     /**
      * Make the given listener object a listener for the list of events
@@ -114,11 +108,11 @@ public class EventUtils {
      *             if an interface is not available
      */
     static public void checkInterface(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
-
-        if (e.getInterface() == null || e.getInterface().length() == 0)
+        } else if (e.getInterface() == null || e.getInterface().length() == 0) {
             throw new InsufficientInformationException("ipaddr for event is unavailable");
+        }
     }
     
     /**
@@ -133,8 +127,9 @@ public class EventUtils {
     static public boolean isNonIpInterface(String intf) {
         if (intf == null || intf.length() == 0 || "0.0.0.0".equals(intf) ) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
    
     
@@ -147,10 +142,9 @@ public class EventUtils {
      *             if  neither an interface nor an ifIndex is available
      */
     static public void checkInterfaceOrIfIndex(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("event is null");
-
-        if (e.getInterface() == null || e.getInterface().length() == 0) {
+        } else if (e.getInterface() == null || e.getInterface().length() == 0) {
             if (!e.hasIfIndex()) {
                 throw new InsufficientInformationException("Neither ipaddr nor ifIndex for the event is available");
             }
@@ -166,11 +160,11 @@ public class EventUtils {
      *             if an interface is not available
      */
     static public void checkHost(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
-
-        if (e.getHost() == null || e.getHost().length() == 0)
+        } else if (e.getHost() == null || e.getHost().length() == 0) {
             throw new InsufficientInformationException("host for event is unavailable");
+        }
     }
 
     /**
@@ -182,11 +176,11 @@ public class EventUtils {
      *             if a node id is not available
      */
     static public void checkNodeId(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
-
-        if (!e.hasNodeid())
+        } else if (!e.hasNodeid()) {
             throw new InsufficientInformationException("nodeid for event is unavailable");
+        }
     }
 
     /**
@@ -198,11 +192,11 @@ public class EventUtils {
      *             if the event does not have a service
      */
     public static void checkService(Event e) throws InsufficientInformationException {
-        if (e == null)
+        if (e == null) {
             throw new NullPointerException("e is null");
-
-        if (e.getService() == null || e.getService().length() == 0)
+        } else if (e.getService() == null || e.getService().length() == 0) {
             throw new InsufficientInformationException("service for event is unavailable");
+        }
     }
 
     /**
@@ -236,12 +230,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -272,12 +264,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -308,12 +298,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -373,12 +361,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -409,12 +395,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -453,12 +437,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -667,12 +649,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
+        Value parmValue = new Value();
 		parmValue.setContent(nodeLabel);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -722,13 +702,11 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
         // Add IP host name
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(ifaddr.getHostName());
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -768,12 +746,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(nodeLabel);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -781,12 +757,12 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
         parmValue = new Value();
-        parmValue.setContent((new Long(txNo)).toString());
+        parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
         // Add Parms to the event
-        if ((nodeLabel != null) && (((new Long(txNo)).toString()) != null))
+        if ((nodeLabel != null) && ((String.valueOf(txNo)) != null))
             newEvent.setParms(eventParms);
 
         return newEvent;
@@ -818,12 +794,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(nodeLabel);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -831,7 +805,7 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
         parmValue = new Value();
-        parmValue.setContent((new Long(txNo)).toString());
+        parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -895,13 +869,11 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
-        parmValue.setContent((new Long(txNo)).toString());
+        Value parmValue = new Value();
+        parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -951,13 +923,11 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
         // Add IP host name
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(ifaddr.getHostName());
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -1037,13 +1007,11 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
         // Add IP host name
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(ifaddr.getHostName());
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -1100,12 +1068,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(nodeLabel);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -1113,7 +1079,7 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
         parmValue = new Value();
-        parmValue.setContent((new Long(txNo)).toString());
+        parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -1152,12 +1118,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(nodeLabel);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -1165,7 +1129,7 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
         parmValue = new Value();
-        parmValue.setContent((new Long(txNo)).toString());
+        parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -1206,12 +1170,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_ACTION);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(action);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -1219,7 +1181,7 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
         parmValue = new Value();
-        parmValue.setContent((new Long(txNo)).toString());
+        parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -1257,12 +1219,10 @@ public class EventUtils {
 
         // Add appropriate parms
         Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(String.valueOf(txNo));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
@@ -1310,12 +1270,10 @@ public class EventUtils {
 			event.setParms(eventParms);
 		}
         
-        Parm eventParm = null;
-        Value parmValue = null;
 
-        eventParm = new Parm();
+        Parm eventParm = new Parm();
         eventParm.setParmName(parmName);
-        parmValue = new Value();
+        Value parmValue = new Value();
         parmValue.setContent(String.valueOf(pollResultId));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);

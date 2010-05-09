@@ -33,8 +33,8 @@
 
 package org.opennms.netmgt.notifd.mock;
 
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -47,8 +47,11 @@ import org.opennms.netmgt.config.NotificationCommandManager;
 public class MockNotificationCommandManager extends NotificationCommandManager {
 
     public MockNotificationCommandManager(String xmlString) throws MarshalException, ValidationException {
-        Reader reader = new StringReader(xmlString);
-        parseXML(reader);
+        try {
+            parseXML(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            // This will never happen; all JVMs support UTF-8
+        }
     }
     
     public void update() throws Exception {

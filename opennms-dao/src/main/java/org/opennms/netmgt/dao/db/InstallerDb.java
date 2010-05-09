@@ -49,7 +49,7 @@ package org.opennms.netmgt.dao.db;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -126,6 +126,8 @@ public class InstallerDb {
     
     private String m_pg_iplike = null;
     
+    private String m_pg_plpgsql = null;
+    
     private final Map<String, ColumnChangeReplacement> m_columnReplacements =
         new HashMap<String, ColumnChangeReplacement>();
 
@@ -166,7 +168,7 @@ public class InstallerDb {
     }
     
     public void readTables() throws Exception {
-        readTables(new FileReader(m_createSqlLocation));
+        readTables(new InputStreamReader(new FileInputStream(m_createSqlLocation), "UTF-8"));
     }
 
     public void readTables(Reader reader) throws Exception {
@@ -373,9 +375,12 @@ public class InstallerDb {
         rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
         if (rs.next()) {
             m_out.println("EXISTS");
-        } else {
-            st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c'");
+        } else if (isPgPlPgsqlLibPresent()) {
+            st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '"
+                       + m_pg_plpgsql + "' LANGUAGE 'c'");
             m_out.println("OK");
+        } else {
+            m_out.println("SKIPPED (location of PL/pgSQL library not set, will try to continue)");
         }
 
         m_out.print("- adding PL/pgSQL language module... ");
@@ -511,7 +516,7 @@ public class InstallerDb {
         		throw new Exception(message);
         	}
         	
-        	BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile));
+        	BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, "UTF-8"));
         	StringBuffer createFunction = new StringBuffer();
         	String line;
         	while ((line = in.readLine()) != null) {
@@ -574,7 +579,7 @@ public class InstallerDb {
 
             m_out.print("\n  - " + element.getName() + "... ");
 
-            BufferedReader r = new BufferedReader(new FileReader(element));
+            BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(element), "UTF-8"));
             while ((line = r.readLine()) != null) {
                 line = line.trim();
 
@@ -2382,6 +2387,32 @@ public class InstallerDb {
 
     public String getPgIpLikeLocation() {
         return m_pg_iplike;
+    }
+    
+    public void setPostgresPlPgsqlLocation(String location) {
+        if (location != null) {
+            File plpgsql = new File(location);
+            if (!plpgsql.exists()) {
+                m_out.println("FATAL: missing " + location + ": Unable to set up even the slower IPLIKE stored procedure without PL/PGSQL language support");
+            }
+        }
+        
+        m_pg_plpgsql = location;
+    }
+    
+    public String getPgPlPgsqlLocation() {
+        return m_pg_plpgsql;
+    }
+    
+    public boolean isPgPlPgsqlLibPresent() {
+        if (m_pg_plpgsql == null)
+            return false;
+        
+        File plpgsqlLib = new File(m_pg_plpgsql);
+        if (plpgsqlLib.exists() && plpgsqlLib.canRead())
+            return true;
+        
+        return false;
     }
     
     public void addColumnReplacements() throws SQLException {
