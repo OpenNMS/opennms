@@ -12,7 +12,6 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -46,12 +45,12 @@ public class PageableApplicationList extends PageableList implements
         }
 
         private void resizeToFit() {
-            int calculatedHeight = m_nameLabel.getOffsetHeight() + m_statusLabel.getOffsetHeight();
-            int newHeight = calculatedHeight > 60 ? calculatedHeight : 60;
+            final int calculatedHeight = m_nameLabel.getOffsetHeight() + m_statusLabel.getOffsetHeight();
+            final int newHeight = calculatedHeight > 60 ? calculatedHeight : 60;
             setHeight(Integer.toString(newHeight + 2));
         }
 
-        public ApplicationDetailView(ApplicationInfo applicationInfo) {
+        public ApplicationDetailView(final ApplicationInfo applicationInfo) {
             setElement(Document.get().createDivElement());
             setStyles();
             
@@ -63,7 +62,7 @@ public class PageableApplicationList extends PageableList implements
 
         private void setStyles() {
             setStyleName(locationDetailStyle.detailContainerStyle());
-            String iconStyle = locationDetailStyle.iconStyle();
+            final String iconStyle = locationDetailStyle.iconStyle();
             m_icon.addStyleName(iconStyle);
             m_nameLabel.addStyleName(locationDetailStyle.nameStyle());
             m_statusLabel.addStyleName(locationDetailStyle.statusStyle());
@@ -74,7 +73,7 @@ public class PageableApplicationList extends PageableList implements
             return m_name;
         }
 
-        public void updateDetails(ApplicationDetails appDetails) {
+        public void updateDetails(final ApplicationDetails appDetails) {
             m_statusLabel.setText(appDetails.getStatusDetails().getReason());
             resizeToFit();
         }
@@ -123,31 +122,26 @@ public class PageableApplicationList extends PageableList implements
 
     private void registerHandlers() {
         m_eventBus.addHandler(ApplicationDetailsRetrievedEvent.TYPE, this);
-        
+
         addHandler(new ResizeHandler() {
-            
-            public void onResize(ResizeEvent arg0) {
-                Window.alert("Resizing this stuff");
-                
+            public void onResize(final ResizeEvent event) {
+                // FIXME: is this even necessary?
+                refreshApplicationListResize();
             }
         },  ResizeEvent.getType());
     }
 
-    public void onApplicationDetailsRetrieved(ApplicationDetailsRetrievedEvent event) {
-
+    public void onApplicationDetailsRetrieved(final ApplicationDetailsRetrievedEvent event) {
         updateApplicationDisplayItem(event.getApplicationDetails());
-
     }
 
-    private void updateApplicationDisplayItem(ApplicationDetails appDetails) {
-        
+    private void updateApplicationDisplayItem(final ApplicationDetails appDetails) {
         for(int i = 0; i < getDataList().getRowCount(); i++) {
             ApplicationDetailView view = (ApplicationDetailView) getDataList().getWidget(i, 0);
             if(view.getName().equals(appDetails.getApplicationName())) {
                 view.updateDetails(appDetails);
             }
         }
-        
     }
 
     public void refreshApplicationListResize() {
@@ -156,5 +150,4 @@ public class PageableApplicationList extends PageableList implements
             view.resizeToFit();
         }
     }
-    
 }

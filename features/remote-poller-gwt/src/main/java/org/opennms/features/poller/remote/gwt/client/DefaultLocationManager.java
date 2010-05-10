@@ -175,17 +175,17 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
-    	if (applicationInfo.getLocations().size() == 0) {
-    		applicationInfo.setPriority(Long.MAX_VALUE);
-    	} else {
-    		applicationInfo.setPriority(0L);
-    	}
-    	for (final String location : applicationInfo.getLocations()) {
-    		final LocationInfo locationInfo = m_locations.get(location);
-    		if (locationInfo != null) {
-    			applicationInfo.setPriority(applicationInfo.getPriority() + locationInfo.getPriority());
-    		}
-    	}
+        if (applicationInfo.getLocations().size() == 0) {
+            applicationInfo.setPriority(Long.MAX_VALUE);
+        } else {
+            applicationInfo.setPriority(0L);
+            for (final String location : applicationInfo.getLocations()) {
+                final LocationInfo locationInfo = m_locations.get(location);
+                if (locationInfo != null) {
+                    applicationInfo.setPriority(applicationInfo.getPriority() + locationInfo.getPriority());
+                }
+            }
+        }
         m_applications.add(applicationInfo);
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
     }

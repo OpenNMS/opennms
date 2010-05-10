@@ -94,7 +94,7 @@ public class PageableLocationList extends PageableList {
     }
 
     @Override
-    public void onItemClickHandler(ClickEvent event) {
+    public void onItemClickHandler(final ClickEvent event) {
       final Cell cell = getCellForEvent(event);
       LocationInfo location = m_locations.get(cell.getRowIndex() + (getCurrentPageIndex() * getTotalListItemsPerPage()));
 
