@@ -571,12 +571,7 @@ public class DefaultProvisionService implements ProvisionService {
      * @see org.opennms.netmgt.provision.service.ProvisionService#updateNodeInfo(org.opennms.netmgt.model.OnmsNode)
      */
     public OnmsNode updateNodeAttributes(OnmsNode node) {
-        OnmsNode dbNode;
-        if (node.getId() != null) {
-            dbNode = m_nodeDao.get(node.getId());
-        } else {
-            dbNode = m_nodeDao.findByForeignId(node.getForeignSource(), node.getForeignId());
-        }
+        OnmsNode dbNode = getDbNode(node);
 
         if (dbNode == null) {
             OnmsDistPoller scannedPoller = node.getDistPoller();
@@ -601,6 +596,16 @@ public class DefaultProvisionService implements ProvisionService {
             
             return saveOrUpdate(dbNode);
         }
+    }
+
+    private OnmsNode getDbNode(OnmsNode node) {
+        OnmsNode dbNode;
+        if (node.getId() != null) {
+            dbNode = m_nodeDao.get(node.getId());
+        } else {
+            dbNode = m_nodeDao.findByForeignId(node.getForeignSource(), node.getForeignId());
+        }
+        return dbNode;
     }
     
     private OnmsNode saveOrUpdate(OnmsNode node) {
@@ -747,5 +752,21 @@ public class DefaultProvisionService implements ProvisionService {
         
         m_ipInterfaceDao.initialize(primaryIface);
         return primaryIface;
+    }
+
+    @Transactional
+    public OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node) {
+        OnmsNode dbNode = getDbNode(node);
+        if (dbNode == null) {
+            return null;
+        }
+        else {
+            OnmsIpInterface primaryIface = dbNode.getPrimaryInterface();
+            if (primaryIface != null) {
+                m_ipInterfaceDao.initialize(primaryIface);
+                m_ipInterfaceDao.initialize(primaryIface.getMonitoredServices());
+            }
+            return primaryIface;
+        }
     }
 }

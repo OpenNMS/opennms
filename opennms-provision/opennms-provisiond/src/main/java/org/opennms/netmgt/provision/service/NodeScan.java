@@ -71,7 +71,6 @@ import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -766,13 +765,16 @@ public class NodeScan implements Runnable {
     public void detectAgents(BatchTask currentPhase) {
         
         if (!isAborted()) {
-            OnmsIpInterface primaryIface = getNode().getPrimaryInterface();
+            OnmsIpInterface primaryIface = m_provisionService.getPrimaryInterfaceForNode(getNode());
             if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
+                System.err.println("SNMPSNMPSNMP Found primary interface and SNMP service!!");
                 onAgentFound(currentPhase, primaryIface);
+            } else {
+                System.err.println("SNMPSNMPSNMP Failed to find primary interface and SNMP service!!");
             }
         }
     }
-    
+
     public void handleAgentUndetected(BatchTask currentPhase) {
         
         if (!isAgentFound()) {

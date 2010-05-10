@@ -415,6 +415,63 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
     }
 
+    // fail if we take more than five minutes
+    @Test(timeout=300000)
+    @Transactional
+    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
+    public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
+        importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml");
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+        
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        // Expect there to be no services since we are not provisioning one
+        assertEquals(0, getMonitoredServiceDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
+        
+        
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        OnmsNode node = nodes.get(0);
+
+        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        scan.run();
+        
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(2, getInterfaceDao().countAll());
+        
+        //Verify ifservices count - discover snmp service on both ifs
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(6, getSnmpInterfaceDao().countAll());
+        
+        
+        // Node Delete
+        importFromResource("classpath:/nonodes.xml");
+
+        //Verify node count
+        assertEquals(0, getNodeDao().countAll());
+        
+        
+    }
+
     
     
     // fail if we take more than five minutes

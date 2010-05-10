@@ -212,5 +212,7 @@ public interface ProvisionService {
 
     public abstract OnmsIpInterface setPrimaryInterfaceIfNoneSet(OnmsMonitoredService svc);
 
+    public abstract OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
+
 
 }
