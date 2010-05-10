@@ -91,10 +91,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>gwt-dependencies</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
     </dependency>
@@ -111,60 +107,10 @@
       <artifactId>spring-web-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt.google-apis</groupId>
-      <artifactId>gwt-maps</artifactId>
-      <version>1.0.4</version>
-      <exclusions>
-      	<exclusion>
-      		<groupId>com.google.gwt</groupId>
-      		<artifactId>gwt-user</artifactId>
-      	</exclusion>
-      </exclusions>
-      <scope>provided</scope>
+      <groupId>net.simon04.jelementtree</groupId>
+      <artifactId>jelementtree</artifactId>
+      <version>20100506</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.gwt.google-apis</groupId>
-      <artifactId>gwt-ajaxloader</artifactId>
-      <version>1.0.0</version>
-      <exclusions>
-      	<exclusion>
-      		<groupId>com.google.gwt</groupId>
-      		<artifactId>gwt-user</artifactId>
-      	</exclusion>
-      </exclusions>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code</groupId>
-      <artifactId>gwt-mapquest</artifactId>
-      <version>1.2-20100507</version>
-      <exclusions>
-      	<exclusion>
-      		<groupId>com.google.gwt</groupId>
-      		<artifactId>gwt-user</artifactId>
-      	</exclusion>
-      </exclusions>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.gwtopenmaps.openlayers</groupId>
-      <artifactId>openlayers_gwt</artifactId>
-      <version>0.5-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code</groupId>
-      <artifactId>gwt-maps-utility</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <!--
-    <dependency>
-      <groupId>com.google.code.gwt-log</groupId>
-      <artifactId>gwt-log</artifactId>
-      <version>3.0.1</version>
-    </dependency>
-    -->
     <dependency>
       <groupId>net.sourceforge.geo-google</groupId>
       <artifactId>geo-google</artifactId>
@@ -179,16 +125,62 @@
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
     </dependency>
+
+    <!-- GWT -->
     <dependency>
-      <groupId>com.mapquest</groupId>
-      <artifactId>mq</artifactId>
-      <version>5.3.0</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>gwt-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.simon04.jelementtree</groupId>
-      <artifactId>jelementtree</artifactId>
-      <version>20100506</version>
+      <groupId>com.google.gwt.google-apis</groupId>
+      <artifactId>gwt-ajaxloader</artifactId>
+      <version>1.0.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-user</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
     </dependency>
+
+    <!-- map APIs -->
+    <dependency>
+      <groupId>com.google.gwt.google-apis</groupId>
+      <artifactId>gwt-maps</artifactId>
+      <version>1.0.4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-user</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code</groupId>
+      <artifactId>gwt-mapquest</artifactId>
+      <version>1.2-20100507</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-user</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gwtopenmaps.openlayers</groupId>
+      <artifactId>openlayers_gwt</artifactId>
+      <version>0.5-20100510</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code</groupId>
+      <artifactId>gwt-maps-utility</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency> 
 
     <!-- technically for testing (making a full war)... -->
     <dependency>
@@ -252,13 +244,6 @@
   </dependencies>
 
   <repositories>
-    <repository>
-      <snapshots><enabled>true</enabled></snapshots>
-      <releases><enabled>false</enabled></releases>
-      <id>openlayers-repo</id>
-      <name>OpenLayers Repository</name>
-      <url>http://repo.logical-analytics.co.uk/artifactory/repo</url>
-    </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
