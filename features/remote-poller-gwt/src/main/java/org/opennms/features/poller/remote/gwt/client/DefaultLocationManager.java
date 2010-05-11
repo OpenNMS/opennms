@@ -164,7 +164,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     protected GWTBounds getLocationBounds() {
         BoundsBuilder bldr = new BoundsBuilder();
-        for (LocationInfo l : m_locations.values()) {
+        for (final LocationInfo l : m_locations.values()) {
             bldr.extend(l.getLatLng());
         }
         return bldr.getBounds();
@@ -199,7 +199,11 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void fitMapToLocations() {
-        m_mapPanel.setBounds(getLocationBounds());
+        if (m_mapPanel instanceof SmartMapFit) {
+            ((SmartMapFit)m_mapPanel).fitToBounds();
+        } else {
+            m_mapPanel.setBounds(getLocationBounds());
+        }
     }
 
     /**
@@ -210,7 +214,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // Use an ArrayList so that it has good random-access efficiency
         // since the pageable lists use get() to fetch based on index.
         final ArrayList<LocationInfo> visibleLocations = new ArrayList<LocationInfo>();
-        for (LocationInfo location : m_locations.values()) {
+        for (final LocationInfo location : m_locations.values()) {
             final GWTMarkerState markerState = location.getMarkerState();
             if (markerState.isSelected() && markerState.isVisible()) {
                 visibleLocations.add(location);
@@ -234,13 +238,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         for (final LocationInfo location : m_locations.values()) {
             final GWTMarkerState markerState = location.getMarkerState();
 
-            // if it's within the map bounds, it's visible
-            markerState.setVisible(location.isVisible(m_mapPanel.getBounds()));
-            // markerState.setVisible(true);
-            if (markerState.isVisible()) {
-                // unless it's not in the list of selected statuses
-                markerState.setVisible(m_selectedStatuses.contains(location.getStatusDetails().getStatus()));
-            }
+            markerState.setVisible(m_selectedStatuses.contains(location.getStatusDetails().getStatus()));
 
             boolean selected = false;
             if (m_locationViewActive || m_selectedApplications.size() == 0) {
@@ -273,7 +271,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     public List<String> getTagsOnVisibleLocations() {
         List<String> retval = new ArrayList<String>();
-        for (LocationInfo location : getVisibleLocations()) {
+        for (final LocationInfo location : getVisibleLocations()) {
             retval.addAll(location.getTags());
         }
         return retval;
@@ -449,7 +447,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     public Set<String> getAllApplicationNames() {
         Set<String> retval = new TreeSet<String>();
-        for (ApplicationInfo application : m_applications) {
+        for (final ApplicationInfo application : m_applications) {
             retval.add(application.getName());
         }
         return retval;
@@ -460,7 +458,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             return null;
         }
 
-        for (ApplicationInfo app : m_applications) {
+        for (final ApplicationInfo app : m_applications) {
             if (name.equals(app.getName())) {
                 return app;
             }
