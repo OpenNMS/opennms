@@ -169,9 +169,9 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
     }
 
     private static MQARectLL toMQARectLL(final GWTBounds bounds) {
-        final MQALatLng latLng = toMQALatLng(bounds.getNorthEastCorner());
-        final MQARectLL mqBounds = MQARectLL.newInstance(latLng, latLng);
-        mqBounds.extend(toMQALatLng(bounds.getSouthWestCorner()));
+        final MQALatLng ne = toMQALatLng(bounds.getNorthEastCorner());
+        final MQALatLng sw = toMQALatLng(bounds.getSouthWestCorner());
+        final MQARectLL mqBounds = MQARectLL.newInstance(ne, sw);
         return mqBounds;
     }
 

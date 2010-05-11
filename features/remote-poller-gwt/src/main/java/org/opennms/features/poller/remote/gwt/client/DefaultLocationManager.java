@@ -504,7 +504,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             state = new GWTMarkerState(location.getName(), location.getLatLng(), location.getStatusDetails().getStatus());
             location.setMarkerState(state);
         }
-        state.setVisible(m_selectedStatuses.contains(location.getStatusDetails().getStatus()));
+        final boolean statusIsVisible = m_selectedStatuses.contains(location.getStatusDetails().getStatus());
+        state.setVisible(statusIsVisible && location.isVisible(m_mapPanel.getBounds()));
         return state;
     }
 
