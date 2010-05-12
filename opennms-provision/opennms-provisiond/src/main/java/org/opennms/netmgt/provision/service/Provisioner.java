@@ -36,6 +36,7 @@
 //
 package org.opennms.netmgt.provision.service;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -190,8 +191,13 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
-        log().warn("createNodeScan called");
+        log().info("createNodeScan called");
         return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+    }
+
+    public NewSuspectScan createNewSuspectScan(InetAddress ipAddress) {
+        log().info("createNewSuspectScan called");
+        return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
     }
 
     //Helper functions for the schedule

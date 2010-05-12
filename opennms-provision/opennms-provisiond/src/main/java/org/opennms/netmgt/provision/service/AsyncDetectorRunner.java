@@ -36,7 +36,6 @@ import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.service.NodeScan.IpInterfaceScan;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 class AsyncDetectorRunner implements Async<Boolean> {

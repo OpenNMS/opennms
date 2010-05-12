@@ -32,6 +32,8 @@
 package org.opennms.netmgt.provision.service;
 
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,6 +95,8 @@ import org.springframework.util.Assert;
  */
 @Service
 public class DefaultProvisionService implements ProvisionService {
+    
+    private final static String FOREIGN_SOURCE_FOR_DISCOVERED_NODES = null;
     
     /**
      * ServiceTypeFulfiller
@@ -768,5 +772,47 @@ public class DefaultProvisionService implements ProvisionService {
             }
             return primaryIface;
         }
+    }
+
+    @Transactional
+    public OnmsNode createUndiscoveredNode(String ipAddress) {
+        if (m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress).size() > 0) {
+            return null;
+        }
+        
+        String hostname = getHostnameForIp(ipAddress);
+        
+        OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
+        node.setLabel(hostname == null ? ipAddress : hostname);
+        node.setLabelSource(hostname == null ? "A" : "H");
+        node.setForeignSource(FOREIGN_SOURCE_FOR_DISCOVERED_NODES);
+        node.setType("A");
+        
+        OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
+        iface.setIsManaged("M");
+        iface.setIpHostName(hostname);
+        iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);
+        
+        m_nodeDao.save(node);
+        
+        node.visit(new AddEventVisitor(m_eventForwarder));
+        return node;
+        
+    }
+    
+    private String getHostnameForIp(String address) {
+        try {
+            return InetAddress.getByName(address).getCanonicalHostName();
+        } catch (UnknownHostException e) {
+            return null;
+        }
+    }
+
+    @Transactional
+    public OnmsNode getNode(Integer nodeId) {
+        OnmsNode node = m_nodeDao.get(nodeId);
+        m_nodeDao.initialize(node);
+        m_nodeDao.initialize(node.getCategories());
+        return node;
     }
 }

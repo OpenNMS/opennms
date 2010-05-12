@@ -45,6 +45,7 @@ import java.util.Map;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.util.Assert;
 /**
  * @author david
  *
@@ -114,6 +115,21 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         }
         
         return map;
+    }
+
+    public boolean addressExistsWithForeignSource(String ipAddress, String foreignSource) {
+        Assert.notNull(ipAddress, "ipAddress cannot be null");
+        if (foreignSource == null) {
+            return queryInt("select count(iface.id) from OnmsIpInterface as iface " +
+                    "join iface.node as node " +
+                    "where node.foreignSource is NULL " +
+                    "and iface.ipAddress = ? ", ipAddress) > 0;
+        } else {
+            return queryInt("select count(iface.id) from OnmsIpInterface as iface " +
+                    "join iface.node as node " +
+                    "where node.foreignSource = ? " +
+                    "and iface.ipAddress = ? ", foreignSource, ipAddress) > 0;
+        }
     }
 
 }

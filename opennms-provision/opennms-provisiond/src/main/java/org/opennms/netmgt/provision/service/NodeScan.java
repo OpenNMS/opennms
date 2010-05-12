@@ -36,7 +36,6 @@ import static org.opennms.core.utils.LogUtils.infof;
 import static org.opennms.core.utils.LogUtils.warnf;
 
 import java.net.InetAddress;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -47,32 +46,24 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.BatchTask;
-import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.SequenceTask;
-import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.service.snmp.SystemGroup;
-import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -222,13 +213,17 @@ public class NodeScan implements Runnable {
     }
 
     public void loadNode(BatchTask loadNode) {
+        if (getForeignSource() != null) {
         m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
         if (m_node == null) {
             abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
         } else {
             for(OnmsIpInterface iface : m_node.getIpInterfaces()) {
-                loadNode.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress()));
+                loadNode.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress(), getForeignSource(), getProvisionService()));
             }
+        }
+        } else {
+            m_node = m_provisionService.getNode(m_nodeId);
         }
         
     }
@@ -320,8 +315,10 @@ public class NodeScan implements Runnable {
                 // mark all provisioned interfaces as 'in need of scanning' so we can mark them
                 // as scanned during ipAddrTable processing
                 final Set<String> provisionedIps = new HashSet<String>();
-                for(OnmsIpInterface provisioned : getNode().getIpInterfaces()) {
-                    provisionedIps.add(provisioned.getIpAddress());
+                if (getForeignSource() != null) {
+                    for(OnmsIpInterface provisioned : getNode().getIpInterfaces()) {
+                        provisionedIps.add(provisioned.getIpAddress());
+                    }
                 }
 
 
@@ -341,7 +338,7 @@ public class NodeScan implements Runnable {
                             // add call to the ip interface is managed policies
                             iface.setIsManaged("M");
 
-                            List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource());
+                            List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
         
                             for(IpInterfacePolicy policy : policies) {
                                 if (iface != null) {
@@ -405,7 +402,7 @@ public class NodeScan implements Runnable {
                     OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
                     snmpIface.setLastCapsdPoll(getScanStamp());
                     
-                    List<SnmpInterfacePolicy> policies = getProvisionService().getSnmpInterfacePoliciesForForeignSource(getForeignSource());
+                    List<SnmpInterfacePolicy> policies = getProvisionService().getSnmpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
                     for(SnmpInterfacePolicy policy : policies) {
                         if (snmpIface != null) {
                             snmpIface = policy.apply(snmpIface);
@@ -473,7 +470,7 @@ public class NodeScan implements Runnable {
         
                     systemGroup.updateSnmpDataForNode(getNode());
         
-                    List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource());
+                    List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource()  == null ? "default" : getForeignSource());
         
                     OnmsNode node = getNode();
                     for(NodePolicy policy : nodePolicies) {
@@ -630,7 +627,7 @@ public class NodeScan implements Runnable {
         void updateIpInterface(final BatchTask currentPhase, final OnmsIpInterface iface) {
             getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface);
             if (iface.isManaged()) {
-                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress()));
+                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress(), getForeignSource(), getProvisionService()));
             }
         }
 
@@ -645,112 +642,6 @@ public class NodeScan implements Runnable {
         
     }
     
-    public class IpInterfaceScan implements NeedsContainer {
-        
-        private InetAddress m_address;
-        private Integer m_nodeId;
-
-        public IpInterfaceScan(Integer nodeId, InetAddress address) {
-            m_nodeId = nodeId;
-            m_address = address;
-        }
-
-        public String getForeignSource() {
-            return m_foreignSource;
-        }
-
-        public Integer getNodeId() {
-            return m_nodeId;
-        }
-        
-        public InetAddress getAddress() {
-            return m_address;
-        }
-        
-        public ProvisionService getProvisionService() {
-            return m_provisionService;
-        }
-        
-        public String toString() {
-            return new ToStringBuilder(this)
-                .append("address", m_address)
-                .append("foreign source", m_foreignSource)
-                .append("node ID", m_nodeId)
-                .toString();
-        }
-
-        public Callback<Boolean> servicePersister(final ContainerTask<?> currentPhase, final String serviceName) {
-            return new Callback<Boolean>() {
-                public void complete(Boolean serviceDetected) {
-                    infof(IpInterfaceScan.this, "Attempted to detect service %s on address %s: %s", serviceName, getAddress().getHostAddress(), serviceDetected);
-                    if (serviceDetected) {
-                        OnmsMonitoredService svc = getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
-                        
-                        if ("SNMP".equals(serviceName)) {
-                            OnmsIpInterface primaryIface = getProvisionService().setPrimaryInterfaceIfNoneSet(svc);
-                        }
-                    }
-                }
-                public void handleException(Throwable t) {
-                    infof(IpInterfaceScan.this, t, "Exception occurred trying to detect service %s on address %s", serviceName, getAddress().getHostAddress());
-                }
-            };
-        }
-
-        Runnable runDetector(final SyncServiceDetector detector, final Callback<Boolean> cb) {
-            return new Runnable() {
-                public void run() {
-                    try {
-                        infof(IpInterfaceScan.this, "Attemping to detect service %s on address %s", detector.getServiceName(), getAddress().getHostAddress());
-                        cb.complete(detector.isServiceDetected(getAddress(), new NullDetectorMonitor()));
-                    } catch (Throwable t) {
-                        cb.handleException(t);
-                    }finally{
-                        detector.dispose();
-                    }
-                }
-                @Override
-                public String toString() {
-                    return String.format("Run detector %s on address %s", detector.getServiceName(), getAddress().getHostAddress());
-                }
-        
-            };
-        }
-
-        Async<Boolean> runDetector(AsyncServiceDetector detector) {
-            return new AsyncDetectorRunner(this, detector);
-        }
-
-        Task createDetectorTask(ContainerTask<?> currentPhase, ServiceDetector detector) {
-            if (detector instanceof SyncServiceDetector) {
-                return createSyncDetectorTask(currentPhase, (SyncServiceDetector)detector);
-            } else {
-                return createAsyncDetectorTask(currentPhase, (AsyncServiceDetector)detector);
-            }
-        }
-
-        private Task createAsyncDetectorTask(ContainerTask<?> currentPhase, AsyncServiceDetector asyncDetector) {
-            return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector), servicePersister(currentPhase, asyncDetector.getServiceName()));
-        }
-
-        private Task createSyncDetectorTask(ContainerTask<?> currentPhase, SyncServiceDetector syncDetector) {
-            return currentPhase.getCoordinator().createTask(currentPhase, runDetector(syncDetector, servicePersister(currentPhase, syncDetector.getServiceName())));
-        }
-
-        public void run(ContainerTask<?> currentPhase) {
-
-            Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource());
-            
-            debugf(this, "detectServices for %d : %s: found %d detectors", getNodeId(), getAddress().getHostAddress(), detectors.size());
-            
-            for(ServiceDetector detector : detectors) {
-                currentPhase.add(createDetectorTask(currentPhase, detector));
-            }
-            
-        }
-        
-    }
-
     public String toString() {
         return new ToStringBuilder(this)
             .append("foreign source", m_foreignSource)

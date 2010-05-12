@@ -214,5 +214,10 @@ public interface ProvisionService {
 
     public abstract OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
 
+    public abstract OnmsNode createUndiscoveredNode(String ipAddress);
+
+    public abstract OnmsNode getNode(Integer nodeId);
+
+
 
 }
