@@ -51,6 +51,7 @@ fi
 
 for table in system interfaces ipaddr ifxtable "$@"; do
 	echo "walking $table..." >&2
+	echo "# table $table"
 	if ! $SNMPWALK -OUne -v2c -c "$community" "$host" "$table"; then
 		echo "an error occurred walking host '$host' (table: $table) with community '$community'"
 		exit 2
