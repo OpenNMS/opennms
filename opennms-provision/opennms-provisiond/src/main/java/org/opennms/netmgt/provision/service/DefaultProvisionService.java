@@ -739,7 +739,7 @@ public class DefaultProvisionService implements ProvisionService {
     }
 
     @Transactional
-    public OnmsIpInterface setPrimaryInterfaceIfNoneSet(OnmsMonitoredService detachedSvc) {
+    public OnmsIpInterface setInterfaceIsPrimaryFlag(OnmsMonitoredService detachedSvc) {
         
         OnmsMonitoredService svc = m_monitoredServiceDao.get(detachedSvc.getId());
         OnmsIpInterface svcIface = svc.getIpInterface();
@@ -747,11 +747,13 @@ public class DefaultProvisionService implements ProvisionService {
         if (svcIface.isPrimary()) {
             primaryIface = svcIface;
         } 
-        
-        if (svcIface.getNode().getPrimaryInterface() == null) {
+        else if (svcIface.getNode().getPrimaryInterface() == null) {
             svcIface.setIsSnmpPrimary(PrimaryType.PRIMARY);
             m_ipInterfaceDao.saveOrUpdate(svcIface);
             primaryIface= svcIface;
+        } else {
+            svcIface.setIsSnmpPrimary(PrimaryType.SECONDARY);
+            m_ipInterfaceDao.saveOrUpdate(svcIface);
         }
         
         m_ipInterfaceDao.initialize(primaryIface);

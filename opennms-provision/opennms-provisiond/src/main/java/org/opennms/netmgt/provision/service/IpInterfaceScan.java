@@ -96,7 +96,7 @@ public class IpInterfaceScan implements RunInBatch {
                     OnmsMonitoredService svc = getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
                     
                     if ("SNMP".equals(serviceName)) {
-                        OnmsIpInterface primaryIface = getProvisionService().setPrimaryInterfaceIfNoneSet(svc);
+                        OnmsIpInterface primaryIface = getProvisionService().setInterfaceIsPrimaryFlag(svc);
                     }
                 }
             }
