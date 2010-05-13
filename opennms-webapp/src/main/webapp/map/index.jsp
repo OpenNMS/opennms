@@ -49,6 +49,11 @@
 		</jsp:include>
 <p>
 
+<center>
+<div id="reloading">
+</div>
+</center>	
+
 <script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.js"></script>
 <script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.history.js"></script>
 
@@ -70,11 +75,13 @@ function toggle(id)
 
 window.onresize = function() {
     if (resizing) return;
-    
     resizing=true;
-	removeSVG();
+    resizeSVG();
+}
+
+function resize(timeout) {
 	writeReload();
-	setTimeout("window.location.reload();",1000);	
+	setTimeout("window.location.reload();",timeout);
 }
 
 function  writeReload() {
@@ -103,19 +110,9 @@ function emitSVG() {
 	document.writeln('<embed id="opennmsSVGMaps" src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml" width="'+svgMapWidth+'" height="'+svgMapHeight+'">');
 }
 
-function removeSVG() {
-	var o=document.getElementById('opennmsSVGMaps');
-	if (o != undefined) 
-		o.parentNode.removeChild(o);
-}
-
 emitSVG();
 
 </script>
-<center>
-<div id="reloading">
-</div>
-</center>	
 </p>
 
     <jsp:include page="/includes/footer.jsp" flush="false" >
