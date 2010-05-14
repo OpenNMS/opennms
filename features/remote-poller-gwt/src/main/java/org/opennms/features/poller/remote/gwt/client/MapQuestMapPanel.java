@@ -198,7 +198,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
 
     private void updateMarker(final MQAPoi m, final GWTMarkerState marker) {
         m.setIcon(createIcon(marker));
-//        m.setVisible(marker.isVisible());
+        m.setVisible(marker.isVisible());
     }
 
     private MQAPoi getMarker(final String name) {
