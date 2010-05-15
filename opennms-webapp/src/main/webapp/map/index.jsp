@@ -80,13 +80,23 @@ window.onresize = function() {
 }
 
 function resize(timeout) {
-	writeReload();
+	writeReload("Resizing the maps.....");
 	setTimeout("window.location.reload();",timeout);
 }
 
-function  writeReload() {
+function reloadConfig(timeout1,timeout2) {
+	setTimeout("writeReload(\"Configuration Reloaded. Restarting Maps.....\");",timeout1);
+	setTimeout("window.location.reload();",timeout2);
+}
+
+function  writeReload(text) {
 	var o=document.getElementById('reloading');
-	o.appendChild(document.createTextNode("Resizing the maps....."));
+    var ls = o.childNodes;
+    while (ls.length > 0) {
+      var obj = ls.item(0);
+      o.removeChild(obj);
+    }
+	o.appendChild(document.createTextNode(text));
 }
 
 function setSvgWindowSize() {

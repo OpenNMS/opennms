@@ -147,6 +147,8 @@ function instantiateRefreshGroupAdminMode() {
 	refreshMenu.addElement(id, "Maps", menuDeltaX,menuDeltaY,menuWidth,menuHeight, loadMapsSetUp,null);
 	id = "LoadNodes";
 	refreshMenu.addElement(id, "Nodes", menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, loadNodesSetUp,null);
+	id = "ReloadConfig";
+	refreshMenu.addElement(id, "Config", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, reloadConfigSetUp,null);
 }
 
 function instantiateRefreshGroupNormalMode() {
@@ -590,6 +592,16 @@ function loadNodesSetUp() {
 	showHistory();
 }
 
+// Reload Nodes List
+function reloadConfigSetUp() {	
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	top.writeReload("Reloading the maps configuration.....");
+	reloadConfiguration();
+}
 // Refresh Map
 function refreshNodesSetUp() {	
 	closeAllMenu();

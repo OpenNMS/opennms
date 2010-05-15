@@ -5,6 +5,22 @@ function testOKResponse(action, response){
 		return false;
 }
 
+function reloadConfiguration(){
+	loading++;
+	assertLoading();
+	getMapRequest ( RELOAD_CONFIG_ACTION+"."+suffix, null, handleReloadConfigResponse, "text/xml", null );	
+}
+
+function handleReloadConfigResponse(data) {
+	if((data.success || data.status==200) && testOKResponse(RELOAD_CONFIG_ACTION, data.content) ) {
+		top.reloadConfig(1000,2000);
+	} else {
+		alert('Reloading Map configuration failed');
+	}
+	loading--;	
+	assertLoading();
+    }
+
 function loadDefaultMap(){
 	loading++;
 	assertLoading();
