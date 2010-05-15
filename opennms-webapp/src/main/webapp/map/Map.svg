@@ -171,6 +171,8 @@ function handleInit(data) {
 			LINK_TEXT[currLink.id]=currLink.text;
 			LINK_WIDTH[currLink.id]=currLink.width;
 			LINK_DASHARRAY[currLink.id]=currLink.dasharray;
+			MULTILINK_WIDTH[currLink.id]=currLink.multilinkwidth;
+			MULTILINK_DASHARRAY[currLink.id]=currLink.multilinkdasharray;
 		}
               
         for (i=0;i<mapsPropertiesFactory.linkStatuses.length;i++)

@@ -283,6 +283,8 @@ var LINK_SPEED = new Array();
 var LINK_TEXT = new Array();
 var LINK_WIDTH = new Array();
 var LINK_DASHARRAY = new Array();	
+var MULTILINK_WIDTH = new Array();
+var MULTILINK_DASHARRAY = new Array();	
 var LINKSTATUS_COLOR = new Array();	
 var LINKSTATUS_FLASH = new Array();	
 
