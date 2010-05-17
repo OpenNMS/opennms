@@ -37,13 +37,14 @@ package org.opennms.netmgt.poller.remote;
 
 import java.util.Date;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.netmgt.model.PollStatus;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class ServicePollState {
+public class ServicePollState implements Comparable<ServicePollState> {
     
     private PolledService m_polledService;
     private int m_index;
@@ -86,6 +87,19 @@ public class ServicePollState {
 
     public void setInitialPollTime(Date initialPollTime) {
         m_initialPollTime = initialPollTime;
+    }
+
+    public int compareTo(final ServicePollState that) {
+        if (that == null) return -1;
+        final PolledService thisService = this.getPolledService();
+        final PolledService thatService = that.getPolledService();
+        return new CompareToBuilder()
+            .append(thisService.getNodeLabel(), thatService.getNodeLabel())
+            .append(thisService.getIpAddr(), thatService.getIpAddr())
+            .append(this.getLastPoll().getStatusName(), that.getLastPoll().getStatusName())
+            .append(thisService.getServiceId(), thatService.getServiceId())
+            .append(thisService.getNodeId(), thatService.getNodeId())
+            .toComparison();
     }
 
 }
