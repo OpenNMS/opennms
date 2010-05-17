@@ -74,11 +74,6 @@ public class NewSuspectScan implements RunInBatch {
             TaskBuilder<SequenceTask> bldr = phase.getBuilder().createSequence();
             bldr.add(new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService));
             bldr.add(new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator));
-            bldr.add(new RunInBatch() {
-                public void run(BatchTask batch) {
-                    reparentNodes(batch, node.getId());
-                }
-            });
             bldr.setParent(phase);
         }
     }
