@@ -201,7 +201,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         final Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
         final Set<String> locationNames = new TreeSet<String>();
-        for (OnmsMonitoredService service : m_monitoredServiceDao.findByApplication(app)) {
+        for (final OnmsMonitoredService service : m_monitoredServiceDao.findByApplication(app)) {
             services.add(transformMonitoredService(service));
         }
         for (final OnmsLocationMonitor mon : m_locationDao.findByApplication(app)) {
@@ -284,13 +284,14 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         final Date to = new Date();
         final Date from = new Date(to.getTime() - AVAILABILITY_MS);
-        for (OnmsMonitoredService service : m_monitoredServiceDao.findByApplication(app)) {
-            service.getStatus();
-        }
-
+        
+        final Collection<OnmsMonitoredService> services = m_monitoredServiceDao.findByApplication(app);
+        
         for (final OnmsLocationMonitor monitor : m_locationDao.findByApplication(app)) {
             for (final OnmsLocationSpecificStatus locationSpecificStatus : m_locationDao.getStatusChangesForLocationBetween(from, to, monitor.getDefinitionName())) {
-                statuses.add(transformLocationSpecificStatus(locationSpecificStatus));
+                if (services.contains(locationSpecificStatus.getMonitoredService())) {
+                    statuses.add(transformLocationSpecificStatus(locationSpecificStatus));
+                }
             }
         }
 
