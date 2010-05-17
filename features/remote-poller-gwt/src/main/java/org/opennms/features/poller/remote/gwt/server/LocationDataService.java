@@ -25,4 +25,5 @@ public interface LocationDataService {
     public void handleAllMonitoringLocationDefinitions(final Collection<LocationDefHandler> handlers);
     public void handleAllApplications(final Collection<ApplicationHandler> appHandlers);
     public LocationInfo getLocationInfoForMonitor(final Integer monitorId);
+    public Collection<ApplicationInfo> getApplicationsForLocation(final LocationInfo info);
 }

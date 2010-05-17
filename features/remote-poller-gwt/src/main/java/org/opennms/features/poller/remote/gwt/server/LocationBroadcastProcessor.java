@@ -6,7 +6,9 @@ import java.util.TimerTask;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.EventDao;
@@ -131,6 +133,9 @@ public class LocationBroadcastProcessor implements InitializingBean {
             if (p.getParmName().equals(EventConstants.PARM_LOCATION_MONITOR_ID)) {
                 final LocationInfo info = m_locationDataService.getLocationInfoForMonitor(Integer.valueOf(p.getValue().getContent()));
                 m_eventHandler.sendEvent(new LocationUpdatedRemoteEvent(info));
+                for (final ApplicationInfo applicationInfo : m_locationDataService.getApplicationsForLocation(info)) {
+                    m_eventHandler.sendEvent(new ApplicationUpdatedRemoteEvent(applicationInfo));
+                }
             }
         }
     }

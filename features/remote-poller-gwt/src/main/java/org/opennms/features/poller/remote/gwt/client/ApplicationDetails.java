@@ -26,6 +26,8 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 
     private ApplicationInfo m_application;
 
+    private Collection<GWTLocationMonitor> m_locationMonitors;
+
     private List<GWTLocationSpecificStatus> m_locationSpecificStatuses;
 
     private Date m_statusFrom;
@@ -36,16 +38,18 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 
     public ApplicationDetails() {
         m_name = null;
+        m_locationMonitors = null;
         m_locationSpecificStatuses = null;
         m_statusFrom = null;
         m_statusTo = null;
     }
 
-    public ApplicationDetails(final ApplicationInfo application, final Date from, final Date to, final List<GWTLocationSpecificStatus> statuses) {
+    public ApplicationDetails(final ApplicationInfo application, final Date from, final Date to, final Collection<GWTLocationMonitor> monitors, final List<GWTLocationSpecificStatus> statuses) {
         m_name = application.getName();
         m_application = application;
         m_statusFrom = from;
         m_statusTo = to;
+        m_locationMonitors = monitors;
         m_locationSpecificStatuses = statuses;
         if (m_locationSpecificStatuses != null)
             Collections.sort(m_locationSpecificStatuses, new LocationSpecificStatusComparator());
@@ -84,8 +88,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
                 // there's no existing outage
 
                 if (status.getPollResult().isDown()) {
-                    // but the service is down on this monitor, start a new
-                    // outage
+                    // but the service is down on this monitor, start a new outage
                     lastOutage = new GWTServiceOutage();
                     lastOutage.setService(status.getMonitoredService());
                     lastOutage.setMonitor(status.getLocationMonitor());
@@ -137,7 +140,11 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 
     private StatusDetails getStatusDetailsUncached() {
         if (m_locationSpecificStatuses == null || m_locationSpecificStatuses.size() == 0) {
-            return StatusDetails.unknown("No status updates for application " + m_name);
+            return StatusDetails.unknown("No locations have reported status updates.");
+        }
+
+        if (m_locationMonitors == null || m_locationMonitors.size() == 0) {
+            return StatusDetails.unknown("No location monitors are currently reporting.");
         }
 
         final Set<Integer> monitorIds = new HashSet<Integer>();
@@ -146,8 +153,15 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         final Set<GWTMonitoredService> servicesWithOutages = new HashSet<GWTMonitoredService>();
         final Set<GWTMonitoredService> servicesDown = new HashSet<GWTMonitoredService>();
 
-        for (final GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
-            monitorIds.add(status.getLocationMonitor().getId());
+        boolean foundActiveMonitor = false;
+        for (final GWTLocationMonitor monitor : m_locationMonitors) {
+            if (monitor.getStatus().equals("STARTED")) {
+                foundActiveMonitor = true;
+                monitorIds.add(monitor.getId());
+            }
+        }
+        if (! foundActiveMonitor) {
+            return StatusDetails.unknown("No location monitors are currently reporting.");
         }
 
         Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = getOutages();

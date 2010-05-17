@@ -20,9 +20,9 @@ public class ApplicationState implements Serializable, IsSerializable {
 
 	public ApplicationState() {}
 
-	public ApplicationState(final Date from, final Date to, final Collection<ApplicationInfo> applications, final Map<String, List<GWTLocationSpecificStatus>> statuses) {
+	public ApplicationState(final Date from, final Date to, final Collection<ApplicationInfo> applications, final List<GWTLocationMonitor> monitors, final Map<String, List<GWTLocationSpecificStatus>> statuses) {
 		for (final ApplicationInfo app : applications) {
-			m_statuses.put(app.getName(), new ApplicationDetails(app, from, to, statuses.get(app.getName())));
+			m_statuses.put(app.getName(), new ApplicationDetails(app, from, to, monitors, statuses.get(app.getName())));
 		}
 	}
 

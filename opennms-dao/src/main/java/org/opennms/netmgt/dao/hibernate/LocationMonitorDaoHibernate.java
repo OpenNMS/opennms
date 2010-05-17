@@ -372,6 +372,20 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     			);
     }
 
+    public Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(String locationName) {
+        return findObjects(OnmsLocationSpecificStatus.class,
+                           "from OnmsLocationSpecificStatus as status " +
+                           "where status.pollResult.timestamp = ( " +
+                           "    select max(recentStatus.pollResult.timestamp) " +
+                           "    from OnmsLocationSpecificStatus as recentStatus " +
+                           "    where recentStatus.pollResult.timestamp < ? " +
+                           "    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
+                           "    having recentStatus.locationMonitor = status.locationMonitor " +
+                           "    and recentStatus.monitoredService = status.monitoredService " +
+                           ") and status.locationMonitor.definitionName = ?",
+                           locationName); 
+    }
+
     @SuppressWarnings("unchecked")
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
     	final List l = getHibernateTemplate().find(
@@ -389,5 +403,5 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         
         return ret;
     }
-    
+
 }

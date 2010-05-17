@@ -234,7 +234,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         final DefaultLocationDataService.MonitorStatusTracker mst = new DefaultLocationDataService.MonitorStatusTracker(def.getName());
         final DefaultLocationDataService.ApplicationStatusTracker ast = new DefaultLocationDataService.ApplicationStatusTracker(def.getName());
 
-        final Set<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
+        final List<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
 
         for (OnmsLocationMonitor mon : m_locationDao.findByLocationDefinition(def)) {
             monitors.add(transformLocationMonitor(mon));
@@ -267,7 +267,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         }
 
         ld.setLocationMonitorState(new LocationMonitorState(monitors, mst.drain()));
-        ld.setApplicationState(new ApplicationState(from, to, applications, ast.drainStatuses()));
+        ld.setApplicationState(new ApplicationState(from, to, applications, monitors, ast.drainStatuses()));
         return ld;
     }
 
@@ -284,10 +284,12 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         final Date to = new Date();
         final Date from = new Date(to.getTime() - AVAILABILITY_MS);
-        
+
         final Collection<OnmsMonitoredService> services = m_monitoredServiceDao.findByApplication(app);
-        
+        final List <GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
+
         for (final OnmsLocationMonitor monitor : m_locationDao.findByApplication(app)) {
+            monitors.add(transformLocationMonitor(monitor));
             for (final OnmsLocationSpecificStatus locationSpecificStatus : m_locationDao.getStatusChangesForLocationBetween(from, to, monitor.getDefinitionName())) {
                 if (services.contains(locationSpecificStatus.getMonitoredService())) {
                     statuses.add(transformLocationSpecificStatus(locationSpecificStatus));
@@ -295,7 +297,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             }
         }
 
-        ApplicationDetails details = new ApplicationDetails(applicationInfo, from, to, statuses);
+        ApplicationDetails details = new ApplicationDetails(applicationInfo, from, to, monitors, statuses);
         return details;
     }
 
@@ -398,6 +400,19 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         for (final ApplicationHandler handler : handlers) {
             handler.finish();
         }
+    }
+
+    @Transactional
+    public Collection<ApplicationInfo> getApplicationsForLocation(final LocationInfo locationInfo) {
+        final Map<String,ApplicationInfo> apps = new HashMap<String,ApplicationInfo>();
+        for (final OnmsLocationSpecificStatus status : m_locationDao.getMostRecentStatusChangesForLocation(locationInfo.getName())) {
+            for (final OnmsApplication app : status.getMonitoredService().getApplications()) {
+                if (!apps.containsKey(app.getName())) {
+                    apps.put(app.getName(), getApplicationInfo(app, true));
+                }
+            }
+        }
+        return apps.values();
     }
 
     private static GWTPollResult transformPollResult(final PollStatus pollStatus) {
