@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 import org.joda.time.Duration;
 import org.junit.Before;
@@ -57,6 +58,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
+import org.opennms.core.tasks.Task;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -301,7 +303,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
         NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         
-        scan.run();
+        runScan(scan);
     }
     
     
@@ -385,7 +387,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         OnmsNode node = nodes.get(0);
 
         NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        scan.run();
+        runScan(scan);
         
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -442,7 +444,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         OnmsNode node = nodes.get(0);
 
         NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        scan.run();
+        runScan(scan);
         
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -487,7 +489,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
         NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         
-        scan.run();
+        runScan(scan);
         
         m_nodeDao.flush();
         
@@ -499,7 +501,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
         NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         
-        scan2.run();
+        runScan(scan2);
         
         m_nodeDao.flush();
 
@@ -531,6 +533,12 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         assertEquals(0, getNodeDao().countAll());
         
         
+    }
+    
+    public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
+        Task t = scan.createTask();
+        t.schedule();
+        t.waitFor();
     }
 
     

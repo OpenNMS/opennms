@@ -52,6 +52,7 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.SequenceTask;
+import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
@@ -69,7 +70,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
-public class NodeScan implements Runnable {
+public class NodeScan implements RunInBatch {
     private Integer m_nodeId;
     private String m_foreignSource;
     private String m_foreignId;
@@ -146,6 +147,10 @@ public class NodeScan implements Runnable {
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
+    
+    public DefaultTaskCoordinator getTaskCoordinator() {
+        return m_taskCoordinator;
+    }
 
     public boolean isAborted() {
         return m_aborted;
@@ -168,47 +173,60 @@ public class NodeScan implements Runnable {
         
     }
 
-    public void run() {
-        try {
-            infof(this, "Scanning node (%s/%s)", m_foreignSource, m_foreignId);
+    Task createTask() {
+        return getTaskCoordinator().createBatch().add(NodeScan.this).get();
+    }
+    
+    public void run(BatchTask parent) {
+        infof(this, "Scanning node (%s/%s)", m_foreignSource, m_foreignId);
 
-            SequenceTask sequence = m_taskCoordinator.createSequence().add(
-                    new RunInBatch() {
-                        public void run(BatchTask phase) {
-                            loadNode(phase);
-                        }
-                    },
-                    new RunInBatch() {
-                        public void run(BatchTask phase) {
-                            detectAgents(phase);
-                        }
-                    },
-                    new RunInBatch() {
-                        public void run(BatchTask phase) {
-                            handleAgentUndetected(phase);
-                        }
-                    },
-                    new RunInBatch() {
-                        public void run(BatchTask phase) {
-                            scanCompleted(phase);
-                        }
+        parent.getBuilder().addSequence(
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        loadNode(phase);
                     }
-            ).get();
-            
-            sequence.schedule();
-            sequence.waitFor();
-            
-            debugf(this, "Finished scanning node (%s/%s)", m_foreignSource, m_foreignId);
-        } catch (InterruptedException e) {
-            warnf(this, e, "The node scan was interrupted");
-        } catch (ExecutionException e) {
-            warnf(this, e, "An error occurred while scanning node (%s/%s)", m_foreignSource, m_foreignId);
-        }
+                },
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        detectAgents(phase);
+                    }
+                },
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        handleAgentUndetected(phase);
+                    }
+                },
+                new RunInBatch() {
+                    public void run(BatchTask phase) {
+                        scanCompleted(phase);
+                    }
+                }
+        );
+        
+        
     }
     
 
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
-        ScheduledFuture<?> future = executor.scheduleWithFixedDelay(this, schedule.getInitialDelay().getMillis(), schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
+        
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    
+                    Task t = createTask();
+                    t.schedule();
+                    t.waitFor();
+                    
+                    debugf(NodeScan.this, "Finished scanning node (%s/%s)", NodeScan.this.m_foreignSource, NodeScan.this.m_foreignId);
+                } catch (InterruptedException e) {
+                    warnf(NodeScan.this, e, "The node scan was interrupted");
+                } catch (ExecutionException e) {
+                    warnf(NodeScan.this, e, "An error occurred while scanning node (%s/%s)", NodeScan.this.m_foreignSource, NodeScan.this.m_foreignId);
+                }
+            }
+        };
+        
+        ScheduledFuture<?> future = executor.scheduleWithFixedDelay(r, schedule.getInitialDelay().getMillis(), schedule.getScanInterval().getMillis(), TimeUnit.MILLISECONDS);
         return future;
     }
 
