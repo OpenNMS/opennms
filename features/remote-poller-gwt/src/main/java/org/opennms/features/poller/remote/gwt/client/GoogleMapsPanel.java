@@ -39,9 +39,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
 
     private static GoogleMapsPanelUiBinder uiBinder = GWT.create(GoogleMapsPanelUiBinder.class);
 
-    interface GoogleMapsPanelUiBinder extends
-            UiBinder<Widget, GoogleMapsPanel> {
-    }
+    interface GoogleMapsPanelUiBinder extends UiBinder<Widget, GoogleMapsPanel> {}
     
     @UiField
     MapWidget m_mapWidget;
@@ -98,7 +96,6 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         getMapWidget().setSize("100%", "100%");
         getMapWidget().setUIToDefault();
         getMapWidget().addControl(new LargeMapControl());
-        getMapWidget().setContinuousZoom(true);
         getMapWidget().setScrollWheelZoomEnabled(true);
       
         Window.addResizeHandler(new ResizeHandler() {
