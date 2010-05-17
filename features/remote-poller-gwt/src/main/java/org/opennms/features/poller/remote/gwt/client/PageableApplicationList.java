@@ -41,6 +41,7 @@ public class PageableApplicationList extends PageableList implements
 
         @Override
         protected void onLoad() {
+            super.onLoad();
             resizeToFit();
         }
 
@@ -86,7 +87,7 @@ public class PageableApplicationList extends PageableList implements
      */
     public void updateList(final ArrayList<ApplicationInfo> applications) {
         setApplications(applications);
-        super.showFirstPage();
+        refresh();
     }
 
     @Override
@@ -104,6 +105,7 @@ public class PageableApplicationList extends PageableList implements
 
     @Override
     protected int getListSize() {
+        if (m_applications == null) return 0;
         return m_applications.size();
     }
 
@@ -125,7 +127,6 @@ public class PageableApplicationList extends PageableList implements
 
         addHandler(new ResizeHandler() {
             public void onResize(final ResizeEvent event) {
-                // FIXME: is this even necessary?
                 refreshApplicationListResize();
             }
         },  ResizeEvent.getType());
@@ -133,6 +134,7 @@ public class PageableApplicationList extends PageableList implements
 
     public void onApplicationDetailsRetrieved(final ApplicationDetailsRetrievedEvent event) {
         updateApplicationDisplayItem(event.getApplicationDetails());
+        refresh();
     }
 
     private void updateApplicationDisplayItem(final ApplicationDetails appDetails) {
@@ -149,5 +151,6 @@ public class PageableApplicationList extends PageableList implements
             ApplicationDetailView view = (ApplicationDetailView) getDataList().getWidget(i, 0);
             view.resizeToFit();
         }
+        refresh();
     }
 }

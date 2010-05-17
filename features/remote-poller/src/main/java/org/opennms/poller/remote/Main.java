@@ -227,7 +227,6 @@ public class Main {
     }
 
     private void createAppContext() {
-        
         File homeDir = new File(System.getProperty("user.home"));
         String homeUrl = homeDir.toURI().toString();
         if (homeUrl.endsWith("/")) {

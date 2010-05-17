@@ -20,337 +20,338 @@ import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ApplicationDetails implements Serializable, IsSerializable {
-	private static final long serialVersionUID = 1L;
-	private String m_name;
-	private ApplicationInfo m_application;
-	private List<GWTLocationSpecificStatus> m_locationSpecificStatuses;
-	private Date m_statusFrom;
-	private Date m_statusTo;
-	private StatusDetails m_statusDetails;
+    private static final long serialVersionUID = 1L;
 
-	public ApplicationDetails() {
-		m_name = null;
-		m_locationSpecificStatuses = null;
-		m_statusFrom = null;
-		m_statusTo = null;
-	}
+    private String m_name;
 
-	public ApplicationDetails(final ApplicationInfo application, final Date from, final Date to, final List<GWTLocationSpecificStatus> statuses) {
-		m_name = application.getName();
-		m_application = application;
-		m_statusFrom = from;
-		m_statusTo = to;
-		m_locationSpecificStatuses = statuses;
-		if (m_locationSpecificStatuses != null) Collections.sort(m_locationSpecificStatuses, new LocationSpecificStatusComparator());
-	}
+    private ApplicationInfo m_application;
 
-	private Map<Integer,Map<Integer,List<GWTServiceOutage>>> getOutages() {
-		// service id -> location id -> outages
-		final Map<Integer,Map<Integer,List<GWTServiceOutage>>> outages = new HashMap<Integer,Map<Integer,List<GWTServiceOutage>>>();
+    private List<GWTLocationSpecificStatus> m_locationSpecificStatuses;
 
-		for (final GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
-			final Integer serviceId = status.getMonitoredService().getId();
-			final Integer monitorId = status.getLocationMonitor().getId();
-			GWTServiceOutage lastOutage = null;
-			Map<Integer,List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
-			if (serviceOutages != null) {
-				List<GWTServiceOutage> monitorOutages = serviceOutages.get(monitorId);
-				if (monitorOutages != null && monitorOutages.size() > 0) {
-					lastOutage = monitorOutages.get(monitorOutages.size() - 1);
-				}
-			}
+    private Date m_statusFrom;
 
-			if (lastOutage != null && lastOutage.getTo() == null) {
-				// there's an existing outage, and it's unfinished
+    private Date m_statusTo;
 
-				if (!status.getPollResult().isDown()) {
-					// it's back up
-					lastOutage.setTo(status.getPollResult().getTimestamp());
-					continue;
-				}
-				// otherwise, it's still down... leave the "to" incomplete
+    private StatusDetails m_statusDetails;
 
-			} else {
-				// there's no existing outage
+    public ApplicationDetails() {
+        m_name = null;
+        m_locationSpecificStatuses = null;
+        m_statusFrom = null;
+        m_statusTo = null;
+    }
 
-				if (status.getPollResult().isDown()) {
-					// but the service is down on this monitor, start a new outage
-					lastOutage = new GWTServiceOutage();
-					lastOutage.setService(status.getMonitoredService());
-					lastOutage.setMonitor(status.getLocationMonitor());
-					lastOutage.setFrom(status.getPollResult().getTimestamp());
-					
-					if (serviceOutages == null) {
-						serviceOutages = new HashMap<Integer,List<GWTServiceOutage>>();
-						outages.put(serviceId, serviceOutages);
-					}
-					List<GWTServiceOutage> monitorOutages = serviceOutages.get(monitorId);
-					if (monitorOutages == null) {
-						monitorOutages = new ArrayList<GWTServiceOutage>();
-						serviceOutages.put(monitorId, monitorOutages);
-					}
-					serviceOutages.get(monitorId).add(lastOutage);
-				}
-			}
-		}
+    public ApplicationDetails(final ApplicationInfo application, final Date from, final Date to, final List<GWTLocationSpecificStatus> statuses) {
+        m_name = application.getName();
+        m_application = application;
+        m_statusFrom = from;
+        m_statusTo = to;
+        m_locationSpecificStatuses = statuses;
+        if (m_locationSpecificStatuses != null)
+            Collections.sort(m_locationSpecificStatuses, new LocationSpecificStatusComparator());
+    }
 
-		for (final Integer serviceId : outages.keySet()) {
-			for (final Integer monitorId : outages.get(serviceId).keySet()) {
-				for (GWTServiceOutage outage : outages.get(serviceId).get(monitorId)) {
-					if (outage.getTo() == null) {
-						outage.setTo(m_statusTo);
-					}
-				}
-			}
-		}
+    private Map<Integer, Map<Integer, List<GWTServiceOutage>>> getOutages() {
+        // service id -> location id -> outages
+        final Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = new HashMap<Integer, Map<Integer, List<GWTServiceOutage>>>();
+        if (m_locationSpecificStatuses == null) {
+            return outages;
+        }
 
-		return outages;
-	}
+        for (final GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
+            final Integer serviceId = status.getMonitoredService().getId();
+            final Integer monitorId = status.getLocationMonitor().getId();
+            GWTServiceOutage lastOutage = null;
+            Map<Integer, List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
+            if (serviceOutages != null) {
+                List<GWTServiceOutage> monitorOutages = serviceOutages.get(monitorId);
+                if (monitorOutages != null && monitorOutages.size() > 0) {
+                    lastOutage = monitorOutages.get(monitorOutages.size() - 1);
+                }
+            }
 
-	@SuppressWarnings("unused")
-	private boolean intersects(final GWTServiceOutage outage1, final GWTServiceOutage outage2) {
-		long highestFrom = 0;
-		long lowestTo = Long.MAX_VALUE;
+            if (lastOutage != null && lastOutage.getTo() == null) {
+                // there's an existing outage, and it's unfinished
 
-		long current;
-		
-		current = outage1.getFrom().getTime();
-		if (current > highestFrom) highestFrom = current;
+                if (!status.getPollResult().isDown()) {
+                    // it's back up
+                    lastOutage.setTo(status.getPollResult().getTimestamp());
+                    continue;
+                }
+                // otherwise, it's still down... leave the "to" incomplete
 
-		current = outage2.getFrom().getTime();
-		if (current > highestFrom) highestFrom = current;
-		
-		current = outage1.getTo().getTime();
-		if (current < lowestTo) lowestTo = current;
+            } else {
+                // there's no existing outage
 
-		current = outage2.getTo().getTime();
-		if (current < lowestTo) lowestTo = current;
+                if (status.getPollResult().isDown()) {
+                    // but the service is down on this monitor, start a new
+                    // outage
+                    lastOutage = new GWTServiceOutage();
+                    lastOutage.setService(status.getMonitoredService());
+                    lastOutage.setMonitor(status.getLocationMonitor());
+                    lastOutage.setFrom(status.getPollResult().getTimestamp());
 
-		if (highestFrom < lowestTo) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+                    if (serviceOutages == null) {
+                        serviceOutages = new HashMap<Integer, List<GWTServiceOutage>>();
+                        outages.put(serviceId, serviceOutages);
+                    }
+                    List<GWTServiceOutage> monitorOutages = serviceOutages.get(monitorId);
+                    if (monitorOutages == null) {
+                        monitorOutages = new ArrayList<GWTServiceOutage>();
+                        serviceOutages.put(monitorId, monitorOutages);
+                    }
+                    serviceOutages.get(monitorId).add(lastOutage);
+                }
+            }
+        }
 
-	private Collection<GWTMonitoredService> getAllServices() {
-		final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
-		for (final GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
-			services.add(status.getMonitoredService());
-		}
-		return services;
-	}
+        for (final Integer serviceId : outages.keySet()) {
+            for (final Integer monitorId : outages.get(serviceId).keySet()) {
+                for (GWTServiceOutage outage : outages.get(serviceId).get(monitorId)) {
+                    if (outage.getTo() == null) {
+                        outage.setTo(m_statusTo);
+                    }
+                }
+            }
+        }
 
-	public StatusDetails getStatusDetails() {
-		if (m_statusDetails == null) {
-			m_statusDetails = getStatusDetailsUncached();
-		}
-		return m_statusDetails;
-	}
+        return outages;
+    }
 
-	private StatusDetails getStatusDetailsUncached() {
-		if (m_locationSpecificStatuses == null || m_locationSpecificStatuses.size() == 0) {
-			return StatusDetails.unknown("No status updates for application " + m_name);
-		}
+    private Collection<GWTMonitoredService> getAllServices() {
+        final Set<GWTMonitoredService> services = new HashSet<GWTMonitoredService>();
+        if (m_locationSpecificStatuses != null) {
+            for (final GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
+                services.add(status.getMonitoredService());
+            }
+        }
+        return services;
+    }
 
-		final Set<Integer> monitorIds = new HashSet<Integer>();
-		final Set<String> serviceNamesWithOutages = new HashSet<String>();
-		final Set<String> serviceNamesDown = new HashSet<String>();
-		final Set<GWTMonitoredService> servicesWithOutages = new HashSet<GWTMonitoredService>();
-		final Set<GWTMonitoredService> servicesDown = new HashSet<GWTMonitoredService>();
+    public StatusDetails getStatusDetails() {
+        if (m_statusDetails == null) {
+            m_statusDetails = getStatusDetailsUncached();
+        }
+        return m_statusDetails;
+    }
 
-		for (final GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
-			monitorIds.add(status.getLocationMonitor().getId());
-		}
+    private StatusDetails getStatusDetailsUncached() {
+        if (m_locationSpecificStatuses == null || m_locationSpecificStatuses.size() == 0) {
+            return StatusDetails.unknown("No status updates for application " + m_name);
+        }
 
-		Map<Integer,Map<Integer,List<GWTServiceOutage>>> outages = getOutages();
-		for (final Integer serviceId : outages.keySet()) {
-			final Map<Integer,GWTServiceOutage> currentOutages = new HashMap<Integer,GWTServiceOutage>();
-			final List<GWTServiceOutage> locationOutages = new ArrayList<GWTServiceOutage>();
-			final Set<Integer> monitorIdsWithoutOutages = new HashSet<Integer>(monitorIds);
-			for (final Integer monitorId : outages.get(serviceId).keySet()) {
-				locationOutages.addAll(outages.get(serviceId).get(monitorId));
-			}
-			Collections.sort(locationOutages);
+        final Set<Integer> monitorIds = new HashSet<Integer>();
+        final Set<String> serviceNamesWithOutages = new HashSet<String>();
+        final Set<String> serviceNamesDown = new HashSet<String>();
+        final Set<GWTMonitoredService> servicesWithOutages = new HashSet<GWTMonitoredService>();
+        final Set<GWTMonitoredService> servicesDown = new HashSet<GWTMonitoredService>();
 
-			for (final GWTServiceOutage outage : locationOutages) {
-				// any outage means we're marginal
-				serviceNamesWithOutages.add(outage.getService().getServiceName());
-				servicesWithOutages.add(outage.getService());
+        for (final GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
+            monitorIds.add(status.getLocationMonitor().getId());
+        }
 
-				currentOutages.put(outage.getMonitor().getId(), outage);
-				monitorIdsWithoutOutages.remove(outage.getMonitor().getId());
-				long from = outage.getFrom().getTime();
-				long to = outage.getTo().getTime();
+        Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = getOutages();
+        for (final Integer serviceId : outages.keySet()) {
+            final Map<Integer, GWTServiceOutage> currentOutages = new HashMap<Integer, GWTServiceOutage>();
+            final List<GWTServiceOutage> locationOutages = new ArrayList<GWTServiceOutage>();
+            final Set<Integer> monitorIdsWithoutOutages = new HashSet<Integer>(monitorIds);
+            for (final Integer monitorId : outages.get(serviceId).keySet()) {
+                locationOutages.addAll(outages.get(serviceId).get(monitorId));
+            }
+            Collections.sort(locationOutages);
 
-				for (final Integer monitorId : monitorIds) {
-					// don't compare to ourselves
-					if (monitorId == outage.getMonitor().getId()) {
-						continue;
-					}
+            for (final GWTServiceOutage outage : locationOutages) {
+                // any outage means we're marginal
+                serviceNamesWithOutages.add(outage.getService().getServiceName());
+                servicesWithOutages.add(outage.getService());
 
-					final GWTServiceOutage o = currentOutages.get(monitorId);
-					if (o == null) {
-						continue;
-					}
+                currentOutages.put(outage.getMonitor().getId(), outage);
+                monitorIdsWithoutOutages.remove(outage.getMonitor().getId());
+                long from = outage.getFrom().getTime();
+                long to = outage.getTo().getTime();
 
-					// only compare (outage) for the same monitoring location definition
-					if (!o.getMonitor().getDefinitionName().equals(outage.getMonitor().getDefinitionName())) {
-						continue;
-					}
+                for (final Integer monitorId : monitorIds) {
+                    // don't compare to ourselves
+                    if (monitorId == outage.getMonitor().getId()) {
+                        continue;
+                    }
 
-					if (o.getFrom().getTime() > from) from = o.getFrom().getTime();
-					if (o.getTo().getTime()   < to  ) to   = o.getTo().getTime();
-				}
-				if (from < to && monitorIdsWithoutOutages.size() == 0) {
-					// if from is still less than to, all monitors in a location overlap by (to - from) milliseconds
-					serviceNamesDown.add(outage.getService().getServiceName());
-					servicesDown.add(outage.getService());
-				}
-			}
-		}
-		outages = null;
+                    final GWTServiceOutage o = currentOutages.get(monitorId);
+                    if (o == null) {
+                        continue;
+                    }
 
-		Set<String> allServiceNames = new HashSet<String>();
-		for (final GWTMonitoredService service : m_application.getServices()) {
-			allServiceNames.add(service.getServiceName());
-		}
-		Set<String> unmonitoredServiceNames = new HashSet<String>(allServiceNames);
-		for (final GWTMonitoredService service : getAllServices()) {
-			unmonitoredServiceNames.remove(service.getServiceName());
-		}
+                    // only compare (outage) for the same monitoring location
+                    // definition
+                    if (!o.getMonitor().getDefinitionName().equals(outage.getMonitor().getDefinitionName())) {
+                        continue;
+                    }
 
-		if (unmonitoredServiceNames.size() > 0) {
-			return StatusDetails.unknown("The following services were not being reported on by any monitor: " + StringUtils.join(unmonitoredServiceNames, ", "));
-		}
-		
-		if (servicesDown.size() > 0) {
-			return StatusDetails.down("The following services were reported as down by all monitors: " + StringUtils.join(serviceNamesDown, ","));
-		}
+                    if (o.getFrom().getTime() > from)
+                        from = o.getFrom().getTime();
+                    if (o.getTo().getTime() < to)
+                        to = o.getTo().getTime();
+                }
+                if (from < to && monitorIdsWithoutOutages.size() == 0) {
+                    // if from is still less than to, all monitors in a
+                    // location overlap by (to - from) milliseconds
+                    serviceNamesDown.add(outage.getService().getServiceName());
+                    servicesDown.add(outage.getService());
+                }
+            }
+        }
+        outages = null;
 
-		if (servicesWithOutages.size() == m_application.getServices().size()) {
-			return StatusDetails.marginal("The following services were reported to have outages in this application: " + StringUtils.join(serviceNamesWithOutages, ", "));
-		}
+        Set<String> allServiceNames = new HashSet<String>();
+        for (final GWTMonitoredService service : m_application.getServices()) {
+            allServiceNames.add(service.getServiceName());
+        }
+        Set<String> unmonitoredServiceNames = new HashSet<String>(allServiceNames);
+        for (final GWTMonitoredService service : getAllServices()) {
+            unmonitoredServiceNames.remove(service.getServiceName());
+        }
 
-		return StatusDetails.up();
-	}
+        if (unmonitoredServiceNames.size() > 0) {
+            return StatusDetails.unknown("The following services were not being reported on by any monitor: "
+                    + StringUtils.join(unmonitoredServiceNames, ", "));
+        }
 
-	public Double getAvailability() {
-		if (m_statusFrom == null) {
-			return null;
-		}
+        if (servicesDown.size() > 0) {
+            return StatusDetails.down("The following services were reported as down by all monitors: "
+                    + StringUtils.join(serviceNamesDown, ","));
+        }
 
-		long timeAvailable = 0;
-		boolean available = true;
-		Date lastTime = m_statusFrom;
-		for (GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
-			final Date pollTime = status.getPollTime();
-			if (available) {
-				timeAvailable += (pollTime.getTime() - lastTime.getTime());
-			}
-			lastTime = pollTime;
-			available = !status.getPollResult().isDown();
-		}
-		if (available) {
-			timeAvailable += (m_statusTo.getTime() - lastTime.getTime());
-		}
+        if (servicesWithOutages.size() == m_application.getServices().size()) {
+            return StatusDetails.marginal("The following services were reported to have outages in this application: "
+                    + StringUtils.join(serviceNamesWithOutages, ", "));
+        }
 
-		final long totalTime = m_statusTo.getTime() - m_statusFrom.getTime();
-		return Double.valueOf(timeAvailable / totalTime * 100.0);
-	}
+        return StatusDetails.up();
+    }
 
-	public String toString() {
-		return "ApplicationDetails[name=" + m_name + ",range=" + m_statusFrom + "-" + m_statusTo + ",statuses=" + m_locationSpecificStatuses + "]";
-	}
+    public Double getAvailability() {
+        if (m_statusFrom == null || m_locationSpecificStatuses == null) {
+            return null;
+        }
 
-	public class GWTServiceOutage implements Serializable, IsSerializable, Comparable<GWTServiceOutage> {
-		private static final long serialVersionUID = 1L;
-		private GWTLocationMonitor m_monitor;
-		private GWTMonitoredService m_service;
-		private Date m_from;
-		private Date m_to;
+        long timeAvailable = 0;
+        boolean available = true;
+        Date lastTime = m_statusFrom;
+        for (GWTLocationSpecificStatus status : m_locationSpecificStatuses) {
+            final Date pollTime = status.getPollTime();
+            if (available) {
+                timeAvailable += (pollTime.getTime() - lastTime.getTime());
+            }
+            lastTime = pollTime;
+            available = !status.getPollResult().isDown();
+        }
+        if (available) {
+            timeAvailable += (m_statusTo.getTime() - lastTime.getTime());
+        }
 
-		public GWTServiceOutage() {}
-		public GWTServiceOutage(final GWTLocationMonitor monitor, final GWTMonitoredService service) {
-			m_monitor = monitor;
-			m_service = service;
-		}
+        final long totalTime = m_statusTo.getTime() - m_statusFrom.getTime();
+        return Double.valueOf(timeAvailable / totalTime * 100.0);
+    }
 
-		public Date getFrom() {
-			return m_from;
-		}
-		public void setFrom(final Date from) {
-			m_from = from;
-		}
-		public Date getTo() {
-			return m_to;
-		}
-		public void setTo(final Date to) {
-			m_to = to;
-		}
-		public GWTLocationMonitor getMonitor() {
-			return m_monitor;
-		}
-		public void setMonitor(final GWTLocationMonitor monitor) {
-			m_monitor = monitor;
-		}
-		public GWTMonitoredService getService() {
-			return m_service;
-		}
-		public void setService(final GWTMonitoredService service) {
-			m_service = service;
-		}
+    public String toString() {
+        return "ApplicationDetails[name=" + m_name + ",range=" + m_statusFrom + "-" + m_statusTo + ",statuses=" + m_locationSpecificStatuses + "]";
+    }
 
-		public boolean equals(Object o) {
-			if (!(o instanceof GWTServiceOutage)) return false;
-			GWTServiceOutage that = (GWTServiceOutage)o;
-			return 
-				EqualsUtil.areEqual(this.getMonitor().getId(), that.getMonitor().getId()) &&
-				EqualsUtil.areEqual(this.getService().getId(), that.getService().getId()) &&
-				EqualsUtil.areEqual(this.getFrom(), that.getFrom()) &&
-				EqualsUtil.areEqual(this.getTo(), that.getTo())
-			;
-		}
+    public class GWTServiceOutage implements Serializable, IsSerializable, Comparable<GWTServiceOutage> {
+        private static final long serialVersionUID = 1L;
 
-		public int hashCode() {
-			return new HashCodeBuilder()
-				.append(this.getMonitor())
-				.append(this.getService())
-				.append(this.getFrom())
-				.append(this.getTo())
-				.toHashcode();
-		}
+        private GWTLocationMonitor m_monitor;
 
-		public String toString() {
-			return "GWTServiceOutage[monitor=" + m_monitor + ",service=" + m_service + ",from=" + m_from + ",to=" + m_to + "]";
-		}
+        private GWTMonitoredService m_service;
 
-		public int compareTo(final GWTServiceOutage that) {
-			return new CompareToBuilder()
-				.append(this.getService(), that.getService())
-				.append(this.getFrom(), that.getFrom())
-				.append(this.getMonitor(), that.getMonitor())
-				.append(this.getTo(), that.getTo())
-				.toComparison();
-		}
-		
-		
-	}
+        private Date m_from;
 
-	private static class LocationSpecificStatusComparator implements Comparator<GWTLocationSpecificStatus> {
+        private Date m_to;
 
-		public int compare(final GWTLocationSpecificStatus a, final GWTLocationSpecificStatus b) {
-			return new CompareToBuilder()
-				.append(a.getMonitoredService(), b.getMonitoredService())
-				.append(a.getLocationMonitor().getDefinitionName(), b.getLocationMonitor().getDefinitionName())
-				.append(a.getPollTime(), b.getPollTime())
-				.append(a.getLocationMonitor(), b.getLocationMonitor())
-				.toComparison();
-		}
+        public GWTServiceOutage() {
+        }
 
-	}
-	
-	public String getApplicationName() {
+        public GWTServiceOutage(final GWTLocationMonitor monitor, final GWTMonitoredService service) {
+            m_monitor = monitor;
+            m_service = service;
+        }
+
+        public Date getFrom() {
+            return m_from;
+        }
+
+        public void setFrom(final Date from) {
+            m_from = from;
+        }
+
+        public Date getTo() {
+            return m_to;
+        }
+
+        public void setTo(final Date to) {
+            m_to = to;
+        }
+
+        public GWTLocationMonitor getMonitor() {
+            return m_monitor;
+        }
+
+        public void setMonitor(final GWTLocationMonitor monitor) {
+            m_monitor = monitor;
+        }
+
+        public GWTMonitoredService getService() {
+            return m_service;
+        }
+
+        public void setService(final GWTMonitoredService service) {
+            m_service = service;
+        }
+
+        public boolean equals(Object o) {
+            if (!(o instanceof GWTServiceOutage))
+                return false;
+            GWTServiceOutage that = (GWTServiceOutage) o;
+            return EqualsUtil.areEqual(this.getMonitor().getId(), that.getMonitor().getId())
+                    && EqualsUtil.areEqual(this.getService().getId(), that.getService().getId())
+                    && EqualsUtil.areEqual(this.getFrom(), that.getFrom()) && EqualsUtil.areEqual(this.getTo(), that.getTo());
+        }
+
+        public int hashCode() {
+            return new HashCodeBuilder().append(this.getMonitor()).append(this.getService()).append(this.getFrom()).append(this.getTo()).toHashcode();
+        }
+
+        public String toString() {
+            return "GWTServiceOutage[monitor=" + m_monitor + ",service=" + m_service + ",from=" + m_from + ",to=" + m_to + "]";
+        }
+
+        public int compareTo(final GWTServiceOutage that) {
+            if (that == null) return -1;
+            return new CompareToBuilder()
+                .append(this.getService(), that.getService())
+                .append(this.getFrom(), that.getFrom())
+                .append(this.getMonitor(), that.getMonitor())
+                .append(this.getTo(),that.getTo())
+                .toComparison();
+        }
+
+    }
+
+    private static class LocationSpecificStatusComparator implements Comparator<GWTLocationSpecificStatus> {
+        public int compare(final GWTLocationSpecificStatus a, final GWTLocationSpecificStatus b) {
+            return new CompareToBuilder()
+                .append(a.getMonitoredService(), b.getMonitoredService())
+                .append(
+                     a.getLocationMonitor() == null? null : a.getLocationMonitor().getDefinitionName(),
+                     b.getLocationMonitor() == null? null : b.getLocationMonitor().getDefinitionName()
+                )
+                .append(a.getPollTime(), b.getPollTime())
+                .append(a.getLocationMonitor(), b.getLocationMonitor())
+                .toComparison();
+        }
+    }
+
+    public String getApplicationName() {
         return m_name;
     }
 

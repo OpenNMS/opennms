@@ -60,7 +60,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     private PollerBackEnd m_remoteBackEnd;
     private boolean m_serverUnresponsive = false;
     
-    public void setRemoteBackEnd(PollerBackEnd remoteBackEnd) {
+    public void setRemoteBackEnd(final PollerBackEnd remoteBackEnd) {
         m_remoteBackEnd = remoteBackEnd;
     }
 
@@ -78,35 +78,36 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         return m_remoteBackEnd.getMonitoringLocations();
     }
 
-    public PollerConfiguration getPollerConfiguration(int locationMonitorId) {
+    public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
         if (m_serverUnresponsive) {
             return new EmptyPollerConfiguration();
         }
         try {
-            return m_remoteBackEnd.getPollerConfiguration(locationMonitorId);
-        } catch (RemoteAccessException e) {
+            final PollerConfiguration config = m_remoteBackEnd.getPollerConfiguration(locationMonitorId);
+            m_serverUnresponsive = false;
+            return config;
+        } catch (final RemoteAccessException e) {
             m_serverUnresponsive = true;
             return new EmptyPollerConfiguration();
         }
     }
 
-    public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
+    public MonitorStatus pollerCheckingIn(final int locationMonitorId, final Date currentConfigurationVersion) {
         // if we check in and get a remote exception then we switch to the EmptyConfiguration
         try {
-            MonitorStatus result = m_remoteBackEnd.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
+            final MonitorStatus result = m_remoteBackEnd.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
             m_serverUnresponsive = false;
             return result;
-        } catch (RemoteAccessException e) {
+        } catch (final RemoteAccessException e) {
             // we have failed to check in properly with the server
             m_serverUnresponsive = true;
             return MonitorStatus.DISCONNECTED;
         }
     }
 
-    public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
+    public boolean pollerStarting(final int locationMonitorId, final Map<String, String> pollerDetails) {
         try {
-            
-            boolean pollerStarting = m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
+            final boolean pollerStarting = m_remoteBackEnd.pollerStarting(locationMonitorId, pollerDetails);
             // If false was returned, this location monitor doesn't exist on the server, so we can't get its name
             if (pollerStarting) {
                 m_monitorName = m_remoteBackEnd.getMonitorName(locationMonitorId);
@@ -114,22 +115,22 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             m_serverUnresponsive = false;
             return pollerStarting;
             
-        } catch (RemoteAccessException e) {
+        } catch (final RemoteAccessException e) {
             m_serverUnresponsive = true;
             return true;
         }
     }
 
-    public void pollerStopping(int locationMonitorId) {
+    public void pollerStopping(final int locationMonitorId) {
         m_remoteBackEnd.pollerStopping(locationMonitorId);
     }
 
-    public int registerLocationMonitor(String monitoringLocationId) {
+    public int registerLocationMonitor(final String monitoringLocationId) {
         // leave this method as it is a 'before registration' method and we want errors to occur?
     	return m_remoteBackEnd.registerLocationMonitor(monitoringLocationId);
     }
 
-    public void reportResult(int locationMonitorID, int serviceId, PollStatus status) {
+    public void reportResult(final int locationMonitorID, final int serviceId, final PollStatus status) {
         if (!m_serverUnresponsive) {
             try {
                 m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);

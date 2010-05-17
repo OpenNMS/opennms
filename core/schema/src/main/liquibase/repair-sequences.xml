@@ -6,7 +6,7 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="opennmsnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="opennmsnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="acks" />
 		<tableExists tableName="assets" />
@@ -45,7 +45,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="nodenxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="nodenxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="node" />
 	</preConditions>
@@ -58,7 +58,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="servicenxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="servicenxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="service" />
 	</preConditions>
@@ -71,7 +71,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="eventsnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="eventsnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="events" />
 	</preConditions>
@@ -84,7 +84,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="alarmsnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="alarmsnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="alarms" />
 	</preConditions>
@@ -97,7 +97,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="outagenxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="outagenxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="outages" />
 	</preConditions>
@@ -110,7 +110,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="notifynxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="notifynxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="notifications" />
 	</preConditions>
@@ -123,7 +123,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="vulnnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="vulnnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="vulnerabilities" />
 	</preConditions>
@@ -136,7 +136,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="catnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="catnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="categories" />
 	</preConditions>
@@ -149,7 +149,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="usernotifnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="usernotifnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="usersnotified" />
 	</preConditions>
@@ -162,7 +162,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="demandpollnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="demandpollnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="demandpolls" />
 	</preConditions>
@@ -175,7 +175,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="pollresultnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="pollresultnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="pollresults" />
 	</preConditions>
@@ -188,7 +188,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="mapnxtid-update-sequence">
+<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="mapnxtid-update-sequence" context="production">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="map" />
 	</preConditions>

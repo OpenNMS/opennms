@@ -36,7 +36,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.eventd.db;
+package org.opennms.netmgt.model.events;
 
 import java.util.Iterator;
 import java.util.List;
@@ -56,32 +56,32 @@ public class Constants extends EventConstants {
      * value are added as delimiter separated list of ' <parmName>= <value>'
      * strings
      */
-    final static char NAME_VAL_DELIM = '=';
+    public final static char NAME_VAL_DELIM = '=';
 
     /**
      * The delimiter used to delimit multiple values of the same element that
      * are appended and made the value of a single database column
      */
-    final static char MULTIPLE_VAL_DELIM = ';';
+    public final static char MULTIPLE_VAL_DELIM = ';';
 
     /**
      * The parser adds the value and attributes of an element to a single
      * element of eventBlock and uses the ATTRIB_DELIM to separate these values
      */
-    final static String ATTRIB_DELIM = "/\\";
+    public final static String ATTRIB_DELIM = "/\\";
 
     /**
      * The values and the corresponding attributes of an element are added to a
      * single column of the table and delimited by DB_ATTRIB_DELIM
      */
-    final static char DB_ATTRIB_DELIM = ',';
+    public final static char DB_ATTRIB_DELIM = ',';
 
     /**
      * Multiple values of any xml element are appended into one value when
      * inserted into the database - if the length of the appended string exceeds
      * the column length, the value is appended with this pattern
      */
-    final static String VALUE_TRUNCATE_INDICATOR = "...";
+    public final static String VALUE_TRUNCATE_INDICATOR = "...";
 
     /**
      * This method is used to escape required values from strings that may
@@ -99,7 +99,7 @@ public class Constants extends EventConstants {
      * @see #DB_ATTRIB_DELIM
      * @see #MULTIPLE_VAL_DELIM
      */
-  public static String escape(String inStr, char delimchar) {
+    public static String escape(String inStr, char delimchar) {
         
         StringBuilder buf = new StringBuilder(inStr.length()+16);
 

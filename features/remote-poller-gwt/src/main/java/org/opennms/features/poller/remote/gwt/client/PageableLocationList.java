@@ -44,7 +44,7 @@ public class PageableLocationList extends PageableList {
             setHeight(Integer.toString(newHeight + 2));
         }
 
-        public LocationInfoDisplay(LocationInfo locationInfo) {
+        public LocationInfoDisplay(final LocationInfo locationInfo) {
             setElement(DOM.createDiv());
 
             setStyles();
@@ -67,7 +67,7 @@ public class PageableLocationList extends PageableList {
     }
 
     @Override
-    protected Widget getListItemWidget(int rowIndex) {
+    protected Widget getListItemWidget(final int rowIndex) {
         return new LocationInfoDisplay(getLocations().get(rowIndex));
     }
 
@@ -75,21 +75,22 @@ public class PageableLocationList extends PageableList {
      * TODO: Maybe enhance this so that it only adds/updates/deletes individual items
      * TODO: Don't skip to the front page on every update
      */
-    public void updateList(ArrayList<? extends LocationInfo> locations) {
+    public void updateList(final ArrayList<? extends LocationInfo> locations) {
         setLocations(locations);
-        super.showFirstPage();
+        refresh();
     }
-    
+
     private ArrayList<? extends LocationInfo> getLocations() {
         return m_locations;
     }
 
-    private void setLocations(ArrayList<? extends LocationInfo> locations) {
+    private void setLocations(final ArrayList<? extends LocationInfo> locations) {
         m_locations = locations;
     }
 
     @Override
     protected int getListSize() {
+        if (getLocations() == null) return 0;
         return getLocations().size();
     }
 
@@ -106,6 +107,7 @@ public class PageableLocationList extends PageableList {
             LocationInfoDisplay locInfo = (LocationInfoDisplay) getDataList().getWidget(i, 0);
             locInfo.resizeToFit();
         }
+        refresh();
     }
 
 }

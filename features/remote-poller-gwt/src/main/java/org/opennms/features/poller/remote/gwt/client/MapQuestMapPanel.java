@@ -103,6 +103,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         getMapHolder().setSize("100%", "100%");
         m_map.addControl(MQALargeZoomControl.newInstance());
         m_map.setZoomLevel(1);
+        m_map.setCenter(MQALatLng.newInstance("0,0"));
 
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {

@@ -69,7 +69,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     private final Map<String, LocationInfo> m_locations = new HashMap<String, LocationInfo>();
 
-    private final Set<ApplicationInfo> m_applications = new HashSet<ApplicationInfo>();
+    private final Map<String,ApplicationInfo> m_applications = new HashMap<String,ApplicationInfo>();
 
     private String m_selectedTag = null;
 
@@ -190,7 +190,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
                 }
             }
         }
-        m_applications.add(applicationInfo);
+        m_applications.put(applicationInfo.getName(), applicationInfo);
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
     }
 
@@ -383,13 +383,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
          * good random-access efficiency since the pageable lists use get() to
          * fetch based on index. Note, that m_applications is a *HashSet* not
          * a *TreeSet* since TreeSets consider duplicates based on Comparable,
-         * not equals
+         * not equals, and thus duplicates them.
          */
 
-        ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
-        applicationList.addAll(m_applications);
-        Collections.sort(applicationList);
-        m_locationPanel.updateApplicationList(applicationList);
+        updateApplicationList();
 
         if (!m_updated) {
             return;
@@ -399,7 +396,25 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         for (final String locationName : applicationInfo.getLocations()) {
             GWTMarkerState m = getMarkerForLocation(locationName);
-            m_mapPanel.placeMarker(m);
+            if (m != null) {
+                m_mapPanel.placeMarker(m);
+            }
+        }
+    }
+
+    private void updateApplicationList() {
+        ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
+        applicationList.addAll(m_applications.values());
+        Collections.sort(applicationList);
+        m_locationPanel.updateApplicationList(applicationList);
+    }
+
+    public void removeApplication(final String applicationName) {
+        final ApplicationInfo info = m_applications.get(applicationName);
+        if (info != null) {
+            m_selectedApplications.remove(info);
+            m_applications.remove(applicationName);
+            updateApplicationList();
         }
     }
 
@@ -446,24 +461,15 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Fetch a list of all application names.
      */
     public Set<String> getAllApplicationNames() {
-        Set<String> retval = new TreeSet<String>();
-        for (final ApplicationInfo application : m_applications) {
-            retval.add(application.getName());
-        }
-        return retval;
+        return new TreeSet<String>(m_applications.keySet());
     }
 
-    public ApplicationInfo getApplicationInfo(String name) {
+    public ApplicationInfo getApplicationInfo(final String name) {
         if (name == null) {
             return null;
         }
 
-        for (final ApplicationInfo app : m_applications) {
-            if (name.equals(app.getName())) {
-                return app;
-            }
-        }
-        return null;
+        return m_applications.get(name);
     }
 
     public LocationInfo getLocation(String locationName) {
