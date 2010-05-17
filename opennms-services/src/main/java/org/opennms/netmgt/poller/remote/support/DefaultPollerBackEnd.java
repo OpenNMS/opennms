@@ -201,9 +201,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
-            /* the monitor has been deleted we'll pick this in up on the next
-             * config check
-             */
+            // the monitor has been deleted we'll pick this in up on the next config check
             return new EmptyPollerConfiguration();
         }
 
