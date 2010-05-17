@@ -232,18 +232,18 @@ public class NodeScan implements RunInBatch {
 
     public void loadNode(BatchTask loadNode) {
         if (getForeignSource() != null) {
-        m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
-        if (m_node == null) {
-            abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
-        } else {
-            for(OnmsIpInterface iface : m_node.getIpInterfaces()) {
-                loadNode.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress(), getForeignSource(), getProvisionService()));
+            m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
+            if (m_node == null) {
+                abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
+            } else {
+                for(OnmsIpInterface iface : m_node.getIpInterfaces()) {
+                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress(), getForeignSource(), getProvisionService()));
+                }
             }
-        }
         } else {
             m_node = m_provisionService.getNode(m_nodeId);
         }
-        
+
     }
 
     public AgentScan createAgentScan(InetAddress agentAddress, String agentType) {

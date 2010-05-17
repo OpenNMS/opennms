@@ -815,6 +815,7 @@ public class DefaultProvisionService implements ProvisionService {
         OnmsNode node = m_nodeDao.get(nodeId);
         m_nodeDao.initialize(node);
         m_nodeDao.initialize(node.getCategories());
+        m_nodeDao.initialize(node.getIpInterfaces());
         return node;
     }
 }

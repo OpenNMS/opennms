@@ -265,6 +265,45 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
         
     }
     
+    @Test(timeout=300000)
+    @Transactional
+    public void testScanNewSuspectNoSnmp() throws Exception {
+
+        //Verify empty database
+        assertEquals(1, getDistPollerDao().countAll());
+        assertEquals(0, getNodeDao().countAll());
+        assertEquals(0, getInterfaceDao().countAll());
+        assertEquals(0, getMonitoredServiceDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+        
+        
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
+        runScan(scan);
+        
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        OnmsNode node = nodes.get(0);
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+        
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 0, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(0, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+        
+    }
+    
     public void runScan(NewSuspectScan scan) throws InterruptedException, ExecutionException {
         Task t = scan.createTask();
         t.schedule();
