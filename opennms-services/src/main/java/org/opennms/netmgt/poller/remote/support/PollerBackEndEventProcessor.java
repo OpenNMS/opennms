@@ -12,6 +12,16 @@ public class PollerBackEndEventProcessor {
     @Autowired
     private PollerBackEnd m_pollerBackEnd;
 
+    @EventHandler(uei=EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI)
+    public void handleSnmpPollerConfigChanged(final Event event) {
+        m_pollerBackEnd.configurationUpdated();
+    }
+
+    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleDaemonConfigChanged(final Event event) {
+        m_pollerBackEnd.configurationUpdated();
+    }
+
     @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAdded(final Event event) {
         m_pollerBackEnd.configurationUpdated();
