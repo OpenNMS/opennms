@@ -133,7 +133,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 *  Method to get the QosD's logger from OpenNMS
 	 */
 	public static Logger getLog() {
-		return (Logger)ThreadCategory.getInstance(QoSDimpl2.class);	
+		return ThreadCategory.getInstance(QoSDimpl2.class);	
 	}
 
 	// ---------------SPRING DAO DECLARATIONS----------------

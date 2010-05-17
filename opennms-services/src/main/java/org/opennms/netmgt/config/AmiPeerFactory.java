@@ -490,8 +490,7 @@ public class AmiPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn(String.format("AmiPeerFactory: could not convert host %s to InetAddress", saddr), e);
+                    log().warn(String.format("AmiPeerFactory: could not convert host %s to InetAddress", saddr), e);
                 }
             }
 
@@ -510,8 +509,7 @@ public class AmiPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn(String.format("AmiPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd()), e);
+                    log().warn(String.format("AmiPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd()), e);
                 }
             }
             
