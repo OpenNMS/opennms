@@ -51,6 +51,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Category;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -391,19 +392,33 @@ public class Provisioner implements SpringServiceDaemon {
     
     @EventHandler(uei = EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
     public void handleNewSuspectEvent(Event e) {
-        String ip = e.getInterface();
+        final String uei = e.getUei();
+        final String ip = e.getInterface();
         if (ip == null) {
             log().error("Received a "+e.getUei()+" event with a null ipAddress");
         }
 
-        try {
-            InetAddress addr = InetAddress.getByName(ip);
-            NewSuspectScan scan = createNewSuspectScan(addr);
-            m_scheduledExecutor.execute(scan);
-            
-        } catch (UnknownHostException ex) {
-            log().error("Unable to convert address "+ip+" from "+e.getUei()+" event to InetAddress", ex);
-        }
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    InetAddress addr = InetAddress.getByName(ip);
+                    NewSuspectScan scan = createNewSuspectScan(addr);
+                    Task t = scan.createTask();
+                    t.schedule();
+                    t.waitFor();
+                } catch (UnknownHostException ex) {
+                    log().error("Unable to convert address "+ip+" from "+uei+" event to InetAddress", ex);
+                } catch (InterruptedException ex) {
+                    log().error("Task interrupted waiting for new suspect scan of "+ip+" to finish", ex);
+                } catch (ExecutionException ex) {
+                    log().error("An expected execution occurred waiting for new suspect scan of "+ip+" to finish", ex);
+                }
+                
+            }
+        };
+
+        m_scheduledExecutor.execute(r);
+        
     }
     
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)

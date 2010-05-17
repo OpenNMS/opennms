@@ -50,6 +50,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 import org.joda.time.Duration;
 import org.junit.Before;
@@ -58,6 +59,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
+import org.opennms.core.tasks.Task;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -238,7 +240,7 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
         
         
         NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
-        scan.run();
+        runScan(scan);
         
         List<OnmsNode> nodes = getNodeDao().findAll();
         OnmsNode node = nodes.get(0);
@@ -261,6 +263,12 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
         
+    }
+    
+    public void runScan(NewSuspectScan scan) throws InterruptedException, ExecutionException {
+        Task t = scan.createTask();
+        t.schedule();
+        t.waitFor();
     }
 
     

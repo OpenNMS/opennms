@@ -229,7 +229,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
 
 
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testVisit() throws Exception {
 
@@ -245,7 +245,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
      * @throws ForeignSourceRepositoryException
      * @throws MalformedURLException
      */
-    @Test
+    @Test(timeout=300000)
     @Ignore
     public void dwImportDnsResourceRequisition() throws ForeignSourceRepositoryException, MalformedURLException {
         Requisition r = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost/localhost"));
@@ -254,7 +254,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         verifyCounts2(v);
     }
 
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testSendEventsOnImport() throws Exception {
         
@@ -293,7 +293,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testNonSnmpImportAndScan() throws Exception {
         importFromResource("classpath:/import_localhost.xml");
@@ -307,7 +307,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testFindQuery() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -317,7 +317,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         }
     }
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testBigImport() throws Exception {
         File file = new File("/tmp/tec_dump.xml.large");
@@ -331,7 +331,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
     }
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
@@ -544,7 +544,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testPopulate() throws Exception {
         
@@ -609,7 +609,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
      * 
      * @throws ModelImportException
      */
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testImportUtf8() throws Exception {
 
@@ -627,7 +627,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
      * 
      * @throws ModelImportException
      */
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testDelete() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -643,7 +643,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
      * This test makes sure that asset information is getting imported properly.
      * @throws Exception
      */
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testAssets() throws Exception {
         importFromResource("classpath:/tec_dump.xml");
@@ -655,7 +655,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
     //Scheduler tests
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
        //importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -670,7 +670,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
        assertEquals(nodeCount, m_provisioner.getScheduleLength());
     }
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testProvisionServiceGetScheduleForNodesUponDelete() throws Exception {
        importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -687,7 +687,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
        assertEquals(9, m_provisioner.getScheduleLength());
     }
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testProvisionerAddNodeToSchedule() throws Exception{
         
@@ -712,7 +712,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
     }
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testProvisionerRescanWorking() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -721,7 +721,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         assertEquals(10, m_provisioner.getScheduleLength());
     }
 
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testProvisionerRemoveNodeInSchedule() throws Exception{
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -753,7 +753,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
     }
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testProvisionerNodeRescanSchedule() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -767,7 +767,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         assertEquals(10, m_provisioner.getScheduleLength());
     }
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testProvisionerUpdateScheduleAfterImport() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest");
@@ -792,7 +792,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
     }
     
-    @Test
+    @Test(timeout=300000)
     @Transactional
     public void testSaveCategoriesOnUpdateNodeAttributes() throws Exception {
         
