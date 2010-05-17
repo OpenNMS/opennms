@@ -225,7 +225,7 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 	 */
 	private static Logger getLog()
 	{
-		return (Logger)ThreadCategory.getInstance(QoSDrx.class);	
+		return ThreadCategory.getInstance(QoSDrx.class);	
 	}
 
 	/**

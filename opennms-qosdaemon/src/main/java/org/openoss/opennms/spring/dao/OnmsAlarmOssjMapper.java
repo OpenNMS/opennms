@@ -62,7 +62,7 @@ public class OnmsAlarmOssjMapper {
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
 	private static Logger getLog() {
-		return (Logger)ThreadCategory.getInstance(OnmsAlarmOssjMapper.class);	
+		return ThreadCategory.getInstance(OnmsAlarmOssjMapper.class);	
 	}
 
 	// pattern for recognising simple <HTML> tags ; 
