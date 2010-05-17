@@ -285,7 +285,7 @@ public class Migrator {
 
         final String contexts = System.getProperty("opennms.contexts", "production");
         try {
-            liquibase.update("");
+            liquibase.update(contexts);
         } catch (Exception e) {
             cleanUpDatabase(connection, null, null);
             throw new MigrationException("unable to update the database", e);
