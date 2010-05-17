@@ -173,7 +173,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	}
 
 	private static Logger getLog() {
-		return (Logger)ThreadCategory.getInstance(OpenNMSEventHandlerThread.class);	
+		return ThreadCategory.getInstance(OpenNMSEventHandlerThread.class);	
 	}
 
 }

@@ -484,8 +484,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("NSClientPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                    log().warn("NSClientPeerFactory: could not convert host " + saddr + " to InetAddress", e);
                 }
             }
 
@@ -505,8 +504,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("NSClientPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                    log().warn("NSClientPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
                 }
             }
             
