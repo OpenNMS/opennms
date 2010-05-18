@@ -148,6 +148,10 @@ public class DefaultProvisionService implements ProvisionService {
     
     private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
+    
+    public boolean isDiscoveryEnabled() {
+        return System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true");
+    }
 
     @Transactional
     public void insertNode(OnmsNode node) {
@@ -525,32 +529,33 @@ public class DefaultProvisionService implements ProvisionService {
     
     private NodeScanSchedule createScheduleForNode(OnmsNode node, boolean force) {
         Assert.notNull(node, "Node may not be null");
-        if (node.getForeignSource() == null) {
-            info("Not scheduling node %s to be scanned since it has a null foreignSource", node);
+        String actualForeignSource = node.getForeignSource();
+        if (actualForeignSource == null && !isDiscoveryEnabled()) {
+            info("Not scheduling node %s to be scanned since it has a null foreignSource and handling of discovered nodes is disabled in provisiond", node);
             return null;
         }
 
-        ForeignSource fs = null;
+        String effectiveForeignSource = actualForeignSource == null ? "default" : actualForeignSource;
         try {
-            fs = m_foreignSourceRepository.getForeignSource(node.getForeignSource());
+            ForeignSource fs = m_foreignSourceRepository.getForeignSource(effectiveForeignSource);
+
+            Duration scanInterval = fs.getScanInterval();
+            Duration initialDelay = Duration.ZERO;
+            if (node.getLastCapsdPoll() != null && !force) {
+                DateTime nextPoll = new DateTime(node.getLastCapsdPoll().getTime()).plus(scanInterval);
+                DateTime now = new DateTime();
+                if (nextPoll.isAfter(now)) {
+                    initialDelay = new Duration(now, nextPoll);
+                }
+            }
+
+            NodeScanSchedule nSchedule = new NodeScanSchedule(node.getId(), effectiveForeignSource, node.getForeignId(), initialDelay, scanInterval);
+
+            return nSchedule;
         } catch (ForeignSourceRepositoryException e) {
-            log().warn(String.format("unable to get foreign source '%s' from repository", node.getForeignSource()), e);
+            log().warn(String.format("unable to get foreign source '%s' from repository", effectiveForeignSource), e);
             return null;
         }
-
-        Duration scanInterval = fs.getScanInterval();
-        Duration initialDelay = Duration.ZERO;
-        if (node.getLastCapsdPoll() != null && !force) {
-            DateTime nextPoll = new DateTime(node.getLastCapsdPoll().getTime()).plus(scanInterval);
-            DateTime now = new DateTime();
-            if (nextPoll.isAfter(now)) {
-                initialDelay = new Duration(now, nextPoll);
-            }
-        }
-        
-        NodeScanSchedule nSchedule = new NodeScanSchedule(node.getId(), node.getForeignSource(), node.getForeignId(), initialDelay, scanInterval);
-        
-        return nSchedule;
     }
 
     public void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository) {

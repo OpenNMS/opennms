@@ -51,7 +51,6 @@ import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
-import org.opennms.core.tasks.SequenceTask;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -71,6 +70,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
 public class NodeScan implements RunInBatch {
+
     private Integer m_nodeId;
     private String m_foreignSource;
     private String m_foreignId;
@@ -714,6 +714,7 @@ public class NodeScan implements RunInBatch {
             bldr.addParam(EventConstants.PARM_FOREIGN_ID, getForeignId());
             getEventForwarder().sendNow(bldr.getEvent());
         }
+        
     }
 
 }

@@ -36,9 +36,7 @@ import java.net.InetAddress;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.RunInBatch;
-import org.opennms.core.tasks.SequenceTask;
 import org.opennms.core.tasks.Task;
-import org.opennms.core.tasks.TaskBuilder;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -67,14 +65,16 @@ public class NewSuspectScan implements RunInBatch {
     }
 
     protected void scanUndiscoveredNode(BatchTask phase) {
+        
         final OnmsNode node = m_provisionService.createUndiscoveredNode(m_ipAddress.getHostAddress());
         
         if (node != null) {
-            
-            TaskBuilder<SequenceTask> bldr = phase.getBuilder().createSequence();
-            bldr.add(new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService));
-            bldr.add(new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator));
-            bldr.setParent(phase);
+
+            phase.getBuilder().addSequence(
+                    new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService),
+                    new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
+            );
+
         }
     }
 

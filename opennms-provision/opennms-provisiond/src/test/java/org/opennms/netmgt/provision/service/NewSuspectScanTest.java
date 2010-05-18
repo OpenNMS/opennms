@@ -53,6 +53,8 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import org.joda.time.Duration;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -185,6 +187,8 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
 
     private MockSnmpAgent m_agent;
     
+    static private String s_initialDiscoveryEnabledValue;
+    
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_agent = agent;
     }
@@ -201,6 +205,23 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
         MockLogAppender.setupLogging(props);
         
         //System.setProperty("mock.debug", "false");
+        
+    }
+
+    @BeforeClass
+    public static void setEnableDiscovery() {
+        s_initialDiscoveryEnabledValue = System.getProperty("org.opennms.provisiond.enableDiscovery");
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
+        
+    }
+    
+    @AfterClass
+    public static void resetEnableDiscovery() {
+        if (s_initialDiscoveryEnabledValue == null) {
+            System.getProperties().remove("org.opennms.provisiond.enableDiscovery");
+        } else {
+            System.setProperty("org.opennms.provisiond.enableDiscovery", s_initialDiscoveryEnabledValue);
+        }
     }
     
     @Before
@@ -223,13 +244,11 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
 
     }
 
-
-
     @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
     public void testScanNewSuspect() throws Exception {
-
+        
         //Verify empty database
         assertEquals(1, getDistPollerDao().countAll());
         assertEquals(0, getNodeDao().countAll());
@@ -237,32 +256,35 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
         assertEquals(0, getMonitoredServiceDao().countAll());
         assertEquals(0, getServiceTypeDao().countAll());
         assertEquals(0, getSnmpInterfaceDao().countAll());
-        
-        
+
+
         NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
         runScan(scan);
-        
+
+        // wait for NodeScan triggered by NodeAdded to complete
+        Thread.sleep(100000);
+
         List<OnmsNode> nodes = getNodeDao().findAll();
         OnmsNode node = nodes.get(0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
-        
+
         //Verify ifservices count - discover snmp service on other if
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
-        
+
     }
     
     @Test(timeout=300000)

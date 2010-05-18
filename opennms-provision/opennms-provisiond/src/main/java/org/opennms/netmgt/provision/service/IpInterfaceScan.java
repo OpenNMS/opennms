@@ -40,10 +40,8 @@ import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.ContainerTask;
-import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -96,7 +94,7 @@ public class IpInterfaceScan implements RunInBatch {
                     OnmsMonitoredService svc = getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
                     
                     if ("SNMP".equals(serviceName)) {
-                        OnmsIpInterface primaryIface = getProvisionService().setInterfaceIsPrimaryFlag(svc);
+                        getProvisionService().setInterfaceIsPrimaryFlag(svc);
                     }
                 }
             }

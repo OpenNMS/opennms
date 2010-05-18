@@ -392,12 +392,18 @@ public class Provisioner implements SpringServiceDaemon {
     
     @EventHandler(uei = EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
     public void handleNewSuspectEvent(Event e) {
+        
         final String uei = e.getUei();
         final String ip = e.getInterface();
+
         if (ip == null) {
-            log().error("Received a "+e.getUei()+" event with a null ipAddress");
+            log().error("Received a "+uei+" event with a null ipAddress");
         }
 
+        if (!getProvisionService().isDiscoveryEnabled()) {
+            log().info("Ignoring "+uei+" event for ip "+ip+" since discovery handling is disabled in provisiond");
+        }
+        
         Runnable r = new Runnable() {
             public void run() {
                 try {
