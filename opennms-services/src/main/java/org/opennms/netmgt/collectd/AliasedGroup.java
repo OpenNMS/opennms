@@ -33,7 +33,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public class AliasedGroup extends AttributeGroup {

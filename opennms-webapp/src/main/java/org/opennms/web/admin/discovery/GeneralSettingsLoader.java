@@ -8,7 +8,6 @@ package org.opennms.web.admin.discovery;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.web.WebSecurityUtils;

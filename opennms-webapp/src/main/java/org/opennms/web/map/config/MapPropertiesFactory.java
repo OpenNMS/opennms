@@ -48,7 +48,6 @@ import java.util.TreeMap;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;

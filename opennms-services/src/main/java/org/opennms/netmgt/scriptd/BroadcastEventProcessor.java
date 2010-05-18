@@ -39,7 +39,6 @@
 
 package org.opennms.netmgt.scriptd;
 
-import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;

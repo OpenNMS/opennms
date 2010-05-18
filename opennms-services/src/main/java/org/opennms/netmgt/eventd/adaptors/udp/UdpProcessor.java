@@ -39,7 +39,6 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;

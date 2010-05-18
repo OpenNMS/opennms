@@ -58,7 +58,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.apache.log4j.Category;
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpVar;
 import org.opennms.core.utils.ThreadCategory;

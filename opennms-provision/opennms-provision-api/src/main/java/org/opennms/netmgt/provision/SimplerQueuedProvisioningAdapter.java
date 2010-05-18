@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 

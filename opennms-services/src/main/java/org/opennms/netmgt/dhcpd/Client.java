@@ -49,7 +49,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Observable;
 
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
 

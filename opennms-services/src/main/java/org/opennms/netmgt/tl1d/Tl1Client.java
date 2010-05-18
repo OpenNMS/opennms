@@ -37,7 +37,6 @@ package org.opennms.netmgt.tl1d;
 
 import java.util.concurrent.BlockingQueue;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

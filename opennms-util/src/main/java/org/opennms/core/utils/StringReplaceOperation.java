@@ -36,7 +36,6 @@ package org.opennms.core.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 
 public abstract class StringReplaceOperation {
     protected String m_pattern;

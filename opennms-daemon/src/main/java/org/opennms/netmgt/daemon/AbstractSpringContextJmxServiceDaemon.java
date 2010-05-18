@@ -42,7 +42,6 @@ package org.opennms.netmgt.daemon;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;

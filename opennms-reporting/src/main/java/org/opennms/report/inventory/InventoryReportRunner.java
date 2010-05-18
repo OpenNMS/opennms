@@ -3,7 +3,6 @@ package org.opennms.report.inventory;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.report.ReportMailer;
 import org.opennms.reporting.availability.render.ReportRenderException;
@@ -187,7 +186,7 @@ public class InventoryReportRunner implements Runnable {
 
     }
     
-    private static Category log() {
+    private static Logger log() {
         return Logger.getLogger("Rancid");
     }
 

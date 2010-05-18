@@ -37,7 +37,6 @@ package org.opennms.report;
 
 import java.io.IOException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.javamail.JavaMailer;

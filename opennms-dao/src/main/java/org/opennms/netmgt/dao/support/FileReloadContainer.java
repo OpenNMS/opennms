@@ -43,7 +43,6 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;

@@ -41,7 +41,6 @@ package org.opennms.netmgt.rtc.utils;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.rtc.DataManager;

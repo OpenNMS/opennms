@@ -38,7 +38,6 @@ import org.opennms.protocols.wmi.WmiClient;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.core.utils.ThreadCategory;
-import org.apache.log4j.Category;
 
 import java.util.HashMap;
 import java.util.Map;

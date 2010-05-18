@@ -38,7 +38,6 @@ package org.opennms.report.render;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;

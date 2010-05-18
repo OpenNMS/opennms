@@ -41,7 +41,6 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 import java.util.SortedMap;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 

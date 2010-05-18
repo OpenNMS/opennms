@@ -36,7 +36,6 @@
 package org.opennms.netmgt.provision;
 
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 

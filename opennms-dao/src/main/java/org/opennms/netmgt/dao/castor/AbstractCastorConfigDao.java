@@ -43,7 +43,6 @@
 package org.opennms.netmgt.dao.castor;
 
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.support.FileReloadCallback;
 import org.opennms.netmgt.dao.support.FileReloadContainer;

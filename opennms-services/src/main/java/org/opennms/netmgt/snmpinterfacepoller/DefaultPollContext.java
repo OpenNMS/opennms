@@ -39,7 +39,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 

@@ -56,7 +56,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.Marshaller;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventProxy;

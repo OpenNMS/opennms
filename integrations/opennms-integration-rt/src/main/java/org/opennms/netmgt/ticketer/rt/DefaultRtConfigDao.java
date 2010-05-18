@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public class DefaultRtConfigDao {

@@ -6,7 +6,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.inventory.InventoryService;
@@ -54,7 +53,7 @@ public class AdminRancidDeleteController extends SimpleFormController {
         log().debug("AdminRancidStatusController initBinder");
     }
     
-    private static Category log() {
+    private static Logger log() {
         return Logger.getLogger("Rancid");
     }
 }

@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.core.resource.Vault;
 
@@ -97,7 +96,7 @@ public class NotificationModel extends Object {
 
     private final String USER_OUTSTANDING_COUNT = "SELECT COUNT(notifyid) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
 
-    private Category log() {
+    private Logger log() {
         return Logger.getLogger(getClass());
     }
 

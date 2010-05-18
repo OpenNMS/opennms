@@ -38,7 +38,6 @@ package org.opennms.test.mock;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
@@ -162,7 +161,7 @@ public class MockLogAppenderTest extends TestCase {
 	}
         
         public void testDiscardHibernateAnnotationBinderWarnings() {
-            Category log = Logger.getLogger("org.hibernate.cfg.AnnotationBinder");
+            Logger log = Logger.getLogger("org.hibernate.cfg.AnnotationBinder");
             log.info("An Info message");
             log.warn("A warn message");
 

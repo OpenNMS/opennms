@@ -37,7 +37,6 @@ package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.icmp.ICMPEchoPacket;

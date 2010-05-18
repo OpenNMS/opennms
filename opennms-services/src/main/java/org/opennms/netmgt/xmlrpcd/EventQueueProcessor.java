@@ -37,7 +37,6 @@ package org.opennms.netmgt.xmlrpcd;
 
 import java.util.Enumeration;
 
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;

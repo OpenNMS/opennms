@@ -33,7 +33,6 @@ package org.opennms.netmgt.utils;
 import java.lang.NumberFormatException;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

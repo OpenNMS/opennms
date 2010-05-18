@@ -53,7 +53,6 @@ import java.util.Map.Entry;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;

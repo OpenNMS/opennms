@@ -68,7 +68,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.krupczak.Xmp.SocketOpts;
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpMessage;

@@ -59,7 +59,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -278,7 +277,7 @@ public class AvailabilityReport extends Object {
                                                                                 "%m%n"),
                                                               ConsoleAppender.SYSTEM_ERR);
         consoleAppender.setThreshold(Level.WARN);
-        Category logger = Logger.getLogger(LOG4J_CATEGORY);
+        Logger logger = Logger.getLogger(LOG4J_CATEGORY);
         logger.addAppender(consoleAppender);
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);

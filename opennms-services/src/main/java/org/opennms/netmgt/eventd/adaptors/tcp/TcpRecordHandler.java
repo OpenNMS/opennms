@@ -49,7 +49,6 @@ import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

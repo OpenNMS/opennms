@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
 import org.opennms.core.utils.ThreadCategory;

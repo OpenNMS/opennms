@@ -39,7 +39,6 @@ package org.opennms.netmgt.protocols.xmp;
 
 import java.math.BigInteger;
 
-import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpMessage;

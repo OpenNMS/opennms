@@ -41,7 +41,6 @@ package org.opennms.netmgt.collectd;
 import java.net.InetAddress;
 import java.util.Collection;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;

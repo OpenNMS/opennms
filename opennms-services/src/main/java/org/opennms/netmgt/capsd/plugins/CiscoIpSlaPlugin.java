@@ -35,7 +35,6 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import org.apache.log4j.Category;
 import java.net.InetAddress;
 import java.util.Map;
 

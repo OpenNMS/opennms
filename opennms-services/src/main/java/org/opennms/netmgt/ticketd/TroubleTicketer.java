@@ -35,7 +35,6 @@ package org.opennms.netmgt.ticketd;
 
 import java.util.Arrays;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;

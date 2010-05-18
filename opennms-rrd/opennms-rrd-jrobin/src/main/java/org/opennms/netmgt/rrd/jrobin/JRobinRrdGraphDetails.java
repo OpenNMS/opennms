@@ -34,7 +34,6 @@ package org.opennms.netmgt.rrd.jrobin;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Category;
 import org.jrobin.graph.RrdGraph;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdException;

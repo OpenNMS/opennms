@@ -33,7 +33,6 @@
 
 package org.opennms.netmgt.charts;
 
-import org.apache.log4j.Category;
 import org.jfree.chart.axis.ExtendedCategoryAxis;
 import org.opennms.core.utils.ThreadCategory;
 

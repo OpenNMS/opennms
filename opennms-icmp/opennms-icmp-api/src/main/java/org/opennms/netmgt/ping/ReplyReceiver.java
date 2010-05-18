@@ -44,7 +44,6 @@ package org.opennms.netmgt.ping;
 
 import java.net.DatagramPacket;
 
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;

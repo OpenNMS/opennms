@@ -46,7 +46,6 @@ import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.ChartFactory;

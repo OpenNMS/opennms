@@ -48,6 +48,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -192,7 +193,6 @@ public class EventsArchiver {
      * Read the required properties and set up the logs, the archive etc.
      * @throws ArchiverException Thrown if a required property is not specified or is incorrect
      */
-    @SuppressWarnings("deprecation")
     private void init() throws ArchiverException {
         String oldPrefix = ThreadCategory.getPrefix();
         // The general logs from the events archiver go to this category
@@ -200,7 +200,7 @@ public class EventsArchiver {
         m_logCat = ThreadCategory.getInstance(this.getClass());
 
         // The archive logs go to this category
-        m_archCat = Category.getInstance("EventsArchiver");
+        m_archCat = Logger.getLogger("EventsArchiver");
 
         /*
          * Set additivity for this to false so that logs from here

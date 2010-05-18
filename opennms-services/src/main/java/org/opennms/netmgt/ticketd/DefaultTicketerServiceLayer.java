@@ -33,7 +33,6 @@
  */
 package org.opennms.netmgt.ticketd;
 
-import org.apache.log4j.Category;
 import org.opennms.api.integration.ticketing.*;
 import org.opennms.api.integration.ticketing.Ticket.State;
 import org.opennms.core.utils.ThreadCategory;

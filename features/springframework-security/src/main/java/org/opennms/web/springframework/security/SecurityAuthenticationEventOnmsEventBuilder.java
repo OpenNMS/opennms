@@ -37,7 +37,6 @@ package org.opennms.web.springframework.security;
 
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;

@@ -38,7 +38,6 @@ import java.io.StringWriter;
 
 import javax.servlet.ServletRequest;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import com.sun.syndication.feed.synd.SyndFeed;

@@ -38,7 +38,6 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;

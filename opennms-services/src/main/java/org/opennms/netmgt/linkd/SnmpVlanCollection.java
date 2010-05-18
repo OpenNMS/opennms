@@ -39,7 +39,6 @@ package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.linkd.snmp.*;
 import org.opennms.netmgt.scheduler.ReadyRunnable;

@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Queue;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
@@ -57,7 +56,7 @@ public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
         return m_socket;
     }
     
-    private Category log() {
+    private Logger log() {
         return Logger.getLogger(getClass());
     }
     

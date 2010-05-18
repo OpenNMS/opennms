@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 //import java.util.regex.Pattern;
 //import org.apache.log4j.Level;
-import org.apache.log4j.Category;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 //import org.opennms.netmgt.model.PollStatus;

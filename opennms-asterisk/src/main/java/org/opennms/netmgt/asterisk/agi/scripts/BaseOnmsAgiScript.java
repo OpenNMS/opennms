@@ -6,7 +6,6 @@ package org.opennms.netmgt.asterisk.agi.scripts;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.asteriskjava.fastagi.AgiException;
 import org.asteriskjava.fastagi.BaseAgiScript;
 import org.opennms.core.utils.ThreadCategory;

@@ -11,7 +11,6 @@ import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.collectd.CollectionAttributeType;
 import org.opennms.core.utils.ThreadCategory;
-import org.apache.log4j.Category;
 
 import java.util.List;
 import java.io.File;

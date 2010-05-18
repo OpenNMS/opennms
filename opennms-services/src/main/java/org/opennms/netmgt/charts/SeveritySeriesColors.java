@@ -36,7 +36,6 @@ package org.opennms.netmgt.charts;
 import java.awt.Color;
 import java.awt.Paint;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

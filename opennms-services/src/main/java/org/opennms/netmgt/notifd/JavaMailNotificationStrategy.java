@@ -37,7 +37,6 @@ package org.opennms.netmgt.notifd;
 
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Argument;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;

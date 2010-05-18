@@ -55,7 +55,6 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
