@@ -175,7 +175,7 @@ final class Executor implements Runnable, PausableFiber {
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(Executor.class);
+        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         synchronized (this) {
             m_status = RUNNING;
@@ -357,7 +357,7 @@ final class Executor implements Runnable, PausableFiber {
      * 
      */
     public synchronized void start() {
-        Category log = ThreadCategory.getInstance(Executor.class);
+        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         if (m_worker != null) {
             throw new IllegalStateException("The fiber has already been run");

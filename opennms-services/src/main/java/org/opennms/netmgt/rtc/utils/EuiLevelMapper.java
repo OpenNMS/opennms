@@ -92,7 +92,7 @@ public class EuiLevelMapper extends Object {
         // get the rolling window
         long rWindow = RTCManager.getRollingWindow();
 
-        Category log = ThreadCategory.getInstance(EuiLevelMapper.class);
+        ThreadCategory log = ThreadCategory.getInstance(EuiLevelMapper.class);
         if (log.isDebugEnabled()) {
             log.debug("curdate: " + curDate);
         }

@@ -146,7 +146,7 @@ public final class SnmpInterfacePollerConfigFactory extends SnmpInterfacePollerC
         }
     }
 
-    private static Category logStatic() {
+    private static ThreadCategory logStatic() {
         return ThreadCategory.getInstance(SnmpInterfacePollerConfigFactory.class);
     }
 

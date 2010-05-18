@@ -190,7 +190,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

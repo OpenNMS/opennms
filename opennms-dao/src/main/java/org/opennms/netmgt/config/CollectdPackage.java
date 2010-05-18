@@ -185,7 +185,7 @@ public class CollectdPackage {
 		return filterPassed;
 	}
 
-	Category log() {
+	ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

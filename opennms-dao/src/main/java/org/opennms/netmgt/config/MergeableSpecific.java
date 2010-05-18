@@ -53,7 +53,7 @@ public final class MergeableSpecific implements Comparable<String> {
     private long m_value;
 
     public MergeableSpecific(String specific) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         m_specific = specific;
         try {
             m_value = InetAddressUtils.toIpAddrLong(InetAddress.getByName(specific));

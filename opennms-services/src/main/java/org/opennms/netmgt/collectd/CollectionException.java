@@ -73,7 +73,7 @@ public class CollectionException extends Exception {
     	}
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

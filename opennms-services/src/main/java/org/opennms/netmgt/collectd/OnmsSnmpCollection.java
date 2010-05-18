@@ -151,7 +151,7 @@ public class OnmsSnmpCollection {
         return m_params.getSnmpPrivProtocol(current);
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -64,7 +64,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
     public final static String NAME = "OpenNMS.EventTranslator";
 
     protected void onInit() {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         try {
             DataSourceFactory.init();
             EventTranslatorConfigFactory.init();

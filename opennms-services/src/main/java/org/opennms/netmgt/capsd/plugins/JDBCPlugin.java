@@ -92,7 +92,7 @@ public class JDBCPlugin extends AbstractPlugin {
         log().info("JDBCPlugin class loaded");
     }
 
-	protected Category log() {
+	protected ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
@@ -157,7 +157,7 @@ public class JDBCPlugin extends AbstractPlugin {
                 	log().info("JDBC server detected on: '" + hostname + "', attempts #:" + attempts);
                 
             } catch (Exception e) {
-                log().info(e);
+                log().info(e.getMessage());
                 e.printStackTrace();
             } finally {
                 attempts++;
@@ -252,7 +252,7 @@ public class JDBCPlugin extends AbstractPlugin {
         try {
             status = isServer(address.getCanonicalHostName(), new HashMap<String, Object>());
         } catch (Exception exp) {
-            log().error(exp);
+            log().error(exp.getMessage());
         }
         return status;
     }
@@ -292,7 +292,7 @@ public class JDBCPlugin extends AbstractPlugin {
         try {
             status = isServer(address.getCanonicalHostName(), qualifiers);
         } catch (Exception exp) {
-            log().error(exp);
+            log().error(exp.getMessage());
         }
         return status;
     }

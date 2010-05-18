@@ -59,7 +59,7 @@ public class NullNotificationStrategy implements NotificationStrategy {
         return 0;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

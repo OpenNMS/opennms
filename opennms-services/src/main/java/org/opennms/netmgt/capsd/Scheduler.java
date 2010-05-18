@@ -243,7 +243,7 @@ final class Scheduler implements Runnable, PausableFiber {
             log().debug("Scheduler: done loading known nodes, node count: " + m_knownNodes.size());
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

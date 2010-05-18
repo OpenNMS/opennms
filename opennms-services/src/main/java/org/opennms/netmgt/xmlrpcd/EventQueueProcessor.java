@@ -180,7 +180,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

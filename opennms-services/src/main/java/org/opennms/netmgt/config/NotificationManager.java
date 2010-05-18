@@ -156,7 +156,7 @@ public abstract class NotificationManager {
         update();
         List<Notification> notifList = new ArrayList<Notification>();
         boolean matchAll = getConfigManager().getNotificationMatch();
-        Category log = this.log();
+        ThreadCategory log = this.log();
   
         // This if statement will check to see if notification should be suppressed for this event.
 
@@ -245,7 +245,7 @@ public abstract class NotificationManager {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     /**
@@ -396,7 +396,7 @@ public abstract class NotificationManager {
         Connection connection = null;
         List<Integer> notifIDs = new LinkedList<Integer>();
         final DBUtils d = new DBUtils(getClass());
-        Category log = this.log();
+        ThreadCategory log = this.log();
 
         try {
             // First get most recent event ID from notifications 
@@ -560,7 +560,7 @@ public abstract class NotificationManager {
     public void updateNoticeWithUserInfo(final String userId, final int noticeId, final String media, final String contactInfo, final String autoNotify) throws SQLException, MarshalException, ValidationException, IOException {
         if (noticeId < 0) return;
         int userNotifId = getUserNotifId();
-        Category log = this.log();
+        ThreadCategory log = this.log();
         if (log.isDebugEnabled()) {
             log.debug("updating usersnotified: ID = " + userNotifId+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
         }

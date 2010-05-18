@@ -219,7 +219,7 @@ public final class SyslogHandler {
             m_processor.stop();
 
         } catch (InterruptedException e) {
-            Category log = ThreadCategory.getInstance(this.getClass());
+            ThreadCategory log = ThreadCategory.getInstance(this.getClass());
             log.warn(
                     "The thread was interrupted while attempting to join sub-threads",
                     e);

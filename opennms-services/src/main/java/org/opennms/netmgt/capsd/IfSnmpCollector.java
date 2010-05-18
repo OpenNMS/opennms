@@ -380,7 +380,7 @@ public final class IfSnmpCollector implements Runnable {
             log().info("IfSnmpCollector: failed to collect ifXTable for " + m_address.getHostAddress());
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass()+"."+m_address);
     }
 }

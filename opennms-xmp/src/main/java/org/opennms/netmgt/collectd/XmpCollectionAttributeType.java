@@ -80,7 +80,7 @@ class XmpCollectionAttributeType implements CollectionAttributeType
     }
 
     /* private methods *********************************** */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

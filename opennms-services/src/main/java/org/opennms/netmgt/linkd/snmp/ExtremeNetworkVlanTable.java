@@ -63,7 +63,7 @@ public class ExtremeNetworkVlanTable extends SnmpTable<ExtremeNetworkVlanTableEn
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(ExtremeNetworkVlanTable.class);
     }
 }

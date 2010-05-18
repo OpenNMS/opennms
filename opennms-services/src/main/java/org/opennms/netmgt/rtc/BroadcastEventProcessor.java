@@ -145,7 +145,7 @@ final class BroadcastEventProcessor implements EventListener {
         if (event == null)
             return;
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
             log.debug("About to start processing recd. event");

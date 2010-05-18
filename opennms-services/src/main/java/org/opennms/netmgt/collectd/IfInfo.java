@@ -44,6 +44,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.RrdRepository;
 
 
@@ -125,7 +126,7 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     void logAlias(String ifAlias) {
-        Category log = log();
+        ThreadCategory log = log();
         if (log.isDebugEnabled()) {
             log.debug("Alias for RRD directory name = " + ifAlias);
         }

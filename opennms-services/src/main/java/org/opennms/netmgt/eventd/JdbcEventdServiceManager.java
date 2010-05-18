@@ -107,7 +107,7 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
         });
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

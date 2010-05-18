@@ -67,7 +67,7 @@ public abstract class StringReplaceOperation {
     
     public abstract String replace(String input);
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 }

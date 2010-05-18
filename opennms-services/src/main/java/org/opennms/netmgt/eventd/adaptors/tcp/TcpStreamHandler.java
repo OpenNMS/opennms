@@ -473,7 +473,7 @@ final class TcpStreamHandler implements Runnable {
         log().debug("Thread exiting");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

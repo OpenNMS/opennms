@@ -134,7 +134,7 @@ public class CollectionSpecification {
         return Collections.unmodifiableMap(m_parameters);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

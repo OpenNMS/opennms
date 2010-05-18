@@ -90,7 +90,7 @@ public class DefaultPollerConfigDao implements InitializingBean {
         setPollerConfig(new PollerConfigFactory(lastModified, stream, getLocalServer(), isVerifyServer()));
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

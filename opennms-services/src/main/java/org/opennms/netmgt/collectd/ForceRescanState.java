@@ -58,7 +58,7 @@ public class ForceRescanState {
         return m_eventProxy;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -250,7 +250,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      * 
      * @return a log4j Category for this class
      */
-    Category log() {
+    ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

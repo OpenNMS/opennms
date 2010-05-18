@@ -163,7 +163,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
         setInstance(config);
     }
 
-    private static Category logStatic() {
+    private static ThreadCategory logStatic() {
         return ThreadCategory.getInstance(PollerConfigFactory.class);
     }
 

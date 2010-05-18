@@ -245,7 +245,7 @@ public class DbStpNodeEntry
 				throw new IllegalStateException(
 						"The record already exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -386,7 +386,7 @@ public class DbStpNodeEntry
 				throw new IllegalStateException(
 						"The record does not exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -529,7 +529,7 @@ public class DbStpNodeEntry
 			if (!m_fromDb)
 				throw new IllegalStateException("The record does not exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			final DBUtils d = new DBUtils(getClass());
 			try {

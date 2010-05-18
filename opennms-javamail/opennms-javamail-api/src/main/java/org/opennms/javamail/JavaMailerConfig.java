@@ -70,7 +70,7 @@ public class JavaMailerConfig {
         return properties;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(JavaMailerConfig.class);
     }
 

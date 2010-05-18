@@ -108,7 +108,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
         return (Class<? extends AttributeStatisticVisitorWithResults>) Class.forName(report.getClassName());
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

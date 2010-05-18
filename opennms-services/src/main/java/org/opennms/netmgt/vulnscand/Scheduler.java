@@ -114,7 +114,7 @@ final class Scheduler implements Runnable, PausableFiber {
         }
 	}
 
-	Category log() {
+	ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

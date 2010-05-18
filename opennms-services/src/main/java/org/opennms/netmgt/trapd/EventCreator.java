@@ -129,7 +129,7 @@ public class EventCreator implements TrapProcessor {
         return m_event;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

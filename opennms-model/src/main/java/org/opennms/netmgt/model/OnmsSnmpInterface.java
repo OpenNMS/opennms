@@ -385,7 +385,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     // return ifsForSnmpIface;
     // }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

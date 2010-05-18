@@ -128,7 +128,7 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
         //
         // Process parameters
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         //
         // Get interface address from NetworkInterface

@@ -289,7 +289,7 @@ public class EditForeignSourceController extends SimpleFormController {
         return null;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(EditForeignSourceController.class);
     }
     

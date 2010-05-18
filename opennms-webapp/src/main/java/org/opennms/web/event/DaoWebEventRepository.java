@@ -273,7 +273,7 @@ public class DaoWebEventRepository implements WebEventRepository {
         }
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(DaoWebEventRepository.class);
     }
 

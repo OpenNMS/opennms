@@ -144,7 +144,7 @@ public class WmiAgentState {
         this.m_wmiClient = wmiClient;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 }

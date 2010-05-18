@@ -166,7 +166,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
     
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
-	protected Category log() {
+	protected ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

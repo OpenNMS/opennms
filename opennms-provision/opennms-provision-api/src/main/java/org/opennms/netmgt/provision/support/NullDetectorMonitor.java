@@ -65,14 +65,14 @@ public class NullDetectorMonitor implements DetectorMonitor{
     }
     
     private void info(Throwable t, String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args), t);
         }
     }
     
     private void info(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args));
         }

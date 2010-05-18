@@ -140,7 +140,7 @@ public abstract class ThreshdConfigManager {
      * rules from the database.
      */
     protected void createPackageIpListMap() {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
     
         m_pkgIpMap = new HashMap<Package, List<String>>();
     
@@ -284,7 +284,7 @@ public abstract class ThreshdConfigManager {
      *         otherwise.
      */
     public synchronized boolean interfaceInPackage(String iface, org.opennms.netmgt.config.threshd.Package pkg) {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
     
         boolean filterPassed = false;
     

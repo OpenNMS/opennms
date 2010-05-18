@@ -63,7 +63,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
     
-    private Category log;
+    private ThreadCategory log;
     
     public DefaultReportStoreService () {
         
@@ -119,7 +119,7 @@ public class DefaultReportStoreService implements ReportStoreService {
         }
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

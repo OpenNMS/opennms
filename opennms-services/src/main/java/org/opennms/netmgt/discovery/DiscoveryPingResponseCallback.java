@@ -87,7 +87,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
         log().debug("an error occurred pinging " + address, t);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

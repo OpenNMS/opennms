@@ -146,7 +146,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return getEntry(new SnmpInstId(address.getHostAddress()));
     }
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
 

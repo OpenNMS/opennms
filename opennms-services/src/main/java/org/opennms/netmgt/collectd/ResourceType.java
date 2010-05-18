@@ -92,5 +92,5 @@ public abstract class ResourceType {
     
     public abstract Collection<? extends SnmpCollectionResource> getResources();
     
-    public Category log() { return ThreadCategory.getInstance(getClass()); }
+    public ThreadCategory log() { return ThreadCategory.getInstance(getClass()); }
 }

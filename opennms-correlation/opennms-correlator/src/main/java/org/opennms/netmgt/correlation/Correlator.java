@@ -130,7 +130,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
         return m_engines;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

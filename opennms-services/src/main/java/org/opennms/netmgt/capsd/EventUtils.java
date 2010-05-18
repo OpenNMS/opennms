@@ -600,7 +600,7 @@ public abstract class EventUtils {
      */
     public static void sendEvent(Event newEvent, String callerUei, long txNo, boolean isXmlRpcEnabled) {
         // Send event to Eventd
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
@@ -636,7 +636,7 @@ public abstract class EventUtils {
 
     public static Event createNodeAddedEvent(String source, int nodeId,
             String nodeLabel, String labelSource) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
 		if (log.isDebugEnabled())
             log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeId);
 
@@ -688,7 +688,7 @@ public abstract class EventUtils {
     }
 
 	public static Event createNodeGainedInterfaceEvent(String source, int nodeId, InetAddress ifaddr) {
-		Category log = ThreadCategory.getInstance(EventUtils.class);
+		ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
 		if (log.isDebugEnabled())
             log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeId);
 
@@ -733,7 +733,7 @@ public abstract class EventUtils {
      *            the node label of the deleted node.
      */
     public static Event createNodeDeletedEvent(String source, int nodeId, String hostName, String nodeLabel, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled())
             log.debug("createAndSendNodeDeletedEvent:  processing deleteNode event for nodeid:  " + nodeId);
 
@@ -782,7 +782,7 @@ public abstract class EventUtils {
      *            the external transaction No of the event.
      */
     public static Event createAndSendDeleteNodeEvent(String source, String nodeLabel, String hostName, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled())
             log.debug("createdAndSendDeleteNodeEvent: processing deleteInterface event... ");
 
@@ -825,7 +825,7 @@ public abstract class EventUtils {
      *            the node ID of the node to rescan.
      */
     public static Event createForceRescanEvent(String hostName, long nodeId) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled())
             log.debug("createdAndSendForceRescanEvent: processing forceRescan event... ");
 
@@ -855,7 +855,7 @@ public abstract class EventUtils {
      *            the external transaction No. of the original event.
      */
     public static Event createAndSendInterfaceDeletedEvent(String source, int nodeId, String ipaddr, String hostName, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled())
             log.debug("createAndSendInterfaceDeletedEvent:  processing deleteInterface event for interface: " + ipaddr + " at nodeid: " + nodeId);
 
@@ -908,7 +908,7 @@ public abstract class EventUtils {
     }
 
 	public static Event createNodeGainedServiceEvent(String source, int nodeId, InetAddress ifaddr, String service, String nodeLabel, String labelSource, String sysName, String sysDescr) {
-		Category log = ThreadCategory.getInstance(EventUtils.class);
+		ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
 		if (log.isDebugEnabled())
             log.debug("createAndSendNodeGainedServiceEvent:  nodeId/interface/service  " + nodeId + "/" + ifaddr.getHostAddress() + "/" + service);
 
@@ -992,7 +992,7 @@ public abstract class EventUtils {
      *            the transaction no.
      */
     public static Event createAndSendDeleteServiceEvent(String source, DbNodeEntry nodeEntry, InetAddress ifaddr, String service, String hostName, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled())
             log.debug("createAndSendDeleteServiceEvent:  nodeId/interface/service  " + nodeEntry.getNodeId() + "/" + ifaddr.getHostAddress() + "/" + service);
 
@@ -1055,7 +1055,7 @@ public abstract class EventUtils {
      *            the exteranl transaction number
      */
     public static Event createAddInterfaceEvent(String source, String nodeLabel, String ipaddr, String hostName, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled())
             log.debug("createAndSendAddInterfaceEvent:  processing updateServer event for interface:  " + ipaddr + " on server: " + hostName);
 
@@ -1105,7 +1105,7 @@ public abstract class EventUtils {
      *            the external transaction No.
      */
     public static Event createAndSendDeleteInterfaceEvent(String source, String nodeLabel, String ipaddr, String hostName, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled())
             log.debug("createAndSendDeleteInterfaceEvent:  processing updateServer event for interface:  " + ipaddr + " on server: " + hostName);
 
@@ -1157,7 +1157,7 @@ public abstract class EventUtils {
      *            the external transaction No.
      */
     public static Event createChangeServiceEvent(String source, String ipaddr, String service, String action, String hostName, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled())
             log.debug("createAndSendChangeServiceEvent:  processing updateService event for service:  " + service + " on interface: " + ipaddr);
 

@@ -40,7 +40,7 @@ public abstract class MobileSequenceOperation {
 		m_label = label;
 	}
 
-	public Category log() {
+	public ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

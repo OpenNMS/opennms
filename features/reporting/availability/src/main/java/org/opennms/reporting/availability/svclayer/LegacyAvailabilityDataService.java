@@ -76,7 +76,7 @@ public class LegacyAvailabilityDataService implements
 
     private Connection m_availConn;
     
-    private Category log;
+    private ThreadCategory log;
     
     private List<Node> m_nodes;
 
@@ -427,7 +427,7 @@ public class LegacyAvailabilityDataService implements
      * Closes the database connection.
      */
     private void closeConnection() {
-        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         if (m_availConn != null) {
             try {
                 m_availConn.close();

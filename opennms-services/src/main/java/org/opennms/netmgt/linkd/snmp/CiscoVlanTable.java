@@ -78,7 +78,7 @@ public class CiscoVlanTable extends SnmpTable<CiscoVlanTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(CiscoVlanTable.class);
     }
 }

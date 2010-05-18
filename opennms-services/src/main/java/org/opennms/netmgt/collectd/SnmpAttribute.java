@@ -78,7 +78,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
         return m_type;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -124,7 +124,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             try {
                 return Double.valueOf(getValue().toString()).toString();
             } catch(NumberFormatException e) {
-                log().log(Level.TRACE, "Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
+                log().trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
                 return null;
             }
         }

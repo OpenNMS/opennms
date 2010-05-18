@@ -63,7 +63,7 @@ public class ThreeComVlanTable extends SnmpTable<ThreeComVlanTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(ThreeComVlanTable.class);
     }
 }

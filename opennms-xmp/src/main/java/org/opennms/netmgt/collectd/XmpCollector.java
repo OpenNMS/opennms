@@ -119,7 +119,7 @@ public class XmpCollector implements ServiceCollector {
     }
 
     /* private methods *********************************** */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -842,7 +842,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         return thresholdMap;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

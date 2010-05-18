@@ -332,7 +332,7 @@ public class Migrator {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(Migrator.class);
     }
 

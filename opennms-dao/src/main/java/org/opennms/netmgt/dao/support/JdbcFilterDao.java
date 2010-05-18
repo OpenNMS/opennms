@@ -388,7 +388,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         isRuleMatching(rule);
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

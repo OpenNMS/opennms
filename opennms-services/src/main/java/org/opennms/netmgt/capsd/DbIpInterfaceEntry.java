@@ -1145,7 +1145,7 @@ public final class DbIpInterfaceEntry {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -199,7 +199,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         promoteGraphAttributesForResource(loadResourceById(resourceId));
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

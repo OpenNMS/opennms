@@ -88,7 +88,7 @@ public class CollectdConfigFile {
 		return new RuntimeException(msg, e);
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 }

@@ -77,7 +77,7 @@ public class DBUtils {
         m_connections.clear();
     }
     
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(m_loggingClass);
     }
 }

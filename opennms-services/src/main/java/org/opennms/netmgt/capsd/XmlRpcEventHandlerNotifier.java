@@ -107,7 +107,7 @@ public class XmlRpcEventHandlerNotifier {
         notifyEventError(event, "processing failed: ", ex);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

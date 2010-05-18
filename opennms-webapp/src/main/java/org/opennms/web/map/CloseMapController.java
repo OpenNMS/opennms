@@ -59,7 +59,7 @@ import org.springframework.web.servlet.mvc.Controller;
 public class CloseMapController implements Controller {
 	
 
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	

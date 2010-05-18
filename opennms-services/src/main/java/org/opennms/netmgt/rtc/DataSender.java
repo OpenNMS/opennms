@@ -191,7 +191,7 @@ final class DataSender implements Fiber {
         m_status = RUNNING;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

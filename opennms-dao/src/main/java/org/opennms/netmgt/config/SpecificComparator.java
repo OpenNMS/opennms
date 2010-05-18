@@ -49,7 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
  *
  */
 public class SpecificComparator implements Comparator<String> {
-    Category log = ThreadCategory.getInstance(getClass());
+    ThreadCategory log = ThreadCategory.getInstance(getClass());
 
     /**
      * returns the difference of spec1 - spec2

@@ -128,7 +128,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return -1;
     }
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
 

@@ -68,7 +68,7 @@ public class JasperReportService implements ReportService {
 
     private JasperReportConfigDao m_jasperReportConfigDao;
 
-    private final Category log;
+    private final ThreadCategory log;
 
     public JasperReportService() {
         String oldPrefix = ThreadCategory.getPrefix();

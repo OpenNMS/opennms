@@ -61,7 +61,7 @@ public class PollableNode extends PollableContainer {
         private int m_obtainCount = 0;
         
         public synchronized void obtain() {
-            Category log = ThreadCategory.getInstance(getClass());
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
             
             if (m_owner != Thread.currentThread()) {
                 log.debug("Trying to obtain lock for "+PollableNode.this);
@@ -75,7 +75,7 @@ public class PollableNode extends PollableContainer {
         }
         
         public synchronized void obtain(long timeout) {
-            Category log = ThreadCategory.getInstance(getClass());
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
             
             if (m_owner != Thread.currentThread()) {
                 log.debug("Trying to obtain lock for "+PollableNode.this);

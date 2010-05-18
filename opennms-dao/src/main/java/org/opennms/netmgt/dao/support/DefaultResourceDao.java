@@ -611,7 +611,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resources.addAll(findDomainResources());
         return resources;
     }
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 }

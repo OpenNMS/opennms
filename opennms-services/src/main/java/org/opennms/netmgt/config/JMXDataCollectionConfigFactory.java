@@ -289,7 +289,7 @@ public final class JMXDataCollectionConfigFactory {
      * @return a list of MIB objects
      */
     public Map<String, List<Attrib>> getAttributeMap(String cName, String aSysoid, String anAddress) {
-        Category log = log();
+        ThreadCategory log = log();
         
         Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
 
@@ -508,7 +508,7 @@ public final class JMXDataCollectionConfigFactory {
         return rrdPath;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
     	return ThreadCategory.getInstance(JMXDataCollectionConfigFactory.class);
     }
     

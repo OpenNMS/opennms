@@ -75,7 +75,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
         }
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

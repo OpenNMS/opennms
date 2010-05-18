@@ -84,7 +84,7 @@ public class IpRouteTable extends SnmpTable<IpRouteTableEntry>
         return new IpRouteTableEntry();
     }
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IpRouteTable.class);
     }
 

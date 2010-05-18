@@ -100,7 +100,7 @@ public class DependencyCheckingContextListener implements ServletContextListener
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

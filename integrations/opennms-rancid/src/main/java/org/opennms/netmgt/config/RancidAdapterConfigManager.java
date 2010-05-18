@@ -236,7 +236,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      *         otherwise.
      */
     private synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        Category log = log();
+        ThreadCategory log = log();
     
         boolean filterPassed = false;
     
@@ -507,7 +507,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
 
     
  
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

@@ -323,7 +323,7 @@ public final class BroadcastEventProcessor implements EventListener {
         return isPathOk;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

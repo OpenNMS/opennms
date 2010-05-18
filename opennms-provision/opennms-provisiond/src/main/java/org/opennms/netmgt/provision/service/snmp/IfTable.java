@@ -101,7 +101,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IfTable.class);
     }
     

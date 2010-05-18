@@ -152,7 +152,7 @@ public abstract class AbstractSpringContextJmxServiceDaemon<T extends SpringServ
         return status();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

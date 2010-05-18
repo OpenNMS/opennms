@@ -131,7 +131,7 @@ public class HttpCollector implements ServiceCollector {
         return collectionSet;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

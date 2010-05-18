@@ -105,7 +105,7 @@ final class Receiver2 implements Runnable, Fiber {
     }
 
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // set the state
         //

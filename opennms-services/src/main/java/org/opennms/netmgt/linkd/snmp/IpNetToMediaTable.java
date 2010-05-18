@@ -82,7 +82,7 @@ public class IpNetToMediaTable	extends SnmpTable<IpNetToMediaTableEntry>
         return new IpNetToMediaTableEntry();
     }
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IpNetToMediaTable.class);
     }
 

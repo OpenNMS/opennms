@@ -121,7 +121,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         m_repository = repository;
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

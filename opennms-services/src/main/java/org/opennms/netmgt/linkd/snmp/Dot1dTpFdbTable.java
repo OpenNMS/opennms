@@ -64,7 +64,7 @@ public class Dot1dTpFdbTable extends SnmpTable<Dot1dTpFdbTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(Dot1dTpFdbTable.class);
     }
 	

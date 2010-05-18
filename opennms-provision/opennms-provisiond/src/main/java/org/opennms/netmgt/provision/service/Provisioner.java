@@ -263,7 +263,7 @@ public class Provisioner implements SpringServiceDaemon {
         doImport.waitFor();
     }
 
-    public Category log() {
+    public ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
 	}
 

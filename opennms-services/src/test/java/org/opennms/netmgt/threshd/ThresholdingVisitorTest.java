@@ -1531,7 +1531,7 @@ public class ThresholdingVisitorTest {
         return path.delete();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

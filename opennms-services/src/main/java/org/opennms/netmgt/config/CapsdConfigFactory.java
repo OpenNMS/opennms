@@ -149,7 +149,7 @@ public final class CapsdConfigFactory {
         s_singleton = instance;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(CapsdConfigFactory.class);
     }
 

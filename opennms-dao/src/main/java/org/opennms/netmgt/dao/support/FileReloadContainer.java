@@ -261,7 +261,7 @@ public class FileReloadContainer<T> {
         m_reloadCheckInterval = reloadCheckInterval;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 }

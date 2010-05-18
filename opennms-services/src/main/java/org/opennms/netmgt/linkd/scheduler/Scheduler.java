@@ -513,7 +513,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		return rr;
 	}
 	
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 	

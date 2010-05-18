@@ -72,7 +72,7 @@ public class DBManager extends Manager {
      */
     String elementTable = "element";
 
-    Category log = null;
+    ThreadCategory log = null;
 
     private DbConnectionFactory m_factory = null;
 

@@ -311,7 +311,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         return defaultView;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

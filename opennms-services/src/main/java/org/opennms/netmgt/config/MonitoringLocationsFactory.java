@@ -193,7 +193,7 @@ public class MonitoringLocationsFactory {
         m_defsMap = map;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 }

@@ -63,7 +63,7 @@ public class IntelVlanTable extends SnmpTable<IntelVlanTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IntelVlanTable.class);
     }
 

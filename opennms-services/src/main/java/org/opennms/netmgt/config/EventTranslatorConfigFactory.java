@@ -242,7 +242,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		m_loaded=true;
 	}
 	
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(EventTranslatorConfig.class);
 	}
 	

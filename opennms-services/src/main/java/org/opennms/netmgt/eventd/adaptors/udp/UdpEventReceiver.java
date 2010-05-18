@@ -315,7 +315,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

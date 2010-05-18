@@ -59,7 +59,7 @@ import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextC
  */
 public class JBossConnectionFactory {
     
-    static Category log = ThreadCategory.getInstance(JBossConnectionFactory.class);
+    static ThreadCategory log = ThreadCategory.getInstance(JBossConnectionFactory.class);
     static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
     /* (non-Javadoc)

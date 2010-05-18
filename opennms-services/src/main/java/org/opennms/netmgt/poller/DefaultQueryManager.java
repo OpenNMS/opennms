@@ -111,7 +111,7 @@ public class DefaultQueryManager implements QueryManager {
      * @return
      */
     public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
-        Category log = log();
+        ThreadCategory log = log();
         java.sql.Connection dbConn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -157,7 +157,7 @@ public class DefaultQueryManager implements QueryManager {
             dbConn = getConnection();
             d.watch(dbConn);
             List<Integer> serviceIds = new ArrayList<Integer>();
-            Category log = log();
+            ThreadCategory log = log();
             stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_FETCH_IFSERVICES_TO_POLL);
             d.watch(stmt);
             stmt.setString(1, ipaddr);
@@ -181,7 +181,7 @@ public class DefaultQueryManager implements QueryManager {
      * @throws SQLException
      */
     public int getNodeIDForInterface(String ipaddr) throws SQLException {
-        Category log = log();
+        ThreadCategory log = log();
 
         int nodeid = -1;
         java.sql.Connection dbConn = null;
@@ -217,7 +217,7 @@ public class DefaultQueryManager implements QueryManager {
      * @throws SQLException
      */
     public String getNodeLabel(int nodeId) throws SQLException {
-        Category log = log();
+        ThreadCategory log = log();
 
         String nodeLabel = null;
         java.sql.Connection dbConn = null;
@@ -252,7 +252,7 @@ public class DefaultQueryManager implements QueryManager {
      * @throws SQLException
      */
     public int getServiceCountForInterface(String ipaddr) throws SQLException {
-        Category log = log();
+        ThreadCategory log = log();
         java.sql.Connection dbConn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -287,7 +287,7 @@ public class DefaultQueryManager implements QueryManager {
      */
     public List<IfKey> getInterfacesWithService(String svcName) throws SQLException {
         List<IfKey> ifkeys = new ArrayList<IfKey>();
-        Category log = log();
+        ThreadCategory log = log();
         final DBUtils d = new DBUtils(getClass());
 
         try {
@@ -328,7 +328,7 @@ public class DefaultQueryManager implements QueryManager {
      * @return
      */
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
-        Category log = ThreadCategory.getInstance(Poller.class);
+        ThreadCategory log = ThreadCategory.getInstance(Poller.class);
         log.debug("getting last known status for address: " + ipAddr + " service: " + svcName);
 
         Date svcLostDate = null;
@@ -521,7 +521,7 @@ public class DefaultQueryManager implements QueryManager {
      * 
      * @return A log <code>Category</code>
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

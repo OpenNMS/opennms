@@ -73,7 +73,7 @@ public class AlarmFactory extends Object {
     private AlarmFactory() {
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
     	return ThreadCategory.getInstance();
     }
 

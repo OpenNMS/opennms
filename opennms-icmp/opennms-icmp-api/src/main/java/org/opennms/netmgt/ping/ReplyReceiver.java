@@ -343,7 +343,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

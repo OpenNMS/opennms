@@ -143,7 +143,7 @@ public final class TcpEventProxy implements EventProxy {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

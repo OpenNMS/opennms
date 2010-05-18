@@ -81,7 +81,7 @@ public class CdpCacheTable extends SnmpTable<CdpCacheTableEntry> {
         return new CdpCacheTableEntry();
     }
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(CdpCacheTable.class);
     }
 

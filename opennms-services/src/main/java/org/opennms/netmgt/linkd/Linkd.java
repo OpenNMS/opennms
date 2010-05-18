@@ -120,7 +120,7 @@ public class Linkd extends AbstractServiceDaemon {
 	       
 		if (log().isInfoEnabled())
 			log()
-					.info("init: Category Level Set to "
+					.info("init: Logging Level Set to "
 							+ log().getLevel().toString());
 
 		m_activepackages = new ArrayList<String>();

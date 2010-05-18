@@ -45,6 +45,7 @@ import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpMessage;
 import org.krupczak.Xmp.XmpSession;
 import org.krupczak.Xmp.XmpVar;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * @author jeffg
@@ -60,7 +61,7 @@ public class XmpUtil {
     public static final String MATCHES = "~";
     
     private static boolean valueMeetsCriteria(XmpVar replyVar, 
-            String valueOperator, String valueOperand, Category log, boolean caseSensitive)
+            String valueOperator, String valueOperand, ThreadCategory log, boolean caseSensitive)
             throws XmpUtilException {
         RE valueRegex = null;
         if (MATCHES.equals(valueOperator)) {
@@ -183,7 +184,7 @@ public class XmpUtil {
     }
 
     public static boolean handleScalarQuery(XmpSession session, String mib,
-            String object, String valueOperator, String valueOperand, Category log, boolean caseSensitive) throws XmpUtilException {
+            String object, String valueOperator, String valueOperand, ThreadCategory log, boolean caseSensitive) throws XmpUtilException {
         XmpMessage reply;
         XmpVar[] queryVars = new XmpVar[1];
         XmpVar[] replyVars;
@@ -215,7 +216,7 @@ public class XmpUtil {
             String table, String object, String instance, RE instanceRegex, 
             String valueOperator, String valueOperand, int minMatches,
             int maxMatches, boolean maxMatchesUnbounded,
-            Category log, boolean caseSensitive) throws XmpUtilException {
+            ThreadCategory log, boolean caseSensitive) throws XmpUtilException {
         XmpMessage reply;
         String[] tableInfo = new String[3];
         XmpVar[] queryVars = new XmpVar[1];

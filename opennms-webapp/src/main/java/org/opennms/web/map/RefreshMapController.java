@@ -65,7 +65,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class RefreshMapController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	

@@ -123,7 +123,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
      */
 
     public RadiusAuthMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         log.info(getClass().getName() + ": RadiusAuthMonitor class loaded");
     }
 
@@ -162,7 +162,7 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Asume that the service is down
         PollStatus status = PollStatus.unavailable();

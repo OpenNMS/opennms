@@ -76,7 +76,7 @@ public class SnmpStore extends AbstractSnmpStore {
         return ms_elemList;
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

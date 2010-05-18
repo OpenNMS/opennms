@@ -97,7 +97,7 @@ public final class NtpPlugin extends AbstractPlugin {
      */
     private boolean isServer(InetAddress nserver, int port, int retries, int timeout) {
         boolean isAServer = false;
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Allocate a communication socket
         //

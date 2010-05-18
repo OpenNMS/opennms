@@ -396,7 +396,7 @@ public abstract class ThresholdingSet {
         return m_thresholdGroups.toString();
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

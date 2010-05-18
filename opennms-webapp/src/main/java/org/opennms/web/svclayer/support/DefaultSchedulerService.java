@@ -119,7 +119,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             }
         } catch (SchedulerException e) {
             log().error("exception looking up trigger name: " + triggerName);
-            log().error(e);
+            log().error(e.getMessage());
         }
 
         return found;
@@ -138,7 +138,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
             log().error(
                         "exception when attempting to remove trigger "
                                 + triggerName);
-            log().error(e);
+            log().error(e.getMessage());
         }
 
     }
@@ -262,7 +262,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

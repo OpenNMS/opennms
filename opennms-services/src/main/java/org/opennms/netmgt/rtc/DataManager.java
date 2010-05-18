@@ -366,7 +366,7 @@ public class DataManager extends Object {
 		return args.toArray();
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(DataManager.class);
 	}
 

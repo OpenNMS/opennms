@@ -54,7 +54,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class Jsr160ConnectionFactory {
     
-    static Category log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
+    static ThreadCategory log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
 
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {
         Jsr160ConnectionWrapper connectionWrapper = null;

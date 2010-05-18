@@ -134,7 +134,7 @@ public class ManagerDefaultImpl implements Manager {
 
     boolean adminMode = false;
 
-    private Category log = null;
+    private ThreadCategory log = null;
 
     public String getFilter() {
         return filter;
@@ -908,7 +908,7 @@ public class ManagerDefaultImpl implements Manager {
             throws MapsException {
 
         ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
 
         java.util.Map<Integer, Set<Integer>> maps = dbManager.getMapsStructure();
         Set<Integer> childSet = new TreeSet<Integer>();

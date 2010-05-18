@@ -93,7 +93,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         }
     }
     
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -193,7 +193,7 @@ public abstract class NotifdConfigManager {
     
     // TODO This change only works for one parameter, need to expand it to many.
     public boolean matchNotificationParameters(Event event, Notification notification) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean parmmatch = false;
         Parms parms = event.getParms();

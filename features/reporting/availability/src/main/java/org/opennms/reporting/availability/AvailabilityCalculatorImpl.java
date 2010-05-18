@@ -132,7 +132,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
 
     private Report m_report = null;
 
-    private Category log;
+    private ThreadCategory log;
 
     private ReportStoreService m_reportStoreService;
     

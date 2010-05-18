@@ -54,7 +54,7 @@ public abstract class ImportOperation {
         return m_provisionService;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

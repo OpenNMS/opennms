@@ -303,7 +303,7 @@ final class DbDataLinkInterfaceEntry
 				throw new IllegalStateException(
 						"The record does not exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			PreparedStatement stmt = null;
             ResultSet rset;

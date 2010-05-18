@@ -63,7 +63,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
         bs.signalAll();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

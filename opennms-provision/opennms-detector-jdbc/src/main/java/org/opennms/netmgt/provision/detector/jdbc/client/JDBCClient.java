@@ -136,7 +136,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         return m_url;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

@@ -277,7 +277,7 @@ final class IfSmbCollector implements Runnable {
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         try {
             m_addr = NbtAddress.getByName(m_target.getHostAddress());
 

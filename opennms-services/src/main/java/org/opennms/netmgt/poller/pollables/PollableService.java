@@ -313,7 +313,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         return status;
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(PollableService.class);
 	}
 

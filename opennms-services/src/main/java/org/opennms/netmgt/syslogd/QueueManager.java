@@ -79,7 +79,7 @@ import org.opennms.core.utils.ThreadCategory;
 
     public synchronized ConvertToEvent getFromQueue() {
         // This synchronized method removes a message from the queue
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
 
         try {
             while (m_backlogQ.isEmpty()) {

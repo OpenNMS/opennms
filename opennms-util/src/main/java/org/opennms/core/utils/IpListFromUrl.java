@@ -140,7 +140,7 @@ public class IpListFromUrl extends Object {
         return iplist;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(IpListFromUrl.class);
     }
 }

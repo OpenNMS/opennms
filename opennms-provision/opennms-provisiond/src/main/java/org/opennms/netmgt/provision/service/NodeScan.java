@@ -173,7 +173,7 @@ public class NodeScan implements Runnable {
         return new NoAgentScan(m_nodeId, m_node);
     }
  
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(NodeScan.class);
     }
 

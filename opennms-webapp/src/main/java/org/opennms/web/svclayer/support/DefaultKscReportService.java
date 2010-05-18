@@ -247,7 +247,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         
         initTimeSpans();
     }
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

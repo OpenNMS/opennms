@@ -240,7 +240,7 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         return true;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass().getName());
     }
 }

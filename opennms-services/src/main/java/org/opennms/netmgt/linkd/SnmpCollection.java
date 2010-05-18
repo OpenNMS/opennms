@@ -348,7 +348,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		return m_snmpVlanCollection;
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 	/**

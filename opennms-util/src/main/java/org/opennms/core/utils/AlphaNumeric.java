@@ -106,7 +106,7 @@ public class AlphaNumeric extends Object {
 
             // Log4j category
             //
-            Category log = ThreadCategory.getInstance(AlphaNumeric.class);
+            ThreadCategory log = ThreadCategory.getInstance(AlphaNumeric.class);
             if (log.isDebugEnabled()) {
                 if (replacedChar)
                     log.debug("parseAndReplace: original='" + str + "'" + " new='" + temp + "'");

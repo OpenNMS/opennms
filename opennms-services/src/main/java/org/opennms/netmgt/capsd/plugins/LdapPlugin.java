@@ -136,7 +136,7 @@ public final class LdapPlugin extends AbstractPlugin {
      *         otherwise
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
 

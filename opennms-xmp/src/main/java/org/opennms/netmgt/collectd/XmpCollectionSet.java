@@ -93,7 +93,7 @@ public class XmpCollectionSet implements CollectionSet {
     }
 
     /* private methods *********************************** */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

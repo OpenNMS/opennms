@@ -194,7 +194,7 @@ public final class XmpPlugin extends AbstractPlugin {
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         XmpConfig protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
         XmpSession session;
         SocketOpts sockopts = new SocketOpts();

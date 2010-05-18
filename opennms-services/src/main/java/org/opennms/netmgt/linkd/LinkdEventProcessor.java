@@ -230,7 +230,7 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
      * 
      */
     public void onEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         try {
         	int eventid = event.getDbid();

@@ -298,7 +298,7 @@ public abstract class EventUtils {
     }
     
     private static void debug(String format, Object... args) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled()) {
             log.debug(String.format(format, args));
         }

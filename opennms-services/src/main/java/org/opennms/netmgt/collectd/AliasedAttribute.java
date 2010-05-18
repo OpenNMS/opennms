@@ -32,6 +32,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class AliasedAttribute extends SnmpAttribute {
@@ -67,7 +68,7 @@ public class AliasedAttribute extends SnmpAttribute {
 		return m_attr.hashCode();
 	}
 
-	public Category log() {
+	public ThreadCategory log() {
 		return m_attr.log();
 	}
 

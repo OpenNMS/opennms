@@ -51,7 +51,7 @@ public class ReportMailer {
 	
 	private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 	
-	private Category log;
+	private ThreadCategory log;
 	
 	private String m_filename;
 	

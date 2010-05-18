@@ -148,7 +148,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
 				int retry, int timeout) {
 
         boolean isRadiusServer = false;
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         RadiusClient rc = null;
 

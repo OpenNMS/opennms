@@ -239,7 +239,7 @@ public final class XmlrpcdConfigFactory {
         }
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(XmlrpcdConfigFactory.class);
     }
 

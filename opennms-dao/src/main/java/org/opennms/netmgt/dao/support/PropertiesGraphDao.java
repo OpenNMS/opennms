@@ -313,7 +313,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
     

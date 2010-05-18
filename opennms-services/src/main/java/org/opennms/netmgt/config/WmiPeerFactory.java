@@ -149,7 +149,7 @@ public class WmiPeerFactory extends PeerFactory {
         m_loaded = true;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(WmiPeerFactory.class);
     }
 
@@ -202,7 +202,7 @@ public class WmiPeerFactory extends PeerFactory {
      * @throws UnknownHostException
      */
     private static void optimize() throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // First pass: Remove empty definition elements
         for (Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator();
@@ -377,7 +377,7 @@ public class WmiPeerFactory extends PeerFactory {
      * @throws UnknownHostException
      */
     public void define(InetAddress ip, String username, String password, String domain) throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Convert IP to long so that it easily compared in range elements
         int address = new IPv4Address(ip).getAddress();
@@ -499,7 +499,7 @@ public class WmiPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
+                    ThreadCategory log = ThreadCategory.getInstance(getClass());
                     log.warn("WmiPeerFactory: could not convert host " + saddr + " to InetAddress", e);
                 }
             }
@@ -519,7 +519,7 @@ public class WmiPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
+                    ThreadCategory log = ThreadCategory.getInstance(getClass());
                     log.warn("WmiPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
                 }
             }

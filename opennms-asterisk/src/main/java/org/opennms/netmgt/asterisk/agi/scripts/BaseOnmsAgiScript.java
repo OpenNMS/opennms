@@ -115,7 +115,7 @@ public abstract class BaseOnmsAgiScript extends BaseAgiScript {
         }
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -139,7 +139,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -492,7 +492,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         return m_listeners.remove(listener);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

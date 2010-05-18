@@ -84,7 +84,7 @@ class DnsRecord {
         return m_hostname;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(DnsRecord.class);
     }
 

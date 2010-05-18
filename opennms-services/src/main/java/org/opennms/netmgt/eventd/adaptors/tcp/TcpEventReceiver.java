@@ -345,7 +345,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
         Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

@@ -257,7 +257,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
         return status;
     }
 
-    public static Category log() {
+    public static ThreadCategory log() {
         return ThreadCategory.getInstance(CiscoIpSlaPlugin.class);
     }
 }

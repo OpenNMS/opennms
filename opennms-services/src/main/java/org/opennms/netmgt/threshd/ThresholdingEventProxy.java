@@ -59,7 +59,7 @@ public class ThresholdingEventProxy implements EventProxy {
         }
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

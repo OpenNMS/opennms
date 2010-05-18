@@ -127,7 +127,7 @@ public class SnmpIfCollector extends AggregateTracker {
         m_collectionSet = collectionSet;
     }
 
-    protected static Category log() {
+    protected static ThreadCategory log() {
         return ThreadCategory.getInstance(SnmpIfCollector.class);
     }
 

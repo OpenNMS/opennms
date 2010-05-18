@@ -48,7 +48,7 @@ public class NSClientCollector implements ServiceCollector {
     // copy and the key won't require the service name as part of the key.
     private final HashMap<Integer, NSClientAgentState> m_scheduledNodes = new HashMap<Integer, NSClientAgentState>();
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

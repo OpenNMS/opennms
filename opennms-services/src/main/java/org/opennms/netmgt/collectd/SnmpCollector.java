@@ -431,7 +431,7 @@ public class SnmpCollector implements ServiceCollector {
         log().info("agent "+agent+" defines no data to collect.  Skipping.");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

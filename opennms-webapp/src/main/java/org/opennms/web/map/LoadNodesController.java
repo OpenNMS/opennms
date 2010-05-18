@@ -62,7 +62,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class LoadNodesController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	

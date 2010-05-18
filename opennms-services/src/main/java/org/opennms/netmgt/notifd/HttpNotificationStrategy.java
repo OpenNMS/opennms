@@ -208,7 +208,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
         return value;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

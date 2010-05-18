@@ -173,7 +173,7 @@ public class DbEventWriter implements QueryManager {
 
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

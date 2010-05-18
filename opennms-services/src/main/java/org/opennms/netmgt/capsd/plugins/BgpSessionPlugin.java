@@ -245,7 +245,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
         return false;
     }
 
-    public static Category log() {
+    public static ThreadCategory log() {
         return ThreadCategory.getInstance(BgpSessionPlugin.class);
     }
 }

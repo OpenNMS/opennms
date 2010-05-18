@@ -132,7 +132,7 @@ public final class NrpePlugin extends AbstractPlugin {
      *         line contains the bannerMatch text.
      */
     private boolean isServer(InetAddress host, int port, String command, int padding, int retries, int timeout, RE regex, StringBuffer bannerResult) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
@@ -364,7 +364,7 @@ public final class NrpePlugin extends AbstractPlugin {
         return wrappedSocket;
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
     }
 }

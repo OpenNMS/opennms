@@ -93,7 +93,7 @@ final class BroadcastEventProcessor implements EventListener {
      *            The event
      */
     public void onEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         String eventUei = event.getUei();
         if (eventUei == null)

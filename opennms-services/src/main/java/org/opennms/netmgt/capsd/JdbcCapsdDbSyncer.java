@@ -462,7 +462,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -1568,7 +1568,7 @@ final class SuspectEventProcessor implements Runnable {
     	createAndSendSuspectScanCompletedEvent(ifaddr);
     } // end run
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SuspectEventProcessor.class);
     }
 

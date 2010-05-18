@@ -79,7 +79,7 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
 
     }
     
-    private static Category logStatic() {
+    private static ThreadCategory logStatic() {
         return ThreadCategory.getInstance(RancidAdapterConfigFactory.class);
     }
 

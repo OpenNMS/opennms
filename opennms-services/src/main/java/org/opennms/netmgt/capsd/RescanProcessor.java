@@ -808,7 +808,7 @@ public final class RescanProcessor implements Runnable {
 
 
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(RescanProcessor.class);
     }
 

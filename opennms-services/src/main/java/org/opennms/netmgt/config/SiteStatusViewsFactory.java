@@ -195,7 +195,7 @@ public class SiteStatusViewsFactory {
         m_viewsMap = map;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 }

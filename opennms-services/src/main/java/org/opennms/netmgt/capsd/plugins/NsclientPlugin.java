@@ -240,7 +240,7 @@ public class NsclientPlugin extends AbstractPlugin {
         return response;
     }
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

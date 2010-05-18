@@ -180,7 +180,7 @@ public class ChartUtilsTest extends OpenNMSTestCase {
 //        m_config = ChartConfigFactory.getInstance().getConfiguration();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

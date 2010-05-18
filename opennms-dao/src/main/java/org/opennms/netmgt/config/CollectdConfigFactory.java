@@ -279,7 +279,7 @@ public class CollectdConfigFactory {
         return m_singleton != null;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(CollectdConfigFactory.class);
     }
 }

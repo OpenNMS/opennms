@@ -356,7 +356,7 @@ public class EventUtils {
      */
     public static void sendEvent(Event newEvent, String callerUei, long txNo, boolean isXmlRpcEnabled) {
         // Send event to Eventd
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 

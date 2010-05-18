@@ -151,7 +151,7 @@ public class BroadcastEventProcessor implements EventListener {
         return isTarget;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

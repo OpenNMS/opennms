@@ -172,7 +172,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
     protected boolean preconnectCheck(ConnectionConfig tcpConfig) {
         // get a log to send errors
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         DominoConnectionConfig config = (DominoConnectionConfig) tcpConfig;
         // Lets first try to the the IOR via HTTP, if we can't get that then any

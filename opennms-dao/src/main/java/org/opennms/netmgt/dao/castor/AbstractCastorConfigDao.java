@@ -76,7 +76,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
 
     public abstract V translateConfig(K castorConfig);
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

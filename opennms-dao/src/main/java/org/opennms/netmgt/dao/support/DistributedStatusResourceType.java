@@ -228,7 +228,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         return locationMonitorDirectory;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
     

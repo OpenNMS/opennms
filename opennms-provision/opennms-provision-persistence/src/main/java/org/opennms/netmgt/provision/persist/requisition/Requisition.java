@@ -228,7 +228,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
         return (m_nodes == null) ? 0 : m_nodes.size();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(Requisition.class);
     }
 

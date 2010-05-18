@@ -316,7 +316,7 @@ public class Vulnscand extends AbstractServiceDaemon {
 	        ifStmt.setString(1, address.getHostAddress());
 	        ResultSet rset = ifStmt.executeQuery();
 	        d.watch(rset);
-	        Category log = log();
+	        ThreadCategory log = log();
 			if (rset.next()) {
 	            Timestamp lastPolled = rset.getTimestamp(1);
 	            if (lastPolled != null && rset.wasNull() == false) {

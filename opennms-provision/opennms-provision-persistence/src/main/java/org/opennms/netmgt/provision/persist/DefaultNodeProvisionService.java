@@ -151,7 +151,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         m_eventForwarder = new TransactionAwareEventForwarder(proxyForwarder);
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

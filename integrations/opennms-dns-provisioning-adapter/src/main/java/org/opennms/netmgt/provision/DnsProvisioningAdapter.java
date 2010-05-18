@@ -225,7 +225,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         return builder;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(DnsProvisioningAdapter.class);
     }
 

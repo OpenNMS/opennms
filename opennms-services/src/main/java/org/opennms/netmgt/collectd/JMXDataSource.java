@@ -201,7 +201,7 @@ public class JMXDataSource  {
                 
                 m_collectionName = collectionName;
                 
-                Category log = ThreadCategory.getInstance(getClass());
+                ThreadCategory log = ThreadCategory.getInstance(getClass());
 
                 // Assign heartbeat using formula (2 * step) and hard code
                 // min & max values to "U" ("unknown").

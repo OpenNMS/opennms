@@ -62,14 +62,14 @@ public class MockLogAppenderTest extends TestCase {
     }
 	
     public void testInfo() {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.info("An Info message");
         assertTrue("Messages were logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testWarn() {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.warn("A warn message");
         assertFalse("Messages were not logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
@@ -77,7 +77,7 @@ public class MockLogAppenderTest extends TestCase {
     }
     
     public void testError() {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.error("An error message");
         assertFalse("Messages were not logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
@@ -85,21 +85,21 @@ public class MockLogAppenderTest extends TestCase {
     }
     
     public void testInfoWithException() {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.info("An info message with exception", new NullPointerException());
         assertTrue("Messages were logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testErrorWithException() {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.error("An error message with exception", new NullPointerException());
         assertFalse("Messages were not logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
     }
 	
 	public void xtestInfoMessage() throws InterruptedException {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.info("An Info message");
 		
         Thread.sleep(10000);
@@ -117,7 +117,7 @@ public class MockLogAppenderTest extends TestCase {
 	}
 	
 	public void testWarnLimit() throws InterruptedException {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.info("An Info message");
         log.warn("A warn message");
 		
@@ -135,7 +135,7 @@ public class MockLogAppenderTest extends TestCase {
 	}
 	
 	public void testWarnAssert() throws InterruptedException {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.info("An Info message");
         log.warn("A warn message");
  
@@ -150,7 +150,7 @@ public class MockLogAppenderTest extends TestCase {
 	}
 	
 	public void testErrorAssert() throws InterruptedException {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         log.info("An Info message");
         log.warn("A warn message");
 

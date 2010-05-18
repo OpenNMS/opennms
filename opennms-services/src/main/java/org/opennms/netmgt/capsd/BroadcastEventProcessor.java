@@ -2271,7 +2271,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         Assert.state(m_localServer != null, "The localServer must be set");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

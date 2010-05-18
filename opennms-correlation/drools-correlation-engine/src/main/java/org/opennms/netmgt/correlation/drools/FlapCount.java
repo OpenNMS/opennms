@@ -133,7 +133,7 @@ public class FlapCount {
         return creator.toString();
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

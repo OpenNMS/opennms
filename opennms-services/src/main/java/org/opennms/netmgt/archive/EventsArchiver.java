@@ -155,7 +155,7 @@ public class EventsArchiver {
     /**
      * The log4j category for this class' output logs
      */
-    private Category m_logCat;
+    private ThreadCategory m_logCat;
 
     /**
      * The log4j category for the archive file
@@ -520,7 +520,7 @@ public class EventsArchiver {
             m_logCat.error("EventsArchiver: Exception in opening the database "
                            + "connection or in the prepared statement for the "
                            + "get events");
-            m_logCat.error(e);
+            m_logCat.error(e.getMessage());
             throw new ArchiverException("EventsArchiver: " + e.getMessage());
         }
     }

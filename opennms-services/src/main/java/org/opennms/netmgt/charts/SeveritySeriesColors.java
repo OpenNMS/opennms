@@ -98,7 +98,7 @@ public class SeveritySeriesColors implements CustomSeriesColors {
      * 
      * @return A log4j <code>Category</code>.
      */
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SeveritySeriesColors.class);
     }
 

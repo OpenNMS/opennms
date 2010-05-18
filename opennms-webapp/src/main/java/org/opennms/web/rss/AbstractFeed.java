@@ -118,7 +118,7 @@ public class AbstractFeed implements Feed {
         return title;
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

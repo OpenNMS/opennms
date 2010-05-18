@@ -765,7 +765,7 @@ public final class ConfigFileConstants {
         return frfile;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(ConfigFileConstants.class);
     }
 

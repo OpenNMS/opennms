@@ -293,9 +293,9 @@ final class CollectableService implements ReadyRunnable {
                 updateStatus(ServiceCollector.COLLECTION_SUCCEEDED, null);
             } catch (CollectionException e) {
                 if (e instanceof CollectionWarning) {
-                    log().warn(e, e);
+                    log().warn(e.getMessage(), e);
                 } else {
-                    log().error(e, e);
+                    log().error(e.getMessage(), e);
                 }
                 updateStatus(ServiceCollector.COLLECTION_FAILED, e);
             }
@@ -546,7 +546,7 @@ final class CollectableService implements ReadyRunnable {
         return !ABORT_COLLECTION;
     }
     
-    Category log() {
+    ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
     }
 

@@ -96,7 +96,7 @@ public class InitializerServletContextListener implements ServletContextListener
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -153,7 +153,7 @@ public class InitializerServletContextListener implements ServletContextListener
             }
         }
         
-        private Category log() {
+        private ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
     }

@@ -83,7 +83,7 @@ public class MailTransportMonitor extends IPv4Monitor {
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         PollStatus status = null;
 
         try {

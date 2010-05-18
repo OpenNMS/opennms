@@ -67,7 +67,7 @@ public class ThresholdResourceType {
     	m_thresholdMap = thresholdMap;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

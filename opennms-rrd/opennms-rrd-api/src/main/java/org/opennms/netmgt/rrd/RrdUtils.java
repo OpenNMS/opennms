@@ -174,7 +174,7 @@ public abstract class RrdUtils {
         }
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(RrdUtils.class);
     }
 

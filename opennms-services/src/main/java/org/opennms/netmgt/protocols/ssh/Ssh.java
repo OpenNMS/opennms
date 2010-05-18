@@ -295,7 +295,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
         return ps;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

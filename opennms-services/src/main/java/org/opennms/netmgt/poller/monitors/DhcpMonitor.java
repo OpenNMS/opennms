@@ -106,7 +106,7 @@ final public class DhcpMonitor extends IPv4Monitor {
 
         // Process parameters
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Retries
         //

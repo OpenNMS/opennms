@@ -366,7 +366,7 @@ public class OpenNMSProvisioner implements Provisioner {
         return true;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

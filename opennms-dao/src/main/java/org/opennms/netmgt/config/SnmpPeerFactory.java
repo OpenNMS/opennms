@@ -161,7 +161,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
         m_loaded = true;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SnmpPeerFactory.class);
     }
 
@@ -248,7 +248,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
      */
     @SuppressWarnings("unused")
     private void define(InetAddress ip, String community) throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Convert IP to long so that it easily compared in range elements
         int address = new IPv4Address(ip).getAddress();

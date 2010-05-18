@@ -407,7 +407,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
         return "";
     }
     
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

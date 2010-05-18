@@ -175,15 +175,15 @@ public abstract class JavaMailer2 {
     /**
      * @return log4j Category
      */
-    protected static Category log() {
+    protected static ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 
     public static class LoggingByteArrayOutputStream extends ByteArrayOutputStream {
-        private Category m_category;
+        private ThreadCategory m_category;
 
-        public LoggingByteArrayOutputStream(Category category) {
-            m_category = category;
+        public LoggingByteArrayOutputStream(ThreadCategory threadCategory) {
+            m_category = threadCategory;
         }
 
         @Override
@@ -200,13 +200,13 @@ public abstract class JavaMailer2 {
     }
 
     public static class LoggingTransportListener implements TransportListener {
-        private Category m_category;
+        private ThreadCategory m_category;
         private List<Address> m_invalidAddresses = new ArrayList<Address>();
         private List<Address> m_validSentAddresses = new ArrayList<Address>();
         private List<Address> m_validUnsentAddresses = new ArrayList<Address>();
 
-        public LoggingTransportListener(Category category) {
-            m_category = category;
+        public LoggingTransportListener(ThreadCategory threadCategory) {
+            m_category = threadCategory;
         }
 
         public void messageDelivered(TransportEvent event) {

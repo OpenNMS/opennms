@@ -85,7 +85,7 @@ public class DhcpTestDetector {
     private boolean isServer(InetAddress host, int retries, int timeout) {
         // Load the category for logging
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         long responseTime = -1;

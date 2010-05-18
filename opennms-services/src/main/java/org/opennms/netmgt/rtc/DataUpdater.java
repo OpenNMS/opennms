@@ -69,7 +69,7 @@ final class DataUpdater implements Runnable {
      * If it is a nodeGainedService, create a new entry in the map
      */
     private void handleNodeGainedService(long nodeid, String ip, String svcName) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || ip == null || svcName == null) {
             log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/svc: " + nodeid + "/" + ip + "/" + svcName);
@@ -87,7 +87,7 @@ final class DataUpdater implements Runnable {
      * If it is a nodeLostService, update downtime on the rtcnode
      */
     private void handleNodeLostService(long nodeid, String ip, String svcName, long eventTime) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
             log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/svc/eventtime: " + nodeid + "/" + ip + "/" + svcName + "/" + eventTime);
@@ -105,7 +105,7 @@ final class DataUpdater implements Runnable {
      * If it is an interfaceDown, update downtime on the appropriate rtcnodes
      */
     private void handleInterfaceDown(long nodeid, String ip, long eventTime) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || ip == null || eventTime == -1) {
             log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/eventtime: " + nodeid + "/" + ip + "/" + eventTime);
@@ -123,7 +123,7 @@ final class DataUpdater implements Runnable {
      * If it is an nodeDown, update downtime on the appropriate rtcnodes
      */
     private void handleNodeDown(long nodeid, long eventTime) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || eventTime == -1) {
             log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/eventtime: " + nodeid + "/" + eventTime);
@@ -141,7 +141,7 @@ final class DataUpdater implements Runnable {
      * If it is a nodeUp, update regained time on the appropriate rtcnodes
      */
     private void handleNodeUp(long nodeid, long eventTime) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || eventTime == -1) {
             log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/eventtime: " + nodeid + "/" + eventTime);
@@ -159,7 +159,7 @@ final class DataUpdater implements Runnable {
      * If it is an interfaceUp, update regained time on the appropriate rtcnodes
      */
     private void handleInterfaceUp(long nodeid, String ip, long eventTime) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || ip == null || eventTime == -1) {
             log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/eventtime: " + nodeid + "/" + ip + "/" + eventTime);
@@ -177,7 +177,7 @@ final class DataUpdater implements Runnable {
      * If it is a nodeRegainedService, update downtime on the rtcnode
      */
     private void handleNodeRegainedService(long nodeid, String ip, String svcName, long eventTime) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
             log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/svc/eventtime: " + nodeid + "/" + ip + "/" + svcName + "/" + eventTime);
@@ -195,7 +195,7 @@ final class DataUpdater implements Runnable {
      * If it is a serviceDeleted, remove corresponding RTC nodes from the map
      */
     private void handleServiceDeleted(long nodeid, String ip, String svcName) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || ip == null || svcName == null) {
             log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/svc: " + nodeid + "/" + ip + "/" + svcName);
@@ -214,7 +214,7 @@ final class DataUpdater implements Runnable {
      * Record the interfaceReparented info in the datastore
      */
     private void handleInterfaceReparented(String ip, Parms eventParms) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (ip == null || eventParms == null) {
             log.warn(m_event.getUei() + " ignored - info incomplete - ip/parms: " + ip + "/" + eventParms);
@@ -281,7 +281,7 @@ final class DataUpdater implements Runnable {
      * Inform the data sender of the new listener
      */
     private void handleRtcSubscribe(Parms eventParms) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (eventParms == null) {
             log.warn(m_event.getUei() + " ignored - info incomplete - parms: " + eventParms);
@@ -338,7 +338,7 @@ final class DataUpdater implements Runnable {
      * Inform the data sender of the listener unsubscribing
      */
     private void handleRtcUnsubscribe(Parms eventParms) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (eventParms == null) {
             log.warn(m_event.getUei() + " ignored - info incomplete - parms: " + eventParms);
@@ -378,7 +378,7 @@ final class DataUpdater implements Runnable {
      * If it is a assetInfoChanged method, update RTC
      */
     private void handleAssetInfoChangedEvent(long nodeid) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         DataManager dataMgr = RTCManager.getDataManager();
 
@@ -395,7 +395,7 @@ final class DataUpdater implements Runnable {
      * categories via "categoryName" or "catinc*" rules
      */
     private void handleNodeCategoryMembershipChanged(long nodeid) {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         DataManager dataMgr = RTCManager.getDataManager();
 
@@ -411,7 +411,7 @@ final class DataUpdater implements Runnable {
      * manager to update data
      */
     private void processEvent() {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (m_event == null) {
             if (log.isDebugEnabled())
@@ -513,7 +513,7 @@ final class DataUpdater implements Runnable {
      * Process the event depending on the UEI and update date
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(DataUpdater.class);
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         try {
             processEvent();

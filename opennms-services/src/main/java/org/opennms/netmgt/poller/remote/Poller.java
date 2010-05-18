@@ -143,7 +143,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 		
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

@@ -85,7 +85,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     }
 
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

@@ -419,7 +419,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return m_eventForwarder;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(RancidProvisioningAdapter.class);
     }
 

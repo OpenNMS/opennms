@@ -185,7 +185,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
         return getAlias().hashCode();
     }
     
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

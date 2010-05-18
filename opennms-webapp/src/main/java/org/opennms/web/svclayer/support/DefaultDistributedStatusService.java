@@ -411,7 +411,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return table;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

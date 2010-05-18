@@ -74,7 +74,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     
     public abstract int getType();
     
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

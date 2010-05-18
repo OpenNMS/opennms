@@ -170,7 +170,7 @@ abstract public class RWSConfigManager implements RWSConfig {
         return m_config;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

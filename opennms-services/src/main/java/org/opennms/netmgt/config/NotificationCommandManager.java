@@ -93,7 +93,7 @@ public abstract class NotificationCommandManager {
     
     public abstract void update() throws Exception;
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(NotificationCommandManager.class);
     }
 

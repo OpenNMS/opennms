@@ -61,7 +61,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  */
 @SuppressWarnings("deprecation")
 public class LoadLabelMapController extends SimpleFormController {
-	Category log; 
+	ThreadCategory log; 
 
 	private Manager manager;
 		

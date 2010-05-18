@@ -62,7 +62,7 @@ public class RTCPostSubscriber extends Object {
     protected String m_username = "rtc";
     protected String m_password = "rtc";
 
-    protected static Category log = ThreadCategory.getInstance("RTC");
+    protected static ThreadCategory log = ThreadCategory.getInstance("RTC");
 
     public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
         m_proxy = Util.createEventProxy();

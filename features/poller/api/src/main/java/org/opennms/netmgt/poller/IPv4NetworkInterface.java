@@ -169,7 +169,7 @@ public class IPv4NetworkInterface implements NetworkInterface, Serializable {
         return m_properties.put(property, value);
     }
     
-	public Category log() {
+	public ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

@@ -109,7 +109,7 @@ public class Starter {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

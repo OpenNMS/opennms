@@ -96,7 +96,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(AbstractForeignSourceRepository.class);
     }
 

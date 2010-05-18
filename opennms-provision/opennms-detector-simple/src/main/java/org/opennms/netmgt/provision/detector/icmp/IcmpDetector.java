@@ -72,7 +72,7 @@ public class IcmpDetector extends AbstractDetector {
                 sb.append(" is: ");
                 sb.append(retval);
                 sb.append('.');
-                log().debug(retval);
+                log().debug(retval.toString());
                 
                 if (retval != null) {
                     sb.delete(0, sb.length());

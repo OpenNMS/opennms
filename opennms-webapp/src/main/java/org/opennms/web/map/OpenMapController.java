@@ -63,7 +63,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class OpenMapController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	

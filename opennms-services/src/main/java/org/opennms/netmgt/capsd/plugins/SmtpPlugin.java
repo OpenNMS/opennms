@@ -150,7 +150,7 @@ public final class SmtpPlugin extends AbstractPlugin {
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
         // get a log to send errors
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {

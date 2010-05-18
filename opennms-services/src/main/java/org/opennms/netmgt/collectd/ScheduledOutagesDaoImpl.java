@@ -48,7 +48,7 @@ public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
 		loadScheduledOutagesConfigFactory();
 	}
 	
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

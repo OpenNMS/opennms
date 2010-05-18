@@ -109,7 +109,7 @@ final public class IcmpMonitor extends IPv4Monitor {
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         Long rtt = null;
         InetAddress host = (InetAddress) iface.getAddress();
 

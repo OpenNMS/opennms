@@ -66,7 +66,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     private ReportServiceLocator m_reportServiceLocator;
 
-    private Category log;
+    private ThreadCategory log;
 
     private ReportStoreService m_reportStoreService;
 

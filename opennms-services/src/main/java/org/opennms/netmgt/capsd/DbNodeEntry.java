@@ -1669,7 +1669,7 @@ final class DbNodeEntry {
      *            The database connection used to write the record.
      */
     void store(Connection db) throws SQLException {
-        Category log = log();
+        ThreadCategory log = log();
         log.debug("DbNodeEntry: changed map = 0x" + Integer.toHexString(m_changed));
         if (m_changed != 0 || m_fromDb == false) {
             if (m_fromDb)
@@ -2071,7 +2071,7 @@ final class DbNodeEntry {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

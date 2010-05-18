@@ -410,7 +410,7 @@ public class AsteriskOriginator {
     /**
      * @return log4j Category
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

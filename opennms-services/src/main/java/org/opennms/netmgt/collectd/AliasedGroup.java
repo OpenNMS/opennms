@@ -77,7 +77,7 @@ public class AliasedGroup extends AttributeGroup {
 		return m_group.toString();
 	}
 	
-	Category log(){
+	ThreadCategory log(){
 		return ThreadCategory.getInstance(getClass());
 	}
 

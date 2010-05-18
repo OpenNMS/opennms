@@ -317,7 +317,7 @@ public class BaseImporter implements ImportOperationFactory {
 		specFile.visitImport(new NodeRelator(specFile.getForeignSource()));
 	}
 
-    public Category log() {
+    public ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
 	}
 

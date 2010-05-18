@@ -683,7 +683,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         return ".jrb";
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -705,7 +705,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @return
      */
     public static String[] tokenizeWithQuotingAndEscapes(final String line, final String delims, final boolean processQuoted, final String tokens) {
-        Category log = ThreadCategory.getInstance(StringUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(StringUtils.class);
         List<String> tokenList = new LinkedList<String>();
     
         StringBuffer currToken = new StringBuffer();

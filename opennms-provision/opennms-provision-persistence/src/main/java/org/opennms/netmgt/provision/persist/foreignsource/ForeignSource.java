@@ -224,7 +224,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         m_default = isDefault;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(ForeignSource.class);
     }
 

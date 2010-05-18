@@ -64,7 +64,7 @@ public class QBridgeDot1dTpFdbTable extends SnmpTable<QBridgeDot1dTpFdbTableEntr
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(QBridgeDot1dTpFdbTable.class);
     }
 	

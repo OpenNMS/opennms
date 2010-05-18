@@ -189,7 +189,7 @@ public final class OpenManageChassisPlugin extends SnmpPlugin {
         return false;
     }
 
-    public static Category log() {
+    public static ThreadCategory log() {
         return ThreadCategory.getInstance(OpenManageChassisPlugin.class);
     }
 }

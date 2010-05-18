@@ -154,7 +154,7 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     }
     
     private void info(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args));
         }

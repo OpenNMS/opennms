@@ -126,7 +126,7 @@ public class DefaultPollContext implements PollContext {
         getEventManager().sendNow(event);
     }
 
-    Category log() {
+    ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

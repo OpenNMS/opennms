@@ -252,7 +252,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
         return matches;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

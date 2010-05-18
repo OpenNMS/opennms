@@ -167,7 +167,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         m_workingMemory.setGlobal(name, value);
     }
     
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

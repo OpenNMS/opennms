@@ -81,7 +81,7 @@ public class MapPropertiesFactory extends Object {
 	/**
 	 * The Log4J category for logging web authentication messages.
 	 */
-	protected Category log = null;
+	protected ThreadCategory log = null;
 
 //	protected Map[] propertiesMaps = null;
 

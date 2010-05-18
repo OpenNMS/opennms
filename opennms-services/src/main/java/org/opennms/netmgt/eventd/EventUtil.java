@@ -421,7 +421,7 @@ public final class EventUtil {
 						DateFormat.FULL);
 				retParmVal = df.format(actualDate);
 			} catch (java.text.ParseException e) {
-				Category log = ThreadCategory.getInstance();
+				ThreadCategory log = ThreadCategory.getInstance();
 				log.error("could not parse event date \"" + eventTime + "\": ",
 						e);
 

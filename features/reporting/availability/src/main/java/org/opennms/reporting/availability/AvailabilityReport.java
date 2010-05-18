@@ -385,7 +385,7 @@ public class AvailabilityReport extends Object {
         }
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(AvailabilityReport.class);
     }
 }

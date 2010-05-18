@@ -306,7 +306,7 @@ public class CustomViewController extends AbstractController implements Initiali
         
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

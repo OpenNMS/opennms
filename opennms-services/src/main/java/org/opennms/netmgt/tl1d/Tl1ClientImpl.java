@@ -45,8 +45,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
-import org.apache.log4j.Category;
 import org.jfree.util.Log;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.tl1d.Tl1Element;
 
 /**
@@ -65,7 +65,7 @@ public class Tl1ClientImpl implements Tl1Client {
     private BlockingQueue<Tl1AutonomousMessage> m_tl1Queue;
     private BufferedReader m_reader;
     private TimeoutSleeper m_sleeper;
-    private Category m_log;
+    private ThreadCategory m_log;
     private Tl1AutonomousMessageProcessor m_messageProcessor;
     //private long m_reconnectionDelay = 30000;
     private long m_reconnectionDelay;  //see configuration xsd for default and set by Tl1d after instantiation
@@ -74,7 +74,7 @@ public class Tl1ClientImpl implements Tl1Client {
     public Tl1ClientImpl() {
     }
     
-    public Tl1ClientImpl(BlockingQueue<Tl1AutonomousMessage> queue, Tl1Element element, Category log) 
+    public Tl1ClientImpl(BlockingQueue<Tl1AutonomousMessage> queue, Tl1Element element, ThreadCategory log) 
         throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         
         m_host = element.getHost();
@@ -142,7 +142,7 @@ public class Tl1ClientImpl implements Tl1Client {
                 
             } catch (IOException e) {
                 log().error("TL1 Connection Failed to " + m_host + ":" + m_port);
-                log().debug(e);
+                log().debug(e.getMessage());
                 
                 waitUntilNextConnectTime();
             } 
@@ -230,7 +230,7 @@ public class Tl1ClientImpl implements Tl1Client {
         log().info("TL1 client stopped for: "+m_host+":"+String.valueOf(m_port));
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return m_log;
     }
 
@@ -355,7 +355,7 @@ public class Tl1ClientImpl implements Tl1Client {
         return m_started;
     }
 
-    public void setLog(Category log) {
+    public void setLog(ThreadCategory log) {
         m_log = log;
     }
 

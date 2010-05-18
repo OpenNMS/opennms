@@ -184,7 +184,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         }
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(LinkProvisioningAdapter.class);
     }
 

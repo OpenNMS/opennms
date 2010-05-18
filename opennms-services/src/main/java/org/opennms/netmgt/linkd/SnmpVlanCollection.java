@@ -277,7 +277,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 */
 
 	public void run() {
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		
 			m_dot1dbase = new Dot1dBaseGroup(m_address);
 			m_dot1dbaseTable = new Dot1dBasePortTable(m_address);

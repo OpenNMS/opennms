@@ -320,7 +320,7 @@ public class EventConfData extends Object {
         m_ueiToKeyListMap.clear();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

@@ -79,7 +79,7 @@ public class ClassExecutor implements ExecutorStrategy {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

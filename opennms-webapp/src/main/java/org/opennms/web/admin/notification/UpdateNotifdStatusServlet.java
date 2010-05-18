@@ -76,7 +76,7 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
    }
 }

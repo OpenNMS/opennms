@@ -62,7 +62,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
         DataSourceFactory.close();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -227,7 +227,7 @@ final class TcpServer implements Runnable {
         log().debug("All TCP Handlers are stopped and removed");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

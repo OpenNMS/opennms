@@ -63,7 +63,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class IfLabel extends Object {
 
-    protected static Category log = ThreadCategory.getInstance(IfLabel.class);
+    protected static ThreadCategory log = ThreadCategory.getInstance(IfLabel.class);
 
     /**
      * Return a map of useful SNMP information for the interface specified by

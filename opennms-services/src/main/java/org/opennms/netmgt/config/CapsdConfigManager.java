@@ -649,7 +649,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         return protocols;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

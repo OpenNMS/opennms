@@ -211,7 +211,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
 
         m_queryString = "GET " + config.getKeyedString(PROPERTY_NAME_URL, DEFAULT_URL) + " HTTP/1.0\r\n\r\n";
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled()) {
             log.debug( "Query: " + m_queryString);
         }

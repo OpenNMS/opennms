@@ -107,7 +107,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     final protected boolean checkConnection(ConnectionConfig config) {
         // get a log to send errors
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // don't let the user set the timeout to 0, an infinite loop will occur
         // if the server is down

@@ -66,7 +66,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class SearchMapsController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	

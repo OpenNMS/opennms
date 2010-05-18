@@ -48,7 +48,7 @@ import org.opennms.netmgt.config.common.Range;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class RangeComparator implements Comparator<Range> {
-    Category log = ThreadCategory.getInstance(getClass());
+    ThreadCategory log = ThreadCategory.getInstance(getClass());
 
     public int compare(Range rng1, Range rng2) {
         long compared = 0;

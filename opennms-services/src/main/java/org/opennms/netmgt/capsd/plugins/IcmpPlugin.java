@@ -87,7 +87,7 @@ public final class IcmpPlugin extends AbstractPlugin {
 	    		return true;
 	    	}
 		} catch (Exception e) {
-	        Category log = ThreadCategory.getInstance(this.getClass());
+	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
 			log.warn("Pinger failed to ping " + address, e);
 		}
 		return false;
@@ -124,7 +124,7 @@ public final class IcmpPlugin extends AbstractPlugin {
     			return true;
     		}
     	} catch (Exception e) {
-	        Category log = ThreadCategory.getInstance(this.getClass());
+	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
 			log.warn("Pinger failed to ping " + address, e);
         }
     	

@@ -101,7 +101,7 @@ final class BroadcastEventProcessor implements EventListener {
             return;
         }
 
-        Category log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
+        ThreadCategory log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
 
         try {
             m_execQ.add(event);

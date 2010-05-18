@@ -92,7 +92,7 @@ public class SyslogConnection implements Runnable {
 
     public void run() {
         ThreadCategory.setPrefix(m_logPrefix);
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         ConvertToEvent re = null;
         try {

@@ -289,7 +289,7 @@ public class Ssh extends AbstractPoll {
         return ps;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

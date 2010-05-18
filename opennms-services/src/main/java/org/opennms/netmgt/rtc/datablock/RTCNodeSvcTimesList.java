@@ -134,7 +134,7 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
         removeExpiredOutages();
 
         if (regainedtime > 0 && regainedtime < losttime) {
-            Category log = ThreadCategory.getInstance(getClass());
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
             log.warn("RTCNodeSvcTimesList: Rejecting service time pair since regained time " + "less than lost time -> losttime in milliseconds: " + losttime + "\tregainedtime in milliseconds: " + regainedtime);
 
             return;

@@ -168,7 +168,7 @@ public class NSClientDataCollectionConfigFactory {
          NSClientDataCollectionConfigFactory.m_config = m_config;
      }
 
-     private Category log() {
+     private ThreadCategory log() {
          return ThreadCategory.getInstance();
      }
 

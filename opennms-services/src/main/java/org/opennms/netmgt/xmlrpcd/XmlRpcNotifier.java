@@ -564,7 +564,7 @@ public final class XmlRpcNotifier {
     }
 
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(XmlRpcNotifier.class);
     }
 

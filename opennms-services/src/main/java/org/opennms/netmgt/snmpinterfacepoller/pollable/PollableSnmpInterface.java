@@ -369,7 +369,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
         m_schedule.unschedule();
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(PollableService.class);
     }
 

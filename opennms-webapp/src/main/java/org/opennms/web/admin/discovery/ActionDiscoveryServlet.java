@@ -37,6 +37,7 @@
 package org.opennms.web.admin.discovery;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -69,7 +70,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
  
     private static final long serialVersionUID = 2L;
     
-    protected static Category log = ThreadCategory.getInstance("WEB");
+    protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
     
     
     public static String addSpecificAction = "AddSpecific";
@@ -211,7 +212,11 @@ public class ActionDiscoveryServlet extends HttpServlet {
         if(action.equals(saveAndRestartAction)){
         	DiscoveryConfigFactory dcf=null;
         	try{
-        		log.debug(config);
+        		if (log.isDebugEnabled()) {
+        			StringWriter configString = new StringWriter();
+        			config.marshal(configString);
+        			log.debug(configString.toString().trim());
+        		}
         		DiscoveryConfigFactory.init();
         		dcf = DiscoveryConfigFactory.getInstance();
             	        dcf.saveConfiguration(config);
@@ -224,7 +229,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	try {
     			proxy = Util.createEventProxy();
     		} catch (Exception me) {
-    			log.error(me);
+    			log.error(me.getMessage());
     		}
 
     		Event event = new Event();
@@ -236,7 +241,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
             try {
             	proxy.send(event);
             } catch (Exception me) {
-    			log.error(me);
+    			log.error(me.getMessage());
     		}
 
             log.info("Restart Discovery requested!");  

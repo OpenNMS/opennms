@@ -94,7 +94,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         return getSwitchValue("trapVersion");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

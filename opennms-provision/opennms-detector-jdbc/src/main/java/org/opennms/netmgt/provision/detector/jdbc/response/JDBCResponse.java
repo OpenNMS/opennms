@@ -88,7 +88,7 @@ public class JDBCResponse {
     }
 
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

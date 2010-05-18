@@ -165,7 +165,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
             m_sequenceProperties.clear();
         }
         
-        private Category log() {
+        private ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
     }
@@ -471,7 +471,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
             return m_page.getDsName();
         }
         
-        private Category log() {
+        private ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
     }

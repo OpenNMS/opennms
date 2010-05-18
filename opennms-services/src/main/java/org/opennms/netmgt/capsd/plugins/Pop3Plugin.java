@@ -117,7 +117,7 @@ public final class Pop3Plugin extends AbstractPlugin {
      * @return True if server is running MS Exchange, false otherwise
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {

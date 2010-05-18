@@ -255,7 +255,7 @@ public final class SystemGroup extends AggregateTracker {
         log().info("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

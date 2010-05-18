@@ -78,7 +78,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
             protocolName = getProtocolName(map);
         }
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         boolean res = false;
         ConnectionWrapper connection = null;
         try {

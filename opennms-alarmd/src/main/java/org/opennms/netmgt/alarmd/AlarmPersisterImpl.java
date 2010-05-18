@@ -159,7 +159,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return true;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(AlarmPersisterImpl.class);
     }
     

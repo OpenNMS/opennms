@@ -126,7 +126,7 @@ public class SnmpPollInterfaceMonitor {
         return mifaces;
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

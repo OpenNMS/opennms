@@ -62,7 +62,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class ExecCommandController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
    		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
@@ -167,14 +167,14 @@ public class ExecCommandController implements Controller {
 			            
 			        }
 			        catch(IOException io){
-			        	log.warn(io);
+			        	log.warn(io.getMessage());
 			        }
 			    }
 			}).start();
 			try{
 				p.waitFor();
 			}catch(Exception e){
-				log.warn(e);
+				log.warn(e.getMessage());
 			}
 
 		} catch (Exception e) {

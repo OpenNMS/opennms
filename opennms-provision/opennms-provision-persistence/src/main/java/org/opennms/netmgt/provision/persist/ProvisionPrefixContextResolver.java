@@ -31,7 +31,7 @@ public class ProvisionPrefixContextResolver implements ContextResolver<JAXBConte
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(ProvisionPrefixContextResolver.class);
     }
 

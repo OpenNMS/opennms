@@ -294,7 +294,7 @@ public final class VulnscandConfigFactory {
      * 
      */
     public static boolean isInterfaceInDB(Connection dbConn, InetAddress ifAddress) throws SQLException {
-        Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
+        ThreadCategory log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
 
         boolean result = false;
 
@@ -321,7 +321,7 @@ public final class VulnscandConfigFactory {
      * 
      */
     public static int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress) throws SQLException {
-        Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
+        ThreadCategory log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
 
         log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
 
@@ -440,7 +440,7 @@ public final class VulnscandConfigFactory {
     }
 
     public Set<Serializable> getAllExcludes() {
-	Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
+	ThreadCategory log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
         if (m_excludes == null) {
             m_excludes = new TreeSet<Serializable>();
 

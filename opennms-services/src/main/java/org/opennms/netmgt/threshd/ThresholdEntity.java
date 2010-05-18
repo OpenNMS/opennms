@@ -247,7 +247,7 @@ public final class ThresholdEntity implements Cloneable {
         return events;
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(ThresholdEntity.class);
     }
 

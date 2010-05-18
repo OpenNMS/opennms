@@ -139,7 +139,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         Assert.notNull(m_eventProxy, "property eventProxy must be set");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

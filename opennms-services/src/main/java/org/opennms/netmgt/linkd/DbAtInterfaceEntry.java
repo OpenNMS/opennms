@@ -169,7 +169,7 @@ final class DbAtInterfaceEntry {
 			throw new IllegalStateException(
 					"The record already exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -267,7 +267,7 @@ final class DbAtInterfaceEntry {
 			throw new IllegalStateException(
 					"The record does not exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -362,7 +362,7 @@ final class DbAtInterfaceEntry {
 			throw new IllegalStateException(
 					"The record does not exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// create the Prepared statment and then
 		// start setting the result values

@@ -497,7 +497,7 @@ public class DutySchedule {
         return m_days.get(aDay);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

@@ -314,7 +314,7 @@ public final class ThresholdingConfigFactory {
         }
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(ThresholdingConfigFactory.class);
     }
 }

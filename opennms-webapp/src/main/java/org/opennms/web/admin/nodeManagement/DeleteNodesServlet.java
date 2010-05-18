@@ -248,7 +248,7 @@ public class DeleteNodesServlet extends HttpServlet {
         return successful;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

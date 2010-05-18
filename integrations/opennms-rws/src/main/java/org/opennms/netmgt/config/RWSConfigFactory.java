@@ -145,7 +145,7 @@ public final class RWSConfigFactory extends RWSConfigManager {
         }
     }
 
-    private static Category logStatic() {
+    private static ThreadCategory logStatic() {
         return ThreadCategory.getInstance(RWSConfigFactory.class);
     }
 

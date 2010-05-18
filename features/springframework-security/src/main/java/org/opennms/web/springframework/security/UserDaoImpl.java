@@ -430,7 +430,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     /**
      * Returns the Log4J category for logging web authentication messages.
      */
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

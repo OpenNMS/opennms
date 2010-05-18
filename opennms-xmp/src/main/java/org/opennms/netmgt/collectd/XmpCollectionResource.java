@@ -121,7 +121,7 @@ class XmpCollectionResource extends AbstractCollectionResource
     }
 
     /* private methods *********************************** */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

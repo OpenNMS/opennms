@@ -167,7 +167,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * 
      */
     public void processQueue() {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (m_noticeQueue != null) {
             synchronized(m_noticeQueue) {

@@ -164,7 +164,7 @@ public class Conversation {
     }
     
     private void info(Throwable t, String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args), t);
         }

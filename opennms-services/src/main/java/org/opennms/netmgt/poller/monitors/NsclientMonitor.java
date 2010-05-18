@@ -104,7 +104,7 @@ public class NsclientMonitor extends IPv4Monitor {
         Double responseTime = null;
 
         NetworkInterface iface = svc.getNetInterface();
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Validate the interface type.
         if (iface.getType() != NetworkInterface.TYPE_IPV4) {

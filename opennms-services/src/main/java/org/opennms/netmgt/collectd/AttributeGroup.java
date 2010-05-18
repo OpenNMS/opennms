@@ -90,7 +90,7 @@ public class AttributeGroup {
         
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -199,7 +199,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
                 "; queue size: "+executor.getQueue().size());
     }
 
-    private Logger log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

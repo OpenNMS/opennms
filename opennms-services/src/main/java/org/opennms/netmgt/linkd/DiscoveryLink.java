@@ -153,7 +153,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		super();
 	}
 	
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

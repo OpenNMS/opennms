@@ -59,7 +59,7 @@ import java.util.*;
 
 public class SaveMapController implements Controller {
 
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 

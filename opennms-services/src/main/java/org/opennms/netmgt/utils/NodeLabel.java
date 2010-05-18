@@ -594,7 +594,7 @@ public class NodeLabel {
      *             result set.
      */
     private static void loadAddressList(ResultSet rs, List<IPv4Address> ipv4AddrList, List<String> ipHostNameList) throws SQLException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Process result set, store retrieved addresses/host names in lists
         while (rs.next()) {
@@ -691,7 +691,7 @@ public class NodeLabel {
         return buffer.toString();
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(NodeLabel.class);
     }
 

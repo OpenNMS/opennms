@@ -114,7 +114,7 @@ public class LatencyInterface {
 	    return latencyDir;
 	}
 	
-	private final Category log() {
+	private final ThreadCategory log() {
 		return ThreadCategory.getInstance(LatencyInterface.class);
 	}
 
@@ -140,7 +140,7 @@ public class LatencyInterface {
 		int nodeId = getNodeId();
 		InetAddress ipAddr = getInetAddress();
 		
-		Category log = ThreadCategory.getInstance(LatencyInterface.class);
+		ThreadCategory log = ThreadCategory.getInstance(LatencyInterface.class);
 	
 	    if (threshold == null)
 	        throw new IllegalArgumentException("threshold cannot be null.");

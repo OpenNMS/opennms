@@ -102,7 +102,7 @@ public class ServiceParameters {
     	log().info(this.toString());
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

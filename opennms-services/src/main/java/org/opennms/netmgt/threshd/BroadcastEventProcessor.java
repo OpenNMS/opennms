@@ -193,7 +193,7 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     public void onEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // print out the uei
         //
@@ -293,7 +293,7 @@ final class BroadcastEventProcessor implements EventListener {
      */
     @SuppressWarnings("deprecation")
     private void reinitializePrimarySnmpInterfaceHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (event.getInterface() == null) {
             log.error("reinitializePrimarySnmpInterface event is missing an interface.");
@@ -350,7 +350,7 @@ final class BroadcastEventProcessor implements EventListener {
      *            The event to process.
      */
     private void thresholdConfigurationChangedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         //Force a reload of the configuration, then tell the thresholders to reinitialize
         try {
             ThresholdingConfigFactory.reload();
@@ -417,7 +417,7 @@ final class BroadcastEventProcessor implements EventListener {
      */
     @SuppressWarnings("deprecation")
     private void primarySnmpInterfaceChangedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
 
@@ -516,7 +516,7 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void interfaceReparentedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
 
@@ -614,7 +614,7 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void nodeDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         int nodeId = (int) event.getNodeid();
 
@@ -660,7 +660,7 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void interfaceDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         int nodeId = (int) event.getNodeid();
         String ipAddr = event.getInterface();
@@ -709,7 +709,7 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void serviceDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Currently only support SNMP data thresholding.
         //

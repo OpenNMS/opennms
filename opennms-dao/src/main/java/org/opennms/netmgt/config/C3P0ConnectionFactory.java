@@ -144,7 +144,7 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -512,7 +512,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         return foreignSource;
     }
     
-    private static Logger log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(DnsRequisitionUrlConnection.class);
     }
 

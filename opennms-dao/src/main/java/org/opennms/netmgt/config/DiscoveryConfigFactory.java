@@ -240,7 +240,7 @@ public final class DiscoveryConfigFactory {
      *            the retries for all entries in this URL
      */
     public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, String url, long timeout, int retries) {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         
         // open the file indicated by the URL
         InputStream is = null;
@@ -273,7 +273,7 @@ public final class DiscoveryConfigFactory {
     }
     
     public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, InputStream is, long timeout, int retries) throws IOException {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
     
         boolean bRet = true;
     

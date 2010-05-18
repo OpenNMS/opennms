@@ -26,7 +26,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
         m_name = name;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

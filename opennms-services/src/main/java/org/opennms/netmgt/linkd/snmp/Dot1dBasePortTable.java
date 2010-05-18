@@ -65,7 +65,7 @@ public class Dot1dBasePortTable extends SnmpTable<Dot1dBasePortTableEntry>
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(Dot1dBasePortTable.class);
     }
 

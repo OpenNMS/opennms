@@ -79,7 +79,7 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
         log().info("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
     }
     
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

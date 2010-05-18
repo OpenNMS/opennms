@@ -76,7 +76,7 @@ public class ThresholdGroup {
 		return m_rrdRepository;
 	}
 
-	Category log() {
+	ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

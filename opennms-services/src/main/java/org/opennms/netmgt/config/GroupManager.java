@@ -266,7 +266,7 @@ public abstract class GroupManager {
      * @return long, the time in milliseconds until the group is next on duty
      */
     public long groupNextOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         long next = -1;
         update();
         //if the group has no duty schedules then it is on duty

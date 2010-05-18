@@ -200,7 +200,7 @@ final class Executor implements Runnable, PausableFiber {
                 waitPeriod = 15000;
             }
 
-            Category log = ThreadCategory.getInstance(Executor.class);
+            ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
             // Begin the checking process.
             //
@@ -287,7 +287,7 @@ final class Executor implements Runnable, PausableFiber {
      * 
      */
     private static String[] getExecArguments(String cmd) {
-        Category log = ThreadCategory.getInstance(Executor.class);
+        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         // make sure we get rid of excess white space.
         //
@@ -380,7 +380,7 @@ final class Executor implements Runnable, PausableFiber {
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(Executor.class);
+        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         synchronized (this) {
             m_status = RUNNING;

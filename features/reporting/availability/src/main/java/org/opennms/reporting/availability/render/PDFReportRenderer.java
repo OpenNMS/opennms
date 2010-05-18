@@ -82,7 +82,7 @@ public class PDFReportRenderer implements ReportRenderer {
 
     private String m_baseDir;
 
-    private Category log;
+    private ThreadCategory log;
 
     public PDFReportRenderer() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);

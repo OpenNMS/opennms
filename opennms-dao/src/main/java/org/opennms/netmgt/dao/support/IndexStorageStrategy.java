@@ -78,7 +78,7 @@ public class IndexStorageStrategy implements StorageStrategy {
         // Empty method, this strategy takes no parameters
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

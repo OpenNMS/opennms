@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Package;
@@ -285,7 +286,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * uei Universal event identifier of event to generate.
      */
     private void sendEvent(String uei) {
-        Category log = log();
+        ThreadCategory log = log();
         Event event = new Event();
         event.setUei(uei);
         event.setNodeid((long) m_nodeId);
@@ -321,7 +322,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * 
      */
     public void run() {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Process any oustanding updates.
         //
@@ -441,7 +442,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      *         (for example due to deletion flag being set), false otherwise.
      */
     private boolean processUpdates() {
-        Category log = log();
+        ThreadCategory log = log();
 
         // All update processing takes place within synchronized block
         // to ensure that no updates are missed.

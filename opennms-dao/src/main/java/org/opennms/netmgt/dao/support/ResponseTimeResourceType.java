@@ -133,7 +133,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
         return getResourcesForNode(nodeId).size() > 0;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

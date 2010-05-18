@@ -115,7 +115,7 @@ class MailAckProcessor implements AckProcessor {
         log().debug("findAndProcessAcks: completed checking for and processing acknowledgments.");
     }
 
-    private static Logger log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(MailAckProcessor.class);
     }
 

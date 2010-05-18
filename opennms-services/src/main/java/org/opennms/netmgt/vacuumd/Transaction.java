@@ -79,7 +79,7 @@ public class Transaction {
 		
 	}
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(Transaction.class);
     }
 

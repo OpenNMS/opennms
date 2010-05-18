@@ -64,7 +64,7 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
     public final static String NAME = "OpenNMS.PassiveStatus";
 
     protected void onInit() {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         try {
             DataSourceFactory.init();
         } catch (MarshalException e) {

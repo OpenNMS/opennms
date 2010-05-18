@@ -293,7 +293,7 @@ final class KnownIPMgr {
      * 
      */
     static synchronized void dataSourceSync() throws SQLException {
-        Category log = ThreadCategory.getInstance(KnownIPMgr.class);
+        ThreadCategory log = ThreadCategory.getInstance(KnownIPMgr.class);
 
         // Get the database connection
         //

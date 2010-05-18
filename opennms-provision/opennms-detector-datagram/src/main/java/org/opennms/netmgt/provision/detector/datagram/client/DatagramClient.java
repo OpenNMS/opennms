@@ -97,7 +97,7 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     }
 
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

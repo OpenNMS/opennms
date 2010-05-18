@@ -240,7 +240,7 @@ public class CollectionResourceWrapper {
         return m_resource.toString();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

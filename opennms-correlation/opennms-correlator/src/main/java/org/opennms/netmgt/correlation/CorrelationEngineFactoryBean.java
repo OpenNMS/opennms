@@ -95,7 +95,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         m_applicationContext = applicationContext;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

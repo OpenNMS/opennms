@@ -63,7 +63,7 @@ public class Dot1qStaticVlanTable extends SnmpTable<Dot1qStaticVlanTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(Dot1qStaticVlanTable.class);
     }
 }

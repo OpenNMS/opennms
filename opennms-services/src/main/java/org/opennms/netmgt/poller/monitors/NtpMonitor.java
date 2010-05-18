@@ -119,7 +119,7 @@ final public class NtpMonitor extends IPv4Monitor {
 
         // get the log
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // get the parameters
         //

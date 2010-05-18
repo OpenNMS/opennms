@@ -69,7 +69,7 @@ public class AsteriskConfig {
         return properties;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(AsteriskConfig.class);
     }
 

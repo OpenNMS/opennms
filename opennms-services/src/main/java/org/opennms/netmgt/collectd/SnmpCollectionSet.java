@@ -190,7 +190,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
        return m_agent;
     }
 
-    Category log() {
+    ThreadCategory log() {
        return ThreadCategory.getInstance(getClass());
     }
 

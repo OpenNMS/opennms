@@ -133,7 +133,7 @@ public final class ServiceConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
 
-        Category log = ThreadCategory.getInstance(ServiceConfigFactory.class);
+        ThreadCategory log = ThreadCategory.getInstance(ServiceConfigFactory.class);
         if (log.isDebugEnabled())
             log.debug("ServiceConfigFactory.init: config file path " + cfgFile.getPath());
 

@@ -416,7 +416,7 @@ public class Controller {
         m_invokeUrl = invokerUrl;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

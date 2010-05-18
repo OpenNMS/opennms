@@ -487,7 +487,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         return mibObjectList;
     }
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
@@ -510,7 +510,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      *            List of MibObject objects being built.
      */
     private void processGroupName(String cName, String groupName, int ifType, List<MibObject> mibObjectList) {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Using the collector name retrieve the group map
         Map<String, Group> groupMap = m_collectionGroupMap.get(cName);

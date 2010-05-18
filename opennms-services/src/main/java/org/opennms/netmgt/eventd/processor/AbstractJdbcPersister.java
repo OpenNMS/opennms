@@ -282,7 +282,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
         return new JdbcTemplate(getDataSource()).queryForInt(getGetNextIdString());
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

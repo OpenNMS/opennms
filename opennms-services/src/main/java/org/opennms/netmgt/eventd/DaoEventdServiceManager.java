@@ -95,7 +95,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

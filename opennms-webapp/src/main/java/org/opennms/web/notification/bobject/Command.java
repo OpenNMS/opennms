@@ -430,7 +430,7 @@ public class Command {
         return list;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

@@ -55,7 +55,7 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
  */
 public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 
-    protected static Category log = ThreadCategory.getInstance("WEB");
+    protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

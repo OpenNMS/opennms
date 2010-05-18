@@ -179,7 +179,7 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
         
     }
 
-        public static Category log() {
+        public static ThreadCategory log() {
                 return ThreadCategory.getInstance(Win32ServicePlugin.class);
         }
 }

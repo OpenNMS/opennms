@@ -328,7 +328,7 @@ public abstract class Task {
         }
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

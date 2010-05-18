@@ -98,7 +98,7 @@ public class ScanManager {
         return (addr == null ? null : addr.getHostAddress());
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

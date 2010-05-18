@@ -81,7 +81,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
 
     }
     
-    private static Category logStatic() {
+    private static ThreadCategory logStatic() {
         return ThreadCategory.getInstance(MapsAdapterConfigFactory.class);
     }
 

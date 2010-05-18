@@ -321,7 +321,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *         otherwise.
      */
     private synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        Category log = log();
+        ThreadCategory log = log();
     
         boolean filterPassed = false;
     
@@ -480,7 +480,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
 
     
  
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

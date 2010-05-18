@@ -108,7 +108,7 @@ public class SeveritySubLabels extends ExtendedCategoryAxis {
      * 
      * @return A log4j <code>Category</code>.
      */
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SeveritySubLabels.class);
     }
 }

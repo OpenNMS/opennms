@@ -214,7 +214,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(DefaultGraphResultsService.class);
     }
 

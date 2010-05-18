@@ -128,7 +128,7 @@ public final class MSExchangePlugin extends AbstractPlugin {
     private final static int IMAP_INDEX = 1;
 
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {

@@ -78,7 +78,7 @@ public class PuppetProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
         }
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(PuppetProvisioningAdapter.class);
     }
 

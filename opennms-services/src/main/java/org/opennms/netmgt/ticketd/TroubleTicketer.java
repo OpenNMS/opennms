@@ -137,7 +137,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         }
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 	    return ThreadCategory.getInstance(getClass());
     }
 

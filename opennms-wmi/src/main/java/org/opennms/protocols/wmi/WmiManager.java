@@ -87,7 +87,7 @@ public class WmiManager {
 
 	private int m_Timeout = DEFAULT_SOCKET_TIMEOUT;
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

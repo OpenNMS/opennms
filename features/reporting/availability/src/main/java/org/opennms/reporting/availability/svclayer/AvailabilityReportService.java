@@ -75,7 +75,7 @@ public class AvailabilityReportService implements ReportService {
 
     private OnmsReportConfigDao m_configDao;
 
-    private Category log;
+    private ThreadCategory log;
 
     private ParameterConversionService m_parameterConversionService;
 

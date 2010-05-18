@@ -253,7 +253,7 @@ final class UdpUuidSender implements Runnable {
         m_logPrefix = prefix;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

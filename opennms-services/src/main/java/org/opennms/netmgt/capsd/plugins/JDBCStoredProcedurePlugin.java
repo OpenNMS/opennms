@@ -71,7 +71,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 	 */
 	public JDBCStoredProcedurePlugin() {
 		super();
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		log.info(getClass().getName()
 				+ ": JDBCStoredProcedurePlugin class loaded");
 	}

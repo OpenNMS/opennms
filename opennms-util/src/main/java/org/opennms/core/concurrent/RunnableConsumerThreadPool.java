@@ -338,7 +338,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
             return result;
         }
 
-        private Category log() {
+        private ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
     }
@@ -485,7 +485,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
             return m_status;
         }
 
-        private Category log() {
+        private ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
     }

@@ -272,7 +272,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(DefaultForeignSourceService.class);
     }
 

@@ -72,7 +72,7 @@ public final class SmbPlugin extends AbstractPlugin {
      *         name. False otherwise.
      */
     private boolean isSmb(InetAddress host) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         boolean isAServer = false;
         try {
             log.debug("host.getHostAddress(): " + host.getHostAddress());

@@ -62,7 +62,7 @@ import org.opennms.web.outage.filter.ServiceFilter;
  */
 public class OutageFactory extends Object {
 
-    protected static final Category log = ThreadCategory.getInstance("OutageFactory");
+    protected static final ThreadCategory log = ThreadCategory.getInstance("OutageFactory");
 
     /** Private constructor so this class cannot be instantiated. */
     private OutageFactory() {

@@ -303,7 +303,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         return ipList;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 
@@ -336,7 +336,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      *         otherwise.
      */
     public synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        Category log = log();
+        ThreadCategory log = log();
     
         boolean filterPassed = false;
     
