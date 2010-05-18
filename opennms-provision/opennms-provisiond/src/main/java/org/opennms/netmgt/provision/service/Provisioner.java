@@ -369,7 +369,10 @@ public class Provisioner implements SpringServiceDaemon {
         NodeScanSchedule scheduleForNode = null;
         log().warn("node added event (" + System.currentTimeMillis() + ")");
         try {
-            scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);
+            /* we don't force a scan on node added so new suspect doesn't cause 2 simultaneous node scans
+             * New nodes that are created another way shouldn't have a 'lastCapsPoll' timestamp set 
+             */ 
+            scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), false);
         } catch (Throwable t) {
             log().error("getScheduleForNode fails", t);
         }

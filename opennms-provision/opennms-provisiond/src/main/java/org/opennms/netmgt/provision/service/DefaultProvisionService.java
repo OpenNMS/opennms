@@ -787,6 +787,14 @@ public class DefaultProvisionService implements ProvisionService {
             return null;
         }
         
+        /*
+         * We set the capsd polls to now so since the new suspect scan includes
+         * a regular node scan.  This prevents a simultaneous node scan from being
+         * started when the nodeAdded event comes in but still allows it to be
+         * scheduled for a scan according to the default foreignSource schedule
+         */
+        Date now = new Date();
+        
         String hostname = getHostnameForIp(ipAddress);
         
         OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
@@ -794,11 +802,13 @@ public class DefaultProvisionService implements ProvisionService {
         node.setLabelSource(hostname == null ? "A" : "H");
         node.setForeignSource(FOREIGN_SOURCE_FOR_DISCOVERED_NODES);
         node.setType("A");
+        node.setLastCapsdPoll(now);
         
         OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
         iface.setIsManaged("M");
         iface.setIpHostName(hostname);
         iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);
+        iface.setIpLastCapsdPoll(now);
         
         m_nodeDao.save(node);
         
