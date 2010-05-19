@@ -237,7 +237,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     private void updateAllMarkerStates() {
         for (final LocationInfo location : m_locations.values()) {
             final GWTMarkerState markerState = location.getMarkerState();
-            
+
             boolean visible = m_selectedStatuses.contains(location.getStatusDetails().getStatus());
             markerState.setVisible(visible);
 
@@ -516,21 +516,24 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return state;
     }
 
-    public void onApplicationSelected(ApplicationSelectedEvent event) {
+    public void onApplicationSelected(final ApplicationSelectedEvent event) {
+        final String applicationName = event.getApplicationname();
+        final ApplicationInfo app = m_applications.get(applicationName);
+
         // Add the application to the selected application list
-        m_selectedApplications.add(event.getAppInfo());
+        m_selectedApplications.add(app);
 
         updateAllMarkerStates();
 
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
-        m_remoteService.getApplicationDetails(event.getAppInfo().getName(), new AsyncCallback<ApplicationDetails>() {
+        m_remoteService.getApplicationDetails(applicationName, new AsyncCallback<ApplicationDetails>() {
 
-            public void onFailure(Throwable arg0) {
+            public void onFailure(final Throwable t) {
                 // TODO: Do something on failure.
             }
 
-            public void onSuccess(ApplicationDetails applicationDetails) {
+            public void onSuccess(final ApplicationDetails applicationDetails) {
                 m_eventBus.fireEvent(new ApplicationDetailsRetrievedEvent(applicationDetails));
             }
         });
