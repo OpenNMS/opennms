@@ -53,7 +53,12 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
     }
 
     public int compareTo(final StatusDetails that) {
-        return new CompareToBuilder().append(this.getStatus(), that.getStatus()).append(this.getReason(), that.getReason()).toComparison();
+        return new CompareToBuilder()
+//            .append(this.getStatus(), that.getStatus())
+            // reverse sort!
+            .append(that.getStatus(), this.getStatus())
+            .append(this.getReason(), that.getReason())
+            .toComparison();
     }
 
     public static StatusDetails up() {

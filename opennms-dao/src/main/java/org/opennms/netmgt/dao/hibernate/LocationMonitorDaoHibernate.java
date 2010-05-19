@@ -378,28 +378,37 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
 
     public Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationName) {
-        return findObjects(OnmsLocationSpecificStatus.class,
+        final Collection<OnmsLocationSpecificStatus> statuses = getMostRecentStatusChangesForDateAndLocation(startDate, locationName);
+        statuses.addAll(findObjects(OnmsLocationSpecificStatus.class,
             /*
             "from OnmsLocationSpecificStatus as status " +
-            "where status.pollResult.timestamp >= ( " +
+            "where " +
+            "( " +
             "    select max(recentStatus.pollResult.timestamp) " +
             "    from OnmsLocationSpecificStatus as recentStatus " +
             "    where recentStatus.pollResult.timestamp < ? " +
             "    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
             "    having recentStatus.locationMonitor = status.locationMonitor " +
             "    and recentStatus.monitoredService = status.monitoredService " +
-            ")" +
+            ") <= status.pollResult.timestamp " +
             "and status.pollResult.timestamp < ?" +
             "and status.locationMonitor.definitionName = ?",
             startDate, endDate, locationName); 
             */
             "from OnmsLocationSpecificStatus as status " +
-            "where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ? and status.locationMonitor.definitionName = ?",
+            "where ? <= status.pollResult.timestamp " +
+            "and status.pollResult.timestamp < ? " +
+            "and status.locationMonitor.definitionName = ?",
             startDate, endDate, locationName
-        );
+        ));
+        return statuses;
     }
 
-    public Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(String locationName) {
+    public Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(final String locationName) {
+        return getMostRecentStatusChangesForDateAndLocation(new Date(), locationName);
+    }
+
+    private Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForDateAndLocation(final Date date, final String locationName) {
         return findObjects(OnmsLocationSpecificStatus.class,
                            "from OnmsLocationSpecificStatus as status " +
                            "where status.pollResult.timestamp = ( " +
@@ -410,7 +419,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                            "    having recentStatus.locationMonitor = status.locationMonitor " +
                            "    and recentStatus.monitoredService = status.monitoredService " +
                            ") and status.locationMonitor.definitionName = ?",
-                           new Date(), locationName); 
+                           date, locationName); 
     }
 
     @SuppressWarnings("unchecked")

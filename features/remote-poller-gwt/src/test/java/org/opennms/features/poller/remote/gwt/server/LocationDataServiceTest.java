@@ -1,6 +1,7 @@
 package org.opennms.features.poller.remote.gwt.server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Date;
@@ -65,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
         "classpath:/locationDataServiceTest.xml"
 })
-    @JUnitTemporaryDatabase()
+@JUnitTemporaryDatabase()
 public class LocationDataServiceTest {
     @Autowired
     private LocationDataService m_locationDataService;
@@ -311,6 +312,9 @@ public class LocationDataServiceTest {
         assertEquals("TestApp1", ad.getApplicationName());
         assertEquals(Double.valueOf(16D/24D*100), ad.getAvailability());
         assertEquals("currently available", StatusDetails.up(), ad.getStatusDetails());
+        final String detailString = ad.getDetailsAsString();
+        System.err.println(detailString);
+        assertTrue(detailString.contains(""));
     }
 
     @Test
