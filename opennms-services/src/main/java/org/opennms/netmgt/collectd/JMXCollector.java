@@ -58,7 +58,6 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -198,7 +197,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
     public void initialize(Map<String, String> parameters) {
         // Log4j category
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Initialize the JMXDataCollectionConfigFactory
         try {
@@ -282,7 +281,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
 
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         InetAddress ipAddr = (InetAddress) agent.getAddress();
 
         if (log.isDebugEnabled()) {
@@ -387,7 +386,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
 
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> map) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         InetAddress ipaddr = (InetAddress) agent.getAddress();
         JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
@@ -660,7 +659,7 @@ public abstract class JMXCollector implements ServiceCollector {
     public String getRRDValue_isthis_used_(JMXDataSource ds,
             JMXCollectorEntry collectorEntry) throws IllegalArgumentException {
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         log.debug("getRRDValue: " + ds.getName());
 
@@ -683,7 +682,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * @return list of RRDDataSource objects
      */
     private Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         log.debug("buildDataSourceList - ***");
 

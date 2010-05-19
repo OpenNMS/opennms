@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.RWSConfig;
@@ -745,7 +744,7 @@ public class InventoryService implements InitializingBean {
         return true;
     }
 
-    private static Category log() {
+    private static Logger log() {
         return Logger.getLogger("Rancid");
     }
 

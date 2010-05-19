@@ -21,7 +21,6 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.log.LogFactory;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -332,7 +331,7 @@ public class Migrator {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(Migrator.class);
     }
 

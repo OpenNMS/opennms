@@ -223,7 +223,7 @@ public class HypericAckProcessor implements AckProcessor {
         }
     }
 
-    private static Logger log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(HypericAckProcessor.class);
     }
 

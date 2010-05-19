@@ -55,7 +55,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -347,13 +346,13 @@ public abstract class JMXThresholder implements ServiceThresholder {
             log().debug("initialize: dumping node thresholds defined for " + ipAddr.getHostAddress() + "/" + groupName + ":");
             Iterator<ThresholdEntity> iter = nodeMap.values().iterator();
             while (iter.hasNext()) {
-                log().debug(iter.next());
+                log().debug(iter.next().toString());
             }
 
             log().debug("initialize: dumping interface thresholds defined for " + ipAddr.getHostAddress() + "/" + groupName + ":");
             iter = baseIfMap.values().iterator();
             while (iter.hasNext()) {
-                log().debug(iter.next());
+                log().debug(iter.next().toString());
             }
         }
 
@@ -387,7 +386,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *            belongs.
      */
     public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters) {
-        Category log = log();
+        ThreadCategory log = log();
         String dsDir = serviceName;
 
         String port         = ParameterMap.getKeyedString( parameters, "port",           null);
@@ -489,7 +488,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
     }
     
     private Map<String, Double> getThresholdValues(File directory, int range, int interval, Collection<String> requiredDatasources) {
-        Category log = log();
+        ThreadCategory log = log();
         Map<String, Double> values=new HashMap<String,Double>();
         for(String ds: requiredDatasources) {
             File dsFile=new File(directory,ds+RrdUtils.getExtension());
@@ -548,7 +547,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *             if path parameter is not a directory.
      */
     private void checkNodeDir(File directory, Integer nodeId, InetAddress primary, int interval, int range,  Date date, Map<Object,ThresholdEntity> thresholdMap, Events events) throws IllegalArgumentException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Sanity Check
         if (directory == null || nodeId == null || primary == null || date == null || thresholdMap == null || events == null) {
@@ -716,7 +715,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

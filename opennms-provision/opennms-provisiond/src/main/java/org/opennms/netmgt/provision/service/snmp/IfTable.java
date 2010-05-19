@@ -42,7 +42,6 @@ import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -101,7 +100,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IfTable.class);
     }
     

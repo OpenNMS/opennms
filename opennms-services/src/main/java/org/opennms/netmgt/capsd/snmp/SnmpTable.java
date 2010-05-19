@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -79,7 +78,7 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
         log().info("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
     }
     
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

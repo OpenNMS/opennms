@@ -2,7 +2,6 @@ package org.opennms.netmgt.scriptd.ins.events;
 
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;

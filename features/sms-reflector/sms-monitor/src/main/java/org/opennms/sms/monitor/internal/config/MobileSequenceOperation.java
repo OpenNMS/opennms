@@ -3,7 +3,6 @@ package org.opennms.sms.monitor.internal.config;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public abstract class MobileSequenceOperation {
@@ -40,7 +39,7 @@ public abstract class MobileSequenceOperation {
 		m_label = label;
 	}
 
-	public Category log() {
+	public ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

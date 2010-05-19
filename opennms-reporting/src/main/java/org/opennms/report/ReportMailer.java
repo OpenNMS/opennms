@@ -37,7 +37,6 @@ package org.opennms.report;
 
 import java.io.IOException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.javamail.JavaMailer;
@@ -51,7 +50,7 @@ public class ReportMailer {
 	
 	private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 	
-	private Category log;
+	private ThreadCategory log;
 	
 	private String m_filename;
 	

@@ -35,7 +35,6 @@
 //
 package org.opennms.netmgt.collectd;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public class CollectionException extends Exception {
@@ -73,7 +72,7 @@ public class CollectionException extends Exception {
     	}
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

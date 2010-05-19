@@ -41,7 +41,6 @@
 
 package org.opennms.netmgt.syslogd;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -219,7 +218,7 @@ public final class SyslogHandler {
             m_processor.stop();
 
         } catch (InterruptedException e) {
-            Category log = ThreadCategory.getInstance(this.getClass());
+            ThreadCategory log = ThreadCategory.getInstance(this.getClass());
             log.warn(
                     "The thread was interrupted while attempting to join sub-threads",
                     e);

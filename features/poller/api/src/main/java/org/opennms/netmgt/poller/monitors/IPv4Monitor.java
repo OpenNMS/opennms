@@ -41,7 +41,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
@@ -166,7 +165,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
     
     abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
-	protected Category log() {
+	protected ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

@@ -45,7 +45,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.filter.Filter;
@@ -62,7 +61,7 @@ import org.opennms.web.outage.filter.ServiceFilter;
  */
 public class OutageFactory extends Object {
 
-    protected static final Category log = ThreadCategory.getInstance("OutageFactory");
+    protected static final ThreadCategory log = ThreadCategory.getInstance("OutageFactory");
 
     /** Private constructor so this class cannot be instantiated. */
     private OutageFactory() {

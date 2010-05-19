@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
@@ -98,7 +97,7 @@ public class AutomationProcessor implements ReadyRunnable {
             m_trigger = trigger;
         }
 
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -240,7 +239,7 @@ public class AutomationProcessor implements ReadyRunnable {
             return m_action;
         }
 
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -434,7 +433,7 @@ public class AutomationProcessor implements ReadyRunnable {
             m_autoEvent = autoEvent;
         }
         
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -522,7 +521,7 @@ public class AutomationProcessor implements ReadyRunnable {
             m_assignment = assignment;
         }
 
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -567,7 +566,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
         }
         
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -855,7 +854,7 @@ public class AutomationProcessor implements ReadyRunnable {
         m_schedule = schedule;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(AutomationProcessor.class);        
     }
 

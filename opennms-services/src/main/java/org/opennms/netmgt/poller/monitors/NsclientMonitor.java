@@ -34,7 +34,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
@@ -104,7 +103,7 @@ public class NsclientMonitor extends IPv4Monitor {
         Double responseTime = null;
 
         NetworkInterface iface = svc.getNetInterface();
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Validate the interface type.
         if (iface.getType() != NetworkInterface.TYPE_IPV4) {

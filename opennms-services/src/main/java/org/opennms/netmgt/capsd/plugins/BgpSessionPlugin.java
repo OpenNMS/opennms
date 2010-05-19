@@ -44,7 +44,6 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -245,7 +244,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
         return false;
     }
 
-    public static Category log() {
+    public static ThreadCategory log() {
         return ThreadCategory.getInstance(BgpSessionPlugin.class);
     }
 }

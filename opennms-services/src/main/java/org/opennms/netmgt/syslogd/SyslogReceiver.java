@@ -41,7 +41,6 @@
 
 package org.opennms.netmgt.syslogd;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
@@ -127,7 +126,7 @@ class SyslogReceiver implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            Category log = ThreadCategory.getInstance(getClass());
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
             log.debug("Stopping and joining thread context " + m_context.getName());
             m_context.interrupt();
             m_context.join();
@@ -153,7 +152,7 @@ class SyslogReceiver implements Runnable {
 
         // Get a log instance
         ThreadCategory.setPrefix(m_logPrefix);
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (m_stop) {
             log.debug("Stop flag set before thread started, exiting");

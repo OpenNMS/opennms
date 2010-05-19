@@ -50,7 +50,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
@@ -75,7 +74,7 @@ public class AvailabilityReportService implements ReportService {
 
     private OnmsReportConfigDao m_configDao;
 
-    private Category log;
+    private ThreadCategory log;
 
     private ParameterConversionService m_parameterConversionService;
 

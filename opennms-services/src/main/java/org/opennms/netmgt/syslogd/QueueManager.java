@@ -39,7 +39,6 @@
 //
 package org.opennms.netmgt.syslogd;
 
-import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
@@ -79,7 +78,7 @@ import org.opennms.core.utils.ThreadCategory;
 
     public synchronized ConvertToEvent getFromQueue() {
         // This synchronized method removes a message from the queue
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
 
         try {
             while (m_backlogQ.isEmpty()) {

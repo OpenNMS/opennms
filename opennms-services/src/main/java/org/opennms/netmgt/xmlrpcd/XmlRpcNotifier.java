@@ -52,7 +52,6 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 /*import org.apache.xmlrpc.secure.SecureXmlRpcClient; */
@@ -564,7 +563,7 @@ public final class XmlRpcNotifier {
     }
 
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(XmlRpcNotifier.class);
     }
 

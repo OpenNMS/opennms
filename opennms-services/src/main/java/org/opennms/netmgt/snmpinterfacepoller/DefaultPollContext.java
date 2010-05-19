@@ -39,7 +39,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -126,7 +125,7 @@ public class DefaultPollContext implements PollContext {
         getEventManager().sendNow(event);
     }
 
-    Category log() {
+    ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -39,7 +39,6 @@
 package org.opennms.netmgt.capsd.snmp;
 
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -76,7 +75,7 @@ public class SnmpStore extends AbstractSnmpStore {
         return ms_elemList;
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

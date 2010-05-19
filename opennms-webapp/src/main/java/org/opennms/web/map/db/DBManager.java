@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.DbConnectionFactory;
@@ -72,7 +71,7 @@ public class DBManager extends Manager {
      */
     String elementTable = "element";
 
-    Category log = null;
+    ThreadCategory log = null;
 
     private DbConnectionFactory m_factory = null;
 

@@ -37,7 +37,6 @@ package org.opennms.netmgt.config;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -53,7 +52,7 @@ public final class MergeableSpecific implements Comparable<String> {
     private long m_value;
 
     public MergeableSpecific(String specific) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         m_specific = specific;
         try {
             m_value = InetAddressUtils.toIpAddrLong(InetAddress.getByName(specific));

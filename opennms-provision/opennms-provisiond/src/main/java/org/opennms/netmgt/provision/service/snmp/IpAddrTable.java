@@ -44,7 +44,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -146,7 +145,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return getEntry(new SnmpInstId(address.getHostAddress()));
     }
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
 

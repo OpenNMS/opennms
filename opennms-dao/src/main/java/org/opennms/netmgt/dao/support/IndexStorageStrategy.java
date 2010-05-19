@@ -32,7 +32,6 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.config.StorageStrategy;
@@ -78,7 +77,7 @@ public class IndexStorageStrategy implements StorageStrategy {
         // Empty method, this strategy takes no parameters
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

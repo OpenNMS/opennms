@@ -37,7 +37,6 @@ package org.opennms.netmgt.notifd;
 
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Argument;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
@@ -77,7 +76,7 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
         return 0;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

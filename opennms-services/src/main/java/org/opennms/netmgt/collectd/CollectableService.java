@@ -46,7 +46,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
@@ -293,9 +292,9 @@ final class CollectableService implements ReadyRunnable {
                 updateStatus(ServiceCollector.COLLECTION_SUCCEEDED, null);
             } catch (CollectionException e) {
                 if (e instanceof CollectionWarning) {
-                    log().warn(e, e);
+                    log().warn(e.getMessage(), e);
                 } else {
-                    log().error(e, e);
+                    log().error(e.getMessage(), e);
                 }
                 updateStatus(ServiceCollector.COLLECTION_FAILED, e);
             }
@@ -546,7 +545,7 @@ final class CollectableService implements ReadyRunnable {
         return !ABORT_COLLECTION;
     }
     
-    Category log() {
+    ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
     }
 

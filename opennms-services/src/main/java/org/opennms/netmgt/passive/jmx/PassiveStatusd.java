@@ -39,7 +39,6 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -64,7 +63,7 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
     public final static String NAME = "OpenNMS.PassiveStatus";
 
     protected void onInit() {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         try {
             DataSourceFactory.init();
         } catch (MarshalException e) {

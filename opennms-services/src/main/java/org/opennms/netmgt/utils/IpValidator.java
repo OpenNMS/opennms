@@ -33,7 +33,6 @@ package org.opennms.netmgt.utils;
 import java.lang.NumberFormatException;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -42,7 +41,7 @@ import org.opennms.core.utils.ThreadCategory;
 */
 public class IpValidator extends Object {
     public static boolean isIpValid(String ipAddr) {
-        Category log = ThreadCategory.getInstance(IpValidator.class);
+        ThreadCategory log = ThreadCategory.getInstance(IpValidator.class);
         StringTokenizer token = new StringTokenizer(ipAddr, ".");
         if(token.countTokens() != 4) {
             if (log.isDebugEnabled())

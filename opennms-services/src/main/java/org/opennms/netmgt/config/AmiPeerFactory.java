@@ -50,7 +50,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -143,7 +142,7 @@ public class AmiPeerFactory extends PeerFactory {
         m_loaded = true;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(AmiPeerFactory.class);
     }
 
@@ -196,7 +195,7 @@ public class AmiPeerFactory extends PeerFactory {
      * @throws UnknownHostException
      */
     private static void optimize() throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // First pass: Remove empty definition elements
         for (Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator(); definitionsIterator.hasNext();) {
@@ -365,7 +364,7 @@ public class AmiPeerFactory extends PeerFactory {
      * @throws UnknownHostException
      */
     public void define(InetAddress ip, String username, String password) throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Convert IP to long so that it easily compared in range elements
         int address = new IPv4Address(ip).getAddress();

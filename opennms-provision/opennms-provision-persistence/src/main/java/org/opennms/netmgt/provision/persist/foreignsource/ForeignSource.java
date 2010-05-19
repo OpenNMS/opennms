@@ -55,7 +55,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.log4j.Category;
 import org.joda.time.Duration;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
@@ -224,7 +223,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         m_default = isDefault;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(ForeignSource.class);
     }
 

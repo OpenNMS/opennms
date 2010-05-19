@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -133,7 +132,7 @@ public final class ServiceConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
 
-        Category log = ThreadCategory.getInstance(ServiceConfigFactory.class);
+        ThreadCategory log = ThreadCategory.getInstance(ServiceConfigFactory.class);
         if (log.isDebugEnabled())
             log.debug("ServiceConfigFactory.init: config file path " + cfgFile.getPath());
 

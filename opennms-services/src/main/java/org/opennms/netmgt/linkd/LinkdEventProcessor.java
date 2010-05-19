@@ -44,7 +44,6 @@ package org.opennms.netmgt.linkd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -230,7 +229,7 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
      * 
      */
     public void onEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         try {
         	int eventid = event.getDbid();

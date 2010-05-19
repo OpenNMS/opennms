@@ -74,7 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
@@ -1568,7 +1567,7 @@ final class SuspectEventProcessor implements Runnable {
     	createAndSendSuspectScanCompletedEvent(ifaddr);
     } // end run
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SuspectEventProcessor.class);
     }
 

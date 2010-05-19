@@ -35,7 +35,6 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.integration.otrs.ticketservice.Article;
 import org.opennms.integration.otrs.ticketservice.ArticleCore;
@@ -448,7 +447,7 @@ public class OtrsTicketerPlugin implements Plugin {
 	 * 
 	 * @return a log4j Category for this class
 	 */
-	Category log() {
+	ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

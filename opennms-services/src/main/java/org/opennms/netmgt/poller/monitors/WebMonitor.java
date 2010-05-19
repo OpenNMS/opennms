@@ -104,9 +104,9 @@ public class WebMonitor extends IPv4Monitor {
             }
 
         } catch (HttpException e) {
-            log().info(e);
+            log().info(e.getMessage());
         } catch (IOException e) {
-            log().info(e);
+            log().info(e.getMessage());
         } finally{
             getMethod.releaseConnection();   
         }

@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 /**
@@ -579,7 +578,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     }
 
     
-    private Category log() {
+    private Logger log() {
         return Logger.getLogger(m_category);
     }
 

@@ -45,7 +45,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -213,7 +212,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         m_template = template;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(MapProvisioningAdapter.class);
     }
 
@@ -706,7 +705,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
     private void sendAndThrow(Exception e) {
         Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
         m_eventForwarder.sendNow(event);
-        log().error(e);
+        log().error(e.getMessage());
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
     }
 

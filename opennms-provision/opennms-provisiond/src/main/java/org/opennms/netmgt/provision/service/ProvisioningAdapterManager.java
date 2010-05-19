@@ -37,7 +37,6 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.Collection;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -139,7 +138,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

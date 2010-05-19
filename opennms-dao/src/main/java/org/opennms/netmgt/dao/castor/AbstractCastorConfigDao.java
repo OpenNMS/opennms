@@ -43,7 +43,6 @@
 package org.opennms.netmgt.dao.castor;
 
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.support.FileReloadCallback;
 import org.opennms.netmgt.dao.support.FileReloadContainer;
@@ -76,7 +75,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
 
     public abstract V translateConfig(K castorConfig);
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
