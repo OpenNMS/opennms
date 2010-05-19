@@ -187,6 +187,14 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     public OnmsNode findByForeignId(String foreignSource, String foreignId) {
         return findUnique("from OnmsNode n where n.foreignSource = ? and n.foreignId = ?", foreignSource, foreignId);
     }
+    
+    public List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress) {
+        if (foreignSource == null) {
+            return find("select distinct n from OnmsNode n join n.ipInterfaces as ip where n.foreignSource is NULL and ip.ipAddress = ?", ipAddress);
+        } else {
+            return find("select distinct n from OnmsNode n join n.ipInterfaces as ip where n.foreignSource = ? and ip.ipAddress = ?", foreignSource, ipAddress);
+        }
+    }
 
     public int getNodeCountForForeignSource(String foreignSource) {
         return queryInt("select count(*) from OnmsNode as n where n.foreignSource = ?", foreignSource);
@@ -218,6 +226,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     public Collection<Integer> getNodeIds() {
         return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
     }
+
     
     
 

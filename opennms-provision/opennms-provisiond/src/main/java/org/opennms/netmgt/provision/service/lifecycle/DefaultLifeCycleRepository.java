@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 
 public class DefaultLifeCycleRepository implements LifeCycleRepository {
@@ -48,7 +49,7 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
     }
 
 
-    public LifeCycleInstance createNestedLifeCycleInstance(Phase containingPhase, String lifeCycleName, Object... providers) {
+    public LifeCycleInstance createNestedLifeCycleInstance(BatchTask containingPhase, String lifeCycleName, Object... providers) {
         LifeCycle lifeCycle = getLifeCycle(lifeCycleName);
         
         return new DefaultLifeCycleInstance(containingPhase, this, m_coordinator, lifeCycle.getLifeCycleName(), lifeCycle.getPhaseNames(), providers);

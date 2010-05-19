@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 
  * TODO derive directly from Task
  */
-public class ContainerTask extends Task {
+public abstract class ContainerTask<T extends ContainerTask<?>> extends Task {
 
     /**
      * TaskTrigger
@@ -40,7 +40,7 @@ public class ContainerTask extends Task {
      * @author brozow
      */
     private final class TaskTrigger extends Task {
-        public TaskTrigger(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+        public TaskTrigger(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
             super(coordinator, parent);
         }
 
@@ -56,13 +56,28 @@ public class ContainerTask extends Task {
 
     protected final Task m_triggerTask;
     private final List<Task> m_children = Collections.synchronizedList(new ArrayList<Task>());
+    private final TaskBuilder<T> m_builder;
     
-    public ContainerTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+    public ContainerTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
+        m_builder = createBuilder();
         m_triggerTask = new TaskTrigger(coordinator, this);
 
     }
 
+
+
+    @SuppressWarnings("unchecked")
+    private TaskBuilder<T> createBuilder() {
+        return new TaskBuilder<T>((T)this);
+    }
+    
+    
+    
+    public TaskBuilder<T> getBuilder() {
+        return m_builder;
+    }
+    
     @Override
     public void addPrerequisite(Task task) {
         super.addPrerequisite(task);
@@ -103,6 +118,14 @@ public class ContainerTask extends Task {
         }
         
     }
+    
+    public void add(RunInBatch runInBatch) {
+        getBuilder().add(runInBatch);
+    }
+    
+    public void add(NeedsContainer needsContainer) {
+        getBuilder().add(needsContainer);
+    }
 
     protected Task getTriggerTask() {
         return m_triggerTask;
@@ -134,18 +157,24 @@ public class ContainerTask extends Task {
         add(task);
         return task;
     }
-
+    
     public SyncTask add(Runnable runnable, String schedulingHint) {
         SyncTask task = createTask(runnable, schedulingHint);
         add(task);
         return task;
     }
     
-    public <T> AsyncTask<T> add(Async<T> async, Callback<T> cb) {
-        AsyncTask<T> task = createTask(async, cb);
+    public <S> AsyncTask<S> add(Async<S> async, Callback<S> cb) {
+        AsyncTask<S> task = createTask(async, cb);
         add(task);
         return task;
     }
+    
+    @Deprecated
+    public SequenceTask addSequence(Runnable... tasks) {
+        return getCoordinator().createSequence(this, tasks);
+    }
+    
 
     private SyncTask createTask(Runnable runnable) {
         return getCoordinator().createTask(this, runnable);
@@ -155,7 +184,8 @@ public class ContainerTask extends Task {
         return getCoordinator().createTask(this, runnable, schedulingHint);
     }
     
-    private <T> AsyncTask<T> createTask(Async<T> async, Callback<T> cb) {
+    
+    private <S> AsyncTask<S> createTask(Async<S> async, Callback<S> cb) {
         return getCoordinator().createTask(this, async, cb);
     }
 
