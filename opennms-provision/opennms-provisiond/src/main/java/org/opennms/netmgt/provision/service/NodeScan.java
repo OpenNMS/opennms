@@ -198,11 +198,6 @@ public class NodeScan implements RunInBatch {
                 },
                 new RunInBatch() {
                     public void run(BatchTask phase) {
-                        reparentOrphanedInterfaces(phase);
-                    }
-                },
-                new RunInBatch() {
-                    public void run(BatchTask phase) {
                         scanCompleted(phase);
                     }
                 }
@@ -211,9 +206,6 @@ public class NodeScan implements RunInBatch {
         
     }
     
-
-    protected void reparentOrphanedInterfaces(BatchTask phase) {
-    }
 
     ScheduledFuture<?> schedule(ScheduledExecutorService executor, NodeScanSchedule schedule) {
         
