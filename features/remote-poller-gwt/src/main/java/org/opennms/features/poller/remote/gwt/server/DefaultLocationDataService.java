@@ -34,10 +34,12 @@ import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.springframework.beans.factory.InitializingBean;
@@ -335,8 +337,6 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             }
         }
 
-        LogUtils.debugf(this, "getApplicationDetails(%s): monitors = %s, statuses = %s", app.getName(), monitors, statuses);
-
         ApplicationDetails details = new ApplicationDetails(applicationInfo, from, to, monitors, statuses);
         LogUtils.warnf(this, "getApplicationDetails(%s) returning %s", app.getName(), details);
         return details;
@@ -485,16 +485,19 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     private static GWTMonitoredService transformMonitoredService(final OnmsMonitoredService monitoredService) {
         final GWTMonitoredService service = new GWTMonitoredService();
         service.setId(monitoredService.getId());
-        /*
-         * FIXME: why does this get exceptions?!? final OnmsIpInterface ipi =
-         * monitoredService.getIpInterface(); if (ipi != null) {
-         * service.setIpInterfaceId(ipi.getId()); if (ipi.getNode() != null) {
-         * service.setNodeId(ipi.getNode().getId()); }
-         * service.setIpAddress(ipi.getIpAddress());
-         * service.setHostname(ipi.getIpHostName()); final OnmsSnmpInterface
-         * snmpi = ipi.getSnmpInterface(); if (snmpi != null) {
-         * service.setIfIndex(snmpi.getIfIndex()); } }
-         */
+        final OnmsIpInterface ipi = monitoredService.getIpInterface();
+        if (ipi != null) {
+            service.setIpInterfaceId(ipi.getId());
+            if (ipi.getNode() != null) {
+                service.setNodeId(ipi.getNode().getId());
+            }
+            service.setIpAddress(ipi.getIpAddress());
+            service.setHostname(ipi.getIpHostName());
+            final OnmsSnmpInterface snmpi = ipi.getSnmpInterface();
+            if (snmpi != null) {
+                service.setIfIndex(snmpi.getIfIndex());
+            }
+        }
         service.setServiceName(monitoredService.getServiceName());
         return service;
     }

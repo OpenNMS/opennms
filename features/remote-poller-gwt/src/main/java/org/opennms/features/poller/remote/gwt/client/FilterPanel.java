@@ -146,7 +146,7 @@ public class FilterPanel extends Composite {
     public void onApplicationSelect(final SelectionEvent<Suggestion> event) {
         Suggestion item = event.getSelectedItem();
         ApplicationInfo app = m_locationManager.getApplicationInfo(item.getReplacementString());
-        m_eventBus.fireEvent(new ApplicationSelectedEvent(app));
+        m_eventBus.fireEvent(new ApplicationSelectedEvent(app.getName()));
     }
 
     @UiHandler("upButton") 
