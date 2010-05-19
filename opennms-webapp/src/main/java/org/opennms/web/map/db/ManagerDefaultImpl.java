@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -135,6 +136,10 @@ public class ManagerDefaultImpl implements Manager {
     boolean adminMode = false;
 
     private Category log = null;
+    
+    private List<VElementInfo> elemInfo = new ArrayList<VElementInfo>();
+
+    private List<VMapInfo> mapInfo = new ArrayList<VMapInfo>();
 
     public String getFilter() {
         return filter;
@@ -578,7 +583,8 @@ public class ManagerDefaultImpl implements Manager {
                 }
             }
         }
-        return maps;
+        mapInfo = maps;
+        return mapInfo;
     }
 
     /**
@@ -960,7 +966,8 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     public List<VElementInfo> getElementInfo() throws MapsException {
-        return dbManager.getAllElementInfo();
+        elemInfo=  dbManager.getAllElementInfo();
+        return elemInfo;
     }
 
     public org.opennms.web.map.db.Manager getDataAccessManager() {
@@ -1386,24 +1393,51 @@ public class ManagerDefaultImpl implements Manager {
 
     public java.util.Map<String, Set<Integer>> getNodeLabelToMaps(String user)
             throws MapsException {
-        List<Integer> maps = new ArrayList<Integer>();
-        for (VMapInfo mapinfo : getMapsMenuByuser(user)) {
-            maps.add(new Integer(mapinfo.getId()));
+        Map<Integer,String> maps = new HashMap<Integer,String>();
+        for (VMapInfo mapinfo :mapInfo) {
+            maps.put(new Integer(mapinfo.getId()),mapinfo.getName());
+        }
+        Map<Integer,String> elemInfoMap = new HashMap<Integer,String>();
+        for (VElementInfo elem: elemInfo) {
+            elemInfoMap.put(elem.getId(), elem.getLabel());
         }
         DbElement[] elems = dbManager.getAllElements();
         java.util.Map<String, Set<Integer>> nodelabelMap = new HashMap<String, Set<Integer>>();
         for (int i = 0; i < elems.length; i++) {
             DbElement elem = elems[i];
+            Integer mapId = new Integer(elem.getMapId());
+            if (!maps.containsKey(mapId))
+                continue;
+
             String label = elem.getLabel();
             log.debug("getNodeLabelToMaps: found element with label: "
                     + label);
-            Integer mapId = new Integer(elem.getMapId());
-            if (!elem.isNode())
-                continue;
-            if (!maps.contains(mapId))
-                continue;
-
             Set<Integer> mapids = null;
+            if (nodelabelMap.containsKey(label)) {
+                mapids = nodelabelMap.get(label);
+            } else {
+                mapids = new TreeSet<Integer>();
+            }
+            mapids.add(mapId);
+            nodelabelMap.put(label, mapids);
+            // Adding the MapName if is a map
+            if (elem.isMap()) {
+                String mapName=maps.get(elem.getId());
+                if (mapName.equals(label))
+                    continue;
+                else
+                    label=mapName;
+                log.debug("getNodeLabelToMaps: found map with name: "
+                          + label);
+            } else {
+                String nodename=elemInfoMap.get(elem.getId());
+                if (nodename.equals(label))
+                    continue;
+                else
+                    label=nodename;
+                log.debug("getNodeLabelToMaps: found node with name: "
+                          + label);
+            }
             if (nodelabelMap.containsKey(label)) {
                 mapids = nodelabelMap.get(label);
             } else {

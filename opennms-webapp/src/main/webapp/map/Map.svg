@@ -343,6 +343,13 @@ function load(evt){
 	
 		<!-- ********* maps history ********* -->
 		<svg id="history" y="170" x="3" width="150" heigth="30">
+		    <g id="topGroup" display="none">
+				<polygon id="prev" points="0,23 6,23 3,18" style="stroke:grey;fill:blue"/>
+				<polygon id="prev" points="6,23 12,23 9,18" style="stroke:grey;fill:blue"/>
+				<text id="topMapName" x="13" y="23" fill="navy" font-size="10">Up</text>
+				<rect  style="cursor:pointer" id="topAction"  x="0" y="15" rx="2" ry="2" width="14" height="10" opacity="0"/>
+		    </g>
+		
 		    <g id="prevGroup" display="none">
 				<polygon id="prev" points="0,30 5,27 5,33" style="stroke:grey;fill:blue"/>
 				<polygon id="prev" points="6,30 11,27 11,33" style="stroke:grey;fill:blue"/>
