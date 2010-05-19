@@ -16,11 +16,42 @@
 
   <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
 
-  <bean id="monitoringLocationsConfiguration" class="org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration" />
-  
+  <bean id="monitoringLocationsConfiguration" class="org.opennms.features.poller.remote.gwt.server.TestMonitoringLocationsConfiguration" />
+
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="monitoringLocationsConfiguration" ref="monitoringLocationsConfiguration" />
   </bean>
 
+  <bean id="locationDataService" class="org.opennms.features.poller.remote.gwt.server.DefaultLocationDataService">
+    <property name="save" value="false" />
+  </bean>
+
+  <bean id="pollerConfigDao" class="org.opennms.netmgt.config.DefaultPollerConfigDao">
+    <property name="configResource" value="classpath:/poller-configuration.xml"/>
+    <property name="localServer" value="nms1"/>
+    <property name="verifyServer" value="false"/>
+  </bean>
+
+  <bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="pollerConfigDao"/>
+    <property name="targetMethod" value="getPollerConfig"/>
+  </bean>
+
+  <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
+    <constructor-arg><value>3000</value></constructor-arg>
+  </bean>
+  
+  <bean name="monitorCheckInterval" class="java.lang.Long">
+    <constructor-arg><value>500</value></constructor-arg>
+  </bean>
+
+  <bean name="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+    <property name="locationMonitorDao" ref="locationMonitorDao" />
+    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="pollerConfig" ref="pollerConfig" />
+    <property name="timeKeeper" ref="timeKeeper" />
+    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout" />
+  </bean>
 </beans>

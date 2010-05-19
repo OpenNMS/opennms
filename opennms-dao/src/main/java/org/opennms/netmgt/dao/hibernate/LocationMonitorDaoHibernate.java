@@ -50,6 +50,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.config.monitoringLocations.Locations;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.tags.Tag;
 import org.opennms.netmgt.config.tags.Tags;
@@ -91,10 +92,13 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     
     public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
         assertPropertiesSet();
-        
-        final List<LocationDef> locationDefCollection = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
-        if (locationDefCollection != null) {
-        	return convertDefs(locationDefCollection);
+
+        final Locations locations = m_monitoringLocationsConfiguration.getLocations();
+        if (locations != null) {
+            final List<LocationDef> locationDefCollection = locations.getLocationDefCollection();
+            if (locationDefCollection != null) {
+                return convertDefs(locationDefCollection);
+            }
         }
         return new ArrayList<OnmsMonitoringLocationDefinition>();
     }
@@ -125,16 +129,43 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      * Don't call this for now.
      */
     public void saveMonitoringLocationDefinitions(final Collection<OnmsMonitoringLocationDefinition> onmsDefs) {
-    	final Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
-        for (final OnmsMonitoringLocationDefinition onmsDef : onmsDefs) {
+    	final Locations locations = m_monitoringLocationsConfiguration.getLocations();
+    	if (locations != null) {
+            final Collection<LocationDef> defs = locations.getLocationDefCollection();
+            for (final OnmsMonitoringLocationDefinition onmsDef : onmsDefs) {
+                for (final LocationDef def : defs) {
+                    if (def.getLocationName().equals(onmsDef.getName())) {
+                        def.setMonitoringArea(onmsDef.getArea());
+                        def.setPollingPackageName(onmsDef.getPollingPackageName());
+                        def.setGeolocation(onmsDef.getGeolocation());
+                        def.setCoordinates(onmsDef.getCoordinates());
+                        def.setPriority(onmsDef.getPriority());
+                        
+                        final Tags tags = new Tags();
+                        for (final String tag : onmsDef.getTags()) {
+                        	final Tag t = new Tag();
+                        	t.setName(tag);
+                        	tags.addTag(t);
+                        }
+                        def.setTags(tags);
+                    }
+                }
+            }
+    	}
+        saveMonitoringConfig();
+    }
+
+    public void saveMonitoringLocationDefinition(final OnmsMonitoringLocationDefinition onmsDef) {
+    	final Locations locations = m_monitoringLocationsConfiguration.getLocations();
+    	if (locations != null) {
+            final Collection<LocationDef> defs = locations.getLocationDefCollection();
             for (final LocationDef def : defs) {
-                if (def.getLocationName().equals(onmsDef.getName())) {
+                if (onmsDef.getName().equals(def.getLocationName())) {
                     def.setMonitoringArea(onmsDef.getArea());
                     def.setPollingPackageName(onmsDef.getPollingPackageName());
                     def.setGeolocation(onmsDef.getGeolocation());
                     def.setCoordinates(onmsDef.getCoordinates());
                     def.setPriority(onmsDef.getPriority());
-                    
                     final Tags tags = new Tags();
                     for (final String tag : onmsDef.getTags()) {
                     	final Tag t = new Tag();
@@ -144,28 +175,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                     def.setTags(tags);
                 }
             }
-        }
-        saveMonitoringConfig();
-    }
-
-    public void saveMonitoringLocationDefinition(final OnmsMonitoringLocationDefinition onmsDef) {
-    	final Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
-        for (final LocationDef def : defs) {
-            if (onmsDef.getName().equals(def.getLocationName())) {
-                def.setMonitoringArea(onmsDef.getArea());
-                def.setPollingPackageName(onmsDef.getPollingPackageName());
-                def.setGeolocation(onmsDef.getGeolocation());
-                def.setCoordinates(onmsDef.getCoordinates());
-                def.setPriority(onmsDef.getPriority());
-                final Tags tags = new Tags();
-                for (final String tag : onmsDef.getTags()) {
-                	final Tag t = new Tag();
-                	t.setName(tag);
-                	tags.addTag(t);
-                }
-                def.setTags(tags);
-            }
-        }
+    	}
         saveMonitoringConfig();
     }
     
@@ -179,7 +189,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         String xml = null;
         final StringWriter writer = new StringWriter();
         try {
-        	Marshaller.marshal(m_monitoringLocationsConfiguration, writer);
+            Marshaller.marshal(m_monitoringLocationsConfiguration, writer);
             xml = writer.toString();
             saveXml(xml);
         } catch (final MarshalException e) {
@@ -209,9 +219,12 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      * @return
      */
     private LocationDef getLocationDef(final String definitionName) {
-        for (final LocationDef def : m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection()) {
-            if (def.getLocationName().equals(definitionName)) {
-            	return def;
+        final Locations locations = m_monitoringLocationsConfiguration.getLocations();
+        if (locations != null) {
+            for (final LocationDef def : locations.getLocationDefCollection()) {
+                if (def.getLocationName().equals(definitionName)) {
+                	return def;
+                }
             }
         }
         return null;
@@ -365,11 +378,25 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
 
     public Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationName) {
-    	return findObjects(OnmsLocationSpecificStatus.class,
-    			"from OnmsLocationSpecificStatus as status " +
-    			"where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ? and status.locationMonitor.definitionName = ?",
-    			startDate, endDate, locationName
-    			);
+        return findObjects(OnmsLocationSpecificStatus.class,
+            /*
+            "from OnmsLocationSpecificStatus as status " +
+            "where status.pollResult.timestamp >= ( " +
+            "    select max(recentStatus.pollResult.timestamp) " +
+            "    from OnmsLocationSpecificStatus as recentStatus " +
+            "    where recentStatus.pollResult.timestamp < ? " +
+            "    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
+            "    having recentStatus.locationMonitor = status.locationMonitor " +
+            "    and recentStatus.monitoredService = status.monitoredService " +
+            ")" +
+            "and status.pollResult.timestamp < ?" +
+            "and status.locationMonitor.definitionName = ?",
+            startDate, endDate, locationName); 
+            */
+            "from OnmsLocationSpecificStatus as status " +
+            "where ? <= status.pollResult.timestamp and status.pollResult.timestamp < ? and status.locationMonitor.definitionName = ?",
+            startDate, endDate, locationName
+        );
     }
 
     public Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(String locationName) {
@@ -383,7 +410,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                            "    having recentStatus.locationMonitor = status.locationMonitor " +
                            "    and recentStatus.monitoredService = status.monitoredService " +
                            ") and status.locationMonitor.definitionName = ?",
-                           locationName); 
+                           new Date(), locationName); 
     }
 
     @SuppressWarnings("unchecked")

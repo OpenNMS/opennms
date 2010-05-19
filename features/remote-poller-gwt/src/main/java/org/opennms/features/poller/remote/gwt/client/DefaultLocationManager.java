@@ -1,7 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -560,10 +559,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {
         final LocationMonitorState state = locationDetails.getLocationMonitorState();
 
-        int pollersStarted = state.getMonitorsStarted();
-        int pollersStopped = state.getMonitorsStopped();
+        int pollersStarted      = state.getMonitorsStarted();
+        int pollersStopped      = state.getMonitorsStopped();
         int pollersDisconnected = state.getMonitorsDisconnected();
-        Collection<String> serviceNames = state.getServiceNames();
+        int services            = state.getServices().size();
         int servicesWithOutages = state.getServicesDown().size();
         int monitorsWithOutages = state.getMonitorsWithServicesDown().size();
 
@@ -591,8 +590,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             }
             sb.append("<dt class=\"").append(styleName).append(" statusDt\">").append("Services:").append("</dt>\n");
             sb.append("<dd class=\"").append(styleName).append(" statusDd\">");
-            sb.append(servicesWithOutages + " outages (of " + serviceNames.size() + " services)").append("<br>\n");
-            sb.append(monitorsWithOutages + " pollers reporting errors").append("\n");
+            sb.append(servicesWithOutages).append(" outage").append(servicesWithOutages == 1? "" : "s");
+            sb.append(" (of ").append(services).append(" service").append(services == 1? "" : "s").append(")").append("<br>\n");
+            sb.append(monitorsWithOutages).append(" poller").append(monitorsWithOutages == 1? "" : "s").append(" reporting errors").append("\n");
             sb.append("</dd>\n");
         }
 

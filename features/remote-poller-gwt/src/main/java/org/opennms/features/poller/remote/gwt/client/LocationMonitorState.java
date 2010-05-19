@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
 
@@ -21,7 +22,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	private Set<GWTLocationMonitor> m_monitorsDisconnected = new HashSet<GWTLocationMonitor>();
 
 	private Collection<GWTLocationSpecificStatus> m_locationStatuses;
-	private Set<String> m_services = new HashSet<String>();
+	private Set<String> m_serviceNames = new HashSet<String>();
 
 	private StatusDetails m_statusDetails;
 
@@ -53,7 +54,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		if (statuses != null) {
 			for (final GWTLocationSpecificStatus status : statuses) {
 				handleMonitor(status.getLocationMonitor());
-				m_services.add(status.getMonitoredService().getServiceName());
+				m_serviceNames.add(status.getMonitoredService().getServiceName());
 			}
 			m_locationStatuses = statuses;
 		}
@@ -144,14 +145,22 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	}
 
 	protected Collection<String> getServiceNames() {
-		final List<String> serviceNames = Collections.list(Collections.enumeration(m_services));
+		final List<String> serviceNames = Collections.list(Collections.enumeration(m_serviceNames));
 		Collections.sort(serviceNames);
 		return serviceNames;
 	}
 
+	protected Collection<GWTMonitoredService> getServices() {
+	    final Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
+	    for (final GWTLocationSpecificStatus status : m_locationStatuses) {
+	        services.add(status.getMonitoredService());
+	    }
+	    return services;
+	}
+
 	protected Collection<String> getServicesDown() {
 		final Set<String> servicesDown = new HashSet<String>();
-		for (GWTLocationSpecificStatus status : m_locationStatuses) {
+		for (final GWTLocationSpecificStatus status : m_locationStatuses) {
 			final GWTMonitoredService service = status.getMonitoredService();
 			final GWTPollResult result = status.getPollResult();
 			if (result.isDown()) {
@@ -163,7 +172,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 
 	protected Collection<GWTLocationMonitor> getMonitorsWithServicesDown() {
 		final Set<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
-		for (GWTLocationSpecificStatus status : m_locationStatuses) {
+		for (final GWTLocationSpecificStatus status : m_locationStatuses) {
 			final GWTPollResult result = status.getPollResult();
 			if (result.isDown()) {
 				monitors.add(status.getLocationMonitor());
@@ -191,7 +200,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		Set<String> anyDown = new HashSet<String>();
 		Set<String> services = new HashSet<String>();
 		Set<String> servicesDown = new HashSet<String>();
-		for (String serviceName : m_services) {
+		for (String serviceName : m_serviceNames) {
 			boolean serviceAllDown = true;
 			boolean foundService = false;
 			for (GWTLocationSpecificStatus status : m_locationStatuses) {
@@ -235,7 +244,8 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	}
 
 	public String toString() {
-		return "LocationMonitorState[started=" + m_monitorsStarted + ",stopped=" + m_monitorsStopped + ",disconnected=" + m_monitorsDisconnected + ",statuses="+m_locationStatuses+",services="+m_services+"]";
+		return "LocationMonitorState[started=" + m_monitorsStarted + ",stopped=" + m_monitorsStopped + ",disconnected=" + m_monitorsDisconnected + ",statuses="+m_locationStatuses+",services="+m_serviceNames+"]";
 	}
+
 
 }
