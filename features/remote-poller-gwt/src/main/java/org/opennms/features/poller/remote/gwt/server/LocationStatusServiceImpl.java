@@ -2,246 +2,168 @@ package org.opennms.features.poller.remote.gwt.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor;
-import org.opennms.features.poller.remote.gwt.client.GWTLocationSpecificStatus;
-import org.opennms.features.poller.remote.gwt.client.GWTMonitoredService;
-import org.opennms.features.poller.remote.gwt.client.GWTPollResult;
-import org.opennms.features.poller.remote.gwt.client.Location;
-import org.opennms.features.poller.remote.gwt.client.LocationMonitorState;
+import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
+import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
-import org.opennms.features.poller.remote.gwt.client.UpdateComplete;
-import org.opennms.features.poller.remote.gwt.client.UpdateLocation;
-import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
+import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import de.novanic.eventservice.service.EventExecutorService;
+import de.novanic.eventservice.service.EventExecutorServiceFactory;
 import de.novanic.eventservice.service.RemoteEventServiceServlet;
 
 public class LocationStatusServiceImpl extends RemoteEventServiceServlet implements LocationStatusService {
-	private static final long serialVersionUID = 1L;
-	private static final int UPDATE_PERIOD = 1000 * 60; // 1 minute
+    private static final long serialVersionUID = 1L;
 
-	private volatile Map<String,MonitorStatus> m_monitorStatuses = new HashMap<String,MonitorStatus>(); // NOPMD by ranger on 3/18/10 9:39 AM
+    private static final int UPDATE_PERIOD = 1000 * 60; // 1 minute
+    private static final int PADDING_TIME = 2000;
+    private static final int APPLICATION_UPDATE_OFFSET = 1; // how many update periods to wait before updating application data
 
-	private static volatile Timer myLocationTimer; // NOPMD by ranger on 3/18/10 9:40 AM
-	private static volatile Date lastUpdated; // NOPMD by ranger on 3/18/10 9:40 AM
-	private static volatile LocationMonitorDao m_locationDao; // NOPMD by ranger on 3/18/10 9:40 AM
-	private static volatile String m_apiKey = null;
+    private static volatile Timer m_timer;
+    private static volatile Date m_lastUpdated;
+    private static volatile AtomicBoolean m_initializationComplete;
 
-	private void initializeLocationDao() {
-		if (m_locationDao == null) {
-			final WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-			m_locationDao = context.getBean(LocationMonitorDao.class);
-		}
-	}
+    private static volatile Set<String> m_activeApplications = new HashSet<String>();
 
-	private void initializeApiKey() {
-		if (m_apiKey == null) {
-			final WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-			m_apiKey = context.getBean("apiKey", String.class);
-		}
-	}
+    private static volatile WebApplicationContext m_context;
+    private static volatile LocationDataService m_locationDataService;
+    private static volatile LocationBroadcastProcessor m_locationBroadcastProcessor;
 
-	public void start() {
-		LogUtils.debugf(this, "starting location status service");
-		initializeLocationDao();
+    private void initialize() {
+        Logger.getLogger("com.google.gwt.user.client.rpc").setLevel(Level.TRACE);
 
-		if (myLocationTimer == null) {
-			LogUtils.debugf(this, "starting update timer");
-			myLocationTimer = new Timer();
-			myLocationTimer.schedule(new LocationUpdateSenderTimerTask(), UPDATE_PERIOD, UPDATE_PERIOD);
-		}
-		
-		myLocationTimer.schedule(new InitialSenderTimerTask(), 1000);
-	}
+        if (m_context == null) {
+            LogUtils.infof(this, "initializing context");
+            m_context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        }
+        if (m_locationDataService == null) {
+            LogUtils.infof(this, "initializing location data service");
+            m_locationDataService = m_context.getBean(LocationDataService.class);
+        }
+        if (m_initializationComplete == null) {
+            m_initializationComplete = new AtomicBoolean(false);
+        }
+        if (m_locationBroadcastProcessor == null) {
+            m_locationBroadcastProcessor = m_context.getBean(LocationBroadcastProcessor.class);
+            m_locationBroadcastProcessor.setEventHandler(new LocationEventHandler() {
+                public void sendEvent(final MapRemoteEvent event) {
+                    addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, event);
+                }
+            });
+        }
+    }
 
-	public String getApiKey() {
-		initializeApiKey();
-		LogUtils.debugf(this, "returing API key " + m_apiKey);
-		return m_apiKey;
-	}
+    public void start() {
+        LogUtils.debugf(this, "starting location status service");
+        initialize();
+        final EventExecutorService service = EventExecutorServiceFactory.getInstance().getEventExecutorService(this.getRequest().getSession());
 
-	private class InitialSenderTimerTask extends TimerTask {
+        if (m_timer == null) {
+            m_timer = new Timer();
+            m_timer.schedule(new TimerTask() {
+                CountDownLatch m_latch = new CountDownLatch(APPLICATION_UPDATE_OFFSET);
 
-		@Override
-		public void run() {
-			LogUtils.debugf(this, "pushing initial data");
-			lastUpdated = new Date();
-			for (OnmsMonitoringLocationDefinition def : m_locationDao.findAllMonitoringLocationDefinitions()) {
-				LogUtils.debugf(this, "pushing location: %s", def.getName());
-//				addEventUserSpecific(getLocation(def));
-				addEvent(Location.LOCATION_EVENT_DOMAIN, getLocation(def));
-			}
+                @Override
+                public void run() {
+                    if (!m_initializationComplete.get()) {
+                        return;
+                    }
+                    if (m_lastUpdated == null) {
+                        return;
+                    }
+                    LogUtils.debugf(this, "pushing monitor status updates");
+                    final Date endDate = new Date();
+                    addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(m_locationDataService.getUpdatedLocationsBetween(m_lastUpdated, endDate)));
+                    LogUtils.debugf(this, "finished pushing monitor status updates");
 
-			addEvent(Location.LOCATION_EVENT_DOMAIN, new UpdateComplete());
-		}
-		
-	}
+                    // Every 5 minutes, update the application list too
+                    synchronized(m_latch) {
+                        m_latch.countDown();
+                        if (m_latch.getCount() == 0) {
+                            LogUtils.debugf(this, "pushing application updates");
+                            final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
+                            final DefaultApplicationHandler applicationHandler = new DefaultApplicationHandler(m_locationDataService, service, true, m_activeApplications);
+                            appHandlers.add(applicationHandler);
+                            m_locationDataService.handleAllApplications(appHandlers);
+                            synchronized(m_activeApplications) {
+                                m_activeApplications.clear();
+                                m_activeApplications.addAll(applicationHandler.getApplicationNames());
+                            }
+                            m_latch = new CountDownLatch(APPLICATION_UPDATE_OFFSET);
+                            LogUtils.debugf(this, "finished pushing application updates");
+                        }
+                    }
 
-	private class LocationUpdateSenderTimerTask extends TimerTask {
-		@Override
-		public void run() {
-			LogUtils.debugf(this, "checking for monitor status updates");
-			final Date startDate = lastUpdated;
-			final Date endDate   = new Date();
+                    m_lastUpdated = endDate;
+                }
+            }, UPDATE_PERIOD, UPDATE_PERIOD);
+        }
 
-			final Map<String,OnmsMonitoringLocationDefinition> definitions = new HashMap<String,OnmsMonitoringLocationDefinition>();
+        final TimerTask initializedTask = new TimerTask() {
+            @Override
+            public void run() {
+                pushInitialData(service);
+                service.addEventUserSpecific(new UpdateCompleteRemoteEvent());
+                m_lastUpdated = new Date();
+                m_initializationComplete.set(true);
+            }
+        };
 
-			// check for any monitors that have changed status
-			for (OnmsMonitoringLocationDefinition def : m_locationDao.findAllMonitoringLocationDefinitions()) {
-				for (OnmsLocationMonitor mon : m_locationDao.findByLocationDefinition(def)) {
-					final MonitorStatus status = m_monitorStatuses.get(mon.getDefinitionName());
-					if (status == null || !status.equals(mon.getStatus())) {
-						definitions.put(def.getName(), def);
-						m_monitorStatuses.put(def.getName(), mon.getStatus());
-					}
-				}
-			}
+        /*
+         * final TimerTask uninitializedTask = new TimerTask() {
+         * @Override public void run() { pushUninitializedLocations(service);
+         * service.addEventUserSpecific(new UpdateCompleteRemoteEvent());
+         * m_timer.schedule(initializedTask, PADDING_TIME); } };
+         */
 
-			// check for any definitions that have status updates
-			for (final OnmsLocationSpecificStatus status : m_locationDao.getStatusChangesBetween(startDate, endDate)) {
-				final String definitionName = status.getLocationMonitor().getDefinitionName();
-				if (!definitions.containsKey(definitionName)) {
-					definitions.put(definitionName, m_locationDao.findMonitoringLocationDefinition(definitionName));
-				}
-			}
+        m_timer.schedule(initializedTask, PADDING_TIME);
+    }
 
-			for (final OnmsMonitoringLocationDefinition def : definitions.values()) {
-				final Location location = getLocation(def);
-				LogUtils.debugf(this, "pushing location update: %s", location.getName());
-				addEvent(Location.LOCATION_EVENT_DOMAIN, location);
-			}
+    public LocationInfo getLocationInfo(final String locationName) {
+        return m_locationDataService.getLocationInfo(locationName);
+    }
 
-			lastUpdated = endDate;
-		}
-	}
+    public LocationDetails getLocationDetails(final String locationName) {
+        return m_locationDataService.getLocationDetails(locationName);
+    }
 
-	public Location getLocation(final String locationName) {
-		return getLocation(m_locationDao.findMonitoringLocationDefinition(locationName));
-	}
+    public ApplicationInfo getApplicationInfo(final String applicationName) {
+        return m_locationDataService.getApplicationInfo(applicationName);
+    }
 
-	private Location getLocation(final OnmsMonitoringLocationDefinition def) {
+    public ApplicationDetails getApplicationDetails(final String applicationName) {
+        return m_locationDataService.getApplicationDetails(applicationName);
+    }
 
-		final LocationUpdateTracker tracker = new LocationUpdateTracker(def.getName());
+    private void pushInitialData(final EventExecutorService service) {
+        LogUtils.debugf(this, "pushing initialized locations");
+        final LocationDefHandler locationHandler = new DefaultLocationDefHandler(m_locationDataService, service, true);
+        m_locationDataService.handleAllMonitoringLocationDefinitions(Collections.singleton(locationHandler));
+        LogUtils.debugf(this, "finished pushing initialized locations");
 
-		final Collection<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
-
-		for (OnmsLocationMonitor mon : m_locationDao.findByLocationDefinition(def)) {
-			monitors.add(transformLocationMonitor(mon));
-		}
-		for (OnmsLocationSpecificStatus status : m_locationDao.getAllMostRecentStatusChanges()) {
-			tracker.onStatus(status);
-		}
-
-		final LocationMonitorState lms = new LocationMonitorState(monitors, tracker.drain());
-
-		if (def.getGeolocation() == null || def.getGeolocation().equals("")) {
-			// OpenNMS World HQ
-			def.setGeolocation("35.715751,-79.16262");
-		}
-
-		final Location loc = new UpdateLocation(def.getName(), def.getPollingPackageName(), def.getArea(), def.getGeolocation(), lms);
-		LogUtils.debugf(this, "getLocation(OnmsMonitoringLocationDefinition) returning %s", loc.toString());
-		return loc;
-	}
-
-	private GWTLocationMonitor transformLocationMonitor(final OnmsLocationMonitor monitor) {
-		final GWTLocationMonitor gMonitor = new GWTLocationMonitor();
-		gMonitor.setId(monitor.getId());
-		gMonitor.setDefinitionName(monitor.getDefinitionName());
-		gMonitor.setName(monitor.getName());
-		gMonitor.setStatus(monitor.getStatus().toString());
-		gMonitor.setLastCheckInTime(monitor.getLastCheckInTime());
-		return gMonitor;
-	}
-
-	private GWTLocationSpecificStatus transformLocationSpecificStatus(final OnmsLocationSpecificStatus status) {
-		final GWTLocationSpecificStatus gStatus = new GWTLocationSpecificStatus();
-		gStatus.setId(status.getId());
-		gStatus.setLocationMonitor(transformLocationMonitor(status.getLocationMonitor()));
-		gStatus.setPollResult(transformPollResult(status.getPollResult()));
-		gStatus.setMonitoredService(transformMonitoredService(status.getMonitoredService()));
-		return gStatus;
-	}
-
-	private GWTMonitoredService transformMonitoredService(final OnmsMonitoredService monitoredService) {
-		final GWTMonitoredService service = new GWTMonitoredService();
-		service.setId(monitoredService.getId());
-		/* FIXME: why does this get exceptions?!?
-		final OnmsIpInterface ipi = monitoredService.getIpInterface();
-		if (ipi != null) {
-			service.setIpInterfaceId(ipi.getId());
-			if (ipi.getNode() != null) {
-				service.setNodeId(ipi.getNode().getId());
-			}
-			service.setIpAddress(ipi.getIpAddress());
-			service.setHostname(ipi.getIpHostName());
-			final OnmsSnmpInterface snmpi = ipi.getSnmpInterface();
-			if (snmpi != null) {
-				service.setIfIndex(snmpi.getIfIndex());
-			}
-		}
-		*/
-		service.setServiceName(monitoredService.getServiceName());
-		return service;
-	}
-
-	private GWTPollResult transformPollResult(final PollStatus pollStatus) {
-		final GWTPollResult gResult = new GWTPollResult();
-		gResult.setReason(pollStatus.getReason());
-		gResult.setResponseTime(pollStatus.getResponseTime());
-		gResult.setStatus(pollStatus.getStatusName());
-		gResult.setTimestamp(pollStatus.getTimestamp());
-		return gResult;
-	}
-
-	public void setLocationMonitorDao(final LocationMonitorDao dao) {
-		m_locationDao = dao;
-	}
-
-	private class LocationUpdateTracker {
-		private transient final Set<OnmsLocationSpecificStatus> m_statuses = new HashSet<OnmsLocationSpecificStatus>();
-		private transient final String m_locationName;
-
-		public LocationUpdateTracker(final String locationName) {
-			m_locationName = locationName;
-		}
-
-		public void onStatus(final OnmsLocationSpecificStatus status) {
-			if (status.getLocationMonitor().getDefinitionName().equals(m_locationName)) {
-				LogUtils.tracef(this, "(added) status code for %s/%s is %d", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
-				m_statuses.add(status);
-			} else {
-				LogUtils.tracef(this, "(skipped) status code for %s/%s is %d", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
-			}
-		}
-		
-		public Collection<GWTLocationSpecificStatus> drain() {
-			final Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
-			synchronized(m_statuses) {
-				for (OnmsLocationSpecificStatus status : m_statuses) {
-					statuses.add(transformLocationSpecificStatus(status));
-				}
-				m_statuses.clear();
-			}
-			return statuses;
-		}
-	}
-
+        LogUtils.debugf(this, "pushing initialized applications");
+        final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
+        appHandlers.add(new UserSpecificApplicationHandler(m_locationDataService, service, true));
+        m_locationDataService.handleAllApplications(appHandlers);
+        LogUtils.debugf(this, "finished pushing initialized applications");
+    }
 
 }

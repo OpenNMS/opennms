@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -77,8 +78,8 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
             if (!resourceTypeMap.containsKey(childResource.getResourceType())) {
                 resourceTypeMap.put(childResource.getResourceType(), new LinkedList<OnmsResource>());
             }
-            System.out.println("getId(): " + childResource.getId());
-            System.out.println("getName(): " + childResource.getName());
+            LogUtils.infof(this, "getId(): " + childResource.getId());
+            LogUtils.infof(this, "getName(): " + childResource.getName());
             //checkLabelForQuotes(
             resourceTypeMap.get(childResource.getResourceType()).add(checkLabelForQuotes(childResource));
         }

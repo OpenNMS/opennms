@@ -53,6 +53,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
@@ -353,7 +354,7 @@ public class OnmsRestService {
                                    )
                                )
                            );
-        System.out.println("\n****m_offest: " + m_offset + "****\n");
+        LogUtils.infof(this, "**** m_offset: " + m_offset + " ****");
         OnmsCriteria rootCriteria = new OnmsCriteria(clazz);
         rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
         for (Order o : m_ordering) {

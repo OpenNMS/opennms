@@ -358,7 +358,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 * @param m_context - application conext for this bean to use
 	 */
-	public  void setapplicationcontext(ClassPathXmlApplicationContext m_context){
+	public  void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
 	}
 	

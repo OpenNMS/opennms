@@ -54,10 +54,8 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 
 /**
- * 
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- *
  */
 public class Main {
     
@@ -88,7 +86,7 @@ public class Main {
 
     private void initializeLogging() throws Exception {
         String logFile;
-        logFile = m_pollerHome + File.separator + "opennms-remote-poller.log";
+        logFile = System.getProperty("poller.logfile", m_pollerHome + File.separator + "opennms-remote-poller.log");
         File logDirectory = new File(logFile).getParentFile();
         if (!logDirectory.exists()) {
             if (!logDirectory.mkdirs()) {
@@ -229,7 +227,6 @@ public class Main {
     }
 
     private void createAppContext() {
-        
         File homeDir = new File(System.getProperty("user.home"));
         String homeUrl = homeDir.toURI().toString();
         if (homeUrl.endsWith("/")) {

@@ -31,7 +31,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
-import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
+import org.openoss.opennms.spring.dao.OssDao;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public interface QoSD {
@@ -40,7 +40,7 @@ public interface QoSD {
 	 * provides an interface to OpenNMS which provides a unified api 
 	 * @param ossDao the ossDao to set
 	 */
-	public abstract void setossDao(OssDaoOpenNMSImpl _ossDao);
+	public abstract void setOssDao(OssDao _ossDao);
 
 	/**
 	 * Used by Spring Application context to pass in OnmsAlarmOssjMapper
@@ -54,38 +54,38 @@ public interface QoSD {
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 * @param ar 
 	 */
-	public abstract void setassetRecordDao(AssetRecordDao ar);
+	public abstract void setAssetRecordDao(AssetRecordDao ar);
 
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
 	 * @param nodedao 
 	 */
-	public abstract void setnodeDao(NodeDao nodedao);
+	public abstract void setNodeDao(NodeDao nodedao);
 
 	/**
 	 * Used by Spring Application context to pass in EventIpcManager
 	 * @param eventIpcManager
 	 */
-	public abstract void seteventIpcManager(EventIpcManager eventIpcManager);
+	public abstract void setEventIpcManager(EventIpcManager eventIpcManager);
 
 	/**
 	 * Used by Spring Application context to pass in alarmDao
 	 * @param alarmDao
 	 */
-	public abstract void setalarmDao(AlarmDao alarmDao);
+	public abstract void setAlarmDao(AlarmDao alarmDao);
 
 	/**
 	 * Used by Spring Application context to pass in AlarmListConnectionManager
 	 * @param alcm
 	 */
-	public abstract void setalarmListConnectionManager(
+	public abstract void setAlarmListConnectionManager(
 			AlarmListConnectionManager alcm);
 	
 	/**
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 * @param m_context - application context for this bean to use
 	 */
-	public abstract void setapplicationcontext(ClassPathXmlApplicationContext m_context);
+	public abstract void setApplicationContext(ClassPathXmlApplicationContext m_context);
 
 	public static final String NAME = "OpenOSS.QoSD";
 

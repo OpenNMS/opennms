@@ -56,7 +56,7 @@ public class OnmsLocationSpecificStatus {
         // this is used by hibernate to construct an object from the db
     }
 
-    public OnmsLocationSpecificStatus(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monitoredService, PollStatus pollResult) {
+    public OnmsLocationSpecificStatus(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monitoredService, final PollStatus pollResult) {
         m_locationMonitor = locationMonitor;
         m_monitoredService = monitoredService;
         m_pollResult = pollResult;
@@ -69,7 +69,7 @@ public class OnmsLocationSpecificStatus {
         return m_id;
     }
 
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         m_id = id;
     }
 
@@ -79,7 +79,7 @@ public class OnmsLocationSpecificStatus {
         return m_locationMonitor;
     }
 
-    public void setLocationMonitor(OnmsLocationMonitor locationMonitor) {
+    public void setLocationMonitor(final OnmsLocationMonitor locationMonitor) {
         m_locationMonitor = locationMonitor;
     }
 
@@ -89,7 +89,7 @@ public class OnmsLocationSpecificStatus {
         return m_monitoredService;
     }
 
-    public void setMonitoredService(OnmsMonitoredService monitoredService) {
+    public void setMonitoredService(final OnmsMonitoredService monitoredService) {
         m_monitoredService = monitoredService;
     }
 
@@ -98,7 +98,7 @@ public class OnmsLocationSpecificStatus {
         return m_pollResult;
     }
 
-    public void setPollResult(PollStatus newStatus) {
+    public void setPollResult(final PollStatus newStatus) {
         m_pollResult = newStatus;
     }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone='no'?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
 "http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd">
-<svg id="mainSvgDocument"  onload="load(evt);"  xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<svg id="mainSvgDocument"  onload="load(evt);" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 	<defs>
 		<menu id='ContextMenu' xmlns='http://mapsContextMenu.openNMS.org' />
 	</defs>
@@ -40,23 +40,44 @@
 	
 <script type="text/ecmascript"><![CDATA[
 
-//top.$.history.callback = openMapSetUp;
-top.$.history.callback = historyCallBack;
+var startingup=true;
 
-var counter = 0;
+top.resizeSVG = resizeSVG;
 
-function historyCallBack(reinstate,cursor) {
-	 if (typeof(reinstate) == 'undefined')
-    	close();
-    else if (reinstate.mapid == MAP_NOT_OPENED )
-    	close();
-    else
-    	for ( var mapid in mapidSortAss ) {
-    		if ( mapid = reinstate.mapid) {
-				openMapSetUp(reinstate.mapid,true);
-				return;
-			}
+function resizeSVG() {
+	if (savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED && currentMapId != NEW_MAP && isAdminMode) {
+		clearTopInfo();
+		disableMenu();
+		writeDownInfo("Saving map '" +currentMapName+"'");
+		resetFlags();
+		saveMap();
+		top.resize(3000);
+	} else {
+		top.resize(1000);
+	}
+}
+
+function historyCallBack(hash) {
+	if (startingup) {
+		if(hash) {
+	    	setTimeout('openBookMarkedMap('+hash+');',1000);
+		} else {
+			loadDefaultMap();		
 		}
+		startingup=false;
+		return;
+	}
+	if(hash) {
+		openBookMarkedMap(hash);
+	} else {
+		close();
+	}
+	
+}
+
+function openBookMarkedMap(mapId) {
+	mapTabSetUp(mapidSortAss[mapId]);
+	openMap(mapId);
 }
 
 function startUp() {
@@ -86,10 +107,8 @@ new Menu(menuSvgElement,viewMenuId,"View",viewMenuX,viewMenuY,menuWidth,menuHeig
 	refreshMenu = 
 new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWidth,menuHeight, menuStyle,menuTextStyle,menuMouseStyle,menuUpColor,menuDownColor,resetWorkPanel);
 	
-		
 	loadMaps();
 	loadNodes();
-	loadDefaultMap();
 		
 	addLegend();
 
@@ -98,6 +117,17 @@ new Menu(menuSvgElement,refreshMenuId,"Reload",refreshMenuX,refreshMenuY,menuWid
 	displayCountDown("Set Refresh Time",true);
 	
 	myMapApp.initTooltips("toolTip",tooltipTextStyles,tooltipRectStyles,10,5,3);
+
+	top.$j(document).ready(function() {
+		top.$j.history.init(historyCallBack);
+		
+		top.$j("a[@rel='history']").click(function(){
+			var hash = this.href;
+			hash = hash.replace(/^.*#/, '');
+			top.$j.history.load(hash);
+			return false;
+		});
+	});
 }
 
 function handleInit(data) {
@@ -141,6 +171,8 @@ function handleInit(data) {
 			LINK_TEXT[currLink.id]=currLink.text;
 			LINK_WIDTH[currLink.id]=currLink.width;
 			LINK_DASHARRAY[currLink.id]=currLink.dasharray;
+			MULTILINK_WIDTH[currLink.id]=currLink.multilinkwidth;
+			MULTILINK_DASHARRAY[currLink.id]=currLink.multilinkdasharray;
 		}
               
         for (i=0;i<mapsPropertiesFactory.linkStatuses.length;i++)
@@ -225,8 +257,8 @@ function handleInit(data) {
 	    myMapElemDimResult = new MapElemDimResult();
 	    myMEIconsResult = new MEIconsResult();
 		myRefreshTimeMinsResult = new refreshTimeMinsResult();
-							
-		startUp();
+	
+		startUp();					
 	}else{
 		alert("Initialization failed.");
 	}	
@@ -246,14 +278,8 @@ function load(evt){
 	// Reference var to the Windows SVG Object		
 	tabSvgElement = document.getElementById("TabPanel");
 
-	//WorkPanel data
-	var workPanelWidth = 3*menuWidth;
-	var workPanelHeight = 600;
-	var workPanelDelta = 2;
-
-	mapWidth=parseInt((screen.availWidth*97/100))-workPanelWidth-workPanelDelta;
-	mapHeight=parseInt(mapWidth*3/4);			
-	
+	mapWidth=top.svgMapWidth-workPanelWidth-workPanelDelta;
+	mapHeight=top.svgMapHeight;				
 	
 	// Define the position and dimension of the work panel objects
 	document.getElementById('WorkPanel').setAttributeNS(null,"x",mapWidth+workPanelDelta);
@@ -261,7 +287,6 @@ function load(evt){
 	document.getElementById('WorkPanel').setAttributeNS(null,"height",workPanelHeight);
 
 	document.getElementById('toolbar').setAttributeNS(null,"fill","navy");
-//	document.getElementById('toolbar').setAttributeNS(null,"stroke","blue");
 	document.getElementById('toolbar').setAttributeNS(null,"height",2*menuHeight+1);
 
 
@@ -284,7 +309,6 @@ function load(evt){
 	document.getElementById('TopInfoText').setAttributeNS(null,"font-family",textFamily);
 	document.getElementById('TopInfoText').setAttributeNS(null, "font-size",titleFontSize);
 
-	
 	postMapRequestAll( "MapStartUp."+suffix, "GET", null, handleInit, "text/xml", null, true );
 }
 
@@ -302,6 +326,9 @@ function load(evt){
 
 	<!-- ******** WINDOWS P A N E L S ********* -->	
 	<svg id="Windows" x="0" y="20"/>
+	
+	<!-- ******** TOOLTIP P A N E L S ********* -->	
+	<g id="toolTip"/>
 	
 	<!-- ******** WORK P A N E L ********* -->	
 	<svg id="WorkPanel" y="0">
@@ -397,8 +424,6 @@ function load(evt){
 
  	</svg> <!-- End WorkPanel -->
 	
-	<!-- ******** TOOLTIP P A N E L S ********* -->	
-	<g id="toolTip"/>
 </svg>
 
 

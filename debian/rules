@@ -126,20 +126,18 @@ install: build
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
-	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,opennms-remoting,opennms-remote-monitor-ui}
+	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,opennms-remoting}
 	mv debian/temp/jetty-webapps/opennms/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
 	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms-remoting/
-	mv debian/temp/jetty-webapps/opennms-remote-monitor-ui/* debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms-remote-monitor-ui/
 	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
 	## Setup the opennms-webapp-standalone package
 	##
 	install -m 644 debian/opennms-webapp-standalone.overrides debian/opennms-webapp-standalone/usr/share/lintian/overrides/opennms-webapp-standalone
-	install -d -m 755 debian/opennms-webapp-standalone/usr/share/opennms/webapps/{opennms,opennms-remoting,opennms-remote-monitor-ui}
+	install -d -m 755 debian/opennms-webapp-standalone/usr/share/opennms/webapps/{opennms,opennms-remoting}
 	mv debian/temp/webapps/opennms/* debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms/
 	mv debian/temp/webapps/opennms-remoting/* debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms-remoting/
-	mv debian/temp/webapps/opennms-remote-monitor-ui/* debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms-remote-monitor-ui/
 	find debian/opennms-webapp-standalone/usr/share/opennms/webapps/opennms* -type f -execdir chmod 644 {} \;
 	install -m 644 debian/opennms-webapp-standalone.policy debian/opennms-webapp-standalone/etc/tomcat5.5/policy.d/99opennms.policy
 

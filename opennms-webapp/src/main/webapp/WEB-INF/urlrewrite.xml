@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 2.6//EN" "http://tuckey.org/res/dtds/urlrewrite2.5.dtd">
-
 <urlrewrite>
 	<rule>
 		<from>^.*/(.*\.jnlp)$</from>

@@ -544,6 +544,8 @@ public class MapPropertiesFactory extends Object {
 			String width = props.getProperty("link." + links[i]+ ".width");
 			String dasharray = props.getProperty("link." + links[i]+ ".dash-array");			
 			String snmptype = props.getProperty("link." + links[i]+ ".snmptype");			
+            String multilinkwidth = props.getProperty("link." + links[i]+ ".multilink.width");
+            String multilinkdasharray = props.getProperty("link." + links[i]+ ".multilink.dash-array");            
 			if(id==null){
 				log.error("param id for link cannot be null in map.properties: skipping link...");
 				continue;
@@ -552,13 +554,13 @@ public class MapPropertiesFactory extends Object {
 				log.error("param text for link cannot be null in map.properties: skipping link...");
 				continue;
 			}
+            if(width==null){
+                log.error("param width for link cannot be null in map.properties: skipping link...");
+                continue;
+            }
 			if(speed==null){
-				log.error("param speed for link cannot be null in map.properties: skipping link...");
-				continue;
-			}
-			if(width==null){
-				log.error("param width for link cannot be null in map.properties: skipping link...");
-				continue;
+				log.info("param speed for link cannot be null in map.properties: skipping link...");
+				speed="Unknown";
 			}
 				
 			int dash_arr=-1;
@@ -569,7 +571,16 @@ public class MapPropertiesFactory extends Object {
 			if(snmptype!=null)
 				snmp_type=WebSecurityUtils.safeParseInt(snmptype);
 
-			Link lnk = new Link(WebSecurityUtils.safeParseInt(id), speed,text,width,dash_arr,snmp_type);
+			if (multilinkwidth==null) {
+			    multilinkwidth= width;
+			}
+
+			int multilink_dasharray=dash_arr;
+            if (multilinkdasharray!=null) {
+                multilink_dasharray=WebSecurityUtils.safeParseInt(multilinkdasharray);
+            }
+
+			Link lnk = new Link(WebSecurityUtils.safeParseInt(id), speed,text,width,dash_arr,snmp_type,multilinkwidth,multilink_dasharray);
 			
 			log.debug("found link " + links[i] + " with id=" + id
 					+ ", text=" + text+ ", speed=" + speed+ ", width=" + width+ ", dash-array=" + dasharray+ "snmp-type=" + snmp_type+". Adding it.");

@@ -1,8 +1,13 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.io.Serializable;
+import java.util.Set;
 
-public class GWTMonitoredService implements Serializable {
+import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class GWTMonitoredService implements Serializable, IsSerializable, Comparable<GWTMonitoredService> {
 	private static final long serialVersionUID = 1L;
 
 	private int m_id;
@@ -12,11 +17,14 @@ public class GWTMonitoredService implements Serializable {
 	private String m_hostname;
 	private int m_nodeId;
 	private String m_serviceName;
+	private Set<String> m_applications;
+
+	public GWTMonitoredService() {}
 
 	public void setId(final int id) {
 		m_id = id;
 	}
-	public int getId() {
+	public Integer getId() {
 		return m_id;
 	}
 	public void setIfIndex(final Integer ifIndex) {
@@ -54,6 +62,26 @@ public class GWTMonitoredService implements Serializable {
 	}
 	public String getServiceName() {
 		return m_serviceName;
+	}
+	public Set<String> getApplications() {
+		return m_applications;
+	}
+	public void setApplications(final Set<String> applications) {
+		m_applications = applications;
+	}
+
+	public String toString() {
+		return "GWTMonitoredService[id=" + m_id + ",service=" + m_serviceName + ",nodeId=" + m_nodeId + ",ipInterfaceId=" + m_ipInterfaceId + "]";
+	}
+
+	public int compareTo(GWTMonitoredService that) {
+		return new CompareToBuilder()
+			.append(this.getServiceName(), that.getServiceName())
+			.append(this.getNodeId(), that.getNodeId())
+			.append(this.getIpInterfaceId(), that.getIpInterfaceId())
+			.append(this.getApplications(), that.getApplications())
+			.append(this.getId(), that.getId())
+			.toComparison();
 	}
 
 }

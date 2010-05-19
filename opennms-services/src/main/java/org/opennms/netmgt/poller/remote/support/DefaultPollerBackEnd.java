@@ -38,14 +38,14 @@ package org.opennms.netmgt.poller.remote.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.TimeKeeper;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
@@ -87,7 +87,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         private Date m_timestamp;
         private PolledService[] m_polledServices;
 
-        SimplePollerConfiguration(Date timestamp, PolledService[] polledSvcs) {
+        SimplePollerConfiguration(final Date timestamp, final PolledService[] polledSvcs) {
             m_timestamp = timestamp;
             m_polledServices = polledSvcs;
         }
@@ -127,29 +127,28 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     public void checkForDisconnectedMonitors() {
 
-        log().debug("Checking for disconnected monitors: disconnectedTimeout = "+m_disconnectedTimeout);
+        LogUtils.debugf(this, "Checking for disconnected monitors: disconnectedTimeout = %d", m_disconnectedTimeout);
 
-        Date now = m_timeKeeper.getCurrentDate();
-        Date earliestAcceptable = new Date(now.getTime() - m_disconnectedTimeout);
+        final Date now = m_timeKeeper.getCurrentDate();
+        final Date earliestAcceptable = new Date(now.getTime() - m_disconnectedTimeout);
 
-        Collection<OnmsLocationMonitor> monitors = m_locMonDao.findAll();
-        log().debug("Found "+monitors.size()+" monitors");
+        final Collection<OnmsLocationMonitor> monitors = m_locMonDao.findAll();
+        LogUtils.debugf(this, "Found %d monitors", monitors.size());
 
-        for (OnmsLocationMonitor monitor : monitors) {
+        for (final OnmsLocationMonitor monitor : monitors) {
             if (monitor.getStatus() == MonitorStatus.STARTED && monitor.getLastCheckInTime().before(earliestAcceptable)) {
-                log().debug("Monitor "+monitor.getName()+" has stopped responding");
+                LogUtils.debugf(this, "Monitor %s has stopped responding", monitor.getName());
                 monitor.setStatus(MonitorStatus.DISCONNECTED);
                 m_locMonDao.update(monitor);
 
                 sendDisconnectedEvent(monitor);
-
             } else {
-                log().debug("Monitor "+monitor.getName()+"("+monitor.getStatus()+") last responded at "+monitor.getLastCheckInTime());
+                LogUtils.debugf(this, "Monitor %s (%s) last responded at %s", monitor.getName(), monitor.getStatus(), monitor.getLastCheckInTime());
             }
         }
     }
 
-    private MonitorStatus checkForGlobalConfigChange(Date currentConfigurationVersion) {
+    private MonitorStatus checkForGlobalConfigChange(final Date currentConfigurationVersion) {
         if (m_configurationTimestamp.after(currentConfigurationVersion)) {
             return MonitorStatus.CONFIG_CHANGED;
         } else {
@@ -161,13 +160,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_configurationTimestamp = m_timeKeeper.getCurrentDate();
     }
 
-    private EventBuilder createEventBuilder(OnmsLocationMonitor mon, String uei) {
-        EventBuilder eventBuilder = new EventBuilder(uei, "PollerBackEnd")
-        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, mon.getId());
+    private EventBuilder createEventBuilder(final OnmsLocationMonitor mon, final String uei) {
+        final EventBuilder eventBuilder = new EventBuilder(uei, "PollerBackEnd")
+            .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, mon.getId());
         return eventBuilder;
     }
 
-    private boolean databaseStatusChanged(OnmsLocationSpecificStatus currentStatus, OnmsLocationSpecificStatus newStatus) {
+    private boolean databaseStatusChanged(final OnmsLocationSpecificStatus currentStatus, final OnmsLocationSpecificStatus newStatus) {
         return currentStatus == null || !currentStatus.getPollResult().equals(newStatus.getPollResult());
     }
 
@@ -179,16 +178,16 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return m_locMonDao.findAllMonitoringLocationDefinitions();
     }
 
-    public String getMonitorName(int locationMonitorId) {
-        OnmsLocationMonitor locationMonitor = m_locMonDao.load(locationMonitorId);
+    public String getMonitorName(final int locationMonitorId) {
+        final OnmsLocationMonitor locationMonitor = m_locMonDao.load(locationMonitorId);
         return locationMonitor.getName();
     }
 
-    private Map<String, Object> getParameterMap(Service serviceConfig) {
-        Map<String, Object> paramMap = new HashMap<String, Object>();
-        Enumeration<Parameter> serviceParms = serviceConfig.enumerateParameter();
+    private Map<String, Object> getParameterMap(final Service serviceConfig) {
+        final Map<String, Object> paramMap = new HashMap<String, Object>();
+        final Enumeration<Parameter> serviceParms = serviceConfig.enumerateParameter();
         while(serviceParms.hasMoreElements()) {
-            Parameter serviceParm = serviceParms.nextElement();
+            final Parameter serviceParm = serviceParms.nextElement();
 
             String value = serviceParm.getValue();
             if (value == null) {
@@ -200,80 +199,68 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return paramMap;
     }
 
-    public PollerConfiguration getPollerConfiguration(int locationMonitorId) {
-
-        OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+    public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
+        final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
-            /* the monitor has been deleted we'll pick this in up on the next
-             * config check
-             */
+            // the monitor has been deleted we'll pick this in up on the next config check
             return new EmptyPollerConfiguration();
         }
 
-        Package pkg = getPollingPackageForMonitor(mon);
+        final Package pkg = getPollingPackageForMonitor(mon);
+        final ServiceSelector selector = m_pollerConfig.getServiceSelectorForPackage(pkg);
+        final Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
+        final List<PolledService> configs = new ArrayList<PolledService>(services.size());
 
-        ServiceSelector selector = m_pollerConfig.getServiceSelectorForPackage(pkg);
+        LogUtils.debugf(this, "found %d services", services.size());
 
-        Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
-        log().debug("found " + services.size() + " services");
-
-        List<PolledService> configs = new ArrayList<PolledService>(services.size());
-
-        for (OnmsMonitoredService monSvc : services) {
-            Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
-            long interval = serviceConfig.getInterval();
-            Map<String, Object> parameters = getParameterMap(serviceConfig);
+        for (final OnmsMonitoredService monSvc : services) {
+            final Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
+            final long interval = serviceConfig.getInterval();
+            final Map<String, Object> parameters = getParameterMap(serviceConfig);
             configs.add(new PolledService(monSvc, parameters, new OnmsPollModel(interval)));
         }
 
-        PolledService[] polledSvcs = configs.toArray(new PolledService[configs.size()]);
-        return new SimplePollerConfiguration(getConfigurationTimestamp(), polledSvcs);
-
-
+        Collections.sort(configs);
+        return new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PolledService[configs.size()]));
     }
 
-    private Package getPollingPackageForMonitor(OnmsLocationMonitor mon) {
-        OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
+    private Package getPollingPackageForMonitor(final OnmsLocationMonitor mon) {
+        final OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
         if (def == null) {
             throw new IllegalStateException("Location definition '" + mon.getDefinitionName() + "' could not be found for location monitor ID " + mon.getId());
         }
         String pollingPackageName = def.getPollingPackageName();
 
-        Package pkg = m_pollerConfig.getPackage(pollingPackageName);
+        final Package pkg = m_pollerConfig.getPackage(pollingPackageName);
         if (pkg == null) {
             throw new IllegalStateException("Package "+pollingPackageName+" does not exist as defined for monitoring location "+mon.getDefinitionName());
         }
         return pkg;
     }
 
-    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
-        Collection<ServiceMonitorLocator> locators = m_pollerConfig.getServiceMonitorLocators(context);
-        log().debug("getServiceMonitorLocators: Returning " + locators.size() + " locators");
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
+        final Collection<ServiceMonitorLocator> locators = m_pollerConfig.getServiceMonitorLocators(context);
+        LogUtils.debugf(this, "getServiceMonitorLocators: Returning %d locators", locators.size());
         return locators;
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-    private boolean logicalStatusChanged(OnmsLocationSpecificStatus currentStatus, OnmsLocationSpecificStatus newStatus) {
+    private boolean logicalStatusChanged(final OnmsLocationSpecificStatus currentStatus, final OnmsLocationSpecificStatus newStatus) {
         return currentStatus != null || (currentStatus == null && !newStatus.getPollResult().isAvailable());
     }
 
 
-    public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
-        OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+    public MonitorStatus pollerCheckingIn(final int locationMonitorId, final Date currentConfigurationVersion) {
+        final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
-            log().debug("Deleted monitor checked in with ID " + locationMonitorId);
+            LogUtils.debugf(this, "Deleted monitor checked in with ID %d", locationMonitorId);
             return MonitorStatus.DELETED;
         }
 
         return updateMonitorState(mon, currentConfigurationVersion);
-
     }
 
-    public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
-        OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+    public boolean pollerStarting(final int locationMonitorId, final Map<String, String> pollerDetails) {
+        final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
             return false;
         }
@@ -287,10 +274,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return true;
     }
 
-    public void pollerStopping(int locationMonitorId) {
-        OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+    public void pollerStopping(final int locationMonitorId) {
+        final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
-            log().info("pollerStopping was called for location monitor ID " + locationMonitorId + " which does not exist");
+            LogUtils.infof(this, "pollerStopping was called for location monitor ID %d which does not exist", locationMonitorId);
             return;
         }
 
@@ -299,15 +286,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_locMonDao.update(mon);
 
         sendMonitorStoppedEvent(mon);
-
     }
 
-    private void processStatusChange(OnmsLocationSpecificStatus currentStatus, OnmsLocationSpecificStatus newStatus) {
-
+    private void processStatusChange(final OnmsLocationSpecificStatus currentStatus, final OnmsLocationSpecificStatus newStatus) {
         if (databaseStatusChanged(currentStatus, newStatus)) {
             m_locMonDao.saveStatusChange(newStatus);
 
-            PollStatus pollResult = newStatus.getPollResult();
+            final PollStatus pollResult = newStatus.getPollResult();
 
             // if we don't know the current status only send an event if it is not up
             if (logicalStatusChanged(currentStatus, newStatus)) {
@@ -316,12 +301,12 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         }
     }
 
-    public int registerLocationMonitor(String monitoringLocationId) {
-        OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
+    public int registerLocationMonitor(final String monitoringLocationId) {
+        final OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
         if (def == null) {
             throw new ObjectRetrievalFailureException(OnmsMonitoringLocationDefinition.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
         }
-        OnmsLocationMonitor mon = new OnmsLocationMonitor();
+        final OnmsLocationMonitor mon = new OnmsLocationMonitor();
         mon.setDefinitionName(def.getName());
         mon.setStatus(MonitorStatus.REGISTERED);
 
@@ -330,63 +315,60 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return mon.getId();
     }
 
-    public void reportResult(int locationMonitorID, int serviceId, PollStatus pollResult) {
+    public void reportResult(final int locationMonitorID, final int serviceId, final PollStatus pollResult) {
         if (pollResult == null) {
             throw new IllegalArgumentException("pollResult argument cannot be null");
         }
 
-        OnmsLocationMonitor locationMonitor = m_locMonDao.get(locationMonitorID);
+        final OnmsLocationMonitor locationMonitor = m_locMonDao.get(locationMonitorID);
         if (locationMonitor == null) {
-            log().info("reportResult was called for location monitor ID " + locationMonitorID + " which does not exist");
+            LogUtils.infof(this, "reportResult was called for location monitor ID %d which does not exist", locationMonitorID);
             return;
         }
 
-        OnmsMonitoredService monSvc = m_monSvcDao.get(serviceId);
+        final OnmsMonitoredService monSvc = m_monSvcDao.get(serviceId);
         if (monSvc == null) {
-            log().info("reportResult was called for service " + serviceId + " which does not exist on location monitor ID " + locationMonitorID);
+            LogUtils.infof(this, "reportResult was called for service %d which does not exist on location monitor ID %d", serviceId, locationMonitorID);
             return;
         }
 
-        OnmsLocationSpecificStatus newStatus = new OnmsLocationSpecificStatus(locationMonitor, monSvc, pollResult);
+        final OnmsLocationSpecificStatus newStatus = new OnmsLocationSpecificStatus(locationMonitor, monSvc, pollResult);
 
         if (newStatus.getPollResult().getResponseTime() != null) {
-            Package pkg = getPollingPackageForMonitor(locationMonitor);
+            final Package pkg = getPollingPackageForMonitor(locationMonitor);
             m_pollerConfig.saveResponseTimeData(Integer.toString(locationMonitorID), monSvc, newStatus.getPollResult().getResponseTime(), pkg);
         }
 
-        OnmsLocationSpecificStatus currentStatus = m_locMonDao.getMostRecentStatusChange(locationMonitor, monSvc);
+        final OnmsLocationSpecificStatus currentStatus = m_locMonDao.getMostRecentStatusChange(locationMonitor, monSvc);
 
         processStatusChange(currentStatus, newStatus);
     }
 
-    private void sendDisconnectedEvent(OnmsLocationMonitor mon) {
+    private void sendDisconnectedEvent(final OnmsLocationMonitor mon) {
         sendEvent(mon, EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI);
     }
 
-    private void sendEvent(OnmsLocationMonitor mon, String uei) {
-        EventBuilder eventBuilder = createEventBuilder(mon, uei);
-        m_eventIpcManager.sendNow(eventBuilder.getEvent());
+    private void sendEvent(final OnmsLocationMonitor mon, final String uei) {
+        m_eventIpcManager.sendNow(createEventBuilder(mon, uei).getEvent());
     }
 
-    private void sendMonitorStartedEvent(OnmsLocationMonitor mon) {
+    private void sendMonitorStartedEvent(final OnmsLocationMonitor mon) {
         sendEvent(mon, EventConstants.LOCATION_MONITOR_STARTED_UEI);
     }
 
-    private void sendMonitorStoppedEvent(OnmsLocationMonitor mon) {
+    private void sendMonitorStoppedEvent(final OnmsLocationMonitor mon) {
         sendEvent(mon, EventConstants.LOCATION_MONITOR_STOPPED_UEI);
     }
 
-    private void sendReconnectedEvent(OnmsLocationMonitor mon) {
+    private void sendReconnectedEvent(final OnmsLocationMonitor mon) {
         sendEvent(mon, EventConstants.LOCATION_MONITOR_RECONNECTED_UEI);
     }
 
-    private void sendRegainedOrLostServiceEvent(OnmsLocationSpecificStatus newStatus, PollStatus pollResult) {
-        String uei = pollResult.isAvailable()
-        ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI
-            : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI;
+    private void sendRegainedOrLostServiceEvent(final OnmsLocationSpecificStatus newStatus, final PollStatus pollResult) {
+        final String uei = pollResult.isAvailable() ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI;
 
-        EventBuilder builder = createEventBuilder(newStatus.getLocationMonitor(), uei)
-        .setMonitoredService(newStatus.getMonitoredService());
+        final EventBuilder builder = createEventBuilder(newStatus.getLocationMonitor(), uei)
+            .setMonitoredService(newStatus.getMonitoredService());
 
         if (!pollResult.isAvailable() && pollResult.getReason() != null) {
             builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, pollResult.getReason());
@@ -395,58 +377,57 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_eventIpcManager.sendNow(builder.getEvent());
     }
 
-    public void setDisconnectedTimeout(int disconnectedTimeout) {
+    public void setDisconnectedTimeout(final int disconnectedTimeout) {
         m_disconnectedTimeout = disconnectedTimeout;
 
     }
 
-    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+    public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
 
-    public void setLocationMonitorDao(LocationMonitorDao locMonDao) {
+    public void setLocationMonitorDao(final LocationMonitorDao locMonDao) {
         m_locMonDao = locMonDao;
     }
 
-    public void setMonitoredServiceDao(MonitoredServiceDao monSvcDao) {
+    public void setMonitoredServiceDao(final MonitoredServiceDao monSvcDao) {
         m_monSvcDao = monSvcDao;
     }
 
-    public void setPollerConfig(PollerConfig pollerConfig) {
+    public void setPollerConfig(final PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
     }
 
-    public void setTimeKeeper(TimeKeeper timeKeeper) {
+    public void setTimeKeeper(final TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
     }
 
-    private MonitorStatus updateMonitorState(OnmsLocationMonitor mon, Date currentConfigurationVersion) {
+    private MonitorStatus updateMonitorState(final OnmsLocationMonitor mon, final Date currentConfigurationVersion) {
         try {
 
             switch(mon.getStatus()) {
-            case DISCONNECTED:
-                sendReconnectedEvent(mon);
-                mon.setStatus(MonitorStatus.STARTED);
-                return checkForGlobalConfigChange(currentConfigurationVersion);
+                case DISCONNECTED:
+                    sendReconnectedEvent(mon);
+                    mon.setStatus(MonitorStatus.STARTED);
+                    return checkForGlobalConfigChange(currentConfigurationVersion);
 
-            case STARTED:
-                mon.setStatus(MonitorStatus.STARTED);
-                return checkForGlobalConfigChange(currentConfigurationVersion);
+                case STARTED:
+                    mon.setStatus(MonitorStatus.STARTED);
+                    return checkForGlobalConfigChange(currentConfigurationVersion);
 
-            case PAUSED:
-                mon.setStatus(MonitorStatus.PAUSED);
-                return MonitorStatus.PAUSED;
+                case PAUSED:
+                    mon.setStatus(MonitorStatus.PAUSED);
+                    return MonitorStatus.PAUSED;
 
-            case CONFIG_CHANGED: 
-                mon.setStatus(MonitorStatus.STARTED);
-                return MonitorStatus.CONFIG_CHANGED;
+                case CONFIG_CHANGED: 
+                    mon.setStatus(MonitorStatus.STARTED);
+                    return MonitorStatus.CONFIG_CHANGED;
 
-            default:
-                log().error("Unexpected monitor state for monitor: "+mon);
-            throw new IllegalStateException("Unexpected monitor state for monitor: "+mon);
+                default:
+                    LogUtils.errorf(this, "Unexpected monitor state for monitor: %s", mon);
+                    throw new IllegalStateException("Unexpected monitor state for monitor: "+mon);
 
             }
-
         } finally {
             mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
             m_locMonDao.update(mon);

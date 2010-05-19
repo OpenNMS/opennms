@@ -134,6 +134,11 @@ var myMapApp = new mapApp(false,undefined);
 // Windows Objects used now when double click on MapElements
 myMapApp.Windows = new Array();
 
+//WorkPanel data
+var workPanelWidth = 3*menuWidth;
+var workPanelHeight = 600;
+var workPanelDelta = 2;
+
 // The Map width and height definition
 var mapWidth;
 var mapHeight;
@@ -278,6 +283,8 @@ var LINK_SPEED = new Array();
 var LINK_TEXT = new Array();
 var LINK_WIDTH = new Array();
 var LINK_DASHARRAY = new Array();	
+var MULTILINK_WIDTH = new Array();
+var MULTILINK_DASHARRAY = new Array();	
 var LINKSTATUS_COLOR = new Array();	
 var LINKSTATUS_FLASH = new Array();	
 

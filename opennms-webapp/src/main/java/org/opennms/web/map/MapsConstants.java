@@ -117,6 +117,7 @@ public final class MapsConstants {
 	
 	public static final String SWITCH_MODE_ACTION = "admin/SwitchRole";
 		
+    public static final String RELOAD_CONFIG_ACTION = "admin/ReloadConfig";
     // map types
 	public static final String USER_GENERATED_MAP = "U";
 

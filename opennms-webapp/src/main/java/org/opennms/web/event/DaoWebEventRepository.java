@@ -148,6 +148,7 @@ public class DaoWebEventRepository implements WebEventRepository {
         event.createTime = onmsEvent.getEventCreateTime();
         event.description = onmsEvent.getEventDescr();
         event.dpName = onmsEvent.getDistPoller() != null ? onmsEvent.getDistPoller().getName() : "";
+        event.eventDisplay = Boolean.valueOf(onmsEvent.getEventDisplay().equals("Y"));
         event.forward = onmsEvent.getEventForward();
         event.host = onmsEvent.getEventHost();
         event.id = onmsEvent.getId();

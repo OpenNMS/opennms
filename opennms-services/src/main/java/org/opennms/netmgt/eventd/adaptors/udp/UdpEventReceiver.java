@@ -226,6 +226,14 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         return m_status;
     }
 
+    public String getStatusText() {
+        return STATUS_NAMES[getStatus()];
+    }
+
+    public String status() {
+        return getStatusText();
+    }
+
     public void init() {
     }
 

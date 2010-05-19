@@ -18,7 +18,7 @@ public class LocationPanelSelectEvent extends GwtEvent<LocationPanelSelectEventH
     }
 
     @Override
-    public com.google.gwt.event.shared.GwtEvent.Type<LocationPanelSelectEventHandler> getAssociatedType() {
+    public Type<LocationPanelSelectEventHandler> getAssociatedType() {
         return TYPE;
     }
 

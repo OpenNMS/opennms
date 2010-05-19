@@ -49,19 +49,23 @@
 		</jsp:include>
 <p>
 
-<script language="JavaScript" type="text/javascript" src="map/js/jquery.js"></script>
-<script language="JavaScript" type="text/javascript" src="map/js/jquery.history.js"></script>
+<center>
+<div id="reloading">
+</div>
+</center>	
+
+<script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.js"></script>
+<script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.history.js"></script>
 
 <script type="text/javascript">
 
-$.history.callback = function ( reinstate, cursor ) {
-		window.historyCallBack(reinstate,cursor);
-};
+var svgMapWidth,svgMapHeight;
 
-function savehistory(mapid) {
- 	$.history( {'mapid':mapid} );
-}
+var resizing=false;
 
+var $j = jQuery.noConflict();
+var $ = {};
+	
 function toggle(id)
 {
 	el = document.getElementById(id);
@@ -69,15 +73,58 @@ function toggle(id)
 	el.style.display = display;
 }
 
-
-function emitSVG(embedAttrs) {
-    document.writeln('<embed '+embedAttrs+' width="'+parseInt(screen.availWidth*95/100)+'" height="'+parseInt(((screen.availWidth*95/100)-100)*3/4)+'">');
+window.onresize = function() {
+    if (resizing) return;
+    resizing=true;
+    resizeSVG();
 }
 
-emitSVG('src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml"');
+function resize(timeout) {
+	writeReload("Resizing the maps.....");
+	setTimeout("window.location.reload();",timeout);
+}
+
+function reloadConfig(timeout1,timeout2) {
+	setTimeout("writeReload(\"Configuration Reloaded. Restarting Maps.....\");",timeout1);
+	setTimeout("window.location.reload();",timeout2);
+}
+
+function  writeReload(text) {
+	var o=document.getElementById('reloading');
+    var ls = o.childNodes;
+    while (ls.length > 0) {
+      var obj = ls.item(0);
+      o.removeChild(obj);
+    }
+	o.appendChild(document.createTextNode(text));
+}
+
+function setSvgWindowSize() {
+	if (window.innerWidth)  {
+		svgMapWidth=window.innerWidth-35;
+		svgMapHeight=window.innerHeight;
+	} else if (document.all) {
+		svgMapWidth=document.body.clientWidth-20;
+		svgMapHeight=document.body.clientHeight;
+	}
+	
+	if (svgMapWidth < 1072)
+		svgMapWidth=1072;
+	if (svgMapHeight < 600)
+		svgMapHeight=600;
+}
+
+function emitSVG() {
+	resizing=false;
+	setSvgWindowSize();
+	document.writeln('<embed id="opennmsSVGMaps" src="map/Map.svg"  style="float: left" align="left"  type="image/svg+xml" width="'+svgMapWidth+'" height="'+svgMapHeight+'">');
+}
+
+emitSVG();
 
 </script>
 </p>
+
     <jsp:include page="/includes/footer.jsp" flush="false" >
       <jsp:param name="location" value="map" />
     </jsp:include>

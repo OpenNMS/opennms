@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.support.GenericIndexResourceType;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.web.Util;
@@ -435,29 +436,31 @@ public class ThresholdController extends AbstractController implements Initializ
         return modelAndView;
     }
     
-    private void sendNotifEvent(String uei, String source) throws ServletException {
-        Event event = new Event();
-        event.setSource(source);
-        event.setUei(uei);
+    private EventBuilder createEventBuilder(String uei) {
+        EventBuilder ebldr = new EventBuilder(uei, "Web UI");
         try {
-                event.setHost(InetAddress.getLocalHost().getHostName());
+            ebldr.setHost(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException uhE) {
-                event.setHost("unresolved.host");
+            ebldr.setHost("unresolved.host");
         }
-        
-        event.setTime(EventConstants.formatToString(new java.util.Date()));
+        return ebldr;
+    }
+    private void sendNotifEvent(Event event) throws ServletException {
         try {
-                Util.createEventProxy().send(event);
+            Util.createEventProxy().send(event);
         } catch (Exception e) {
-                throw new ServletException("Could not send event " + event.getUei(), e);
+            throw new ServletException("Could not send event " + event.getUei(), e);
         }
-       
+
     }
     private void saveChanges() throws ServletException {
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
         try {
             configFactory.saveCurrent();
-            sendNotifEvent(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "Threshd");
+            EventBuilder ebldr = createEventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
+            ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, "thresholds.xml");
+            sendNotifEvent(ebldr.getEvent());
         } catch (Exception e) {
             throw new ServletException("Could not save the changes to the threshold because "+e.getMessage(),e);
         }
@@ -465,7 +468,7 @@ public class ThresholdController extends AbstractController implements Initializ
         if(eventConfChanged) {
             try {
                 EventconfFactory.getInstance().saveCurrent();
-                sendNotifEvent(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "Web UI");
+                sendNotifEvent(createEventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI).getEvent());
             } catch (Exception e) {
                 throw new ServletException("Could not save the changes to the event configuration because "+e.getMessage(),e);
             }

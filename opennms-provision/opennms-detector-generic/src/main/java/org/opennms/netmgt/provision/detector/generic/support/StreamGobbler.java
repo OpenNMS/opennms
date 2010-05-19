@@ -57,13 +57,13 @@ import java.io.PrintWriter;
  */
 class StreamGobbler extends Thread {
 
-    /** The input stream we're gobbling * */
+    /** The {@link InputStream} we're gobbling */
     private InputStream in = null;
 
-    /** The printwriter we'll send the gobbled characters to if asked* */
+    /** The {@link PrintWriter} we'll send the gobbled characters to if asked */
     private PrintWriter pwOut = null;
 
-    /** Our flag to allow us to safely terminate the monitoring thread * */
+    /** Our flag to allow us to safely terminate the monitoring thread */
     private boolean quit = false;
 
     /**

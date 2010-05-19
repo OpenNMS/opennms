@@ -184,6 +184,9 @@ function deleteMapInHistory() {
 }
 
 function saveMapInHistory(){
+	if (currentMapId == NEW_MAP )
+	 	return;
+
 	for(i in mapHistory){
 		if(mapHistory[i]==currentMapId){
 			mapHistoryIndex=parseInt(i);
@@ -191,11 +194,7 @@ function saveMapInHistory(){
 			return;
 		}
 	}
-	if (currentMapId == NEW_MAP )
-	 	return;
-	 	
-	top.savehistory(currentMapId);
-	
+	 		
 	if(mapHistory.length==0){
 		mapHistory.push(currentMapId);
 		mapHistoryName.push(currentMapName);

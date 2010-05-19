@@ -50,40 +50,39 @@ import org.springframework.transaction.support.TransactionCallback;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
-public class OssDaoOpenNMSImpl {
+public class OssDaoOpenNMSImpl implements OssDao {
 
 	private static final String LOG4J_CATEGORY = "OpenOSS.QoSDrx";
 
 	/** 
 	 * local store for OpenNMS alarm list indexed by OpenNMS AlarmID as Integer
 	 */
-	private Hashtable<Integer,OnmsAlarm> alarmCacheByID = new Hashtable<Integer,OnmsAlarm>(); 
+	private final Hashtable<Integer,OnmsAlarm> alarmCacheByID = new Hashtable<Integer,OnmsAlarm>(); 
 
 	/** 
 	 * local store for OpenNMS alarm list indexed by ApplicationDN+OssPrimaryKey() as string
 	 */
-	private Hashtable<String,OnmsAlarm> alarmCacheByUniqueKey = new Hashtable<String,OnmsAlarm>(); 
+	private final Hashtable<String,OnmsAlarm> alarmCacheByUniqueKey = new Hashtable<String,OnmsAlarm>(); 
 
 	/** 
 	 * local store for OpenNMS node list indexed by OpenNMS NodeID as Integer
 	 */
-	private Hashtable<Integer,OnmsNode> nodeCacheByID = new Hashtable<Integer,OnmsNode>();
+	private final Hashtable<Integer,OnmsNode> nodeCacheByID = new Hashtable<Integer,OnmsNode>();
 	/** 
 	 * local store for OpenNMS node list indexed by OpenNMS NodeLabel as String
 	 */
-	private Hashtable<String,OnmsNode> nodeCacheByLabel = new Hashtable<String,OnmsNode>();
+	private final Hashtable<String,OnmsNode> nodeCacheByLabel = new Hashtable<String,OnmsNode>();
 	/** 
 	 * local store for OpenNMS node list indexed by ManagedObjectInstance+ManagedObjectType as string
 	 * */
-	private Hashtable<String,OnmsNode> nodeCacheByUniqueID = new Hashtable<String,OnmsNode>();
+	private final Hashtable<String,OnmsNode> nodeCacheByUniqueID = new Hashtable<String,OnmsNode>();
 
 
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
 	private static Logger getLog() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return (Logger)ThreadCategory.getInstance(QoSDrx.class);	
+		return ThreadCategory.getInstance(OssDaoOpenNMSImpl.class);	
 	}
 
 	// ****************
@@ -94,12 +93,12 @@ public class OssDaoOpenNMSImpl {
 	 * Used to create new Lazy objects
 	 * 
 	 */
-	protected static DataSource _dataSource;
+	protected DataSource _dataSource;
 
-	/**
-	 * @param source the dataSource to set
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#setDataSource(javax.sql.DataSource)
 	 */
-	public void setdataSource(DataSource dataSource) {
+	public void setDataSource(DataSource dataSource) {
 		_dataSource = dataSource;
 	}
 
@@ -107,14 +106,13 @@ public class OssDaoOpenNMSImpl {
 	 * Used to obtain opennms asset information for inclusion in alarms
 	 * @see org.opennms.netmgt.dao.AssetRecordDao
 	 */
-	protected static AssetRecordDao _assetRecordDao;
+	protected AssetRecordDao _assetRecordDao;
 
 
-	/**
-	 * Used by Spring Application context to pass in AssetRecordDao
-	 * @param ar 
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#setAssetRecordDao(org.opennms.netmgt.dao.AssetRecordDao)
 	 */
-	public  void setassetRecordDao(AssetRecordDao ar){
+	public void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
 	}
 
@@ -122,13 +120,12 @@ public class OssDaoOpenNMSImpl {
 	 * Used to obtain opennms node information for inclusion in alarms
 	 * @see org.opennms.netmgt.dao.NodeDao 
 	 */
-	protected static NodeDao _nodeDao;
+	protected NodeDao _nodeDao;
 
-	/**
-	 * Used by Spring Application context to pass in NodeDaof
-	 * @param nodedao 
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#setNodeDao(org.opennms.netmgt.dao.NodeDao)
 	 */
-	public  void setnodeDao( NodeDao nodedao){
+	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
 	}
 
@@ -136,13 +133,12 @@ public class OssDaoOpenNMSImpl {
 	 * Used to search and update opennms alarm list
 	 * @see org.opennms.netmgt.dao.AlarmDao
 	 */
-	protected static AlarmDao _alarmDao;
+	protected AlarmDao _alarmDao;
 
-	/**
-	 * Used by Spring Application context to pass in alarmDao
-	 * @param alarmDao
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#setAlarmDao(org.opennms.netmgt.dao.AlarmDao)
 	 */
-	public  void setalarmDao( AlarmDao alarmDao){
+	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
 	}
 
@@ -150,11 +146,10 @@ public class OssDaoOpenNMSImpl {
 	 * Used to ensure that objects retreived from OpenNMS through Hibernate
 	 * contain all of their internal objects populated with values
 	 */
-	protected static TransactionTemplate transTemplate;
+	protected TransactionTemplate transTemplate;
 
-	/**
-	 * Used by Spring Application context to pass in a spring transaction manager
-	 * @param transTemplate
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#setTransTemplate(org.springframework.transaction.support.TransactionTemplate)
 	 */
 	public void setTransTemplate(TransactionTemplate _transTemplate) {
 		transTemplate = _transTemplate;
@@ -168,11 +163,10 @@ public class OssDaoOpenNMSImpl {
 	 * Used to provide a call back interface to QoSD for forwarding changes to alarm list
 	 * @param alarmDao
 	 */
-	private static QoSD qoSD=null; 
+	private QoSD qoSD = null; 
 
-	/**
-	 * Used by running QoSD to set up OssDao to call back alarm list updates
-	 * @param alarmDao
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#setQoSD(org.openoss.opennms.spring.qosd.QoSD)
 	 */
 	public void setQoSD(QoSD _qoSD){
 		qoSD=_qoSD;
@@ -184,9 +178,8 @@ public class OssDaoOpenNMSImpl {
 	
 	private boolean initialised=false; // true if init() has initialised class
 
-	/**
-	 * Initialises the Node and Alarm caches
-	 * Must be called before any other methods to ensure that ossDao is initialised
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#init()
 	 */
 	synchronized public void init(){
 		if (initialised) return;
@@ -207,19 +200,8 @@ public class OssDaoOpenNMSImpl {
 	// ************************
 
 
-	/**
-	 * Adds Current alarm to OpenNMS database with a new alarmID as an AlarmType= 'raise' ( type 1 ) alarm.
-	 * Adds the alarm to the local Current Alarm Alarm list alarmCacheByID with the new alarmID only if
-	 * the alarm is NOT (Acknowledged AND Cleared).  
-	 * @param alarm - alarm to add. 
-	 * 
-	 * @return added alarm with new alarmID
-	 * 
-	 * @throws If alarm AlarmID not null throws <code>IllegalArgumentException</code>.
-	 * If ApplicationDN() and OssPrimaryKey() not unique in Current Alarm list throws <code>IllegalArgumentException</code>
-	 * If alarm type not type 1  throws <code>IllegalArgumentException</code>.
-	 * If ApplicationDN()==null or "" or OssPrimaryKey()==null or "", throws <code>IllegalArgumentException</code>.
-	 * Note any new locally generated OpenNMS alarms will have ApplictionDN or OssPrimaryKey ==null or "" and so are ignored
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#addCurrentAlarmForUniqueKey(org.opennms.netmgt.model.OnmsAlarm)
 	 */
 
 
@@ -280,19 +262,8 @@ public class OssDaoOpenNMSImpl {
 		return alarm;
 	}
 
-	/**
-	 * Updates Current alarm in OpenNMS database with a new alarmID as an AlarmType= 'raise' ( type 1 ) alarm.
-	 * Adds the alarm to the local Current Alarm Alarm list alarmCacheByID with the new alarmID only if
-	 * the alarm is NOT (Acknowledged AND Cleared).  
-	 * @param alarm - alarm to add. 
-	 * 
-	 * @return added alarm with new alarmID from OpenNMS Database
-	 * 
-	 * @throws If alarm AlarmID not null throws <code>IllegalArgumentException</code>.
-	 * If alarm type not type 1  throws <code>IllegalArgumentException</code>.
-	 * If ApplicationDN()==null or "" or OssPrimaryKey()==null or "", throws <code>IllegalArgumentException</code>.
-	 * 
-	 * Note any new locally generated OpenNMS alarms will have ApplictionDN or OssPrimaryKey ==null or "" and so are ignored
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#updateCurrentAlarmForUniqueKey(org.opennms.netmgt.model.OnmsAlarm)
 	 */
 	public synchronized OnmsAlarm updateCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
 		Logger log = getLog();	
@@ -348,11 +319,8 @@ public class OssDaoOpenNMSImpl {
 		return alarm;
 	}
 
-	/**
-	 * @return the first found alarm from current alarm list with matching paramaters. 
-	 * Returns Null if no such alarm.
-	 * @param applicationDN
-	 * @param OssPrimaryKey
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#getCurrentAlarmForUniqueKey(java.lang.String, java.lang.String)
 	 */
 	public synchronized OnmsAlarm getCurrentAlarmForUniqueKey(String applicationDN , String ossPrimaryKey){
 		Logger log = getLog();	
@@ -398,8 +366,8 @@ public class OssDaoOpenNMSImpl {
 
 		Collection<OnmsAlarm> c = _alarmDao.findAll();
 
-		alarmCacheByID= new Hashtable<Integer,OnmsAlarm>(); // clear previous hashtable
-		alarmCacheByUniqueKey = new Hashtable<String,OnmsAlarm>();
+		alarmCacheByID.clear(); // clear previous hashtable
+		alarmCacheByUniqueKey.clear();
 		OnmsAlarm[] alarms= (OnmsAlarm[]) c.toArray(new OnmsAlarm[c.size()]);
 		//TODO - ISSUE if too many alarms?
 		for (int i=0; i<alarms.length; i++){
@@ -429,28 +397,23 @@ public class OssDaoOpenNMSImpl {
 		}
 	}
 
-	/**
-	 * Used to force an update to the local cache from latest alarm list in database
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#updateAlarmCache()
 	 */
 	synchronized public void updateAlarmCache() throws IllegalStateException{
 		localUpdateAlarmCache();
 	}
 
-	/**
-	 * Used By QoSD to force an update to the local cache from latest alarm list in database
-	 * Tries to call back to QoSD to send the latest alarm list.
-	 * The reason for this is to enforce synchronisation between QoSD and QoSDrx so that the 
-	 * current alarm list is always sent by QoSD 
-	 * If QoSD not running. Logs a debug message and returns
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#updateAlarmCacheAndSendAlarms()
 	 */
 	synchronized public void updateAlarmCacheAndSendAlarms() throws IllegalStateException{
 		localUpdateAlarmCache();
 		sendAlarms();
 	}
 
-	/**
-	 * Used By QoSD to retreive a copy of the current view of the alarm cache.
-	 * Note NOT Synchronized - but OK if called by QoSD through QoSD.sendAlarms()
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#getAlarmCache()
 	 */
 	public OnmsAlarm[] getAlarmCache(){
 		OnmsAlarm[] returnAlarmCache= new OnmsAlarm[alarmCacheByID.size()];
@@ -501,18 +464,12 @@ public class OssDaoOpenNMSImpl {
 		return alarm;
 	}
 
-
-
-
-
-
-
 	/**
 	 * Debug method to print out opennms alarms (brief summary)
 	 * @param alarm
 	 * @return string to print out
 	 */
-	public String alarmToStringBrief(OnmsAlarm alarm){
+	private static String alarmToStringBrief(OnmsAlarm alarm){
 		String s;
 		if (alarm==null) {
 			s="\n\t\tOnmsAlarm is Null";
@@ -536,7 +493,7 @@ public class OssDaoOpenNMSImpl {
 	 * @param alarm
 	 * @return string to print out
 	 */
-	public String alarmToString(OnmsAlarm alarm){
+	public static String alarmToString(OnmsAlarm alarm){
 		String s;
 		if (alarm==null) {
 			s="\n\t\tOnmsAlarm is Null";
@@ -582,13 +539,8 @@ public class OssDaoOpenNMSImpl {
 	// ***********************************************
 
 
-	/** 
-	 * This will return the first node in nodes table with nodeLable entry matching label
-	 * Note for this to work, the configuration of OpenNMS must ensure that the node label is unique 
-	 * otherwise only the first instance will be returned
-	 * @param label NodeLabel of node to look for
-	 * @return will look for first match of node label. <code>null</code> if not found
-	 * Note: Accesses the Node Cache
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByLabel(java.lang.String)
 	 */
 	public OnmsNode findNodeByLabel(String label) {
 		Logger log = getLog();	
@@ -604,16 +556,8 @@ public class OssDaoOpenNMSImpl {
 	}
 
 
-	/**
-	 * This will return the first node with entry in Assets table having matching managedObjectInstance and
-	 * managedObjectType. 
-	 * Note for this to work, the configuration of OpenNMS must ensure that the concatenation of 
-	 * these fields is unique in the system otherwise only the first instance will be returned
-	 * @param managedObjectInstance
-	 * @param managedObjectType
-	 * @return
-	 * @throws IllegalArgumentException
-	 * Note: Accesses the Node Cache
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByInstanceAndType(java.lang.String, java.lang.String)
 	 */
 	public OnmsNode findNodeByInstanceAndType(String managedObjectInstance, String managedObjectType) throws IllegalArgumentException{
 		Logger log = getLog();	
@@ -633,11 +577,8 @@ public class OssDaoOpenNMSImpl {
 
 
 
-	/**
-	 * Returns the OnmsNode for the supplied node id
-	 * @param nodeid
-	 * @return
-	 * Note: Accesses the Node Cache
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByID(java.lang.Integer)
 	 */
 	public OnmsNode findNodeByID(Integer nodeid){
 		Logger log = getLog();	
@@ -653,9 +594,8 @@ public class OssDaoOpenNMSImpl {
 	}
 
 
-	/**
-	 * Synchronized method to Update the node cache from the OpenNMS database
-	 * May be called from Qosd on receipt of an asset register update event
+	/* (non-Javadoc)
+	 * @see org.openoss.opennms.spring.dao.OssDao#updateNodeCaches()
 	 */
 	public synchronized void updateNodeCaches(){
 		localUpdateNodeCaches();
@@ -669,9 +609,9 @@ public class OssDaoOpenNMSImpl {
 	private void localUpdateNodeCaches(){
 		Logger log = getLog();	
 		try{
-			nodeCacheByID=new Hashtable<Integer,OnmsNode>();
-			nodeCacheByLabel=new Hashtable<String,OnmsNode>();
-			nodeCacheByUniqueID=new Hashtable<String,OnmsNode>();	
+			nodeCacheByID.clear();
+			nodeCacheByLabel.clear();
+			nodeCacheByUniqueID.clear();
 
 			if (log.isDebugEnabled()) log.debug("\tOssDaoOpenNMSImpl().updateNodeCaches - Updating Node Caches :");
 
@@ -780,7 +720,3 @@ public class OssDaoOpenNMSImpl {
 	}
 
 }
-
-
-
-

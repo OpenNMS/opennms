@@ -41,6 +41,8 @@
 
 package org.opennms.web.map.db;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
@@ -1462,5 +1464,15 @@ public class ManagerDefaultImpl implements Manager {
         }            
         map.addLinks(getLinks(map.getElements().values()));
         return map;
+    }
+
+    public void reloadConfig() throws MapsException {
+        try {
+            mapsPropertiesFactory.reload(true);
+        } catch (FileNotFoundException e) {
+            throw new MapsException(e);
+        } catch (IOException e) {
+            throw new MapsException(e);
+        }
     }
 }

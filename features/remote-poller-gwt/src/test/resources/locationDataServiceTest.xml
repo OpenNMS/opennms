@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+       ">
+
+  <context:annotation-config />
+
+  <bean id="apiKey" class="java.lang.String">
+    <constructor-arg value="1234" />
+  </bean>
+
+  <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
+
+  <bean id="monitoringLocationsConfiguration" class="org.opennms.features.poller.remote.gwt.server.TestMonitoringLocationsConfiguration" />
+
+  <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="monitoringLocationsConfiguration" ref="monitoringLocationsConfiguration" />
+  </bean>
+
+  <bean id="locationDataService" class="org.opennms.features.poller.remote.gwt.server.DefaultLocationDataService">
+    <property name="save" value="false" />
+  </bean>
+
+  <bean id="pollerConfigDao" class="org.opennms.netmgt.config.DefaultPollerConfigDao">
+    <property name="configResource" value="classpath:/poller-configuration.xml"/>
+    <property name="localServer" value="nms1"/>
+    <property name="verifyServer" value="false"/>
+  </bean>
+
+  <bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="pollerConfigDao"/>
+    <property name="targetMethod" value="getPollerConfig"/>
+  </bean>
+
+  <bean name="monitorDisconnectedTimeout" class="java.lang.Integer">
+    <constructor-arg><value>3000</value></constructor-arg>
+  </bean>
+  
+  <bean name="monitorCheckInterval" class="java.lang.Long">
+    <constructor-arg><value>500</value></constructor-arg>
+  </bean>
+
+  <bean name="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+    <property name="locationMonitorDao" ref="locationMonitorDao" />
+    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="pollerConfig" ref="pollerConfig" />
+    <property name="timeKeeper" ref="timeKeeper" />
+    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout" />
+  </bean>
+</beans>

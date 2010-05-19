@@ -4,6 +4,7 @@
 
 var MAPS_STARTUP_ACTION = "MapStartUp";
 var SWITCH_MODE_ACTION = "admin/SwitchRole";
+var RELOAD_CONFIG_ACTION = "admin/ReloadConfig";
 var OPENMAP_ACTION = "OpenMap";
 var NEWMAP_ACTION = "admin/NewMap";
 var CLOSEMAP_ACTION = "CloseMap";

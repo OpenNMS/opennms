@@ -83,7 +83,6 @@ import org.opennms.netmgt.xml.event.Value;
 // Improvements most likely are to be made.
 final class ConvertToEvent {
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
     protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
     /**
@@ -170,9 +169,7 @@ final class ConvertToEvent {
         e.m_ackEvents = new ArrayList<Event>(16);
         e.m_log = null;
 
-        String m_logPrefix = Syslogd.LOG4J_CATEGORY;
-        ThreadCategory.setPrefix(m_logPrefix);
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        ThreadCategory.setPrefix(Syslogd.LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
 
         if (log.isDebugEnabled())

@@ -160,15 +160,18 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	}
 
 	public void onEvent(Event e) {
-	    ThreadCategory.setPrefix(NAME);
-
-		if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
-                    return;
-                }
-		
-		doImport(e);
+		String oldPrefix = ThreadCategory.getPrefix();
+		try {
+			ThreadCategory.setPrefix(NAME);
+			if (!EventConstants.RELOAD_IMPORT_UEI.equals(e.getUei())) {
+				return;
+			}
+			doImport(e);
+		} finally {
+			ThreadCategory.setPrefix(oldPrefix);
+		}
 	}
-	
+
 	public class ImporterStats implements ImportStatistics {
 
 		private Duration m_importDuration = new Duration("Importing");

@@ -34,16 +34,7 @@
  */
 package org.opennms.netmgt.tl1d.jmx;
 
-public interface Tl1dMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    int getStatus();
-
-    String status();
-
-    String getStatusText();
+public interface Tl1dMBean extends BaseOnmsMBean {
 }

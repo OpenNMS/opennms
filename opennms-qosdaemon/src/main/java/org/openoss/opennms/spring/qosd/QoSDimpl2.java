@@ -60,6 +60,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -68,7 +69,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
-import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
+import org.openoss.opennms.spring.dao.OssDao;
 import org.openoss.ossj.jvt.fm.monitor.OOSSAlarmValue;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -122,29 +123,32 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * <p>
  */
 
-public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
+public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, EventListener, QoSD {
+
+	public QoSDimpl2() {
+		super(NAME);
+	}
 
 	/**
 	 *  Method to get the QosD's logger from OpenNMS
 	 */
 	public static Logger getLog() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return (Logger)ThreadCategory.getInstance(QoSDimpl2.class);	
+		return ThreadCategory.getInstance(QoSDimpl2.class);	
 	}
 
 	// ---------------SPRING DAO DECLARATIONS----------------
 
-	private static OssDaoOpenNMSImpl ossDao;
+	private OssDao ossDao;
 
 	/**
 	 * provides an interface to OpenNMS which provides a unified api 
 	 * @param ossDao the ossDao to set
 	 */
-	public void setossDao(OssDaoOpenNMSImpl _ossDao) {
+	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
 	}
 
-	private static OnmsAlarmOssjMapper onmsAlarmOssjMapper; 
+	private OnmsAlarmOssjMapper onmsAlarmOssjMapper; 
 
 	/**
 	 * Used by Spring Application context to pass in OnmsAlarmOssjMapper
@@ -161,13 +165,13 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * @see org.opennms.netmgt.dao.AssetRecordDao
 	 */
 	@SuppressWarnings("unused")
-	private static AssetRecordDao assetRecordDao;
+	private AssetRecordDao assetRecordDao;
 
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 * @param ar 
 	 */
-	public void setassetRecordDao(AssetRecordDao ar){
+	public void setAssetRecordDao(AssetRecordDao ar){
 		assetRecordDao = ar;
 	}
 
@@ -176,13 +180,13 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * @see org.opennms.netmgt.dao.NodeDao 
 	 */
 	@SuppressWarnings("unused")
-	private static NodeDao nodeDao;
+	private NodeDao nodeDao;
 
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
 	 * @param nodedao 
 	 */
-	public void setnodeDao( NodeDao nodedao){
+	public void setNodeDao( NodeDao nodedao){
 		nodeDao = nodedao;
 	}
 
@@ -190,13 +194,13 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Used to register for opennms events
 	 * @see org.opennms.netmgt.eventd.EventIpcManager
 	 */
-	private static EventIpcManager eventIpcManager;
+	private EventIpcManager eventIpcManager;
 
 	/**
 	 * Used by Spring Application context to pass in EventIpcManager
 	 * @param eventIpcManager
 	 */
-	public void seteventIpcManager( EventIpcManager evtIpcManager){
+	public void setEventIpcManager( EventIpcManager evtIpcManager){
 		eventIpcManager = evtIpcManager;
 	}
 
@@ -205,13 +209,13 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * @see org.opennms.netmgt.dao.AlarmDao
 	 */
 	@SuppressWarnings("unused")
-	private static AlarmDao alarmDao;
+	private AlarmDao alarmDao;
 
 	/**
 	 * Used by Spring Application context to pass in alarmDao
 	 * @param alarmDao
 	 */
-	public void setalarmDao( AlarmDao almDao){
+	public void setAlarmDao( AlarmDao almDao){
 		alarmDao = almDao;
 	}
 
@@ -220,13 +224,13 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * This is used by spring to provide a proxy for the J2EE AlarmMonitor bean or for the local spring
 	 * AlarmMonitor if J2EE is not being used
 	 */
-	private static AlarmListConnectionManager alarmListConnectionManager;
+	private AlarmListConnectionManager alarmListConnectionManager;
 
 	/**
 	 * Used by Spring Application context to pass in AlarmListConnectionManager
 	 * @param alcm
 	 */
-	public void setalarmListConnectionManager( AlarmListConnectionManager alcm) {
+	public void setAlarmListConnectionManager( AlarmListConnectionManager alcm) {
 		alarmListConnectionManager =alcm;
 	}
 
@@ -239,7 +243,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Used by jmx mbean QoSD to pass in Spring Application context
 	 * @param m_context - application conext for this bean to use
 	 */
-	public  void setapplicationcontext(ClassPathXmlApplicationContext m_context){
+	public void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
 	}
 
@@ -250,28 +254,25 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * STARTING, RUNNING, STOP_PENDING, STOPPED
 	 */
 
-	private int status = START_PENDING;
-	//private static QoSD singleton;
 	private QoSDConfiguration config = null;
-	public static PropertiesLoader props;
-	private static Properties env;
+	public PropertiesLoader props;
+	private Properties env;
 
-	private static Hashtable<String,String> triggerUeiList;
+	private Hashtable<String,String> triggerUeiList;
 
 
 	public static final String NAME = "OpenOSS.QoSD";
-	private static final String LOG4J_CATEGORY = "OpenOSS.QoSD";
-	private static String m_stats=null;  //not used but needed for initialisation	
+	private String m_stats=null;  //not used but needed for initialisation	
 
 	// TODO - need to make this a configuration option
-	public static boolean useUeiList=false; // if true only alarms with event id's in the UEI list are sent
+	public boolean useUeiList=false; // if true only alarms with event id's in the UEI list are sent
 	OpenNMSEventHandlerThread openNMSEventHandlerThread;
 
 	/*----------------START OF PUBLIC METHODS---------------*/
 
 	/** Method to set up the fiber
 	 *  Note - not used in Spring activation */
-	public void init(){
+	protected void onInit(){
 		Logger log = getLog();	
 		log.info("Initialising QoSD");
 	}
@@ -279,9 +280,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	/**
 	 * The start() method loads the configuration for the QosD daemon and registers for events
 	 */
-	public void start() {
-		status = STARTING;
-
+	protected void onStart() {
 		String jnp_host;
 		Logger log = getLog();		//Get a reference to the QosD logger instance assigned by OpenNMS
 
@@ -290,7 +289,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 		// set application context for AlarmListConnectionManager
 		try {
 			if (log.isDebugEnabled()) log.debug("Qosd.start():setting application context for alarmListConnectionManager: m.context.toString:"+m_context.toString());                           
-			alarmListConnectionManager.setapplicationcontext(m_context);
+			alarmListConnectionManager.setApplicationContext(m_context);
 		}catch ( Exception ex){
 			throw new IllegalArgumentException("Qosd.start(): Error setting spring application context: "+ex);
 		}
@@ -411,7 +410,7 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 		log.info("Qosd.start(): initialising OpenNMSEventHandlerThread");
 		try {
 			openNMSEventHandlerThread= new OpenNMSEventHandlerThread();
-			openNMSEventHandlerThread.setossDao(ossDao);
+			openNMSEventHandlerThread.setOssDao(ossDao);
 			openNMSEventHandlerThread.init();
 			openNMSEventHandlerThread.start();
 		} catch (Exception ex) {
@@ -438,7 +437,6 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 				
 		// TODO - replace ack handler code with QoSDrx receiver code
 
-		status = RUNNING;
 		log.info("QoSD Started");
 	}
 
@@ -448,11 +446,10 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or 
 	 * database connections, before the fiber's execution is ended. 
 	 */
-	public void stop() {
+	protected void onStop() {
 		Logger log = getLog();		//Get a reference to the QoSD logger
 
 		log.info("Stopping QosD");
-		status = STOP_PENDING;
 
 		try {
 			unregisterListener();	//unregister the OpenNMS event listener
@@ -473,7 +470,6 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 			log.error("stop() Error killing alarmListConnectionManager. Error:", ex);
 		}
 
-		status = STOPPED;		
 		log.info("QosD Stopped");
 	}
 
@@ -482,13 +478,11 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Resume method of fiber, called by OpenNMS to start the fiber up from 
 	 * a paused state.
 	 */
-	public void resume() {
+	protected void onResume() {
 		Logger log = getLog();		//Get a reference to the QosD logger
 		//instance assigned by OpenNMS
 		log.info("Resuming QosD");
-		status = RESUME_PENDING;
 		registerListener();		//start responding to OpenNMS events
-		status = RUNNING;
 		log.info("QosD Resumed");
 	}
 
@@ -497,33 +491,13 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	 * Pause method of fiber, called by OpenNMS to put the fiber in a 
 	 * suspended state until it can be later resumed.
 	 */
-	public void pause() {
+	protected void onPause() {
 		Logger log = getLog();		//Get a reference to the QosD logger
 		//instance assigned by OpenNMS
 		log.info("Pausing QosD");
-		status = PAUSE_PENDING;
 		unregisterListener();		//stop responding to OpenNMS events
-		status = PAUSED;
 		log.info("QosD Paused");
 	}
-
-
-	/**
-	 *  Returns the Log category name
-	 */
-	public String getName() {
-		return LOG4J_CATEGORY;
-	}
-
-
-	/**
-	 *  lets OpenNMS know what state the daemon is in
-	 *  @param status
-	 */ 
-	public int getStatus() 	{
-		return status;
-	}
-
 
 	/**
 	 * Registers an OpenNMS event listener with this class.
@@ -740,6 +714,3 @@ public class QoSDimpl2 implements PausableFiber, EventListener, QoSD {
 	}
 
 }
-
-
-

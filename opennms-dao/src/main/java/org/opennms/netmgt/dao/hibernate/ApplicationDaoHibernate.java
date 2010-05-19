@@ -40,8 +40,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 		super(OnmsApplication.class);
 	}
 
-	public OnmsApplication findByName(String name) {
+	public OnmsApplication findByName(final String name) {
 		return findUnique("from OnmsApplication as app where app.name = ?", name);
 	}
-
 }

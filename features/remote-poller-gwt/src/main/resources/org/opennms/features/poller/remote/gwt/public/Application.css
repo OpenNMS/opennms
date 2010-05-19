@@ -1,5 +1,15 @@
 /** Add css rules here for your application. */
 
+HR {
+  margin: 0px;
+}
+
+.gwt-Hyperlink {
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 13px;
+}
+
 button {
   display: block;
   font-size: 16pt
@@ -9,32 +19,49 @@ button {
   width: 100%
 }
 
-/*img {
-  margin-top: 20px;
-}*/
+#locationStatus {
+  width: 250px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 
-.statusTable td {
-  border: 0px;
-  padding: 3px;
+.statusDt {
+  padding-left: 0px;
   margin: 0px;
 }
 
-.statusUp td {
-  vertical-align: top;
-  background-color: #40ff40;
+.statusDd {
+  padding-left: 20px;
+  margin: 0px;
 }
 
-.statusMarginal td {
+.statusUp {
   vertical-align: top;
-  background-color: #ffff40;
+  background-color: #88ff88;
 }
 
-.statusDown td {
+.statusMarginal {
   vertical-align: top;
-  background-color: #ff4040;
+  background-color: #ffff88;
 }
 
-.statusUnknown td {
+.statusDown {
   vertical-align: top;
-  background-color: #4040ff;
+  background-color: #ff8888;
+}
+
+.statusUnknown {
+  vertical-align: top;
+  background-color: #8888ff;
+}
+
+.statusUninitialized {
+  vertical-align: top;
+  background-color: #dddddd;
+}
+
+.mqpoicontenttext {
+  margin: 0px;
+  overflow: hidden;
 }

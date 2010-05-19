@@ -117,6 +117,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
 		onmsLinkState.setLinkState(state);
 		
         dli.setLastPollTime(new Date());
+        dli.setLinkTypeId(777);
         
         m_dataLinkDao.save(dli);
         m_linkStateDao.save(onmsLinkState);

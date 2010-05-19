@@ -58,6 +58,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.AttributeGroupType;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GenericIndexResource;
@@ -118,6 +119,7 @@ public class ThresholdingVisitorTest {
     @Before
     public void setUp() throws Exception {
         // Resets Counters Cache Data
+        System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "false");
         CollectionResourceWrapper.s_cache.clear();
         
         m_defaultErrorLevelToCheck = Level.WARN;
@@ -794,6 +796,57 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testBug3554_withDBFilterDao() throws Exception {
+        runTestForBug3554();
+
+        // Validate FilterDao Calls
+        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
+        int count = 0;
+        String expectedMsgHeader = "createPackageIpMap: package ";
+        for (LoggingEvent e : events) {
+            if (e.getMessage().toString().startsWith(expectedMsgHeader))
+                count++;
+        }
+        assertEquals("expecting " + numOfPackages + " events", numOfPackages, count);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-bug3554.xml
+     * - test-thresholds-bug3554.xml
+     * 
+     * This test demonstrate that we can force filter auto-reload.
+     */
+    @Test
+    public void testBug3720() throws Exception {
+        System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "true");
+        runTestForBug3554();
+        
+        // Validate FilterDao Calls
+        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
+        int expectedCalls = numOfPackages * 26; // Not sure why is 5^2+1
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
+        int count = 0;
+        String expectedMsgHeader = "createPackageIpMap: package ";
+        for (LoggingEvent e : events) {
+            if (e.getMessage().toString().startsWith(expectedMsgHeader))
+                count++;
+        }
+        assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
+        
+        // Validate number of re-initializations
+        expectedCalls = 25; // 5 nodes => 5^2 times
+        events = MockLogAppender.getEventsGreaterOrEqual(Level.INFO);
+        count = 0;
+        expectedMsgHeader = "getThresholdGroupNames: re-initializing filters.";
+        for (LoggingEvent e : events) {
+            if (e.getMessage().toString().equals(expectedMsgHeader))
+                count++;
+        }
+        assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
+    }
+
+    private void runTestForBug3554() throws Exception {
         MockLogAppender.resetEvents();
         System.err.println("----------------------------------------------------------------------------------- begin test");
 
@@ -853,18 +906,6 @@ public class ThresholdingVisitorTest {
             assertEquals(4, visitor.getThresholdGroups().size()); // mib2, cisco, ciscoIPRA, ciscoNAS
         }
         System.err.println("----------------------------------------------------------------------------------- end");
-
-        // Validate FilterDao Calls
-
-        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
-        int count = 0;
-        String expectedMsgHeader = "createPackageIpMap: package ";
-        for (LoggingEvent e : events) {
-            if (e.getMessage().toString().startsWith(expectedMsgHeader))
-                count++;
-        }
-        assertEquals("expecting " + numOfPackages + " events", numOfPackages, count);
     }
 
     /*
@@ -973,6 +1014,50 @@ public class ThresholdingVisitorTest {
         String ifName = "wlan0";
         addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
         runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-bug3664.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
+     */
+    @Test
+    public void testBug3664() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3664.xml");
+        Integer ifIndex = 1;
+        Long ifSpeed = 10000000l;
+        String ifName = "wlan0";
+        String domain = "myDomain";
+        String ifAlias = ifName;
+        String ifAliasComment = "#";
+
+        String label = domain + "/" + ifAlias;
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", null, "ifOutOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", null, "ifInOctets", label, ifIndex.toString());
+
+        ThresholdingVisitor visitor = createVisitor();
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
+        CollectionAgent agent = createCollectionAgent();
+        IfResourceType resourceType = createInterfaceResourceType(agent);
+
+        // Step 1
+        IfInfo ifInfo = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 10000);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 10000);
+        AliasedResource resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
+        resource.visit(visitor);
+
+        // Step 2 - Increment Counters
+        ifInfo = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 46000);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
+        resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
         verifyEvents(0);
     }
 

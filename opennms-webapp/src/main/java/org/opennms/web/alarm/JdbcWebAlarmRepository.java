@@ -38,6 +38,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.alarm.filter.AlarmCriteria;
@@ -266,7 +267,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), new SeverityBetweenFilter(OnmsSeverity.NORMAL, OnmsSeverity.CRITICAL));
         
         String sql = getSql("UPDATE ALARMS SET SEVERITY =?, ALARMTYPE =? ", criteria);
-        System.out.println(sql);
+        LogUtils.infof(this, sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), Alarm.RESOLUTION_TYPE));
         
     }
@@ -279,7 +280,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         AlarmCriteria criteria = new AlarmCriteria(new AlarmIdListFilter(alarmIds), orCondFilter);
         
         String sql = getSql("UPDATE ALARMS SET SEVERITY = ( CASE WHEN SEVERITY =? THEN ? ELSE ( CASE WHEN SEVERITY <? THEN SEVERITY + 1 ELSE ? END) END), ALARMTYPE =? ", criteria);
-        System.out.println(sql);
+        LogUtils.infof(this, sql);
         jdbc().update(sql, paramSetter(criteria, OnmsSeverity.CLEARED.getId(), OnmsSeverity.WARNING.getId(), OnmsSeverity.CRITICAL.getId(), OnmsSeverity.CRITICAL.getId(), Alarm.PROBLEM_TYPE));
     }
     

@@ -141,8 +141,8 @@
 	           <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
 	           <artifactItems>
 	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-webapp</artifactId>
+	               <groupId>org.opennms.features</groupId>
+	               <artifactId>org.opennms.features.webapp-full</artifactId>
                   <version>${project.version}</version>
 	               <type>war</type>
 	             </artifactItem>
@@ -161,24 +161,6 @@
                 <artifactItem>
                   <groupId>org.opennms.features</groupId>
                   <artifactId>org.opennms.features.http-remoting</artifactId>
-                  <version>${project.version}</version>
-                  <type>war</type>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
-          <execution>
-            <id>unpack-monitor-webapp</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}/dependency-remote-monitor</outputDirectory>
-	           <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
                   <version>${project.version}</version>
                   <type>war</type>
 	             </artifactItem>

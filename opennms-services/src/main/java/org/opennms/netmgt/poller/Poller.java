@@ -410,7 +410,7 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private boolean scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date date, String svcLostUei) {
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
 
         Package pkg = findPackageForService(ipAddr, serviceName);
         if (pkg == null) {
@@ -504,7 +504,7 @@ public class Poller extends AbstractServiceDaemon {
     }
     
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
 
         if (!getPollerConfig().serviceInPackageAndEnabled(svcName, pkg)) {
             if (log.isDebugEnabled())

@@ -57,10 +57,10 @@ import java.util.List;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.AutoAction;
-import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.eventd.db.OperatorAction;
-import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.eventd.db.SnmpInfo;
+import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Operaction;
@@ -84,9 +84,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * Values for the ' <parms>' block are loaded with each parm name and parm value
  * delimited with the NAME_VAL_DELIM.
  * 
- * @see org.opennms.netmgt.eventd.db.Constants#MULTIPLE_VAL_DELIM
- * @see org.opennms.netmgt.eventd.db.Constants#DB_ATTRIB_DELIM
- * @see org.opennms.netmgt.eventd.db.Constants#NAME_VAL_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#MULTIPLE_VAL_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#DB_ATTRIB_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#NAME_VAL_DELIM
  * 
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>

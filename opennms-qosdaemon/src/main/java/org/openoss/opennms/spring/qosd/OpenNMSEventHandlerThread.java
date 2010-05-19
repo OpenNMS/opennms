@@ -29,7 +29,7 @@ package org.openoss.opennms.spring.qosd;
 
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
-import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
+import org.openoss.opennms.spring.dao.OssDao;
 
 /**
  * This class provides a thread to decouple the OpenNMS event handling from updates to
@@ -42,18 +42,17 @@ import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
  *
  */
 public class OpenNMSEventHandlerThread extends Thread {
-	private static final String LOG4J_CATEGORY = "OpenOSS.QoSD";
 
 	// ---------------SPRING DAO DECLARATIONS----------------
 
 
-	private static OssDaoOpenNMSImpl ossDao;
+	private static OssDao ossDao;
 
 	/**
 	 * provides an interface to OpenNMS which provides a unified api 
 	 * @param ossDao the ossDao to set
 	 */
-	public void setossDao(OssDaoOpenNMSImpl _ossDao) {
+	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
 	}
 
@@ -174,8 +173,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	}
 
 	private static Logger getLog() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return (Logger)ThreadCategory.getInstance(QoSDimpl2.class);	
+		return ThreadCategory.getInstance(OpenNMSEventHandlerThread.class);	
 	}
 
 }

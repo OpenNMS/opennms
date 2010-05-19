@@ -27,7 +27,7 @@ DESC="OpenNMS Remote Poller"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 PIDFILE="/var/run/$NAME.pid"
 OPENNMS_HOME="${install.dir}"
-JVM_ARGS=""
+JVM_ARGS="-Dpoller.logfile=/var/log/opennms-remote-poller.log"
 EXTRA_ARGS=""
 URI="http://localhost:8980/opennms-remoting"
 LOCATION="Default"
@@ -79,20 +79,48 @@ if [ x$PASSWORD != x ]; then
 	EXTRA_ARGS="$EXTRA_ARGS -p $PASSWORD"
 fi
 
+# When this function returns:
+# - if POLLER_PID is null, then the process is dead and the pidfile does not exist
+# - if POLLER_PID is not null, then the process is alive with that PID
 pid_running() {
 	if [ -f "$PIDFILE" ]; then
+		# Pull the PID out of the pidfile
 		POLLER_PID=`cat $PIDFILE`
-		if [ -n $POLLER_PID ]; then
-			return ps -p $POLLER_PID >/dev/null 2>&1
+		if [ ! -z $POLLER_PID ]; then
+			# Check to see if the process is still alive
+			ps -p $POLLER_PID >/dev/null 2>&1
+			# If it is dead, then unset POLLER_PID
+			if [ $? -gt 0 ]; then
+				rm -f "$PIDFILE"
+				unset POLLER_PID
+				return
+			fi
+
+			return 
+		fi
+	else
+		# Attempt to find an existing remote poller process
+		POLLER_PID=$(ps -efww | grep remote-poller.jar | grep -v grep | awk '{print $2}')
+		if [ ! -z $POLLER_PID ]; then
+			kill $POLLER_PID
+			# Give it a few seconds to die
+			sleep 5
+			POLLER_PID=$(ps -efww | grep remote-poller.jar | grep -v grep | awk '{print $2}')
+			if [ ! -z $POLLER_PID ]; then
+				kill -9 $POLLER_PID
+			fi
+			unset POLLER_PID
 		fi
 	fi
-	return 1
+	return
 }
 
 case "$1" in
 
 	start)
-		if pid_running; then
+		pid_running
+		if [ ! -z $POLLER_PID ]; then
+			echo "$DESC is running."
 			exit 0
 		fi
 
@@ -103,14 +131,16 @@ case "$1" in
 
 		echo -n "Starting $DESC: "
 		if [ -x /sbin/start-stop-daemon ]; then
-			start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE $CHUID --startas /usr/sbin/opennms-remote-poller -- $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null
+			start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --make-pidfile $CHUID --startas $OPENNMS_HOME/bin/remote-poller.sh -- $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null
 		else
-			$SUDO_PREFIX $OPENNMS_HOME/bin/remote-poller.sh $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS
-			RETVAL="$?"
-			POLLER_PID="$!"
-			echo "$POLLER_PID" > "$PIDFILE"
-			echo "OK"
-			exit 0
+			if $SUDO_PREFIX $OPENNMS_HOME/bin/remote-poller.sh $JVM_ARGS -u "$URI" -l "$LOCATION" $EXTRA_ARGS >/dev/null; then
+				echo "OK"
+				exit 0
+			else
+				RETVAL="$?"
+				echo "FAILED"
+				exit $RETVAL
+			fi
 		fi
 		echo "."
 		;;
@@ -121,10 +151,13 @@ case "$1" in
 			start-stop-daemon --stop --quiet --retry 15 --pidfile $PIDFILE > /dev/null
 			echo "."
 		else
-			if pid_running; then
+			pid_running
+			if [ ! -z $POLLER_PID ]; then
 				kill `cat $PIDFILE`
-			else
-				rm "$PIDFILE" >/dev/null 2>&1
+				rm -f "$PIDFILE" 2>&1
+			else 
+				echo "FAILED: $DESC is not running."
+				exit 1
 			fi
 
 			echo "OK"
@@ -140,16 +173,15 @@ case "$1" in
 		;;
 
 	try-restart)
-		if pid_running; then
+		pid_running
+		if [ ! -z $POLLER_PID ]; then
 			$0 restart
 			exit $?
 		fi
+		echo "$DESC not running."
 		exit 0
 		;;
 
-	reload)
-		exit 3
-		;;
 
 	force-reload)
 		$0 try-restart
@@ -157,18 +189,18 @@ case "$1" in
 		;;
 
 	status)
-		if pid_running; then
+		pid_running
+		if [ ! -z $POLLER_PID ]; then
+			echo "$DESC is running."
 			exit 0
 		else
-			if [ -f $PIDFILE ]; then
-				exit 1
-			else
-				exit 3
-			fi
+			echo "$DESC is stopped."
+			exit 3
 		fi
 		;;
+
 	*)
-		echo "Usage: $0 {start|stop|restart|try-restart|reload|force-reload|status}" >&2
+		echo "Usage: $0 {start|stop|restart|try-restart|force-reload|status}" >&2
 		exit 1
 		;;
 esac

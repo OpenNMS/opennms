@@ -75,14 +75,14 @@ public final class SmbPlugin extends AbstractPlugin {
         Category log = ThreadCategory.getInstance(getClass());
         boolean isAServer = false;
         try {
-            System.out.println("host.getHostAddress(): " + host.getHostAddress());
+            log.debug("host.getHostAddress(): " + host.getHostAddress());
             NbtAddress nbtAddr = NbtAddress.getByName(host.getHostAddress());
 
             // If the retrieved SMB name is equal to the IP address
             // of the host, the it is safe to assume that the interface
             // does not support SMB
             //
-            System.out.println("nbtAddr.getHostNamer(): " + nbtAddr.getHostName());
+            log.debug("nbtAddr.getHostNamer(): " + nbtAddr.getHostName());
             if (nbtAddr.getHostName().equals(host.getHostAddress())) {
                 if (log.isDebugEnabled())
                     log.debug("SmbPlugin: failed to retrieve SMB name for " + host.getHostAddress());

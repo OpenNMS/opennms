@@ -44,10 +44,16 @@
         noticeStatus = "<font color=\"ff0000\">Unknown</font>";
     }
     pageContext.setAttribute("noticeStatus", noticeStatus);
+    final String baseHref = org.opennms.web.Util.calculateUrlBase( request );
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-   
+<c:choose>
+<c:when test="${param.docType == 'html'}">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+</c:when>
+<c:otherwise>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+</c:otherwise>
+</c:choose>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
@@ -68,50 +74,54 @@
   </c:forEach>
   <c:choose>
     <c:when test="${param.nobase != 'true' }">
-        <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+        <base href="<%= baseHref %>" />
     </c:when>
   </c:choose>
   <!--  ${nostyles} -->
   <c:choose>
     <c:when test="${param.nostyles != 'true' }">
-        <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
         <c:choose>
         	<c:when test="${param.enableExtJS == 'true'}">
-        		<link rel='stylesheet' type='text/css' href='extJS/resources/css/ext-all.css' />
-  				<link rel='stylesheet' type='text/css' href='css/o-styles.css' media='screen' />
-  				<link rel='stylesheet' type='text/css' href='extJS/resources/css/opennmsGridTheme.css' />
+        		<link rel='stylesheet' type='text/css' href='<%= baseHref %>extJS/resources/css/ext-all.css' />
+  				<link rel='stylesheet' type='text/css' href='<%= baseHref %>css/o-styles.css' media='screen' />
+  				<link rel='stylesheet' type='text/css' href='<%= baseHref %>extJS/resources/css/opennmsGridTheme.css' />
         	</c:when>
         </c:choose>
     </c:when>
   </c:choose>
-<c:forEach var="link" items="${paramValues.link}">
+  <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
-  <script type="text/javascript" src="js/global.js"></script>
-    <c:if test="${!empty pageContext.request.remoteUser}">
-        <script type="text/javascript" src="coreweb/coreweb.nocache.js"></script>
+  <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
+    <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
+        <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
     </c:if>
 	<c:if test="${param.enableExtJS == 'true'}">
-  		<script type='text/javascript' src='extJS/source/core/Ext.js'></script>
-  		<script type='text/javascript' src='extJS/source/adapter/ext-base.js'></script>
-  		<script type='text/javascript' src='extJS/ext-all-debug.js'></script>
-  		<script type='text/javascript'>Ext.BLANK_IMAGE_URL = 'extJS/resources/images/default/s.gif'</script>
+  		<script type='text/javascript' src='<%= baseHref %>extJS/source/core/Ext.js'></script>
+  		<script type='text/javascript' src='<%= baseHref %>extJS/source/adapter/ext-base.js'></script>
+  		<script type='text/javascript' src='<%= baseHref %>extJS/ext-all-debug.js'></script>
+  		<script type='text/javascript'>Ext.BLANK_IMAGE_URL = '<%= baseHref %>extJS/resources/images/default/s.gif'</script>
 	</c:if>
 
 	<c:if test="${param.storageAdmin == 'true'}">
-  		<script type='text/javascript' src='js/rwsStorage.js'></script>
+  		<script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
 	</c:if>
 
 	<c:if test="${param.enableSpringDojo == 'true'}">	
-		<script type="text/javascript" src="<c:url value="/resources/dojo/dojo.js" />"></script>
-   		<script type="text/javascript" src="<c:url value="/resources/spring/Spring.js" />"></script>
-    	<script type="text/javascript" src="<c:url value="/resources/spring/Spring-Dojo.js" />"></script>
+		<script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
+   		<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
+    	<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>
+
+<c:forEach var="extras" items="${paramValues.extras}">
+  <c:out value="${extras}" escapeXml="false" />
+</c:forEach>
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -128,14 +138,14 @@
 
 	<!-- Header -->
 	<div id="header">
-		<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
+		<h1 id="headerlogo"><a href="<%= baseHref %>index.jsp"><img src="<%= baseHref %>images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
 		<div id="headerinfo">
 			<h2>${param.title}</h2>
 			<p align="right">
 				<c:choose>
 					<c:when test="${!empty pageContext.request.remoteUser}">
-						User: <a href="account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
-						- <a href="j_spring_security_logout">Log out</a><br/>
+						User: <a href="<%= baseHref %>account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+						- <a href="<%= baseHref %>j_spring_security_logout">Log out</a><br/>
 					</c:when>
 					<c:otherwise>
 						User: &hellip;<br/>
@@ -151,17 +161,19 @@
 		<c:choose>
 			<c:when test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">
 				<div id="headernavbarright">
-                  <jsp:include page="/navBar.htm" flush="false"/>
+					<jsp:include page="/navBar.htm" flush="false"/>
 				</div>
 			</c:when>
 			<c:otherwise>
-				<div id="headernavbarright">
-					<div class="navbar">
-						<ul>
-							<li class="last"><a href="http://www.opennms.org/index.php/FAQ">FAQs</a></li>
-						</ul>
+				<c:if test="${param.nofaq != 'true'}">
+					<div id="headernavbarright">
+						<div class="navbar">
+							<ul>
+								<li class="last"><a href="http://www.opennms.org/index.php/FAQ">FAQs</a></li>
+							</ul>
+						</div>
 					</div>
-				</div>
+				</c:if>
 			</c:otherwise>
 		</c:choose>
 	  <div class="spacer"><!-- --></div>
@@ -180,8 +192,8 @@
 <%= "<div id=\"content\">" %>
 <div class="onms">
 <h2>
-<c:if test="${(param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)}">
-   <a href="index.jsp">Home</a>
+<c:if test="${((param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)) && param.nobreadcrumbs != 'true'}">
+   <a href="<%= baseHref %>index.jsp">Home</a>
    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
      <c:if test="${breadcrumb != ''}">
            / <c:out value="${breadcrumb}" escapeXml="false"/>

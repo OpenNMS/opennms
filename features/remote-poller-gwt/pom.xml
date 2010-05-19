@@ -10,12 +10,12 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
   <packaging>war</packaging>
+  <name>OpenNMS Remote Poller GWT UI</name>
 
   <properties>
     <moduleName>org.opennms.features.poller.remote.gwt.client.Application</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
-    <gwt.style>DETAILED</gwt.style>
   </properties>
 
   <build>
@@ -59,14 +59,6 @@
         <version>7.0.1.v20091125</version>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
-<!--
-          <connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>${web.port}</port>
-              <maxIdleTime>60000</maxIdleTime>
-            </connector>
-          </connectors>
--->
           <systemProperties>
             <systemProperty>
               <name>log4j.configuration</name>
@@ -99,10 +91,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>gwt-dependencies</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
     </dependency>
@@ -119,32 +107,80 @@
       <artifactId>spring-web-dependencies</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt.google-apis</groupId>
-      <artifactId>gwt-maps</artifactId>
-      <version>1.0.4</version>
-      <exclusions>
-      	<exclusion>
-      		<groupId>com.google.gwt</groupId>
-      		<artifactId>gwt-user</artifactId>
-      	</exclusion>
-      </exclusions>
+      <groupId>net.simon04.jelementtree</groupId>
+      <artifactId>jelementtree</artifactId>
+      <version>20100506</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.geo-google</groupId>
+      <artifactId>geo-google</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+    <!-- used by geo-google -->
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+
+    <!-- GWT -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>gwt-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.gwt.google-apis</groupId>
       <artifactId>gwt-ajaxloader</artifactId>
       <version>1.0.0</version>
       <exclusions>
-      	<exclusion>
-      		<groupId>com.google.gwt</groupId>
-      		<artifactId>gwt-user</artifactId>
-      	</exclusion>
+        <exclusion>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-user</artifactId>
+        </exclusion>
       </exclusions>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- map APIs -->
+    <dependency>
+      <groupId>com.google.gwt.google-apis</groupId>
+      <artifactId>gwt-maps</artifactId>
+      <version>1.0.4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-user</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code</groupId>
+      <artifactId>gwt-mapquest</artifactId>
+      <version>1.2-20100507</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-user</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gwtopenmaps.openlayers</groupId>
+      <artifactId>openlayers_gwt</artifactId>
+      <version>0.5-20100510</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code</groupId>
       <artifactId>gwt-maps-utility</artifactId>
       <version>1.0</version>
-    </dependency>
+      <scope>provided</scope>
+    </dependency> 
 
     <!-- technically for testing (making a full war)... -->
     <dependency>
@@ -169,11 +205,28 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-tcp</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>runtime</scope>
     </dependency>
 
     <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
@@ -184,6 +237,26 @@
       <artifactId>org.opennms.core.test-api.http</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-test-dependencies</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+  </repositories>
 
 </project>

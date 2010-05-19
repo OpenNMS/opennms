@@ -76,9 +76,9 @@ import org.springframework.util.Assert;
  * Values for the ' <parms>' block are loaded with each parm name and parm value
  * delimited with the NAME_VAL_DELIM.
  * 
- * @see org.opennms.netmgt.eventd.db.Constants#MULTIPLE_VAL_DELIM
- * @see org.opennms.netmgt.eventd.db.Constants#DB_ATTRIB_DELIM
- * @see org.opennms.netmgt.eventd.db.Constants#NAME_VAL_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#MULTIPLE_VAL_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#DB_ATTRIB_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#NAME_VAL_DELIM
  * 
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  * @author Sowmya Nataraj </A>

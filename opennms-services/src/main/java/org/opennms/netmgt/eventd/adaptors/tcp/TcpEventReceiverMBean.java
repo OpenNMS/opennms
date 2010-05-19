@@ -37,33 +37,13 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
-public interface TcpEventReceiverMBean {
-    /**
-     * Starts the current managed bean.
-     */
-    void start();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    /**
-     * Stops the current managed bean.
-     */
-    void stop();
-
-    /**
-     * Invoked prior to start
-     */
-    void init();
-
+public interface TcpEventReceiverMBean extends BaseOnmsMBean{
     /**
      * Invoked prior to garbage collection.
      */
     void destroy();
-
-    /**
-     * The current status of the managed bean. This is a representation of the
-     * managed bean's run state as defined by the <code>Fiber</code>
-     * interface.
-     */
-    int getStatus();
 
     /**
      * Sets the port where new requests will be handled. This can only be done
