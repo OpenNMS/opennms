@@ -49,7 +49,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.Manager;
-import org.opennms.web.map.view.VElementInfo;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 

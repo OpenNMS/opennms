@@ -13,7 +13,6 @@
 	<script type="text/ecmascript" xlink:href="ECMAScript/textbox.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/button.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/selectionList.js"/>
-	<script type="text/ecmascript" xlink:href="ECMAScript/tabgroup.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/Window.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/Point2D.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/PickColor.js"/>	
@@ -25,6 +24,7 @@
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationHelpers.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationEventProcessor.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Map.js"/>
+	<script type="text/ecmascript" xlink:href="svgjavascript/MapTabs.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Node.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Label.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Link.js"/>
@@ -88,9 +88,7 @@ function startUp() {
 
 	// Instantiate the tabPanel
 	mapTabTitles.push(MAP_NOT_OPENED_NAME);
-	mapTabGroup = 
-	new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
-
+	mapTabGroup = new MapTabs("TabPanelGroup","TabPanel",mapWidth,tabwidth,menuHeight,tabStyles,tabactivetabBGColor,tabtextStyles,mapTabTitles,0);
 	defaultMap = new ElemMap(-2, null, null);
 	
 	

@@ -493,7 +493,38 @@ function execLinkCMAction(linkid,sid,label,evt) {
 	sLink.switchLink(linkid);
 }
 
-function activateTabMap(id,tabTitle,tabindex) {
+function onClickTab(evt) {
+	var tab = evt.target;
+	var id = tab.getAttributeNS(null,"id");
+	var idArray = id.split("__");
+	var index = parseInt(idArray[1]);
+	mapTabGroup.activateTabByIndex(index);
+	var tabTitle = mapTabGroup.getTabTitleByIndex(index);
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if ( tabTitle == NEW_MAP_NAME ) {
+		newMapSetUp();
+	} else {
+		openMapSetUp(mapSortAss[tabTitle].id,false);
+	}
+}
+
+function onCloseTab(evt) {
+	var tab = evt.target;
+	var id = tab.getAttributeNS(null,"id");
+	var idArray = id.split("__");
+	var index = parseInt(idArray[1]);
+	var tabTitle = mapTabGroup.getTabTitleByIndex(index);
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if (mapTabGroup.getActiveTabIndex() == index ) {
+		closeSetUp();
+		setTimeout("onClosingActiveTab();",200);
+	} else {
+		mapTabClose(tabTitle);
+	}
+}
+
+function onClosingActiveTab() {
+	var tabTitle = mapTabGroup.getActiveTabTitle();
 	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
 	if ( tabTitle == NEW_MAP_NAME ) {
 		newMapSetUp();
