@@ -117,11 +117,6 @@ public class Linkd extends AbstractServiceDaemon {
         Assert.state(m_scheduler != null, "must set the scheduler property");
         Assert.state(m_eventListener != null,"must be set the event receiver");
 	       
-		if (log().isInfoEnabled())
-			log()
-					.info("init: Logging Level Set to "
-							+ log().getLevel().toString());
-
 		m_activepackages = new ArrayList<String>();
 		
 		// initialize the ipaddrsentevents
