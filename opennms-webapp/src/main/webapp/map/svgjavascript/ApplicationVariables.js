@@ -26,9 +26,9 @@ var Y_FACTOR = 2.625;
 
 //TabGroup Object Style
 var tabStyles = {"fill":"navy","stroke":"navy","stroke-width":1,"cursor":"pointer"};
-var tabwindowStyles = {"fill":"white","stroke":"navy","stroke-width":1};
 var tabtextStyles = {"font-family":textFamily,"font-size":titleFontSize,"fill":"white","font-weight":"normal"};
 var tabactivetabBGColor = "blue";
+var tabwidth=200;
 
 // Menu ObjectStyle
 //Variables used for Menu style
