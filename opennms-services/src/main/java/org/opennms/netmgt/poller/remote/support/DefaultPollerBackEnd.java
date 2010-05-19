@@ -38,6 +38,7 @@ package org.opennms.netmgt.poller.remote.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -201,9 +202,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
-            /* the monitor has been deleted we'll pick this in up on the next
-             * config check
-             */
+            // the monitor has been deleted we'll pick this in up on the next config check
             return new EmptyPollerConfiguration();
         }
 
@@ -221,6 +220,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             configs.add(new PolledService(monSvc, parameters, new OnmsPollModel(interval)));
         }
 
+        Collections.sort(configs);
         return new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PolledService[configs.size()]));
     }
 

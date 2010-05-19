@@ -57,7 +57,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
 	private static Logger getLog() {
-		return (Logger)ThreadCategory.getInstance(QoSDrx.class);	
+		return ThreadCategory.getInstance(QoSDrx.class);	
 	}
 	
 	// ************************

@@ -388,8 +388,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                    log().warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
                 }
             }
 
@@ -409,8 +408,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                    log().warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
                 }
             }
             
