@@ -7,7 +7,7 @@
 
 	<section id="current-release">
 		<title>Current Release</title>
-		<para>There are no known major issues in OpenNMS 1.6.</para>
+		<para>There are no known major issues in OpenNMS 1.6.3.</para>
 		<para>
 			There are, however, a number of bugs and features which are slated for
 			future 1.6 releases.  They can be viewed (and voted on) in the bugzilla <ulink

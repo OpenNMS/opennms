@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms-snmp</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.6.11</version>
+    <version>1.6.12-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-snmp-test</artifactId>
