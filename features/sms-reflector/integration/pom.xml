@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>provision</artifactId>
-    <version>1.7.90-SNAPSHOT</version>
+    <version>1.7.91-SNAPSHOT</version>
     <relativePath>../provision</relativePath>
   </parent>
 
