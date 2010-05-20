@@ -4,6 +4,12 @@ opennms (1.7.90-1) unstable; urgency=medium
 
  -- Benjamin Reed <ranger@opennms.org>  Thu, 20 May 2010 02:00:00 -0500
 
+opennms (1.7.10-4) unstable; urgency=low
+
+  * Fix PostgreSQL dependency
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 06 May 2010 10:57:00 +0200
+
 opennms (1.7.10-3) unstable; urgency=low
 
   * Include small fix for RXTX native libraries.
