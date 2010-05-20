@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features.notifications</artifactId>
-    <version>1.7.11-SNAPSHOT</version>
+    <version>1.7.90-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>org.opennms.features.notifications.sms-strategy</artifactId>
-  <version>1.7.11-SNAPSHOT</version>
+  <version>1.7.90-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS SMS Notification Strategy</name>
   <build>
