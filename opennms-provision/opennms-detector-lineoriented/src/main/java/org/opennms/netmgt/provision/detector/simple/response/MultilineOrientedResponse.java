@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.opennms.core.utils.LogUtils;
+
 /**
  * @author Donald Desloge
  */
@@ -86,9 +88,9 @@ public class MultilineOrientedResponse {
         try {
             
             String response = getEntireResponse(m_in);
-            System.out.printf("Checking http response, pattern: %s  URL: %s  isCheckCode: %s  MaxRetCode: %s\n", pattern, url, isCheckCode, maxRetCode);
+            LogUtils.infof(this, "Checking http response, pattern: %s  URL: %s  isCheckCode: %s  MaxRetCode: %s\n", pattern, url, isCheckCode, maxRetCode);
             if (response != null && response.contains(pattern)) {
-                System.out.println("Return from server was: " + response);
+                LogUtils.infof(this, "Return from server was: " + response);
                 if (isCheckCode) {
                                                 
                     if (("/".equals(url)) || (isCheckCode == false)) {
@@ -100,11 +102,11 @@ public class MultilineOrientedResponse {
                     String codeString = t.nextToken();
                                                
                     if (validateCodeRange(codeString, 99, maxRetCode)) {
-                        System.out.println("RetCode Passed");
+                        LogUtils.infof(this, "RetCode Passed");
                         return true;
                     }
                 } else {
-                    System.out.println("isAServer");
+                    LogUtils.infof(this, "isAServer");
                     return true;
                 }
             }
