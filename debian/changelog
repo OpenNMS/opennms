@@ -1,8 +1,8 @@
-opennms (1.7.90-0) unstable; urgency=low
+opennms (1.7.90-1) unstable; urgency=medium
 
-  * Rearranged remote poller packaging.
+  * New upstream release.
 
- -- Benjamin Reed <ranger@opennms.org>  Mon, 05 Apr 2010 12:00:00 -0500
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 20 May 2010 02:00:00 -0500
 
 opennms (1.7.10-3) unstable; urgency=low
 
