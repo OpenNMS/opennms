@@ -210,6 +210,7 @@ public class PDFReportRenderer implements ReportRenderer {
         try {
 
             FopFactory fopFactory = FopFactory.newInstance();
+            fopFactory.setStrictValidation(false);
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out);
 
             TransformerFactory tfact = TransformerFactory.newInstance();
