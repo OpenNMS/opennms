@@ -84,7 +84,7 @@
   <scm>
     <connection>scm:git:git://opennms.git.sourceforge.net/gitroot/opennms/opennms</connection>
     <developerConnection>scm:git:ssh://${user.name}@opennms.git.sourceforge.net/gitroot/opennms/opennms</developerConnection>
-    <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/master</url>
+    <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/1.8</url>
   </scm>
   <modules>
     <!-- new structure -->
