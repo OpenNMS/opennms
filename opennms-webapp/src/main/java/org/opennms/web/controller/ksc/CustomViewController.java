@@ -262,7 +262,10 @@ public class CustomViewController extends AbstractController implements Initiali
     }
 
     private void promoteResourceAttributesIfNecessary(final OnmsResource resource) {
-        boolean needToSchedule = m_resourcesPendingPromotion.add(resource.getId());
+        boolean needToSchedule = false;
+        if(resource != null && resource.getId() != null) {
+            needToSchedule = m_resourcesPendingPromotion.add(resource.getId());
+        }
         if (needToSchedule) {
             m_executor.execute(new Runnable() {
 
