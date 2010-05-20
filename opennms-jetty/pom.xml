@@ -57,4 +57,13 @@
       <artifactId>slf4j-log4j12</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+  </repositories>
 </project>
