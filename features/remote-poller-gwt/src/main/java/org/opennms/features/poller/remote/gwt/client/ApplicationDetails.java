@@ -53,8 +53,10 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         m_application = application;
         m_statusFrom = from;
         m_statusTo = to;
-        for (final GWTLocationMonitor monitor : monitors) {
-            m_monitors.put(monitor.getId(), monitor);
+        if (monitors != null) {
+            for (final GWTLocationMonitor monitor : monitors) {
+                m_monitors.put(monitor.getId(), monitor);
+            }
         }
         m_locationSpecificStatuses = statuses;
         if (m_locationSpecificStatuses != null) {
@@ -198,11 +200,11 @@ public class ApplicationDetails implements Serializable, IsSerializable {
                  service = locationOutages.iterator().next().getService();
             } else {
                 return StatusDetails.unknown("No locations reporting for service ID " + serviceId);
-            }   
+            }
 
             final Set<GWTLocationMonitor> monitorsFailing = new HashSet<GWTLocationMonitor>();
-            final Set<GWTLocationMonitor> monitorsPassing = new HashSet<GWTLocationMonitor>();
-            
+            final Set<GWTLocationMonitor> monitorsPassing = new HashSet<GWTLocationMonitor>(m_monitors.values());
+
             Collections.sort(locationOutages);
             for (final GWTServiceOutage outage : locationOutages) {
                 final GWTLocationMonitor monitor = outage.getMonitor();
