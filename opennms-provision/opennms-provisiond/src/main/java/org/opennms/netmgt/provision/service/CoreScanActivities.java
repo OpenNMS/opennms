@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
@@ -253,7 +254,7 @@ public class CoreScanActivities {
         final PhysInterfaceTableTracker physIfTracker = new PhysInterfaceTableTracker() {
             @Override
             public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
-                System.out.println("Processing row for ifIndex "+row.getIfIndex());
+                LogUtils.infof(this, "Processing row for ifIndex "+row.getIfIndex());
                 OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
                 snmpIface.setLastCapsdPoll(agentScan.getScanStamp());
                 
@@ -271,7 +272,7 @@ public class CoreScanActivities {
 
                     Runnable r = new Runnable() {
                         public void run() {
-                            System.out.println("Saving OnmsSnmpInterface "+snmpIfaceResult);
+                            LogUtils.infof(this, "Saving OnmsSnmpInterface "+snmpIfaceResult);
                             m_provisionService.updateSnmpInterfaceAttributes(
                                                                              agentScan.getNodeId(),
                                                                              snmpIfaceResult);
@@ -314,7 +315,7 @@ public class CoreScanActivities {
         final IPInterfaceTableTracker ipIfTracker = new IPInterfaceTableTracker() {
             @Override
             public void processIPInterfaceRow(IPInterfaceRow row) {
-                System.out.println("Processing row with ipAddr "+row.getIpAddress());
+                LogUtils.infof(this, "Processing row with ipAddr "+row.getIpAddress());
                 if (!row.getIpAddress().startsWith("127.0.0")) {
                     
                     // mark any provisioned interface as scanned

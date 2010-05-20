@@ -41,6 +41,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;
@@ -83,7 +84,7 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
         SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         sslSF = sslContext.getSocketFactory();
-        System.out.println("port: " + port);
+        LogUtils.infof(this, "SSL port: " + port);
         sslSocket = sslSF.createSocket(socket, hostAddress, port, true);
         return sslSocket;
     }
