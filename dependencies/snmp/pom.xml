@@ -14,7 +14,7 @@
     can depend on to use SNMP
   </description>
   <properties>
-    <opennmsJoesnmpVersion>2.0.0</opennmsJoesnmpVersion>
+    <opennmsJoesnmpVersion>2.0.1</opennmsJoesnmpVersion>
     <opennmsSnmpApiVersion>2.0.1</opennmsSnmpApiVersion>
   </properties>
 
