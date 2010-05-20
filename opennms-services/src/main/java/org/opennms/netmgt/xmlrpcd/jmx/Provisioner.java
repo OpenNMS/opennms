@@ -68,8 +68,18 @@ public class Provisioner implements ProvisionerMBean {
         m_status = Fiber.STOPPED;
     }
 
-    public String status() {
+    /**
+     * Returns the status of this Fiber.
+     */
+    public int getStatus() {
+        return m_status;
+    }
+
+    public String getStatusText() {
         return Fiber.STATUS_NAMES[m_status];
     }
 
+    public String status() {
+        return getStatusText();
+    }
 }

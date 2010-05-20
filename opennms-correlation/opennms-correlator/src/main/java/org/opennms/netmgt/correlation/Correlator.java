@@ -40,7 +40,6 @@ package org.opennms.netmgt.correlation;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -130,7 +129,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
         return m_engines;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

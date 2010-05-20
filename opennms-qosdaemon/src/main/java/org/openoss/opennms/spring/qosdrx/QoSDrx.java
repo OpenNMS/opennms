@@ -139,7 +139,7 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 	/** Method to set up the fiber. */
 	protected void onInit()
 	{
-		Logger log = getLog();	//Get a reference to the QosDrx logger instance assigned by OpenNMS
+		ThreadCategory log = getLog();	//Get a reference to the QosDrx logger instance assigned by OpenNMS
 		log.info("QoSDrx.init(): Initialising QoSDrx");
 		if (log.isDebugEnabled()) log.debug("QoSDrx.init(): Setting initialOssBeanRunner.setLogName(_logName) to:"+ log.getName());
 		initialOssBeanRunner.setLogName(log.getName());
@@ -156,7 +156,7 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 	 */
 	protected void onStart()
 	{
-		Logger log = getLog();	//Get a reference to the QoSDrx logger instance assigned by OpenNMS
+		ThreadCategory log = getLog();	//Get a reference to the QoSDrx logger instance assigned by OpenNMS
 		log.info("QoSDrx.start(): Starting QoSDrx");
 
 		if (initialOssBeanRunner.getStatus()==OssBean.START_PENDING){
@@ -177,7 +177,7 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 	 */
 	protected void onStop()
 	{
-		Logger log = getLog(); //Get a reference to the QoSDrx logger instance assigned by OpenNMS
+		ThreadCategory log = getLog(); //Get a reference to the QoSDrx logger instance assigned by OpenNMS
 		log.info("QoSDrx.stop(): Stopping QoSDrx");
 		initialOssBeanRunner.stop();
 		while (initialOssBeanRunner.getStatus()!=OssBean.STOPPED); // wait for bean to stop
@@ -192,7 +192,7 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 	protected void onPause()
 	{
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		log.error("QoSDrx.pause(): NOT IMPLEMENTED - this method does nothing and returns");
 
 		//log.info("Pausing QoSDrx");
@@ -210,7 +210,7 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 	protected void onResume()
 	{
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		log.error("QoSDrx.resume(): NOT IMPLEMENTED - this method does nothing and returns");
 
 		//log.info("Resuming QoSDrx");
@@ -223,9 +223,9 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
-	private static Logger getLog()
+	private static ThreadCategory getLog()
 	{
-		return (Logger)ThreadCategory.getInstance(QoSDrx.class);	
+		return ThreadCategory.getInstance(QoSDrx.class);	
 	}
 
 	/**
@@ -233,7 +233,7 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 	 * @return string representation of the statistics for the running receivers
 	 */
 	public String getRuntimeStatistics(){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String runtimeStats="QoSDrx.getRuntimeStatistics(): NOT AVAILABLE";
 		try {
 			runtimeStats=initialOssBeanRunner.getRuntimeStatistics();

@@ -53,7 +53,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractTcpPlugin;
 import org.opennms.netmgt.capsd.ConnectionConfig;
@@ -172,7 +171,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
     protected boolean preconnectCheck(ConnectionConfig tcpConfig) {
         // get a log to send errors
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         DominoConnectionConfig config = (DominoConnectionConfig) tcpConfig;
         // Lets first try to the the IOR via HTTP, if we can't get that then any

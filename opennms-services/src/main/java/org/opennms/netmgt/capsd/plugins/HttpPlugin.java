@@ -56,7 +56,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractTcpPlugin;
 import org.opennms.netmgt.capsd.ConnectionConfig;
@@ -211,7 +210,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
 
         m_queryString = "GET " + config.getKeyedString(PROPERTY_NAME_URL, DEFAULT_URL) + " HTTP/1.0\r\n\r\n";
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled()) {
             log.debug( "Query: " + m_queryString);
         }

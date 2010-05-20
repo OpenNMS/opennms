@@ -52,7 +52,6 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -388,7 +387,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         isRuleMatching(rule);
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

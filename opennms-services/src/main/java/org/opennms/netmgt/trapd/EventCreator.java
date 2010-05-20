@@ -37,7 +37,6 @@ package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -129,7 +128,7 @@ public class EventCreator implements TrapProcessor {
         return m_event;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

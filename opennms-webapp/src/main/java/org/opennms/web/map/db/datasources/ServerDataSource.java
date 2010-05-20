@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.SimpleDbConnectionFactory;
 import org.opennms.core.utils.ThreadCategory;
@@ -64,7 +63,7 @@ public class ServerDataSource implements DataSourceInterface {
 	boolean initialized = false;
 	private Map<String, String> severityMapping = new HashMap<String, String>();
 
-	static Category log;
+	static ThreadCategory log;
 	
 	static final String STATUS_FIELD="ev_status";
 	static final String SEVERITY_FIELD="ev_severity";

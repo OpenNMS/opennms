@@ -50,7 +50,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -59,15 +58,15 @@ import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 
 /**
- * AvailabilityCalculator is a partial refectoring of AvailabilityReport that
+ * AvailabilityCalculator is a partial refactoring of AvailabilityReport that
  * removes the responsibility for rendering the report. This can now be found
  * in the ReportRenderer implementations HTMLReportRenderer and
  * PDFReportRenderer (for batch-mode report rendering) and in the availability
  * report viewer service and its associated views. Depending on the type of
- * reportStore configured, Availability Calulator will marshall the
+ * reportStore configured, Availability Calculator will marshal the
  * availability report to either a predefined file on disk, or a file on disk
  * with attendant report locator table entry. This table entry can be used
- * later to retrive the ready run report. The castor generated object created needs a string
+ * later to retrieve the ready run report. The castor generated object created needs a string
  * representation for the month in the year. This is unnecessarily complex for
  * the information that it conveys and should be changed.
  * 
@@ -132,7 +131,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
 
     private Report m_report = null;
 
-    private Category log;
+    private ThreadCategory log;
 
     private ReportStoreService m_reportStoreService;
     

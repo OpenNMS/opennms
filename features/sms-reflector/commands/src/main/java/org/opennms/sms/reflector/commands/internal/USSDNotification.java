@@ -15,7 +15,7 @@ public class USSDNotification implements IUSSDNotification {
     }
     
     private void debugf(String format, Object ...args){
-        Logger log = ThreadCategory.getInstance(USSDNotification.class);
+        ThreadCategory log = ThreadCategory.getInstance(USSDNotification.class);
         
         if(log.isDebugEnabled()){
             log.debug(String.format(format, args));

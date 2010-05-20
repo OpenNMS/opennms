@@ -334,7 +334,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         }
     }
 
-    private Logger log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getName());
     }
 

@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.queue.FifoQueue;
@@ -139,9 +138,8 @@ final class DataSender implements Fiber {
         try {
             currentThread.setPriority(priority);
         } catch (Exception e) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            if (log.isDebugEnabled()) {
-                log.debug("Error setting thread priority: ", e);
+            if (log().isDebugEnabled()) {
+                log().debug("Error setting thread priority: ", e);
             }
         }
 
@@ -181,20 +179,18 @@ final class DataSender implements Fiber {
     public synchronized void start() {
         m_status = STARTING;
 
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        log.info("Starting the datasender thread pool..");
+        log().info("Starting the datasender thread pool..");
         try {
             m_dsrPool.start();
-            log.info("Datasender thread pool started..");
+            log().info("Datasender thread pool started..");
         } catch (Exception e) {
-            log.error("Error starting data sender pool", e);
+            log().error("Error starting data sender pool", e);
         }
 
         m_status = RUNNING;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 
@@ -471,11 +467,9 @@ final class DataSender implements Fiber {
         try {
             m_dataSenderQ.add(new SendRequest());
         } catch (InterruptedException iE) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            log.warn("Unable to queue datasender to the dsConsumer queue", iE);
+            log().warn("Unable to queue datasender to the dsConsumer queue", iE);
         } catch (FifoQueueException qE) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            log.warn("Unable to queue datasender to the dsConsumer queue", qE);
+            log().warn("Unable to queue datasender to the dsConsumer queue", qE);
         }
     }
 }

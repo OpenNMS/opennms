@@ -176,17 +176,26 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      */
     private Requisition buildRequisitionFromZoneTransfer() throws IOException, ZoneTransferException {
         
-        //ZoneTransferIn xfer = ZoneTransferIn.newAXFR(new Name(m_zone), m_host, m_key);
+	ZoneTransferIn xfer = null;
+        List<Record> records = null;
         
-        ZoneTransferIn xfer = ZoneTransferIn.newIXFR(new Name(m_zone), 
-                                      m_serial.longValue(), 
-                                      m_fallback.booleanValue(), 
-                                      m_url.getHost(), 
-                                      m_port,
-                                      m_key);
+        try { 
+            xfer = ZoneTransferIn.newIXFR(new Name(m_zone), 
+                                        m_serial.longValue(), 
+                                        m_fallback.booleanValue(), 
+                                        m_url.getHost(), 
+                                        m_port,
+                                        m_key);
+               records = getRecords(xfer);
+       } catch (ZoneTransferException e) // Fallbacking to AXFR
+       {
+             String message = "IXFR not supported trying AXFR: "+e;
+             log().warn(message, e);
+             xfer = ZoneTransferIn.newAXFR(new Name(m_zone), m_url.getHost(), m_key);
+             records = getRecords(xfer);
+       }
 
-        List<Record> records = getRecords(xfer);
-        
+  
         Requisition r = null;
         
         if (records.size() > 0) {
@@ -503,7 +512,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         return foreignSource;
     }
     
-    private static Logger log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(DnsRequisitionUrlConnection.class);
     }
 

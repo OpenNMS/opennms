@@ -181,7 +181,7 @@ public class OnmsNodeRequisition {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.NodeRequisition#log()
      */
-    public Logger log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

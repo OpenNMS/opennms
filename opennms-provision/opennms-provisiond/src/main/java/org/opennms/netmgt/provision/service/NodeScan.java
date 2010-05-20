@@ -41,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -173,7 +172,7 @@ public class NodeScan implements Runnable {
         return new NoAgentScan(m_nodeId, m_node);
     }
  
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(NodeScan.class);
     }
 

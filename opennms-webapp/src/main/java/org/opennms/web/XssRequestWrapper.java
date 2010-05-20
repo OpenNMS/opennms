@@ -10,7 +10,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public class XssRequestWrapper extends HttpServletRequestWrapper
@@ -117,7 +116,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

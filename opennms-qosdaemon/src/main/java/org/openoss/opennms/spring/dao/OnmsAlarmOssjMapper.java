@@ -61,8 +61,8 @@ public class OnmsAlarmOssjMapper {
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
-	private static Logger getLog() {
-		return (Logger)ThreadCategory.getInstance(OnmsAlarmOssjMapper.class);	
+	private static ThreadCategory getLog() {
+		return ThreadCategory.getInstance(OnmsAlarmOssjMapper.class);	
 	}
 
 	// pattern for recognising simple <HTML> tags ; 
@@ -205,7 +205,7 @@ public class OnmsAlarmOssjMapper {
 	 * @return the OnmsAlarm populated with OSS/J NotifyNewAlarmEvent data
 	 */
 	public OnmsAlarm populateOnmsAlarmFromOssjAlarm(OnmsAlarm onmsAlarm, AlarmValue alarmValue, Integer almUpdateBehaviour, String defaultUpdateNodeLabel  )throws IllegalArgumentException, UnsupportedAttributeException {
-		Logger log = getLog();
+		ThreadCategory log = getLog();
 		String logheader="\t\t"+this.getClass().getSimpleName()+"populateOnmsAlarmFromOssjAlarm():";
 
 		try{
@@ -386,7 +386,7 @@ public class OnmsAlarmOssjMapper {
 	 * @rerun the _av OSS/J AlarmValue populated with opennms data
 	 */
 	public AlarmValue populateOssjAlarmFromOpenNMSAlarm(AlarmValue alarmValueSpecification, OnmsAlarm _openNMSalarm) throws IllegalArgumentException, UnsupportedAttributeException {
-		Logger log = getLog();
+		ThreadCategory log = getLog();
 		String logheader="\t\t"+this.getClass().getSimpleName()+"populateOssjAlarmFromOpenNMSAlarm():";
 
 		//Node node = null;

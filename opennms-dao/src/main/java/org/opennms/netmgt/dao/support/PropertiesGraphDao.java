@@ -57,7 +57,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.GraphDao;
@@ -313,7 +312,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
     

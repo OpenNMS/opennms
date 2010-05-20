@@ -80,6 +80,8 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
 
     Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationDefinitionName);
 
+    Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(String locationName);
+
     Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId);
 
 }

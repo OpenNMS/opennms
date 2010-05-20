@@ -40,7 +40,6 @@ import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
 import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
 import org.opennms.core.utils.ThreadCategory;
-import org.apache.log4j.Category;
 
 /**
  * <P>
@@ -87,7 +86,7 @@ public class WmiManager {
 
 	private int m_Timeout = DEFAULT_SOCKET_TIMEOUT;
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

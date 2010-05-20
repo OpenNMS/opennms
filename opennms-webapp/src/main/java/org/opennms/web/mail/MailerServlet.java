@@ -49,7 +49,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.web.MissingParameterException;
@@ -139,7 +138,7 @@ public class MailerServlet extends HttpServlet {
         }
     }
     
-    private Category log() {
+    private Logger log() {
         return Logger.getLogger("WEB.MAIL");
     }
 }

@@ -35,14 +35,15 @@ public interface RemotePollerPresenter extends MapPanelBoundsChangedEventHandler
 
     public void fitMapToLocations();
 
-    public void reportError(String string, Throwable t);
+    public void reportError(final String string, final Throwable error);
 
     /**
      * This action is used to respond to server-side events when a location is updated.
      */
-    public void updateLocation(LocationInfo locationInfo);
+    public void updateLocation(final LocationInfo locationInfo);
+    public void removeApplication(final String applicationName);
 
-    public void updateApplication(ApplicationInfo applicationInfo);
+    public void updateApplication(final ApplicationInfo applicationInfo);
 
     /**
      * This action is used to respond to server-side events sent when all initial location updates are complete.

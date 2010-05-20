@@ -49,7 +49,6 @@ import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -455,7 +454,7 @@ final class TcpRecordHandler implements Runnable {
 
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

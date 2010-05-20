@@ -37,16 +37,7 @@
 
 package org.opennms.netmgt.syslogd.jmx;
 
-public interface SyslogdMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    int getStatus();
-
-    String status();
-
-    String getStatusText();
+public interface SyslogdMBean extends BaseOnmsMBean {
 }

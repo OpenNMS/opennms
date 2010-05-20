@@ -41,7 +41,6 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 import java.util.SortedMap;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 
@@ -167,7 +166,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * 
      */
     public void processQueue() {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (m_noticeQueue != null) {
             synchronized(m_noticeQueue) {

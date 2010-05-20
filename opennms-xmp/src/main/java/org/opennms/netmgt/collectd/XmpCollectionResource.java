@@ -63,7 +63,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.RrdRepository;
 
@@ -121,7 +120,7 @@ class XmpCollectionResource extends AbstractCollectionResource
     }
 
     /* private methods *********************************** */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -48,8 +48,8 @@ import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
-import org.opennms.netmgt.eventd.db.Constants;
-import org.opennms.netmgt.eventd.db.Parameter;
+import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;

@@ -46,7 +46,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 
@@ -76,7 +75,7 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
    }
 }

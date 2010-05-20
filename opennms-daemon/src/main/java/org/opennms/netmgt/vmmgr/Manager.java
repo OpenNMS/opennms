@@ -53,7 +53,6 @@ import java.util.Map.Entry;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
@@ -91,7 +90,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  */
 public class Manager implements ManagerMBean {
     /**
-     * The log4j category used to log debug messsages and statements.
+     * The log4j category used to log debug messages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
 
@@ -243,7 +242,7 @@ public class Manager implements ManagerMBean {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

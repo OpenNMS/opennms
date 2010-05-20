@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -89,7 +88,7 @@ public class ConfigurationReportCalculator implements InitializingBean {
         m_baseDir = baseDir;
     }
 
-    private static Category log() {
+    private static Logger log() {
         return Logger.getLogger("Rancid");
     }
 

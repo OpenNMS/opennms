@@ -39,16 +39,7 @@
 
 package org.opennms.netmgt.scriptd.jmx;
 
-public interface ScriptdMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    int getStatus();
-
-    String getStatusText();
-
-    String status();
+public interface ScriptdMBean extends BaseOnmsMBean {
 }

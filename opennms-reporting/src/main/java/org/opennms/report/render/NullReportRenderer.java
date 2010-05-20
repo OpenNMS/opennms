@@ -38,7 +38,6 @@ package org.opennms.report.render;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
@@ -64,7 +63,7 @@ public class NullReportRenderer implements ReportRenderer {
     public void render() throws ReportRenderException {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(NullReportRenderer.class);
+        ThreadCategory log = ThreadCategory.getInstance(NullReportRenderer.class);
         log.debug("Do nothing");
         m_outputFileName = m_inputFileName;
     }

@@ -33,6 +33,8 @@
 				<script type="text/javascript" src="<%= URLEncoder.encode("http://btilelog.access.mapquest.com/tilelog/transaction?transaction=script&itk=true&v=5.3.s&ipkg=controls1" + apiKey, "UTF-8") %>"></script>
 				<script type="text/javascript" src="mapquest/debug/mqutils.js"></script>
 				<script type="text/javascript" src="mapquest/debug/mqobjects.js"></script>
+			<% } else if (mapImplementation.equalsIgnoreCase("openlayers")) { %>
+				<script type="text/javascript" src="openlayers/OpenLayers.js"></script>
 			<% } %>
 			<script type="text/javascript" language="javascript" src="RemotePollerMap.nocache.js"></script>
 		</jsp:attribute>

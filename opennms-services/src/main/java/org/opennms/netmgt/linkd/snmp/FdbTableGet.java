@@ -37,7 +37,6 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -81,7 +80,7 @@ public final class FdbTableGet {
 
 	public int getBridgePort() {
 		
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(FDB_PORT_OID));
 		if (val == null) return -1;
 		if (val.isNull() || val.isError()) return -1;
@@ -94,7 +93,7 @@ public final class FdbTableGet {
 
 	public int getQBridgePort() {
 		
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(QFDB_PORT_OID));
 		if (val == null) return -1;
 		if (val.isNull() || val.isError()) return -1;
@@ -106,7 +105,7 @@ public final class FdbTableGet {
 	}
 
 	public int getBridgePortStatus() {
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(FDB_STATUS_OID));
 		if (val == null) return -1;
 		if (val.isNull() || val.isError()) return -1;
@@ -118,7 +117,7 @@ public final class FdbTableGet {
 	}
 
 	public int getQBridgePortStatus() {
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(QFDB_STATUS_OID));
 		if (val == null) return -1;
 		if (val.isNull() || val.isError()) return -1;

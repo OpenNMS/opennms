@@ -551,31 +551,31 @@ public class CoreScanActivities {
     
     @SuppressWarnings("unused")
     private void error(Throwable t, String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         log.error(String.format(format, args), t);
     }
 
     private void debug(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled()) {
             log.debug(String.format(format, args));
         };
     }
     private void info(Throwable t, String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args), t);
         }
     }
     private void info(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args));
         }
     }
     @SuppressWarnings("unused")
     private void error(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         log.error(String.format(format, args));
     }
 

@@ -9,6 +9,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -46,24 +47,44 @@ public abstract class PageableList extends Composite {
     @UiField Hyperlink prevBtn;
     @UiField LocationDetailStyle locationDetailStyle;
     
+    private volatile boolean m_needsRefresh = true;
     private int m_currentPageIndex = 0;
     private int m_totalPages = 0;
 
     public PageableList() {
         initWidget(uiBinder.createAndBindUi(this));
     }
-    
-    protected void showFirstPage() {
-        setCurrentPageIndex(0);
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        new Timer() {
+            @Override
+            public void run() {
+                if (isVisible() && m_needsRefresh) {
+                    m_needsRefresh = false;
+                    updateListDisplay(getCurrentPageIndex());
+                }
+            }
+        }.scheduleRepeating(500);
     }
 
-    protected void updateListDisplay(int currentPageIndex) {
+    public void refresh() {
+        m_needsRefresh = true;
+    }
+
+    protected void showFirstPage() {
+        setCurrentPageIndex(0);
+        refresh();
+    }
+
+    protected void updateListDisplay(final int currentPageIndex) {
         getDataList().removeAllRows();
 
         int rowCount = 0;
-        int size = getListSize();
-        int showableLocations = ((currentPageIndex + 1) * getTotalListItemsPerPage()) > size ? size : ((currentPageIndex + 1) * getTotalListItemsPerPage());
-        int startIndex = currentPageIndex * getTotalListItemsPerPage(); 
+        final int size = getListSize();
+        final int showableLocations = ((currentPageIndex + 1) * getTotalListItemsPerPage()) > size ? size : ((currentPageIndex + 1) * getTotalListItemsPerPage());
+        final int startIndex = currentPageIndex * getTotalListItemsPerPage(); 
 
         for(int i = startIndex; i < showableLocations; i++) {
             getDataList().setWidget(rowCount, 0, getListItemWidget(i));
@@ -92,33 +113,34 @@ public abstract class PageableList extends Composite {
     
     protected abstract int getListSize();
     
-    protected abstract Widget getListItemWidget(int rowIndex);
+    protected abstract Widget getListItemWidget(final int rowIndex);
 
     @UiHandler("dataList")
     public abstract void onItemClickHandler(final ClickEvent event);
-    
+
     @UiHandler("prevBtn")
-    public void onPrevBtnClick(ClickEvent event) {
-        setCurrentPageIndex(getCurrentPageIndex() - 1); 
+    public void onPrevBtnClick(final ClickEvent event) {
+        final int newIndex = getCurrentPageIndex() - 1;
+        setCurrentPageIndex(newIndex);
+        updateListDisplay(newIndex);
     }
-    
+
     @UiHandler("nextBtn")
-    public void onNextBtnClick(ClickEvent event) {
-        setCurrentPageIndex(getCurrentPageIndex() + 1);
+    public void onNextBtnClick(final ClickEvent event) {
+        final int newIndex = getCurrentPageIndex() + 1;
+        setCurrentPageIndex(newIndex);
+        updateListDisplay(newIndex);
     }
-    
-    public void addLocationPanelSelectEventHandler(LocationPanelSelectEventHandler handler) {
+
+    public void addLocationPanelSelectEventHandler(final LocationPanelSelectEventHandler handler) {
         addHandler(handler, LocationPanelSelectEvent.TYPE);
     }
     
-    private void setCurrentPageIndex(int currentPageIndex) {
-
-        if(currentPageIndex == 0  ) {
+    private void setCurrentPageIndex(final int currentPageIndex) {
+        if (currentPageIndex == 0) {
             m_currentPageIndex = currentPageIndex;
-            updateListDisplay(m_currentPageIndex);
-        }else if(currentPageIndex > 0 && currentPageIndex <= getTotalPages()) {
+        } else if(currentPageIndex > 0 && currentPageIndex <= getTotalPages()) {
             m_currentPageIndex = currentPageIndex;
-            updateListDisplay(m_currentPageIndex);
         }
     }
 
@@ -126,11 +148,11 @@ public abstract class PageableList extends Composite {
         return m_currentPageIndex;
     }
 
-    private void setTotalPages(int totalPages) {
+    private void setTotalPages(final int totalPages) {
         m_totalPages = totalPages;
     }
 
-    private void updatePageStatsDisplay(int startIndex, int endIndex, int total) {
+    private void updatePageStatsDisplay(final int startIndex, final int endIndex, final int total) {
         if (endIndex > 0) {
             pageStatsLabel.setText( startIndex + "-" + endIndex + " of " + total);
         } else {
@@ -146,7 +168,7 @@ public abstract class PageableList extends Composite {
         return TOTAL_LOCATIONS;
     }
 
-    void setDataList(FlexTable dataList) {
+    void setDataList(final FlexTable dataList) {
         this.dataList = dataList;
     }
 
@@ -154,7 +176,7 @@ public abstract class PageableList extends Composite {
         return dataList;
     }
 
-    protected Cell getCellForEvent(ClickEvent event) {
+    protected Cell getCellForEvent(final ClickEvent event) {
         return getDataList().getCellForEvent(event);
     }
 

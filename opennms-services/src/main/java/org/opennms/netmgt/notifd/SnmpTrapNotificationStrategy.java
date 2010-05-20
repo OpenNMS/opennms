@@ -42,7 +42,6 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -94,7 +93,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         return getSwitchValue("trapVersion");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

@@ -78,7 +78,7 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 		}
 	}
 	
-	private Logger log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

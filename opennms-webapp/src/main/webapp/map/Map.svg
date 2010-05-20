@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone='no'?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
 "http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd">
-<svg id="mainSvgDocument"  onload="load(evt);"  xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<svg id="mainSvgDocument"  onload="load(evt);" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 	<defs>
 		<menu id='ContextMenu' xmlns='http://mapsContextMenu.openNMS.org' />
 	</defs>
@@ -13,7 +13,6 @@
 	<script type="text/ecmascript" xlink:href="ECMAScript/textbox.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/button.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/selectionList.js"/>
-	<script type="text/ecmascript" xlink:href="ECMAScript/tabgroup.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/Window.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/Point2D.js"/>
 	<script type="text/ecmascript" xlink:href="ECMAScript/PickColor.js"/>	
@@ -25,6 +24,7 @@
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationHelpers.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/ApplicationEventProcessor.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Map.js"/>
+	<script type="text/ecmascript" xlink:href="svgjavascript/MapTabs.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Node.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Label.js"/>
 	<script type="text/ecmascript" xlink:href="svgjavascript/Link.js"/>
@@ -41,6 +41,21 @@
 <script type="text/ecmascript"><![CDATA[
 
 var startingup=true;
+
+top.resizeSVG = resizeSVG;
+
+function resizeSVG() {
+	if (savedMapString!=getMapString() && currentMapId!=MAP_NOT_OPENED && currentMapId != NEW_MAP && isAdminMode) {
+		clearTopInfo();
+		disableMenu();
+		writeDownInfo("Saving map '" +currentMapName+"'");
+		resetFlags();
+		saveMap();
+		top.resize(3000);
+	} else {
+		top.resize(1000);
+	}
+}
 
 function historyCallBack(hash) {
 	if (startingup) {
@@ -73,9 +88,7 @@ function startUp() {
 
 	// Instantiate the tabPanel
 	mapTabTitles.push(MAP_NOT_OPENED_NAME);
-	mapTabGroup = 
-	new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
-
+	mapTabGroup = new MapTabs("TabPanelGroup","TabPanel",mapWidth,tabwidth,menuHeight,tabStyles,tabactivetabBGColor,tabtextStyles,mapTabTitles,0);
 	defaultMap = new ElemMap(-2, null, null);
 	
 	
@@ -156,6 +169,8 @@ function handleInit(data) {
 			LINK_TEXT[currLink.id]=currLink.text;
 			LINK_WIDTH[currLink.id]=currLink.width;
 			LINK_DASHARRAY[currLink.id]=currLink.dasharray;
+			MULTILINK_WIDTH[currLink.id]=currLink.multilinkwidth;
+			MULTILINK_DASHARRAY[currLink.id]=currLink.multilinkdasharray;
 		}
               
         for (i=0;i<mapsPropertiesFactory.linkStatuses.length;i++)
@@ -328,6 +343,13 @@ function load(evt){
 	
 		<!-- ********* maps history ********* -->
 		<svg id="history" y="170" x="3" width="150" heigth="30">
+		    <g id="topGroup" display="none">
+				<polygon id="prev" points="0,23 6,23 3,18" style="stroke:grey;fill:blue"/>
+				<polygon id="prev" points="6,23 12,23 9,18" style="stroke:grey;fill:blue"/>
+				<text id="topMapName" x="13" y="23" fill="navy" font-size="10">Up</text>
+				<rect  style="cursor:pointer" id="topAction"  x="0" y="15" rx="2" ry="2" width="14" height="10" opacity="0"/>
+		    </g>
+		
 		    <g id="prevGroup" display="none">
 				<polygon id="prev" points="0,30 5,27 5,33" style="stroke:grey;fill:blue"/>
 				<polygon id="prev" points="6,30 11,27 11,33" style="stroke:grey;fill:blue"/>

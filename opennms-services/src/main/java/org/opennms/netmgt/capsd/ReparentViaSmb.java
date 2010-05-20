@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -352,7 +351,7 @@ public final class ReparentViaSmb {
      *             if an error occurs querying the database.
      */
     private void buildNodeLists() throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         m_existingNodeList = new ArrayList<LightWeightNodeEntry>();
         final DBUtils d = new DBUtils(getClass());
 
@@ -484,7 +483,7 @@ public final class ReparentViaSmb {
      *             if error occurs updating the database
      */
     private void reparentInterfaces() throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         List<LightWeightIfEntry> reparentedIfList = null;
         m_reparentedIfMap = null;
         final DBUtils d = new DBUtils(getClass());
@@ -628,7 +627,7 @@ public final class ReparentViaSmb {
         //
         // iterate through the reparent interface list
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
             log.debug("generateEvents:  Generating reparent events...reparentedIfMap size: " + m_reparentedIfMap.size());
@@ -685,7 +684,7 @@ public final class ReparentViaSmb {
      *            node
      */
     private synchronized void sendInterfaceReparentedEvent(String ipAddr, String ipHostName, int newNodeId, int oldNodeId, DbNodeEntry reparentNodeEntry) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("sendInterfaceReparentedEvent: ipAddr: " + ipAddr + " ipHostName: " + ipHostName + " newNodeId: " + newNodeId + " oldNodeId: " + oldNodeId);
 

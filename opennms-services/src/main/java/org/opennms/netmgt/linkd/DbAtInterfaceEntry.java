@@ -44,7 +44,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -169,7 +168,7 @@ final class DbAtInterfaceEntry {
 			throw new IllegalStateException(
 					"The record already exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -267,7 +266,7 @@ final class DbAtInterfaceEntry {
 			throw new IllegalStateException(
 					"The record does not exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -362,7 +361,7 @@ final class DbAtInterfaceEntry {
 			throw new IllegalStateException(
 					"The record does not exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// create the Prepared statment and then
 		// start setting the result values

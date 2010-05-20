@@ -30,6 +30,7 @@ import javax.oss.fm.monitor.JVTAlarmMonitorHome;
 import javax.oss.fm.monitor.JVTAlarmMonitorSession;
 import javax.rmi.PortableRemoteObject;
 import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;
 import org.openoss.opennms.spring.qosd.QoSDimpl2;
@@ -59,7 +60,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	private boolean init = false;
 	private String rebuilt_message="not set";
 	
-	Logger log;
+	ThreadCategory log;
 	
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#reset_list(java.lang.String)
@@ -226,7 +227,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	{
 		this.props = props;
 		this.env = env;
-		log = (Logger) QoSDimpl2.getLog();	//Get a reference to the QoSD logger
+		log = QoSDimpl2.getLog();	//Get a reference to the QoSD logger
 		init = true;		//inform the thread that it has been initialised 
 		//and can execute the run() method.
 	}

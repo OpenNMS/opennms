@@ -37,4 +37,13 @@
 
   <bean id="locationDataService" class="org.opennms.features.poller.remote.gwt.server.DefaultLocationDataService" />
 
+  <bean id="locationBroadcastProcessor" class="org.opennms.features.poller.remote.gwt.server.LocationBroadcastProcessor" />
+
+  <!--
+  <bean name="locationEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="locationBroadcastProcessor" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+  -->
+
 </beans>

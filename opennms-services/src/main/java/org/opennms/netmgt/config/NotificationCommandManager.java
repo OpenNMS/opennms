@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -93,7 +92,7 @@ public abstract class NotificationCommandManager {
     
     public abstract void update() throws Exception;
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(NotificationCommandManager.class);
     }
 

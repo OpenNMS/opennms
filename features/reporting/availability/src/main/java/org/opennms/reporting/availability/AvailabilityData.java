@@ -157,7 +157,7 @@ public class AvailabilityData {
             throws IOException, MarshalException, ValidationException,
             Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         log.debug("Inside AvailabilityData");
 
         m_nodes = new ArrayList<Node>();
@@ -247,7 +247,7 @@ public class AvailabilityData {
     private void populateDataStructures(
             org.opennms.netmgt.config.categories.Category cat, Report report,
             String format, String monthFormat, int catIndex) throws Exception {
-        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Inside populate data Structures" + catIndex);
         report.setCatCount(catIndex);
@@ -391,7 +391,7 @@ public class AvailabilityData {
      * get the last months top 20 offenders
      */
     public TreeMap<Double, List<String>> getPercentNode() {
-        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         int days = m_daysInLastMonth;
         long endTime = m_lastMonthEndTime;
         Calendar cal = new GregorianCalendar();
@@ -433,7 +433,7 @@ public class AvailabilityData {
 
     public void setAvailabilityDataService(
             AvailabilityDataService availabilityDataService) {
-        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         log.debug("setting m_availabilityDataService");
         m_availabilityDataService = availabilityDataService;
     }

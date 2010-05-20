@@ -39,9 +39,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
 
     private static GoogleMapsPanelUiBinder uiBinder = GWT.create(GoogleMapsPanelUiBinder.class);
 
-    interface GoogleMapsPanelUiBinder extends
-            UiBinder<Widget, GoogleMapsPanel> {
-    }
+    interface GoogleMapsPanelUiBinder extends UiBinder<Widget, GoogleMapsPanel> {}
     
     @UiField
     MapWidget m_mapWidget;
@@ -53,15 +51,13 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     public GoogleMapsPanel(final HandlerManager eventBus) {
         m_eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
-        
-        initializeMapPanel();
-        
-        m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
 
+        initializeMapPanel();
+
+        m_mapWidget.addMapMoveEndHandler(new MapMoveEndHandler() {
             public void onMoveEnd(MapMoveEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
-            
         });
     }
     
@@ -75,14 +71,14 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         getMapWidget().savePosition();
         getMapWidget().setCenter(m.getLatLng());
         if (m != null) {
-        	final VerticalPanel panel = new VerticalPanel();
-        	panel.add(new Label(htmlTitle));
-        	panel.add(new HTML(htmlContent));
+            final VerticalPanel panel = new VerticalPanel();
+            panel.add(new Label(htmlTitle));
+            panel.add(new HTML(htmlContent));
             getMapWidget().getInfoWindow().open(m.getLatLng(), new InfoWindowContent(panel.toString()));
             getMapWidget().getInfoWindow().addInfoWindowCloseClickHandler(new InfoWindowCloseClickHandler() {
-				public void onCloseClick(InfoWindowCloseClickEvent event) {
-					getMapWidget().returnToSavedPosition();
-				}
+                public void onCloseClick(InfoWindowCloseClickEvent event) {
+                    getMapWidget().returnToSavedPosition();
+                }
             });
         }
     }
@@ -100,7 +96,6 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         getMapWidget().setSize("100%", "100%");
         getMapWidget().setUIToDefault();
         getMapWidget().addControl(new LargeMapControl());
-        getMapWidget().setContinuousZoom(true);
         getMapWidget().setScrollWheelZoomEnabled(true);
       
         Window.addResizeHandler(new ResizeHandler() {

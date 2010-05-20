@@ -84,4 +84,8 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 			+ ",selected=" + m_selected
 			+ "]";
 	}
+
+    public boolean isWithinBounds(GWTBounds bounds) {
+        return bounds.contains(getLatLng());
+    }
 }

@@ -185,5 +185,7 @@ public interface Manager {
     public VProperties getProperties(boolean isUserAdmin) throws MapsException;
     
     public VMap addElements(VMap map, List<VElement> velems) throws MapsException;
+    
+    public void reloadConfig() throws MapsException;
 
 }

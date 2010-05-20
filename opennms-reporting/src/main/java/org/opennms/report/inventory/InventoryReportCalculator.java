@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -103,7 +102,7 @@ public class InventoryReportCalculator implements InitializingBean {
         m_baseDir = baseDir;
     }
 
-    private static Category log() {
+    private static Logger log() {
         return Logger.getLogger("Rancid");
     }
 

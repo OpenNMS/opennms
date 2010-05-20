@@ -12,7 +12,6 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ExtensionManager;
@@ -272,7 +271,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(DefaultForeignSourceService.class);
     }
 

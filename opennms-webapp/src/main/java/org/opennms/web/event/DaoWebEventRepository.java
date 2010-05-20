@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -273,7 +272,7 @@ public class DaoWebEventRepository implements WebEventRepository {
         }
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(DaoWebEventRepository.class);
     }
 

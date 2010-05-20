@@ -42,7 +42,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
 import org.apache.xmlrpc.WebServer;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcHandler;
@@ -173,7 +172,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
         return sb.toString();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass()); 
     }
 

@@ -79,7 +79,7 @@ public abstract class AbstractDetector implements SyncServiceDetector {
         return m_serviceName;
     }
     
-    protected Logger log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

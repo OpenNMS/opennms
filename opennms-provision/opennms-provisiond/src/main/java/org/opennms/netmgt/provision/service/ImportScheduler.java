@@ -276,7 +276,7 @@ public class ImportScheduler implements InitializingBean {
         
     }
 
-    private Logger log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

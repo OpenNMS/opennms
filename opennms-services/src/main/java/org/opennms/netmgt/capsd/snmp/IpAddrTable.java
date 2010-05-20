@@ -43,7 +43,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -128,7 +127,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return -1;
     }
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
 

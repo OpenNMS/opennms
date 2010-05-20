@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 
 public class DBUtils {
     private final Set<Statement> m_statements;
@@ -77,7 +76,7 @@ public class DBUtils {
         m_connections.clear();
     }
     
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(m_loggingClass);
     }
 }

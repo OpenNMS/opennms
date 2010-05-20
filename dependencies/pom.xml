@@ -32,9 +32,11 @@
     <module>snmp</module>
   </modules>
   <properties>
-    <springVersion>3.0.0.RELEASE</springVersion>
-    <springWebFlowVersion>2.0.7.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>2.0.4</springSecurityVersion>
+    <springVersion>3.0.2.RELEASE</springVersion>
+    <springWebFlowVersion>2.0.9.RELEASE</springWebFlowVersion>
+    <!-- <springSecurityVersion>3.0.2.RELEASE</springSecurityVersion> -->
+    <springSecurityVersion>2.0.5.RELEASE</springSecurityVersion>
+    <!-- <springLdapVersion>1.3.0.RELEASE</springLdapVersion> -->
     <springLdapVersion>1.2.1</springLdapVersion>
   </properties>
 </project>

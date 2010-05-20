@@ -12,15 +12,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.eventd.db.Constants;
-import org.opennms.netmgt.eventd.db.Parameter;
+import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;

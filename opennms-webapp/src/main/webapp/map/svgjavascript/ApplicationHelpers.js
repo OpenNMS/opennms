@@ -325,15 +325,14 @@ function mapTabSetUp(mapName) {
 	}
 	for ( var i in mapTabTitles) {
 		if ( mapTabTitles[i]==mapName ) {
-			mapTabGroup.activateTabByTitle(mapName,false);
+			mapTabGroup.activateTabByTitle(mapName);
 			return;
 		}
 	}
 	tabClean();
 	mapTabTitles.push(mapName);
-	mapTabGroup = 
-new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
-	mapTabGroup.activateTabByTitle(mapName,false);
+	mapTabGroup = new MapTabs("TabPanelGroup","TabPanel",mapWidth,tabwidth,menuHeight,tabStyles,tabactivetabBGColor,tabtextStyles,mapTabTitles,0);
+	mapTabGroup.activateTabByTitle(mapName);
 }
 
 function mapTabClose(mapName) {
@@ -349,20 +348,20 @@ function mapTabClose(mapName) {
 	if (tabs.length == 0) {
 		tabs.push(MAP_NOT_OPENED_NAME);
 	}
-	if ( tabs.length == index )
-	   index--;
 
+	if (mapTabGroup.getActiveTabIndex() == index ) {
+		if ( tabs.length == index )
+	   		index--;
+	} else if ( mapTabGroup.getActiveTabIndex() < index ) {
+		index = mapTabGroup.getActiveTabIndex();
+	} else {
+		index = mapTabGroup.getActiveTabIndex();
+		index--;
+	}
 	tabClean();
 	mapTabTitles=tabs;
 
-	mapTabGroup = 
-new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
-
-	if ( mapTabTitles[0] == MAP_NOT_OPENED_NAME ) {
-			mapTabGroup.activateTabByIndex(index,false);
-	} else {
-		mapTabGroup.activateTabByIndex(index,true);
-	}
+	mapTabGroup = new MapTabs("TabPanelGroup","TabPanel",mapWidth,tabwidth,menuHeight,tabStyles,tabactivetabBGColor,tabtextStyles,mapTabTitles,index);
 }
 
 function mapTabRename(oldMapName,newMapName) {
@@ -377,9 +376,8 @@ function mapTabRename(oldMapName,newMapName) {
 
 	tabClean();
 	mapTabTitles=tabs;
-	mapTabGroup = 
-new tabgroup("TabPanelGroup","TabPanel",0,0,mapWidth,menuHeight,menuHeight,"rect","triangle",5,0,tabStyles,tabactivetabBGColor,tabwindowStyles,tabtextStyles,mapTabTitles,0,true,activateTabMap);
-	mapTabGroup.activateTabByTitle(newMapName,false);
+	mapTabGroup = new MapTabs("TabPanelGroup","TabPanel",mapWidth,tabwidth,menuHeight,tabStyles,tabactivetabBGColor,tabtextStyles,mapTabTitles,0);
+	mapTabGroup.activateTabByTitle(newMapName);
 
 }
 

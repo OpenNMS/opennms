@@ -47,7 +47,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -164,7 +163,7 @@ public final class DbSnmpInterfaceEntry {
             throw new IllegalStateException("The record already exists in the database");
         }
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
         StringBuffer names = new StringBuffer("INSERT INTO snmpInterface (nodeID,snmpIfIndex,ipaddr");
@@ -308,7 +307,7 @@ public final class DbSnmpInterfaceEntry {
             throw new IllegalStateException("The record does not exists in the database");
         }
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
         StringBuffer sqlText = new StringBuffer("UPDATE snmpInterface SET ");
@@ -511,7 +510,7 @@ public final class DbSnmpInterfaceEntry {
             throw new IllegalStateException("The record does not exists in the database");
         }
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // create the Prepared statement and then start setting the query values
         PreparedStatement stmt = null;

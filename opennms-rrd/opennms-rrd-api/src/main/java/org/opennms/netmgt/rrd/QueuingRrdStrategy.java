@@ -53,8 +53,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * Provides queuing implementation of RrdStrategy.
@@ -359,7 +358,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
         Object process(Object rrd) throws Exception {
             // if the rrd is already open we are confused
             if (rrd != null) {
-                log().debug("WHAT! rrd open but not created?");
+                LogUtils.debugf(this, "WHAT! rrd open but not created?");
                 m_delegate.closeFile(rrd);
                 rrd = null;
             }
@@ -512,7 +511,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
                 try {
                     zeroOp.mergeUpdates(this);
                 } catch (IllegalArgumentException e) {
-                    log().debug(e.getMessage());
+                    LogUtils.debugf(this, e, "unable to merge updates");
                     super.addToPendingList(pendingOperations);
                 }
             } else {
@@ -531,7 +530,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
             if ((colon >= 0) && (Double.parseDouble(update.substring(colon + 1)) == 0.0)) {
                 long initialTimeStamp = Long.parseLong(update.substring(0, colon));
                 if (initialTimeStamp == 0)
-                    log().debug("ZERO ERROR: created a zero update with ts=0 for file: " + fileName + " data: " + update);
+                    LogUtils.debugf(this, "ZERO ERROR: created a zero update with ts=0 for file: %s data: %s", fileName, update);
 
                 return new ZeroUpdateOperation(fileName, initialTimeStamp);
             }
@@ -553,17 +552,17 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     public void addOperation(Operation op) {
         synchronized (this) {
             if (queueIsFull()) {
-                log().error("RRD Data Queue is Full!! Discarding operation for file "+op.getFileName());
+                LogUtils.errorf(this, "RRD Data Queue is Full!! Discarding operation for file %s", op.getFileName());
                 return;
             }
             
             if (op.isSignificant() && sigQueueIsFull()) {
-                log().error("RRD Data Significant Queue is Full!! Discarding operation for file "+op.getFileName());
+                LogUtils.errorf(this, "RRD Data Significant Queue is Full!! Discarding operation for file %s", op.getFileName());
                 return;
             }
             
             if (!op.isSignificant() && inSigQueueIsFull()) {
-                log().error("RRD Insignificant Data Queue is Full!! Discarding operation for file "+op.getFileName());
+                LogUtils.errorf(this, "RRD Insignificant Data Queue is Full!! Discarding operation for file %s", op.getFileName());
                 return;
             }
             
@@ -579,10 +578,6 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     }
 
     
-    private Category log() {
-        return Logger.getLogger(m_category);
-    }
-
     private boolean queueIsFull() {
         if (m_queueHighWaterMark <= 0)
             return false;
@@ -955,7 +950,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
         } catch (Exception e) {
             setErrors(getErrors() + 1);
             logLapTime("Error updating file " + fileName + ": " + e.getMessage());
-            log().debug("Error upading file " + fileName + ": " + e.getMessage(), e);
+            LogUtils.debugf(this, e, "Error upading file %s", fileName);
         } finally {
             processClose(rrd);
         }
@@ -1049,11 +1044,11 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     }
 
     void logLapTime(String message) {
-        log().debug(message + " " + getLapTime());
+        LogUtils.debugf(this, "%s %s", message, getLapTime());
     }
     
     void logLapTime(String message, Throwable t) {
-        log().debug(message + " " + getLapTime(), t);
+        LogUtils.debugf(this, t, "%s %s", message, getLapTime());
     }
 
     public String getLapTime() {

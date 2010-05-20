@@ -32,16 +32,7 @@
 
 package org.opennms.netmgt.threshd.jmx;
 
-public interface ThreshdMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    int getStatus();
-
-    String status();
-
-    String getStatusText();
+public interface ThreshdMBean extends BaseOnmsMBean {
 }

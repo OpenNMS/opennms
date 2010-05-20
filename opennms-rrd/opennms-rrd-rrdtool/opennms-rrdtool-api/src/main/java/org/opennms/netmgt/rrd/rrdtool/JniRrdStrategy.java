@@ -48,7 +48,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -407,7 +406,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
         return "";
     }
     
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

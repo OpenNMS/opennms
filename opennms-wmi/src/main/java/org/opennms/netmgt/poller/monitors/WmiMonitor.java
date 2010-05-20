@@ -37,7 +37,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
@@ -119,7 +118,7 @@ public class WmiMonitor extends IPv4Monitor {
 		// Get the address we're going to poll.
 		InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 		
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// Validate the interface type.
 		if (iface.getType() != NetworkInterface.TYPE_IPV4) {

@@ -34,16 +34,7 @@
 
 package org.opennms.netmgt.trapd.jmx;
 
-public interface TrapdMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    int getStatus();
-
-    String status();
-
-    String getStatusText();
+public interface TrapdMBean extends BaseOnmsMBean {
 }

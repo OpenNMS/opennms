@@ -50,7 +50,6 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.PropertyConfigurator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
@@ -416,7 +415,7 @@ public class Controller {
         m_invokeUrl = invokerUrl;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -442,7 +442,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
     }
     
     private void debugf(String format, Object ...args){
-        Logger log = ThreadCategory.getInstance(SmsCommands.class);
+        ThreadCategory log = ThreadCategory.getInstance(SmsCommands.class);
         
         if(log.isDebugEnabled()){
             log.debug(String.format(format, args));

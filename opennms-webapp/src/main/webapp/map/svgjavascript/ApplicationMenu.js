@@ -147,6 +147,8 @@ function instantiateRefreshGroupAdminMode() {
 	refreshMenu.addElement(id, "Maps", menuDeltaX,menuDeltaY,menuWidth,menuHeight, loadMapsSetUp,null);
 	id = "LoadNodes";
 	refreshMenu.addElement(id, "Nodes", menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, loadNodesSetUp,null);
+	id = "ReloadConfig";
+	refreshMenu.addElement(id, "Config", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, reloadConfigSetUp,null);
 }
 
 function instantiateRefreshGroupNormalMode() {
@@ -243,9 +245,8 @@ function addSearchMapList()
 function filterSearchMapSelectionList(textboxId,value,changeType) {
 		if (changeType == "change") {
 			var matchingMaps = new Array(); 
-			for(var i in nodeLabels) {
-				if (nodeLabels[i].indexOf(value) >= 0) {
-					var label = getLabel(nodeLabels[i]);
+			for(var label in nodeLabelMap) {
+				if (label.indexOf(value) >= 0) {
 				    var mapLbl = nodeLabelMap[label];
 				    if (mapLbl!=undefined) {
 						for (var j=0; j<mapLbl.length;j++ ){
@@ -303,6 +304,34 @@ function searchMapSetUp()
 	} else {
 		openMapSetUp();
 	}
+}
+
+function topMapSetUp(){
+	if (verifyMapString()) return;
+	var elems = new String();
+	var first=true;
+	for(var label in nodeLabelMap) {
+		if (label == currentMapName ) {
+		    var mapLbl = nodeLabelMap[label];
+		    if (mapLbl!=undefined) {
+				for (var j=0; j<mapLbl.length;j++ ){
+					if (first) {
+						elems = mapSortAss[mapLbl[j]].id;
+						first = false;
+					} else {
+						elems = elems + "," + mapSortAss[mapLbl[j]].id;
+					}
+				}
+			}
+			break;
+		}  
+	}
+
+	windowsClean();
+	clearTopInfo();
+	clearDownInfo();
+	mapTabSetUp(SEARCH_MAP_NAME);
+	searchMap(elems);	
 }
 
 // Open Map
@@ -404,16 +433,9 @@ function addRenameMapBox(){
 		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",undefined);
 		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
  	} else if (currentMapType == "A") {
-		alert('Cannot rename automatic map');
- 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED) {
-		clearTopInfo();
-		clearDownInfo();
-		hidePickColor();
-		resetFlags();
-
-		//first a few styling parameters:
-		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",undefined);
-		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
+		alert('Cannot rename Automatic map');
+ 	} else if (currentMapType == "S") {
+		alert('Cannot rename Static map');
 	}else{
 		alert('No maps opened');
     }
@@ -445,16 +467,9 @@ function deleteMapSetUp() {
 			deleteMap();
     	}
  	} else if (currentMapType == "A") {
-		alert('Cannot delete automatic map');
- 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP ) {
-	    if(confirm('Are you sure to delete static the map?')==true){ 
-	 		disableMenu();
-			deleteMap();
-    	}
- 	} else if (currentMapType == "A") {
-		alert('Cannot delete automatic map');
+		alert('Cannot delete Automatic map');
  	} else if (currentMapType == "S") {
-		alert('Cannot delete static map');
+		alert('Cannot delete Static map');
 	}else{
 		alert('No maps to delete found');
     }	
@@ -604,6 +619,16 @@ function loadNodesSetUp() {
 	showHistory();
 }
 
+// Reload Nodes List
+function reloadConfigSetUp() {	
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	top.writeReload("Reloading the maps configuration.....");
+	reloadConfiguration();
+}
 // Refresh Map
 function refreshNodesSetUp() {	
 	closeAllMenu();
@@ -1433,6 +1458,14 @@ function assertRefreshing(loading){
 }
 
 function showHistory(){
+	if (currentMapName == SEARCH_MAP_NAME || currentMapName == NEW_MAP_NAME || currentMapName == MAP_NOT_OPENED_NAME)  {
+		document.getElementById("topGroup").setAttributeNS(null,'display', 'none');
+	} else {
+		var topAction = document.getElementById("topAction");
+		topAction.setAttribute("onclick","topMapSetUp();");
+		document.getElementById("topGroup").setAttributeNS(null,'display', 'inline');
+	}
+		
 	if(mapHistory.length>mapHistoryIndex+1){
 		var next = mapHistory[mapHistoryIndex+1];
 		var nextName = mapHistoryName[mapHistoryIndex+1]; 

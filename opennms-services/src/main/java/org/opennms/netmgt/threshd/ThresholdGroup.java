@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public class ThresholdGroup {
@@ -76,7 +75,7 @@ public class ThresholdGroup {
 		return m_rrdRepository;
 	}
 
-	Category log() {
+	ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

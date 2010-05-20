@@ -55,7 +55,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -421,7 +420,7 @@ public final class EventUtil {
 						DateFormat.FULL);
 				retParmVal = df.format(actualDate);
 			} catch (java.text.ParseException e) {
-				Category log = ThreadCategory.getInstance();
+				ThreadCategory log = ThreadCategory.getInstance();
 				log.error("could not parse event date \"" + eventTime + "\": ",
 						e);
 

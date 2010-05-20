@@ -99,7 +99,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
         return m_port;
     }
 
-    private Logger log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(NtpClient.class);
     }
 

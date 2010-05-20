@@ -50,7 +50,6 @@ import java.io.Reader;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -163,7 +162,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
         setInstance(config);
     }
 
-    private static Category logStatic() {
+    private static ThreadCategory logStatic() {
         return ThreadCategory.getInstance(PollerConfigFactory.class);
     }
 

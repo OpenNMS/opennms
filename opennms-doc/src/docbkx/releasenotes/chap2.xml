@@ -140,6 +140,14 @@
 					</glossdef>
 				</glossentry>
 				<glossentry>
+					<glossterm>Remote Poller Web UI</glossterm>
+					<glossdef>
+						<para>A new map-based remote poller web UI was added, which lets you
+						dynamically map remote poller status using Google Maps, Mapquest, or
+						OpenLayers (OpenStreetMap).</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
 					<glossterm>RESTful Interface</glossterm>
 					<glossdef>
 						<para>A number of interfaces to OpenNMS data have been made available
@@ -175,6 +183,135 @@
 					</glossdef>
 				</glossentry>
 			</glosslist>
+		</section>
+
+	</section>
+
+	<section id="opennms-1.7.90">
+		<title>Changes in OpenNMS 1.7.10</title>
+
+		<section id="opennms-1.7.90-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Support for data collection from JMX MXBeans was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1444">#1444</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for adding asset data in a provisiond import was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2091">#2091</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>JavaMail defaults to using quoted-printable encoding when sending mail. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2825">#2825</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for collecting JMX data over SSL was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3225">#3225</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The configuration files in examples/ have been updated to conform to current best practices. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3231">#3231</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>It is now possible to send an event to reload the thresholding configuration. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3324">#3324</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>You can now sort the alarms list by severity. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3553">#3553</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The node page now shows critical path information.
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3674">#3674</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A remote poller map UI was added.  See
+					<ulink url="http://www.opennms.org/wiki/Remote_Monitoring_Status_UI">here</ulink> for details.</para>
+				</listitem>
+
+				<listitem>
+					<para>A large number of enhancements were made to the maps.</para>
+				</listitem>
+
+				<listitem>
+					<para>The reporting engine has gone through a number of enhancements since 1.7.10.</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.7.90-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>A bug in handling tabs in include files was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=735">#735</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug where SVG availability reports would cause an acrobat error was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1247">#1247</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in handling percent signs was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2856">#2856</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2888">#2888</ulink>, and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3317">#3317</ulink>, and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3429">#3429</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Encoding bugs in marshalling and unmarshalling config files were fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3125">#3125</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug where OpenNMS would not shut down properly was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3261">#3261</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug where in-line thresholding would cause a large startup delay was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3554">#3554</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The event ID was missing from the notification list. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3558">#3558</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug that caused Jetty startup to take a long time was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3604">#3604</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Debian packages were missing the RXTX library for the SMS monitor. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3648">#3648</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An exception in the dashboard was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3700">#3700</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
 		</section>
 
 	</section>

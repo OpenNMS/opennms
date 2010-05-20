@@ -2,8 +2,6 @@ package org.opennms.features.poller.remote.gwt.client.remoteevents;
 
 import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 
-import com.google.gwt.user.client.Window;
-
 public class GeocodingUpdatingRemoteEvent implements MapRemoteEvent {
 	private static final long serialVersionUID = 1L;
 	private int m_count = 0;
@@ -20,4 +18,7 @@ public class GeocodingUpdatingRemoteEvent implements MapRemoteEvent {
 //		Window.alert("updating geocoding: " + m_count + "/" + m_size);
 	}
 
+	public String toString() {
+	    return "GeocodingUpdatingRemoteEvent[count=" + m_count + ",size=" + m_size + "]";
+	}
 }

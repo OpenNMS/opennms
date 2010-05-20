@@ -38,7 +38,6 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -54,7 +53,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class Jsr160ConnectionFactory {
     
-    static Category log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
+    static ThreadCategory log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
 
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {
         Jsr160ConnectionWrapper connectionWrapper = null;

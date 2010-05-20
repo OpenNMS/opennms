@@ -65,6 +65,42 @@
        
     </ui:style>
     
+    <ui:style field="applicationDetailStyle" type="org.opennms.features.poller.remote.gwt.client.PageableApplicationList.ApplicationDetailStyle">
+
+       .detailContainerStyle{
+           position: relative;
+           height: 60px;
+           overflow: hidden;
+        }
+       
+       .iconStyle{
+           position: absolute;
+           left: 0px;
+        }
+       
+       .nameStyle{
+           position: absolute;
+           left: 32px;
+       }
+        
+       .areaStyle{
+            position: absolute;
+            right: 10px;
+       }
+        
+       .statusStyle{
+            position: absolute;
+            top: 20px;
+            left: 32px;
+            right: 0px;
+       }
+
+       .alternateRowStyle{
+           background: #D5DDF3;
+        }
+       
+    </ui:style>
+    
 	<g:DockLayoutPanel height="100%" width="100%" unit="PX">
            <g:center>
              <g:FlowPanel styleName="{style.tableContainer}">
