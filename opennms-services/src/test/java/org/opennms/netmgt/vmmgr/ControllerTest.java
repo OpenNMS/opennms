@@ -75,7 +75,7 @@ public class ControllerTest {
             public void run() {
                 c.invokeOperation("testClientTimeout");
             }
-        });
+        }, this.getClass().getSimpleName() + "-clientThread");
         
         final StringBuffer exceptionBuffer = new StringBuffer();
         
@@ -97,7 +97,7 @@ public class ControllerTest {
                     throw new UndeclaredThrowableException(e);
                 }
             }
-        });
+        }, this.getClass().getSimpleName() + "-acceptThread");
 
         acceptThread.setUncaughtExceptionHandler(handler);
         

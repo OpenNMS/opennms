@@ -134,7 +134,7 @@ abstract public class AbstractSimpleServer {
     public void onInit() {} 
     
     public void startServer() throws Exception{
-        m_serverThread = new Thread(getRunnable());
+        m_serverThread = new Thread(getRunnable(), this.getClass().getSimpleName());
         m_serverThread.start();
     }
     
