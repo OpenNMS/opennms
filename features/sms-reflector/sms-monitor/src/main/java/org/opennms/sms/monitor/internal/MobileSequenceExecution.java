@@ -124,7 +124,7 @@ public class MobileSequenceExecution {
 
     public void start(MobileSequenceSession session, DefaultTaskCoordinator coordinator) {
         
-        setTask(coordinator.createSequence(null));
+        setTask(coordinator.createSequence().get());
 
         for (MobileTransactionExecution execution : getTransactionExecutions()) {
             getTask().add(createAsync(session, execution), null);

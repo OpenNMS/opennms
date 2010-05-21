@@ -35,21 +35,20 @@
 //
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
@@ -114,7 +113,7 @@ public class UserGroupManagerTest {
     
     @Test
     public void testGetUserNames() throws Exception {
-        List userNameList = m_userManager.getUserNames();
+        List<String> userNameList = m_userManager.getUserNames();
         assertEquals(4, userNameList.size());
         assertTrue(userNameList.contains("admin"));
         assertTrue(userNameList.contains("brozow"));
@@ -125,14 +124,14 @@ public class UserGroupManagerTest {
     @Test
     public void testRenameUser() throws Exception{
         m_userManager.renameUser("brozow", "brozow2");
-        List userNameList = m_userManager.getUserNames();
+        List<String> userNameList = m_userManager.getUserNames();
        
         assertEquals(4, userNameList.size());
         assertTrue(userNameList.contains("brozow2"));
         
-        List group1Users = m_groupManager.getGroup("InitialGroup").getUserCollection();
-        List group2Users = m_groupManager.getGroup("EscalationGroup").getUserCollection();
-        List group3Users = m_groupManager.getGroup("UpGroup").getUserCollection();
+        List<String> group1Users = m_groupManager.getGroup("InitialGroup").getUserCollection();
+        List<String> group2Users = m_groupManager.getGroup("EscalationGroup").getUserCollection();
+        List<String> group3Users = m_groupManager.getGroup("UpGroup").getUserCollection();
         
         assertFalse(group1Users.contains("brozow"));
         assertFalse(group2Users.contains("brozow"));
@@ -166,7 +165,7 @@ public class UserGroupManagerTest {
     
     @Test
     public void testGetGroupNames() throws Exception {
-        List userNameList = m_groupManager.getGroupNames();
+        List<String> userNameList = m_groupManager.getGroupNames();
         assertEquals(3, userNameList.size());
         assertTrue(userNameList.contains("InitialGroup"));
         assertTrue(userNameList.contains("EscalationGroup"));
@@ -242,8 +241,7 @@ public class UserGroupManagerTest {
     }
     
     private void testUsersScheduleForRoleAt(String role, Date date) throws Exception {
-        for (Iterator it = m_userManager.getUserNames().iterator(); it.hasNext();) {
-            String userId = (String) it.next();
+        for(String userId : m_userManager.getUserNames()) {
             User u = m_userManager.getUser(userId);
             testUserScheduledForRoleAt(u, role, date);
         }
@@ -303,7 +301,7 @@ public class UserGroupManagerTest {
         assertNotNull("Unexpected null user list", roleNames);
         assertEquals("Unexpected number of users", expected.length, roleNames.length);
         
-        List nameList = Arrays.asList(roleNames);
+        List<String> nameList = Arrays.asList(roleNames);
         for(int i = 0; i < expected.length; i++) {
             Role r = expected[i];
             assertTrue("Expected user "+r.getName()+" in list "+nameList, nameList.contains(r.getName()));
@@ -318,7 +316,7 @@ public class UserGroupManagerTest {
         assertNotNull("Unexpected null user list", userNames);
         assertEquals("Unexpected number of users", expected.length, userNames.length);
         
-        List nameList = Arrays.asList(userNames);
+        List<String> nameList = Arrays.asList(userNames);
         for(int i = 0; i < expected.length; i++) {
             User u = expected[i];
             assertTrue("Expected user "+u.getUserId()+" in list "+nameList, nameList.contains(u.getUserId()));
