@@ -148,7 +148,7 @@ public class Ping {
     short m_icmpId = 2;
     
         Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
-        Thread t = new Thread(s);
+        Thread t = new Thread(s, Ping.class.getSimpleName());
         t.start();
     
         for (long m_fiberId = 0; true; m_fiberId++) {
