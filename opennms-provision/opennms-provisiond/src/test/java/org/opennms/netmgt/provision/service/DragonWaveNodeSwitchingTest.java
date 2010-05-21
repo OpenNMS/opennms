@@ -83,6 +83,13 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     public void setUp() throws Exception {
         m_provisioner.start();
     }
+
+    public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
+        Task t = scan.createTask();
+        t.schedule();
+        t.waitFor();
+    }
+
     
     @Test
     @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:/dw/walks/node1-walk.properties")
@@ -94,7 +101,7 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
         OnmsNode onmsNode = m_nodeDao.findByForeignId("dw", "arthur");
         
         NodeScan scan = m_provisioner.createNodeScan(onmsNode.getId(), onmsNode.getForeignSource(), onmsNode.getForeignId());
-        scan.run();
+	runScan(scan);
         
         String sysObjectId = onmsNode.getSysObjectId();
         assertEquals(".1.3.6.1.4.1.7262.2.3", sysObjectId);
@@ -105,7 +112,7 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
         assertEquals(".1.3.6.1.4.1.7262.1", getSnmpValue("192.168.255.22", ".1.3.6.1.2.1.1.2.0").toDisplayString());
         
         NodeScan scan2 = m_provisioner.createNodeScan(onmsNode.getId(), onmsNode.getForeignSource(), onmsNode.getForeignId());
-        scan2.run();
+	runScan(scan2);
         
         m_nodeDao.flush();
         
