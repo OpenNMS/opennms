@@ -66,7 +66,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
@@ -791,7 +790,7 @@ public class Collectd extends AbstractServiceDaemon implements
             throws InsufficientInformationException {
         EventUtils.checkNodeId(event);
 
-        Category log = log();
+        ThreadCategory log = log();
         
         String ipAddr = event.getInterface();
         if(EventUtils.isNonIpInterface(ipAddr) ) {
@@ -864,7 +863,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        Category log = log();
+        ThreadCategory log = log();
         if (log.isDebugEnabled())
             log.debug("interfaceReparentedHandler:  processing interfaceReparented event for "
                     + event.getInterface());
@@ -973,7 +972,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        Category log = log();
+        ThreadCategory log = log();
 
         int nodeId = (int) event.getNodeid();
 
@@ -1120,7 +1119,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        Category log = log();
+        ThreadCategory log = log();
 
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
@@ -1244,7 +1243,7 @@ public class Collectd extends AbstractServiceDaemon implements
         // updates map and mark any which have the same interface
         // address for reinitialization
         //
-        Category log = log();
+        ThreadCategory log = log();
         
         OnmsIpInterface iface = null;
         synchronized (getCollectableServices()) {
@@ -1294,7 +1293,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkInterface(event);
         EventUtils.checkService(event);
 
-        Category log = log();
+        ThreadCategory log = log();
 
         //INCORRECT; we now support all *sorts* of data collection.  This is *way* out of date
         // Currently only support SNMP data collection.

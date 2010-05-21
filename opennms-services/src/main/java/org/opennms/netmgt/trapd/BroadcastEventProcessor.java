@@ -40,7 +40,6 @@ package org.opennms.netmgt.trapd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -109,7 +108,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
      * 
      */
     public void onEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         String eventUei = event.getUei();
         if (eventUei == null) {

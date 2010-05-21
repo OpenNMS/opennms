@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.ThreadCategory;
@@ -446,7 +445,7 @@ public class DefaultProvisionService implements ProvisionService {
         return category;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

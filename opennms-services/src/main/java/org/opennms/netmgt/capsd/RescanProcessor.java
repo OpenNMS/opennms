@@ -94,7 +94,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -808,7 +807,7 @@ public final class RescanProcessor implements Runnable {
 
 
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(RescanProcessor.class);
     }
 

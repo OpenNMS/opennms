@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -70,7 +69,7 @@ public class JavaMailerConfig {
         return properties;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(JavaMailerConfig.class);
     }
 

@@ -45,7 +45,6 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -348,7 +347,7 @@ public final class SnmpCollection implements ReadyRunnable {
 		return m_snmpVlanCollection;
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 	/**

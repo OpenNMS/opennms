@@ -52,7 +52,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -293,7 +292,7 @@ final class KnownIPMgr {
      * 
      */
     static synchronized void dataSourceSync() throws SQLException {
-        Category log = ThreadCategory.getInstance(KnownIPMgr.class);
+        ThreadCategory log = ThreadCategory.getInstance(KnownIPMgr.class);
 
         // Get the database connection
         //

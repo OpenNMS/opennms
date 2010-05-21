@@ -50,7 +50,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -132,7 +131,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
 
     private Report m_report = null;
 
-    private Category log;
+    private ThreadCategory log;
 
     private ReportStoreService m_reportStoreService;
     

@@ -37,7 +37,6 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
@@ -136,7 +135,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         return m_url;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

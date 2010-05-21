@@ -57,7 +57,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -248,7 +247,7 @@ public class DeleteNodesServlet extends HttpServlet {
         return successful;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

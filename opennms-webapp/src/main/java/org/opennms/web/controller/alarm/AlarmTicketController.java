@@ -37,7 +37,6 @@ package org.opennms.web.controller.alarm;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.web.servlet.ModelAndView;
@@ -101,7 +100,7 @@ public class AlarmTicketController extends MultiActionController {
     /**
      * @return logger for this class
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

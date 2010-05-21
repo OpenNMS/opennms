@@ -41,7 +41,6 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
@@ -97,13 +96,13 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     /**
      * The thread logger associated with this request.
      */
-    private Category m_log = ThreadCategory.getInstance(this.getClass());
+    private ThreadCategory m_log = ThreadCategory.getInstance(this.getClass());
     
     
     private AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
-    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, Category logger, PingResponseCallback cb) {
+    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
         m_id = new PingRequestId(addr, tid, sequenceId);
         m_retries    = retries;
         m_timeout    = timeout;
@@ -179,7 +178,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return m_log;
     }
 

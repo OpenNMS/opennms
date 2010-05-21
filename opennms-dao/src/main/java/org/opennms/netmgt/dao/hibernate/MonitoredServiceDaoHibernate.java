@@ -97,7 +97,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
     }
 
     private Collection<OnmsMonitoredService> findActive() {
-        return find("select distinct svc from OnmsMonitoredService as svc where svc.status not in ('D', 'U', 'F')");
+        return find("select distinct svc from OnmsMonitoredService as svc where (svc.status is null or svc.status not in ('F','U','D'))");
     }
 
     public Collection<OnmsMonitoredService> findByApplication(OnmsApplication application) {

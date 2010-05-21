@@ -12,6 +12,7 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -22,13 +23,22 @@ public class PageableApplicationList extends PageableList implements
 
     private ArrayList<ApplicationInfo> m_applications;
     private HandlerManager m_eventBus;
+    private ApplicationDetails m_selected = null;
+
+    interface ApplicationDetailStyle extends LocationDetailStyle {
+        String detailContainerStyle();
+        String iconStyle();
+        String nameStyle();
+        String areaStyle();
+        String statusStyle();
+        String alternateRowStyle();
+    }
 
     private class ApplicationDetailView extends Widget {
-        
-        private String m_name = "";
         final Image m_icon = new Image();
         final Label m_nameLabel = new Label();
-        final Label m_statusLabel = new Label();
+        final HTML m_statusLabel = new HTML();
+//        final HTML m_statusDetails = new HTML();
 
         @Override
         protected void doAttachChildren() {
@@ -36,7 +46,7 @@ public class PageableApplicationList extends PageableList implements
             DOM.appendChild(this.getElement(), m_icon.getElement());
             DOM.appendChild(this.getElement(), m_nameLabel.getElement());
             DOM.appendChild(this.getElement(), m_statusLabel.getElement());
-
+//            DOM.appendChild(this.getElement(), m_statusDetails.getElement());
         }
 
         @Override
@@ -54,11 +64,19 @@ public class PageableApplicationList extends PageableList implements
         public ApplicationDetailView(final ApplicationInfo applicationInfo) {
             setElement(Document.get().createDivElement());
             setStyles();
-            
-            m_name = applicationInfo.getName();
+
             m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
             m_nameLabel.setText(applicationInfo.getName());
-            m_statusLabel.setText(applicationInfo.getStatusDetails().getReason());
+            m_statusLabel.setHTML(getApplicationStatusHTML(applicationInfo));
+//            m_statusDetails.setHTML(getApplicationStatusHTML(applicationInfo));
+        }
+
+        private String getApplicationStatusHTML(final ApplicationInfo applicationInfo) {
+            if (m_selected != null && m_selected.getApplicationName().equals(applicationInfo.getName())) {
+                return m_selected.getDetailsAsString();
+            } else {
+                return applicationInfo.getStatusDetails().getReason();
+            }
         }
 
         private void setStyles() {
@@ -67,18 +85,8 @@ public class PageableApplicationList extends PageableList implements
             m_icon.addStyleName(iconStyle);
             m_nameLabel.addStyleName(locationDetailStyle.nameStyle());
             m_statusLabel.addStyleName(locationDetailStyle.statusStyle());
-
+//            m_statusDetails.addStyleName(locationDetailStyle.detailsStyle());
         }
-
-        public String getName() {
-            return m_name;
-        }
-
-        public void updateDetails(final ApplicationDetails appDetails) {
-            m_statusLabel.setText(appDetails.getStatusDetails().getReason());
-            resizeToFit();
-        }
-
     }
 
     /**
@@ -87,6 +95,9 @@ public class PageableApplicationList extends PageableList implements
      */
     public void updateList(final ArrayList<ApplicationInfo> applications) {
         setApplications(applications);
+        if (m_selected != null) {
+            m_eventBus.fireEvent(new ApplicationSelectedEvent(m_selected.getApplicationName()));
+        }
         refresh();
     }
 
@@ -114,7 +125,7 @@ public class PageableApplicationList extends PageableList implements
         final Cell cell = getCellForEvent(event);
 
         final ApplicationInfo appInfo = getApplications().get(cell.getRowIndex());
-        m_eventBus.fireEvent(new ApplicationSelectedEvent(appInfo));
+        m_eventBus.fireEvent(new ApplicationSelectedEvent(appInfo.getName()));
     }
 
     public void setEventBus(final HandlerManager eventBus) {
@@ -133,17 +144,8 @@ public class PageableApplicationList extends PageableList implements
     }
 
     public void onApplicationDetailsRetrieved(final ApplicationDetailsRetrievedEvent event) {
-        updateApplicationDisplayItem(event.getApplicationDetails());
-        refresh();
-    }
-
-    private void updateApplicationDisplayItem(final ApplicationDetails appDetails) {
-        for(int i = 0; i < getDataList().getRowCount(); i++) {
-            ApplicationDetailView view = (ApplicationDetailView) getDataList().getWidget(i, 0);
-            if(view.getName().equals(appDetails.getApplicationName())) {
-                view.updateDetails(appDetails);
-            }
-        }
+        m_selected = event.getApplicationDetails();
+        refreshApplicationListResize();
     }
 
     public void refreshApplicationListResize() {

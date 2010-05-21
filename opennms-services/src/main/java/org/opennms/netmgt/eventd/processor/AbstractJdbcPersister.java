@@ -51,7 +51,6 @@ import java.text.ParseException;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventdConstants;
@@ -282,7 +281,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
         return new JdbcTemplate(getDataSource()).queryForInt(getGetNextIdString());
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

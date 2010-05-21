@@ -53,7 +53,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
@@ -842,7 +841,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         return thresholdMap;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

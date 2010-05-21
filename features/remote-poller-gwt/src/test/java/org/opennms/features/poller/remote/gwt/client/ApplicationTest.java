@@ -216,7 +216,7 @@ public class ApplicationTest {
             date = new Date(date.getTime() + FIVE_MINUTES);
         }
         statuses.add(getStatus(date, "RDU", monitorOffset + 1, up(date)));
-        statuses.add(getStatus(date, "RDU", monitorOffset + 2, up(date)));
+        statuses.add(getStatus(date, "RDU", monitorOffset + 2, down(date, "Still totally broken.")));
 
         monitorOffset += 2;
         return statuses;

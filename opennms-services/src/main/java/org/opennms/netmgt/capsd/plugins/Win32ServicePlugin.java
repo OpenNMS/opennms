@@ -36,7 +36,6 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -63,7 +62,7 @@ public class Win32ServicePlugin extends SnmpPlugin {
 		return super.isProtocolSupported(address, qualifiers);
 	}
 	
-	public static Category log() {
+	public static ThreadCategory log() {
 		return ThreadCategory.getInstance(Win32ServicePlugin.class);
 	}
 }

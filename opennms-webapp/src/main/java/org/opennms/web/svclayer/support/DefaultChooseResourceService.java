@@ -41,7 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -74,12 +74,18 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
         model.setResource(resource);
         Map<OnmsResourceType, List<OnmsResource>> resourceTypeMap = new LinkedHashMap<OnmsResourceType, List<OnmsResource>>();
         
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         for (OnmsResource childResource : resource.getChildResources()) {
             if (!resourceTypeMap.containsKey(childResource.getResourceType())) {
                 resourceTypeMap.put(childResource.getResourceType(), new LinkedList<OnmsResource>());
             }
-            LogUtils.infof(this, "getId(): " + childResource.getId());
-            LogUtils.infof(this, "getName(): " + childResource.getName());
+            // See bug 3760: These values have been known to contain a % sign so they are 
+            // not safe to pass to LogUtils.infof()
+            // http://bugzilla.opennms.org/show_bug.cgi?id=3760
+            if (log.isInfoEnabled()) {
+                log.info("getId(): " + childResource.getId());
+                log.info("getName(): " + childResource.getName());
+            }
             //checkLabelForQuotes(
             resourceTypeMap.get(childResource.getResourceType()).add(checkLabelForQuotes(childResource));
         }

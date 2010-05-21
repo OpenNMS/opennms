@@ -57,7 +57,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DhcpdConfigFactory;
 import org.opennms.netmgt.utils.IpValidator;
@@ -227,7 +226,7 @@ final class Poller {
      *             daemon.
      */
     private Poller(long timeout) throws IOException {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         DhcpdConfigFactory dcf = DhcpdConfigFactory.getInstance();
         try {
             if (log.isDebugEnabled()) {
@@ -277,7 +276,7 @@ final class Poller {
      *             if the socket close() method fails.
      */
     public void close() {
-        Category log = ThreadCategory.getInstance(Poller.class);
+        ThreadCategory log = ThreadCategory.getInstance(Poller.class);
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Closing connection");
@@ -326,7 +325,7 @@ final class Poller {
      *         otherwise.
      */
     static long isServer(InetAddress host, long timeout, int retries) throws IOException {
-        Category log = ThreadCategory.getInstance(Poller.class);
+        ThreadCategory log = ThreadCategory.getInstance(Poller.class);
 
         boolean isDhcpServer = false;
         // List of DHCP queries to try. The default when extended
@@ -495,7 +494,7 @@ final class Poller {
     // Converts the provided hardware address string (format=00:00:00:00:00:00)
     // to an array of bytes which can be passed in a DHCP DISCOVER packet.
     private static void setHwAddress(String hwAddressStr) {
-        Category log = ThreadCategory.getInstance(Poller.class);
+        ThreadCategory log = ThreadCategory.getInstance(Poller.class);
         // initialize the address
         s_hwAddress = DEFAULT_MAC_ADDRESS;
 

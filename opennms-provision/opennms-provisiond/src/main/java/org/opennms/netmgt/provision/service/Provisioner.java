@@ -49,7 +49,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import org.apache.log4j.Category;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.ThreadCategory;
@@ -297,7 +296,7 @@ public class Provisioner implements SpringServiceDaemon {
         doImport.waitFor();
     }
 
-    public Category log() {
+    public ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
 	}
 

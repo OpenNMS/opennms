@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -194,7 +193,7 @@ public class CoreImportActivities {
         }
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

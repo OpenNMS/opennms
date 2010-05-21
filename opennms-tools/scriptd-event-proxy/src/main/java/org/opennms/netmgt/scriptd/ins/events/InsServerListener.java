@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.netmgt.xml.event.Event;
 
 

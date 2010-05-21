@@ -37,7 +37,6 @@
  */
 package org.opennms.netmgt.collectd;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,7 +45,7 @@ import org.apache.log4j.Logger;
  */
 public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
 
-    private Category log() {
+    private Logger log() {
         return Logger.getLogger("Instrumentation.Collectd");
     }
 

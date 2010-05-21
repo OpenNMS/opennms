@@ -48,7 +48,6 @@ import java.util.TreeMap;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -81,7 +80,7 @@ public class MapPropertiesFactory extends Object {
 	/**
 	 * The Log4J category for logging web authentication messages.
 	 */
-	protected Category log = null;
+	protected ThreadCategory log = null;
 
 //	protected Map[] propertiesMaps = null;
 

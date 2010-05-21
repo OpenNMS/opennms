@@ -96,14 +96,14 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     }
     
     private void debug(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled()) {
             log.debug(String.format(format, args));
         }
     }
     
     private void info(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args));
         }

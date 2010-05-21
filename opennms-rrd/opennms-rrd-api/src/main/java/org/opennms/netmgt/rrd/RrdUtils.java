@@ -46,7 +46,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -174,7 +173,7 @@ public abstract class RrdUtils {
         }
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(RrdUtils.class);
     }
 

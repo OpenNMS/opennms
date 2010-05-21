@@ -44,7 +44,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -320,7 +319,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

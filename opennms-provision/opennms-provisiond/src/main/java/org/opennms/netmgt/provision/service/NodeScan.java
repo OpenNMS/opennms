@@ -46,6 +46,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+<<<<<<< HEAD:opennms-provision/opennms-provisiond/src/main/java/org/opennms/netmgt/provision/service/NodeScan.java
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
@@ -53,6 +54,9 @@ import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.LogUtils;
+=======
+import org.opennms.core.utils.ThreadCategory;
+>>>>>>> 4ed40ece1df65e0671836ddbc2b6ad5f4ce769ac:opennms-provision/opennms-provisiond/src/main/java/org/opennms/netmgt/provision/service/NodeScan.java
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -253,7 +257,14 @@ public class NodeScan implements RunInBatch {
     NoAgentScan createNoAgentScan() {
         return new NoAgentScan(m_nodeId, m_node);
     }
+<<<<<<< HEAD:opennms-provision/opennms-provisiond/src/main/java/org/opennms/netmgt/provision/service/NodeScan.java
     
+=======
+ 
+    private ThreadCategory log() {
+        return ThreadCategory.getInstance(NodeScan.class);
+    }
+>>>>>>> 4ed40ece1df65e0671836ddbc2b6ad5f4ce769ac:opennms-provision/opennms-provisiond/src/main/java/org/opennms/netmgt/provision/service/NodeScan.java
 
     /**
      * AgentScan

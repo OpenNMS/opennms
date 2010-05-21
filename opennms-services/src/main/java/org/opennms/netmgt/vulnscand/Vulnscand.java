@@ -48,7 +48,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
@@ -316,7 +315,7 @@ public class Vulnscand extends AbstractServiceDaemon {
 	        ifStmt.setString(1, address.getHostAddress());
 	        ResultSet rset = ifStmt.executeQuery();
 	        d.watch(rset);
-	        Category log = log();
+	        ThreadCategory log = log();
 			if (rset.next()) {
 	            Timestamp lastPolled = rset.getTimestamp(1);
 	            if (lastPolled != null && rset.wasNull() == false) {

@@ -218,7 +218,7 @@ public class ImportOperationsManager {
         };
     }
 
-	private Logger log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

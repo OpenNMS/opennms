@@ -44,7 +44,6 @@ import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
@@ -119,7 +118,7 @@ final public class NtpMonitor extends IPv4Monitor {
 
         // get the log
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // get the parameters
         //

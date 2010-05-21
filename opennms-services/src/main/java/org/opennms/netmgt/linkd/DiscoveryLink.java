@@ -49,7 +49,6 @@ import java.util.Set;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
@@ -153,7 +152,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		super();
 	}
 	
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

@@ -33,7 +33,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -65,7 +64,7 @@ public class Dot1dStpPortTable extends SnmpTable<Dot1dStpPortTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(Dot1dStpPortTable.class);
     }
 	

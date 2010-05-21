@@ -37,7 +37,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -71,7 +70,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 	 */
 	public JDBCStoredProcedurePlugin() {
 		super();
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		log.info(getClass().getName()
 				+ ": JDBCStoredProcedurePlugin class loaded");
 	}

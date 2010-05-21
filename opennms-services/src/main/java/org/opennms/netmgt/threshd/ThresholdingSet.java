@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
@@ -396,7 +395,7 @@ public abstract class ThresholdingSet {
         return m_thresholdGroups.toString();
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

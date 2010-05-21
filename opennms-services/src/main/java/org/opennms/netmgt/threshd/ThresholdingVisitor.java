@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.collectd.CollectionAttribute;
@@ -75,7 +74,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * Is static because successful creation depends on thresholding-enabled parameter.
      */
     public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String,String> params, long interval) {
-        Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
+        ThreadCategory log = ThreadCategory.getInstance(ThresholdingVisitor.class);
 
         String enabled = params.get("thresholding-enabled");
         if (enabled == null || !enabled.equals("true")) {
@@ -158,7 +157,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         return "ThresholdingVisitor for " + m_thresholdingSet;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

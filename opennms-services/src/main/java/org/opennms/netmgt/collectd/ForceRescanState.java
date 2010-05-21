@@ -35,7 +35,6 @@ package org.opennms.netmgt.collectd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -58,7 +57,7 @@ public class ForceRescanState {
         return m_eventProxy;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

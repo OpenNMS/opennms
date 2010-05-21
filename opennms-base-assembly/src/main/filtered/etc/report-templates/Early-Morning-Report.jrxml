@@ -521,9 +521,11 @@ FROM
 	(SELECT
 		CASE
 			WHEN notifications.answeredby is null THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
 			END AS outstanding,
 		CASE
 			WHEN notifications.answeredby is not null THEN CAST('1' AS INTEGER)
+			ELSE CAST('0' AS INTEGER)
 			END AS acknowledged,
 		CASE
 			WHEN notifications.answeredby is null THEN 'outstanding'
@@ -1664,7 +1666,7 @@ WHERE
 						</categorySeries>
 					</categoryDataset>
 					<bar3DPlot>
-						<plot foregroundAlpha="0.7">
+						<plot foregroundAlpha="0.7" labelRotation="45.0">
 							<seriesColor seriesOrder="0" color="#B1A500"/>
 							<seriesColor seriesOrder="1" color="#999999"/>
 							<seriesColor seriesOrder="2" color="#009900"/>

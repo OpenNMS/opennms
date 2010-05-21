@@ -54,7 +54,6 @@ import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
@@ -353,7 +352,7 @@ public class Invoker {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

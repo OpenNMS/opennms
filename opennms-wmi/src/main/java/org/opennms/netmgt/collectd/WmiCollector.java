@@ -40,7 +40,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -87,7 +86,7 @@ public class WmiCollector implements ServiceCollector {
     private HashMap<String, AttributeGroupType> m_groupTypeList = new HashMap<String, AttributeGroupType>();
     private HashMap<String, WmiCollectionAttributeType> m_attribTypeList = new HashMap<String, WmiCollectionAttributeType>();
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

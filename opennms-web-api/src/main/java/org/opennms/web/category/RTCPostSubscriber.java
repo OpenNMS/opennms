@@ -34,7 +34,6 @@ package org.opennms.web.category;
 
 import java.io.IOException;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
@@ -62,7 +61,7 @@ public class RTCPostSubscriber extends Object {
     protected String m_username = "rtc";
     protected String m_password = "rtc";
 
-    protected static Category log = ThreadCategory.getInstance("RTC");
+    protected static ThreadCategory log = ThreadCategory.getInstance("RTC");
 
     public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
         m_proxy = Util.createEventProxy();

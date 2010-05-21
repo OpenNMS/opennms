@@ -58,7 +58,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.style.ToStringCreator;
@@ -385,7 +384,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     // return ifsForSnmpIface;
     // }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

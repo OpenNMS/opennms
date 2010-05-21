@@ -1,16 +1,14 @@
 package org.opennms.features.poller.remote.gwt.client.events;
 
-import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
-
 import com.google.gwt.event.shared.GwtEvent;
 
 public class ApplicationSelectedEvent extends GwtEvent<ApplicationSelectedEventHandler> {
     
     public static Type<ApplicationSelectedEventHandler> TYPE = new Type<ApplicationSelectedEventHandler>();
-    private ApplicationInfo m_appInfo;
+    private String m_applicationName;
     
-    public ApplicationSelectedEvent(ApplicationInfo appInfo) {
-        setAppInfo(appInfo);
+    public ApplicationSelectedEvent(final String applicationName) {
+        m_applicationName = applicationName;
     }
     
     @Override
@@ -23,12 +21,8 @@ public class ApplicationSelectedEvent extends GwtEvent<ApplicationSelectedEventH
         return TYPE;
     }
 
-    protected void setAppInfo(ApplicationInfo appInfo) {
-        m_appInfo = appInfo;
-    }
-
-    public ApplicationInfo getAppInfo() {
-        return m_appInfo;
+    public String getApplicationname() {
+        return m_applicationName;
     }
 
 }

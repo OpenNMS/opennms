@@ -49,7 +49,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
@@ -298,7 +297,7 @@ public abstract class EventUtils {
     }
     
     private static void debug(String format, Object... args) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         if (log.isDebugEnabled()) {
             log.debug(String.format(format, args));
         }

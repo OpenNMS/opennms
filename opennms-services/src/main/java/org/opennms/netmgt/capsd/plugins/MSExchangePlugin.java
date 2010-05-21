@@ -54,7 +54,6 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -128,7 +127,7 @@ public final class MSExchangePlugin extends AbstractPlugin {
     private final static int IMAP_INDEX = 1;
 
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {

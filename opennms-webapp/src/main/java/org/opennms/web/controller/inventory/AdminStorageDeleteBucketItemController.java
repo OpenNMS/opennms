@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.springframework.security.Authentication;
@@ -45,7 +44,7 @@ public class AdminStorageDeleteBucketItemController implements Controller {
         return modelAndView;
     }
     
-    private static Category log() {
+    private static Logger log() {
         return Logger.getLogger("Rancid");
     }
 

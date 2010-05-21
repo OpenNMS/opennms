@@ -47,7 +47,6 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.WebSecurityUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -62,7 +61,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class ExecCommandController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
    		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
@@ -167,14 +166,14 @@ public class ExecCommandController implements Controller {
 			            
 			        }
 			        catch(IOException io){
-			        	log.warn(io);
+			        	log.warn(io.getMessage());
 			        }
 			    }
 			}).start();
 			try{
 				p.waitFor();
 			}catch(Exception e){
-				log.warn(e);
+				log.warn(e.getMessage());
 			}
 
 		} catch (Exception e) {
