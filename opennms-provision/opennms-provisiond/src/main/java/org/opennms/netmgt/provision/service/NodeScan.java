@@ -254,14 +254,10 @@ public class NodeScan implements RunInBatch {
     NoAgentScan createNoAgentScan() {
         return new NoAgentScan(m_nodeId, m_node);
     }
-<<<<<<< HEAD:opennms-provision/opennms-provisiond/src/main/java/org/opennms/netmgt/provision/service/NodeScan.java
  
     private ThreadCategory log() {
         return ThreadCategory.getInstance(NodeScan.class);
     }
-=======
-    
->>>>>>> cae0afe... NMS-112 Add Capsd function to Provisiond so as to replace capsd:opennms-provision/opennms-provisiond/src/main/java/org/opennms/netmgt/provision/service/NodeScan.java
 
     /**
      * AgentScan
