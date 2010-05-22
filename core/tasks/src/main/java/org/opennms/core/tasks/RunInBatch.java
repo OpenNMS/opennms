@@ -1,14 +1,12 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,29 +29,6 @@
  */
 package org.opennms.core.tasks;
 
-import java.util.concurrent.atomic.AtomicReference;
-
-public class SequenceTask extends ContainerTask<SequenceTask> {
-    
-    private AtomicReference<Task> m_lastChild = new AtomicReference<Task>(null);
-
-    public SequenceTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
-        super(coordinator, parent);
-        m_lastChild.set(getTriggerTask());
-    }
-    
-    @Override
-    protected void addChildDependencies(Task child) {
-        super.addChildDependencies(child);
-        Task last = m_lastChild.getAndSet(child);
-        child.addPrerequisite(last);
-    }
-    
-    public String toString() {
-        return "sequenceTask";
-    }
-    
-    
-
-
+public interface RunInBatch {
+    public void run(BatchTask batch);
 }

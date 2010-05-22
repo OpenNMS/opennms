@@ -31,6 +31,8 @@
  */
 package org.opennms.netmgt.provision.service.lifecycle;
 
+import org.opennms.core.tasks.BatchTask;
+
 /**
  * LifeCycleRepository
  *
@@ -38,7 +40,7 @@ package org.opennms.netmgt.provision.service.lifecycle;
  */
 public interface LifeCycleRepository {
     
-    LifeCycleInstance createNestedLifeCycleInstance(Phase containingPhase, String lifeCycleName, Object... providers);
+    LifeCycleInstance createNestedLifeCycleInstance(BatchTask containingPhase, String lifeCycleName, Object... providers);
     LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers);
 
 }

@@ -551,7 +551,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     @Override
     public void init() throws ProvisioningAdapterException {
         MapSyncExecutor e = new MapSyncExecutor();
-        new Thread(e).start();        
+        new Thread(e, MapSyncExecutor.class.getSimpleName()).start();
     }
     
 

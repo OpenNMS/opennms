@@ -11,6 +11,7 @@
   
 
     <bean id="sequenceTaskCoordinator" class="org.opennms.core.tasks.DefaultTaskCoordinator">
+      <constructor-arg value="SequeceTaskCoordinator" />
       <property name="defaultExecutor" value="default" />
       <property name="executors">
           <map>
