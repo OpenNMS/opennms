@@ -147,7 +147,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
         
         MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), new File("/dev/null"), moFile, bindAddress);
-        Thread thread = new Thread(agent);
+        Thread thread = new Thread(agent, agent.getClass().getSimpleName());
         thread.start();
 
         try {

@@ -23,7 +23,7 @@ public class DefaultInventoryReportService implements InventoryReportService {
         m_reportRunner.setReportFormat(criteria.getReportFormat());
         m_reportRunner.setReportRequestDate(criteria.getReportRequestDate());
         m_reportRunner.setTheField(criteria.getTheField());
-        new Thread(m_reportRunner).start();    
+        new Thread(m_reportRunner, m_reportRunner.getClass().getSimpleName()).start();    
         
         return true;
     }

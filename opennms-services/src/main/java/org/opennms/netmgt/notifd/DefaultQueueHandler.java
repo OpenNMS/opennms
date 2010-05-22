@@ -211,7 +211,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     public synchronized void start() {
         m_status = STARTING;
 
-        Thread thread = new Thread(this, m_queueID);
+        Thread thread = new Thread(this, this.getClass().getSimpleName() + "-" + m_queueID);
         thread.start();
     }
 

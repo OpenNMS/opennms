@@ -209,7 +209,7 @@ public class LifeCycleInstanceTest {
     @Before
     public void setUp() {
         
-        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newFixedThreadPool(10));
+        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator("LifeCycleInstanceTest", Executors.newFixedThreadPool(10));
         
         DefaultLifeCycleRepository repository = new DefaultLifeCycleRepository(coordinator);
         

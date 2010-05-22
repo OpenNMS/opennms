@@ -57,8 +57,8 @@ public class ProcessExec {
         PrintInputStream out = new PrintInputStream(p.getInputStream(), m_out);
         PrintInputStream err = new PrintInputStream(p.getErrorStream(), m_err);
 
-        Thread t1 = new Thread(out);
-        Thread t2 = new Thread(err);
+        Thread t1 = new Thread(out, this.getClass().getSimpleName() + "-stdout");
+        Thread t2 = new Thread(err, this.getClass().getSimpleName() + "-stderr");
         t1.start();
         t2.start();
 

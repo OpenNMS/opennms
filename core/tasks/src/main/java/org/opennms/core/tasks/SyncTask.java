@@ -47,12 +47,12 @@ public class SyncTask extends Task {
 
     private String m_preferredExecutor = DEFAULT_EXECUTOR;
     
-    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Runnable action) {
+    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Runnable action) {
         this(coordinator, parent, action, DEFAULT_EXECUTOR);
     }
 
 
-    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Runnable action, String preferredExecutor) {
+    public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Runnable action, String preferredExecutor) {
         super(coordinator, parent);
         m_action = action;
         m_preferredExecutor = preferredExecutor;

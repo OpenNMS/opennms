@@ -43,6 +43,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -52,6 +53,8 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import org.joda.time.Duration;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -135,7 +138,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitTemporaryDatabase()
-public class ProvisionerTest implements MockSnmpAgentAware {
+public class NewSuspectScanTest implements MockSnmpAgentAware {
     
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -184,14 +187,10 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
     private MockSnmpAgent m_agent;
     
+    static private String s_initialDiscoveryEnabledValue;
+    
     public void setMockSnmpAgent(MockSnmpAgent agent) {
         m_agent = agent;
-    }
-    
-    @Before
-    public void dwVerifyDnsUrlHandlerFactory() throws MalformedURLException {
-        new URL("dns://david:rocks@localhost:53/opennms");
-        assertNotNull("failed to wire the ImportSchedule class", m_importSchedule);
     }
     
     @BeforeClass
@@ -206,6 +205,23 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         MockLogAppender.setupLogging(props);
         
         //System.setProperty("mock.debug", "false");
+        
+    }
+
+    @BeforeClass
+    public static void setEnableDiscovery() {
+        s_initialDiscoveryEnabledValue = System.getProperty("org.opennms.provisiond.enableDiscovery");
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
+        
+    }
+    
+    @AfterClass
+    public static void resetEnableDiscovery() {
+        if (s_initialDiscoveryEnabledValue == null) {
+            System.getProperties().remove("org.opennms.provisiond.enableDiscovery");
+        } else {
+            System.setProperty("org.opennms.provisiond.enableDiscovery", s_initialDiscoveryEnabledValue);
+        }
     }
     
     @Before
@@ -228,282 +244,67 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
     }
 
-
-    @Test(timeout=300000)
-    @Transactional
-    public void testVisit() throws Exception {
-
-        Requisition requisition = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/NewFile2.xml"));
-        CountingVisitor visitor = new CountingVisitor();
-        requisition.visit(visitor);
-        verifyCounts(visitor);
-    }
-    
-    /**
-     * We have to ignore this test until there is a DNS service available in the test harness
-     * 
-     * @throws ForeignSourceRepositoryException
-     * @throws MalformedURLException
-     */
-    @Test(timeout=300000)
-    @Ignore
-    public void dwImportDnsResourceRequisition() throws ForeignSourceRepositoryException, MalformedURLException {
-        Requisition r = m_foreignSourceRepository.importResourceRequisition(new UrlResource("dns://localhost/localhost"));
-        CountingVisitor v = new CountingVisitor();
-        r.visit(v);
-        verifyCounts2(v);
-    }
-
-    @Test(timeout=300000)
-    @Transactional
-    public void testSendEventsOnImport() throws Exception {
-        
-        MockNetwork network = new MockNetwork();
-        MockNode node = network.addNode(1, "node1");
-        network.addInterface("172.20.1.204");
-        network.addService("ICMP");
-        network.addService("HTTP");
-        network.addInterface("172.20.1.201");
-        network.addService("ICMP");
-        network.addService("SNMP");
-        
-        anticpateCreationEvents(node);
-        
-        importFromResource("classpath:/tec_dump.xml");
-        
-        m_eventAnticipator.verifyAnticipated();
-        
-    }
-
-    private void importFromResource(String path) throws Exception {
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource(path));
-    }
-    
-    private void anticpateCreationEvents(MockElement element) {
-        element.visit(new MockVisitorAdapter() {
-
-            @Override
-            public void visitElement(MockElement e) {
-                Event newEvent = e.createNewEvent();
-                System.out.println("Anticipate Event "+newEvent.getUei());
-                m_eventAnticipator.anticipateEvent(newEvent);
-            }
-            
-        });
-    }
-    
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testNonSnmpImportAndScan() throws Exception {
-        importFromResource("classpath:/import_localhost.xml");
-        
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
-
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        
-        runScan(scan);
-    }
-    
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testFindQuery() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        
-        for (OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
-            System.err.println(assetRecord.getBuilding());
-        }
-    }
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testBigImport() throws Exception {
-        File file = new File("/tmp/tec_dump.xml.large");
-        if (file.exists()) {
-            m_eventAnticipator.reset();
-            m_eventAnticipator.setDiscardUnanticipated(true);
-            String path = file.toURI().toURL().toExternalForm();
-            System.err.println("Importing: "+path);
-            importFromResource(path);
-        }
-        
-    }
-    
-    @Test(timeout=300000)
-    @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
-    public void testPopulateWithSnmp() throws Exception {
-        
-        importFromResource("classpath:/tec_dump.xml");
-
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-        
-        //Verify ipinterface count
-        assertEquals(2, getInterfaceDao().countAll());
-        
-        //Verify ifservices count
-        assertEquals(4, getMonitoredServiceDao().countAll());
-        
-        //Verify service count
-        assertEquals(3, getServiceTypeDao().countAll());
-
-        //Verify snmpInterface count
-        assertEquals(2, getSnmpInterfaceDao().countAll());
-        
-    }
-    // fail if we take more than five minutes
     @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
-    public void testPopulateWithSnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scan2.xml");
-
-        //Verify distpoller count
+    public void testScanNewSuspect() throws Exception {
+        
+        //Verify empty database
         assertEquals(1, getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-        
-        //Verify ipinterface count
-        assertEquals(1, getInterfaceDao().countAll());
-        
-        //Verify ifservices count
-        assertEquals(1, getMonitoredServiceDao().countAll());
-        
-        //Verify service count
-        assertEquals(1, getServiceTypeDao().countAll());
-
-        //Verify snmpInterface count
-        assertEquals(1, getSnmpInterfaceDao().countAll());
-        
-        
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
-
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
-        
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-        
-        //Verify ipinterface count
-        assertEquals(2, getInterfaceDao().countAll());
-        
-        //Verify ifservices count - discover snmp service on other if
-        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
-        
-        //Verify service count
-        assertEquals(1, getServiceTypeDao().countAll());
-
-        //Verify snmpInterface count
-        assertEquals(6, getSnmpInterfaceDao().countAll());
-        
-        
-        // Node Delete
-        importFromResource("classpath:/nonodes.xml");
-
-        //Verify node count
         assertEquals(0, getNodeDao().countAll());
-        
-        
-    }
-
-    // fail if we take more than five minutes
-    @Test(timeout=300000)
-    @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
-    public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml");
-
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(1, getNodeDao().countAll());
-        
-        //Verify ipinterface count
-        assertEquals(1, getInterfaceDao().countAll());
-        
-        assertEquals(0, getSnmpInterfaceDao().countAll());
-
-        // Expect there to be no services since we are not provisioning one
+        assertEquals(0, getInterfaceDao().countAll());
         assertEquals(0, getMonitoredServiceDao().countAll());
         assertEquals(0, getServiceTypeDao().countAll());
-        
-        
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
+        runScan(scan);
+
+        // wait for NodeScan triggered by NodeAdded to complete
+        Thread.sleep(100000);
+
         List<OnmsNode> nodes = getNodeDao().findAll();
         OnmsNode node = nodes.get(0);
 
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
-        
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
-        
+
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
-        
+
         //Verify ipinterface count
         assertEquals(2, getInterfaceDao().countAll());
-        
-        //Verify ifservices count - discover snmp service on both ifs
+
+        //Verify ifservices count - discover snmp service on other if
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
-        
+
         //Verify service count
         assertEquals(1, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
-        
-        
-        // Node Delete
-        importFromResource("classpath:/nonodes.xml");
 
-        //Verify node count
-        assertEquals(0, getNodeDao().countAll());
-        
-        
     }
-
     
-    
-    // fail if we take more than five minutes
     @Test(timeout=300000)
     @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
-    public void testImportAddrThenChangeAddr() throws Exception {
-        
-        importFromResource("classpath:/requisition_then_scan2.xml");
+    public void testScanNewSuspectNoSnmp() throws Exception {
 
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
-
-        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        //Verify empty database
+        assertEquals(1, getDistPollerDao().countAll());
+        assertEquals(0, getNodeDao().countAll());
+        assertEquals(0, getInterfaceDao().countAll());
+        assertEquals(0, getMonitoredServiceDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
+        assertEquals(0, getSnmpInterfaceDao().countAll());
         
+        
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
         runScan(scan);
         
-        m_nodeDao.flush();
-        
-        assertEquals(2, getInterfaceDao().countAll());
-
-        m_agent.updateValuesFromResource(m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
-        
-        importFromResource("classpath:/requisition_primary_addr_changed.xml");
-        
-        NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        
-        runScan(scan2);
-        
-        m_nodeDao.flush();
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        OnmsNode node = nodes.get(0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -511,63 +312,26 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
         
-        System.err.println(getInterfaceDao().findAll());
-        
         //Verify ipinterface count
-        assertEquals(2, getInterfaceDao().countAll());
+        assertEquals(1, getInterfaceDao().countAll());
         
         //Verify ifservices count - discover snmp service on other if
-        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 0, getMonitoredServiceDao().countAll());
         
         //Verify service count
-        assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
+        assertEquals(0, getServiceTypeDao().countAll());
 
         //Verify snmpInterface count
-        assertEquals(6, getSnmpInterfaceDao().countAll());
-        
-        
-        // Node Delete
-        importFromResource("classpath:/nonodes.xml");
-
-        //Verify node count
-        assertEquals(0, getNodeDao().countAll());
-        
+        assertEquals(0, getSnmpInterfaceDao().countAll());
         
     }
     
-    public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
+    public void runScan(NewSuspectScan scan) throws InterruptedException, ExecutionException {
         Task t = scan.createTask();
         t.schedule();
         t.waitFor();
     }
 
-    
-    
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testPopulate() throws Exception {
-        
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-
-        //Verify distpoller count
-        assertEquals(1, getDistPollerDao().countAll());
-        
-        //Verify node count
-        assertEquals(10, getNodeDao().countAll());
-        
-        //Verify ipinterface count
-        assertEquals(30, getInterfaceDao().countAll());
-        
-        //Verify ifservices count
-        assertEquals(50, getMonitoredServiceDao().countAll());
-        
-        //Verify service count
-        assertEquals(3, getServiceTypeDao().countAll());
-    }
-    
-    
-    
     
     private DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
@@ -603,234 +367,6 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     }
     
 
-    /**
-     * This test first bulk imports 10 nodes then runs update with 1 node missing
-     * from the import file.
-     * 
-     * @throws ModelImportException
-     */
-    @Test(timeout=300000)
-    @Transactional
-    public void testImportUtf8() throws Exception {
-
-        m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"));
-        
-        assertEquals(1, getNodeDao().countAll());
-        // \u00f1 is unicode for n~ 
-        assertEquals("\u00f1ode2", getNodeDao().get(1).getLabel());
-        
-    }
-    
-    /**
-     * This test first bulk imports 10 nodes then runs update with 1 node missing
-     * from the import file.
-     * 
-     * @throws ModelImportException
-     */
-    @Test(timeout=300000)
-    @Transactional
-    public void testDelete() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        assertEquals(10, getNodeDao().countAll());
-        importFromResource("classpath:/tec_dump.xml.smalltest.delete");
-        assertEquals(9, getNodeDao().countAll());
-    
-        importFromResource("classpath:/tec_dump.xml.smalltest.nonodes");
-        assertEquals(0, getNodeDao().countAll());
-    }
-
-    /**
-     * This test makes sure that asset information is getting imported properly.
-     * @throws Exception
-     */
-    @Test(timeout=300000)
-    @Transactional
-    public void testAssets() throws Exception {
-        importFromResource("classpath:/tec_dump.xml");
-        assertEquals(1, getNodeDao().countAll());
-        OnmsNode n = getNodeDao().get(1);
-        assertEquals("Asset Record: Manufacturer",     "Dell",                   n.getAssetRecord().getManufacturer());
-        assertEquals("Asset Record: Operating System", "Windows Pi",             n.getAssetRecord().getOperatingSystem());
-        assertEquals("Asset Record: Description",      "Large and/or In Charge", n.getAssetRecord().getDescription());
-    }
-    
-    //Scheduler tests
-    @Test(timeout=300000)
-    @Transactional
-    public void testProvisionServiceGetScheduleForNodesCount() throws Exception {
-       //importFromResource("classpath:/tec_dump.xml.smalltest");
-       
-       List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
-       
-       int nodeCount = getNodeDao().countAll();
-       System.err.println("NodeCount: "+nodeCount);
-
-       
-       assertEquals(nodeCount, schedulesForNode.size());
-       assertEquals(nodeCount, m_provisioner.getScheduleLength());
-    }
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testProvisionServiceGetScheduleForNodesUponDelete() throws Exception {
-       importFromResource("classpath:/tec_dump.xml.smalltest");
-       
-       List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
-       
-       assertEquals(10, schedulesForNode.size());
-       
-       importFromResource("classpath:/tec_dump.xml.smalltest.delete");
-       
-       schedulesForNode = m_provisionService.getScheduleForNodes();
-       
-       assertEquals(9, schedulesForNode.size());
-       assertEquals(9, m_provisioner.getScheduleLength());
-    }
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testProvisionerAddNodeToSchedule() throws Exception{
-        
-        
-        m_provisioner.scheduleRescanForExistingNodes();
-        assertEquals(0, m_provisioner.getScheduleLength());
-        
-       
-        
-        OnmsNode node = createNode();
-        assertEquals(1, node.getId().intValue());
-        
-        assertNotNull(m_nodeDao.get(1));
-        
-        Event addedEvent = new Event();
-        addedEvent.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
-        addedEvent.setNodeid(1);
-        
-        m_mockEventIpcManager.broadcastNow(addedEvent);
-        
-        assertEquals(1, m_provisioner.getScheduleLength());
-        
-    }
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testProvisionerRescanWorking() throws Exception{
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        
-        m_provisioner.scheduleRescanForExistingNodes();
-        assertEquals(10, m_provisioner.getScheduleLength());
-    }
-
-    @Test(timeout=300000)
-    @Transactional
-    public void testProvisionerRemoveNodeInSchedule() throws Exception{
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        
-        //m_provisioner.scheduleRescanForExistingNodes();
-        assertEquals(10, m_provisioner.getScheduleLength());
-        
-        Event addedEvent = new Event();
-        addedEvent.setUei(EventConstants.NODE_DELETED_EVENT_UEI);
-        addedEvent.setNodeid(2);
-        
-        m_mockEventIpcManager.broadcastNow(addedEvent);
-        
-        assertEquals(9, m_provisioner.getScheduleLength());
-    }
-    
-    @Test
-    @Transactional
-    public void testProvisionServiceScanIntervalCalcWorks() {
-        long now = System.currentTimeMillis();
-        
-        Date date = new Date();
-        date.setTime(now - 43200000);
-        long lastPoll = date.getTime();
-        long nextPoll = lastPoll + 86400000;
-        long initialDelay = Math.max(0, nextPoll - now);
-        
-        assertEquals(43200000, initialDelay);
-        
-    }
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testProvisionerNodeRescanSchedule() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        
-        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
-        
-        assertEquals(10, schedulesForNode.size());
-        
-        //m_provisioner.scheduleRescanForExistingNodes();
-        
-        assertEquals(10, m_provisioner.getScheduleLength());
-    }
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testProvisionerUpdateScheduleAfterImport() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        
-        List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
-        
-        assertEquals(10, schedulesForNode.size());
-        
-        //m_provisioner.scheduleRescanForExistingNodes();
-        
-        assertEquals(10, m_provisioner.getScheduleLength());
-        
-        //reimport with one missing node
-        importFromResource("classpath:/tec_dump.xml.smalltest.delete");
-        
-        //m_provisioner.scheduleRescanForExistingNodes();
-        schedulesForNode = m_provisionService.getScheduleForNodes();
-        
-        //check the schedule to make sure that it deletes the node
-        assertEquals(schedulesForNode.size(), m_provisioner.getScheduleLength());
-        assertEquals(getNodeDao().countAll(), m_provisioner.getScheduleLength());
-        
-    }
-    
-    @Test(timeout=300000)
-    @Transactional
-    public void testSaveCategoriesOnUpdateNodeAttributes() throws Exception {
-        
-        final String TEST_CATEGORY = "TEST_CATEGORY";
-        
-        final String LABEL = "apknd";
-        
-        importFromResource("classpath:/tec_dump.xml.smalltest");
-        
-        Collection<OnmsNode> nodes = m_nodeDao.findByLabel(LABEL);
-        assertNotNull(nodes);
-        assertEquals(1, nodes.size());
-        
-        OnmsNode node = nodes.iterator().next();
-        assertNotNull(node);
-        assertEquals(LABEL, node.getLabel());
-        assertFalse(node.hasCategory(TEST_CATEGORY));
-        
-        NodeCategorySettingPolicy policy = new NodeCategorySettingPolicy();
-        policy.setCategory(TEST_CATEGORY);
-        policy.setLabel(LABEL);
-        
-        node = policy.apply(node);
-        
-        assertTrue(node.hasCategory(TEST_CATEGORY));
-        
-        m_provisionService.updateNodeAttributes(node);
-        
-        // flush here to force a write so we are sure that the OnmsCategories are correctly created
-        m_nodeDao.flush();
-        
-        OnmsNode node2 = m_nodeDao.findByLabel(LABEL).iterator().next();
-
-        assertTrue(node2.hasCategory(TEST_CATEGORY));
-        
-
-    }
-    
     
     
     

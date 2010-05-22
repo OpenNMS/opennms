@@ -67,4 +67,5 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
      */
     Map<String, Integer> getInterfacesForNodes();
 
+
 }

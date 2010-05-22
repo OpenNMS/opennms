@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.SequenceTask;
 
@@ -58,7 +59,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      *  
      */
     
-    final Phase m_containingPhase;
+    final BatchTask m_containingPhase;
     final LifeCycleRepository m_repository;
     final DefaultTaskCoordinator m_coordinator;
     final String m_name;
@@ -66,7 +67,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     final Object[] m_providers;
     final Map<String, Object> m_attributes = new HashMap<String, Object>();
     
-    public DefaultLifeCycleInstance(Phase containingPhase, LifeCycleRepository repository,
+    public DefaultLifeCycleInstance(BatchTask containingPhase, LifeCycleRepository repository,
             DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
 
         super(coordinator, containingPhase);
@@ -151,7 +152,7 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     }
 
     
-    public LifeCycleInstance createNestedLifeCycle(Phase containingPhase, String lifeCycleName) {
+    public LifeCycleInstance createNestedLifeCycle(BatchTask containingPhase, String lifeCycleName) {
         return m_repository.createNestedLifeCycleInstance(containingPhase, lifeCycleName, m_providers);
     }
 
