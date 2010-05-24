@@ -360,14 +360,14 @@
                   <%=createSelectList("availableUsers", availableUsers)%><br/>
                   <p align="center">
                   <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"><br/>
-                  <input type="button" onClick="addUsers()" value="&nbsp;&gt;&gt;&nbsp;"></p>
+                  <input type="button" onClick="addUsers()" value="&nbsp;&#155;&#155;&nbsp;"></p>
                 </td>
                 <td align="center">
                   Currently in Group <br/>
                   <%=createSelectList("selectedUsers", selectedUsers)%><br/>
                   <p align="center">
                   <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"><br/>
-                  <input type="button" onClick="removeUsers()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
+                  <input type="button" onClick="removeUsers()" value="&nbsp;&#139;&#139;&nbsp;" ></p>
                 </td>
                 <td>
                   <input type="button" value="  Move Up   " onclick="move(-1)"> <br/>
@@ -394,14 +394,14 @@
 	                  <p align="center">
 	                  
 	                  <input type="button" name="availableAll" onClick="selectAllAvailableCategories()" value="Select All"><br/>
-	                  <input type="button" onClick="addCategories()" value="&nbsp;&gt;&gt;&nbsp;"></p>
+	                  <input type="button" onClick="addCategories()" value="&nbsp;&#155;&#155;&nbsp;"></p>
 	                </td>
 	                <td align="center">
 	                  Currently in Group <br/>
 	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
 	                  <p align="center">
 	                  <input type="button" name="selectedAll" onClick="selectAllSelectedCategories()" value="Select All"><br/>
-	                  <input type="button" onClick="removeCategories()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
+	                  <input type="button" onClick="removeCategories()" value="&nbsp;&#139;&#139;&nbsp;" ></p>
 	                </td>
 	                <td>
 	                  <input type="button" value="  Move Up   " onclick="moveCat(-1)"> <br/>
