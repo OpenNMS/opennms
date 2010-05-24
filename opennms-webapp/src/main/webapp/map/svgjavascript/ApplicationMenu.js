@@ -305,9 +305,7 @@ function searchMapSetUp()
 		openMapSetUp();
 	}
 }
-
-function topMapSetUp(){
-	if (verifyMapString()) return;
+function getTopElementsString() {
 	var elems = new String();
 	var first=true;
 	for(var label in nodeLabelMap) {
@@ -316,22 +314,26 @@ function topMapSetUp(){
 		    if (mapLbl!=undefined) {
 				for (var j=0; j<mapLbl.length;j++ ){
 					if (first) {
-						elems = mapSortAss[mapLbl[j]].id;
+						elems += mapSortAss[mapLbl[j]].id;
 						first = false;
 					} else {
-						elems = elems + "," + mapSortAss[mapLbl[j]].id;
+						elems += "," + mapSortAss[mapLbl[j]].id;
 					}
 				}
 			}
 			break;
 		}  
 	}
+	return elems;
+}
 
+function topMapSetUp(){
+	if (verifyMapString()) return;
 	windowsClean();
 	clearTopInfo();
 	clearDownInfo();
 	mapTabSetUp(SEARCH_MAP_NAME);
-	searchMap(elems);	
+	searchMap(getTopElementsString());	
 }
 
 // Open Map
@@ -1458,12 +1460,13 @@ function assertRefreshing(loading){
 }
 
 function showHistory(){
-	if (currentMapName == SEARCH_MAP_NAME || currentMapName == NEW_MAP_NAME || currentMapName == MAP_NOT_OPENED_NAME)  {
-		document.getElementById("topGroup").setAttributeNS(null,'display', 'none');
-	} else {
+	var elems = getTopElementsString();
+	if (elems.length > 0 ) {
 		var topAction = document.getElementById("topAction");
 		topAction.setAttribute("onclick","topMapSetUp();");
 		document.getElementById("topGroup").setAttributeNS(null,'display', 'inline');
+	} else {
+		document.getElementById("topGroup").setAttributeNS(null,'display', 'none');
 	}
 		
 	if(mapHistory.length>mapHistoryIndex+1){

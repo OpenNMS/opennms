@@ -33,6 +33,7 @@ package org.opennms.netmgt.provision.server;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.server.exchange.LineConversation;
 
 /**
@@ -54,16 +55,16 @@ public class SimpleServerHandler extends IoHandlerAdapter {
     
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-        System.out.println("Session opened");
+        LogUtils.infof(this, "Session opened");
         if(m_conversation != null && m_conversation.hasBanner()) {
-            System.out.printf("Sending Banner: %s \n", m_conversation.getBanner());
+            LogUtils.infof(this, "Sending Banner: %s \n", m_conversation.getBanner());
             session.write(m_conversation.getBanner());
         }
     }
     
     @Override
     public void messageReceived (IoSession session, Object message) throws Exception {
-        System.out.printf("Server received: %s\n", message.toString().trim());
+        LogUtils.infof(this, "Server received: %s\n", message.toString().trim());
         String str = message.toString();
         if(str.trim().equalsIgnoreCase(m_conversation.getExpectedClose())) {
             if(m_conversation.getExpectedCloseResponse() != null) {
@@ -76,7 +77,7 @@ public class SimpleServerHandler extends IoHandlerAdapter {
     }
     
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        System.out.println( "IDLE " + session.getIdleCount(status));
+        LogUtils.infof(this, "IDLE " + session.getIdleCount(status));
     }
 
 }

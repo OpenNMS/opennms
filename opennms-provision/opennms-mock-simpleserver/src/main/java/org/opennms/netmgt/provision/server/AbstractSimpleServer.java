@@ -43,6 +43,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
+
 abstract public class AbstractSimpleServer {
     
     public static interface RequestMatcher{
@@ -81,7 +83,7 @@ abstract public class AbstractSimpleServer {
         
         public boolean processRequest(BufferedReader in) throws IOException {
             String line = in.readLine();
-            System.out.print("processing request: " + line);
+            LogUtils.infof(this, "processing request: " + line);
             
             if(line == null)return false;
             
@@ -89,7 +91,7 @@ abstract public class AbstractSimpleServer {
         }
 
         public boolean sendReply(OutputStream out) throws IOException {
-            System.out.println("writing output: " + m_response);
+            LogUtils.infof(this, "writing output: " + m_response);
             out.write(String.format("%s\r\n", m_response).getBytes());
             return false;
         }
@@ -132,7 +134,7 @@ abstract public class AbstractSimpleServer {
     public void onInit() {} 
     
     public void startServer() throws Exception{
-        m_serverThread = new Thread(getRunnable());
+        m_serverThread = new Thread(getRunnable(), this.getClass().getSimpleName());
         m_serverThread.start();
     }
     

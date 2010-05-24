@@ -42,6 +42,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.NrpeRequest;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
@@ -131,7 +132,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
     
     private NrpePacket receiveResponse() throws Exception {
         NrpePacket response = NrpePacket.receivePacket(getInput(), getPadding());
-        System.out.println("what is response: " + response.getResultCode());
+        LogUtils.infof(this, "what is response: " + response.getResultCode());
         return response;
     }
 

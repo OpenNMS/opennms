@@ -33,11 +33,11 @@ package org.opennms.core.tasks;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SequenceTask extends ContainerTask {
+public class SequenceTask extends ContainerTask<SequenceTask> {
     
     private AtomicReference<Task> m_lastChild = new AtomicReference<Task>(null);
 
-    public SequenceTask(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+    public SequenceTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
         m_lastChild.set(getTriggerTask());
     }

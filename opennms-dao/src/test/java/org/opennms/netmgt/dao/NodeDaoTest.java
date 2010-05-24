@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -314,6 +315,17 @@ public class NodeDaoTest  {
         assertEquals(timestamp, n.getLastCapsdPoll());
         
         
+    }
+    
+    @Test
+    @Transactional
+    public void testFindByForeignSourceAndIpAddress() {
+        assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress("NoSuchForeignSource", "192.168.1.1").size());
+        assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress("imported:", "192.167.7.7").size());
+        assertEquals(1, getNodeDao().findByForeignSourceAndIpAddress("imported:", "192.168.1.1").size());
+        assertEquals(1, getNodeDao().findByForeignSourceAndIpAddress(null, "10.1.1.1").size());
+        assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress(null, "192.167.7.7").size());
+
     }
     
     

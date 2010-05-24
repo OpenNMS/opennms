@@ -387,6 +387,7 @@ function handleLoadingCloseMap(data) {
 		reloadGrid();
 		clearMapInfo();
 		hideMapInfo();
+		setTimeout("onClosingActiveTab();",200);
 	} else {
 	    alert('Close map failed');
 	}
@@ -629,14 +630,14 @@ function handleDeleteMapResponse(data) {
 		currentMapCreatetime="";
 		currentMapLastmodtime="";
 	
-		map.render();
-	
 		loadMaps();
+		setTimeout("onClosingActiveTab();",200);
 	
 		writeDownInfo("Map deleted.");
 		clearMapInfo();
 		hideMapInfo();
 		showHistory();
+
 	} else {
 		alert('Failed to delete map');
 		clearDownInfo();

@@ -517,7 +517,6 @@ function onCloseTab(evt) {
 	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
 	if (mapTabGroup.getActiveTabIndex() == index ) {
 		closeSetUp();
-		setTimeout("onClosingActiveTab();",200);
 	} else {
 		mapTabClose(tabTitle);
 	}

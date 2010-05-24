@@ -606,8 +606,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     public synchronized void ensureThreadsStarted() {
         if (threadsRunning < m_writeThreads) {
             threadsRunning++;
-            Thread t = new Thread(this);
-            t.start();
+            new Thread(this, this.getClass().getSimpleName() + "-" + threadsRunning).start();
         }
     }
 
@@ -1040,6 +1039,8 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     }
 
     public void logStats() {
+        // TODO: Seth 2010-05-21: Change this so that it avoids the overhead of 
+        // calling getStats() unless debug logging is enabled?
         logLapTime(getStats());
     }
 
