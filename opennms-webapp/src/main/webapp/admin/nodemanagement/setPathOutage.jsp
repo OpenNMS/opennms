@@ -80,6 +80,12 @@
   <jsp:param name="breadcrumb" value="Configure Path Outage" />
 </jsp:include>
 
+<style type="text/css">
+LABEL
+{
+  font-weight: bold;
+}
+</style>
 <script type="text/javascript" >
 
   function verifyIpAddress() {
@@ -150,49 +156,39 @@
   
 </p>
 
-<hr/> 
+<br/> 
   
 <form method="post" name="setCriticalPath" action="admin/setCriticalPath">
 
-<br/><br/>
-
-Enter the critical path IP address in xxx.xxx.xxx.xxx format:
-
-<br/><br/>
-
-<input type="text" name="criticalIp" size="17" maxlength="15" />
-
-<br/><br/>
-
-critical path service:
-
-<br/><br/>
-
-  <select name="criticalSvc" value="ICMP" size="1">
-        <option value="ICMP">ICMP</option>
-  </select>
-
 <input name="node" value=<%=nodeId%> type="hidden"/>
 
-<br/><br/><br/>
+<p>
+<label for="criticalIp">Critical path IP address in xxx.xxx.xxx.xxx format:</label><br/>
+<input id="criticalIp" type="text" name="criticalIp" size="17" maxlength="15" />
+</p>
 
-<input type="submit" name="task" value="Submit" onClick="verifyIpAddress()">
-&nbsp;&nbsp;
-<input type="submit" name="task" value="Cancel" onClick="cancel()">
+<p>
+<label for="criticalSvc">Critical path service:</label><br/>
 
-<br/><br/>
+  <select id="criticalSvc" name="criticalSvc" value="ICMP" size="1">
+        <option value="ICMP">ICMP</option>
+  </select>
+</p>
 
-<hr>
+<p>
+<input type="submit" name="task" value="Submit" onClick="verifyIpAddress()"/>
+&nbsp;
+<input type="submit" name="task" value="Cancel" onClick="cancel()"/>
+</p>
 
 <br/>
 
-Delete critical path for this node
-
-<br/><br/>
-
-<input type="submit" name="task" value="Delete" onClick="Delete()">
+<h2>Delete critical path for this node</h2>
+<br/>
+<p>
+<input type="submit" name="task" value="Delete" onClick="Delete()"/>
+</p>
 
 </form>
 
 <jsp:include page="/includes/footer.jsp" flush="true"/>
-
