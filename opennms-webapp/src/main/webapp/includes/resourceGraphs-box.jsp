@@ -52,6 +52,9 @@
 <script type="text/javascript">
 
   function chooseResourceBoxChange(record){
+	// Note that if this file is ever included in a JSP not at the top level of the
+	// base HREF, we'll have to change this function because IE resolves URLs in
+	// window.location against the local directory, not the base HREF
 	window.location = "graph/chooseresource.htm?reports=all&parentResourceType=node&parentResource=" + record.data.id;
   }
 </script>
