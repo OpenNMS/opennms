@@ -46,7 +46,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
@@ -54,6 +53,7 @@ import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -175,6 +175,7 @@ public class NodeScan implements RunInBatch {
     }
 
     Task createTask() {
+    	System.err.println("/*********\nCurrent Thread " + Thread.currentThread().getName() +  "\ncreating task for NodeScan\nnodeid: " + m_nodeId + "\nforeignSource: " + m_foreignSource + "\nforeignId: " + m_foreignId + "\n***************");
         return getTaskCoordinator().createBatch().add(NodeScan.this).get();
     }
     

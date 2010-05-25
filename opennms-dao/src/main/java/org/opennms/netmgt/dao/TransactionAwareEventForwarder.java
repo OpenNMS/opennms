@@ -52,22 +52,26 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class TransactionAwareEventForwarder implements EventForwarder, InitializingBean {
-    
+public class TransactionAwareEventForwarder implements EventForwarder,
+        InitializingBean {
+
     public TransactionAwareEventForwarder() {
     }
 
-    public TransactionAwareEventForwarder(EventForwarder forwarder) throws Exception {
-       setEventForwarder(forwarder);
-       afterPropertiesSet();
+    public TransactionAwareEventForwarder(EventForwarder forwarder)
+            throws Exception {
+        setEventForwarder(forwarder);
+        afterPropertiesSet();
     }
 
-    public static class PendingEventsSynchronization extends TransactionSynchronizationAdapter {
-        
+    public static class PendingEventsSynchronization extends
+            TransactionSynchronizationAdapter {
+
         private PendingEventsHolder m_eventsHolder;
         private EventForwarder m_eventForwarder;
 
-        public PendingEventsSynchronization(PendingEventsHolder eventsHolder, EventForwarder eventForwarder) {
+        public PendingEventsSynchronization(PendingEventsHolder eventsHolder,
+                EventForwarder eventForwarder) {
             m_eventsHolder = eventsHolder;
             m_eventForwarder = eventForwarder;
         }
@@ -77,9 +81,9 @@ public class TransactionAwareEventForwarder implements EventForwarder, Initializ
             if (!m_eventsHolder.hasPendingEvents()) {
                 return;
             }
-            
+
             List<Log> pendingEvents = m_eventsHolder.consumePendingEvents();
-            for(Log events : pendingEvents) {
+            for (Log events : pendingEvents) {
                 m_eventForwarder.sendNow(events);
             }
         }
@@ -87,18 +91,17 @@ public class TransactionAwareEventForwarder implements EventForwarder, Initializ
         @Override
         public void afterCompletion(int status) {
             if (TransactionSynchronizationManager.hasResource(m_eventForwarder)) {
-                TransactionSynchronizationManager.unbindResource(m_eventForwarder);
+                TransactionSynchronizationManager
+                        .unbindResource(m_eventForwarder);
             }
         }
-        
-        
 
     }
 
     public static class PendingEventsHolder extends ResourceHolderSupport {
-        
+
         private List<Log> m_pendingEvents = null;
-        
+
         public PendingEventsHolder(List<Log> pendingEvents) {
             m_pendingEvents = pendingEvents;
         }
@@ -129,14 +132,14 @@ public class TransactionAwareEventForwarder implements EventForwarder, Initializ
     }
 
     private EventForwarder m_eventForwarder;
-    
-    
+
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_eventForwarder != null, "eventForwarder property must be set");
+        Assert.state(m_eventForwarder != null,
+                "eventForwarder property must be set");
     }
 
     public void sendNow(Event event) {
@@ -149,60 +152,70 @@ public class TransactionAwareEventForwarder implements EventForwarder, Initializ
 
     public void sendNow(Log eventLog) {
         List<Log> pendingEvents = requestPendingEventsList();
-        
+
         pendingEvents.add(eventLog);
-        
+
         releasePendingEventsList(pendingEvents);
     }
-    
+
     public List<Log> requestPendingEventsList() {
-        PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager.getResource(m_eventForwarder);
-        if (eventsHolder != null && (eventsHolder.hasPendingEvents() || eventsHolder.isSynchronizedWithTransaction())) {
+        PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager
+                .getResource(m_eventForwarder);
+        if (eventsHolder != null
+                && (eventsHolder.hasPendingEvents() || eventsHolder
+                        .isSynchronizedWithTransaction())) {
             eventsHolder.requested();
             if (!eventsHolder.hasPendingEvents()) {
                 eventsHolder.setPendingEventsList(new LinkedList<Log>());
             }
             return eventsHolder.getPendingEvents();
         }
-        
+
         List<Log> pendingEvents = new LinkedList<Log>();
-        
+
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             PendingEventsHolder holderToUse = eventsHolder;
             if (holderToUse == null) {
                 holderToUse = new PendingEventsHolder(pendingEvents);
-            }
-            else {
+            } else {
                 holderToUse.setPendingEventsList(pendingEvents);
             }
             holderToUse.requested();
-            TransactionSynchronizationManager.registerSynchronization(
-                    new PendingEventsSynchronization(holderToUse, m_eventForwarder));
+            TransactionSynchronizationManager
+                    .registerSynchronization(new PendingEventsSynchronization(
+                            holderToUse, m_eventForwarder));
             holderToUse.setSynchronizedWithTransaction(true);
             if (holderToUse != eventsHolder) {
-                TransactionSynchronizationManager.bindResource(m_eventForwarder, holderToUse);
+                TransactionSynchronizationManager.bindResource(
+                        m_eventForwarder, holderToUse);
             }
         }
 
         return pendingEvents;
     }
-    
+
     public void releasePendingEventsList(List<Log> pendingEvents) {
         if (pendingEvents == null) {
             return;
-            
+
         }
 
-        PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager.getResource(m_eventForwarder);
-        if (eventsHolder != null && eventHolderHolds(eventsHolder, pendingEvents)) {
+        PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager
+                .getResource(m_eventForwarder);
+        if (eventsHolder != null
+                && eventHolderHolds(eventsHolder, pendingEvents)) {
             // It's the transactional Connection: Don't close it.
             eventsHolder.released();
-            return;
+        } else {
+            for (Log log : pendingEvents) {
+                m_eventForwarder.sendNow(log);
+            }
         }
-       
+
     }
 
-    private boolean eventHolderHolds(PendingEventsHolder eventsHolder, List<Log> passedInEvents) {
+    private boolean eventHolderHolds(PendingEventsHolder eventsHolder,
+            List<Log> passedInEvents) {
         if (!eventsHolder.hasPendingEvents()) {
             return false;
         }
