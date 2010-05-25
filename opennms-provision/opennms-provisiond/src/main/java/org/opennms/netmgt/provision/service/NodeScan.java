@@ -175,6 +175,7 @@ public class NodeScan implements RunInBatch {
     }
 
     Task createTask() {
+    	System.err.println("/*********\nCurrent Thread " + Thread.currentThread().getName() +  "\ncreating task for NodeScan\nnodeid: " + m_nodeId + "\nforeignSource: " + m_foreignSource + "\nforeignId: " + m_foreignId + "\n***************");
         return getTaskCoordinator().createBatch().add(NodeScan.this).get();
     }
     
