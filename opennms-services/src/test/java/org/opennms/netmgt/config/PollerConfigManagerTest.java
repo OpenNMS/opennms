@@ -48,6 +48,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -94,11 +95,14 @@ public class PollerConfigManagerTest extends TestCase {
     @Override
     protected void runTest() throws Throwable {
         super.runTest();
-        
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
     public void testSaveResponseTimeDataWithLocaleThatUsesCommasForDecimals() throws Exception {
+    	Properties p = new Properties();
+    	p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
+    	MockLogAppender.setupLogging(p);
+
         Locale.setDefault(Locale.FRENCH);
         
         // Make sure we actually have a valid test

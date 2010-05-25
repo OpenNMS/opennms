@@ -115,11 +115,15 @@ OpenNMS.ux.SNMPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	},
 
 	onDoubleClick:function(event){
-		
+		var prefix = "element/";
+		// IE likes page-relative links, everything else does base-HREF-relative links
+		if (Ext.isIE) {
+			prefix = "";
+		}
 		if(this.getSelectionModel().getSelected().data.ipAddress != "0.0.0.0"){
-			window.location = "element/interface.jsp?node=" + this.nodeId + "&intf=" + this.getSelectionModel().getSelected().data.ipAddress;
+			window.location = prefix + "interface.jsp?node=" + this.nodeId + "&intf=" + this.getSelectionModel().getSelected().data.ipAddress;
 		}else{
-			window.location = "element/snmpinterface.jsp?node=" + this.nodeId + "&ifindex=" + this.getSelectionModel().getSelected().data.ifIndex;
+			window.location = prefix + "snmpinterface.jsp?node=" + this.nodeId + "&ifindex=" + this.getSelectionModel().getSelected().data.ifIndex;
 		}
 	}
 

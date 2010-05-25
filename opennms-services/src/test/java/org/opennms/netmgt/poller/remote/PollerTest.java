@@ -71,7 +71,7 @@ public class PollerTest extends TestCase {
 		OnmsMonitoredService svc = getMonitoredService();
         svc.setId(7);
 		
-		PollConfiguration pollConfig = new PollConfiguration(svc, new HashMap(), 300000);
+		PollConfiguration pollConfig = new PollConfiguration(svc, new HashMap<String,Object>(), 300000);
 		
 		PolledService polledService = new PolledService(pollConfig.getMonitoredService(), pollConfig.getMonitorConfiguration(), pollConfig.getPollModel());
 		

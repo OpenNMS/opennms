@@ -94,7 +94,12 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 	},
 	
 	onDoubleClick:function(event){
-		window.location = "element/interface.jsp?ipinterfaceid=" + this.getSelectionModel().getSelected().data.interfaceId;
+		// IE likes page-relative links, everything else does base-HREF-relative links
+		if (Ext.isIE) {
+			window.location = "interface.jsp?ipinterfaceid=" + this.getSelectionModel().getSelected().data.interfaceId;
+		} else {
+			window.location = "element/interface.jsp?ipinterfaceid=" + this.getSelectionModel().getSelected().data.interfaceId;
+		}
 	}
 
 

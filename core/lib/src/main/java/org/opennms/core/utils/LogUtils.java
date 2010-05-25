@@ -86,12 +86,18 @@ public class LogUtils {
         }
     }
 
+    /**
+     * @deprecated SLF4J doesn't support fatal, so this just goes to {@link #errorf} anyways.
+     */
     public static void fatalf(final Object logee, final String format, final Object... args) {
         errorf(logee, null, format, args);
     }
 
+    /**
+     * @deprecated SLF4J doesn't support fatal, so this just goes to {@link #errorf} anyways.
+     */
     public static void fatalf(final Object logee, final Throwable throwable, final String format, final Object... args) {
-        errorf(logee, null, format, args);
+        errorf(logee, throwable, format, args);
     }
 
     public static void logToConsole() {

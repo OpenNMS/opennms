@@ -206,7 +206,12 @@
 				                             ]};
 		
 		Ext.onReady(function(){
-			customizedReportsInitView("custom-resources", customData, "KSC/formProcMain.htm?report_action={action}");
+			// IE likes page-relative links, everything else does base-HREF-relative links
+			if (Ext.isIE) {
+				customizedReportsInitView("custom-resources", customData, "formProcMain.htm?report_action={action}");
+			} else {
+				customizedReportsInitView("custom-resources", customData, "KSC/formProcMain.htm?report_action={action}");
+			}
 		})
 	</script>
 	<div id="custom-resources"></div>
@@ -235,7 +240,12 @@
 												</c:forEach>
       	                                  	]};
         	Ext.onReady(function(){
-        		nodeSNMPReportsInitView("snmp-reports", nodeData, "KSC/customView.htm?type={type}&report={id}")
+				// IE likes page-relative links, everything else does base-HREF-relative links
+				if (Ext.isIE) {
+					nodeSNMPReportsInitView("snmp-reports", nodeData, "customView.htm?type={type}&report={id}")
+				} else {
+					nodeSNMPReportsInitView("snmp-reports", nodeData, "KSC/customView.htm?type={type}&report={id}")
+				}
             });
       </script>
       <div id="snmp-reports"></div>
@@ -270,7 +280,14 @@
           </script>
           <script type="text/javascript">
           	Ext.onReady(function(){
-          		//domainGridInitView("domain-reports", domainData, "KSC/customView.htm");
+				/*
+				// IE likes page-relative links, everything else does base-HREF-relative links
+				if (Ext.isIE) {
+					domainGridInitView("domain-reports", domainData, "customView.htm");
+				} else {
+					domainGridInitView("domain-reports", domainData, "KSC/customView.htm");
+				}
+				*/
             });
           </script>
           <div id="domain-reports"></div>

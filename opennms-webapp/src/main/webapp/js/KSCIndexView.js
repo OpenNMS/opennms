@@ -178,7 +178,7 @@ function customizedReportsInitView(elementId, customData, urlTemplate){
 			window.location = url;
 		}else{
 			if(reportAction.action == "Create"){
-				window.location = url
+				window.location = url;
 			}else{
 				alert('No reports selected.  Please click on a report title to make a report selection.');	
 			}
@@ -187,9 +187,5 @@ function customizedReportsInitView(elementId, customData, urlTemplate){
 	
 	function navigateToURL(url){
 		window.location = url;
-	};
-	
-	function createNewResourceGraph(){
-		window.location = " KSC/customReport.htm";	
 	};
 }

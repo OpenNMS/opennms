@@ -169,6 +169,7 @@
 			                                          		]};
 
 		Ext.onReady(function(){
+			// IE likes page-relative links, everything else does base-HREF-relative links
 			var urlTemplate = "graph/chooseresource.htm?reports=all&parentResourceId={id}";
 			if(Ext.isIE){
 				urlTemplate = "chooseresource.htm?reports=all&parentResourceId={id}";
