@@ -142,7 +142,7 @@ public class Main {
             if (!m_gui) {
                 if (!m_frontEnd.isRegistered()) {
                     if (m_locationName == null) {
-                        LogUtils.fatalf(this, "No location name provided.  You must pass a location name the first time you start the remote poller!");
+                        LogUtils.errorf(this, "No location name provided.  You must pass a location name the first time you start the remote poller!");
                         System.exit(27);
                     } else {
                         m_frontEnd.register(m_locationName);

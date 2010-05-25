@@ -79,7 +79,6 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.ThrowableAnticipator;
 import org.quartz.Scheduler;
 
 public class PollerBackEndTest extends TestCase {
@@ -560,16 +559,10 @@ public class PollerBackEndTest extends TestCase {
     }
     
     public void testReportResultWithNullPollResult() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("pollResult argument cannot be null"));
+    	expect(m_locMonDao.get(1)).andThrow(new RuntimeException("crazy location monitor exception"));
 
         replayMocks();
-        try {
-            m_backEnd.reportResult(1, 1, null);
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
+        m_backEnd.reportResult(1, 1, null);
         verifyMocks();
     }
 

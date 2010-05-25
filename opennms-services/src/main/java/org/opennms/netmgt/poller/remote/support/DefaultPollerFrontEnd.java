@@ -210,7 +210,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                         break;
                 }
             } catch (final Exception e) {
-                LogUtils.fatalf(this, e, "Unexpected exception occurred loading the configs.");
+                LogUtils.errorf(this, e, "Unexpected exception occurred loading the configs.");
                 setState(new FatalExceptionOccurred());
             }
             final String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
@@ -234,7 +234,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                 doStop();
                 setState(new Registering());
             } catch (final Exception e) {
-                LogUtils.fatalf(this, e, "Unexpected exception occurred loading the configs.");
+                LogUtils.errorf(this, e, "Unexpected exception occurred loading the configs.");
                 setState(new FatalExceptionOccurred());
             }
         }
@@ -269,7 +269,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             try {
                 doPollService(polledServiceId);
             } catch (Exception e) {
-                LogUtils.fatalf(this, e, "Unexpected exception occurred loading the configs.");
+                LogUtils.errorf(this, e, "Unexpected exception occurred loading the configs.");
                 setState(new FatalExceptionOccurred());
             }
 
@@ -590,9 +590,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     private void doLoadConfig() {
         Date oldTime = getCurrentConfigTimestamp();
 
-        m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
-
         try {
+            m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
             m_pollerConfiguration = m_backEnd.getPollerConfiguration(getMonitorId());
 
             synchronized (m_pollState) {
