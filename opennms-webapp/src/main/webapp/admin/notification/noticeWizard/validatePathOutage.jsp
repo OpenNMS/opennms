@@ -129,8 +129,8 @@
              for nodes matching the rule: <%= newRule %></p>
           <br/><br/>
         <% } %>
-           <a HREF="javascript:rebuild()">&#060;&#060;&#060; Rebuild</a>&nbsp;&nbsp;&nbsp;
-           <a HREF="javascript:next()">Finish &#062;&#062;&#062;</a>
+           <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;
+           <a HREF="javascript:next()">Finish &#155;&#155;&#155;</a>
       </form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
