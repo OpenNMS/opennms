@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2005-12-27T09:12:54">
+	<node node-label="bert" foreign-source="muppetworkshop" foreign-id="bert">
+		<interface ip-addr="10.0.0.1" status="1" snmp-primary="N" descr="">
+			<monitored-service service-name="ICMP"/>
+		</interface>
+		<asset name="description" value="yellow human" />
+		<asset name="pollercategory" value="platinum" />
+	</node>
+	<node node-label="ernie" foreign-source="muppetworkshop" foreign-id="ernie">
+		<interface ip-addr="10.0.0.2" status="1" snmp-primary="N" descr="">
+			<monitored-service service-name="ICMP"/>
+		</interface>
+		<asset name="description" value="orange human" />
+		<asset name="pollercategory" value="platinum" />
+	</node>
+	<node node-label="oscar" foreign-source="muppetworkshop" foreign-id="oscar">
+		<interface ip-addr="10.0.0.3" status="1" snmp-primary="N" descr="">
+			<monitored-service service-name="ICMP"/>
+		</interface>
+		<asset name="description" value="green grouch" />
+		<asset name="pollercategory" value="silver" />
+	</node>
+	<node node-label="waldorf" foreign-source="muppetworkshop" foreign-id="waldorf">
+		<interface ip-addr="10.0.0.4" status="1" snmp-primary="N" descr="">
+			<monitored-service service-name="ICMP"/>
+		</interface>
+		<asset name="description" value="pink human" />
+	</node>
+	<node node-label="statler" foreign-source="muppetworkshop" foreign-id="statler">
+		<interface ip-addr="10.0.0.5" status="1" snmp-primary="N" descr="">
+			<monitored-service service-name="ICMP"/>
+		</interface>
+		<asset name="description" value="pink human" />
+	</node>
+</model-import>
