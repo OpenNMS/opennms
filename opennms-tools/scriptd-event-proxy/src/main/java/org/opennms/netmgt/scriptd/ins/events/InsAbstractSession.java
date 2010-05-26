@@ -17,7 +17,7 @@ public abstract class InsAbstractSession extends Thread {
 
     private String m_criteria;
     
-    private Category log;
+    private ThreadCategory log;
 	/**
 	 * the shared string for client authentication
 	 * If the shared string is not set, then server doesn't require authentication 
@@ -53,11 +53,11 @@ public abstract class InsAbstractSession extends Thread {
         log.debug("InsAbstract Session Constructor: loaded");
     }
 
-    public Category getLog() {
+    public ThreadCategory getLog() {
         return log;
     }
     
-    public void setLog(Category log) {
+    public void setLog(ThreadCategory log) {
         this.log = log;
     }
 	

@@ -17,6 +17,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.events.Constants;
 import org.opennms.netmgt.model.events.Parameter;
@@ -84,7 +85,7 @@ class InsSession extends InsAbstractSession {
 	}
 
 	public void run() {
-        Category log = getLog();
+        ThreadCategory log = getLog();
 		input = "";
 
 		try {
@@ -187,7 +188,7 @@ class InsSession extends InsAbstractSession {
 	}
 
 	private StringWriter getOutput() {
-        Category log = getLog();
+        ThreadCategory log = getLog();
         log.debug("Sending alarms to the client");
         StringWriter sw = new StringWriter();
         List<Event> events = getEvents();
@@ -212,7 +213,7 @@ class InsSession extends InsAbstractSession {
 	}
 
 	private Event getXMLEvent(OnmsEvent ev) {
-        Category log = getLog();
+        ThreadCategory log = getLog();
         log.info("Working on XML Event for id: " + ev.getId()); 
         log.debug("Setting Event id: " + ev.getId()); 
         Event e = new Event();
@@ -361,7 +362,7 @@ class InsSession extends InsAbstractSession {
 	
 	@SuppressWarnings("unchecked")
     private void getEventsByCriteria() {
-        Category log = getLog();
+        ThreadCategory log = getLog();
         log.debug("Entering getEventsByCriteria.....");
         log.debug("clearing events");
         clearEvents();
@@ -371,7 +372,7 @@ class InsSession extends InsAbstractSession {
         try {
                 transTemplate.execute(new TransactionCallback() {
                 public Object doInTransaction(final TransactionStatus status) {
-                    Category log = getLog();
+                    ThreadCategory log = getLog();
                     log.debug("entering transaction call back: selection with criteria: " + criteriaRestriction);
                     final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
                     criteria.add(Restrictions.sqlRestriction(criteriaRestriction));

@@ -132,7 +132,7 @@ public class QuickBaseTicketerPlugin implements Plugin {
      * Convenience logging.
      * @return a log4j Category for this class
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
