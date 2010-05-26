@@ -237,7 +237,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         // daemon configuration change
         ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
-
+        
         getEventIpcManager().addEventListener(this, ueiList);
     }
 
@@ -1032,7 +1032,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //
         scheduleForCollection(event);
     }
-
+    
     /**
      * Process a threshold configuration change event.  Need to update thresholding visitors to use the new configuration
      * @param event

@@ -214,7 +214,7 @@ public interface ProvisionService {
     public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
 
     @Transactional
-    public abstract OnmsIpInterface setInterfaceIsPrimaryFlag(OnmsMonitoredService svc);
+    public abstract OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress);
 
     @Transactional
     public abstract OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
