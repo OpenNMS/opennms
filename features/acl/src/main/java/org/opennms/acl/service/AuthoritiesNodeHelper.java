@@ -34,6 +34,7 @@
 //============================================================================
 package org.opennms.acl.service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,8 +43,6 @@ import java.util.Set;
 
 import org.opennms.acl.model.AuthorityDTO;
 import org.opennms.acl.model.AuthorityView;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
@@ -78,7 +77,6 @@ class AuthoritiesNodeHelper {
 		return itemsSet.remove(id);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Set<String> getAuthorities() {
 		return Collections.unmodifiableSet(authItemsMap.keySet());
 	}
