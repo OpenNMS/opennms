@@ -89,30 +89,35 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
                     if (m_lastUpdated == null) {
                         return;
                     }
-                    LogUtils.debugf(this, "pushing monitor status updates");
-                    final Date endDate = new Date();
-                    addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(m_locationDataService.getUpdatedLocationsBetween(m_lastUpdated, endDate)));
-                    LogUtils.debugf(this, "finished pushing monitor status updates");
 
-                    // Every 5 minutes, update the application list too
-                    synchronized(m_latch) {
-                        m_latch.countDown();
-                        if (m_latch.getCount() == 0) {
-                            LogUtils.debugf(this, "pushing application updates");
-                            final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
-                            final DefaultApplicationHandler applicationHandler = new DefaultApplicationHandler(m_locationDataService, service, true, m_activeApplications);
-                            appHandlers.add(applicationHandler);
-                            m_locationDataService.handleAllApplications(appHandlers);
-                            synchronized(m_activeApplications) {
-                                m_activeApplications.clear();
-                                m_activeApplications.addAll(applicationHandler.getApplicationNames());
-                            }
-                            m_latch = new CountDownLatch(APPLICATION_UPDATE_OFFSET);
-                            LogUtils.debugf(this, "finished pushing application updates");
-                        }
-                    }
+                    try {
+						LogUtils.debugf(this, "pushing monitor status updates");
+						final Date endDate = new Date();
+						addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, new LocationsUpdatedRemoteEvent(m_locationDataService.getUpdatedLocationsBetween(m_lastUpdated, endDate)));
+						LogUtils.debugf(this, "finished pushing monitor status updates");
 
-                    m_lastUpdated = endDate;
+						// Every 5 minutes, update the application list too
+						synchronized(m_latch) {
+						    m_latch.countDown();
+						    if (m_latch.getCount() == 0) {
+						        LogUtils.debugf(this, "pushing application updates");
+						        final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
+						        final DefaultApplicationHandler applicationHandler = new DefaultApplicationHandler(m_locationDataService, service, true, m_activeApplications);
+						        appHandlers.add(applicationHandler);
+						        m_locationDataService.handleAllApplications(appHandlers);
+						        synchronized(m_activeApplications) {
+						            m_activeApplications.clear();
+						            m_activeApplications.addAll(applicationHandler.getApplicationNames());
+						        }
+						        m_latch = new CountDownLatch(APPLICATION_UPDATE_OFFSET);
+						        LogUtils.debugf(this, "finished pushing application updates");
+						    }
+						}
+
+						m_lastUpdated = endDate;
+					} catch (final Exception e) {
+						LogUtils.warnf(this, e, "An error occurred while pushing monitor and application status updates.");
+					}
                 }
             }, UPDATE_PERIOD, UPDATE_PERIOD);
         }
@@ -120,10 +125,14 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
         final TimerTask initializedTask = new TimerTask() {
             @Override
             public void run() {
-                pushInitialData(service);
-                service.addEventUserSpecific(new UpdateCompleteRemoteEvent());
-                m_lastUpdated = new Date();
-                m_initializationComplete.set(true);
+            	try {
+	                pushInitialData(service);
+	                service.addEventUserSpecific(new UpdateCompleteRemoteEvent());
+	                m_lastUpdated = new Date();
+	                m_initializationComplete.set(true);
+            	} catch (final Exception e) {
+            		LogUtils.warnf(this, e, "An exception occurred pushing initial data.");
+            	}
             }
         };
 
