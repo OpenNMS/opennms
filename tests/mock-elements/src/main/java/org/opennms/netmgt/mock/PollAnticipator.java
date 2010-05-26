@@ -100,7 +100,7 @@ public class PollAnticipator {
     /**
      * @return
      */
-    public Collection unanticipatedPolls() {
+    public Collection<MockService> unanticipatedPolls() {
         return Collections.unmodifiableCollection(m_unanticipatedPolls);
     }
 

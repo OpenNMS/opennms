@@ -43,7 +43,7 @@ import org.springframework.util.Assert;
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class RunnableConsumerThreadPoolFactoryBean implements FactoryBean, InitializingBean {
+public class RunnableConsumerThreadPoolFactoryBean implements FactoryBean<RunnableConsumerThreadPool>, InitializingBean {
     
     private String m_name;
     private float m_lowMark = 0.0f;
@@ -52,12 +52,12 @@ public class RunnableConsumerThreadPoolFactoryBean implements FactoryBean, Initi
     
     private RunnableConsumerThreadPool m_pool;
 
-    public Object getObject() throws Exception {
+    public RunnableConsumerThreadPool getObject() throws Exception {
         return m_pool;
     }
 
-    public Class getObjectType() {
-        return (m_pool == null ? RunnableConsumerThreadPoolFactoryBean.class : m_pool.getClass());
+    public Class<? extends RunnableConsumerThreadPool> getObjectType() {
+        return (m_pool == null ? RunnableConsumerThreadPool.class : m_pool.getClass());
     }
 
     public boolean isSingleton() {

@@ -55,16 +55,16 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */
-public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
+public class CorrelationEngineFactoryBean implements FactoryBean<List<CorrelationEngine>>, InitializingBean, ApplicationContextAware {
     
     private List<CorrelationEngine> m_correlationEngines = new ArrayList<CorrelationEngine>(0);
     private ApplicationContext m_applicationContext;
 
-    public Object getObject() throws Exception {
+    public List<CorrelationEngine> getObject() throws Exception {
         return m_correlationEngines;
     }
 
-    public Class<?> getObjectType() {
+    public Class<? extends List> getObjectType() {
         return m_correlationEngines.getClass();
     }
 

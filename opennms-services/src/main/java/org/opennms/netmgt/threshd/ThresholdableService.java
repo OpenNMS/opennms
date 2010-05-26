@@ -69,6 +69,11 @@ import org.opennms.netmgt.xml.event.Event;
  */
 final class ThresholdableService extends IPv4NetworkInterface implements ThresholdNetworkInterface, ReadyRunnable {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 2477161545461824755L;
+
+    /**
      * Interface's parent node identifier
      */
     private int m_nodeId;
