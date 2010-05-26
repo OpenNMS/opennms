@@ -1,11 +1,15 @@
 package org.opennms.netmgt.scriptd.ins.events;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 
 
@@ -28,7 +32,7 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * listens for incoming connection on defined port (default is 8154)
 	 */
 	public void run() {
-	    Category log = getLog();
+	    ThreadCategory log = getLog();
 		if(criteriaRestriction ==null)
 			throw new IllegalStateException("The property criteriaRestriction cannot be null!");
 		log.info("InsServerListener started: listening on port "+listeningPort);
@@ -58,7 +62,7 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * Stops the listener
 	 */
 	public void interrupt() {
-        Category log = getLog();
+        ThreadCategory log = getLog();
 		try {
 			listener.close();
 		} catch (IOException e) {
@@ -69,7 +73,7 @@ public class InsServerListener extends InsServerAbstractListener {
 	}
 	
 	private synchronized void cleanActiveSessions(){
-        Category log = getLog();
+        ThreadCategory log = getLog();
 		synchronized (activeSessions){
 			Iterator<InsSession> it = activeSessions.iterator();
 			while(it.hasNext()){
@@ -88,7 +92,7 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * @param event
 	 */
 	public void flushEvent(Event event){
-	      Category log = getLog();
+	      ThreadCategory log = getLog();
 	      log.debug("Flushing uei: "+event.getUei());
 	      log.debug("Flushing ifindex: " + event.getIfIndex());
 	      log.debug("Flushing ifAlias: " + event.getIfAlias());

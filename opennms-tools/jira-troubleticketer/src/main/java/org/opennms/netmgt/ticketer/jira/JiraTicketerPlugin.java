@@ -322,7 +322,7 @@ public class JiraTicketerPlugin implements Plugin {
      *
      * @return a log4j Category for this class
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
