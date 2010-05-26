@@ -39,22 +39,20 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
-import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 
 public class IpInterfaceScan implements RunInBatch {
-    
+
     private ProvisionService m_provisionService;
     private InetAddress m_address;
     private Integer m_nodeId;
     private String m_foreignSource;
-    
+
     public IpInterfaceScan(Integer nodeId, InetAddress address, String foreignSource, ProvisionService provisionService) {
         m_nodeId = nodeId;
         m_address = address;
@@ -69,35 +67,49 @@ public class IpInterfaceScan implements RunInBatch {
     public Integer getNodeId() {
         return m_nodeId;
     }
-    
+
     public InetAddress getAddress() {
         return m_address;
     }
-    
+
     public ProvisionService getProvisionService() {
         return m_provisionService;
     }
-    
+
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("address", m_address)
-            .append("foreign source", m_foreignSource)
-            .append("node ID", m_nodeId)
-            .toString();
+        return new ToStringBuilder(this).append("address", m_address).append("foreign source", m_foreignSource).append("node ID", m_nodeId).toString();
     }
 
-    public Callback<Boolean> servicePersister(final ContainerTask<?> currentPhase, final String serviceName) {
+    public Callback<Boolean> servicePersister(final BatchTask currentPhase, final String serviceName) {
         return new Callback<Boolean>() {
             public void complete(Boolean serviceDetected) {
                 infof(this, "Attempted to detect service %s on address %s: %s", serviceName, getAddress().getHostAddress(), serviceDetected);
                 if (serviceDetected) {
-                    OnmsMonitoredService svc = getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
+
+                    currentPhase.getBuilder().addSequence(
+                            new RunInBatch() {
+
+                                public void run(BatchTask batch) {
+
+                                    if ("SNMP".equals(serviceName)) {
+                                        setupAgentInfo(currentPhase);
+                                    }
+
+                                }
+                            }, 
+                            new RunInBatch() {
+
+                                public void run(BatchTask batch) {
+                                    getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
+                                }
+                            });
+
+
                     
-                    if ("SNMP".equals(serviceName)) {
-                        getProvisionService().setInterfaceIsPrimaryFlag(svc);
-                    }
+
                 }
             }
+
             public void handleException(Throwable t) {
                 infof(this, t, "Exception occurred trying to detect service %s on address %s", serviceName, getAddress().getHostAddress());
             }
@@ -112,15 +124,16 @@ public class IpInterfaceScan implements RunInBatch {
                     cb.complete(detector.isServiceDetected(getAddress(), new NullDetectorMonitor()));
                 } catch (Throwable t) {
                     cb.handleException(t);
-                }finally{
+                } finally {
                     detector.dispose();
                 }
             }
+
             @Override
             public String toString() {
                 return String.format("Run detector %s on address %s", detector.getServiceName(), getAddress().getHostAddress());
             }
-    
+
         };
     }
 
@@ -128,32 +141,36 @@ public class IpInterfaceScan implements RunInBatch {
         return new AsyncDetectorRunner(this, detector);
     }
 
-    Task createDetectorTask(ContainerTask<?> currentPhase, ServiceDetector detector) {
+    Task createDetectorTask(BatchTask currentPhase, ServiceDetector detector) {
         if (detector instanceof SyncServiceDetector) {
-            return createSyncDetectorTask(currentPhase, (SyncServiceDetector)detector);
+            return createSyncDetectorTask(currentPhase, (SyncServiceDetector) detector);
         } else {
-            return createAsyncDetectorTask(currentPhase, (AsyncServiceDetector)detector);
+            return createAsyncDetectorTask(currentPhase, (AsyncServiceDetector) detector);
         }
     }
 
-    private Task createAsyncDetectorTask(ContainerTask<?> currentPhase, AsyncServiceDetector asyncDetector) {
+    private Task createAsyncDetectorTask(BatchTask currentPhase, AsyncServiceDetector asyncDetector) {
         return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector), servicePersister(currentPhase, asyncDetector.getServiceName()));
     }
 
-    private Task createSyncDetectorTask(ContainerTask<?> currentPhase, SyncServiceDetector syncDetector) {
+    private Task createSyncDetectorTask(BatchTask currentPhase, SyncServiceDetector syncDetector) {
         return currentPhase.getCoordinator().createTask(currentPhase, runDetector(syncDetector, servicePersister(currentPhase, syncDetector.getServiceName())));
     }
 
     public void run(BatchTask currentPhase) {
 
         Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
-        
+
         debugf(this, "detectServices for %d : %s: found %d detectors", getNodeId(), getAddress().getHostAddress(), detectors.size());
-        
-        for(ServiceDetector detector : detectors) {
+
+        for (ServiceDetector detector : detectors) {
             currentPhase.add(createDetectorTask(currentPhase, detector));
         }
-        
+
     }
-    
+
+    private void setupAgentInfo(BatchTask currentphase) {
+        getProvisionService().setIsPrimaryFlag(getNodeId(), getAddress().getHostAddress());
+    }
+
 }

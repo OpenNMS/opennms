@@ -599,10 +599,12 @@ public class DefaultProvisionService implements ProvisionService {
             
             node.setDistPoller(dbPoller);
             
+            
             return saveOrUpdate(node);
             
             
         } else {
+            
             dbNode.mergeNodeAttributes(node);
             
             return saveOrUpdate(dbNode);
@@ -745,11 +747,10 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
 
+    
     @Transactional
-    public OnmsIpInterface setInterfaceIsPrimaryFlag(OnmsMonitoredService detachedSvc) {
-        
-        OnmsMonitoredService svc = m_monitoredServiceDao.get(detachedSvc.getId());
-        OnmsIpInterface svcIface = svc.getIpInterface();
+    public OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress) {
+        OnmsIpInterface svcIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         OnmsIpInterface primaryIface = null;
         if (svcIface.isPrimary()) {
             primaryIface = svcIface;
