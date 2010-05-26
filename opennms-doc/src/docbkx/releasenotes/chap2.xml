@@ -246,6 +246,11 @@
 				</listitem>
 
 				<listitem>
+					<para>An exception loading the RANCID API was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3776">#3776</ulink>)</para>
+				</listitem>
+
+				<listitem>
 					<para>Provisiond was logging to output.log. (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3791">#3791</ulink>)</para>
 				</listitem>
