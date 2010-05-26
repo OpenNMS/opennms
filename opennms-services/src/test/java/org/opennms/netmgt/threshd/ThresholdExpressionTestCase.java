@@ -175,14 +175,19 @@ public class ThresholdExpressionTestCase extends TestCase {
 
         entity.addThreshold(wrapper);
         Collection<String> dataSources=entity.getRequiredDatasources();
+        StringBuffer dsStringBuffer = new StringBuffer();
+        for (String dataSource : dataSources) {
+            dsStringBuffer.append(dataSource).append(" ");
+        }
+        String dsString = dsStringBuffer.toString().trim();
         
-        assertTrue("Required data sources contains name",dataSources.contains("hrStorageSize"));
-        assertTrue("Required data sources contains name",dataSources.contains("hrStorageUsed"));
-        assertTrue("Required data sources contains name",dataSources.contains("hrStorageAllocationUnits"));
+        assertTrue("Required data sources should contain hrStorageSize: " + dsString, dataSources.contains("hrStorageSize"));
+        assertTrue("Required data sources should contain hrStorageUsed: " + dsString, dataSources.contains("hrStorageUsed"));
+        assertTrue("Required data sources should contain hrStorageAllocationUnits: " + dsString, dataSources.contains("hrStorageAllocationUnits"));
     }
 
     public void testEvaluateConditionalFalse() throws Exception {
-        expression.setExpression("if(a < b, trueval, falseval)");
+        expression.setExpression("if(a < b) { trueval } else { falseval }");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
         
         Map<String, Double> values=new HashMap<String,Double>();
@@ -196,7 +201,7 @@ public class ThresholdExpressionTestCase extends TestCase {
     }
     
     public void testEvaluateConditionalTrue() throws Exception {
-        expression.setExpression("if(a < b, trueval, falseval)");
+        expression.setExpression("if(a < b) { trueval } else { falseval }");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
         
         Map<String, Double> values=new HashMap<String,Double>();
