@@ -43,6 +43,7 @@ public class NodeListCommand {
     private String m_nodename = null;
     private String m_iplike = null;
     private String m_maclike = null;
+    private String m_foreignsource = null;
     private Integer m_service = null;
     private String m_snmpParm = null;
     private String m_snmpParmValue = null;
@@ -84,6 +85,18 @@ public class NodeListCommand {
     }
     public boolean hasMaclike() {
         return m_maclike != null;
+    }
+    
+    public void setForeignSource(String foreignSourceLike) {
+        m_foreignsource = foreignSourceLike;
+    }
+    
+    public String getForeignSource() {
+        return m_foreignsource;
+    }
+    
+    public boolean hasForeignSource() {
+        return m_foreignsource != null;
     }
     
     public void setService(Integer service) {
@@ -194,4 +207,5 @@ public class NodeListCommand {
     public boolean getListInterfaces() {
         return m_listInterfaces;
     }
+    
 }

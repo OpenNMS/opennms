@@ -136,7 +136,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             addCriteriaForCategories(criteria, command.getCategory1());
         } else if (command.hasStatusViewName() && command.hasStatusSite() && command.hasStatusRowLabel()) {
             addCriteriaForSiteStatusView(criteria, command.getStatusViewName(), command.getStatusSite(), command.getStatusRowLabel());
-        } else {
+        }else if(command.hasForeignSource()) {
+            addCriteriaForForeignSource(criteria, command.getForeignSource());
+        }else {
             // Do nothing.... don't add any restrictions other than the default ones
         }
 
@@ -144,6 +146,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             addCriteriaForCurrentOutages(criteria);
         }
     }
+
 
     private void addCriteriaForSnmpParm(OnmsCriteria criteria,
             String snmpParm, String snmpParmValue, String snmpParmMatchType) {
@@ -182,6 +185,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private void addCriteriaForNodename(OnmsCriteria criteria, String nodeName) {
         criteria.add(Restrictions.ilike("node.label", nodeName, MatchMode.ANYWHERE));
     }
+    
+    private void addCriteriaForForeignSource(OnmsCriteria criteria, String foreignSource) {
+        criteria.add(Restrictions.ilike("node.foreignSource", foreignSource, MatchMode.ANYWHERE));
+    }
 
     private void addCriteriaForIpLike(OnmsCriteria criteria, String iplike) {
         OnmsCriteria ipInterface = criteria.createCriteria("node.ipInterfaces", "ipInterface");
@@ -189,6 +196,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         
         ipInterface.add(OnmsRestrictions.ipLike(iplike));
     }
+    
 
     private void addCriteriaForService(OnmsCriteria criteria, int serviceId) {
         criteria.createAlias("node.ipInterfaces", "ipInterface");
