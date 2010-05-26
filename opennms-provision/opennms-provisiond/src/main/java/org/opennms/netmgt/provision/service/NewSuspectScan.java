@@ -37,6 +37,7 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -71,11 +72,25 @@ public class NewSuspectScan implements RunInBatch {
         if (node != null) {
 
             phase.getBuilder().addSequence(
+                    new NodeInfoScan(node, m_ipAddress, null, createScanProgress(), m_agentConfigFactory, m_provisionService),
                     new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService),
                     new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
             );
 
         }
+    }
+
+    private ScanProgress createScanProgress() {
+        return new ScanProgress() {
+            private boolean m_aborted = false;
+            public void abort(String message) {
+                m_aborted = true;
+                LogUtils.infof(this, message);
+            }
+
+            public boolean isAborted() {
+                return m_aborted;
+            }};
     }
 
     protected void reparentNodes(BatchTask batch, Integer nodeId) {

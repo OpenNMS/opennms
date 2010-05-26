@@ -187,6 +187,95 @@
 
 	</section>
 
+	<section id="opennms-1.7.91">
+		<title>Changes in OpenNMS 1.7.91</title>
+
+		<section id="opennms-1.7.91-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Provisiond now properly handles newSuspect events. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2238">#2238</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>It is now possible to filter on the snmpcollect field. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3667">#3667</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.7.91-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Provisiond fires importSuccessful events now. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3518">#3518</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of bugs in IE's handling of window.location were fixed. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3532">#3532</ulink>
+					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3729">#3729</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>PDF availability reports now render properly. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3745">#3745</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>RRD queueing threads now identify themselves properly in the logs. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3768">#3768</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The up button in SVG maps was failing when there was no up map. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3772">#3772</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Outages in the node page are now properly sorted. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3775">#3775</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Provisiond was logging to output.log. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3791">#3791</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Classes logging through LogUtils.fatalf would lose the stack trace. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3792">#3792</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Exceptions which occurred in the poller back end could cause the remote poller
+					to exit (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3793">#3793</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Exceptions during remote poller map updates could cause future updates to fail. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3794">#3794</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Javamail was spitting out an insane amount of debug info. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3795">#3795</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.7.90">
 		<title>Changes in OpenNMS 1.7.90</title>
 

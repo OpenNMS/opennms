@@ -208,6 +208,7 @@ public class DefaultProvisionService implements ProvisionService {
         }
         
         OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, scannedIface.getIpAddress());
+        debug("Updating interface attributes for %s for node %d with ip %s", dbIface, nodeId, scannedIface.getIpAddress());
         if (dbIface != null) {
             if(dbIface.isManaged() && !scannedIface.isManaged()){
                 Set<OnmsMonitoredService> monSvcs = dbIface.getMonitoredServices();
@@ -221,6 +222,7 @@ public class DefaultProvisionService implements ProvisionService {
             dbIface.mergeInterfaceAttributes(scannedIface);
             info("Updating IpInterface %s", dbIface);
             m_ipInterfaceDao.update(dbIface);
+            m_ipInterfaceDao.flush();
             return dbIface;
         } else {
             OnmsNode dbNode = m_nodeDao.load(nodeId);
@@ -231,6 +233,7 @@ public class DefaultProvisionService implements ProvisionService {
             saveOrUpdate(scannedIface);
             AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
             scannedIface.visit(visitor);
+            m_ipInterfaceDao.flush();
             return scannedIface;
         }
 
@@ -596,10 +599,12 @@ public class DefaultProvisionService implements ProvisionService {
             
             node.setDistPoller(dbPoller);
             
+            
             return saveOrUpdate(node);
             
             
         } else {
+            
             dbNode.mergeNodeAttributes(node);
             
             return saveOrUpdate(dbNode);
@@ -742,11 +747,10 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
 
+    
     @Transactional
-    public OnmsIpInterface setInterfaceIsPrimaryFlag(OnmsMonitoredService detachedSvc) {
-        
-        OnmsMonitoredService svc = m_monitoredServiceDao.get(detachedSvc.getId());
-        OnmsIpInterface svcIface = svc.getIpInterface();
+    public OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress) {
+        OnmsIpInterface svcIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         OnmsIpInterface primaryIface = null;
         if (svcIface.isPrimary()) {
             primaryIface = svcIface;
