@@ -35,23 +35,22 @@
  */
 package org.opennms.netmgt.threshd;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.SimpleScriptContext;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.threshd.Expression;
+
 
 /**
  * 
@@ -60,82 +59,34 @@ import org.opennms.netmgt.config.threshd.Expression;
  */
 public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
-	private static class BindingsSniffer extends TreeMap<String,Object> implements Bindings {
+	/**
+	 * This class is used to sniff all of the variable names that a script tries
+	 * to use out of the ScriptContext during a call to eval(). This will allow
+	 * us to construct a list of required parameters for the script expression.
+	 */
+	private static class BindingsSniffer extends HashMap<String,Object> implements Bindings {
 
 		private final Set<String> m_sniffedKeys = new HashSet<String>();
 
 		@Override
 		public Object get(Object key) {
-			System.out.println(new Date().toString() + " Bindings.get(" + key + ")");
+			LogUtils.tracef(this, "Bindings.get(%s)", key);
 			m_sniffedKeys.add((String)key);
 			return super.get(key);
 		}
 
 		@Override
 		public boolean containsKey(Object key) {
-			System.out.println(new Date().toString() + " Bindings.containsKey(" + key + ")");
+			LogUtils.tracef(this, "Bindings.containsKey(%s)", key);
 			m_sniffedKeys.add((String)key);
 			return super.containsKey(key);
 		}
 
 		public Set<String> getSniffedKeys() {
-			System.out.println(new Date().toString() + " Bindings.getSniffedKeys()");
+			LogUtils.tracef(this, "Bindings.getSniffedKeys(%s)");
 			return Collections.unmodifiableSet(m_sniffedKeys);
 		}
 	}
-
-	/*
-	private static class DelegateScriptContext extends SimpleScriptContext implements ScriptContext {
-
-		private final Bindings m_bindingsSniffer = new BindingsSniffer();
-		private final Set<String> m_sniffedAttributes = new HashSet<String>();
-
-		public Object getAttribute(String name) {
-			System.out.println(new Date().toString() + " ScriptContext.getAttribute(" + name + ")");
-			m_sniffedAttributes.add(name);
-			return m_bindingsSniffer.get(name);
-		}
-
-		public Object getAttribute(String name, int scope) {
-			System.out.println(new Date().toString() + " ScriptContext.getAttribute(" + name + ")");
-			m_sniffedAttributes.add(name);
-			return m_bindingsSniffer.get(name);
-		}
-
-		public int getAttributesScope(String name) {
-			throw new UnsupportedOperationException("ScriptContext.getAttributesScope()");
-		}
-
-		public Bindings getBindings(int scope) {
-			return m_bindingsSniffer;
-		}
-
-		public List<Integer> getScopes() {
-			throw new UnsupportedOperationException("ScriptContext.getAttributesScope()");
-		}
-
-		public Object removeAttribute(String name, int scope) {
-			System.out.println(new Date().toString() + " ScriptContext.removeAttribute(" + name + ")");
-			m_sniffedAttributes.add(name);
-			return m_bindingsSniffer.remove(name);
-		}
-
-		public void setAttribute(String name, Object value, int scope) {
-			System.out.println(new Date().toString() + " ScriptContext.setAttribute(" + name + ")");
-			m_sniffedAttributes.add(name);
-			m_bindingsSniffer.put(name, value);
-		}
-
-		public void setBindings(Bindings bindings, int scope) {
-			throw new UnsupportedOperationException("ScriptContext.getAttributesScope()");
-		}
-
-		public Set<String> getSniffedKeys() {
-			System.out.println(new Date().toString() + " ScriptContext.getSniffedKeys()");
-			return Collections.unmodifiableSet(m_sniffedAttributes);
-		}
-	}
-	*/
 
 	private final Expression m_expression;
 	private final Collection<String> m_datasources;
@@ -149,24 +100,15 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		m_parser = mgr.getEngineByName("jexl");
 
 		BindingsSniffer sniffer = new BindingsSniffer();
-		// DelegateScriptContext context = new DelegateScriptContext();
 
-		// Test parsing of the expression and collect the variable names by inserting
-		// a ScriptContext that sniffs calls to getAttribute()
+		// Test parsing of the expression and collect the variable names by using
+		// a Bindings instance that sniffs all of the variable names
 		try {
-			// ScriptContext context = m_parser.getContext();
-			// context.setBindings(sniffer, ScriptContext.ENGINE_SCOPE);
-			// context.setBindings(sniffer, ScriptContext.GLOBAL_SCOPE);
-			// m_parser.setBindings(sniffer, ScriptContext.ENGINE_SCOPE);
-			// m_parser.setBindings(sniffer, ScriptContext.GLOBAL_SCOPE);
-
-			// m_parser.setContext(context);
 			m_parser.eval(m_expression.getExpression(), sniffer);
 		} catch (Throwable e) {
 			throw new ThresholdExpressionException("Could not parse threshold expression:" + e.getMessage());
 		}
 
-		//m_datasources.addAll(m_parser.getBindings(ScriptContext.ENGINE_SCOPE).keySet());
 		m_datasources = sniffer.getSniffedKeys();
 	}
 
@@ -181,9 +123,11 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
 	@Override
 	public double evaluate(Map<String, Double> values) throws ThresholdExpressionException {
+		// Add all of the variable values to the script context
 		m_parser.getBindings(ScriptContext.ENGINE_SCOPE).putAll(values);
 		double result = Double.NaN;
 		try {
+			// Evaluate the script expression
 			result = (Double)m_parser.eval(m_expression.getExpression());
 		} catch (Throwable e) {
 			throw new ThresholdExpressionException("Error while evaluating expression "+m_expression.getExpression()+": " + e.getMessage());
