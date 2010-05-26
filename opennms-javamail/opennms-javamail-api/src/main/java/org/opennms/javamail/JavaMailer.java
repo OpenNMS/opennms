@@ -93,7 +93,7 @@ public class JavaMailer {
     private static final String DEFAULT_AUTHENTICATE_PASSWORD = "opennms";
     private static final String DEFAULT_MAILER = "smtpsend";
     private static final String DEFAULT_TRANSPORT = "smtp";
-    private static final boolean DEFAULT_MAILER_DEBUG = true;
+    private static final boolean DEFAULT_MAILER_DEBUG = false;
     private static final boolean DEFAULT_USE_JMTA = true;
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private static final String DEFAULT_CHARSET = "us-ascii";
