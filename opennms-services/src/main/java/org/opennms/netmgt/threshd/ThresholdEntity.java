@@ -126,7 +126,7 @@ public final class ThresholdEntity implements Cloneable {
     }
 
     /**
-     * Returns the names of the dataousrces required to evaluate this threshold entity
+     * Returns the names of the datasources required to evaluate this threshold entity
      * 
      * @return Collection of the names of datasources 
      */
