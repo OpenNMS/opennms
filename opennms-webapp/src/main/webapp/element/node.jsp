@@ -159,6 +159,7 @@
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
     nodeModel.put("id", Integer.toString(nodeId));
     nodeModel.put("label", node_db.getLabel());
+    nodeModel.put("foreignSource", node_db.getForeignSource());
 
     List<Map<String, String>> links = new ArrayList<Map<String, String>>();
     links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", ""));
@@ -233,6 +234,9 @@
 
 <div class="onms">
 <h2>Node: ${model.label}</h2>
+<c:if test="${model.foreignSource != null}">
+<h2>Foreign Source: ${model.foreignSource}</h2>
+</c:if>
 <div id="linkbar">
   <ul class="o-menu">
     <c:url var="eventLink" value="event/list">
