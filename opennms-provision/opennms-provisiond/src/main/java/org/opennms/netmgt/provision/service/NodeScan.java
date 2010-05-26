@@ -62,9 +62,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
-import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.service.snmp.SystemGroup;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -175,7 +173,6 @@ public class NodeScan implements RunInBatch {
     }
 
     Task createTask() {
-    	System.err.println("/*********\nCurrent Thread " + Thread.currentThread().getName() +  "\ncreating task for NodeScan\nnodeid: " + m_nodeId + "\nforeignSource: " + m_foreignSource + "\nforeignId: " + m_foreignId + "\n***************");
         return getTaskCoordinator().createBatch().add(NodeScan.this).get();
     }
     
@@ -265,7 +262,7 @@ public class NodeScan implements RunInBatch {
      *
      * @author brozow
      */
-    public class AgentScan extends BaseAgentScan implements NeedsContainer {
+    public class AgentScan extends BaseAgentScan implements NeedsContainer, ScanProgress {
 
         private InetAddress m_agentAddress;
         private String m_agentType;
@@ -284,13 +281,6 @@ public class NodeScan implements RunInBatch {
             return m_agentType;
         }
 
-        public void doPersistNodeInfo() {
-            if (isAborted()) {
-                return;
-            }
-            m_provisionService.updateNodeAttributes(getNode());
-        }
-        
         public void setNode(OnmsNode node) {
             m_node = node;
         }
@@ -469,63 +459,9 @@ public class NodeScan implements RunInBatch {
             }
         }
 
-        public void collectNodeInfo(BatchTask currentPhase)  {
-            
-            InetAddress primaryAddress = getAgentAddress();
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(primaryAddress);
-            Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
-            
-            SystemGroup systemGroup = new SystemGroup(primaryAddress);
-            
-            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "systemGroup", systemGroup);
-            walker.start();
-            
-            try {
-        
-                walker.waitFor();
-        
-                if (walker.timedOut()) {
-                    abort("Aborting node scan : Agent timedout while scanning the system table");
-                }
-                else if (walker.failed()) {
-                    abort("Aborting node scan : Agent failed while scanning the system table: " + walker.getErrorMessage());
-                } else {
-        
-                    systemGroup.updateSnmpDataForNode(getNode());
-        
-                    List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource()  == null ? "default" : getForeignSource());
-        
-                    OnmsNode node = getNode();
-                    for(NodePolicy policy : nodePolicies) {
-                        if (node != null) {
-                            node = policy.apply(node);
-                        }
-                    }
-        
-                    if (node == null) {
-                        abort("Aborted scan of node due to configured policy");
-                    } else {
-                        setNode(node);
-                    }
-        
-                }
-            } catch (InterruptedException e) {
-                abort("Aborting node scan : Scan thread interrupted!");
-            }
-        }
-
         public void run(ContainerTask<?> parent) {
             parent.getBuilder().addSequence(
-                    new RunInBatch () {
-                        public void run(BatchTask phase) {
-                            collectNodeInfo(phase);
-                        }
-                    },
-                    new RunInBatch() {
-                        public void run(BatchTask phase) {
-                            doPersistNodeInfo();
-                        }
-                    },
+                    new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService()),
                     new RunInBatch() {
                         public void run(BatchTask phase) {
                             detectPhysicalInterfaces(phase);
