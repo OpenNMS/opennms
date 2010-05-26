@@ -1,3 +1,9 @@
+opennms (1.7.91-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 26 May 2010 12:37:00 -0500
+
 opennms (1.7.90-2) unstable; urgency=medium
 
   * Build non-SNAPSHOT jars.
