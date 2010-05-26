@@ -33,7 +33,11 @@ package org.opennms.netmgt.mock;
 
 import java.util.Iterator;
 
+import org.opennms.netmgt.xml.eventconf.Autoaction;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Forward;
+import org.opennms.netmgt.xml.eventconf.Operaction;
+import org.opennms.netmgt.xml.eventconf.Script;
 
 /**
  * Need this class because Event doesn't properly implement hashCode
@@ -67,7 +71,7 @@ public class EventConfWrapper {
     		}
     		if (m_event.getAutoactionCount() > 0) {
     			b.append(" Autoactions:");
-    			for (Iterator i = m_event.getAutoactionCollection().iterator(); i.hasNext(); ) {
+    			for (Iterator<Autoaction> i = m_event.getAutoactionCollection().iterator(); i.hasNext(); ) {
     				b.append(" " + i.next().toString());
     			}
 			b.append("\n");
@@ -77,15 +81,15 @@ public class EventConfWrapper {
 		}
 		if (m_event.getForwardCount() > 0) {
 			b.append(" Forwards:");
-			for (Iterator i = m_event.getForwardCollection().iterator(); i.hasNext(); ) {
+			for (Iterator<Forward> i = m_event.getForwardCollection().iterator(); i.hasNext(); ) {
 				b.append(" " + i.next().toString());
 			}
 			b.append("\n");
 		}
 		if (m_event.getLoggroupCount() > 0) {
 			b.append(" Loggroup:");
-			for (Iterator i = m_event.getLoggroupCollection().iterator(); i.hasNext(); ) {
-				b.append(" " + i.next().toString());
+			for (Iterator<String> i = m_event.getLoggroupCollection().iterator(); i.hasNext(); ) {
+				b.append(" " + i.next());
 			}
 			b.append("\n");
 		}
@@ -100,7 +104,7 @@ public class EventConfWrapper {
 		}
 		if (m_event.getOperactionCount() > 0) {
 			b.append(" Operaction:");
-			for (Iterator i = m_event.getOperactionCollection().iterator(); i.hasNext(); ) {
+			for (Iterator<Operaction> i = m_event.getOperactionCollection().iterator(); i.hasNext(); ) {
 				b.append(" " + i.next().toString());
 			}
 			b.append("\n");
@@ -110,7 +114,7 @@ public class EventConfWrapper {
 		}
 		if (m_event.getScriptCount() > 0) {
 			b.append(" Script:");
-			for (Iterator i = m_event.getScriptCollection().iterator(); i.hasNext(); ) {
+			for (Iterator<Script> i = m_event.getScriptCollection().iterator(); i.hasNext(); ) {
 				b.append(" " + i.next().toString());
 			}
 			b.append("\n");

@@ -44,16 +44,21 @@ import java.util.Map;
 import org.opennms.netmgt.model.PollStatus;
 
 /**
+ * <ul>
+ * <li><code>P</code>: Parent type of this container</li>
+ * <li><code>C</code>: Child type of this container</li>
+ * </ul>
+ * 
  * @author brozow
  * 
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-abstract public class MockContainer extends MockElement {
+abstract public class MockContainer<P extends MockContainer, C extends MockElement> extends MockElement {
 
-    private Map<Object, MockElement> m_members = new HashMap<Object, MockElement>();
+    private Map<Object, C> m_members = new HashMap<Object, C>();
 
-    protected MockContainer(MockContainer parent) {
+    protected MockContainer(P parent) {
         super(parent);
     }
 
@@ -68,7 +73,7 @@ abstract public class MockContainer extends MockElement {
     }
 
     // model
-    protected MockElement addMember(MockElement element) {
+    protected C addMember(C element) {
         m_members.put(element.getKey(), element);
         element.setParent(this);
         return element;
@@ -80,8 +85,8 @@ abstract public class MockContainer extends MockElement {
     }
 
     // model
-    protected List<MockElement> getMembers() {
-        return new ArrayList<MockElement>(m_members.values());
+    protected List<C> getMembers() {
+        return new ArrayList<C>(m_members.values());
     }
 
     // stats

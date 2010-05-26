@@ -66,6 +66,10 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 	 */
 	private static class BindingsSniffer extends HashMap<String,Object> implements Bindings {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5595028572061424206L;
 		private final Set<String> m_sniffedKeys = new HashSet<String>();
 
 		@Override

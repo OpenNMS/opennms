@@ -117,6 +117,7 @@ public class MockAgentTest extends TestCase {
 
     }
 
+    @SuppressWarnings("unchecked")
     public void testWalkSystem() throws IOException {
         
         Snmp snmp = new Snmp(new DefaultUdpTransportMapping());
