@@ -43,12 +43,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -237,6 +239,9 @@ public class PollerTest {
 	//
     @Test
     public void testIsRemotePackage() {
+    	Properties p = new Properties();
+        p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
+    	MockLogAppender.setupLogging(p);
         Package pkg = new Package();
         pkg.setName("SFO");
         pkg.setRemote(true);
@@ -1016,11 +1021,20 @@ public class PollerTest {
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
 		startDaemons();
-        
+
         TestCapsdConfigManager capsdConfig = new TestCapsdConfigManager(CAPSD_CONFIG);
-        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("opennms-server.xml"));
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getReaderForConfigFile("database-schema.xml")));
-        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+
+        InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("opennms-server.xml");
+        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(configStream);
+        configStream.close();
+
+        configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
+        configStream.close();
+
+        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
+        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+        configStream.close();
         
         JdbcTemplate jdbcTemplate = new JdbcTemplate(m_db);
 

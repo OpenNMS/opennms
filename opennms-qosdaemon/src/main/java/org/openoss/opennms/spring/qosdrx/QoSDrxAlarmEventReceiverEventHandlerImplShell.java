@@ -51,15 +51,13 @@ import org.openoss.ossj.fm.monitor.spring.AlarmEventReceiverEventHandler;
  */
 public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEventReceiverEventHandler{
 
-	private static final String LOG4J_CATEGORY = "OpenOSS.QoSDrx";
 	private static boolean initialised=false; // true if init() has initialised class
 
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
-	private static Logger getLog() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return (Logger)ThreadCategory.getInstance(QoSDrx.class);	
+	private static ThreadCategory getLog() {
+		return ThreadCategory.getInstance(QoSDrx.class);	
 	}
 	
 	// ************************
@@ -79,7 +77,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	 * Used by Spring Application context to pass in AssetRecordDao
 	 * @param ar 
 	 */
-	public  void setassetRecordDao(AssetRecordDao ar){
+	public  void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
 	}
 
@@ -94,7 +92,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	 * Used by Spring Application context to pass in NodeDaof
 	 * @param nodedao 
 	 */
-	public  void setnodeDao( NodeDao nodedao){
+	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
 	}
 
@@ -109,7 +107,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	 * Used by Spring Application context to pass in alarmDao
 	 * @param alarmDao
 	 */
-	public  void setalarmDao( AlarmDao alarmDao){
+	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
 	}
 	
@@ -128,7 +126,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	
 	public void onNotifyNewAlarmEvent(NotifyNewAlarmEvent nnae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyNewAlarmEvent(): ";
 
 		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
@@ -141,7 +139,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 	
 	public void onNotifyClearedAlarmEvent(NotifyClearedAlarmEvent nclae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyClearedAlarmEvent(): ";
 
 		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
@@ -155,7 +153,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 	public void onNotifyAckStateChangedEvent(NotifyAckStateChangedEvent nasce, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAckStateChangedEvent(): ";
 
 		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
@@ -168,7 +166,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 	public void onNotifyAlarmCommentsEvent(NotifyAlarmCommentsEvent nace, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmCommentsEvent(): ";
 
 		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
@@ -181,7 +179,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 	public void onNotifyAlarmListRebuiltEvent(NotifyAlarmListRebuiltEvent nalre, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyAlarmListRebuiltEvent(): ";
 
 		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
@@ -194,7 +192,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 	public void onNotifyChangedAlarmEvent(NotifyChangedAlarmEvent nchae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onNotifyChangedAlarmEvent(): ";
 
 		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
@@ -208,7 +206,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 	public void onUnknownIRPEvt(IRPEvent irpevt, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onUnknownIRPEvt(): ";
 
 		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());
@@ -221,7 +219,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImplShell implements AlarmEvent
 
 	public void onunknownObjectMessage(Object objectMessage, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		String logheader="RX:"+callingAer.getName()+":"+this.getClass().getSimpleName()+".onunknownObjectMessage(): ";
 
 		if (log.isDebugEnabled()) log.debug(logheader+"\n    Statistics:" +callingAer.getRuntimeStatistics());

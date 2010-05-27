@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -50,31 +51,37 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
  */
 public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer> {
     
-    Collection<OnmsLocationMonitor> findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition);
+    Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocationDefinition locationDefinition);
     
+    Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application);
+
     List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions();
     
-    OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(String monitoringLocationDefinitionName);
+    OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(final String monitoringLocationDefinitionName);
     
-    void saveMonitoringLocationDefinition(OnmsMonitoringLocationDefinition def);
+    void saveMonitoringLocationDefinition(final OnmsMonitoringLocationDefinition def);
     
-    void saveMonitoringLocationDefinitions(Collection<OnmsMonitoringLocationDefinition> defs);
+    void saveMonitoringLocationDefinitions(final Collection<OnmsMonitoringLocationDefinition> defs);
 
-    void saveStatusChange(OnmsLocationSpecificStatus status);
+    void saveStatusChange(final OnmsLocationSpecificStatus status);
     
-    OnmsLocationSpecificStatus getMostRecentStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monSvc);
+    OnmsLocationSpecificStatus getMostRecentStatusChange(final OnmsLocationMonitor locationMonitor, final OnmsMonitoredService monSvc);
 
     Collection<OnmsLocationSpecificStatus> getAllMostRecentStatusChanges();
     
-    Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(Date timestamp);
+    Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(final Date timestamp);
     
     /**
      * Returns all status changes since the date, <b>and</b> one previous
      * status change (so that status at the beginning of the period can be
      * determined).
      */
-    Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate);
+    Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(final Date startDate, final Date endDate);
 
-    Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(int nodeId);
-    
+    Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationDefinitionName);
+
+    Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(String locationName);
+
+    Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId);
+
 }

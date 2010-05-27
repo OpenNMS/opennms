@@ -47,7 +47,7 @@ public class Phase extends BatchTask {
     private String m_name;
     private Object[] m_providers;
         
-    public Phase(ContainerTask parent, LifeCycleInstance lifecycle, String name, Object[] providers) {
+    public Phase(ContainerTask<?> parent, LifeCycleInstance lifecycle, String name, Object[] providers) {
         super(lifecycle.getCoordinator(), parent);
         m_lifecycle = lifecycle;
         m_name = name;

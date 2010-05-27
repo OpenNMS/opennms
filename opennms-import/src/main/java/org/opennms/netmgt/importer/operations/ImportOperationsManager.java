@@ -49,7 +49,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -283,10 +282,9 @@ public class ImportOperationsManager {
      * @param template transaction template in which to perform the persist operation
      * @return list of events
 	 */
-    @SuppressWarnings("unchecked")
     private List<Event> persistToDatabase(final ImportOperation oper, TransactionTemplate template) {
-		List<Event> events = (List<Event>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		List<Event> events = template.execute(new TransactionCallback<List<Event>>() {
+			public List<Event> doInTransaction(TransactionStatus status) {
 				List<Event> result = oper.persist();
                 return result;
 			}
@@ -294,7 +292,7 @@ public class ImportOperationsManager {
         return events;
     }
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

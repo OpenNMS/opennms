@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
@@ -106,7 +105,7 @@ public class PluginManager implements InitializingBean {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

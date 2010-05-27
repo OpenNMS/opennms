@@ -52,14 +52,19 @@
 		java.util.*
 	"
 %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
 	Outage[] outages = (Outage[])request.getAttribute("outages");
 	Integer serviceId = (Integer)request.getAttribute("serviceId");
 %>
+<c:set var="serviceId"><%=serviceId%></c:set>
 
-<h3><a href="outage/list.htm?filter=service%3d<%=serviceId%>">Recent&nbsp;Outages</a></h3>
+<c:url var="outageLink" value="outage/list.htm">
+  <c:param name="filter" value="service=${serviceId}"/>
+</c:url>
+<h3><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
 
 <table>
 

@@ -1,8 +1,10 @@
 package org.opennms.report.inventory;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -101,7 +102,7 @@ public class InventoryReportCalculator implements InitializingBean {
         m_baseDir = baseDir;
     }
 
-    private static Category log() {
+    private static Logger log() {
         return Logger.getLogger("Rancid");
     }
 
@@ -388,7 +389,7 @@ public class InventoryReportCalculator implements InitializingBean {
     public void marshal(File outputFile)
     throws InventoryCalculationException {
         try {
-            FileWriter fileWriter = new FileWriter(outputFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             Marshaller marshaller = new Marshaller(fileWriter);
             marshaller.setSuppressNamespaces(true);
             marshaller.marshal(rnbi);

@@ -39,7 +39,6 @@ package org.opennms.netmgt.statsd;
 import java.text.ParseException;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -75,7 +73,6 @@ public class Statsd implements SpringServiceDaemon {
     private ReportPersister m_reportPersister;
     private Scheduler m_scheduler;
     private ReportDefinitionBuilder m_reportDefinitionBuilder;
-    private volatile EventSubscriptionService m_eventSubscriptionService;
     private volatile EventForwarder m_eventForwarder;
 
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
@@ -204,7 +201,7 @@ public class Statsd implements SpringServiceDaemon {
     }
 
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -281,13 +278,5 @@ public class Statsd implements SpringServiceDaemon {
 
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
-    }
-
-    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
-        m_eventSubscriptionService = eventSubscriptionService;
-    }
-
-    public EventSubscriptionService getEventSubscriptionService() {
-        return m_eventSubscriptionService;
     }
 }

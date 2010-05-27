@@ -42,7 +42,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.sql.SQLException;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.JFreeChart;
@@ -180,7 +179,7 @@ public class ChartUtilsTest extends OpenNMSTestCase {
 //        m_config = ChartConfigFactory.getInstance().getConfiguration();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

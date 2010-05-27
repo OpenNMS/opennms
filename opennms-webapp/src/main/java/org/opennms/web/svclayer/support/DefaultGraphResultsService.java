@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.GraphDao;
@@ -114,10 +113,13 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         HashMap<String, List<OnmsResource>> resourcesMap = new HashMap<String, List<OnmsResource>>();
         
         for (String resourceId : resourceIds) {
-            String parent = resourceId.substring(0, resourceId.indexOf("]") + 1);
-            String child = resourceId.substring(resourceId.indexOf("]") + 2);
-            String childType = child.substring(0, child.indexOf("["));
-            String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
+            String[] values = parseResourceId(resourceId);
+            if (values == null) {
+                continue;
+            }
+            String parent = values[0];
+            String childType = values[1];
+            String childName = values[2];
             OnmsResource resource = null;
             if (!resourcesMap.containsKey(parent)) {
                 List<OnmsResource> resourceList = m_resourceDao.getResourceListById(resourceId);
@@ -140,6 +142,19 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         graphResults.setGraphRightOffset(m_rrdDao.getGraphRightOffset());
         
         return graphResults;
+    }
+    
+    public static String[] parseResourceId(String resourceId) {
+        try {
+            String parent = resourceId.substring(0, resourceId.indexOf("]") + 1);
+            String child = resourceId.substring(resourceId.indexOf("]") + 2);
+            String childType = child.substring(0, child.indexOf("["));
+            String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
+            return new String[] { parent, childType, childName };
+        } catch (StringIndexOutOfBoundsException e) {
+            log().warn("Illegally formatted resourceId found in DefaultGraphResultsService: " + resourceId, e);
+            return null;
+        }
     }
     
     public GraphResultSet createGraphResultSet(String resourceId, OnmsResource resource, String[] reports, GraphResults graphResults) {
@@ -198,8 +213,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(DefaultGraphResultsService.class);
     }
 
     private void getAttributeFiles(Graph graph, List<String> filesToPromote) {

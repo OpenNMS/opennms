@@ -37,18 +37,17 @@ package org.opennms.netmgt.threshd;
 
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import junit.framework.TestCase;
 
@@ -61,17 +60,14 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
-import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -140,7 +136,7 @@ public class ThresholderTestCase extends TestCase {
     private File createFile(File dir, String fileName) throws IOException {
         dir.mkdirs();
 		File f = new File(dir, fileName);
-		PrintWriter out = new PrintWriter(new FileWriter(f));
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f), "UTF-8"));
 		out.println("unused");
 		out.close();
 		f.deleteOnExit();
@@ -194,16 +190,9 @@ public class ThresholderTestCase extends TestCase {
 
 	private void ensureEventAfterFetches(int count, String dsName, String uei) {
 	    if (uei != null) {
-	        Event event = MockEventUtil.createServiceEvent("Test", uei, m_network.getService(1, m_ipAddress, m_serviceName), null);
-	        Parms parms = new Parms();
-	        Parm parm = new Parm();
-	        parm.setParmName("ds");
-	        Value val = new Value();
-	        val.setContent(dsName);
-	        parm.setValue(val);
-	        parms.addParm(parm);
-	        event.setParms(parms);
-	        m_anticipator.anticipateEvent(event);
+	        EventBuilder event = MockEventUtil.createServiceEventBuilder("Test", uei, m_network.getService(1, m_ipAddress, m_serviceName), null);
+	        event.addParam("ds", dsName);
+	        m_anticipator.anticipateEvent(event.getEvent());
 	    }
 	    for(int i = 0; i < count; i++) {
 	        m_thresholder.check(m_iface, m_proxy, m_parameters);

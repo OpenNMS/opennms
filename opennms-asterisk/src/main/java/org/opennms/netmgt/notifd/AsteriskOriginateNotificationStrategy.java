@@ -119,7 +119,7 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
         return ao;
     }
 
-    protected Logger log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

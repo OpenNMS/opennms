@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -98,8 +97,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 
-    	ThreadCategory.setPrefix("OpenNMS.WEB");
-		Category log = ThreadCategory.getInstance();
+		ThreadCategory log = ThreadCategory.getInstance();
 
 		HttpSession userSession = request.getSession(false);
         if (userSession == null)

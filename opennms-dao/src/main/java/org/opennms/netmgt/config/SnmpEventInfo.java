@@ -42,7 +42,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -133,7 +132,7 @@ public class SnmpEventInfo {
 
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

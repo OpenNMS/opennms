@@ -80,7 +80,7 @@
   <jsp:param name="breadcrumb" value="Group Intervals" />
 </jsp:include>
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
     <h3>Choose the interval to wait between contacting each member in the groups.</h3>
     <form method="post" name="groupIntervals" action="admin/notification/destinationWizard" >
       <%=Util.makeHiddenTags(request)%>

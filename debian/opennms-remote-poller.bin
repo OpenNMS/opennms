@@ -1,16 +1,4 @@
 #!/bin/sh
 
-LOCATION=$2
-RMI_HOST=$1
-
-usage() {
-	echo "Usage:"
-	echo "$0 <rmi host> <location>"
-	exit 1;
-}
-
-[ $LOCATION ] || usage;
-[ $RMI_HOST ] || usage;
-
-exec nohup java -Dlog4j.logger=INFO -jar /usr/share/java/opennms-remote-poller.jar rmi://$RMI_HOST $LOCATION &> /var/log/opennms/opennms-remote-poller.log &
+/usr/share/opennms/bin/remote-poller.sh "$@" &>/var/log/opennms/opennms-remote-poller.log
 echo $! > /var/run/opennms-remote-poller.pid

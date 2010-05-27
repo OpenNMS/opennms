@@ -37,13 +37,7 @@
 //
 package org.opennms.netmgt.xmlrpcd.jmx;
 
-public interface ProvisionerMBean {
-    void init();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void start();
-
-    void stop();
-
-    String status();
-
+public interface ProvisionerMBean extends BaseOnmsMBean {
 }

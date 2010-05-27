@@ -49,7 +49,6 @@ import javax.mail.Flags.Flag;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.mailtransporttest.JavamailProperty;
@@ -83,7 +82,7 @@ public class MailTransportMonitor extends IPv4Monitor {
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         PollStatus status = null;
 
         try {

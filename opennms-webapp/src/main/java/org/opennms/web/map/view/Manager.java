@@ -37,45 +37,31 @@
  */
 package org.opennms.web.map.view;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.MapsManagementException;
 
 
 /**
  * @author maurizio
- *  
+ * @author antonio 
  */
 public interface Manager {
-
-	// client/server configuration parameters
-	
-	public List<String> getCategories() throws MapsException;
-	
-	/**
-     * Create a new empty VMap and return it.
-     * 
-     * @return the new VMap created.
-     */
-    public VMap newMap();
 
     /**
      * Create a new VMap and return it
      * 
      * @param name
-     * @param accessMode
      * @param owner
      * @param userModifies
      * @param width 
      * @param height
      * @return the new VMap
      */
-    public VMap newMap(String name, String accessMode, String owner,String userModifies, int width, int height) ;
+    public VMap newMap(String owner,String userModifies, int width, int height) ;
 
     /**
      * Close a VMap previusly opened.
@@ -90,17 +76,6 @@ public interface Manager {
     public VMap openMap() throws 
             MapNotFoundException;    
 
-
-    /**
-     * Take the map with id in input and return it in VMap form.
-     * 
-     * @param id
-     * @param refreshElems says if refresh the map's elements
-     * @return the VMap with identifier id
-     * @throws MapsException
-     */
-    public VMap openMap(int id, boolean refreshElems) throws MapNotFoundException, MapsException;    
-
     /**
      * Take the map with id in input and return it in VMap form.
      * 
@@ -113,82 +88,7 @@ public interface Manager {
     public VMap openMap(int id, String user, boolean refreshElems) throws MapNotFoundException, MapsException ;    
 
     public void clearMap()throws MapNotFoundException, MapsException ;
-    
-    public VMapInfo getMapMenu(int mapId) throws MapNotFoundException, MapsException ;
-    
-    public void deleteElementsOfMap(int mapId)throws MapsException;
 
-
-    public List<VLink> getLinks(VElement[] elems) throws MapsException ;
-    public List<VLink> getLinks(Collection<VElement> elems) throws MapsException ;
-
-    public List<VLink> getLinksOnElem(VElement[] elems,VElement elem) throws MapsException ;
-    
-
-    /**
-     * Take the maps with label like the pattern in input and return them in
-     * VMap[] form.
-     * 
-     * @param label
-     * @param refreshElems says if refresh map's elements
-     * @return the VMaps array if any label matches the pattern in input, null
-     *         otherwise
-     * @throws MapsException
-     */
-    public VMap[] getMapsLike(String likeLabel, boolean refreshElems) throws  MapsException ;
-
-    /**
-     * Take the map label and type in input and return it in VMap form.
-     * 
-     * @param mapname
-     * @param maptype
-     * @param refreshElems says if refresh map's elements
-     * @return the VMap[] with corresponding mapname and maptype
-     * @throws MapsException
-     */
-
-    public VMap[] getMap(String mapname, String maptype, boolean refreshElems) throws MapsManagementException,
-            MapNotFoundException, MapsException;
-
-    /**
-     * Take the maps with name in input and return them in
-     * VMap[] form.
-     * 
-     * @param mapName
-     * @param refhresElems says if refresh maps' elements
-     * @return the VMaps array if any map has name in input, null
-     *         otherwise
-     * @throws MapsException
-     */
-    public VMap[] getMapsByName(String mapName, boolean refreshElems) throws MapNotFoundException, MapsException ;
-    
-    /**
-     * Get all defined maps.
-     * @param refreshElems says if refresh maps' elements
-     * @return the VMaps array containing all maps defined
-     * @throws MapsException
-     */
-    public VMap[] getAllMaps(boolean refreshElems) throws MapNotFoundException, MapsException  ;
-
-    /**
-     * Get all defined maps.
-     * 
-     * @return the MapMenu array containing all maps defined
-     * @throws MapsException
-     */
-    public VMapInfo[] getAllMapMenus() throws  MapsException;    
-
-    /**
-     * Take the maps with name in input and return them in
-     * MapMenu[] form.
-     * 
-     * @param mapName
-     * @return the MapMenu array if any map has name in input, null
-     *         otherwise
-     * @throws MapsException
-     */
-    public VMapInfo[] getMapsMenuByName(String mapName) throws MapNotFoundException, MapsException;
-    
     /**
      * gets all visible maps for user in input
      * @param user
@@ -206,122 +106,38 @@ public interface Manager {
      */
     public VMapInfo getDefaultMapsMenu(String user) throws MapsException;
 
-
-    /**
-     * Take all the maps in the tree of maps considering the with name in input
-     * as the root of the tree. If there are more maps with <i>mapName</i> (case insensitive)
-     * all trees with these maps as root are considered and returned. 
-     * 
-     * @param mapName
-     * @return a List with the MapMenu objects.
-     * @throws MapsException
-     */
-    public List getMapsMenuTreeByName(String mapName) throws 
-            MapNotFoundException, MapsException ;
-    
-    /**
-     * Get a map element.
-     * 
-     * @param mapId
-     * @param elementId
-     * @param type the node type
-     * @return the new VElement
-     * @throws MapsException
-     */
-    public VElement getElement(int mapId, int elementId, String type) throws MapsException ;    
-    /**
+	/**
      * Create a new (not child) empty Submap with the identifier setted to id.
      * 
-     * @param mapId
      * @param elementId
      * @param type the node type
-     * @return the new VElement
      * @throws MapsException
-     */
-	public VElement newElement(int mapId, int elementId, String type, int x,int y) throws 
-             MapsException;
-   
-	public VElement newElement(int elementId, String type, int x,int y) throws 
-    MapsException;
+     */	
+	public VElement newElement(int mapid, int elementId, String type) throws MapsException ;	
+
 	/**
      * Create a new (not child) empty Submap with the identifier setted to id.
      * 
      * @param mapId
      * @param elementId
      * @param type the node type
-     * @return the new VElement
-     * @throws MapsException
-     */
-	public VElement newElement(int mapId, int elementId, String type) throws MapsException ;	
-
-	
-	public VElement newElement(int elementId, String type) throws MapsException ;	
-    /**
-     * Create a new (not child) empty Submap with the identifier setted to id.
-     * 
-     * @param mapId
-     * @param elementId
-     * @param type the node type
+     * @param iconnname the name of the icon
+     * @param x position on the x axis
+     * @param y position on the y axis
      * @return the new VElement
      * @throws MapsException
      */
 	public VElement newElement(int mapId, int elementId, String type, String iconname, int x,int y) throws 
             MapsException ;
 	
-	public VElement newElement(int elementId, String type, String iconname, int x,int y) throws 
-    		MapsException ;	
-    /**
-     * Create a new (not child) empty Submap with the identifier setted to id.
-     * 
-     * @param mapId
-     * @param elementId
-     * @param type the node type
-     * @return the new VElement
-     * @throws MapsException
-     */
-	public VElement newElement(int mapId, int elementId, String type,String iconname) throws 
-            MapsException;
-	
 	/**
-     * delete the map in input
-     * 
-     * @param map
-     *            to delete
+     * delete the map current map
      * @throws MapsException
      *             if an error occour deleting map, MapNotFoundException if the
      *             map to delete doesn't exist.
-     */
-    public void deleteMap(VMap map) throws MapsException,
-            MapNotFoundException ;
- 
+     */ 
     public void deleteMap() throws MapsException,
     MapNotFoundException ;
-    /**
-     * delete the map with identifier id
-     * 
-     * @param id
-     *            of the map to delete
-     * @throws MapsException
-     */
-    public void deleteMap(int mapId) throws MapsException ;
-
-    /**
-     * delete the maps in input
-     * 
-     * @param maps
-     *            to delete
-     * @throws MapsException
-     */
-    public void deleteMaps(VMap[] maps) throws MapsException ;
-
-    /**
-     * delete the maps with the identifiers in input
-     * 
-     * @param identifiers
-     *            of the maps to delete
-     * @throws MapsException
-     */
-    public void deleteMaps(int[] maps) throws MapsException ;
 
     /**
      * save the map in input
@@ -330,79 +146,46 @@ public interface Manager {
      *            to save
      * @throws MapsException
      */
-    public void save(VMap map) throws MapsException ;
-
-    /**
-     * save the maps in input
-     * 
-     * @param maps
-     *            to save
-     * @throws MapsException
-     */
-    public void save(VMap[] maps) throws MapsException ;
-    
-    /**
-     * delete all defined node elements in existent maps
-     * @throws MapsException
-     */
-    public void deleteAllNodeElements()throws MapsException;
-    
-    /**
-     * delete all defined sub maps in existent maps
-     * @throws MapsException
-     */
-    
-    public void deleteAllMapElements()throws MapsException;
-
-    /**
-     * Refreshes of avail,severity and status of the elements in input.
-     * The refresh is performed as follows:
-     * 	- default factory is used if no others defined;
-     *	- if in the using factory is defined a source, the system will use this one 
-     *	  else, the system will use default source (OpenNMS)
-     *	 
-     * @param mapElements the elements to refresh
-     * @param incremental return only changed elements, if the refresh implementation is capable of this operation
-     * @return List of VElement
-     * @throws MapsException
-     */
-    public List<VElement> refreshElements(VElement[] mapElements) throws MapsException;    
-
-    public List<VElement> refreshMap() throws MapsException;
-    
-    public VElement refreshElement(VElement mapElement) throws MapsException;    
-    
+    public int save(VMap map) throws MapsException ;
+        
+    public VMap refreshMap(VMap map) throws MapsException;
+        
     /**
      * Refreshs avail,severity and status of the map in input and its elements
      * @param map 
      * @return the map refreshed
      */
     public VMap reloadMap(VMap map)throws MapsException;
-    
-    /**
-     * TODO 
-     * write this method simil way to refreshElement
-     * Not Yet Implemented
-     */
-    public List<VLink> refreshLinks(VLink[] mapLinks) throws MapsException;
-    
+        
     public boolean foundLoopOnMaps(VMap parentMap,int mapId) throws MapsException ;
-
+    
+	public List<VElementInfo> getElementInfo() throws MapsException;
+	
     /**
-     * recursively gets all nodes contained by elem and its submaps (if elem is a map)
+     * Get a Map of nodelabel to the 
+     * container mapids. 
+     * @param user
+     * @return
      */
-    public Set<Integer> getNodeidsOnElement(VElement elem) throws MapsException;
+    public Map<String,Set<Integer>> getNodeLabelToMaps(String user) throws MapsException;
     
-	public VElementInfo[] getAllElementInfo() throws MapsException;
-	
-	public VElementInfo[] getElementInfoLike(String like) throws MapsException;
-	
-	/**
-     * Gets all nodes on the passed map (and its submaps) with theirs occurrences
-     * @param map
-     * @return HashMap<Integer, Integer> (nodeid, occurrences) containing all nodes on the passed map (and its submaps) with theirs occourrences
+    /**
+     * 
+     * @param name
+     * @param owner
+     * @param userModifies
+     * @param width
+     * @param height
+     * @param velems
+     * @return
+     * @throws MapsException
      */
-    public HashMap<Integer, Integer> getAllNodesOccursOnMap(VMap map)throws MapsException;
+    public VMap searchMap(String owner,String userModifies, int width, int height,List<VElement> velems) throws MapsException ;
     
+    public VProperties getProperties(boolean isUserAdmin) throws MapsException;
+    
+    public VMap addElements(VMap map, List<VElement> velems) throws MapsException;
+    
+    public void reloadConfig() throws MapsException;
 
 }

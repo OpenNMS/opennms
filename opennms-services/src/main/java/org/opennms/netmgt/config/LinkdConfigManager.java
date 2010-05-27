@@ -47,7 +47,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -116,7 +115,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
     protected abstract void saveXml(String xml) throws IOException;
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 
@@ -472,7 +471,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      *         otherwise.
      */
     public synchronized boolean interfaceInPackage(String iface, org.opennms.netmgt.config.linkd.Package pkg) {
-        Category log = log();
+        ThreadCategory log = log();
     
         boolean filterPassed = false;
     

@@ -53,6 +53,7 @@ clean:
 	dh_testdir
 	dh_testroot
 	sh ./build.sh -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	rm -f opennms-remote-poller.{init,default}
 	dh_clean
 	rm -f $(STAMP_BUILD)
 
@@ -114,9 +115,12 @@ install: build
 	##
 	## Setup the opennms-remote-poller package
 	##
+	install -d -m 755 debian/opennms-remote-poller/usr/share/opennms/bin debian/opennms-remote-poller/usr/sbin
 	install -m 755 debian/opennms-remote-poller.bin debian/opennms-remote-poller/usr/sbin/opennms-remote-poller
-	install -m 644 features/remote-poller-onejar/target/*remote-poller-*-signed-jar-with-dependencies.jar \
-		debian/opennms-remote-poller/usr/share/java/opennms-remote-poller.jar
+	mv debian/opennms-common/usr/share/opennms/bin/remote-poller.* debian/opennms-remote-poller/usr/share/opennms/bin/
+	install -m 755 debian/temp/contrib/remote-poller/remote-poller.init debian/opennms-remote-poller.init
+	install -m 640 debian/temp/contrib/remote-poller/remote-poller.sysconfig debian/opennms-remote-poller.default
+	rm -rf debian/temp/contrib/remote-poller
 
 	##
 	## Setup the opennms-webapp-jetty package

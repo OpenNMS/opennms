@@ -290,13 +290,16 @@ public class MockNetwork extends MockContainer {
         setCriticalService("ICMP");
         addNode(1, "Router");
         addInterface("192.168.1.1");
+        setIfAlias("dot1 interface alias");
         addService("ICMP");
         addService("SMTP");
         addInterface("192.168.1.2");
+        setIfAlias("dot2 interface alias");
         addService("ICMP");
         addService("SMTP");
         addNode(2, "Server");
         addInterface("192.168.1.3");
+        setIfAlias("dot3 interface alias");
         addService("ICMP");
         addService("HTTP");
         addNode(3, "Firewall");

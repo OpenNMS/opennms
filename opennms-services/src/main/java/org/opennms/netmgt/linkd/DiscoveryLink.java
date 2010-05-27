@@ -49,7 +49,6 @@ import java.util.Set;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
@@ -153,7 +152,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		super();
 	}
 	
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
@@ -241,6 +240,13 @@ public final class DiscoveryLink implements ReadyRunnable {
 						macsExcluded.add(macAddress);
 						continue;
 					}
+                    if (macAddress.indexOf("00000c07ac") == 0) {
+                       log().info("run: at interface "
+                                   + macAddress
+                                   + " is cisco hsrp address! Not adding to discoverable atinterface.");
+                       macsExcluded.add(macAddress); 
+                       continue; 
+                    }
 					List<AtInterface> ats = macToAtinterface.get(macAddress);
 					if (ats == null) ats = new ArrayList<AtInterface>();
 					if (log().isInfoEnabled()) 
@@ -478,7 +484,8 @@ public final class DiscoveryLink implements ReadyRunnable {
 									+ " and with stp designated port "
 									+ stpPortDesignatedPort);
 
-						if (stpPortDesignatedBridge.equals("0000000000000000")) {
+						if (stpPortDesignatedBridge.equals("0000000000000000")
+						        || stpPortDesignatedBridge.equals("")) {
 							log().warn("run: designated bridge is invalid "
 									+ stpPortDesignatedBridge);
 							continue;

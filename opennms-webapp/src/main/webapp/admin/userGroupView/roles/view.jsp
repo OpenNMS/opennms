@@ -103,7 +103,7 @@
 
 </style>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
 	function changeDisplay() {
 		document.displayForm.submit();
@@ -200,9 +200,9 @@
 
 			<table>
 			  <caption>
-				<a href="javascript:prevMonth()">&lt;&lt;&lt;</a>&nbsp;
+				<a href="javascript:prevMonth()">&#139;&#139;&#139;</a>&nbsp;
 				<b>${calendar.monthAndYear}</b>&nbsp;
-				<a href="javascript:nextMonth()">&gt;&gt;&gt;</a>
+				<a href="javascript:nextMonth()">&#155;&#155;&#155;</a>
 			  </caption>
 				<tr>
 				  <c:forEach var="day" items="${calendar.weeks[0].days}">

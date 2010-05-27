@@ -51,7 +51,7 @@ public class IsolatingClassLoader extends URLClassLoader {
     private String[] m_isolatedPrefixes;
     
     /** Set of class names that identifies classes to isolate. **/
-    private Set m_isolatedClassNames = new HashSet();
+    private Set<String> m_isolatedClassNames = new HashSet<String>();
     
     /**
      * @param classpath Where to find classes.
@@ -93,7 +93,7 @@ public class IsolatingClassLoader extends URLClassLoader {
         
         m_name = name;
         
-        final Set prefixes = new HashSet();
+        final Set<String> prefixes = new HashSet<String>();
         
         for (int i=0; i<isolated.length; i++) {
             final int index = isolated[i].indexOf('*');
@@ -161,6 +161,11 @@ public class IsolatingClassLoader extends URLClassLoader {
     }
     
     public static class InvalidContextClassLoaderException extends Exception {
+        
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -82741827583768184L;
         
         public InvalidContextClassLoaderException(String message) {
             

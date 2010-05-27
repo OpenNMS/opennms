@@ -42,7 +42,6 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -61,7 +60,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class ClearMapController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	
@@ -80,18 +79,11 @@ public class ClearMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		log.info("Clearing map.");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-					.getOutputStream()));
+					.getOutputStream(), "UTF-8"));
 	
 		try {
-
-			if (request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				manager.clearMap();
-				bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLEAR_ACTION));
-			} else {
-				log.warn(request.getRemoteUser() +": Cannot Clear Map because user role is:" + MapsConstants.ROLE_USER);
-				bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLEAR_ACTION));
-			}
-
+			manager.clearMap();
+			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLEAR_ACTION));
 		} catch (Exception e) {
 			log.error("Error while doing clear map ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLEAR_ACTION));

@@ -48,7 +48,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
@@ -92,7 +91,7 @@ public class SyslogConnection implements Runnable {
 
     public void run() {
         ThreadCategory.setPrefix(m_logPrefix);
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         ConvertToEvent re = null;
         try {

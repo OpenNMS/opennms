@@ -38,7 +38,6 @@ import com.atlassian.jira.rpc.soap.client.RemoteComment;
 import com.atlassian.jira.rpc.soap.client.RemoteFieldValue;
 import com.atlassian.jira.rpc.soap.client.RemoteIssue;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.api.integration.ticketing.Plugin;
@@ -323,7 +322,7 @@ public class JiraTicketerPlugin implements Plugin {
      *
      * @return a log4j Category for this class
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

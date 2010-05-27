@@ -36,7 +36,6 @@
 package org.opennms.netmgt.provision;
 
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 
@@ -78,7 +77,7 @@ public class PuppetProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
         }
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(PuppetProvisioningAdapter.class);
     }
 

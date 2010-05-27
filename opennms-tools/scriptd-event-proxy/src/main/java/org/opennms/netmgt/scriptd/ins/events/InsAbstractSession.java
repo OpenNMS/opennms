@@ -2,7 +2,6 @@ package org.opennms.netmgt.scriptd.ins.events;
 
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -18,7 +17,7 @@ public abstract class InsAbstractSession extends Thread {
 
     private String m_criteria;
     
-    private Category log;
+    private ThreadCategory log;
 	/**
 	 * the shared string for client authentication
 	 * If the shared string is not set, then server doesn't require authentication 
@@ -54,11 +53,11 @@ public abstract class InsAbstractSession extends Thread {
         log.debug("InsAbstract Session Constructor: loaded");
     }
 
-    public Category getLog() {
+    public ThreadCategory getLog() {
         return log;
     }
     
-    public void setLog(Category log) {
+    public void setLog(ThreadCategory log) {
         this.log = log;
     }
 	
@@ -91,38 +90,11 @@ public abstract class InsAbstractSession extends Thread {
         );
         log.debug("interfaces found: " + iface.size());
 
+        if (iface.size() == 0) return "-1";
         String ifAlias = iface.get(0).getIfAlias();
         log.debug("ifalias found: " + ifAlias);
         
         return ifAlias;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected OnmsSnmpInterface getIfAlias(int nodeid, String ipaddr) {
-
-        log.debug("getting ifalias for nodeid: " +nodeid + " and ipaddress: " + ipaddr);
-        setCriteria("nodeid = " + nodeid + " AND ipaddr = '" + ipaddr +"'");
-        BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
-        final SnmpInterfaceDao snmpInterfaceDao = BeanUtils.getBean(bf,"snmpInterfaceDao", SnmpInterfaceDao.class);
-        TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
-        List<OnmsSnmpInterface> iface = (List<OnmsSnmpInterface>) transTemplate.execute(
-                   new TransactionCallback() {
-                        public Object doInTransaction(final TransactionStatus status) {
-                            final OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsSnmpInterface.class);
-                            onmsCriteria.add(Restrictions.sqlRestriction(getCriteria()));
-                            return snmpInterfaceDao.findMatching(onmsCriteria);
-                        }
-                   }
-        );
-        log.debug("interfaces found: " + iface.size());
-
-        if (iface.size() > 0 ) {
-        String ifAlias = iface.get(0).getIfAlias();
-        log.debug("ifalias found: " + ifAlias);
-        
-        return iface.get(0);
-        }
-        return null;
     }
 
 }

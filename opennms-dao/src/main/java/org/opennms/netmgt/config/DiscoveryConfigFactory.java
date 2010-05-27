@@ -36,12 +36,14 @@ package org.opennms.netmgt.config;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,7 +54,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -83,7 +84,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class DiscoveryConfigFactory {
-    public static final String COMMENT_STR = " #";
+    public static final String COMMENT_STR = "#";
 
     public static final char COMMENT_CHAR = '#';
 
@@ -197,7 +198,7 @@ public final class DiscoveryConfigFactory {
      */
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
-            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME));
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME)), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
@@ -237,67 +238,79 @@ public final class DiscoveryConfigFactory {
      * @param retries
      *            the retries for all entries in this URL
      */
-    public boolean addToSpecificsFromURL(List<IPPollAddress> specifics, String url, long timeout, int retries) {
-        Category log = ThreadCategory.getInstance();
+    public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, String url, long timeout, int retries) {
+        ThreadCategory log = ThreadCategory.getInstance();
+        
+        // open the file indicated by the URL
+        InputStream is = null;
+        try {
+            URL fileURL = new URL(url);
+            is = fileURL.openStream();
+            // check to see if the file exists
+            if (is == null) {
+                // log something
+                log.warn("URL does not exist: " + url);
+                return true;
+            } else {
+                return addToSpecificsFromURL(specifics, fileURL.openStream(), timeout, retries);
+            }
+        } catch (MalformedURLException e) {
+            log.error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
+            return false;
+        } catch (IOException e) {
+            log.error("Error reading URL: " + url + ": " + e.getLocalizedMessage());
+            return false;
+        } finally {
+            if (is != null) { 
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    log.warn("Could not close discovery include file stream: " + e.getMessage(), e);
+                } 
+            }
+        }
+    }
+    
+    public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, InputStream is, long timeout, int retries) throws IOException {
+        ThreadCategory log = ThreadCategory.getInstance();
     
         boolean bRet = true;
     
         try {
-            // open the file indicated by the URL
-            URL fileURL = new URL(url);
-    
-            InputStream is = fileURL.openStream();
-    
-            // check to see if the file exists
-            if (is != null) {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
-    
-                String ipLine = null;
-                String specIP = null;
-    
-                // get each line of the file and turn it into a specific range
-                while ((ipLine = buffer.readLine()) != null) {
-                    ipLine = ipLine.trim();
-                    if (ipLine.length() == 0 || ipLine.charAt(0) == DiscoveryConfigFactory.COMMENT_CHAR) {
-                        // blank line or skip comment
-                        continue;
-                    }
-    
-                    // check for comments after IP
-                    int comIndex = ipLine.indexOf(DiscoveryConfigFactory.COMMENT_STR);
-                    if (comIndex == -1) {
-                        specIP = ipLine;
-                    } else {
-                        specIP = ipLine.substring(0, comIndex);
-                        ipLine = ipLine.trim();
-                    }
-    
-                    try {
-                        specifics.add(new IPPollAddress(specIP, timeout, retries));
-                    } catch (UnknownHostException e) {
-                        log.warn("Unknown host \'" + specIP + "\' read from URL \'" + url.toString() + "\': address ignored");
-                    }
-    
-                    specIP = null;
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+            String ipLine = null;
+            String specIP = null;
+
+            // get each line of the file and turn it into a specific range
+            while ((ipLine = buffer.readLine()) != null) {
+                ipLine = ipLine.trim();
+                if (ipLine.length() == 0 || ipLine.charAt(0) == DiscoveryConfigFactory.COMMENT_CHAR) {
+                    // blank line or skip comment
+                    continue;
                 }
-    
-                buffer.close();
-            } else {
-                // log something
-                log.warn("URL does not exist: " + url.toString());
-                bRet = true;
+                
+                // check for comments after IP
+                int comIndex = ipLine.indexOf(DiscoveryConfigFactory.COMMENT_STR);
+                if (comIndex == -1) {
+                    specIP = ipLine;
+                } else {
+                    specIP = ipLine.substring(0, comIndex);
+                    specIP = specIP.trim();
+                }
+
+                try {
+                    specifics.add(new IPPollAddress(specIP, timeout, retries));
+                } catch (UnknownHostException e) {
+                    log.warn("Unknown host \'" + specIP + "\' inside discovery include file: address ignored");
+                }
+
+                specIP = null;
             }
-        } catch (MalformedURLException e) {
-            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-            bRet = false;
-        } catch (FileNotFoundException e) {
-            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-            bRet = false;
-        } catch (IOException e) {
-            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-            bRet = false;
+        } catch (UnsupportedEncodingException e) {
+            log.error("Your JVM doesn't support UTF-8");
+            return false;
         }
-    
         return bRet;
     }
 

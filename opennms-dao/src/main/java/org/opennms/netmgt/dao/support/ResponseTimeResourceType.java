@@ -43,7 +43,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.NodeDao;
@@ -133,7 +132,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
         return getResourcesForNode(nodeId).size() > 0;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

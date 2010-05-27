@@ -14,18 +14,19 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -125,7 +126,7 @@ public final class NSClientPeerFactory extends PeerFactory {
         m_loaded = true;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(NSClientPeerFactory.class);
     }
 
@@ -158,7 +159,7 @@ public final class NSClientPeerFactory extends PeerFactory {
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         if (stringWriter.toString() != null) {
-            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_CONFIG_FILE_NAME));
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_CONFIG_FILE_NAME)), "UTF-8");
             fileWriter.write(stringWriter.toString());
             fileWriter.flush();
             fileWriter.close();
@@ -174,7 +175,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      * Snmp and NSClient.  Maybe some sort of visitor methodology would work.  The basic logic should be fine as it's all IP address manipulation
      */
     private static void optimize() throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // First pass: Remove empty definition elements
         for (Iterator<Definition> definitionsIterator =
@@ -353,7 +354,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
      */
     public void define(InetAddress ip, String password) throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Convert IP to long so that it easily compared in range elements
         int address = new IPv4Address(ip).getAddress();
@@ -482,8 +483,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("NSClientPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                    log().warn("NSClientPeerFactory: could not convert host " + saddr + " to InetAddress", e);
                 }
             }
 
@@ -503,8 +503,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("NSClientPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                    log().warn("NSClientPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
                 }
             }
             

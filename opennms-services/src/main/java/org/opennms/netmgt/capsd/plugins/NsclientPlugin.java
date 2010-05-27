@@ -34,7 +34,6 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -240,7 +239,7 @@ public class NsclientPlugin extends AbstractPlugin {
         return response;
     }
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

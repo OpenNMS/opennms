@@ -65,7 +65,7 @@ public class CorrelationExample {
     public static void main(final String[] args) throws Exception {
 
         final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( CorrelationExample.class.getResourceAsStream( "CorrelationExample.drl" ) ) );
+        builder.addPackageFromDrl( new InputStreamReader( CorrelationExample.class.getResourceAsStream( "CorrelationExample.drl" ), "UTF-8" ) );
 
         final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
         ruleBase.addPackage( builder.getPackage() );

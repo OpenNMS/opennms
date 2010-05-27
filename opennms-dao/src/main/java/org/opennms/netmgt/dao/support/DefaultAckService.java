@@ -117,7 +117,7 @@ public class DefaultAckService implements AckService {
         log().info("processAck: Found and processed acknowledgables for the acknowledgement: "+ack);
     }
 
-    private Logger log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

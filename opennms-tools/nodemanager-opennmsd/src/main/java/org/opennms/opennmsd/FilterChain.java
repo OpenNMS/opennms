@@ -29,21 +29,19 @@
  */
 package org.opennms.opennmsd;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public class FilterChain {
     
-    private List m_filters = new LinkedList();
+    private List<Filter> m_filters = new LinkedList<Filter>();
     
     public void addFilter(Filter filter) {
         m_filters.add(filter);
     }
     
     public String filterEvent(NNMEvent event) {
-        for(Iterator it = m_filters.iterator(); it.hasNext();) {
-            Filter filter = (Filter)it.next();
+        for(Filter filter : m_filters) {
             if (filter.matches(event)) {
                 return filter.getAction();
             }

@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -258,9 +259,9 @@ public class NodeDaoTest  {
     
     @Transactional
     public OnmsNode getNodeHierarchy(final int nodeId) {
-        return (OnmsNode)m_transTemplate.execute(new TransactionCallback() {
+        return m_transTemplate.execute(new TransactionCallback<OnmsNode>() {
 
-            public Object doInTransaction(TransactionStatus status) {
+            public OnmsNode doInTransaction(TransactionStatus status) {
                 return getNodeDao().getHierarchy(nodeId);
             }
             
@@ -316,6 +317,17 @@ public class NodeDaoTest  {
         
     }
     
+    @Test
+    @Transactional
+    public void testFindByForeignSourceAndIpAddress() {
+        assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress("NoSuchForeignSource", "192.168.1.1").size());
+        assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress("imported:", "192.167.7.7").size());
+        assertEquals(1, getNodeDao().findByForeignSourceAndIpAddress("imported:", "192.168.1.1").size());
+        assertEquals(1, getNodeDao().findByForeignSourceAndIpAddress(null, "10.1.1.1").size());
+        assertEquals(0, getNodeDao().findByForeignSourceAndIpAddress(null, "192.167.7.7").size());
+
+    }
+    
     
     
     @Test
@@ -323,7 +335,7 @@ public class NodeDaoTest  {
         
         final Date timestampe = new Date(1234);
 
-        m_transTemplate.execute(new TransactionCallback() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
                 simulateScan(timestampe);
@@ -332,7 +344,7 @@ public class NodeDaoTest  {
             
         });
 
-        m_transTemplate.execute(new TransactionCallback() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
                 deleteObsoleteInterfaces(timestampe);
@@ -341,7 +353,7 @@ public class NodeDaoTest  {
             
         });
 
-        m_transTemplate.execute(new TransactionCallback() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
                 validateScan();
@@ -430,19 +442,18 @@ public class NodeDaoTest  {
     	
     }
     
-    private interface AssertEquals {
-    	public void assertEqual(Object expected, Object actual) throws Exception;
+    private interface AssertEquals<T> {
+    	public void assertEqual(T expected, T actual) throws Exception;
     }
     
-    @SuppressWarnings("unchecked")
-	private void assertSetsEqual(Set expectedSet, Set actualSet, String orderProperty, AssertEquals comparer) throws Exception {
-    	SortedSet expectedSorted = new TreeSet(new PropertyComparator(orderProperty));
+    private <T> void assertSetsEqual(Set<T> expectedSet, Set<T> actualSet, String orderProperty, AssertEquals<T> comparer) throws Exception {
+    	SortedSet<T> expectedSorted = new TreeSet<T>(new PropertyComparator(orderProperty));
     	expectedSorted.addAll(expectedSet);
-    	SortedSet actualSorted = new TreeSet<OnmsIpInterface>(new PropertyComparator(orderProperty));
+    	SortedSet<T> actualSorted = new TreeSet<T>(new PropertyComparator(orderProperty));
     	actualSorted.addAll(actualSet);
 
-    	Iterator expected = expectedSorted.iterator();
-    	Iterator actual = actualSorted.iterator();
+    	Iterator<T> expected = expectedSorted.iterator();
+    	Iterator<T> actual = actualSorted.iterator();
 
     	while(expected.hasNext() && actual.hasNext()) {
     		comparer.assertEqual(expected.next(), actual.next());
@@ -456,10 +467,10 @@ public class NodeDaoTest  {
     }
 
     private void assertInterfaceSetsEqual(Set<OnmsIpInterface> expectedSet, Set<OnmsIpInterface> actualSet) throws Exception {
-    	assertSetsEqual(expectedSet, actualSet, "ipAddress" , new AssertEquals() {
+    	assertSetsEqual(expectedSet, actualSet, "ipAddress" , new AssertEquals<OnmsIpInterface>() {
 
-			public void assertEqual(Object expected, Object actual) throws Exception {
-	    		assertInterfaceEquals((OnmsIpInterface)expected, (OnmsIpInterface)actual);
+			public void assertEqual(OnmsIpInterface expected, OnmsIpInterface actual) throws Exception {
+	    		assertInterfaceEquals(expected, actual);
 			}
     		
     	});
@@ -471,12 +482,11 @@ public class NodeDaoTest  {
     	assertServicesEquals(expected.getMonitoredServices(), actual.getMonitoredServices());
 	}
 	
-	@SuppressWarnings("unchecked")
-    private void assertServicesEquals(Set expectedSet, Set actualSet) throws Exception {
-    	assertSetsEqual(expectedSet, actualSet, "serviceId" , new AssertEquals() {
+	private void assertServicesEquals(Set<OnmsMonitoredService> expectedSet, Set<OnmsMonitoredService> actualSet) throws Exception {
+    	assertSetsEqual(expectedSet, actualSet, "serviceId" , new AssertEquals<OnmsMonitoredService>() {
 
-			public void assertEqual(Object expected, Object actual) throws Exception {
-	    		assertServiceEquals((OnmsMonitoredService)expected, (OnmsMonitoredService)actual);
+			public void assertEqual(OnmsMonitoredService expected, OnmsMonitoredService actual) throws Exception {
+	    		assertServiceEquals(expected, actual);
 			}
     		
     	});

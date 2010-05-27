@@ -68,7 +68,7 @@
   <jsp:param name="breadcrumb" value="Validate Path Outage" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
   
   function next()
   {
@@ -98,10 +98,10 @@
 
 
       Current Rule: <%=newRule%>
-      <br>critical path IP address = <%=criticalIp%>
-      <br>critical path service = <%=criticalSvc%>
-      <br>
-      <br>
+      <br/>critical path IP address = <%=criticalIp%>
+      <br/>critical path service = <%=criticalSvc%>
+      <br/>
+      <br/>
       <form METHOD="POST" NAME="addresses" ACTION="admin/notification/noticeWizard/notificationWizard">
         <%=Util.makeHiddenTags(request)%>
         <input type="hidden" name="userAction" value=""/>
@@ -122,15 +122,15 @@
             <%=buildNodeTable(newRule)%>
           </table>
         <% } %>
-        <br><br>
+        <br/><br/>
         <% if (criticalIp.equals("")) { %>
           <p style="color:red">You have not selected a critical path IP.
              Clicking "Finish" will clear any critical paths previously set
              for nodes matching the rule: <%= newRule %></p>
-          <br><br>
+          <br/><br/>
         <% } %>
-           <a HREF="javascript:rebuild()">&#060;&#060;&#060; Rebuild</a>&nbsp;&nbsp;&nbsp;
-           <a HREF="javascript:next()">Finish &#062;&#062;&#062;</a>
+           <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;
+           <a HREF="javascript:next()">Finish &#155;&#155;&#155;</a>
       </form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

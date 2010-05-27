@@ -136,7 +136,7 @@
 			org.opennms.netmgt.config.poller.Node[] nodeList = pollFactory.getNodeIds(outageName);
 				for (int j = 0; j < nodeList.length; j++) {
 					org.opennms.web.element.Node elementNode = NetworkElementFactory.getNode(nodeList[j].getId());
-		%> <%=elementNode == null || elementNode.getNodeType()=='D' ? "Node: Node Id " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><BR>
+		%> <%=elementNode == null || elementNode.getNodeType()=='D' ? "Node: Node Id " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
 		<%
 			}
 				org.opennms.netmgt.config.poller.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
@@ -149,12 +149,12 @@
 						display = new StringBuffer();
 						org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(rawAddress);
 						if (interfaces.length == 0) {
-							display.append("Intfc: " + rawAddress + " Not Found<BR>");
+							display.append("Intfc: " + rawAddress + " Not Found<br/>");
 						}
 						for (int k = 0; k < interfaces.length; k++) {
 							org.opennms.web.element.Interface thisInterface = interfaces[k];
 							if (thisInterface.isManagedChar()=='D') {
-								display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<BR>");
+								display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<br/>");
 							} else {
 								if (thisInterface.getHostname() != null && !thisInterface.getHostname().equals(thisInterface.getIpAddress())) {
 									display.append("Intfc: " + thisInterface.getIpAddress() + " " + thisInterface.getHostname());
@@ -162,9 +162,9 @@
 									display.append("Intfc: " + thisInterface.getIpAddress());
 								}
 								if (thisInterface.isManaged()) {
-									display.append("<BR>");
+									display.append("<br/>");
 								} else {
-									display.append(" (unmanaged)<BR>");
+									display.append(" (unmanaged)<br/>");
 								}
 							}
 						}
@@ -187,8 +187,8 @@
 						day = (rawDay == null) ? "" : (String) shortDayNames.get(rawDay);
 					if ("specific".equals(pollFactory.getOutageType(outageName)))
 						day = "";
-		%><%=day%> <%=thisOutageTime.getBegins()%> -<%="specific".equals(pollFactory.getOutageType(outageName)) ? "<BR>" : ""%>
-		<%=thisOutageTime.getEnds()%><BR>
+		%><%=day%> <%=thisOutageTime.getBegins()%> -<%="specific".equals(pollFactory.getOutageType(outageName)) ? "<br/>" : ""%>
+		<%=thisOutageTime.getEnds()%><br/>
 		<%
 			}
 		%>
@@ -212,7 +212,7 @@
 		} //end for outages
 	%>
 </table>
-<form action="admin/sched-outages/editoutage.jsp" method="POST" >
+<form action="admin/sched-outages/editoutage.jsp" method="post" >
   <input type="text" value="New Name" size="40" name="newName" /> 
   <input type="hidden" name="addNew" value="true" /> 
   <input type="submit" name="newOutage" value="Add new outage" />

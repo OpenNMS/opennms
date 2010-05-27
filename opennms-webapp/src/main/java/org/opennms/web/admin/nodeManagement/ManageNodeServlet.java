@@ -40,8 +40,10 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -57,7 +59,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -316,7 +317,7 @@ public class ManageNodeServlet extends HttpServlet {
             String fileName = path + INCLUDE_FILE_NAME;
 
             try {
-                FileWriter fileWriter = new FileWriter(fileName);
+                Writer fileWriter = new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8");
 
                 for (int i = 0; i < interfaceList.size(); i++) {
                     fileWriter.write(interfaceList.get(i) + System.getProperty("line.separator"));
@@ -357,7 +358,7 @@ public class ManageNodeServlet extends HttpServlet {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

@@ -46,7 +46,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.PropertiesCache;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -172,7 +171,7 @@ public class ResourceTypeUtils {
         }
     }
     
-    public static Category log() {
+    public static ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

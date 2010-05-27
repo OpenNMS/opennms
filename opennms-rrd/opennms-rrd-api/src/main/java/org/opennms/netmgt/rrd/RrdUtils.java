@@ -46,7 +46,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -80,28 +79,44 @@ public abstract class RrdUtils {
     private static BeanFactory m_context = new ClassPathXmlApplicationContext(new String[] {
             // Default RRD configuration context
             "org/opennms/netmgt/rrd/rrd-configuration.xml"
-    }); 
+    });
+
+    public static enum StrategyName {
+        basicRrdStrategy,
+        queuingRrdStrategy,
+        tcpAndBasicRrdStrategy,
+        tcpAndQueuingRrdStrategy
+    }
 
     public static RrdStrategy getStrategy() {
         RrdStrategy retval = null;
         if (m_rrdStrategy == null) {
             if ((Boolean)m_context.getBean("useQueue")) {
                 if ((Boolean)m_context.getBean("useTcp")) {
-                    retval = (RrdStrategy)m_context.getBean("tcpAndQueuingRrdStrategy");
+                    retval = (RrdStrategy)m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString());
                 } else {
-                    retval = (RrdStrategy)m_context.getBean("queuingRrdStrategy");
+                    retval = (RrdStrategy)m_context.getBean(StrategyName.queuingRrdStrategy.toString());
                 }
             } else {
                 if ((Boolean)m_context.getBean("useTcp")) {
-                    retval = (RrdStrategy)m_context.getBean("tcpAndBasicRrdStrategy");
+                    retval = (RrdStrategy)m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString());
                 } else {
-                    retval = (RrdStrategy)m_context.getBean("basicRrdStrategy");
+                    retval = (RrdStrategy)m_context.getBean(StrategyName.basicRrdStrategy.toString());
                 }
             }
         } else {
             retval = m_rrdStrategy;
         }
 
+        if (retval == null) {
+            throw new IllegalStateException("RrdUtils not initialized");
+        }
+        return retval;
+    }
+
+    public static RrdStrategy getSpecificStrategy(StrategyName strategy) {
+        RrdStrategy retval = null;
+        retval = (RrdStrategy)m_context.getBean(strategy.toString());
         if (retval == null) {
             throw new IllegalStateException("RrdUtils not initialized");
         }
@@ -158,7 +173,7 @@ public abstract class RrdUtils {
         }
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(RrdUtils.class);
     }
 

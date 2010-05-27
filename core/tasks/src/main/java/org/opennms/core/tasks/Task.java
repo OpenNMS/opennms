@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -69,7 +68,7 @@ public abstract class Task {
     
     private final TaskMonitor m_monitor;
     
-    public Task(DefaultTaskCoordinator coordinator, ContainerTask parent) {
+    public Task(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         m_coordinator = coordinator;
         m_monitor = parent != null 
             ? parent.getMonitor().getChildTaskMonitor(parent, this) 
@@ -328,7 +327,7 @@ public abstract class Task {
         }
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

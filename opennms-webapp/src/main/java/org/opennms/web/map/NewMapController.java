@@ -42,7 +42,6 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.web.WebSecurityUtils;
@@ -61,7 +60,7 @@ import org.springframework.web.servlet.mvc.Controller;
  */
 public class NewMapController implements Controller {
 	
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	
@@ -85,28 +84,19 @@ public class NewMapController implements Controller {
 		int mapHeight = WebSecurityUtils.safeParseInt(request
 					.getParameter("MapHeight"));
 
-		if (log.isDebugEnabled())
-			log.debug("Current mapWidth=" + mapWidth
+		log.debug("Current mapWidth=" + mapWidth
 					+ " and MapHeight=" + mapHeight);
 			
 
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 
-		try {
-			if (request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				
-				if (log.isInfoEnabled())
-					log.info("New Map in admin mode: creating new map");
-			VMap map = manager.newMap(VMap.DEFAULT_NAME, MapsConstants.ROLE_ADMIN, request
+		try {				
+			log.info("New Map in admin mode: creating new map");
+			VMap map = manager.newMap(request
 						.getRemoteUser(), request.getRemoteUser(),
 						mapWidth, mapHeight);
-			bw.write(ResponseAssembler.getMapResponse(MapsConstants.NEWMAP_ACTION, map, 1, 1, false));
-			} else {
-				log.warn(request.getRemoteUser() + ": User is not in Admin mode, cannot create new map");
-				bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.NEWMAP_ACTION));
-			}
-				
+			bw.write(ResponseAssembler.getMapResponse(map));				
 		} catch (Exception e) {
 			log.error("Error while creating new map for user:"+request.getRemoteUser(),e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.NEWMAP_ACTION));

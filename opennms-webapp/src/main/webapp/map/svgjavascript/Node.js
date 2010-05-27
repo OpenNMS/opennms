@@ -1,6 +1,6 @@
 // == Node.js --
 
-function Node(id, label, ipaddress, status, icon)
+function Node(id, label, ipaddress)
 {
 	   	this.init(id, label, ipaddress);
 }

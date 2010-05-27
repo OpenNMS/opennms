@@ -89,15 +89,15 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface.setIsSnmpPrimary(PrimaryType.get(snmpPrimary));
         
         if ("P".equals(snmpPrimary)) {
-        }
 
-        try {
-            m_scanManager = new ScanManager(InetAddress.getByName(ipAddr));
-        } catch (UnknownHostException e) {
-            String msg = String.format("Unable to resolve address of snmpPrimary interface for node %s with address '%s'",m_node.getLabel(), ipAddr);
-            log().error(msg, e);
+            try {
+                m_scanManager = new ScanManager(InetAddress.getByName(ipAddr));
+            } catch (UnknownHostException e) {
+                String msg = String.format("Unable to resolve address of snmpPrimary interface for node %s with address '%s'",m_node.getLabel(), ipAddr);
+                log().error(msg, e);
+            }
+
         }
-        
         
         //FIXME: verify this doesn't conflict with constructor.  The constructor already adds this
         //interface to the node.

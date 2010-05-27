@@ -38,11 +38,11 @@ public class AsyncTask<T> extends Task {
     private final Async<T> m_async;
     private final Callback<T> m_callback;
 
-    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Async<T> async) {
+    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Async<T> async) {
         this(coordinator, parent, async, null);
     }
     
-    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask parent, Async<T> async, Callback<T> callback) {
+    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Async<T> async, Callback<T> callback) {
         super(coordinator, parent);
         Assert.notNull(async, "async parameter must not be null");
         m_async = async;

@@ -39,6 +39,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -48,7 +49,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class PolledService implements MonitoredService, Serializable {
+public class PolledService implements MonitoredService, Serializable, Comparable<PolledService> {
     
     private static final long serialVersionUID = 2L;
 
@@ -110,6 +111,15 @@ public class PolledService implements MonitoredService, Serializable {
     public String toString() {
         return getNodeId()+":"+getIpAddr()+":"+getSvcName();
     }
-    
-    
+
+    public int compareTo(final PolledService that) {
+        if (that == null) return -1;
+        return new CompareToBuilder()
+            .append(this.getNodeLabel(), that.getNodeLabel())
+            .append(this.getIpAddr(), that.getIpAddr())
+            .append(this.getNodeId(), that.getNodeId())
+            .append(this.getSvcName(), that.getSvcName())
+            .append(this.getServiceId(), that.getServiceId())
+            .toComparison();
+    }
 }

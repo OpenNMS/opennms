@@ -495,9 +495,8 @@ public class MockNetworkTest extends TestCase {
 
     }
 
-    @SuppressWarnings("unchecked")
     private Collection<MockService> getServicesForInterface(MockInterface iface) {
-        return (Collection<MockService>) iface.getServices();
+        return iface.getServices();
     }
 
     public void testRemove() {

@@ -48,6 +48,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -155,7 +156,7 @@ public class EventsArchiver {
     /**
      * The log4j category for this class' output logs
      */
-    private Category m_logCat;
+    private ThreadCategory m_logCat;
 
     /**
      * The log4j category for the archive file
@@ -190,19 +191,16 @@ public class EventsArchiver {
 
     /**
      * Read the required properties and set up the logs, the archive etc.
-     * 
-     * @exception ArchiverException
-     *                thrown if a required property is not specified or is
-     *                incorrect
+     * @throws ArchiverException Thrown if a required property is not specified or is incorrect
      */
-    @SuppressWarnings("deprecation")
     private void init() throws ArchiverException {
+        String oldPrefix = ThreadCategory.getPrefix();
         // The general logs from the events archiver go to this category
         ThreadCategory.setPrefix("OpenNMS.Archiver.Events");
-        m_logCat = ThreadCategory.getInstance("OpenNMS.Archiver.Events");
+        m_logCat = ThreadCategory.getInstance(this.getClass());
 
         // The archive logs go to this category
-        m_archCat = Category.getInstance("EventsArchiver");
+        m_archCat = Logger.getLogger("EventsArchiver");
 
         /*
          * Set additivity for this to false so that logs from here
@@ -218,12 +216,15 @@ public class EventsArchiver {
                 EventsArchiverConfigFactory.getInstance();
         } catch (MarshalException ex) {
             m_logCat.fatal("MarshalException", ex);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
             m_logCat.fatal("ValidationException", ex);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
             m_logCat.fatal("IOException", ex);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -233,6 +234,7 @@ public class EventsArchiver {
         try {
             archAge = TimeConverter.convertToMillis(archAgeStr);
         } catch (NumberFormatException nfe) {
+            ThreadCategory.setPrefix(oldPrefix);
             throw new ArchiverException("Archive age: " + archAgeStr
                                         + "- Incorrect format "
                                         + nfe.getMessage());
@@ -272,26 +274,33 @@ public class EventsArchiver {
             m_conn = DataSourceFactory.getInstance().getConnection();
         } catch (IOException e) {
             m_logCat.fatal("IOException while initializing database", e);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (MarshalException e) {
             m_logCat.fatal("MarshalException while initializing database", e);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
             m_logCat.fatal("ValidationException while initializing database", e);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (PropertyVetoException e) {
             m_logCat.fatal("PropertyVetoException while initializing database",
                            e);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
             m_logCat.fatal("SQLException while initializing database", e);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
             m_logCat.fatal("ClassNotFoundException while initializing database",
                            e);
+            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         }
         // XXX should we be throwing ArchiverException instead?
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /**
@@ -511,7 +520,7 @@ public class EventsArchiver {
             m_logCat.error("EventsArchiver: Exception in opening the database "
                            + "connection or in the prepared statement for the "
                            + "get events");
-            m_logCat.error(e);
+            m_logCat.error(e.getMessage());
             throw new ArchiverException("EventsArchiver: " + e.getMessage());
         }
     }

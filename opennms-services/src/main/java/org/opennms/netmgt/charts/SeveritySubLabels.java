@@ -33,7 +33,6 @@
 
 package org.opennms.netmgt.charts;
 
-import org.apache.log4j.Category;
 import org.jfree.chart.axis.ExtendedCategoryAxis;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -108,7 +107,7 @@ public class SeveritySubLabels extends ExtendedCategoryAxis {
      * 
      * @return A log4j <code>Category</code>.
      */
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SeveritySubLabels.class);
     }
 }

@@ -43,7 +43,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
@@ -246,7 +245,7 @@ public final class RTCManager extends AbstractServiceDaemon {
      *            the task that is finishing.
      */
     private synchronized void timerTaskComplete(RTCTimerTask tt) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
             log.debug("TimerTask \'" + tt.getID() + "\' complete, status: " + getStatus());
@@ -329,7 +328,7 @@ public final class RTCManager extends AbstractServiceDaemon {
      * reset timers
      */
     public synchronized void checkTimerTasksOnEventReceipt() {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
             log.debug("checkTimerTasksOnEventReceipt: Checking if timer tasks need to be reset or data needs to be sent out");
@@ -430,7 +429,7 @@ public final class RTCManager extends AbstractServiceDaemon {
         if (m_userTask != null)
             return;
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         try {
             m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);

@@ -46,7 +46,6 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.Manager;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,7 +60,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class DeleteMapController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	
@@ -80,7 +79,7 @@ public class DeleteMapController implements Controller {
 		log = ThreadCategory.getInstance(this.getClass());
 		log.info("Deleting map");
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
-				.getOutputStream()));
+				.getOutputStream(), "UTF-8"));
 		try {
 			manager.deleteMap(); 
 			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.DELETEMAP_ACTION));

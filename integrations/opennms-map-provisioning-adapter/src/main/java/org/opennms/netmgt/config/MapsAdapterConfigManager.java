@@ -37,7 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -45,9 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPSorter;
 import org.opennms.core.utils.IpListFromUrl;
@@ -55,11 +53,11 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.map.adapter.Celement;
 import org.opennms.netmgt.config.map.adapter.Cmap;
 import org.opennms.netmgt.config.map.adapter.Csubmap;
-import org.opennms.netmgt.config.map.adapter.Package;
-import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
 import org.opennms.netmgt.config.map.adapter.ExcludeRange;
 import org.opennms.netmgt.config.map.adapter.IncludeRange;
-
+import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
+import org.opennms.netmgt.config.map.adapter.Package;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**
@@ -79,7 +77,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @throws ValidationException
      * @throws IOException
      */
-   public MapsAdapterConfigManager(Reader reader,String serverName, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+   public MapsAdapterConfigManager(InputStream reader,String serverName, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = serverName;
         m_verifyServer = verifyServer;
         reloadXML(reader);
@@ -129,8 +127,8 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      }
     
 
-    protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (MapsAdapterConfiguration) Unmarshaller.unmarshal(MapsAdapterConfiguration.class, reader);
+    protected synchronized void reloadXML(InputStream reader) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(MapsAdapterConfiguration.class, reader);
         createUrlIpMap();
         createPackageIpListMap();
         createSubMapMapMap();
@@ -322,7 +320,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *         otherwise.
      */
     private synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        Category log = log();
+        ThreadCategory log = log();
     
         boolean filterPassed = false;
     
@@ -481,7 +479,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
 
     
  
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

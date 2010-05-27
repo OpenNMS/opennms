@@ -204,18 +204,22 @@ xmlns:svg="http://www.w3.org/2000/svg">
 								<fo:table-body>
 									<fo:table-row>
 										<fo:table-cell padding-bottom="40pt" >
+											<fo:block>
 											<xsl:apply-templates select="section">
 												<xsl:with-param name="namesec" select="'LastMonthsDailyAvailability'"/>
 												<xsl:with-param name="warning" select="$warning"/>
 												<xsl:with-param name="normal" select="$normal"/>
 											</xsl:apply-templates>
+											</fo:block>
 										</fo:table-cell>
 										<fo:table-cell padding-bottom="40pt" >
+											<fo:block>
 											<xsl:apply-templates select="section">
 												<xsl:with-param name="namesec" select="'MonthToDateDailyAvailability'"/>
 												<xsl:with-param name="warning" select="$warning"/>
 												<xsl:with-param name="normal" select="$normal"/>
 											</xsl:apply-templates>
+											</fo:block>
 										</fo:table-cell>
 									</fo:table-row>
 								</fo:table-body>
@@ -224,11 +228,13 @@ xmlns:svg="http://www.w3.org/2000/svg">
 					</fo:table-row>
 					<fo:table-row>
 						<fo:table-cell padding-left="70pt">
+							<fo:block>
 							<xsl:apply-templates select="section">
 								<xsl:with-param name="namesec" select="'lastMoTop20offenders'"/>
 								<xsl:with-param name="warning" select="$warning"/>
 								<xsl:with-param name="normal" select="$normal"/>
 							</xsl:apply-templates>
+							</fo:block>
 						</fo:table-cell>
 					</fo:table-row>
 

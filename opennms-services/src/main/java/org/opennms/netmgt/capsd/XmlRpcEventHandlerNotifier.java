@@ -34,7 +34,6 @@ package org.opennms.netmgt.capsd;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -107,7 +106,7 @@ public class XmlRpcEventHandlerNotifier {
         notifyEventError(event, "processing failed: ", ex);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

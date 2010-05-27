@@ -74,12 +74,6 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
     private static final String SERVICE_NAME = "Cisco_IP_SLA";
 
     /**
-     * Interface attribute key used to store the interface's SnmpAgentConfig
-     * object.
-     */
-    static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
-
-    /**
      * A string which is used by a managing application to identify the RTT
      * target.
      */
@@ -225,34 +219,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
      *                the interface from being monitored.
      */
     public void initialize(MonitoredService svc) {
-        NetworkInterface iface = svc.getNetInterface();
-        // Log4j category
-        //
-        // Get interface address from NetworkInterface
-        //
         super.initialize(svc);
-
-        InetAddress ipAddr = (InetAddress) iface.getAddress();
-
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(
-                                                                                   ipAddr);
-        if (log().isDebugEnabled()) {
-            log().debug("initialize: SnmpAgentConfig address: " + agentConfig);
-        }
-
-        // Add the snmp config object as an attribute of the interface
-        //
-        if (log().isDebugEnabled())
-            log().debug(
-                        "initialize: CiscoIpSlaMonitor setting SNMP peer attribute for interface "
-                                + ipAddr.getHostAddress());
-
-        iface.setAttribute(SNMP_AGENTCONFIG_KEY, agentConfig);
-
-        log().debug(
-                    "initialize: interface: " + agentConfig.getAddress()
-                            + " initialized.");
-
         return;
     }
 
@@ -283,8 +250,9 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
 
         // Retrieve this interface's SNMP peer object
         //
-        SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
 
         // Get configuration parameters for tag to monitor
         String adminTag = ParameterMap.getKeyedString(parameters,"admin-tag", null);

@@ -52,7 +52,7 @@
     <jsp:param name="breadcrumb" value="Edit Group" />
 </jsp:include>
 
-<script>
+<script type="text/javascript">
     function submitNewNotificationForm(uei) {
     	document.getElementById("uei").value=uei;
     	document.add_notification_form.submit();
@@ -60,7 +60,7 @@
 </script>
 
 	  <!-- hidden form for adding a new Notification -->
-	  <form action="admin/notification/noticeWizard/notificationWizard" method="POST" name="add_notification_form">
+	  <form action="admin/notification/noticeWizard/notificationWizard" method="post" name="add_notification_form">
 	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
 	  	<input type="hidden" id="uei" name="uei" value="" /> <!-- Set by java script -->
 	  	<input type="hidden" name="returnPage" value="<%=Util.calculateUrlBase(request)%>/admin/thresholds/index.htm?groupName=${group.name}&editGroup" />
@@ -101,7 +101,7 @@
     </c:forEach>
   </table>
   <a href="admin/thresholds/index.htm?groupName=${group.name}&newThreshold">Create New Threshold</a>
-  <BR><BR>
+  <br/><br/>
   <h2>Expression-based Thresholds</h2>
   <table class="normal">
     <tr>
@@ -138,10 +138,10 @@
 <h3>Help</h3>
 <p>
 The upper section is Basic Thresholds (thresholds on a  single datasource).  The threshold details are displayed to edit the threshold, click on the "Edit" link on same line as the threshold line.  
-To delete the threshold, click on "Delete" on the same line as the threshold you want to delete.<BR>
-To create a new threshold, click on the "Create New Threshold" link<br>
+To delete the threshold, click on "Delete" on the same line as the threshold you want to delete.<br/>
+To create a new threshold, click on the "Create New Threshold" link<br/>
 The lower section is for Expression-based Thresholds, where the value being checked is a mathematical expression including one or more data sources.  Functionality is identical to that for the Basic Thresholds section
-<BR>
+<br/>
 If you have a custom UEI for triggering or re-arming the threshold, then it will be a hyperlink.  Clicking on that link takes you to the notifications wizard for that UEI, allowing you to see existing notifications for that UEI, and possibly create a new notification for that UEI.
 </p>
 <jsp:include page="/includes/footer.jsp" flush="false"/>

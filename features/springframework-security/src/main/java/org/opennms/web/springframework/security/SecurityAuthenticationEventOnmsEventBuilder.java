@@ -37,7 +37,6 @@ package org.opennms.web.springframework.security;
 
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -139,7 +138,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         Assert.notNull(m_eventProxy, "property eventProxy must be set");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -75,7 +75,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.util.StringUtils;
@@ -94,7 +93,7 @@ public class JavaMailer {
     private static final String DEFAULT_AUTHENTICATE_PASSWORD = "opennms";
     private static final String DEFAULT_MAILER = "smtpsend";
     private static final String DEFAULT_TRANSPORT = "smtp";
-    private static final boolean DEFAULT_MAILER_DEBUG = true;
+    private static final boolean DEFAULT_MAILER_DEBUG = false;
     private static final boolean DEFAULT_USE_JMTA = true;
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private static final String DEFAULT_CHARSET = "us-ascii";
@@ -739,15 +738,15 @@ public class JavaMailer {
     /**
      * @return log4j Category
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
     public static class LoggingByteArrayOutputStream extends ByteArrayOutputStream {
-        private Category m_category;
+        private ThreadCategory m_category;
 
-        public LoggingByteArrayOutputStream(Category category) {
-            m_category = category;
+        public LoggingByteArrayOutputStream(ThreadCategory threadCategory) {
+            m_category = threadCategory;
         }
 
         @Override
@@ -764,13 +763,13 @@ public class JavaMailer {
     }
 
     public static class LoggingTransportListener implements TransportListener {
-        private Category m_category;
+        private ThreadCategory m_category;
         private List<Address> m_invalidAddresses = new ArrayList<Address>();
         private List<Address> m_validSentAddresses = new ArrayList<Address>();
         private List<Address> m_validUnsentAddresses = new ArrayList<Address>();
 
-        public LoggingTransportListener(Category category) {
-            m_category = category;
+        public LoggingTransportListener(ThreadCategory threadCategory) {
+            m_category = threadCategory;
         }
 
         public void messageDelivered(TransportEvent event) {

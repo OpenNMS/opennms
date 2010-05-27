@@ -45,7 +45,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -213,7 +212,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         m_template = template;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(MapProvisioningAdapter.class);
     }
 
@@ -319,11 +318,10 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     }    
     
-    @SuppressWarnings("unchecked")
     private void reSyncMap(final Set<Integer> deletes,final Set<Integer> adds,final Set<Integer> updates) throws ProvisioningAdapterException {
         m_mapsAdapterConfig.rebuildPackageIpListMap();
         
-        m_template.execute(new TransactionCallback() {
+        m_template.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus arg0) {
                 try {
                     // first of all delete the element with nodeid ind deletes
@@ -405,8 +403,15 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                             boolean elementExist = false;
                             for (OnmsMapElement elem: elements) {
                                 if (elem.getMap().getId() == onmsMap.getId() ) {
-                                    log().debug("reSyncMap: nodeid: " + nodeid + " is in map:" + mapName + ". skipping...");
                                     elementExist = true;
+                                    String label = getLabel(node.getLabel());
+                                    if (elem.getLabel().equals(label)) { 
+                                       log().debug("reSyncMap: nodeid: " + nodeid + " is in map:" + mapName + " and has the same label. skipping...");
+                                    } else {
+                                       log().debug("reSyncMap: nodeid: " + nodeid + " is in map:" + mapName + " and has not the same label. updating...");
+                                       elem.setLabel(label);
+                                       m_onmsMapElementDao.update(elem);
+                                    }
                                     continue;
                                 }
                                 tempElem.add(elem);
@@ -546,15 +551,14 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     @Override
     public void init() throws ProvisioningAdapterException {
         MapSyncExecutor e = new MapSyncExecutor();
-        new Thread(e).start();        
+        new Thread(e, MapSyncExecutor.class.getSimpleName()).start();
     }
     
 
-    @SuppressWarnings("unchecked")
     private void syncMaps() throws ProvisioningAdapterException {
 
         try {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
 
                     log().info("syncMaps: acquiring lock...");
@@ -701,7 +705,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
     private void sendAndThrow(Exception e) {
         Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
         m_eventForwarder.sendNow(event);
-        log().error(e);
+        log().error(e.getMessage());
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
     }
 
@@ -717,6 +721,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
                     return onmsIpInterface.getIpAddress();
             }
+            return "0.0.0.0";
         }
         return primaryInterface.getIpAddress();
     }

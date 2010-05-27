@@ -38,7 +38,6 @@ import java.io.StringWriter;
 
 import javax.servlet.ServletRequest;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -118,7 +117,7 @@ public class AbstractFeed implements Feed {
         return title;
     }
     
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

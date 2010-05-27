@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.7.11-SNAPSHOT</version>
+    <version>1.9.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -33,6 +33,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jnlp-dependencies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
@@ -46,15 +50,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.samples.jnlp</groupId>
-      <artifactId>jnlp-servlet</artifactId>
-      <scope>runtime</scope>
     </dependency>
 
     <!-- test dependencies -->

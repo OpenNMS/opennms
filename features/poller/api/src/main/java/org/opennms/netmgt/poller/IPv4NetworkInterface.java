@@ -41,7 +41,6 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 
@@ -169,7 +168,7 @@ public class IPv4NetworkInterface implements NetworkInterface, Serializable {
         return m_properties.put(property, value);
     }
     
-	public Category log() {
+	public ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

@@ -2239,7 +2239,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
     private void assertNoTablesHaveChanged() throws IOException {
         ByteArrayInputStream in = new ByteArrayInputStream(m_outputStream.toByteArray());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
         String line;
         List<String> unanticipatedOutput = new ArrayList<String>();

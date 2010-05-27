@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app id="opennms-remote-monitor-ui" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <display-name>Remote Poller Map</display-name>	
+
+  <jsp-config>
+    <jsp-property-group>
+        <url-pattern>*.jsp</url-pattern>
+        <page-encoding>UTF-8</page-encoding>
+    </jsp-property-group>
+  </jsp-config>
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+        <!-- WARMERGE: begin contextConfigLocation -->
+        /WEB-INF/applicationContext-remote-poller.xml
+        <!-- WARMERGE: end contextConfigLocation -->
+    </param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>parentContextKey</param-name>
+    <param-value>daoContext</param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>org.opennms.web.DependencyCheckingContextListener</listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- WARMERGE: begin servlet -->
+  <servlet>
+    <servlet-name>EventService</servlet-name>
+    <servlet-class>de.novanic.eventservice.service.EventServiceImpl</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>LocationStatusService</servlet-name>
+    <servlet-class>org.opennms.features.poller.remote.gwt.server.LocationStatusServiceImpl</servlet-class>
+  </servlet>
+  <!-- WARMERGE: end servlet -->
+
+  <!-- WARMERGE: begin servlet-mapping -->
+  <servlet-mapping>
+    <servlet-name>EventService</servlet-name>
+    <url-pattern>/RemotePollerMap/gwteventservice</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>LocationStatusService</servlet-name>
+    <url-pattern>/RemotePollerMap/locationStatus</url-pattern>
+  </servlet-mapping>
+  <!-- WARMERGE: end servlet-mapping -->
+
+  <!-- WARMERGE: begin filter -->
+  <filter>
+    <filter-name>cache-filter</filter-name>
+    <filter-class>org.opennms.features.poller.remote.gwt.CacheFilter</filter-class>
+  </filter>
+  <!-- WARMERGE: end filter -->
+
+  <!-- WARMERGE: begin filter-mapping -->
+  <filter-mapping>
+    <filter-name>cache-filter</filter-name>
+    <url-pattern>/RemotePollerMap/*</url-pattern>
+  </filter-mapping>
+  <!-- WARMERGE: end filter-mapping -->
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>frontPage.jsp</welcome-file>
+  </welcome-file-list>
+
+</web-app>

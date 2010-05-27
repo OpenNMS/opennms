@@ -154,6 +154,8 @@ public class DaoWebEventRepositoryTest {
         assertNotNull(event);
         
         assertEquals("uei.opennms.org/test", event.uei);
+        assertNotNull(event.getEventDisplay());
+        assertTrue(event.getEventDisplay());
     }
     
     @Test

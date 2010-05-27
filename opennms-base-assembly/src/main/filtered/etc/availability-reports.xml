@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <opennms-reports
-	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-reports"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
+	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-reports">
 	<report id="defaultCalendarReport" 
 		type="calendar">
 		<logo>${install.etc.dir}/reports/logo.gif</logo>
@@ -14,6 +14,10 @@
 			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
 				<default-interval>day</default-interval>
 				<default-count>1</default-count>
+				<default-time>
+					<hours>23</hours>
+					<minutes>59</minutes>
+				</default-time>
 			</date-parm>
 		</parameters>
 	</report>
@@ -28,6 +32,10 @@
 			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
 				<default-interval>day</default-interval>
 				<default-count>1</default-count>
+				<default-time>
+					<hours>23</hours>
+					<minutes>59</minutes>
+				</default-time>
 			</date-parm>
 		</parameters>
 	</report>

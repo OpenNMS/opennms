@@ -34,6 +34,7 @@
 
 package org.opennms.netmgt.eventd.db;
 
+import org.opennms.netmgt.model.events.Constants;
 import org.opennms.netmgt.xml.event.Snmp;
 
 /**

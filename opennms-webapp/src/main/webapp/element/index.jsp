@@ -72,21 +72,21 @@
   <div class="TwoColLeft">
       <h3>Search for Nodes</h3>
 		<div class="boxWrapper">
-            <form action="element/nodeList.htm" method="GET">
+            <form action="element/nodeList.htm" method="get">
 					<p align="right">Name containing:          
               <input type="hidden" name="listInterfaces" value="false"/>
               <input type="text" name="nodename" />
               <input type="submit" value="Search"/></p>                
             </form>
 
-            <form action="element/nodeList.htm" method="GET">
+            <form action="element/nodeList.htm" method="get">
 					<p align="right">TCP/IP Address like:          
               <input type="hidden" name="listInterfaces" value="false"/>
               <input type="text" name="iplike" value="*.*.*.*" />
               <input type="submit" value="Search"/></p>                
             </form>
 
-            <form action="element/nodeList.htm" method="GET">
+            <form action="element/nodeList.htm" method="get">
 					<p align="right">
 					    <select name="snmpParm" size="1">
                             <option>ifAlias</option> 
@@ -102,7 +102,7 @@
 						<input type="submit" value="Search"/></p>                
             </form>
 
-            <form action="element/nodeList.htm" method="GET">
+            <form action="element/nodeList.htm" method="get">
 					<p align="right">Providing service:          
 						<input type="hidden" name="listInterfaces" value="false"/>
 						<select name="service" size="1">
@@ -114,11 +114,19 @@
 						<input type="submit" value="Search"/></p>                
             </form>
             
-            <form action="element/nodeList.htm" method="GET">
-					<p align="right">Mac Address like:          
+            <form action="element/nodeList.htm" method="get">
+					<p align="right">MAC Address like:          
 						<input type="hidden" name="listInterfaces" value="false"/>
 						<input type="text" name="maclike" />
 						<input type="submit" value="Search"/></p>                
+            </form>
+            
+            <form action="element/nodeList.htm" method="get">
+                    <p align="right">Foreign Source like:
+                        <input type="hidden" name="listInterfaces" value="false"/>
+                        <input type="text" name="foreignSource"/>
+                        <input type="submit" value="Search"/>
+                    </p>
             </form>
                         
 			<ul class="plain">
@@ -130,7 +138,7 @@
 		<h3>Search Asset Information</h3>
 		<div class="boxWrapper">
         <%-- category --%>
-        <form action="asset/nodelist.jsp" method="GET">
+        <form action="asset/nodelist.jsp" method="get">
           <p align="right">Category: 
           <input type="hidden" name="column" value="category" />
           <select name="searchvalue" size="1">
@@ -142,7 +150,7 @@
 			</p>
         </form>
 		
-        <form action="asset/nodelist.jsp" method="GET">
+        <form action="asset/nodelist.jsp" method="get">
           <p align="right">Field:
 				<select name="column" size="1">
 				  <% for( int i=0; i < this.columns.length; i++ ) { %>
@@ -197,7 +205,7 @@
         like to search for.
       </p>
 
-      <p>Searching by Mac Address allows you to find interfaces with hardware (mac) addresses
+      <p>Searching by MAC Address allows you to find interfaces with hardware (MAC) addresses
          matching the search string. This is a case-insensitive partial string match. For
          example, you can find all interfaces with a specified manufacturer's code by entering
          the first 6 characters of the mac address. Octet separators (dash or colon) are optional.

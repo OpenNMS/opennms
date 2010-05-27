@@ -38,14 +38,10 @@ package org.opennms.web.map;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -64,7 +60,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class LoadMapsController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	
@@ -84,10 +80,9 @@ public class LoadMapsController implements Controller {
 		log.debug("Loading Maps");
 		
 		String user = request.getRemoteUser();
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-		    List<VMapInfo> maps  = manager.getVisibleMapsMenu(user);                
-			bw.write(ResponseAssembler.getMapsResponse(MapsConstants.LOADMAPS_ACTION,maps));
+			bw.write(ResponseAssembler.getLoadMapsResponse(manager.getVisibleMapsMenu(user)));
 		} catch (Exception e) {
 			log.error("Error while loading visible maps for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADMAPS_ACTION));

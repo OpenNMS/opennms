@@ -3,14 +3,10 @@ package org.opennms.report.inventory;
 import java.io.IOException;
 import java.util.Date;
 
-
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-
-
 import org.opennms.report.ReportMailer;
-import org.opennms.report.render.ReportRenderException;
-import org.opennms.report.render.ReportRenderer;
+import org.opennms.reporting.availability.render.ReportRenderException;
+import org.opennms.reporting.availability.render.ReportRenderer;
 
 public class InventoryReportRunner implements Runnable {
         
@@ -23,7 +19,7 @@ public class InventoryReportRunner implements Runnable {
 
     InventoryReportCalculator calculator;
 
-    ReportRenderer m_htmlReportRenderer;    
+    ReportRenderer m_htmlReportRenderer;
     ReportRenderer m_nullReportRenderer;
     
     public ReportRenderer getNullReportRenderer() {
@@ -175,7 +171,7 @@ public class InventoryReportRunner implements Runnable {
                 FileOutputStream hmtlFileWriter = new FileOutputStream(file);
                 PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-nbinventoryreport.xsl");
                 File fileR = new File(xmlFileName);
-                FileReader fileReader = new FileReader(fileR);
+                Reader fileReader = new InputStreamReader(new FileInputStream(fileR), "UTF-8");
                 htmlWriter.generateHTML(fileReader, hmtlFileWriter);
                 log().debug("runNodeBaseInventoryReport html sending email");
                 ReportMailer mailer = new ReportMailer(reportEmail,htmlFileName,"OpenNMS Inventory Report");
@@ -190,7 +186,7 @@ public class InventoryReportRunner implements Runnable {
 
     }
     
-    private static Category log() {
+    private static Logger log() {
         return Logger.getLogger("Rancid");
     }
 

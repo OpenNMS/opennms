@@ -55,7 +55,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -421,7 +420,7 @@ public final class EventUtil {
 						DateFormat.FULL);
 				retParmVal = df.format(actualDate);
 			} catch (java.text.ParseException e) {
-				Category log = ThreadCategory.getInstance();
+				ThreadCategory log = ThreadCategory.getInstance();
 				log.error("could not parse event date \"" + eventTime + "\": ",
 						e);
 
@@ -882,82 +881,29 @@ public final class EventUtil {
         return retParmVal;
     }
 
-	/**
-	 * Expand the value if it has parms in one of the following formats -
-	 * %element% values are expanded to have the value of the element where
-	 * 'element' is an element in the event DTD - %parm[values-all]% is expanded
-	 * to a delimited list of all parmblock values - %parm[names-all]% is
-	 * expanded to a list of all parm names - %parm[all]% is expanded to a full
-	 * dump of all parmblocks - %parm[name]% is expanded to the value of the
-	 * parameter named 'name' - %parm[ <name>]% is replaced by the value of the
-	 * parameter named 'name', if present - %parm[# <num>]% is replaced by the
-	 * value of the parameter number 'num', if present - %parm[##]% is replaced
-	 * by the number of parameters
-	 * 
-	 * @param inp
-	 *            the input string in which parm values are to be expanded
-	 * 
-	 * @return expanded value if the value had any parameter to expand, null
-	 *         otherwise
-	 */
-	public static String expandParms(String inp, Event event) {
-		int index1 = -1;
-		int index2 = -1;
+    /**
+     * Expand the value if it has parms in one of the following formats -
+     * %element% values are expanded to have the value of the element where
+     * 'element' is an element in the event DTD - %parm[values-all]% is expanded
+     * to a delimited list of all parmblock values - %parm[names-all]% is
+     * expanded to a list of all parm names - %parm[all]% is expanded to a full
+     * dump of all parmblocks - %parm[name]% is expanded to the value of the
+     * parameter named 'name' - %parm[ <name>]% is replaced by the value of the
+     * parameter named 'name', if present - %parm[# <num>]% is replaced by the
+     * value of the parameter number 'num', if present - %parm[##]% is replaced
+     * by the number of parameters
+     * 
+     * @param inp
+     *            the input string in which parm values are to be expanded
+     * 
+     * @return expanded value if the value had any parameter to expand, null
+     *         otherwise
+     */
+    public static String expandParms(String inp, Event event) {
+        return EventUtil.expandParms(inp, event, null);
+    }
 
-		if (inp == null) {
-			return null;
-		}
-		
-		StringBuffer ret = new StringBuffer();
-
-		String tempInp = inp;
-		int inpLen = inp.length();
-
-		// check input string to see if it has any %xxx% substring
-		while ((tempInp != null) && ((index1 = tempInp.indexOf(PERCENT)) != -1)) {
-			// copy till first %
-			ret.append(tempInp.substring(0, index1));
-
-			index2 = tempInp.indexOf(PERCENT, index1 + 1);
-			if (index2 != -1) {
-				// Get the value between the %s
-				String parm = tempInp.substring(index1 + 1, index2);
-				// m_logger.debug("parm: " + parm + " found in value");
-
-				String parmVal = getValueOfParm(parm, event);
-				// m_logger.debug("value of parm: " + parmVal);
-
-				if (parmVal != null) {
-					ret.append(parmVal);
-				}
-				/**
-				 * else { ret.append(tempInp.substring(index1, index2+1)); }
-				 */
-
-				if (index2 < (inpLen - 1)) {
-					tempInp = tempInp.substring(index2 + 1);
-				} else {
-					tempInp = null;
-				}
-			}
-
-			else {
-				break;
-			}
-		}
-
-		if ((index1 == -1 || index2 == -1) && (tempInp != null)) {
-			ret.append(tempInp);
-		}
-
-		String retStr = ret.toString();
-		if (retStr != null && !retStr.equals(inp))
-			return retStr;
-
-		return null;
-	}
-	
-   /**
+    /**
      * Expand the value if it has parms in one of the following formats -
      * %element% values are expanded to have the value of the element where
      * 'element' is an element in the event DTD - %parm[values-all]% is expanded
@@ -977,66 +923,75 @@ public final class EventUtil {
      * @return expanded value if the value had any parameter to expand, null
      *         otherwise
      */
-	public static String expandParms(String inp, Event event, Map<String, Map<String, String>> decode) {
-       
-	   int index1 = -1;
-       int index2 = -1;
+    public static String expandParms(String inp, Event event, Map<String, Map<String, String>> decode) {
+        int index1 = -1;
+        int index2 = -1;
 
-       if (inp == null) {
-           return null;
-       }
-       
-       StringBuffer ret = new StringBuffer();
+        if (inp == null) {
+            return null;
+        }
 
-       String tempInp = inp;
-       int inpLen = inp.length();
+        StringBuffer ret = new StringBuffer();
 
-       // check input string to see if it has any %xxx% substring
-       while ((tempInp != null) && ((index1 = tempInp.indexOf(PERCENT)) != -1)) {
-           // copy till first %
-           ret.append(tempInp.substring(0, index1));
+        String tempInp = inp;
+        int inpLen = inp.length();
 
-           index2 = tempInp.indexOf(PERCENT, index1 + 1);
-           if (index2 != -1) {
-               // Get the value between the %s
-               String parm = tempInp.substring(index1 + 1, index2);
-               // m_logger.debug("parm: " + parm + " found in value");
+        // check input string to see if it has any %xxx% substring
+        while ((tempInp != null) && ((index1 = tempInp.indexOf(PERCENT)) != -1)) {
+            // copy till first %
+            ret.append(tempInp.substring(0, index1));
+            tempInp = tempInp.substring(index1);
 
-               String parmVal = getValueOfParm(parm, event);
-               // m_logger.debug("value of parm: " + parmVal);
-   
-               if (parmVal != null) {
-                   if (decode != null && decode.containsKey(parm) && decode.get(parm).containsKey(parmVal)) {
-                       ret.append(decode.get(parm).get(parmVal));
-                       ret.append("(");
-                       ret.append(parmVal);
-                       ret.append(")");
-                   } else {
-                       ret.append(parmVal);
-                   }
-               }
+            index2 = tempInp.indexOf(PERCENT, 1);
+            if (index2 != -1) {
+                // Get the value between the %s
+                String parm = tempInp.substring(1, index2);
+                // m_logger.debug("parm: " + parm + " found in value");
 
-               if (index2 < (inpLen - 1)) {
-                   tempInp = tempInp.substring(index2 + 1);
-               } else {
-                   tempInp = null;
-               }
-           }           
-           else {
-               break;
-           }
-       }
+                // If there's any whitespace in between the % signs, then do not try to 
+                // expand it with a parameter value
+                if (parm.matches(".*\\s.*")) {
+                    ret.append(PERCENT);
+                    tempInp = tempInp.substring(1);
+                    continue;
+                }
 
-       if ((index1 == -1 || index2 == -1) && (tempInp != null)) {
-           ret.append(tempInp);
-       }
+                String parmVal = getValueOfParm(parm, event);
+                // m_logger.debug("value of parm: " + parmVal);
 
-       String retStr = ret.toString();
-       if (retStr != null && !retStr.equals(inp))
-           return retStr;
+                if (parmVal != null) {
+                    if (decode != null && decode.containsKey(parm) && decode.get(parm).containsKey(parmVal)) {
+                        ret.append(decode.get(parm).get(parmVal));
+                        ret.append("(");
+                        ret.append(parmVal);
+                        ret.append(")");
+                    } else {
+                        ret.append(parmVal);
+                    }
+                }
 
-       return null;
-   }
+                if (index2 < (inpLen - 1)) {
+                    tempInp = tempInp.substring(index2 + 1);
+                } else {
+                    tempInp = null;
+                }
+            }
+            else {
+                break;
+            }
+        }
+
+        if ((index1 == -1 || index2 == -1) && (tempInp != null)) {
+            ret.append(tempInp);
+        }
+
+        String retStr = ret.toString();
+        if (retStr != null && !retStr.equals(inp)) {
+            return retStr;
+        } else {
+            return null;
+        }
+    }
 
 
 	/**

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.support.Client;
 
 /**
@@ -101,7 +102,7 @@ public class ClientConversation<Request, Response> {
         if (m_bannerValidator != null) {
             Response banner = client.receiveBanner();
             if (!m_bannerValidator.validate(banner)) {
-                System.out.println("False on Banner");
+                LogUtils.infof(this, "False on Banner");
                 return false;
             }
         }
@@ -110,10 +111,10 @@ public class ClientConversation<Request, Response> {
             
             Request request = ex.getRequest();
             
-            System.out.printf("Sending Request %s\n", request);
+            LogUtils.infof(this, "Sending Request %s\n", request);
             Response response = client.sendRequest(request);
             
-            System.out.printf("Received Response %s\n", response);
+            LogUtils.infof(this, "Received Response %s\n", response);
             if (!ex.validate(response)) {
                 return false;
             }

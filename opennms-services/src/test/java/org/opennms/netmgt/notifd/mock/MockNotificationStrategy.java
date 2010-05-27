@@ -37,10 +37,8 @@
 
 package org.opennms.netmgt.notifd.mock;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.opennms.core.utils.Argument;
 import org.opennms.netmgt.notifd.NotificationStrategy;
@@ -54,8 +52,6 @@ import org.opennms.test.mock.MockUtil;
 public class MockNotificationStrategy implements NotificationStrategy {
     
     private static NotificationAnticipator s_anticpator = null;
-    
-    Map notificationsSent = new HashMap();
     
     static {
         MockUtil.println("Static initializer on "+ MockNotificationStrategy.class.getName());
@@ -101,7 +97,7 @@ public class MockNotificationStrategy implements NotificationStrategy {
         return s_anticpator;
     }
 
-    public static void setAnticpator(NotificationAnticipator anticpator) {
+    public static void setAnticipator(NotificationAnticipator anticpator) {
         s_anticpator = anticpator;
     }
 }

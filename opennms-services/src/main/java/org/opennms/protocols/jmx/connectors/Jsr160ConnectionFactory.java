@@ -38,7 +38,6 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -54,9 +53,9 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class Jsr160ConnectionFactory {
     
-    static Category log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
+    static ThreadCategory log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
 
-    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {
+    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<?, ?> propertiesMap, InetAddress address) {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;
         
@@ -88,7 +87,7 @@ public class Jsr160ConnectionFactory {
                 String username   = ParameterMap.getKeyedString(propertiesMap, "username", null);
                 String password   = ParameterMap.getKeyedString(propertiesMap, "password", null);
                 
-                HashMap env = new HashMap();
+                Map<String,String[]> env = new HashMap<String,String[]>();
                 
                 // Provide the credentials required by the server to successfully
                 // perform user authentication

@@ -56,7 +56,7 @@ public class LifeCycleTest {
     @Before
     public void setUp() {
         
-        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator(Executors.newSingleThreadExecutor());
+        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator("LifeCycleTest", Executors.newSingleThreadExecutor());
         m_lifeCycleRepository = new DefaultLifeCycleRepository(coordinator);
     }
 

@@ -38,12 +38,11 @@ package org.opennms.web.admin.config;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -51,7 +50,6 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -60,8 +58,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.BundleLists;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -81,6 +77,11 @@ import org.opennms.netmgt.config.poller.Service;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class PollerConfigServlet extends HttpServlet {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2622622848304715121L;
+    
     PollerConfiguration pollerConfig = null;
 
     CapsdConfiguration capsdConfig = null;
@@ -174,16 +175,16 @@ public class PollerConfigServlet extends HttpServlet {
     }
 
     public void initPollerServices() {
-        Collection packageColl = pollerConfig.getPackageCollection();
+        Collection<org.opennms.netmgt.config.poller.Package> packageColl = pollerConfig.getPackageCollection();
         if (packageColl != null) {
-            Iterator pkgiter = packageColl.iterator();
+            Iterator<org.opennms.netmgt.config.poller.Package> pkgiter = packageColl.iterator();
             if (pkgiter.hasNext()) {
-                pkg = (org.opennms.netmgt.config.poller.Package) pkgiter.next();
-                Collection svcColl = pkg.getServiceCollection();
-                Iterator svcIter = svcColl.iterator();
+                pkg = pkgiter.next();
+                Collection<Service> svcColl = pkg.getServiceCollection();
+                Iterator<Service> svcIter = svcColl.iterator();
                 Service svcProp = null;
                 while (svcIter.hasNext()) {
-                    svcProp = (Service) svcIter.next();
+                    svcProp = svcIter.next();
                     pollerServices.put(svcProp.getName(), svcProp);
                 }
             }
@@ -228,8 +229,8 @@ public class PollerConfigServlet extends HttpServlet {
             adjustNonChecked(checkedList);
             deleteThese(deleteList);
 
-            FileWriter poller_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME));
-            FileWriter capsd_fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME));
+            Writer poller_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME)), "UTF-8");
+            Writer capsd_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME)), "UTF-8");
             try {
                 Marshaller.marshal(pollerConfig, poller_fileWriter);
                 Marshaller.marshal(capsdConfig, capsd_fileWriter);
@@ -257,12 +258,12 @@ public class PollerConfigServlet extends HttpServlet {
 
     public void adjustNonChecked(java.util.List<String> checkedList) {
         if (pkg != null) {
-            Collection svcColl = pkg.getServiceCollection();
+            Collection<Service> svcColl = pkg.getServiceCollection();
             Service svc = null;
             if (svcColl != null) {
-                Iterator svcIter = svcColl.iterator();
+                Iterator<Service> svcIter = svcColl.iterator();
                 while (svcIter.hasNext()) {
-                    svc = (Service) svcIter.next();
+                    svc = svcIter.next();
                     if (svc != null) {
                         if (!checkedList.contains(svc.getName())) {
                             if (svc.getStatus().equals("on")) {
@@ -282,12 +283,12 @@ public class PollerConfigServlet extends HttpServlet {
 
             if (pkg != null) {
                 boolean flag = false;
-                Collection svcColl = pkg.getServiceCollection();
+                Collection<Service> svcColl = pkg.getServiceCollection();
                 if (svcColl != null) {
-                    Iterator svcIter = svcColl.iterator();
+                    Iterator<Service> svcIter = svcColl.iterator();
                     Service svc = null;
                     while (svcIter.hasNext()) {
-                        svc = (Service) svcIter.next();
+                        svc = svcIter.next();
                         if (svc != null) {
                             if (svc.getName().equals(svcname)) {
                                 flag = true;
@@ -309,12 +310,12 @@ public class PollerConfigServlet extends HttpServlet {
 
     public void removeMonitor(String service) {
         // Add the new monitor with the protocol.
-        Collection monitorColl = pollerConfig.getMonitorCollection();
+        Collection<Monitor> monitorColl = pollerConfig.getMonitorCollection();
         Monitor newMonitor = new Monitor();
         if (monitorColl != null) {
-            Iterator monitoriter = monitorColl.iterator();
+            Iterator<Monitor> monitoriter = monitorColl.iterator();
             while (monitoriter.hasNext()) {
-                Monitor mon = (Monitor) monitoriter.next();
+                Monitor mon = monitoriter.next();
                 if (mon != null) {
                     if (mon.getService().equals(service)) {
                         newMonitor.setService(service);
@@ -330,11 +331,11 @@ public class PollerConfigServlet extends HttpServlet {
 
     public void modifyPollerInfo(String bPolled, String protocol) {
         if (pkg != null) {
-            Collection svcColl = pkg.getServiceCollection();
+            Collection<Service> svcColl = pkg.getServiceCollection();
             if (svcColl != null) {
-                Iterator svcIter = svcColl.iterator();
+                Iterator<Service> svcIter = svcColl.iterator();
                 while (svcIter.hasNext()) {
-                    Service svc = (Service) svcIter.next();
+                    Service svc = svcIter.next();
                     if (svc != null) {
                         if (svc.getName().equals(protocol)) {
                             svc.setStatus(bPolled);

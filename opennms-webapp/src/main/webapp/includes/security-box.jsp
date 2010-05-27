@@ -74,7 +74,7 @@
   </tr>
 </table>    
 
-<br>
+<br/>
 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc" >
   <tr> 
     <td colspan="2" bgcolor="#999999" ><b><a href="somewhere3">Security</a></b></td>

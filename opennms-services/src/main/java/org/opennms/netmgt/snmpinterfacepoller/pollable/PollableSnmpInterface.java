@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
@@ -369,7 +368,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
         m_schedule.unschedule();
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(PollableService.class);
     }
 

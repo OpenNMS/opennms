@@ -42,7 +42,7 @@
 package org.opennms.web.map.view;
 
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.db.Element;
+import org.opennms.web.map.db.DbElement;
 
 /**
  * @author micmas
@@ -50,7 +50,7 @@ import org.opennms.web.map.db.Element;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class VElement extends Element {
+public class VElement extends DbElement {
 
 	// boolean that represents if this is a childnode mandatory to avoid loops  
 	protected boolean isChild = false;
@@ -62,7 +62,7 @@ public class VElement extends Element {
 	protected int severity = 0;
 
 	// this represents the global information elements
-	protected double rtc = 0;
+	protected double avail = 0;
 	
 	
 
@@ -76,7 +76,7 @@ public class VElement extends Element {
     /**
      * @param e
      */
-    public VElement(Element e) throws MapsException {
+    public VElement(DbElement e) throws MapsException {
         super(e);
     }
 
@@ -118,12 +118,12 @@ public class VElement extends Element {
 			this.severity = severity;
 	}
 
-	public double getRtc() {
-		return rtc;
+	public double getAvail() {
+		return avail;
 	}
 	
-	public void setRtc(double rtc) {
-		this.rtc = rtc;
+	public void setAvail(double rtc) {
+		this.avail = rtc;
 	}
 	
     public boolean isChild() {
@@ -133,22 +133,18 @@ public class VElement extends Element {
     public boolean equals(Object other){
     	return equalsIgnorePosition((VElement)other);
     }
-    /**
-     * @param elem
-     * @return
-     */
-
+    
     public boolean equalsIgnorePosition(VElement elem) {
     	if (this.getMapId() == elem.getMapId() &&
     		this.getId() == elem.getId() && this.type.equals( elem.getType()) &&
-    		this.rtc == elem.getRtc() && this.status == elem.getStatus() &&
+    		this.avail == elem.getAvail() && this.status == elem.getStatus() &&
 			this.severity == elem.getSeverity() && this.getLabel().equals( elem.getLabel() )) return true;
     	return false;
     }
 
     public boolean equalsIgnorePositionParentMap(VElement elem) {
     	if (this.getId() == elem.getId() && this.type.equals( elem.getType() ) &&
-    		this.rtc == elem.getRtc() && this.status == elem.getStatus() &&
+    		this.avail == elem.getAvail() && this.status == elem.getStatus() &&
 			this.severity == elem.getSeverity() && this.getLabel().equals( elem.getLabel())) return true;
     	return false;
     }

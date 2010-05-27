@@ -35,8 +35,12 @@
 //
 package org.opennms.report.render;
 
-import org.apache.log4j.Category;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.reporting.availability.render.ReportRenderException;
+import org.opennms.reporting.availability.render.ReportRenderer;
 import org.springframework.core.io.Resource;
 
 /**
@@ -59,7 +63,7 @@ public class NullReportRenderer implements ReportRenderer {
     public void render() throws ReportRenderException {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(NullReportRenderer.class);
+        ThreadCategory log = ThreadCategory.getInstance(NullReportRenderer.class);
         log.debug("Do nothing");
         m_outputFileName = m_inputFileName;
     }
@@ -86,6 +90,26 @@ public class NullReportRenderer implements ReportRenderer {
     
     public String getBaseDir(){
        return m_baseDir;
+    }
+
+    public void render(String inputFileName, String outputFileName,
+            Resource xlstResource)
+            throws org.opennms.reporting.availability.render.ReportRenderException {
+    }
+
+    public void render(String inputFileName, OutputStream outputStream,
+            Resource xsltResource)
+            throws org.opennms.reporting.availability.render.ReportRenderException {
+    }
+
+    public void render(InputStream inputStream, OutputStream outputStream,
+            Resource xsltResource)
+            throws org.opennms.reporting.availability.render.ReportRenderException {
+    }
+
+    public byte[] render(String inputFileName, Resource xsltResource)
+            throws org.opennms.reporting.availability.render.ReportRenderException {
+        return new byte[0];
     }
 
 }

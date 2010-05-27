@@ -35,7 +35,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -88,7 +87,7 @@ public class JDBCResponse {
     }
 
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

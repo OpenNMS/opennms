@@ -39,7 +39,6 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -108,7 +107,7 @@ final class UdpProcessor implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            Category log = log();
+            ThreadCategory log = log();
             if (log.isDebugEnabled())
                 log.debug("Stopping and joining thread context " + m_context.getName());
 
@@ -227,7 +226,7 @@ final class UdpProcessor implements Runnable {
         m_logPrefix = prefix;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

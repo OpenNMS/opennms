@@ -40,16 +40,17 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -159,7 +160,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
         m_loaded = true;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SnmpPeerFactory.class);
     }
 
@@ -190,7 +191,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
         // isn't lost if the XML from the marshall is hosed.
         String marshalledConfig = marshallConfig();
         if (marshalledConfig != null) {
-            FileWriter fileWriter = new FileWriter(getFile());
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(getFile()), "UTF-8");
             fileWriter.write(marshalledConfig);
             fileWriter.flush();
             fileWriter.close();
@@ -246,7 +247,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
      */
     @SuppressWarnings("unused")
     private void define(InetAddress ip, String community) throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Convert IP to long so that it easily compared in range elements
         int address = new IPv4Address(ip).getAddress();
@@ -386,8 +387,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                    log().warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
                 }
             }
 
@@ -407,8 +407,7 @@ public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfi
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                    log().warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
                 }
             }
             

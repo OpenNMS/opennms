@@ -57,7 +57,7 @@ public class RTCPostServlet extends HttpServlet {
 
     protected CategoryModel model;
 
-    protected org.apache.log4j.Category log = ThreadCategory.getInstance("RTC");
+    protected ThreadCategory log = ThreadCategory.getInstance("RTC");
 
     public void init() throws ServletException {
         try {

@@ -40,17 +40,18 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -289,7 +290,7 @@ public final class ThresholdingConfigFactory {
         if (xmlString != null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
-            FileWriter fileWriter = new FileWriter(cfgFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xmlString);
             fileWriter.flush();
             fileWriter.close();
@@ -312,7 +313,7 @@ public final class ThresholdingConfigFactory {
         }
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(ThresholdingConfigFactory.class);
     }
 }

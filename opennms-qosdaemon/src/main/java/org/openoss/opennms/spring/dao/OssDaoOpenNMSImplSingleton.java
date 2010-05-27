@@ -23,12 +23,14 @@
 // See: http://www.fsf.org/copyleft/lesser.html
 //
 
-
-
-
-
 package org.openoss.opennms.spring.dao;
 
+import javax.sql.DataSource;
+
+import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.AssetRecordDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Wrapper class for OssDaoOpenNMSImpl which makes it onto a singleton which can be shared
@@ -36,66 +38,61 @@ package org.openoss.opennms.spring.dao;
  * QoSDrx have different local application contexts but need to share access to the OssDao which provides the 
  * synchronized alarm cache for both applications. 
  * Either Qosd or QoSDrx can initialise the class. The first call to getInstance() causes the class to be created.
- * All subsiquent calls return the same instance.
+ * All subsequent calls return the same instance.
  * 
- * Note it is expected thet the Spring application context has already set up the opennms DAO's before the first 
+ * Note it is expected that the Spring application context has already set up the opennms DAO's before the first 
  * call to getInstance(). This means that you must ensure that the application contexts for Qosd and QosDrx
  * set the same values for these DAO's otherwise there will be unpredictable results
  */
-public class OssDaoOpenNMSImplSingleton extends OssDaoOpenNMSImpl{
-	private static OssDaoOpenNMSImplSingleton instance = null;
-	
+public class OssDaoOpenNMSImplSingleton {
+	private static AlarmDao alarmDao;
+	private static AssetRecordDao assetRecordDao;
+	private static DataSource dataSource;
+	private static NodeDao nodeDao;
+	private static TransactionTemplate transTemplate;
 
-	private OssDaoOpenNMSImplSingleton() {
-		//		 not used	
-	}
+	private static OssDao instance = null;
 
 	// This will return a single instance of this call (creating one if none exist)
-	public static OssDaoOpenNMSImplSingleton getInstance() {
+	public static OssDao getInstance() {
 		if (instance == null) // test if an instance exists, if so then return it
 		{
-			
 			// Create an instance in a synchronized block to avoid access by multiple threads
 			// (avoids inefficiency of declaring method body synchronized)
-			synchronized(org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton.class)
+			synchronized(OssDaoOpenNMSImplSingleton.class)
 			{
 				// check once again to ensure first check didn't let two threads through at the same time
 				if (instance == null)
-					instance = new OssDaoOpenNMSImplSingleton(); // create the new instance
-				instance.setalarmDao(_alarmDao);
-				instance.setassetRecordDao(_assetRecordDao);
-				instance.setdataSource(_dataSource);
-				instance.setnodeDao(_nodeDao);
+					instance = new OssDaoOpenNMSImpl(); // create the new instance
+				instance.setAlarmDao(alarmDao);
+				instance.setAssetRecordDao(assetRecordDao);
+				instance.setDataSource(dataSource);
+				instance.setNodeDao(nodeDao);
+				// Seth 2010-05-04: This field was being set on the singleton factory,
+				// but not the constructed instances; keeping it that way for now
+				// instance.setTransTemplate(transTemplate);
 			}
 		}
-		return instance; // return the single OssDaoOpenNMSImplSingleton object
+		return instance; // return the single OssDaoOpenNMSImpl object
+	}
+
+	public void setAlarmDao(AlarmDao alarmDao) {
+		OssDaoOpenNMSImplSingleton.alarmDao = alarmDao;
+	}
+
+	public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
+		OssDaoOpenNMSImplSingleton.assetRecordDao = assetRecordDao;
+	}
+
+	public void setDataSource(DataSource dataSource) {
+		OssDaoOpenNMSImplSingleton.dataSource = dataSource;
+	}
+
+	public void setNodeDao(NodeDao nodeDao) {
+		OssDaoOpenNMSImplSingleton.nodeDao = nodeDao;
 	}
 	
-// TODO remove	
-//	/**
-//	 * Initialise the OssDaoOpenNMSImplSingleton object
-//	 */
-//	public static void init(){
-//		// initialisaton methods if needed
-//		// not used	
-//	}
-//	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
+	public void setTransTemplate(TransactionTemplate transTemplate) {
+		OssDaoOpenNMSImplSingleton.transTemplate = transTemplate;
+	}
 }

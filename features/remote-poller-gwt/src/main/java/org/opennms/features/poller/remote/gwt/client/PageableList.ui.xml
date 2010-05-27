@@ -1,0 +1,118 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+        .pagingControls{
+            padding-top: 5px;
+            width: 100%;
+        }
+        
+        .nextBtnLayoutStyle{
+            text-align: right;
+            text-decoration: none;
+        }
+        
+        .prevBtnLayoutStyle{
+            text-align: left;
+            text-decoration: none;
+        }
+        
+        .labelLayoutStyle{
+            text-align: center;
+            width: 100%;
+        }
+        
+        .tableContainer{
+            cursor: pointer;
+            overflow-y: scroll;
+        }
+        
+    </ui:style>
+    
+    <ui:style field="locationDetailStyle" type="org.opennms.features.poller.remote.gwt.client.PageableList.LocationDetailStyle">
+       
+       .detailContainerStyle{
+           position: relative;
+           height: 60px;
+           overflow: hidden;
+        }
+       
+       .iconStyle{
+           position: absolute;
+           left: 0px;
+        }
+       
+       .nameStyle{
+           position: absolute;
+           left: 32px;
+       }
+        
+       .areaStyle{
+            position: absolute;
+            right: 10px;
+       }
+        
+       .statusStyle{
+            position: absolute;
+            top: 20px;
+            left: 32px;
+            right: 0px;
+       }
+       
+       .alternateRowStyle{
+           background: #D5DDF3;
+        }
+       
+    </ui:style>
+    
+    <ui:style field="applicationDetailStyle" type="org.opennms.features.poller.remote.gwt.client.PageableApplicationList.ApplicationDetailStyle">
+
+       .detailContainerStyle{
+           position: relative;
+           height: 60px;
+           overflow: hidden;
+        }
+       
+       .iconStyle{
+           position: absolute;
+           left: 0px;
+        }
+       
+       .nameStyle{
+           position: absolute;
+           left: 32px;
+       }
+        
+       .areaStyle{
+            position: absolute;
+            right: 10px;
+       }
+        
+       .statusStyle{
+            position: absolute;
+            top: 20px;
+            left: 32px;
+            right: 0px;
+       }
+
+       .alternateRowStyle{
+           background: #D5DDF3;
+        }
+       
+    </ui:style>
+    
+	<g:DockLayoutPanel height="100%" width="100%" unit="PX">
+           <g:center>
+             <g:FlowPanel styleName="{style.tableContainer}">
+                <g:FlexTable ui:field="dataList" width="100%" />
+             </g:FlowPanel>
+           </g:center>
+           <g:south size="26">
+             <g:HorizontalPanel ui:field="pagingControls" addStyleNames="{style.pagingControls}">
+               <g:Hyperlink ui:field="prevBtn" addStyleNames="{style.prevBtnLayoutStyle}" text="&laquo; prev" />
+               <g:Label ui:field="pageStatsLabel" addStyleNames="{style.labelLayoutStyle}"/>
+               <g:Hyperlink ui:field="nextBtn" addStyleNames="{style.nextBtnLayoutStyle}" text="next &raquo;" />
+             </g:HorizontalPanel>
+           </g:south>
+       </g:DockLayoutPanel>
+</ui:UiBinder> 

@@ -44,7 +44,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.core.utils.TimeoutTracker;
@@ -289,7 +288,7 @@ public class Ssh extends AbstractPoll {
         return ps;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

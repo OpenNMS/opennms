@@ -48,7 +48,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
@@ -65,7 +64,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class DeleteElementsController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	
@@ -86,52 +85,43 @@ public class DeleteElementsController implements Controller {
 		String elems = request.getParameter("elems");
 		log.debug("Adding elements action:"+action+", elems="+elems );
 		
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
-			if (!request.isUserInRole(org.opennms.web.springframework.security.Authentication.ADMIN_ROLE)) {
-				log.warn(request.getRemoteUser() +": Cannot delete elements because user role is:" + MapsConstants.ROLE_USER);
-				throw new MapsException(request.getRemoteUser() +": Cannot delete elements because user role is:" + MapsConstants.ROLE_USER);
-			}
 			VMap map = manager.openMap();
 			if(log.isDebugEnabled())
 				log.debug("Got map from manager "+map);
 			
-			Integer[] nodeids = null;
-			String type = VElement.NODE_TYPE;
+			Integer[] elemeids = null;
+			String type = MapsConstants.NODE_TYPE;
+
+            String[] mapids = elems.split(",");
+            elemeids = new Integer[mapids.length];
+            for (int i = 0; i<mapids.length;i++) {
+                elemeids[i] = new Integer(mapids[i]);
+            }
 
 			boolean actionfound = false;
 			if (action.equals(MapsConstants.DELETENODES_ACTION)) {
 				actionfound = true;
-				type = VElement.NODE_TYPE;
-				String[] snodeids = elems.split(",");
-				nodeids = new Integer[snodeids.length];
-				for (int i = 0; i<snodeids.length;i++) {
-					nodeids[i] = new Integer(snodeids[i]);
-				}
 			}
 			
 			if (action.equals(MapsConstants.DELETEMAPS_ACTION)) {
 				actionfound = true;
-				type = VElement.MAP_TYPE;
-				String[] snodeids = elems.split(",");
-				nodeids = new Integer[snodeids.length];
-				for (int i = 0; i<snodeids.length;i++) {
-					nodeids[i] = new Integer(snodeids[i]);
-				}
+				type = MapsConstants.MAP_TYPE;
 			}
 			
-			List<VElement> velems = new ArrayList<VElement>();
-			if (actionfound) {
-				
-				for (int i = 0; i < nodeids.length; i++) {
-					int elemId = nodeids[i].intValue();
+			List<String> velemsids = new ArrayList<String>();
+			if (actionfound) {				
+				for (int i = 0; i < elemeids.length; i++) {
+					int elemId = elemeids[i].intValue();
 					if (map.containsElement(elemId, type)){
 						map.removeLinksOnElementList(elemId,type);
-						velems.add(map.removeElement(elemId,type));
+						VElement ve = map.removeElement(elemId,type);
+						velemsids.add(ve.getId()+ve.getType());
 					}
 				}
 			} 
-			bw.write(ResponseAssembler.getDeleteElementsResponse(action, velems));
+			bw.write(ResponseAssembler.getDeleteElementsResponse(velemsids));
 		} catch (Exception e) {
 			log.error("Error while adding nodes for action: "+action,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(action));

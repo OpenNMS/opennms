@@ -51,7 +51,6 @@ import java.text.ParseException;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventdConstants;
@@ -76,9 +75,9 @@ import org.springframework.util.Assert;
  * Values for the ' <parms>' block are loaded with each parm name and parm value
  * delimited with the NAME_VAL_DELIM.
  * 
- * @see org.opennms.netmgt.eventd.db.Constants#MULTIPLE_VAL_DELIM
- * @see org.opennms.netmgt.eventd.db.Constants#DB_ATTRIB_DELIM
- * @see org.opennms.netmgt.eventd.db.Constants#NAME_VAL_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#MULTIPLE_VAL_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#DB_ATTRIB_DELIM
+ * @see org.opennms.netmgt.model.events.Constants#NAME_VAL_DELIM
  * 
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  * @author Sowmya Nataraj </A>
@@ -282,7 +281,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
         return new JdbcTemplate(getDataSource()).queryForInt(getGetNextIdString());
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

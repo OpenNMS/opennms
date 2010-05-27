@@ -82,7 +82,7 @@
   <jsp:param name="breadcrumb" value="Commands" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
     function next() 
     {
@@ -91,7 +91,7 @@
 
 </script>
 
-<h3><%=(pathName!=null ? "Editing path " + pathName + "<br>" : "")%></h3>
+<h3><%=(pathName!=null ? "Editing path " + pathName + "<br/>" : "")%></h3>
 
 <h3>Step 4: Add escalations to the path.</h3>
 

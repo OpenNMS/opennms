@@ -39,10 +39,11 @@ package org.opennms.reporting.availability.render;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 
@@ -54,18 +55,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.avalon.framework.logger.Log4JLogger;
-import org.apache.avalon.framework.logger.Logger;
-import org.apache.avalon.framework.logger.NullLogger;
-import org.apache.fop.apps.Driver;
-import org.apache.fop.messaging.MessageHandler;
-import org.apache.log4j.Category;
+import org.apache.fop.apps.FOPException;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.MimeConstants;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.Resource;
 
 /**
- * PDFReportRenderer will transform its input.xml into pdf using the supplied
- * xslt resource. 
+ * PDFReportRenderer will transform its input XML into PDF using the supplied
+ * XSLT resource. 
  * 
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  */
@@ -81,189 +80,153 @@ public class PDFReportRenderer implements ReportRenderer {
     private Resource m_xsltResource;
 
     private String m_baseDir;
-    
-    private Category log;
-    
-    private Logger avalonLogger;
-    
+
+    private ThreadCategory log;
+
     public PDFReportRenderer() {
-        
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(PDFReportRenderer.class);
-        avalonLogger = new Log4JLogger(log);
-        
     }
+
     public void render() throws ReportRenderException {
         render(m_inputFileName, m_outputFileName, m_xsltResource);
     }
-    
+
     public byte[] render(String inputFileName, Resource xsltResource) throws ReportRenderException {
-        
+
+        if (log.isDebugEnabled())
+            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to byte array");
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        
-        try {
+        this.render(inputFileName, outputStream, xsltResource);
 
-            log.debug("XSL File " + xsltResource.getDescription());
-
-            Reader xsl = new FileReader(xsltResource.getFile());
-
-            log.debug("file to render" + inputFileName);
-
-            Reader xml = new FileReader(inputFileName);
-
-            Logger nullLogger = new NullLogger();
-            MessageHandler.setScreenLogger(nullLogger);
-            MessageHandler.setOutputMethod(MessageHandler.NONE);
-
-            Driver driver = new Driver();
-            driver.setLogger(avalonLogger);
-            driver.setOutputStream(outputStream);
-            driver.setRenderer(Driver.RENDER_PDF);
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer transformer = tfact.newTransformer(new StreamSource(
-                                                                            xsl));
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(new StreamSource(xml),
-                                  new SAXResult(driver.getContentHandler()));
-
-        } catch (IOException ioe) {
-            log.fatal("IOException ", ioe);
-            throw new ReportRenderException(ioe);
-        } catch (TransformerConfigurationException tce) {
-            log.fatal("transformerConfigurationException ", tce);
-            throw new ReportRenderException(tce);
-        } catch (TransformerException te) {
-            log.fatal("TransformerException ", te);
-            throw new ReportRenderException(te);
-        }
-        
         return outputStream.toByteArray();
     }
-    
+
     public void render(String inputFileName, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
+        if (log.isDebugEnabled())
+            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to OutputStream");
+
+        FileInputStream in = null, xslt = null;
         try {
+            in = new FileInputStream(xsltResource.getFile());
+            Reader xsl = new InputStreamReader(in, "UTF-8");
+            xslt = new FileInputStream(inputFileName);
+            Reader xml = new InputStreamReader(xslt, "UTF-8");
 
-            log.debug("XSL File " + xsltResource.getDescription());
-
-            Reader xsl = new FileReader(xsltResource.getFile());
-
-            log.debug("file to render" + inputFileName);
-
-            Reader xml = new FileReader(inputFileName);
-
-            Logger nullLogger = new NullLogger();
-            MessageHandler.setScreenLogger(nullLogger);
-            MessageHandler.setOutputMethod(MessageHandler.NONE);
-
-            Driver driver = new Driver();
-            driver.setLogger(avalonLogger);
-            driver.setOutputStream(outputStream);
-            driver.setRenderer(Driver.RENDER_PDF);
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer transformer = tfact.newTransformer(new StreamSource(
-                                                                            xsl));
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(new StreamSource(xml),
-                                  new SAXResult(driver.getContentHandler()));
-
+            this.render(xml, outputStream, xsl);
         } catch (IOException ioe) {
             log.fatal("IOException ", ioe);
             throw new ReportRenderException(ioe);
-        } catch (TransformerConfigurationException tce) {
-            log.fatal("transformerConfigurationException ", tce);
-            throw new ReportRenderException(tce);
-        } catch (TransformerException te) {
-            log.fatal("TransformerException ", te);
-            throw new ReportRenderException(te);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XML stream: " + e.getMessage());
+                }
+            }
+            if (xslt != null) {
+                try {
+                    xslt.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                }
+            }
         }
-        
     }
-    
+
     public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
+        if (log.isDebugEnabled())
+            log.debug("Rendering InputStream with XSL File " + xsltResource.getDescription() + " to OutputStream");
+
+        FileInputStream xslt = null;
         try {
+            xslt = new FileInputStream(xsltResource.getFile());
+            Reader xsl = new InputStreamReader(xslt, "UTF-8");
+            Reader xml = new InputStreamReader(inputStream, "UTF-8");
 
-            log.debug("XSL File " + xsltResource.getDescription());
-
-            Reader xsl = new FileReader(xsltResource.getFile());
-            
-            log.debug("rendering input stream");
-
-            Logger nullLogger = new NullLogger();
-            MessageHandler.setScreenLogger(nullLogger);
-            MessageHandler.setOutputMethod(MessageHandler.NONE);
-
-            Driver driver = new Driver();
-            driver.setLogger(avalonLogger);
-            driver.setOutputStream(outputStream);
-            driver.setRenderer(Driver.RENDER_PDF);
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer transformer = tfact.newTransformer(new StreamSource(
-                                                                            xsl));
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(new StreamSource(inputStream),
-                                  new SAXResult(driver.getContentHandler()));
-
+            this.render(xml, outputStream, xsl);
         } catch (IOException ioe) {
             log.fatal("IOException ", ioe);
             throw new ReportRenderException(ioe);
-        } catch (TransformerConfigurationException tce) {
-            log.fatal("transformerConfigurationException ", tce);
-            throw new ReportRenderException(tce);
-        } catch (TransformerException te) {
-            log.fatal("TransformerException ", te);
-            throw new ReportRenderException(te);
+        } finally {
+            if (xslt != null) {
+                try {
+                    xslt.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                }
+            }
         }
-        
     }
 
     public void render(String inputFileName, String outputFileName, Resource xsltResource) throws ReportRenderException {
+        if (log.isDebugEnabled())
+            log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to " + outputFileName + " with base directory of " + m_baseDir);
 
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(PDFReportRenderer.class);
-        Logger avalonLogger = new Log4JLogger(log);
-
+        FileInputStream in = null, xslt = null;
+        FileOutputStream out = null;
         try {
 
-            log.debug("XSL File " + xsltResource.getDescription());
+            xslt = new FileInputStream(xsltResource.getFile());
+            Reader xsl = new InputStreamReader(xslt, "UTF-8");
+            in = new FileInputStream(m_baseDir + "/" + inputFileName);
+            Reader xml = new InputStreamReader(in, "UTF-8");
 
-            Reader xsl = new FileReader(xsltResource.getFile());
+            out = new FileOutputStream(new File(m_baseDir + "/" + outputFileName));
             
-            log.debug("Base directory " + m_baseDir);
-
-            log.debug("file to render" + inputFileName);
-
-            Reader xml = new FileReader(m_baseDir + "/" + inputFileName);
-
-            log.debug("ouput File " + outputFileName);
-
-            FileOutputStream pdfOutputStream = new FileOutputStream(
-                                                                    new File(m_baseDir + "/" +
-                                                                             outputFileName));
-
-            Logger nullLogger = new NullLogger();
-            MessageHandler.setScreenLogger(nullLogger);
-            MessageHandler.setOutputMethod(MessageHandler.NONE);
-
-            Driver driver = new Driver();
-            driver.setLogger(avalonLogger);
-            driver.setOutputStream(pdfOutputStream);
-            driver.setRenderer(Driver.RENDER_PDF);
-            TransformerFactory tfact = TransformerFactory.newInstance();
-            Transformer transformer = tfact.newTransformer(new StreamSource(
-                                                                            xsl));
-            transformer.transform(new StreamSource(xml),
-                                  new SAXResult(driver.getContentHandler()));
-            pdfOutputStream.close();
+            this.render(xml, out, xsl);
 
         } catch (IOException ioe) {
             log.fatal("IOException ", ioe);
             throw new ReportRenderException(ioe);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XML stream: " + e.getMessage());
+                }
+            }
+            if (xslt != null) {
+                try {
+                    xslt.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing XSLT stream: " + e.getMessage());
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing PDF stream: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void render(Reader in, OutputStream out, Reader xslt) throws ReportRenderException {
+        try {
+
+            FopFactory fopFactory = FopFactory.newInstance();
+            fopFactory.setStrictValidation(false);
+            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out);
+
+            TransformerFactory tfact = TransformerFactory.newInstance();
+            Transformer transformer = tfact.newTransformer(new StreamSource(xslt));
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.transform(new StreamSource(in), new SAXResult(fop.getDefaultHandler()));
+
         } catch (TransformerConfigurationException tce) {
-            log.fatal("transformerConfigurationException ", tce);
+            log.fatal("TransformerConfigurationException", tce);
             throw new ReportRenderException(tce);
         } catch (TransformerException te) {
-            log.fatal("TransformerException ", te);
+            log.fatal("TransformerException", te);
             throw new ReportRenderException(te);
+        } catch (FOPException e) {
+            log.fatal("FOPException", e);
+            throw new ReportRenderException(e);
         }
     }
 
@@ -274,24 +237,20 @@ public class PDFReportRenderer implements ReportRenderer {
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
-    
+
     public String getOutputFileName() {
-       return m_outputFileName;
+        return m_outputFileName;
     }
 
     public void setInputFileName(String inputFileName) {
         this.m_inputFileName = inputFileName;
-
     }
-    
+
     public void setBaseDir(String baseDir) {
         this.m_baseDir = baseDir;
-
     }
-    
+
     public String getBaseDir() {
         return m_baseDir;
-
     }
-
 }

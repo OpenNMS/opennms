@@ -53,7 +53,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -83,7 +82,6 @@ import org.opennms.netmgt.xml.event.Value;
 // Improvements most likely are to be made.
 final class ConvertToEvent {
 
-    private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
     protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
     /**
@@ -170,10 +168,8 @@ final class ConvertToEvent {
         e.m_ackEvents = new ArrayList<Event>(16);
         e.m_log = null;
 
-        String m_logPrefix = Syslogd.LOG4J_CATEGORY;
-        ThreadCategory.setPrefix(m_logPrefix);
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory.setPrefix(Syslogd.LOG4J_CATEGORY);
+        ThreadCategory log = ThreadCategory.getInstance();
 
         if (log.isDebugEnabled())
             log.debug("In the make part of UdpReceivedSyslog " + e.toString());
@@ -270,10 +266,10 @@ final class ConvertToEvent {
         boolean traceEnabled = log.isEnabledFor(Level.TRACE);
 
         if (traceEnabled) {
-            log.log(Level.TRACE, "Message : " + message);
-            log.log(Level.TRACE, "Pattern : " + matchPattern);
-            log.log(Level.TRACE, "Host group: " + hostGroup);
-            log.log(Level.TRACE, "Message group: " + messageGroup);
+            log.trace("Message : " + message);
+            log.trace("Pattern : " + matchPattern);
+            log.trace("Host group: " + hostGroup);
+            log.trace("Message group: " + messageGroup);
         }
 
         // We will also here find out if, the host needs to
@@ -299,9 +295,9 @@ final class ConvertToEvent {
         if (m.matches()) {
 
             if (traceEnabled) {
-                log.log(Level.TRACE, "Regexp matched message: " + message);
-                log.log(Level.TRACE, "Host: " + m.group(hostGroup));
-                log.log(Level.TRACE, "Message: " + m.group(messageGroup));
+                log.trace("Regexp matched message: " + message);
+                log.trace("Host: " + m.group(hostGroup));
+                log.trace("Message: " + m.group(messageGroup));
             }
 
             // We will try to extract an IP address from a hostname.....
@@ -333,7 +329,7 @@ final class ConvertToEvent {
                 event.setInterface(myHost.replaceAll("/", ""));
                 message = m.group(messageGroup);
                 if (traceEnabled) {
-                    log.log(Level.TRACE, "Regexp used to find node: " + event.getNodeid());
+                    log.trace("Regexp used to find node: " + event.getNodeid());
                 }
             }
         } else {
@@ -354,18 +350,18 @@ final class ConvertToEvent {
         for (UeiMatch uei : ueiList.getUeiMatchCollection()) {
             if (uei.getMatch().getType().equals("substr")) {
                 if (traceEnabled) {
-                    log.log(Level.TRACE, "Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+                    log.trace("Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
                 }
             	if (message.contains(uei.getMatch().getExpression())) {
             	    if (discardUei.equals(uei.getUei())) {
             	        if (traceEnabled) {
-            	            log.log(Level.TRACE, "Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
+            	            log.trace("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
             	            throw new MessageDiscardedException();
             	        }
             	    }
                     //We can pass a new UEI on this
             	    if (traceEnabled) {
-            	        log.log(Level.TRACE, "Changed the UEI of a Syslogd event, based on substring match, to :" + uei.getUei());
+            	        log.trace("Changed the UEI of a Syslogd event, based on substring match, to :" + uei.getUei());
             	    }
                     event.setUei(uei.getUei());
                     // I think we want to stop processing here so the first
@@ -374,7 +370,7 @@ final class ConvertToEvent {
                 }
             } else if (uei.getMatch().getType().equals("regex")) {
                 if (traceEnabled) {
-                    log.log(Level.TRACE, "Attempting regex match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+                    log.trace("Attempting regex match for text of a Syslogd event to :" + uei.getMatch().getExpression());
                 }
                 try {
             		msgPat = Pattern.compile(uei.getMatch().getExpression(), Pattern.MULTILINE);
@@ -393,13 +389,13 @@ final class ConvertToEvent {
 
                     // We matched a UEI
                     if (traceEnabled) {
-                        log.log(Level.TRACE, "Changed the UEI of a Syslogd event, based on regex match, to :" + uei.getUei());
+                        log.trace("Changed the UEI of a Syslogd event, based on regex match, to :" + uei.getUei());
                     }
                     event.setUei(uei.getUei());
             		if (msgMat.groupCount() > 0) {
             			for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
             			    if (traceEnabled) {
-            			        log.log(Level.TRACE, "Added parm 'group"+groupNum+"' with value '"+msgMat.group(groupNum)+"' to Syslogd event based on regex match group");
+            			        log.trace("Added parm 'group"+groupNum+"' with value '"+msgMat.group(groupNum)+"' to Syslogd event based on regex match group");
             			    }
             				eventParm = new Parm();
             				eventParm.setParmName("group"+groupNum);

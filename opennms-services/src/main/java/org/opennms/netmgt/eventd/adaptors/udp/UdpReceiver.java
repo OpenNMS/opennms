@@ -45,7 +45,6 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -206,7 +205,7 @@ class UdpReceiver implements Runnable {
         m_logPrefix = prefix;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

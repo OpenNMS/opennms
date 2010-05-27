@@ -84,13 +84,13 @@ public class MockPollerConfigTest extends TestCase {
         assertTrue(m_pollerConfig.nodeOutageProcessingEnabled());
 
         // test to ensure that the poller has packages
-        Enumeration pkgs = m_pollerConfig.enumeratePackage();
+        Enumeration<Package> pkgs = m_pollerConfig.enumeratePackage();
         assertNotNull(pkgs);
         int pkgCount = 0;
         Package pkg = null;
 
         while (pkgs.hasMoreElements()) {
-            pkg = (Package) pkgs.nextElement();
+            pkg = pkgs.nextElement();
             pkgCount++;
         }
         assertTrue(pkgCount > 0);
@@ -99,14 +99,14 @@ public class MockPollerConfigTest extends TestCase {
         assertTrue(m_pollerConfig.interfaceInPackage("192.168.1.1", pkg));
         assertFalse(m_pollerConfig.interfaceInPackage("192.168.1.7", pkg));
 
-        Enumeration svcs = pkg.enumerateService();
+        Enumeration<Service> svcs = pkg.enumerateService();
         assertNotNull(svcs);
         
         int svcCount = 0;
         boolean icmpFound = false;
         boolean httpFound = false;
         while (svcs.hasMoreElements()) {
-            Service svc = (Service) svcs.nextElement();
+            Service svc = svcs.nextElement();
             svcCount++;
             if ("ICMP".equals(svc.getName())) {
                 icmpFound = true;

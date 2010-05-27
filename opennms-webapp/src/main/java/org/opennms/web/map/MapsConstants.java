@@ -42,24 +42,32 @@ package org.opennms.web.map;
  * This class contains some constants for Maps application
  *
  */
-public final class MapsConstants extends JSTLConstants{
-    private static final long serialVersionUID = 1L;
+public final class MapsConstants {
 
     public static final String LOG4J_CATEGORY = "OpenNMS.Map";
 	
+    // map default ids
 	public static final int MAP_NOT_OPENED = -1;
 	
 	public static final int NEW_MAP = -2;
 	
+    public static final int SEARCH_MAP = -3;
+
+    public static final String NEW_MAP_NAME = "NewMap";
+    
+    public static final String SEARCH_MAP_NAME = "SearchMap";
+
+    // map types
 	public static final String NODE_TYPE = "N";
 	
 	public static final String MAP_TYPE= "M";
 	
-	public static final String DEFAULT_BACKGROUND_COLOR = "ffffff";
+    public static final String NODE_HIDE_TYPE = "H";
+    
+    public static final String MAP_HIDE_TYPE= "W";
 
-	// load infos
-	
-	public static final String MAPS_STARTUP_ACTION = "StartUp";
+	// actions	
+	public static final String MAPS_STARTUP_ACTION = "MapStartUp";
 	
 	public static final String LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
 	
@@ -67,33 +75,31 @@ public final class MapsConstants extends JSTLConstants{
 	
 	public static final String LOADNODES_ACTION = "LoadNodes";
 
-	public static final String LOADMAPINFO_ACTION = "LoadMapInfo";
+	public static final String LOADLABELMAP_ACTION = "LoadLabelMap";
 	
-	//map action
-	
-	public static final String NEWMAP_ACTION = "NewMap";
+	public static final String NEWMAP_ACTION = "admin/NewMap";
 
 	public static final String OPENMAP_ACTION = "OpenMap";
 	
 	public static final String CLOSEMAP_ACTION = "CloseMap";
 	
-	public static final String SAVEMAP_ACTION = "SaveMap";
+	public static final String SAVEMAP_ACTION = "admin/SaveMap";
 	
-	public static final String DELETEMAP_ACTION = "DeleteMap";	
+	public static final String DELETEMAP_ACTION = "admin/DeleteMap";	
 
-	public static final String CLEAR_ACTION = "Clear";
+	public static final String CLEAR_ACTION = "admin/ClearMap";
 
 	public static final String RELOAD_ACTION = "Reload";
 
 	public static final String REFRESH_ACTION = "Refresh";
 	
-	// element action (a map should be opened )
-	
 	public static final String ADDRANGE_ACTION = "AddRange";
 	
-	public static final String ADDNODES_ACTION = "AddNodes";
+	public static final String ADDNODES_ACTION = "admin/AddNodes";
 
-	public static final String ADDMAPS_ACTION = "AddMaps";
+	public static final String ADDMAPS_ACTION = "admin/AddMaps";
+	
+	public static final String SEARCHMAPS_ACTION = "SearchMap";
 
 	public static final String ADDNODES_BY_CATEGORY_ACTION = "AddNodesByCategory";
 	
@@ -101,46 +107,44 @@ public final class MapsConstants extends JSTLConstants{
 	
 	public static final String ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
 
-	public static final String ADDMAPS_WITH_NEIG_ACTION = "AddMapsWithNeig";
-
 	public static final String ADDNODES_NEIG_ACTION = "AddNodesNeig";
 
-	public static final String ADDMAPS_NEIG_ACTION = "AddMapsNeig";
+    public static final String DELETEELEMENT_ACTION = "admin/DeleteElements";
 
 	public static final String DELETENODES_ACTION = "DeleteNodes";
 
 	public static final String DELETEMAPS_ACTION = "DeleteMaps";
 	
-	// action mode
-	public static final String SWITCH_MODE_ACTION = "SwitchMode";
-	
-	// map roles
-	public static final String ROLE_USER = "RO";
+	public static final String SWITCH_MODE_ACTION = "admin/SwitchRole";
+		
+    public static final String RELOAD_CONFIG_ACTION = "admin/ReloadConfig";
+    // map types
+	public static final String USER_GENERATED_MAP = "U";
 
-	public static final String ROLE_ADMIN = "RW";
-	
-	
+    public static final String AUTOMATICALLY_GENERATED_MAP = "A";
+    
+    public static final String AUTOMATIC_SAVED_MAP = "S";
 
-	/**
-	 * setting value to have no refresh
-	 */
-	
-	public static final int NO_REFRESH_TIME=-1;
-	
-	/**
-	 * setting value to have continous refresh
-	 */
-	
-	public static final int AUTO_REFRESH_TIME=0;
-	
-	
+    // map access 
+    public static final String ACCESS_MODE_ADMIN = "RW";
+
+    public static final String ACCESS_MODE_USER = "RO";
+    
+    public static final String ACCESS_MODE_GROUP = "RWRO";
+		
+	// COLOR_SEMAPHORE
 	public static final String COLOR_SEMAPHORE_BY_SEVERITY = "S";
 	
 	public static final String COLOR_SEMAPHORE_BY_STATUS = "T";
 	
-	public static final String COLOR_SEMAPHORE_BY_AVAILABILITY = "A";
+	public static final String COLOR_SEMAPHORE_BY_AVAILABILITY = "A";	
 	
-	
+	//Failed Map String
+	public static final String failed_string = "Failed";
+
+   //Success Map String
+    public static final String success_string = "OK";
+
 	public MapsConstants() {
 		super();
 	}

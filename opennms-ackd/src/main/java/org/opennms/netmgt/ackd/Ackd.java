@@ -53,7 +53,6 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventSubscriptionService;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -66,13 +65,12 @@ import org.springframework.beans.factory.DisposableBean;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
-@EventListener(name="Ackd")
+@EventListener(name=Ackd.NAME)
 public class Ackd implements SpringServiceDaemon, DisposableBean {
     
-	private static final String NAME = "Ackd";
+	public static final String NAME = "Ackd";
 	private volatile AckdConfigurationDao m_configDao;
 
-    private volatile EventSubscriptionService m_eventSubscriptionService;
 	private volatile EventForwarder m_eventForwarder;
 	
     private volatile ScheduledThreadPoolExecutor m_executor;
@@ -336,7 +334,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         }
     }
 
-    private Logger log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getName());
     }
 
@@ -354,14 +352,6 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
-    }
-
-    public EventSubscriptionService getEventSubscriptionService() {
-        return m_eventSubscriptionService;
-    }
-
-    public void setEventSubscriptionService(EventSubscriptionService eventManager) {
-        m_eventSubscriptionService = eventManager;
     }
 
     protected List<AckReader> getAckReaders() {

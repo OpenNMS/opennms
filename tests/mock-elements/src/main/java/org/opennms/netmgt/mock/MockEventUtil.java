@@ -48,12 +48,11 @@ import java.util.Map;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockUtil;
 
 /**
@@ -62,25 +61,7 @@ import org.opennms.test.mock.MockUtil;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class MockEventUtil {
-    public static void addEventParm(Event event, String parmName, int parmValue) {
-        addEventParm(event, parmName, String.valueOf(parmValue));
-    }
-
-    public static void addEventParm(Event event, String parmName, String parmValue) {
-        Parms parms = event.getParms();
-        if (parms == null) {
-            parms = new Parms();
-            event.setParms(parms);
-        }
-        Parm parm = new Parm();
-        parm.setParmName(parmName);
-        Value value = new Value();
-        value.setContent(parmValue);
-        parm.setValue(value);
-        parms.addParm(parm);
-    }
-    
+public abstract class MockEventUtil {
     public static Event createNodeLostServiceEvent(String source, MockService svc, String reason) {
         return createServiceEvent(source, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc, reason);
     }
@@ -94,19 +75,22 @@ public class MockEventUtil {
     }
     
     public static Event createServiceUnresponsiveEvent(String source, MockService svc, String reason) {
-        return createServiceEvent(source, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc, reason);
+        return createServiceUnresponsiveEventBuilder(source, svc, reason).getEvent();
     }
-
+    
+    public static EventBuilder createServiceUnresponsiveEventBuilder(String source, MockService svc, String reason) {
+        return createServiceEventBuilder(source, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc, reason);
+    }
+    
     public static Event createServiceResponsiveEvent(String source, MockService svc) {
         return createServiceEvent(source, EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, svc, null);
     }
     
     public static Event createDemandPollServiceEvent(String source, MockService svc, int demandPollId) {
-        Event event = createServiceEvent(source, EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, svc, null);
-        addEventParm(event, EventConstants.PARM_DEMAND_POLL_ID, demandPollId);
-        return event;
+        EventBuilder event = createServiceEventBuilder(source, EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, svc, null);
+        event.addParam(EventConstants.PARM_DEMAND_POLL_ID, demandPollId);
+        return event.getEvent();
     }
-
     
     public static Event createNodeGainedServiceEvent(String source, MockService svc) {
         return createServiceEvent(source, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc, null);
@@ -125,7 +109,11 @@ public class MockEventUtil {
     }
     
     public static Event createServiceEvent(String source, String uei, MockService svc, String reason) {
-        return createEvent(source, uei, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), reason);
+        return createServiceEventBuilder(source, uei, svc, reason).getEvent();
+    }
+    
+    public static EventBuilder createServiceEventBuilder(String source, String uei, MockService svc, String reason) {
+        return createEventBuilder(source, uei, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), reason);
     }
     
     public static Event createInterfaceDownEvent(String source, MockInterface iface) {
@@ -145,11 +133,19 @@ public class MockEventUtil {
     }
     
     public static Event createInterfaceEvent(String source, String uei, MockInterface iface) {
-        return createEvent(source, uei, iface.getNodeId(), iface.getIpAddr(), null, null);
+        return createInterfaceEventBuilder(source, uei, iface).getEvent();
+    }
+    
+    public static EventBuilder createInterfaceEventBuilder(String source, String uei, MockInterface iface) {
+        return createEventBuilder(source, uei, iface.getNodeId(), iface.getIpAddr(), null, null);
     }
     
     public static Event createNodeDownEvent(String source, MockNode node) {
-        Event event = createNodeEvent(source, EventConstants.NODE_DOWN_EVENT_UEI, node);
+        return createNodeDownEventBuilder(source, node).getEvent();
+    }
+    
+    public static EventBuilder createNodeDownEventBuilder(String source, MockNode node) {
+        EventBuilder event = createNodeEventBuilder(source, EventConstants.NODE_DOWN_EVENT_UEI, node);
         event.setSeverity(OnmsSeverity.MAJOR.getLabel());
         // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false" />
         AlarmData alarmData = new AlarmData();
@@ -173,7 +169,7 @@ public class MockEventUtil {
     }
     
     public static Event createNodeUpEvent(String source, MockNode node) {
-        Event event = createNodeEvent(source, EventConstants.NODE_UP_EVENT_UEI, node);
+        EventBuilder event = createNodeEventBuilder(source, EventConstants.NODE_UP_EVENT_UEI, node);
         event.setSeverity(OnmsSeverity.NORMAL.getLabel());
         // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" auto-clean="false" />
         AlarmData alarmData = new AlarmData();
@@ -182,38 +178,41 @@ public class MockEventUtil {
         alarmData.setClearKey("uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%");
         alarmData.setAutoClean(false);
         event.setAlarmData(alarmData);
-        return event;
+        return event.getEvent();
     }
     
     public static Event createNodeAddedEvent(String source, MockNode node) {
-        return createNodeEvent(source, EventConstants.NODE_ADDED_EVENT_UEI, node);
+        return createNodeEventBuilder(source, EventConstants.NODE_ADDED_EVENT_UEI, node).getEvent();
     }
     
     public static Event createNodeDeletedEvent(String source, MockNode node) {
-        return createNodeEvent(source, EventConstants.NODE_DELETED_EVENT_UEI, node);
+        return createNodeEventBuilder(source, EventConstants.NODE_DELETED_EVENT_UEI, node).getEvent();
     }
     
     public static Event createNodeEvent(String source, String uei, MockNode node) {
-        return createEvent(source, uei, node.getNodeId(), null, null, null);
+        return createNodeEventBuilder(source, uei, node).getEvent();
+    }
+    
+    public static EventBuilder createNodeEventBuilder(String source, String uei, MockNode node) {
+        return createEventBuilder(source, uei, node.getNodeId(), null, null, null);
     }
     
     public static Event createNodeEventWithReason(String source, String uei, MockNode node, String reason) {
-        return createEvent(source, uei, node.getNodeId(), null, null, reason);
+        return createEventBuilder(source, uei, node.getNodeId(), null, null, reason).getEvent();
     }
     
-    public static Event createNewSuspectEvent(String source, String uei, String ipAddr) {
-        Event event = createEvent(source, uei);
-        
+    public static EventBuilder createNewSuspectEventBuilder(String source, String uei, String ipAddr) {
+        EventBuilder event = createEventBuilder(source, uei);
         event.setInterface(ipAddr);
         return event;
     }
     
     public static Event createBgpBkTnEvent(String source, MockNode node, String ipAddr, int peerState) {
-        Event event = createEvent(source, "http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition", node.getNodeId(), null, null, null);
+        EventBuilder event = createEventBuilder(source, "http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition", node.getNodeId(), null, null, null);
         
         event.setInterface("1.2.3.4");
-        addEventParm(event, ".1.3.6.1.2.1.15.3.1.7." + ipAddr, peerState);
-        return event;
+        event.addParam(".1.3.6.1.2.1.15.3.1.7." + ipAddr, peerState);
+        return event.getEvent();
     }
     
     public static void setEventTime(Event event, Date date) {
@@ -221,41 +220,36 @@ public class MockEventUtil {
     }
     
     public static Event createEvent(String source, String uei, int nodeId, String ipAddr, String svcName, String reason) {
+        return createEventBuilder(source, uei, nodeId, ipAddr, svcName, reason).getEvent();
+    }
+    
+    public static EventBuilder createEventBuilder(String source, String uei, int nodeId, String ipAddr, String svcName, String reason) {
         
-        Event event = createEvent(source, uei);
+        EventBuilder event = createEventBuilder(source, uei);
         event.setNodeid(nodeId);
         event.setInterface(ipAddr);
         event.setService(svcName);
         
         if (reason != null) {
-            Parms eventParms = new Parms();
-            Parm eventParm = new Parm();
-            Value parmValue = new Value();
-            eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
-            parmValue.setContent(reason);
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-            event.setParms(eventParms);
+            event.addParam(EventConstants.PARM_LOSTSERVICE_REASON, reason);
         }
         return event;
     }
 
-    public static Event createEvent(String source, String uei) {
-        Event event = new Event();
-        event.setSource(source);
-        event.setUei(uei);
-        String eventTime = EventConstants.formatToString(new Date());
-        event.setCreationTime(eventTime);
-        event.setTime(eventTime);
-        return event;
+    public static EventBuilder createEventBuilder(String source, String uei) {
+        EventBuilder builder = new EventBuilder(uei, source);
+        Date currentTime = new Date();
+        builder.setCreationTime(currentTime);
+        builder.setTime(currentTime);
+        return builder;
     }
 
     public static Event createReparentEvent(String source, String ipAddr, int oldNode, int newNode) {
-        Event event = createEvent(source, EventConstants.INTERFACE_REPARENTED_EVENT_UEI, oldNode, ipAddr, null, null);
+        EventBuilder event = createEventBuilder(source, EventConstants.INTERFACE_REPARENTED_EVENT_UEI, oldNode, ipAddr, null, null);
         
-        addEventParm(event, EventConstants.PARM_OLD_NODEID, oldNode);
-        addEventParm(event, EventConstants.PARM_NEW_NODEID, newNode);
-        return event;
+        event.addParam(EventConstants.PARM_OLD_NODEID, oldNode);
+        event.addParam(EventConstants.PARM_NEW_NODEID, newNode);
+        return event.getEvent();
     }
     
     public static Timestamp convertEventTimeIntoTimestamp(String eventTime) {
@@ -364,7 +358,4 @@ public class MockEventUtil {
             printEvent(prefix, event);
         }
     }
-
-
-
 }

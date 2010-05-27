@@ -34,6 +34,7 @@
  */
 package org.opennms.web.map.db;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -56,41 +57,8 @@ public abstract class Manager {
 		
 	}
 	
-	//public abstract void finalize() throws MapsException;
-
-	/*
-	 * All your operations on Maps must be preceeded from a startSession() call 
-	 * and termined by an endSession() call. 
-	 * @throws MapsException
-	 */
-	//public abstract void startSession() throws MapsException;
-
-	//public abstract void endSession() throws MapsException;
-
-	public boolean isInitialized() {
-		return initialized;
-	}
-
-	//public abstract boolean isStartedSession() throws MapsException ;
-
-	public abstract void saveMaps(Map[] m) throws MapsException;
+	public abstract int saveMap(DbMap m, Collection<DbElement> e) throws MapsException ;
 	
-	public abstract void saveMap(Map m) throws MapsException ;
-	
-	public abstract void saveElements(Element[] e) throws MapsException;
-
-	public abstract void saveElement(Element e) throws MapsException;
-
-	public abstract void deleteElements(Element[] elems) throws MapsException;
-
-	public abstract void deleteElement(Element e) throws MapsException;
-
-	public abstract void deleteElement(int id, int mapid, String type)throws MapsException;
-
-	public abstract void deleteElementsOfMap(int id) throws MapsException;
-
-	public abstract int deleteMap(Map m) throws MapsException;
-
 	/**
 	 * delete the map with id in input
 	 * @param id
@@ -104,19 +72,19 @@ public abstract class Manager {
 	public abstract void deleteMapTypeElementsFromAllMaps() throws MapsException ;
 	
 
-	public abstract Element getElement(int id, int mapId, String type) throws MapsException ;
+	public abstract DbElement getElement(int id, int mapId, String type) throws MapsException ;
 
-	public abstract Element newElement(int id, int mapId, String type) throws MapsException ;
+	public abstract DbElement newElement(int id, int mapId, String type) throws MapsException ;
 
-    public abstract Element[] getAllElements() throws MapsException ;
+    public abstract DbElement[] getAllElements() throws MapsException ;
 
-	public abstract Element[] getElementsOfMap(int mapid) throws MapsException ;
+	public abstract DbElement[] getElementsOfMap(int mapid) throws MapsException ;
 	  
-	public abstract Element[] getNodeElementsOfMap(int mapid) throws MapsException ;
+	public abstract DbElement[] getNodeElementsOfMap(int mapid) throws MapsException ;
 
-	public abstract Element[] getMapElementsOfMap(int mapid) throws MapsException ;
+	public abstract DbElement[] getMapElementsOfMap(int mapid) throws MapsException ;
 
-	public abstract Element[] getElementsLike(String elementLabel) throws MapsException ;
+	public abstract DbElement[] getElementsLike(String elementLabel) throws MapsException ;
 
 
 	/**
@@ -128,18 +96,17 @@ public abstract class Manager {
 
     public abstract int countMaps(int mapId) throws MapsException ;
 
-	public abstract Map getMap(int id) throws MapsException ;
+	public abstract DbMap getMap(int id) throws MapsException ;
 
-	public abstract Map[] getMaps(String mapname, String maptype) throws MapsException ;
+	public abstract DbMap[] getMaps(String mapname, String maptype) throws MapsException ;
 
-	public abstract Map[] getAllMaps() throws MapsException ;
+	public abstract DbMap[] getAllMaps() throws MapsException ;
 
-    public abstract Map[] getMapsLike(String mapLabel) throws MapsException ;
+    public abstract DbMap[] getMapsLike(String mapLabel) throws MapsException ;
 	  
-    public abstract Map[] getMapsByName(String mapLabel) throws MapsException ;
+    public abstract DbMap[] getMapsByName(String mapLabel) throws MapsException ;
 
-	public abstract Map[] getContainerMaps(int id, String type) throws MapsException ;
-	
+	public abstract DbMap[] getContainerMaps(int id, String type) throws MapsException ;
 	
 	public abstract VMapInfo[] getAllMapMenus() throws MapsException ;
 	  
@@ -158,19 +125,17 @@ public abstract class Manager {
 	public abstract boolean isElementNotDeleted(int elementId, String type) throws MapsException;
 	  
 
-	public abstract VElementInfo[] getAllElementInfo() throws MapsException ;
+	public abstract Vector<VElementInfo> getAllElementInfo() throws MapsException ;
 	
-	public abstract VElementInfo[] getElementInfoLike(String like) throws MapsException;
+	public abstract Vector<VElementInfo> getElementInfoLike(String like) throws MapsException;
 
 	public abstract List<VElementInfo> getAlarmedElements() throws MapsException;
 
 	public abstract Vector<Integer> getDeletedNodes() throws MapsException;
 
-	public abstract java.util.Map<Integer,Double> getAvails(Element[] mapElements)throws MapsException;
-	
-	//public abstract String getNodeLabel(int id) throws MapsException;	
-	
-	public abstract Set<Integer> getNodeidsOnElement(Element elem) throws MapsException;
+	public abstract java.util.Map<Integer,Double> getAvails(DbElement[] mapElements)throws MapsException;
+		
+	public abstract Set<Integer> getNodeidsOnElement(DbElement elem) throws MapsException;
 	
 	public abstract Set<Integer> getNodeIdsBySource(String query)throws MapsException;
 	

@@ -1,8 +1,10 @@
 package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -10,7 +12,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -71,10 +72,10 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         foreignSource.updateDateStamp();
         
         File outputFile = new File(ConfigFileConstants.getFilePathString() + "default-foreign-source.xml");
-        FileWriter writer = null;
+        Writer writer = null;
         try {
             foreignSource.updateDateStamp();
-            writer = new FileWriter(outputFile);
+            writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
         } catch (Exception e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
@@ -94,7 +95,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     }
 
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(AbstractForeignSourceRepository.class);
     }
 

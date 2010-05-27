@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
@@ -171,6 +170,9 @@ final class PollerEventProcessor implements EventListener {
         
         // demand poll
         ueiList.add(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI);
+        
+        // update threshold configuration
+        ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 
         // Subscribe to eventd
         getEventManager().addEventListener(this, ueiList);
@@ -188,7 +190,7 @@ final class PollerEventProcessor implements EventListener {
      * 
      */
     private void nodeGainedServiceHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Is this the result of a resumePollingService event?
         @SuppressWarnings("unused")
@@ -229,7 +231,7 @@ final class PollerEventProcessor implements EventListener {
      * 
      */
     private void interfaceReparentedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
 
@@ -313,7 +315,7 @@ final class PollerEventProcessor implements EventListener {
      * the pollable services list
      */
     private void nodeRemovePollableServiceHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         int nodeId = (int) event.getNodeid();
         String ipAddr = event.getInterface();
@@ -344,7 +346,7 @@ final class PollerEventProcessor implements EventListener {
      * nodeDeleted event from the Poller's pollable node map.
      */
     private void nodeDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         int nodeId = (int) event.getNodeid();
         final String sourceUei = event.getUei();
@@ -407,7 +409,7 @@ final class PollerEventProcessor implements EventListener {
      * 
      */
     private void interfaceDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         int nodeId = (int) event.getNodeid();
         String sourceUei = event.getUei();
@@ -483,7 +485,7 @@ final class PollerEventProcessor implements EventListener {
      * </p>
      */
     private void serviceDeletedHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         int nodeId = (int) event.getNodeid();
         String ipAddr = event.getInterface();
@@ -528,7 +530,7 @@ final class PollerEventProcessor implements EventListener {
 
         createMessageSelectorAndSubscribe();
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("Subscribed to eventd");
 
@@ -560,7 +562,7 @@ final class PollerEventProcessor implements EventListener {
         if (event == null)
             return;
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // print out the uei
         //
@@ -649,7 +651,7 @@ final class PollerEventProcessor implements EventListener {
     	m_demandPollDao.get(EventUtils.getIntParm(e, EventConstants.PARM_DEMAND_POLL_ID, -1));
     }
 
-    private void scheduledOutagesChangeHandler(Category log) {
+    private void scheduledOutagesChangeHandler(ThreadCategory log) {
         try {
             getPollerConfig().update();
             getPoller().getPollOutagesConfig().update();
@@ -660,15 +662,7 @@ final class PollerEventProcessor implements EventListener {
         getPoller().refreshServicePackages();
     }
     
-    private void thresholdsConfigChangeHandler(Category log) {
-        // FIXME Is this really necessary ?
-        try {
-            ThresholdingConfigFactory.reload();
-            ThreshdConfigFactory.reload();
-        } catch (Exception e) {
-            log.error("thresholdsConfigChangeHandler: Failed to reload threshold configuration because "+e.getMessage(), e);
-            return;
-        }
+    private void thresholdsConfigChangeHandler(ThreadCategory log) {
         getPoller().refreshServiceThresholds();
     }
 

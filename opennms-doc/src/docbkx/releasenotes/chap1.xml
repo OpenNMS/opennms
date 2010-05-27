@@ -4,6 +4,38 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.7.91">
+		<title>Release 1.7.91</title>
+
+		<para>
+			Release 1.7.91 is the second release candidate in the 1.8 series.  It
+			represents what will eventually become OpenNMS 1.8.0 when it is declared stable.
+		</para>
+		<para>
+			Since 1.7.90, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.7.91">more bugfixing</ulink>
+			has been going on in preparation for the 1.8 release.
+		</para>
+		<para>
+			The codename for 1.7.91 is <emphasis>JFGI</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.7.90">
+		<title>Release 1.7.90</title>
+
+		<para>
+			Release 1.7.90 is the first release candidate in the 1.8 series.  It
+			represents what will eventually become OpenNMS 1.8.0 when it is declared stable.
+		</para>
+		<para>
+			Since 1.7.10, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.7.90">more bugfixing and feature work</ulink>
+			has been going on in preparation for the 1.8 release.
+		</para>
+		<para>
+			The codename for 1.7.90 is <emphasis>Born Slippy</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.7.10">
 		<title>Release 1.7.10</title>
 

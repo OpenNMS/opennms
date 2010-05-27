@@ -49,13 +49,14 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -110,14 +111,14 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);
-            FileWriter fileWriter = new FileWriter(cfgFile);
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

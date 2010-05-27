@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.apache.log4j.Category;
+import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.core.utils.ThreadCategory;
@@ -59,6 +59,17 @@ public class DefaultReportStoreService implements ReportStoreService {
     private ReportCatalogDao m_reportCatalogDao;
     private ReportServiceLocator m_reportServiceLocator;
     private DatabaseReportConfigDao m_databaseReportConfigDao;
+    
+    private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    
+    private ThreadCategory log;
+    
+    public DefaultReportStoreService () {
+        
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        log = ThreadCategory.getInstance(DefaultReportStoreService.class);
+    
+    }
 
     public void delete(Integer[] ids) {
         for (Integer id : ids) {
@@ -100,10 +111,14 @@ public class DefaultReportStoreService implements ReportStoreService {
         String reportServiceName = m_databaseReportConfigDao.getReportService(catalogEntry.getReportId());
         ReportService reportService = m_reportServiceLocator.getReportService(reportServiceName);
         log().debug("attempting to rended the report as " + format.toString() + " using " + reportServiceName );
-        reportService.render(catalogEntry.getReportId(), catalogEntry.getLocation(), format, outputStream);
+        try {
+            reportService.render(catalogEntry.getReportId(), catalogEntry.getLocation(), format, outputStream);
+        } catch (ReportException e) {
+            log.error("unable to render report", e);
+        }
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

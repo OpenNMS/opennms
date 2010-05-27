@@ -71,7 +71,7 @@
 <script type="text/javascript" src="js/KSCIndexView.js" ></script>
 
 <!-- A script for validating Node ID Selection Form before submittal -->
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
   function validateNode()
   {
       var isChecked = false
@@ -129,7 +129,7 @@
 
 
 <%-- A script for validating Custom Report Form before submittal --%>
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
   function validateReport()
   {
       var isChecked = false
@@ -187,7 +187,7 @@
 
   <div class="boxWrapper">
   <p>Choose the custom report title to view or modify from the list below. There are ${fn:length(reports)} custom reports to select from.</p>
-	<script language="Javascript" type="text/javascript">
+	<script type="text/javascript">
 		var customData = {total:"${fn:length(reports)}", records:[
 											<c:set var="first" value="true"/>
 											<c:forEach var="report" items="${reports}">
@@ -206,7 +206,12 @@
 				                             ]};
 		
 		Ext.onReady(function(){
-			customizedReportsInitView("custom-resources", customData, "KSC/formProcMain.htm?report_action={action}");
+			// IE likes page-relative links, everything else does base-HREF-relative links
+			if (Ext.isIE) {
+				customizedReportsInitView("custom-resources", customData, "formProcMain.htm?report_action={action}");
+			} else {
+				customizedReportsInitView("custom-resources", customData, "KSC/formProcMain.htm?report_action={action}");
+			}
 		})
 	</script>
 	<div id="custom-resources"></div>
@@ -217,7 +222,7 @@
 <div class="boxWrapper">
       <p>Select node for desired performance report</p>
       <c:set var="totalNodeResources" value="${fn:length(nodeResources)}"/>
-      <script language="Javascript" type="text/javascript">
+      <script type="text/javascript">
       	var nodeData = {total:"${totalNodeResources}", records:[
 												<c:set var="first" value="true"/>
 												<c:forEach var="resource" items="${nodeResources}">
@@ -235,7 +240,12 @@
 												</c:forEach>
       	                                  	]};
         	Ext.onReady(function(){
-        		nodeSNMPReportsInitView("snmp-reports", nodeData, "KSC/customView.htm?type={type}&report={id}")
+				// IE likes page-relative links, everything else does base-HREF-relative links
+				if (Ext.isIE) {
+					nodeSNMPReportsInitView("snmp-reports", nodeData, "customView.htm?type={type}&report={id}")
+				} else {
+					nodeSNMPReportsInitView("snmp-reports", nodeData, "KSC/customView.htm?type={type}&report={id}")
+				}
             });
       </script>
       <div id="snmp-reports"></div>
@@ -250,7 +260,7 @@
 
         <c:otherwise>
           <p>Select domain for desired performance report</p>
-          <script>
+          <script type="text/javascript">
           		var domainData = {total:"${fn:length(domainResources)}", records:[
 														<c:set var="first" value="true"/>
 														<c:forEach var="resource" items="${domainResources}">
@@ -268,9 +278,16 @@
 														</c:forEach>	
           		                                		]}
           </script>
-          <script language="Javascript" type="text/javascript">
+          <script type="text/javascript">
           	Ext.onReady(function(){
-          		//domainGridInitView("domain-reports", domainData, "KSC/customView.htm");
+				/*
+				// IE likes page-relative links, everything else does base-HREF-relative links
+				if (Ext.isIE) {
+					domainGridInitView("domain-reports", domainData, "customView.htm");
+				} else {
+					domainGridInitView("domain-reports", domainData, "KSC/customView.htm");
+				}
+				*/
             });
           </script>
           <div id="domain-reports"></div>

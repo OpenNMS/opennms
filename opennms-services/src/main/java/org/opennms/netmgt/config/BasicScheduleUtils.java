@@ -40,7 +40,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
@@ -55,7 +54,7 @@ public class BasicScheduleUtils {
     public static String FORMAT2 = "HH:mm:ss";
 
     public static boolean isTimeInSchedule(Calendar cal, BasicSchedule sched) {
-        Category log = ThreadCategory.getInstance(BasicScheduleUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(BasicScheduleUtils.class);
         
         if (log.isDebugEnabled())
             log.debug("isTimeInOutage: checking for time '" + cal.getTime() + "' in schedule '" + sched.getName() + "'");

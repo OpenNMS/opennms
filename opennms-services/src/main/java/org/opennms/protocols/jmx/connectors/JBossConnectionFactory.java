@@ -39,7 +39,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.jmx.MBeanServerProxy;
@@ -59,7 +58,7 @@ import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextC
  */
 public class JBossConnectionFactory {
     
-    static Category log = ThreadCategory.getInstance(JBossConnectionFactory.class);
+    static ThreadCategory log = ThreadCategory.getInstance(JBossConnectionFactory.class);
     static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
     /* (non-Javadoc)
@@ -121,7 +120,7 @@ public class JBossConnectionFactory {
 
             try {
                 
-                Hashtable props = new Hashtable();
+                Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.NamingContextFactory");
                 props.put(Context.PROVIDER_URL,            "jnp://" + address.getHostAddress() + ":" + port);
                 props.put(Context.URL_PKG_PREFIXES,        "org.jboss.naming:org.jnp.interfaces" );
@@ -150,7 +149,7 @@ public class JBossConnectionFactory {
 
             try {
                 
-                Hashtable props = new Hashtable();
+                Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.HttpNamingContextFactory");
                 props.put(Context.PROVIDER_URL,            "http://" + address.getHostAddress() + ":" + port + "/invoker/JNDIFactory");
                 props.put("jnp.sotimeout",                 timeout );

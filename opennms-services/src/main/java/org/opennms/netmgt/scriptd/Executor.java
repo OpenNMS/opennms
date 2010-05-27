@@ -39,6 +39,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.bsf.BSFException;
+import org.apache.bsf.BSFManager;
 import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
@@ -55,9 +57,6 @@ import org.opennms.netmgt.config.scriptd.Uei;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Script;
-
-import org.apache.bsf.BSFException;
-import org.apache.bsf.BSFManager;
 
 /**
  * This class is used as a thread for launching scripts to handle received
@@ -175,7 +174,7 @@ final class Executor implements Runnable, PausableFiber {
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(Executor.class);
+        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         synchronized (this) {
             m_status = RUNNING;
@@ -357,7 +356,7 @@ final class Executor implements Runnable, PausableFiber {
      * 
      */
     public synchronized void start() {
-        Category log = ThreadCategory.getInstance(Executor.class);
+        ThreadCategory log = ThreadCategory.getInstance(Executor.class);
 
         if (m_worker != null) {
             throw new IllegalStateException("The fiber has already been run");

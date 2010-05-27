@@ -28,9 +28,13 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
+ * This {@link TestExecutionListener} looks for the {@link JUnitSnmpAgent} annotation
+ * and uses attributes on it to launch a mock SNMP agent for use during unit testing.
+ * 
  * @author brozow
  */
 public class JUnitSnmpAgentExecutionListener extends

@@ -82,7 +82,7 @@
   <jsp:param name="breadcrumb" value="Validate Rule" />
 </jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
   
   function next()
   {
@@ -98,7 +98,7 @@
   
 </script>
 
-<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
 
 <h3>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
           'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
@@ -109,8 +109,8 @@
           <td align="left"> <%=newRule%>
           </td>
       </table>
-      <br>
-      <form METHOD="POST" NAME="addresses" ACTION="admin/notification/noticeWizard/notificationWizard">
+      <br/>
+      <form method="post" name="addresses" action="admin/notification/noticeWizard/notificationWizard">
         <%=Util.makeHiddenTags(request)%>
         <input type="hidden" name="userAction" value=""/>
         <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE%>"/>
@@ -128,8 +128,8 @@
         <table width="100%" cellspacing="2" cellpadding="2" border="0">
          <tr> 
           <td>
-           <a HREF="javascript:rebuild()">&#060;&#060;&#060; Rebuild</a>&nbsp;&nbsp;&nbsp;
-           <a HREF="javascript:next()">Next &#062;&#062;&#062;</a>
+           <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;
+           <a HREF="javascript:next()">Next &#155;&#155;&#155;</a>
           </td>
         </tr>
         </table>
@@ -145,6 +145,9 @@
           //Filter filter = new Filter();
           //return filter.getIPServiceMap(rule);
           
+          // TODO: BUG 2009: Also list node names for each IP address that is selected by the
+          // filter?
+          
           Map<String, Set<String>> interfaces = FilterDaoFactory.getInstance().getIPServiceMap(rule);
           
           for (String key : interfaces.keySet()) {
@@ -153,7 +156,7 @@
               
               if (serviceList.length!=0 || notServiceList.length!=0) {
                   for (String service : interfaces.get(key)) { 
-                      buffer.append(service).append("<br>");
+                      buffer.append(service).append("<br/>");
                   }
               } else {
                   buffer.append("All services");

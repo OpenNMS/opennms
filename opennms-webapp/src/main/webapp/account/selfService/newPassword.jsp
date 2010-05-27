@@ -50,7 +50,7 @@
   <jsp:param name="breadcrumb" value="Change Password" />
 </jsp:include>
 
-<script language="JavaScript">
+<script type="text/javascript">
   function verifyGoForm() 
   {
     if (document.goForm.pass1.value == document.goForm.pass2.value) 
@@ -111,7 +111,7 @@
       <input type="submit" value="OK"/>
     </td>
     <td>
-      <input type="button" value="Cancel" onClick="window.location='account/selfService/index.jsp'"/>
+      <a href="account/selfService/index.jsp">Cancel</a>
     </tr>
 </table>
 </form>

@@ -49,7 +49,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
@@ -172,7 +171,7 @@ class NessusScan implements Runnable {
     /**
      * List of the open vulnerabilities on an IP address
      */
-    private Set openVulnerabilities = new HashSet();
+    private Set<Integer> openVulnerabilities = new HashSet<Integer>();
 
     /**
      * Array that holds the plugin lists for each scanning level.
@@ -227,10 +226,10 @@ class NessusScan implements Runnable {
     }
 
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Queue of the lines that are read from the Nessus socket
-        FifoQueue lines = null;
+        FifoQueue<String> lines = null;
         // Flag that lets us know if we've found what we're looking for
         boolean found = false;
         // DB connection; is connected and disconnected as necessary
@@ -479,7 +478,7 @@ class NessusScan implements Runnable {
 
                     Timestamp currentTime = new Timestamp(new java.util.Date().getTime());
 
-                    Iterator vuln = openVulnerabilities.iterator();
+                    Iterator<Integer> vuln = openVulnerabilities.iterator();
                     while (vuln.hasNext()) {
                         stmt.setTimestamp(1, currentTime);
 
@@ -511,11 +510,11 @@ class NessusScan implements Runnable {
 
             log.debug("Sent STOP_WHOLE_TEST directive against target " + config.targetAddress.toString());
         } catch (FifoQueueException ex) {
-            log.warn(ex, ex);
+            log.warn(ex.getMessage(), ex);
         } catch (InterruptedException ex) {
-            log.warn(ex, ex);
+            log.warn(ex.getMessage(), ex);
         } catch (IOException ex) {
-            log.warn(ex, ex);
+            log.warn(ex.getMessage(), ex);
         } finally {
             log.info("Releasing Nessus socket connection");
             if (nessusSocket != null) {
@@ -573,7 +572,7 @@ class NessusScan implements Runnable {
      * 
      */
     private int processScanMessage(String message) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         int vulnerabilityId = -1;
 
@@ -1026,13 +1025,13 @@ class NessusScan implements Runnable {
         }
     }
 
-    public FifoQueue readLines(InputStream in) {
-        Category log = ThreadCategory.getInstance(getClass());
+    public FifoQueue<String> readLines(InputStream in) {
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         String EOL = "\n";
 
         String alreadyRecdData = null;
 
-        FifoQueue retval = new FifoQueueImpl();
+        FifoQueue<String> retval = new FifoQueueImpl<String>();
 
         ByteArrayOutputStream xmlStr = new ByteArrayOutputStream();
         int bytesInThisRead = 0;
@@ -1109,11 +1108,11 @@ class NessusScan implements Runnable {
                     break;
                 }
             } catch (FifoQueueException ex) {
-                log.warn(ex);
+                log.warn(ex.getMessage());
             } catch (InterruptedException ex) {
-                log.warn(ex);
+                log.warn(ex.getMessage());
             } catch (IOException e) {
-                log.warn(e);
+                log.warn(e.getMessage());
             }
         }
         return retval;

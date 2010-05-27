@@ -57,11 +57,13 @@
 
 	<include file="repair-sequences.xml" />
 
-	<changeSet id="grant-permissions" author="rangerrick" runOnChange="true" runAlways="true" context="production">
+	<!--
+	<changeSet id="grant-permissions" author="rangerrick" runOnChange="true" runAlways="true" context="grant">
 		<preConditions>
 			<dbms type="postgresql" />
 		</preConditions>
 		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>
 	</changeSet>
+	-->
 
 </databaseChangeLog>

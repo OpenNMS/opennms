@@ -34,14 +34,7 @@
 
 package org.opennms.netmgt.dhcpd.jmx;
 
-public interface DhcpdMBean {
-    void start();
+import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
-    void stop();
-
-    int getStatus();
-
-    String getStatusText();
-
-    String status();
+public interface DhcpdMBean extends BaseOnmsMBean {
 }

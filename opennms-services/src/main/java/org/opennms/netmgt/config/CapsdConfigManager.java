@@ -55,7 +55,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -356,7 +355,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     
             // check to see if the file exists
             if (file != null) {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(file));
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(file, "UTF-8"));
     
                 String ipLine = null;
                 String specIP = null;
@@ -649,7 +648,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         return protocols;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

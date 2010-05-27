@@ -108,7 +108,7 @@ final public class SshMonitor extends IPv4Monitor {
             try {
                 ps = ssh.poll(tracker);
             } catch (InsufficientParametersException e) {
-                log().error(e);
+                log().error(e.getMessage());
                 break;
             }
 

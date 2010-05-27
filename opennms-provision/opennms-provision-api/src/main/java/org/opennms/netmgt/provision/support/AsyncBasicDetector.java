@@ -283,7 +283,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     }
     
     private void info(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args));
         }

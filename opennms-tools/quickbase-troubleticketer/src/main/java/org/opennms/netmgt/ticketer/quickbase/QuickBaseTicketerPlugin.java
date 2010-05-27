@@ -52,7 +52,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.api.integration.ticketing.Plugin;
@@ -133,7 +132,7 @@ public class QuickBaseTicketerPlugin implements Plugin {
      * Convenience logging.
      * @return a log4j Category for this class
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -245,7 +244,7 @@ public class QuickBaseTicketerPlugin implements Plugin {
             super(username, password, url);
         }
         
-        public HashMap getRecordInfo(String dbid, String rid) throws QuickBaseException, Exception {
+        public HashMap<String,String> getRecordInfo(String dbid, String rid) throws QuickBaseException, Exception {
             Document qdbRequest = newXmlDocument();
             addRequestParameter(qdbRequest, "rid", rid);
             
@@ -254,7 +253,7 @@ public class QuickBaseTicketerPlugin implements Plugin {
             NodeList records = getNodeList(qdbResponse, "field");
             if (records == null) return null;
             
-            HashMap record = new HashMap(0);
+            HashMap<String,String> record = new HashMap<String,String>(0);
             for (int recordCounter = 0; recordCounter < records.getLength(); recordCounter++){
                 Element field = (Element)records.item(recordCounter);
                 String id = field.getElementsByTagName("fid").item(0).getChildNodes().item(0).getNodeValue();

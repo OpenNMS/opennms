@@ -61,8 +61,8 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.OutageAnticipator;
-import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
@@ -376,7 +376,7 @@ public class EventTranslatorTest {
 	}
 
     private Event createEventWithParms(String uei, Parms parms) {
-		Event e = MockEventUtil.createEvent("Automation", uei);
+		Event e = MockEventUtil.createEventBuilder("Automation", uei).getEvent();
 		e.setHost("localhost");
         
         e.setParms(parms);

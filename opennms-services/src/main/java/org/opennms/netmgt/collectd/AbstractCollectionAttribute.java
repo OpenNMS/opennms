@@ -35,11 +35,10 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public abstract class AbstractCollectionAttribute implements  CollectionAttribute {
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

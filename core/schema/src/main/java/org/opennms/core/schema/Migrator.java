@@ -21,14 +21,13 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.log.LogFactory;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
 public class Migrator {
     public static final float POSTGRES_MIN_VERSION = 7.3f;
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.5f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.1f;
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
@@ -283,8 +282,9 @@ public class Migrator {
         liquibase.setChangeLogParameterValue("install.database.admin.password", migration.getAdminPassword());
         liquibase.setChangeLogParameterValue("install.database.user", migration.getDatabaseUser());
 
+        final String contexts = System.getProperty("opennms.contexts", "production");
         try {
-            liquibase.update("");
+            liquibase.update(contexts);
         } catch (Exception e) {
             cleanUpDatabase(connection, null, null);
             throw new MigrationException("unable to update the database", e);
@@ -298,7 +298,7 @@ public class Migrator {
         List<URL> urls = new ArrayList<URL>();
         try {
             if (changeLog.exists()) {
-                urls.add(changeLog.getParentFile().toURL());
+                urls.add(changeLog.getParentFile().toURI().toURL());
             }
         } catch (MalformedURLException e) {
             log().warn("unable to figure out URL for " + migration.getChangeLog(), e);
@@ -331,7 +331,7 @@ public class Migrator {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(Migrator.class);
     }
 

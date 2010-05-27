@@ -48,7 +48,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 
 
 /**
@@ -99,7 +98,7 @@ public class IpListFromUrl extends Object {
 
             // check to see if the file exists
             if (file != null) {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(file));
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(file, "UTF-8"));
 
                 String ipLine = null;
                 String specIP = null;
@@ -140,7 +139,7 @@ public class IpListFromUrl extends Object {
         return iplist;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(IpListFromUrl.class);
     }
 }

@@ -12,19 +12,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.eventd.db.Constants;
-import org.opennms.netmgt.eventd.db.Parameter;
+import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -86,7 +85,7 @@ class InsSession extends InsAbstractSession {
 	}
 
 	public void run() {
-        Category log = getLog();
+        ThreadCategory log = getLog();
 		input = "";
 
 		try {
@@ -189,7 +188,7 @@ class InsSession extends InsAbstractSession {
 	}
 
 	private StringWriter getOutput() {
-        Category log = getLog();
+        ThreadCategory log = getLog();
         log.debug("Sending alarms to the client");
         StringWriter sw = new StringWriter();
         List<Event> events = getEvents();
@@ -214,7 +213,7 @@ class InsSession extends InsAbstractSession {
 	}
 
 	private Event getXMLEvent(OnmsEvent ev) {
-        Category log = getLog();
+        ThreadCategory log = getLog();
         log.info("Working on XML Event for id: " + ev.getId()); 
         log.debug("Setting Event id: " + ev.getId()); 
         Event e = new Event();
@@ -308,18 +307,9 @@ class InsSession extends InsAbstractSession {
             log.info("No Event severity found.");
         }
 
-          if (ev.getIfIndex() != null) {
+          if (ev.getIfIndex() != null && ev.getIfIndex() > 0 ) {
               e.setIfIndex(ev.getIfIndex());
               e.setIfAlias(getIfAlias(ev.getNode().getId(),ev.getIfIndex()));
-          } else if (ev.getIpAddr() != null && !ev.getIpAddr().equals("0.0.0.0")) {
-              OnmsSnmpInterface iface = getIfAlias(ev.getNode().getId(), ev.getIpAddr());
-              if (iface != null) {
-                  e.setIfIndex(iface.getIfIndex());
-                  e.setIfAlias(iface.getIfAlias());
-              } else {
-                  e.setIfIndex(-1);
-                  e.setIfAlias("-1");
-              }
           } else {
               e.setIfIndex(-1);
               e.setIfAlias("-1");
@@ -370,8 +360,9 @@ class InsSession extends InsAbstractSession {
         return e;
     }
 	
-	private void getEventsByCriteria() {
-        Category log = getLog();
+	@SuppressWarnings("unchecked")
+    private void getEventsByCriteria() {
+        ThreadCategory log = getLog();
         log.debug("Entering getEventsByCriteria.....");
         log.debug("clearing events");
         clearEvents();
@@ -381,7 +372,7 @@ class InsSession extends InsAbstractSession {
         try {
                 transTemplate.execute(new TransactionCallback() {
                 public Object doInTransaction(final TransactionStatus status) {
-                    Category log = getLog();
+                    ThreadCategory log = getLog();
                     log.debug("entering transaction call back: selection with criteria: " + criteriaRestriction);
                     final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
                     criteria.add(Restrictions.sqlRestriction(criteriaRestriction));

@@ -33,7 +33,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -78,7 +77,7 @@ public class CiscoVlanTable extends SnmpTable<CiscoVlanTableEntry> {
     }
 
 
-    protected final Category log() {
+    protected final ThreadCategory log() {
         return ThreadCategory.getInstance(CiscoVlanTable.class);
     }
 }

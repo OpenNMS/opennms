@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>dependencies</artifactId>
+    <version>1.9.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>servlet-dependencies</artifactId>
+  <packaging>jar</packaging>
+  <name>OpenNMS Servlet Dependencies</name>
+  <description>
+    This module is used to provide a single artifact that the opennms project
+    can depend on to use servlets
+  </description>
+  <properties>
+    <servletVersion>2.2</servletVersion>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>${servletVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>el-impl</artifactId>
+      <version>${servletVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>jsp-impl</artifactId>
+      <version>${servletVersion}</version>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
+  </repositories>
+</project>

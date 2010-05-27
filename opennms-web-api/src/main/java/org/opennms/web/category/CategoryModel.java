@@ -55,6 +55,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 
@@ -83,7 +84,7 @@ public class CategoryModel extends Object {
     private CatFactory m_factory = null;
 
     /** The Log4J category for logging status and debug messages. */
-    private org.apache.log4j.Category m_log = org.opennms.core.utils.ThreadCategory.getInstance("RTC");
+    private ThreadCategory m_log = org.opennms.core.utils.ThreadCategory.getInstance("RTC");
 
     /**
      * Create the instance of the CategoryModel.

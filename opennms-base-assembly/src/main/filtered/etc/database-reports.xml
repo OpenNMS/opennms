@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database-reports
-	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
-	<report id="defaultCalendarReport" display-name="default calendar report"
-		report-service="availabilityReportService" description="standard opennms report in calendar format" />
-	<report id="defaultClassicReport" display-name="default classic report"
-		report-service="availabilityReportService" description="standard opennms report in tabular format" />
+        xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-database-reports">
+        <report id="defaultCalendarReport" display-name="default calendar report"
+                report-service="availabilityReportService" description="standard opennms report in calendar format" />
+        <report id="defaultClassicReport" display-name="default classic report"
+                report-service="availabilityReportService" description="standard opennms report in tabular format" />
+        <report id="sample-report" display-name="sample JasperReport" online="true"
+                report-service="jasperReportService" description="sample Jasper report using jdbc datasource" />
+        <report id="trivial-report" display-name="trivial JasperReport" online="true"
+                report-service="jasperReportService" description="trivial Jasper report using null datasource" />
+        <report id="Early-Morning-Report" display-name="Early morning report" online="true" 
+                report-service="jasperReportService" description="Global overview of outages, notifications and events in last 24 hours" />
 </database-reports>

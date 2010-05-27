@@ -32,6 +32,8 @@
 package org.opennms.netmgt.provision.service;
 
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.utils.ThreadCategory;
@@ -64,6 +65,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -92,6 +94,8 @@ import org.springframework.util.Assert;
  */
 @Service
 public class DefaultProvisionService implements ProvisionService {
+    
+    private final static String FOREIGN_SOURCE_FOR_DISCOVERED_NODES = null;
     
     /**
      * ServiceTypeFulfiller
@@ -143,6 +147,10 @@ public class DefaultProvisionService implements ProvisionService {
     
     private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
+    
+    public boolean isDiscoveryEnabled() {
+        return System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true");
+    }
 
     @Transactional
     public void insertNode(OnmsNode node) {
@@ -200,6 +208,7 @@ public class DefaultProvisionService implements ProvisionService {
         }
         
         OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, scannedIface.getIpAddress());
+        debug("Updating interface attributes for %s for node %d with ip %s", dbIface, nodeId, scannedIface.getIpAddress());
         if (dbIface != null) {
             if(dbIface.isManaged() && !scannedIface.isManaged()){
                 Set<OnmsMonitoredService> monSvcs = dbIface.getMonitoredServices();
@@ -213,6 +222,7 @@ public class DefaultProvisionService implements ProvisionService {
             dbIface.mergeInterfaceAttributes(scannedIface);
             info("Updating IpInterface %s", dbIface);
             m_ipInterfaceDao.update(dbIface);
+            m_ipInterfaceDao.flush();
             return dbIface;
         } else {
             OnmsNode dbNode = m_nodeDao.load(nodeId);
@@ -223,6 +233,7 @@ public class DefaultProvisionService implements ProvisionService {
             saveOrUpdate(scannedIface);
             AddEventVisitor visitor = new AddEventVisitor(m_eventForwarder);
             scannedIface.visit(visitor);
+            m_ipInterfaceDao.flush();
             return scannedIface;
         }
 
@@ -437,7 +448,7 @@ public class DefaultProvisionService implements ProvisionService {
         return category;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     
@@ -520,32 +531,33 @@ public class DefaultProvisionService implements ProvisionService {
     
     private NodeScanSchedule createScheduleForNode(OnmsNode node, boolean force) {
         Assert.notNull(node, "Node may not be null");
-        if (node.getForeignSource() == null) {
-            info("Not scheduling node %s to be scanned since it has a null foreignSource", node);
+        String actualForeignSource = node.getForeignSource();
+        if (actualForeignSource == null && !isDiscoveryEnabled()) {
+            info("Not scheduling node %s to be scanned since it has a null foreignSource and handling of discovered nodes is disabled in provisiond", node);
             return null;
         }
 
-        ForeignSource fs = null;
+        String effectiveForeignSource = actualForeignSource == null ? "default" : actualForeignSource;
         try {
-            fs = m_foreignSourceRepository.getForeignSource(node.getForeignSource());
+            ForeignSource fs = m_foreignSourceRepository.getForeignSource(effectiveForeignSource);
+
+            Duration scanInterval = fs.getScanInterval();
+            Duration initialDelay = Duration.ZERO;
+            if (node.getLastCapsdPoll() != null && !force) {
+                DateTime nextPoll = new DateTime(node.getLastCapsdPoll().getTime()).plus(scanInterval);
+                DateTime now = new DateTime();
+                if (nextPoll.isAfter(now)) {
+                    initialDelay = new Duration(now, nextPoll);
+                }
+            }
+
+            NodeScanSchedule nSchedule = new NodeScanSchedule(node.getId(), effectiveForeignSource, node.getForeignId(), initialDelay, scanInterval);
+
+            return nSchedule;
         } catch (ForeignSourceRepositoryException e) {
-            log().warn(String.format("unable to get foreign source '%s' from repository", node.getForeignSource()), e);
+            log().warn(String.format("unable to get foreign source '%s' from repository", effectiveForeignSource), e);
             return null;
         }
-
-        Duration scanInterval = fs.getScanInterval();
-        Duration initialDelay = Duration.ZERO;
-        if (node.getLastCapsdPoll() != null && !force) {
-            DateTime nextPoll = new DateTime(node.getLastCapsdPoll().getTime()).plus(scanInterval);
-            DateTime now = new DateTime();
-            if (nextPoll.isAfter(now)) {
-                initialDelay = new Duration(now, nextPoll);
-            }
-        }
-        
-        NodeScanSchedule nSchedule = new NodeScanSchedule(node.getId(), node.getForeignSource(), node.getForeignId(), initialDelay, scanInterval);
-        
-        return nSchedule;
     }
 
     public void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository) {
@@ -570,12 +582,7 @@ public class DefaultProvisionService implements ProvisionService {
      * @see org.opennms.netmgt.provision.service.ProvisionService#updateNodeInfo(org.opennms.netmgt.model.OnmsNode)
      */
     public OnmsNode updateNodeAttributes(OnmsNode node) {
-        OnmsNode dbNode;
-        if (node.getId() != null) {
-            dbNode = m_nodeDao.get(node.getId());
-        } else {
-            dbNode = m_nodeDao.findByForeignId(node.getForeignSource(), node.getForeignId());
-        }
+        OnmsNode dbNode = getDbNode(node);
 
         if (dbNode == null) {
             OnmsDistPoller scannedPoller = node.getDistPoller();
@@ -592,14 +599,26 @@ public class DefaultProvisionService implements ProvisionService {
             
             node.setDistPoller(dbPoller);
             
+            
             return saveOrUpdate(node);
             
             
         } else {
+            
             dbNode.mergeNodeAttributes(node);
             
             return saveOrUpdate(dbNode);
         }
+    }
+
+    private OnmsNode getDbNode(OnmsNode node) {
+        OnmsNode dbNode;
+        if (node.getId() != null) {
+            dbNode = m_nodeDao.get(node.getId());
+        } else {
+            dbNode = m_nodeDao.findByForeignId(node.getForeignSource(), node.getForeignId());
+        }
+        return dbNode;
     }
     
     private OnmsNode saveOrUpdate(OnmsNode node) {
@@ -726,5 +745,95 @@ public class DefaultProvisionService implements ProvisionService {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args));
         }
+    }
+
+    
+    @Transactional
+    public OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress) {
+        OnmsIpInterface svcIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
+        OnmsIpInterface primaryIface = null;
+        if (svcIface.isPrimary()) {
+            primaryIface = svcIface;
+        } 
+        else if (svcIface.getNode().getPrimaryInterface() == null) {
+            svcIface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+            m_ipInterfaceDao.saveOrUpdate(svcIface);
+            primaryIface= svcIface;
+        } else {
+            svcIface.setIsSnmpPrimary(PrimaryType.SECONDARY);
+            m_ipInterfaceDao.saveOrUpdate(svcIface);
+        }
+        
+        m_ipInterfaceDao.initialize(primaryIface);
+        return primaryIface;
+    }
+
+    @Transactional
+    public OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node) {
+        OnmsNode dbNode = getDbNode(node);
+        if (dbNode == null) {
+            return null;
+        }
+        else {
+            OnmsIpInterface primaryIface = dbNode.getPrimaryInterface();
+            if (primaryIface != null) {
+                m_ipInterfaceDao.initialize(primaryIface);
+                m_ipInterfaceDao.initialize(primaryIface.getMonitoredServices());
+            }
+            return primaryIface;
+        }
+    }
+
+    @Transactional
+    public OnmsNode createUndiscoveredNode(String ipAddress) {
+        if (m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress).size() > 0) {
+            return null;
+        }
+        
+        /*
+         * We set the capsd polls to now so since the new suspect scan includes
+         * a regular node scan.  This prevents a simultaneous node scan from being
+         * started when the nodeAdded event comes in but still allows it to be
+         * scheduled for a scan according to the default foreignSource schedule
+         */
+        Date now = new Date();
+        
+        String hostname = getHostnameForIp(ipAddress);
+        
+        OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
+        node.setLabel(hostname == null ? ipAddress : hostname);
+        node.setLabelSource(hostname == null ? "A" : "H");
+        node.setForeignSource(FOREIGN_SOURCE_FOR_DISCOVERED_NODES);
+        node.setType("A");
+        node.setLastCapsdPoll(now);
+        
+        OnmsIpInterface iface = new OnmsIpInterface(ipAddress, node);
+        iface.setIsManaged("M");
+        iface.setIpHostName(hostname);
+        iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);
+        iface.setIpLastCapsdPoll(now);
+        
+        m_nodeDao.save(node);
+        
+        node.visit(new AddEventVisitor(m_eventForwarder));
+        return node;
+        
+    }
+    
+    private String getHostnameForIp(String address) {
+        try {
+            return InetAddress.getByName(address).getCanonicalHostName();
+        } catch (UnknownHostException e) {
+            return null;
+        }
+    }
+
+    @Transactional
+    public OnmsNode getNode(Integer nodeId) {
+        OnmsNode node = m_nodeDao.get(nodeId);
+        m_nodeDao.initialize(node);
+        m_nodeDao.initialize(node.getCategories());
+        m_nodeDao.initialize(node.getIpInterfaces());
+        return node;
     }
 }

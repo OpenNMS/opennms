@@ -36,6 +36,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.opennms.core.utils.LogUtils;
+
 
 public class SimpleConversationEndPoint {
     
@@ -55,7 +57,7 @@ public class SimpleConversationEndPoint {
         public boolean processResponse(BufferedReader in) throws IOException {
             String input = in.readLine();
             
-            System.out.println("SimpleExchange response: " + input);
+            LogUtils.infof(this, "SimpleExchange response: " + input);
             if(input == null) { return false;}
             
             return matchResponseByString(input);

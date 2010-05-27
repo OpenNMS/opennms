@@ -277,7 +277,7 @@ public class PassiveStatusKeeperTest {
     }
 
     private Event createEventWithParms(String uei, Parms parms) {
-		Event e = MockEventUtil.createEvent("Test", uei);
+		Event e = MockEventUtil.createEventBuilder("Test", uei).getEvent();
 		e.setHost("localhost");
         
         e.setParms(parms);

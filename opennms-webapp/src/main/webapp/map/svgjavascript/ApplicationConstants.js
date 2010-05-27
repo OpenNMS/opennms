@@ -1,94 +1,65 @@
-// IMAGES FOLDERS
-var IMAGES_FOLDER = "images";
-var IMAGES_BACKGROUND_FOLDER = IMAGES_FOLDER+"/background/";
-var IMAGES_ELEMENTS_FOLDER = IMAGES_FOLDER+"/elements/";
+// From MapsCostants
+// Here are defined all the global variables used in OpenNMS map application
+//ACTIONS
 
-// General fonts setting
-var titleFontSize = 12;
-var textFontSize = 10;
-var textFamily = "Arial,Helvetica";
+var MAPS_STARTUP_ACTION = "MapStartUp";
+var SWITCH_MODE_ACTION = "admin/SwitchRole";
+var RELOAD_CONFIG_ACTION = "admin/ReloadConfig";
+var OPENMAP_ACTION = "OpenMap";
+var NEWMAP_ACTION = "admin/NewMap";
+var CLOSEMAP_ACTION = "CloseMap";
+var DELETEMAP_ACTION = "admin/DeleteMap";
+var CLEAR_ACTION = "admin/ClearMap";
+var SAVEMAP_ACTION = "admin/SaveMap";
+var LOADDEFAULTMAP_ACTION = "LoadDefaultMap";
+var SEARCHMAPS_ACTION = "SearchMap";
+var LOADMAPS_ACTION = "LoadMaps";
+var LOADNODES_ACTION = "LoadNodes";
+var LOADLABELMAP_ACTION = "LoadLabelMap";
+var ADDNODES_ACTION = "admin/AddNodes";
+var ADDMAPS_ACTION = "admin/AddMaps";
+var DELETEELEMENT_ACTION = "admin/DeleteElements";
+var REFRESH_BASE_ACTION="RefreshMap";
 
-// Constants used by SVG Link Object 
-var deltaLink=2;
-var borderPercentage=5;
+var ADDNODES_WITH_NEIG_ACTION = "AddNodesWithNeig";
+var ADDNODES_BY_CATEGORY_ACTION = "AddNodesByCategory";
+var ADDNODES_BY_LABEL_ACTION = "AddNodesByLabel";
+var ADDNODES_NEIG_ACTION = "AddNodesNeig";
+var ADDRANGE_ACTION = "AddRange";
 
-//global factors for spacing between elements
-//suggested factor:   xfactor/yfactor = 4/3 used by ApplicationMapElemPosition.js functions
-var X_FACTOR = 3.5;
-var Y_FACTOR = 2.625;
+var REFRESH_ACTION = "Refresh";
+var RELOAD_ACTION = "Reload";
 
-// Menu ObjectStyle
-//Costants used for Menu style
+var DELETENODES_ACTION = "DeleteNodes";
+var DELETEMAPS_ACTION = "DeleteMaps";
 
-var menuDownColor = "blue";
-var menuUpColor =  "black";
-var menuStyle = {"stroke":"navy","fill":"black","stroke-width":1};
-var menuTextStyle = {"font-size": titleFontSize,"font-family":textFamily,"fill":"white"};
-var menuMouseStyle = {"fill":"green","fill-opacity":0};
-var menuWidth = 90;
-var menuHeight = 20;
-var mapMenuX = 0;
-var mapMenuY = 21;
-var nodeMenuX= menuWidth;
-var nodeMenuY= mapMenuY;
-var viewMenuX= menuWidth;
-var viewMenuY = mapMenuY;
-var refreshMenuX = 2 * menuWidth;
-var refreshMenuY = mapMenuY;
-var menuDeltaX = 0;
-var menuDeltaY = menuHeight;
+//MAPS
+var MAP_NOT_OPENED = -1;
+var NEW_MAP = -2;
+var SEARCH_MAP = -3;
 
-// Global variable constants identifing the menu
-var mapMenuId = "MapMenu";
-var nodeMenuId = "NodeMenu";
-var viewMenuId = "ViewMenu";
-var refreshMenuId = "RefreshMenu";
+var MAP_NOT_OPENED_NAME = "NotOpenMap";
+var NEW_MAP_NAME = "NewMap";
+var SEARCH_MAP_NAME = "SearchMap";
 
-// These are constants used to manage button style
-var buttonx = 180;
-var buttony = 0;
-var buttonwidth = 60;
-var buttonheight = 20;
-var buttonTextStyles = {"font-family":textFamily, "fill":"white","font-size":titleFontSize};
-var buttonStyles = {"fill":"blue","fill-opacity":0};
-var shadeLightStyles = {"fill":"blue","stroke":"pink","stroke-width":1,"fill-opacity":0.5,"stroke-opacity":0.9};
-var shadeDarkStyles = {"fill":"blue","stroke":"pink","stroke-width":1,"fill-opacity":0.5,"stroke-opacity":0.9};
-var shadowOffset = 0;
+var NODE_TYPE = "N";
+var MAP_TYPE= "M";
+var NODE_HIDE_TYPE = "H";
+var MAP_HIDE_TYPE= "W";
 
-// These are constants used to manage textbox style
-var textboxmaxChars = 32;
-var textboxx = 2; 
-var textboxy = 0; 
-var textboxWidth = 170;
-var textboxHeight = 20;
-var textYOffset = 14;
-var textStyles = {"font-family":textFamily,"font-size":titleFontSize,"fill":"black"};
-var boxStyles = {"fill":"white","stroke":"pink","stroke-width":1,"fill-opacity":0.5,"stroke-opacity":0.9};
-var cursorStyles = {"stroke":"dimgray","stroke-width":1.5};
-var seltextBoxStyles = {"fill":"white","stroke":"pink","stroke-width":1,"fill-opacity":0.5,"stroke-opacity":0.9};
+var USER_GENERATED_MAP = "U";
+var AUTOMATICALLY_GENERATED_MAP = "A";
+var AUTOMATIC_SAVED_MAP = "S";
+var DELETED_MAP = "D";
 
-// Selection Boxes style constants
-var selBoxwidth = 238;
-var selBoxxOffset =2;
-var selBoxyOffset = 23;
-var selBoxCellHeight = 18;
-var selBoxTextpadding = 3;
-var selBoxheightNrElements=5;
-var selBoxtextStyles = {"font-family":textFamily,"font-size":titleFontSize,"fill":"dimgray"};
-var selBoxStyles = {"stroke":"dimgray","stroke-width":1,"fill":"white"};
-var selBoxScrollbarStyles = {"stroke":"dimgray","stroke-width":1,"fill":"whitesmoke"};
-var selBoxSmallrectStyles = {"stroke":"dimgray","stroke-width":1,"fill":"lightgray"};
-var selBoxHighlightStyles = {"fill":"dimgray","fill-opacity":0.3};
-var selBoxTriangleStyles = {"fill":"dimgray"}; 
-var selBoxpreSelect = 0;
-// ContextMenu---Styles
-var cmdelta= 20;
-var cmwidth = 100;
-var cmmenuStyle={"fill":"grey"};
-var cmmenuElementStyle = {"fill":"grey"};
-var cmmenuElementTextStyle={"font-size": titleFontSize,"font-family":textFamily,"fill":"black"};
-var cmmenuElementMouseStyle={"fill":"grey","fill-opacity":0};
+var ACCESS_MODE_ADMIN = "RW";
+var ACCESS_MODE_USER = "RO";
+var ACCESS_MODE_GROUP = "RWRO";
+    
+var COLOR_SEMAPHORE_BY_SEVERITY = "S";
+var COLOR_SEMAPHORE_BY_STATUS = "T";
+var COLOR_SEMAPHORE_BY_AVAILABILITY = "A";
 
-// ToolTip style constants
-var tooltipTextStyles = {"font-family":"Arial,Helvetica","fill":"dimgray","font-size":titleFontSize};
-var tooltipRectStyles = {"fill":"white","stroke":"dimgray"};
+var failed_string = "Failed";
+
+var success_string = "OK";

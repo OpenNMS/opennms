@@ -50,7 +50,6 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -1041,7 +1040,7 @@ public final class DbIfServiceEntry {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

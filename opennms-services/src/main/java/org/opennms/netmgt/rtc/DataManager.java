@@ -66,7 +66,6 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -366,7 +365,7 @@ public class DataManager extends Object {
 		return args.toArray();
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(DataManager.class);
 	}
 

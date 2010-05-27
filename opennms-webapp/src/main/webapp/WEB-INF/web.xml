@@ -39,10 +39,12 @@
         classpath*:/META-INF/opennms/component-service.xml
         classpath:/META-INF/opennms/applicationContext-reportingCore.xml
         classpath:/META-INF/opennms/applicationContext-reportingAvailability.xml
+        classpath:/META-INF/opennms/applicationContext-reportingJasperReports.xml
         classpath:/META-INF/opennms/applicationContext-reporting.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-jersey.xml
         /WEB-INF/applicationContext-spring-webflow.xml
+        <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>
   </context-param>
   
@@ -50,75 +52,14 @@
     <param-name>parentContextKey</param-name>
     <param-value>daoContext</param-value>
   </context-param>
-  
-  <!-- RTC Subscription parameters -->  
-  <!--
-     *** RTC Subscription parameters have been moved ***
-     - If you're using the standalone webapp, see: see WEB-INF/configuration.properties
-     - If you're using the embedded jetty webapp, see: see $OPENNMS_HOME/etc/opennms.properties
-  -->
-  <!--
-  <context-param>
-    <description>The username the RTC uses when authenticating itself in an HTTP POST.</description>
-    <param-name>opennms.rtc-client.http-post.username</param-name>
-    <param-value>rtc</param-value>
-  </context-param>
-  <context-param>
-    <description>The password the RTC uses when authenticating itself in an HTTP POST.</description>
-    <param-name>opennms.rtc-client.http-post.password</param-name>
-    <param-value>rtc</param-value>
-  </context-param>
-  <context-param>
-    <description>The hostname/IP address of the RTCd host for sending subscribe event.</description>
-    <param-name>opennms.rtc.event.proxy.host</param-name>
-    <param-value>127.0.0.1</param-value>
-  </context-param>
-  <context-param>
-    <description>The port of the RTCd host for sending subscribe event (Requires host to be configured).</description>
-    <param-name>opennms.rtc.event.proxy.port</param-name>
-    <param-value>5817</param-value>
-  </context-param>
-  <context-param>
-    <description>
-      The base of a URL that RTC clients use when creating a RTC subscription URL. IMPORTANT: This URL must NOT contain a slash at the end.
-    </description>
-    <param-name>opennms.rtc-client.http-post.base-url</param-name>
-    <param-value>http://localhost:8080/opennms/rtc/post</param-value>
-  </context-param>
-  -->
 
-<!-- Map System Subscription parameters -->  
-  <!--
-     *** Map System Subscription parameters have been moved ***
-     - If you're using the standalone webapp, see: see WEB-INF/configuration.properties
-     - If you're using the embedded jetty webapp, see: see $OPENNMS_HOME/etc/opennms.properties
-  -->
+  <!-- WARMERGE: insert context-param -->  
 
-  <!--
-  <context-param>
-    <description>The username the Map System uses when authenticating itself in an HTTP POST.</description>
-    <param-name>opennms.map-client.http-post.username</param-name>
-    <param-value>map</param-value>
-  </context-param>
-  <context-param>
-    <description>The password the Map System uses when authenticating itself in an HTTP POST.</description>
-    <param-name>opennms.map-client.http-post.password</param-name>
-    <param-value>map</param-value>
-  </context-param>
-  <context-param>
-    <description>
-      The base of a URL that Map System clients use when creating a Map subscription URL. IMPORTANT: This URL must NOT contain a slash at the end.
-    </description>
-    <param-name>opennms.map-client.http-post.url</param-name>
-    <param-value>http://localhost:8080/opennms/map/post</param-value>
-  </context-param>
-  -->
-
-	<filter>
-	  <!--  note the name of this filter is important and is used in the app contexts -->
-	  <filter-name>springSecurityFilterChain</filter-name>
-	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
+  <filter>
+    <!--  note the name of this filter is important and is used in the app contexts -->
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
 
   <filter>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
@@ -183,6 +124,8 @@
       <param-value>true</param-value>
     </init-param>
   </filter>
+
+  <!-- WARMERGE: insert filter -->
 
   <filter-mapping>
     <filter-name>openSessionInViewFilter</filter-name>
@@ -257,6 +200,8 @@
     <url-pattern>*.jnlp</url-pattern>
   </filter-mapping>
 
+  <!-- WARMERGE: insert filter-mapping -->
+
   <listener>
     <!-- This listener handles our custom startup/shutdown behavior. -->
     <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
@@ -290,6 +235,8 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   
+  <!-- WARMERGE: insert listener -->
+
   <!--  RESTful Web Services -->
   <servlet>
     <servlet-name>opennmsRestWebServices</servlet-name>
@@ -502,7 +449,7 @@
     <servlet-name>newPasswordAction</servlet-name>
     <servlet-class>org.opennms.web.account.selfService.NewPasswordActionServlet</servlet-class>
   </servlet>
-  
+
   <!-- Servlet mappings for user account self-service -->
   <servlet-mapping>
     <servlet-name>newPasswordEntry</servlet-name>
@@ -1020,6 +967,9 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/graph/graph.png</url-pattern>
   </servlet-mapping>
+
+  <!-- WARMERGE: insert servlet -->  
+  <!-- WARMERGE: insert servlet-mapping -->  
 
   <error-page>
     <exception-type>org.opennms.web.category.CategoryNotFoundException</exception-type>

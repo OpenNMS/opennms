@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.log4j.Category;
 import org.joda.time.Duration;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.core.utils.ThreadCategory;
@@ -289,7 +288,7 @@ public class EditForeignSourceController extends SimpleFormController {
         return null;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(EditForeignSourceController.class);
     }
     

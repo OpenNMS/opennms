@@ -37,12 +37,12 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -50,10 +50,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
@@ -62,6 +60,7 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.ami.Definition;
 import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.protocols.ami.AmiAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
 
@@ -112,15 +111,10 @@ public class AmiPeerFactory extends PeerFactory {
     private AmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
         super();
         InputStream cfgIn = new FileInputStream(configFile);
-        m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, new InputStreamReader(cfgIn));
+        m_config = CastorUtils.unmarshal(AmiConfig.class, cfgIn);
         cfgIn.close();
     }
 
-    public AmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        super();
-        m_config = (AmiConfig) Unmarshaller.unmarshal(AmiConfig.class, rdr);
-    }
-    
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
@@ -148,7 +142,7 @@ public class AmiPeerFactory extends PeerFactory {
         m_loaded = true;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(AmiPeerFactory.class);
     }
 
@@ -183,7 +177,7 @@ public class AmiPeerFactory extends PeerFactory {
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         if (stringWriter.toString() != null) {
-            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME));
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), "UTF-8");
             fileWriter.write(stringWriter.toString());
             fileWriter.flush();
             fileWriter.close();
@@ -201,7 +195,7 @@ public class AmiPeerFactory extends PeerFactory {
      * @throws UnknownHostException
      */
     private static void optimize() throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // First pass: Remove empty definition elements
         for (Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator(); definitionsIterator.hasNext();) {
@@ -370,7 +364,7 @@ public class AmiPeerFactory extends PeerFactory {
      * @throws UnknownHostException
      */
     public void define(InetAddress ip, String username, String password) throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Convert IP to long so that it easily compared in range elements
         int address = new IPv4Address(ip).getAddress();
@@ -495,8 +489,7 @@ public class AmiPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn(String.format("AmiPeerFactory: could not convert host %s to InetAddress", saddr), e);
+                    log().warn(String.format("AmiPeerFactory: could not convert host %s to InetAddress", saddr), e);
                 }
             }
 
@@ -515,8 +508,7 @@ public class AmiPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn(String.format("AmiPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd()), e);
+                    log().warn(String.format("AmiPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd()), e);
                 }
             }
             

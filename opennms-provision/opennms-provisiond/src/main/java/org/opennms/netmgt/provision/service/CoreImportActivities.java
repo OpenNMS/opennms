@@ -35,7 +35,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.log4j.Category;
+import org.opennms.core.tasks.BatchTask;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
@@ -137,22 +138,22 @@ public class CoreImportActivities {
         info("Running scan phase of %s", operation);
         operation.scan();
 
-        System.out.println("Finished Running scan phase of "+operation);
+        LogUtils.infof(this, "Finished Running scan phase of "+operation);
     }
     
     @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "import" )
     public void persistNode(ImportOperation operation) {
 
-        System.out.println("Running persist phase of "+operation);
+        LogUtils.infof(this, "Running persist phase of "+operation);
         operation.persist();
-        System.out.println("Finished Running persist phase of "+operation);
+        LogUtils.infof(this, "Finished Running persist phase of "+operation);
 
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "import" )
-    public void relateNodes(final Phase currentPhase, final Requisition requisition) {
+    public void relateNodes(final BatchTask currentPhase, final Requisition requisition) {
         
-        System.out.println("Running relate phase");
+        LogUtils.infof(this, "Running relate phase");
         
         RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
             @Override
@@ -164,7 +165,7 @@ public class CoreImportActivities {
         
         requisition.visit(visitor);
         
-        System.out.println("Finished Running relate phase");
+        LogUtils.infof(this, "Finished Running relate phase");
 
     }
     
@@ -192,7 +193,7 @@ public class CoreImportActivities {
         }
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

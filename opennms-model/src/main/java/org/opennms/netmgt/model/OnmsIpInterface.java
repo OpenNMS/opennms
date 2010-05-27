@@ -376,7 +376,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     public String toString() {
         return new ToStringCreator(this)
         .append("ipaddr", getIpAddress())
-        .append("ifindex", getIfIndex())
+        //.append("ifindex", getIfIndex())
         .append("iphostname", getIpHostName())
         .append("ismanaged", getIsManaged())
         .append("iplastcapsdpoll", getIpLastCapsdPoll())

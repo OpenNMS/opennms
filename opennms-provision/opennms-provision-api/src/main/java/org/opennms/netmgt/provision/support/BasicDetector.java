@@ -39,6 +39,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
@@ -69,7 +70,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
         int port = getPort();
         int retries = getRetries();
         int timeout = getTimeout();
-        System.out.printf("Address: %s || port: %s || \n", address, getPort());
+        LogUtils.infof(this, "Address: %s || port: %s || \n", address, getPort());
         detectorMonitor.start(this, "Checking address: %s for %s capability", address, getServiceName());
                 
         Client<Request, Response> client = getClient();

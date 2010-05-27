@@ -38,7 +38,6 @@ package org.opennms.netmgt.discovery;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -87,7 +86,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
         log().debug("an error occurred pinging " + address, t);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

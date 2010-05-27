@@ -13,8 +13,57 @@ function onMouseOverMapElement(evt) {
 	myMapApp.addTooltip(id,toolTipLabel,false,false,"currentTarget",undefined);
 }
 
-function onMouseOutMapElement(evt) {
+function onMouseOverLink(evt) {
+	myMapApp.enableTooltips();
+	var id = evt.target.parentNode.getAttributeNS(null,"id");
 
+	
+	var link = map.mapLinks[id]
+		var toolTipLabel = "";
+
+    var statusMap = link.getStatusMap();
+    for (var statusString in statusMap) {
+    	toolTipLabel = toolTipLabel+" "+ statusString + "("+statusMap[statusString]+")";
+	}
+	toolTipLabel = toolTipLabel+" total("+link.getNumberOfLinks()+")";
+	
+	myMapApp.addTooltip(id,toolTipLabel,false,false,"currentTarget",undefined);
+}
+
+function onMouseOutMapElement(evt) {
+	myMapApp.disableTooltips();
+}
+
+function onMouseOutLink(evt) {
+	myMapApp.disableTooltips();
+}
+
+function onMouseDownOnSLink(evt) {
+	resetSelectedObjects();
+	if ((typeof map) == "object")
+	{
+		// close other menus
+		windowsClean();
+
+		clearDownInfo();
+		clearActionsStarted();
+		var id = evt.target.parentNode.getAttributeNS(null,"id");
+		var slink = map.mapLinks[id];
+		writeTopInfoText(getInfoOnSLink(slink));
+		
+		if (evt.detail == 2)
+		{
+			var x=evt.clientX + 2;
+			var y=evt.clientY + 4;
+			var height = cmdelta * slink.getNumberOfMultiLinks();
+			var cm =  new ContextMenuSimulator(winSvgElement,slink.id,"ProvaMenu",x,y,cmwidth,height,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+			cm.addItem(slink.id,LINK_TEXT[slink.getTypology()],execLinkCMAction);
+			for ( var linkid in slink.getLinks() ) {
+			    var link = slink.getLinks()[linkid];
+				cm.addItem(linkid,LINK_TEXT[link.getTypology()],execLinkCMAction);	
+			}
+		}		
+	}
 }
 
 //if double-click on an element (map) open the map 
@@ -44,7 +93,7 @@ function onClickMapElement(evt)
 
 	if (evt.detail == 2)
 	{
-		myMapApp.disableTooltips();
+		myMapApp.disableTooltips()
 		if(mapElement.isNode())
 		{
 			var nodeid = mapElement.getNodeId();
@@ -67,7 +116,7 @@ function onClickMapElement(evt)
 	
 		if(mapElement.isMap())
 		{
-			openMap(mapElement.getMapId());
+			openMapSetUp(mapElement.getMapId(),true);
 		}
 			
 	}
@@ -127,6 +176,7 @@ function onMouseDownOnMapElement(evt)
 		if(deletingMapElem==true){
 			deleteMapElement(mapElement);
 			deleteMapElementSetUp();
+			myMapApp.disableTooltips();
 		}
 		
 		//add the element neighbors if flag 'addingMapElemNeighbors' is true
@@ -141,8 +191,7 @@ function onMouseDownOnMapElement(evt)
 
 		//set the icon selected into the relative selection list to the selected element
 		if(settingMapElemIcon==true){
-			mapElement.icon=selectedMEIconInList;
-			mapElement.image.setAttributeNS(xlinkNS, "xlink:href", MEIconsSortAss[selectedMEIconInList]);
+			mapElement.setIcon(new Icon(selectedMEIconInList,MEIconsSortAss[selectedMEIconInList]));
 			map.render();
 			setIconSetUp();
 		}
@@ -229,7 +278,6 @@ function resetDraggableObject(){
 		
 function onMouseDownOnLink(evt)
 {
-	
 	resetSelectedObjects();
 	if ((typeof map) == "object")
 	{
@@ -238,8 +286,8 @@ function onMouseDownOnLink(evt)
 
 		clearDownInfo();
 		clearActionsStarted();
-		
-		var mapLink = map.mapLinks[evt.target.getAttributeNS(null,"id")];
+		var id = evt.target.parentNode.getAttributeNS(null,"id");
+		var mapLink = map.mapLinks[id];
 		writeTopInfoText(getInfoOnLink(mapLink));
 		
 		if (evt.detail == 2)
@@ -419,5 +467,67 @@ function onMouseUp(evt)
 			map.endSelectionRectangle=null;	
 		}			
 		
+	}
+}
+
+function ciao() {
+	return;
+}
+
+function execSelectedCMAction(index,nodeid,nodelabel,evt) {
+	if(CM_COMMANDS[index]){
+		var link = CM_LINKS[index];
+		var params = CM_PARAMS[index];				
+		link = link.replace("ELEMENT_ID",""+nodeid);
+		link = link.replace("ELEMENT_LABEL",nodelabel);
+		link = link.replace("ELEMENT_HOSTNAME",nodeidSortAss[nodeid].getLabel());
+		link = link.replace("ELEMENT_IP",nodeidSortAss[nodeid].getIpAddr());
+		openLink(escape(link),params);
+	} else {
+		alert("Windows Menu Command Error");
+	}
+}
+
+function execLinkCMAction(linkid,sid,label,evt) {
+	var sLink=map.mapLinks[sid];
+	sLink.switchLink(linkid);
+}
+
+function onClickTab(evt) {
+	var tab = evt.target;
+	var id = tab.getAttributeNS(null,"id");
+	var idArray = id.split("__");
+	var index = parseInt(idArray[1]);
+	mapTabGroup.activateTabByIndex(index);
+	var tabTitle = mapTabGroup.getTabTitleByIndex(index);
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if ( tabTitle == NEW_MAP_NAME ) {
+		newMapSetUp();
+	} else {
+		openMapSetUp(mapSortAss[tabTitle].id,false);
+	}
+}
+
+function onCloseTab(evt) {
+	var tab = evt.target;
+	var id = tab.getAttributeNS(null,"id");
+	var idArray = id.split("__");
+	var index = parseInt(idArray[1]);
+	var tabTitle = mapTabGroup.getTabTitleByIndex(index);
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if (mapTabGroup.getActiveTabIndex() == index ) {
+		closeSetUp();
+	} else {
+		mapTabClose(tabTitle);
+	}
+}
+
+function onClosingActiveTab() {
+	var tabTitle = mapTabGroup.getActiveTabTitle();
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if ( tabTitle == NEW_MAP_NAME ) {
+		newMapSetUp();
+	} else {
+		openMapSetUp(mapSortAss[tabTitle].id,false);
 	}
 }

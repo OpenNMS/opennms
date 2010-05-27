@@ -317,9 +317,9 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     public boolean interfaceInPackage(String iface, Package pkg) {
-        Enumeration en = pkg.enumerateSpecific();
+        Enumeration<String> en = pkg.enumerateSpecific();
         while (en.hasMoreElements()) {
-            String ipAddr = (String)en.nextElement();
+            String ipAddr = en.nextElement();
             if (ipAddr.equals(iface))
                 return true;
         }
@@ -360,9 +360,9 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     public boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
-        Enumeration en = pkg.enumerateService();
+        Enumeration<Service> en = pkg.enumerateService();
         while(en.hasMoreElements()) {
-            Service svc = (Service)en.nextElement();
+            Service svc = en.nextElement();
             if (svc.getName().equals(svcName))
                 return true;
         }

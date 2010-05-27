@@ -39,7 +39,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Collection;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -193,7 +192,7 @@ public abstract class NotifdConfigManager {
     
     // TODO This change only works for one parameter, need to expand it to many.
     public boolean matchNotificationParameters(Event event, Notification notification) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean parmmatch = false;
         Parms parms = event.getParms();
@@ -206,8 +205,10 @@ public abstract class NotifdConfigManager {
 
             if (notification.getVarbind().getVbvalue() != null) {
                 notfValue = notification.getVarbind().getVbvalue();
-            } else if (log.isDebugEnabled()) {
-                log.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
+                }
                 parmmatch = true;
             }
 
@@ -219,11 +220,9 @@ public abstract class NotifdConfigManager {
                 else
                     parmContent = parmValue.getContent();
 
-                if (parmName.equals(notfName) && parmContent.startsWith(notfValue))
-		{
+                if (parmName.equals(notfName) && parmContent.startsWith(notfValue)) {
                     parmmatch = true;
                 }
-
             }
         } else if (notification.getVarbind() == null || notification.getVarbind().getVbname() == null) {
             parmmatch = true;

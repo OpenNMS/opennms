@@ -40,7 +40,6 @@ package org.opennms.netmgt.eventd;
 
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.EventConfDao;
@@ -151,7 +150,7 @@ public class BroadcastEventProcessor implements EventListener {
         return isTarget;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

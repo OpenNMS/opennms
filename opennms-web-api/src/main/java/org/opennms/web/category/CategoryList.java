@@ -109,7 +109,7 @@ public class CategoryList {
         }
     }
 
-    private org.apache.log4j.Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

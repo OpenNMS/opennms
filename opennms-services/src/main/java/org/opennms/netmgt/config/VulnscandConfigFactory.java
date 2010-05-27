@@ -39,10 +39,12 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
@@ -53,7 +55,6 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -212,7 +213,7 @@ public final class VulnscandConfigFactory {
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(m_config, stringWriter);
         if (stringWriter.toString() != null) {
-            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.VULNSCAND_CONFIG_FILE_NAME));
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.VULNSCAND_CONFIG_FILE_NAME)), "UTF-8");
             fileWriter.write(stringWriter.toString());
             fileWriter.flush();
             fileWriter.close();
@@ -292,7 +293,7 @@ public final class VulnscandConfigFactory {
      * 
      */
     public static boolean isInterfaceInDB(Connection dbConn, InetAddress ifAddress) throws SQLException {
-        Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
+        ThreadCategory log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
 
         boolean result = false;
 
@@ -319,7 +320,7 @@ public final class VulnscandConfigFactory {
      * 
      */
     public static int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress) throws SQLException {
-        Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
+        ThreadCategory log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
 
         log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
 
@@ -438,7 +439,7 @@ public final class VulnscandConfigFactory {
     }
 
     public Set<Serializable> getAllExcludes() {
-	Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
+	ThreadCategory log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
         if (m_excludes == null) {
             m_excludes = new TreeSet<Serializable>();
 

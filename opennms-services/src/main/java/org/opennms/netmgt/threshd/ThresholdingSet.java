@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
@@ -336,10 +335,11 @@ public abstract class ThresholdingSet {
                 log().debug("getThresholdGroupNames: checking ipaddress " + hostAddress + " for inclusion in pkg " + pkg.getName());
             }
             boolean foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
-            if (!foundInPkg) {
+            if (!foundInPkg && Boolean.getBoolean("org.opennms.thresholds.filtersReloadEnabled")) {
                 // The interface might be a newly added one, rebuild the package
                 // to ipList mapping and again to verify if the interface is in
                 // the package.
+                log().info("getThresholdGroupNames: re-initializing filters.");
                 m_configManager.rebuildPackageIpListMap();
                 foundInPkg = m_configManager.interfaceInPackage(hostAddress, pkg);
             }
@@ -382,7 +382,7 @@ public abstract class ThresholdingSet {
             }
             ThresholdResourceType thisResourceType = typeMap.get(resourceType);
             if (thisResourceType == null) {
-                log().warn("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
+                log().info("getEntityMap: No thresholds configured for resource type " + resourceType + ". Not processing this collection.");
                 return null;
             }
             entityMap = thisResourceType.getThresholdMap();
@@ -395,7 +395,7 @@ public abstract class ThresholdingSet {
         return m_thresholdGroups.toString();
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

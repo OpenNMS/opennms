@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -148,6 +147,7 @@ public class DaoWebEventRepository implements WebEventRepository {
         event.createTime = onmsEvent.getEventCreateTime();
         event.description = onmsEvent.getEventDescr();
         event.dpName = onmsEvent.getDistPoller() != null ? onmsEvent.getDistPoller().getName() : "";
+        event.eventDisplay = Boolean.valueOf(onmsEvent.getEventDisplay().equals("Y"));
         event.forward = onmsEvent.getEventForward();
         event.host = onmsEvent.getEventHost();
         event.id = onmsEvent.getId();
@@ -272,7 +272,7 @@ public class DaoWebEventRepository implements WebEventRepository {
         }
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(DaoWebEventRepository.class);
     }
 

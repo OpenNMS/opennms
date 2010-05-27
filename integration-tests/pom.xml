@@ -2,13 +2,18 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.7.11-SNAPSHOT</version>
+    <version>1.9.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.integration-tests</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS Integration Tests</name>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-asterisk</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
@@ -22,12 +27,22 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-jetty</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

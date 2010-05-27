@@ -44,7 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -145,7 +144,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         
         getRancidCategories();
         
-        m_template.execute(new TransactionCallback() {
+        m_template.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus arg0) {
                 buildRancidNodeMap();
                 return null;
@@ -203,8 +202,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         final OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
         Assert.notNull(node, "doAdd: failed to return node for given nodeId:"+nodeId);
 
-        String ipaddress = (String) m_template.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus arg0) {
+        String ipaddress = m_template.execute(new TransactionCallback<String>() {
+            public String doInTransaction(TransactionStatus arg0) {
                 return getSuitableIpForRancid(node);
             }
         });
@@ -251,8 +250,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         final OnmsNode node = m_nodeDao.get(nodeId);
         Assert.notNull(node, "doAdd: failed to return node for given nodeId:"+nodeId);
  
-        String ipaddress = (String) m_template.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus arg0) {
+        String ipaddress = m_template.execute(new TransactionCallback<String>() {
+            public String doInTransaction(TransactionStatus arg0) {
                 return getSuitableIpForRancid(node);
             }
         });
@@ -291,7 +290,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 m_onmsNodeRancidNodeMap.put(nodeId, rUpdatedNode);
             
             } catch (RancidApiException re) {
-                if (re.getRancidCode() ==RancidApiException.OTHER_ERROR) {
+                if (re.getRancidCode() ==RancidApiException.RWS_RESOURCE_NOT_FOUND) {
                     log().warn("doUpdate: node not found in router.db: " + rUpdatedNode.toString());
                     try {
                         log().debug("doUpdate: adding Node to router.db for nodeid: " + nodeId);
@@ -419,7 +418,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return m_eventForwarder;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(RancidProvisioningAdapter.class);
     }
 
@@ -560,28 +559,28 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         log().debug("processPendingOperationForNode: " + op.getType() + " for node: " + op.getNodeId() );
         if (op.getType() == AdapterOperationType.ADD) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doAdd(op.getNodeId(),m_cp,true);
                     return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.UPDATE) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doUpdate(op.getNodeId(),m_cp,true);
                     return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.DELETE) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doDelete(op.getNodeId(),m_cp,true);
                     return null;
                 }
             });
         } else if (op.getType() == AdapterOperationType.CONFIG_CHANGE) {
-            m_template.execute(new TransactionCallback() {
+            m_template.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(TransactionStatus arg0) {
                     doNodeConfigChanged(op.getNodeId(),m_cp,true);
                     return null;
@@ -596,7 +595,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             LogUtils.debugf(this, "reloading the rancid adapter configuration");
             try {
                 RancidAdapterConfigFactory.reload();
-                m_template.execute(new TransactionCallback() {
+                m_template.execute(new TransactionCallback<Object>() {
                     public Object doInTransaction(TransactionStatus arg0) {
                         buildRancidNodeMap();
                         return null;

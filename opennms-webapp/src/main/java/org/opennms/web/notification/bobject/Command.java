@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -300,8 +299,8 @@ public class Command {
 
             // see if we need to build a streamed argument buffer
             if (m_useStream) {
-                // make sure the output we are writting is buffered
-                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream()));
+                // make sure the output we are writing is buffered
+                BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), "UTF-8"));
 
                 StringBuffer buffer = new StringBuffer();
 
@@ -430,7 +429,7 @@ public class Command {
         return list;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

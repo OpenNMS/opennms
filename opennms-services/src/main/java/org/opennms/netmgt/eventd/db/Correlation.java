@@ -44,6 +44,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.events.Constants;
 
 /**
  * This is an utility class used to format the event correlation info - to be
@@ -53,7 +54,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
- * @see org.opennms.netmgt.eventd.db.Constants#VALUE_TRUNCATE_INDICATOR
+ * @see org.opennms.netmgt.model.events.Constants#VALUE_TRUNCATE_INDICATOR
  */
 public class Correlation {
     /**

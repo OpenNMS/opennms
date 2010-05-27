@@ -31,9 +31,8 @@ package org.opennms.opennmsd;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import edu.emory.mathcs.backport.java.util.concurrent.BlockingQueue;
-import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * DefaultEventForwarder
@@ -42,7 +41,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class AbstractEventForwarder implements EventForwarder, Runnable {
     
-    BlockingQueue m_queue = new LinkedBlockingQueue();
+    BlockingQueue<NNMEvent> m_queue = new LinkedBlockingQueue<NNMEvent>();
     Thread m_thread;
     
     public AbstractEventForwarder() {
@@ -78,7 +77,7 @@ public abstract class AbstractEventForwarder implements EventForwarder, Runnable
             while(true) {
                 NNMEvent event = (NNMEvent)m_queue.take();
                 
-                List events = new LinkedList();
+                List<NNMEvent> events = new LinkedList<NNMEvent>();
                 events.add(event);
             
                 m_queue.drainTo(events);
@@ -93,6 +92,6 @@ public abstract class AbstractEventForwarder implements EventForwarder, Runnable
         
     }
 
-    protected abstract void forwardEvents(List events);
+    protected abstract void forwardEvents(List<NNMEvent> events);
 
 }

@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.easymock.EasyMock;
@@ -58,6 +57,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.AttributeGroupType;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.GenericIndexResource;
@@ -74,11 +74,13 @@ import org.opennms.netmgt.collectd.SnmpAttributeType;
 import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collectd.SnmpIfData;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -116,9 +118,11 @@ public class ThresholdingVisitorTest {
     @Before
     public void setUp() throws Exception {
         // Resets Counters Cache Data
+        System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "false");
         CollectionResourceWrapper.s_cache.clear();
         
         m_defaultErrorLevelToCheck = Level.WARN;
+        System.setProperty("mock.logLevel", "DEBUG");
         MockLogAppender.setupLogging();
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
@@ -208,6 +212,7 @@ public class ThresholdingVisitorTest {
     }
 
     private void initFactories(String threshd, String thresholds) throws Exception {
+        log().info("Initialize Threshold Factories");
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
         ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd),"127.0.0.1", false));
     }
@@ -662,17 +667,20 @@ public class ThresholdingVisitorTest {
         
         /*
          * Run Visitor
-         * I must receive 2 warnings because getEntityMap should be called 2 times.
+         * I must receive 2 special info events because getEntityMap should be called 2 times.
          * One for each attribute and one for each resource.
          * Original code will throw a NullPointerException after call getEntityMap.
+         * Original code expects WARNs, but this message is now an INFO.
          */
-        m_defaultErrorLevelToCheck = Level.ERROR;
         resource.visit(visitor);
-        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
-        assertEquals("expecting 2 events", 2, events.length);
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.INFO);
+        int count = 0;
+        String expectedMsg = "getEntityMap: No thresholds configured for resource type frCircuitIfIndex. Not processing this collection.";
         for (LoggingEvent e : events) {
-            assertEquals("getEntityMap: No thresholds configured for resource type frCircuitIfIndex. Not processing this collection.", e.getMessage());
+            if (e.getMessage().equals(expectedMsg))
+                count++;
         }
+        assertEquals("expecting 2 events", 2, count);
     }
 
     /*
@@ -775,44 +783,128 @@ public class ThresholdingVisitorTest {
      * - thresd-configuration-bug3554.xml
      * - test-thresholds-bug3554.xml
      * 
-     * TODO not sure how to emulate a big installation yet.
-     * TODO ThresholdingVisitor.create doesn't look like a complex method that could take too much time
+     * The problem is that every time we create a ThresholdingVisitor instance, the method
+     * ThreshdConfigFactory.interfaceInPackage is called. This methods uses JdbcFilterDao
+     * to evaluate node filter.
+     * 
+     * This filter evaluation is the reason of why collectd take too much to initialize on
+     * large networks when in-line thresholding is enabled.
+     * 
+     * From test log, you can see that JdbcFilterDao is invoked on each visitor creation
+     * iteration.
      */
     @Test
     public void testBug3554_withDBFilterDao() throws Exception {
+        runTestForBug3554();
+
+        // Validate FilterDao Calls
+        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
+        int count = 0;
+        String expectedMsgHeader = "createPackageIpMap: package ";
+        for (LoggingEvent e : events) {
+            if (e.getMessage().toString().startsWith(expectedMsgHeader))
+                count++;
+        }
+        assertEquals("expecting " + numOfPackages + " events", numOfPackages, count);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-bug3554.xml
+     * - test-thresholds-bug3554.xml
+     * 
+     * This test demonstrate that we can force filter auto-reload.
+     */
+    @Test
+    public void testBug3720() throws Exception {
+        System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "true");
+        runTestForBug3554();
         
-        String ipAddress = "10.0.0.1";
+        // Validate FilterDao Calls
+        int numOfPackages = ThreshdConfigFactory.getInstance().getConfiguration().getPackage().length;
+        int expectedCalls = numOfPackages * 26; // Not sure why is 5^2+1
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.DEBUG);
+        int count = 0;
+        String expectedMsgHeader = "createPackageIpMap: package ";
+        for (LoggingEvent e : events) {
+            if (e.getMessage().toString().startsWith(expectedMsgHeader))
+                count++;
+        }
+        assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
         
+        // Validate number of re-initializations
+        expectedCalls = 25; // 5 nodes => 5^2 times
+        events = MockLogAppender.getEventsGreaterOrEqual(Level.INFO);
+        count = 0;
+        expectedMsgHeader = "getThresholdGroupNames: re-initializing filters.";
+        for (LoggingEvent e : events) {
+            if (e.getMessage().toString().equals(expectedMsgHeader))
+                count++;
+        }
+        assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
+    }
+
+    private void runTestForBug3554() throws Exception {
+        MockLogAppender.resetEvents();
+        System.err.println("----------------------------------------------------------------------------------- begin test");
+
+        String baseIpAddress = "10.0.0.";
+        int numOfNodes = 5;
+
+        // Initialize Mock Network
+
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
-        network.addNode(1, "testNode");
-        network.addInterface(ipAddress);
-        network.setIfAlias("eth0");
-        network.addService("ICMP");
-        network.addService("SNMP");
+
+        for (int i=1; i<=numOfNodes; i++) {
+            String ipAddress = baseIpAddress + i;
+            network.addNode(i, "testNode-" + ipAddress);
+            network.addInterface(ipAddress);
+            network.setIfAlias("eth0");
+            network.addService("ICMP");
+            network.addService("SNMP");
+        }
+
         MockDatabase db = new MockDatabase();
         db.populate(network);
-        db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
-        db.update("update node set nodesysoid=? where nodeid=?", ".1.3.6.1.4.1.9.1.222", 1);
         db.update("insert into categories (categoryid, categoryname) values (?, ?)", 10, "IPRA");
         db.update("insert into categories (categoryid, categoryname) values (?, ?)", 11, "NAS");
-        db.update("insert into category_node values (?, ?)", 10, 1);
-        db.update("insert into category_node values (?, ?)", 11, 1);
+        for (int i=1; i<=numOfNodes; i++) {
+            db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", i);
+            db.update("update node set nodesysoid=? where nodeid=?", ".1.3.6.1.4.1.9.1.222", i);
+            db.update("insert into category_node values (?, ?)", 10, i);
+            db.update("insert into category_node values (?, ?)", 11, i);
+        }
         DataSourceFactory.setInstance(db);
-        Vault.setDataSource(db);
-        
-        initFactories("/threshd-configuration-bug3554.xml","/test-thresholds-bug3554.xml");
+
+        // Initialize Filter DAO
+
         System.setProperty("opennms.home", "src/test/resources");
-        FilterDaoFactory.setInstance(null);
-        FilterDao filterDao = FilterDaoFactory.getInstance();
-        assertNotNull(filterDao);
-        
+        DatabaseSchemaConfigFactory.init();
+        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        jdbcFilterDao.setDataSource(db);
+        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.afterPropertiesSet();
+        FilterDaoFactory.setInstance(jdbcFilterDao);
+
+        // Initialize Factories
+
+        initFactories("/threshd-configuration-bug3554.xml","/test-thresholds-bug3554.xml");
+
+        // Initialize Thresholding Visitors
+
         Map<String,String> params = new HashMap<String,String>();
         params.put("thresholding-enabled", "true");
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), params, 300000);
-        
-        assertNotNull(visitor);
-        assertEquals(4, visitor.getThresholdGroups().size()); // mib2, cisco, ciscoIPRA, ciscoNAS
+
+        for (int i=1; i<=numOfNodes; i++) {
+            System.err.println("----------------------------------------------------------------------------------- visitor #" + i);
+            String ipAddress = baseIpAddress + i;
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), params, 300000);
+            assertNotNull(visitor);
+            assertEquals(4, visitor.getThresholdGroups().size()); // mib2, cisco, ciscoIPRA, ciscoNAS
+        }
+        System.err.println("----------------------------------------------------------------------------------- end");
     }
 
     /*
@@ -921,6 +1013,50 @@ public class ThresholdingVisitorTest {
         String ifName = "wlan0";
         addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
         runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        verifyEvents(0);
+    }
+
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-bug3664.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
+     */
+    @Test
+    public void testBug3664() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3664.xml");
+        Integer ifIndex = 1;
+        Long ifSpeed = 10000000l;
+        String ifName = "wlan0";
+        String domain = "myDomain";
+        String ifAlias = ifName;
+        String ifAliasComment = "#";
+
+        String label = domain + "/" + ifAlias;
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", null, "ifOutOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, "Unknown", null, "ifInOctets", label, ifIndex.toString());
+
+        ThresholdingVisitor visitor = createVisitor();
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
+        CollectionAgent agent = createCollectionAgent();
+        IfResourceType resourceType = createInterfaceResourceType(agent);
+
+        // Step 1
+        IfInfo ifInfo = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 10000);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 10000);
+        AliasedResource resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
+        resource.visit(visitor);
+
+        // Step 2 - Increment Counters
+        ifInfo = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 46000);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
+        resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
         verifyEvents(0);
     }
 
@@ -1394,7 +1530,7 @@ public class ThresholdingVisitorTest {
         return path.delete();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

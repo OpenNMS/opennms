@@ -8,7 +8,6 @@ package org.opennms.web.admin.discovery;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.web.WebSecurityUtils;
@@ -16,7 +15,7 @@ import org.opennms.web.WebSecurityUtils;
 
 
 class GeneralSettingsLoader {
-	protected static Category log = ThreadCategory.getInstance("WEB");
+	protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
 	
 	public static DiscoveryConfiguration load(HttpServletRequest request, DiscoveryConfiguration config){
 		String initSTStr = request.getParameter("initialsleeptime");

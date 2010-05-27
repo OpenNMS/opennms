@@ -38,6 +38,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;
@@ -53,7 +54,7 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
     private BufferedReader m_in;
     
     public void close() {
-        System.out.println("Closing Socket");
+        LogUtils.infof(this, "Closing Socket");
         Socket socket = m_socket;
         m_socket = null;
         try {

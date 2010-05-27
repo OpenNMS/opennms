@@ -50,7 +50,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
@@ -227,7 +226,7 @@ final class TcpServer implements Runnable {
         log().debug("All TCP Handlers are stopped and removed");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -269,7 +268,7 @@ final class TcpServer implements Runnable {
                 }
 
                 log().debug("The socket has been closed");
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().warn("An exception occured closing the socket: " + e, e);
             }
 

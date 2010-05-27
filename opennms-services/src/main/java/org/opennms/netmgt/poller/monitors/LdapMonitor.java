@@ -215,7 +215,7 @@ final public class LdapMonitor extends IPv4Monitor {
                         try {
                             lc.disconnect();
                         } catch (LDAPException ex) {
-                            log().debug(ex);
+                            log().debug(ex.getMessage());
                         }
 
                         log().debug("could not bind to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
@@ -249,7 +249,7 @@ final public class LdapMonitor extends IPv4Monitor {
                     try {
                         lc.disconnect();
                     } catch (LDAPException ex) {
-                        log().debug(ex);
+                        log().debug(ex.getMessage());
                     }
 
                     log().debug("could not perform search " + searchFilter + " from " + searchBase);
@@ -262,7 +262,7 @@ final public class LdapMonitor extends IPv4Monitor {
                     if (log().isDebugEnabled())
                             log().debug("disconected from LDAP server " + address + " on port " + ldapPort);
                 } catch (LDAPException e) {
-                    log().debug(e);
+                    log().debug(e.getMessage());
                 }
             }
         } catch (ConnectException e) {

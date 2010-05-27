@@ -51,7 +51,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -411,7 +410,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncServices()
      */
     public void syncServices() {
-        m_jdbcTemplate.execute(new ConnectionCallback() {
+        m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 syncServices(con);
                 return null;
@@ -462,18 +461,17 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncServicesTable()
      */
-    @SuppressWarnings("unchecked")
     public List<String> syncServicesTable() {
-        return (List<String>)m_jdbcTemplate.execute(new ConnectionCallback() {
+        return m_jdbcTemplate.execute(new ConnectionCallback<List<String>>() {
 
-            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+            public List<String> doInConnection(Connection con) throws SQLException, DataAccessException {
                 return syncServicesTable(con);
             }
             
@@ -548,7 +546,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncManagementState()
      */
     public void syncManagementState() {
-        m_jdbcTemplate.execute(new ConnectionCallback() {
+        m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
 
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 syncManagementState(con);
@@ -828,7 +826,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#syncSnmpPrimaryState()
      */
     public void syncSnmpPrimaryState() {
-        m_jdbcTemplate.execute(new ConnectionCallback() {
+        m_jdbcTemplate.execute(new ConnectionCallback<Object>() {
 
             public Object doInConnection(Connection con) throws SQLException, DataAccessException {
                 syncSnmpPrimaryState(con);
@@ -1144,13 +1142,13 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#isInterfaceInDB(java.sql.Connection, java.net.InetAddress)
      */
     public boolean isInterfaceInDB(final InetAddress ifAddress) {
-        return ((Boolean)m_jdbcTemplate.execute(new ConnectionCallback() {
+        return m_jdbcTemplate.execute(new ConnectionCallback<Boolean>() {
 
-            public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+            public Boolean doInConnection(Connection con) throws SQLException, DataAccessException {
                     return isInterfaceInDB(con, ifAddress) ? Boolean.TRUE : Boolean.FALSE;
             }
             
-        })).booleanValue();
+        }).booleanValue();
     }
     
     public boolean isInterfaceInDB(Connection dbConn, InetAddress ifAddress) throws SQLException {

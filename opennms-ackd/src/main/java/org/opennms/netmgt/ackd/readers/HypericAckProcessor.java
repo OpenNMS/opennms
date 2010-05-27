@@ -223,7 +223,7 @@ public class HypericAckProcessor implements AckProcessor {
         }
     }
 
-    private static Logger log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(HypericAckProcessor.class);
     }
 
@@ -459,7 +459,7 @@ public class HypericAckProcessor implements AckProcessor {
                 //String statusText = httpMethod.getStatusText();
                 InputStream responseText = httpMethod.getResponseBodyAsStream();
 
-                retval = parseHypericAlerts(new InputStreamReader(responseText));
+                retval = parseHypericAlerts(new InputStreamReader(responseText, httpMethod.getResponseCharSet()));
             } finally{
                 httpMethod.releaseConnection();
             }

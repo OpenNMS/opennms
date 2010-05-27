@@ -39,7 +39,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -240,7 +239,7 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         return true;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass().getName());
     }
 }

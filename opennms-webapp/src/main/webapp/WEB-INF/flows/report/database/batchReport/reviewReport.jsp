@@ -69,7 +69,7 @@
             </tr>
 		</c:forEach>
 	  </table>
-	  <br>
+	  <br/>
 	  
 <form:form>  
     <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;

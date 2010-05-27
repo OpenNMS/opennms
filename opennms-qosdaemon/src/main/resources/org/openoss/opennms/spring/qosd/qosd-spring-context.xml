@@ -7,10 +7,17 @@
 	<import resource="applicationContext-dao.xml" />
   -->
 	
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" >
-			<value>file:${opennms.home}/etc/qosd.properties</value>
+	<bean id="qosdConfigProperty" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<property name="properties">
+			<props>
+				<prop key="qosd.config.directory">${opennms.home}/etc</prop>
+			</props>
 		</property>
+	</bean>
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" depends-on="qosdConfigProperty">
+		<property name="location" value="file:${qosd.config.directory}/qosd.properties"/>
 	</bean>
 
 	<bean id="QoSD" class="org.openoss.opennms.spring.qosd.QoSDimpl2">
@@ -20,7 +27,7 @@
 			<property name="assetRecordDao" ref="assetRecordDao" />
 			<property name="alarmListConnectionManager" ref="AlarmListConnectionManagerSpringImpl" />
 			<property name="onmsAlarmOssjMapper" ref="onmsAlarmOssjMapper" />
-			<property name="ossDao" ref="ossDao"	/>		
+			<property name="ossDao" ref="ossDao" />
 	</bean>
 	
 	<!-- Old Class
@@ -87,10 +94,13 @@
 	<bean id="AlarmListConnectionManagerSpringImpl"
 		class="org.openoss.opennms.spring.qosd.spring.AlarmListConnectionManagerSpringImpl"
 		depends-on="AlarmMonitorDaoImpl">
-		<property name="alarmMonitorDao" ref ="AlarmMonitorDaoImpl"/>
+		<property name="alarmMonitorDao" ref="AlarmMonitorDaoImpl"/>
 	</bean>
 	
-	
+	<!--
+	Seth 2010-05-05: Commenting this out since there should always be an 'eventIpcManager'
+	bean defined in the context that this runs inside.
+
 	<bean id="eventIpcManager-init"
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"
@@ -98,11 +108,10 @@
 	</bean>
 
 	<bean id="eventIpcManager"
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		depends-on="eventIpcManager-init">
-		<property name="staticMethod"
-			value="org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager" />
-	</bean>
+		class="org.opennms.netmgt.eventd.EventIpcManagerFactory"
+		depends-on="eventIpcManager-init"
+		factory-method="getIpcManager"/>
+	-->
 
 <!-- 
 	<bean id="alarmDao"
@@ -122,7 +131,7 @@
 	-->
 	
 	<!--  Method for sharing DAO across application contexts as a single instance -->
-	<bean id="ossDao-init" 		
+	<bean id="ossDao-init" 
 	    class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton" >
 		<property name="nodeDao" ref="nodeDao" />
 	    <property name="alarmDao" ref="alarmDao" />
@@ -132,11 +141,9 @@
 	</bean>
 
 	<bean id="ossDao" 
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
-		depends-on="ossDao-init">
-		<property name="staticMethod"
-			value="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton.getInstance" />
-	</bean>
+		class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton"
+		depends-on="ossDao-init"
+		factory-method="getInstance"/>
 	
 	<bean id="onmsAlarmOssjMapper"
 		class="org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper">

@@ -108,16 +108,16 @@ public class MockCategoryFactory implements CatFactory {
     }
 	
 	   public synchronized Category getCategory(String name) {
-	        Enumeration enumCG = m_config.enumerateCategorygroup();
+	        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
 	        while (enumCG.hasMoreElements()) {
-	            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+	            Categorygroup cg = enumCG.nextElement();
 
 	            // go through the categories
 	            Categories cats = cg.getCategories();
 
-	            Enumeration enumCat = cats.enumerateCategory();
+	            Enumeration<Category> enumCat = cats.enumerateCategory();
 	            while (enumCat.hasMoreElements()) {
-	                Category cat = (Category) enumCat.nextElement();
+	                Category cat = enumCat.nextElement();
 	                if (cat.getLabel().equals(name)) {
 	                    return cat;
 	                }
@@ -128,16 +128,16 @@ public class MockCategoryFactory implements CatFactory {
 	    }
 	   
 	   public synchronized String getEffectiveRule(String catlabel) {
-	        Enumeration enumCG = m_config.enumerateCategorygroup();
+	        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
 	        while (enumCG.hasMoreElements()) {
-	            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+	            Categorygroup cg = enumCG.nextElement();
 
 	            // go through the categories
 	            Categories cats = cg.getCategories();
 
-	            Enumeration enumCat = cats.enumerateCategory();
+	            Enumeration<Category> enumCat = cats.enumerateCategory();
 	            while (enumCat.hasMoreElements()) {
-	                Category cat = (Category) enumCat.nextElement();
+	                Category cat = enumCat.nextElement();
 	                if (cat.getLabel().equals(catlabel)) {
 	                    String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
 	                    return catRule;

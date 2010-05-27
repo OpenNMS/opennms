@@ -48,7 +48,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
@@ -316,7 +315,7 @@ public class Vulnscand extends AbstractServiceDaemon {
 	        ifStmt.setString(1, address.getHostAddress());
 	        ResultSet rset = ifStmt.executeQuery();
 	        d.watch(rset);
-	        Category log = log();
+	        ThreadCategory log = log();
 			if (rset.next()) {
 	            Timestamp lastPolled = rset.getTimestamp(1);
 	            if (lastPolled != null && rset.wasNull() == false) {
@@ -342,8 +341,8 @@ public class Vulnscand extends AbstractServiceDaemon {
 		return VulnscandConfigFactory.getInstance().getRescanFrequency();
 	}
 
-	Set getAllManagedInterfaces() {
-		Set retval = new TreeSet();
+	Set<String> getAllManagedInterfaces() {
+		Set<String> retval = new TreeSet<String>();
 		String addressString = null;
 
 		Connection connection = null;
@@ -398,15 +397,15 @@ public class Vulnscand extends AbstractServiceDaemon {
 
 		// If the status of the daemon is "true" (meaning "on")...
 		if (config.getStatus()) {
-			Enumeration scanLevels = config.enumerateScanLevel();
+			Enumeration<ScanLevel> scanLevels = config.enumerateScanLevel();
 
 			while (scanLevels.hasMoreElements()) {
-				ScanLevel scanLevel = (ScanLevel) scanLevels.nextElement();
+				ScanLevel scanLevel = scanLevels.nextElement();
 				int level = scanLevel.getLevel();
 
 				// Grab the list of included addresses for this level
 				//Set levelAddresses = configFactory.getAllIpAddresses(scanLevel);
-				Set levelAddresses = new TreeSet ();
+				Set levelAddresses = new TreeSet();
 
 				// If scanning of the managed IPs is enabled...
 				if (configFactory.getManagedInterfacesStatus()) {

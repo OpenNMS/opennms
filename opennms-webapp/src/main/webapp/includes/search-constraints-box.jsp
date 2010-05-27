@@ -64,7 +64,7 @@
 
 <!-- acknowledged/outstanding row -->
 
-<form action="outage/list.htm" method="GET" name="outage_search_constraints_box_outtype_form">
+<form action="outage/list.htm" method="get" name="outage_search_constraints_box_outtype_form">
   <%=Util.makeHiddenTags(req, new String[] {"outtype"})%>
     
   <p>

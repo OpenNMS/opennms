@@ -39,7 +39,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 import java.util.*;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.*;
 
@@ -104,18 +103,13 @@ public class Linkd extends AbstractServiceDaemon {
 	private List<String> m_newSuspenctEventsIpAddr = null;
 	
 	public Linkd() {
-		super("OpenNMS.Linkd");
+		super(LOG4J_CATEGORY);
 	}
 
 	public static Linkd getInstance() {
 		return m_singleton;
 	}
 
-	public Category log() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return ThreadCategory.getInstance();
-	}
-	
 	protected void onInit() {
 
         Assert.state(m_queryMgr != null, "must set the queryManager property");
@@ -123,11 +117,6 @@ public class Linkd extends AbstractServiceDaemon {
         Assert.state(m_scheduler != null, "must set the scheduler property");
         Assert.state(m_eventListener != null,"must be set the event receiver");
 	       
-		if (log().isInfoEnabled())
-			log()
-					.info("init: Category Level Set to "
-							+ log().getLevel().toString());
-
 		m_activepackages = new ArrayList<String>();
 		
 		// initialize the ipaddrsentevents
@@ -201,7 +190,7 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 	}
 	
-	public synchronized void onStart() {
+	protected synchronized void onStart() {
 
 		// start the scheduler
 		//
@@ -214,7 +203,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
-	public synchronized void onStop() {
+	protected synchronized void onStop() {
 
 		// Stop the scheduler
 		m_scheduler.stop();
@@ -225,11 +214,11 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
-	public synchronized void onPause() {
+	protected synchronized void onPause() {
 		m_scheduler.pause();
 	}
 
-	public synchronized void onResume() {
+	protected synchronized void onResume() {
 		m_scheduler.resume();
 	}
 
