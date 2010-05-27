@@ -436,6 +436,10 @@ public final class Threshd extends AbstractServiceDaemon {
                 // Initialize the thresholder with the service.
                 //
                 ServiceThresholder thresholder = this.getServiceThresholder(svcName);
+                if (thresholder == null) {
+                	log().warn("Unable to get service thresholder for service name " + svcName);
+                	return;
+                }
                 thresholder.initialize(tSvc, tSvc.getPropertyMap());
 
                 // Add new service to the thresholdable service list.
