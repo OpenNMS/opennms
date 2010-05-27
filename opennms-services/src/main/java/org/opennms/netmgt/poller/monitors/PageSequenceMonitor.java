@@ -215,11 +215,6 @@ public class PageSequenceMonitor extends IPv4Monitor {
             setRequestBody(parms);
         }
 
-        @Override
-        public boolean getFollowRedirects() {
-            return true;
-        }
-
     }
 
     public static class PageSequenceHttpGetMethod extends GetMethod implements PageSequenceHttpMethod {
