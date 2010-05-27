@@ -397,7 +397,7 @@ public final class Threshd extends AbstractServiceDaemon {
             }
             if (!foundInPkg) {
                 if (log().isDebugEnabled())
-                    log().debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                    log().debug("scheduleService: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
                 continue;
             }
 
@@ -438,7 +438,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 ServiceThresholder thresholder = this.getServiceThresholder(svcName);
                 if (thresholder == null) {
                 	log().warn("Unable to get service thresholder for service name " + svcName);
-                	return;
+                	continue;
                 }
                 thresholder.initialize(tSvc, tSvc.getPropertyMap());
 
