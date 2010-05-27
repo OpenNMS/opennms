@@ -211,7 +211,9 @@
         </tr>
       </table>
 
-      <% if( !(request.isUserInRole( org.opennms.web.springframework.security.Authentication.READONLY_ROLE ))) { %>
+      <% 
+      String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
+      if( !(request.isUserInRole( org.opennms.web.springframework.security.Authentication.READONLY_ROLE )) && acknowledgeEvent.equals("true")) { %>
         <form method="post" action="event/acknowledge">
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <input type="hidden" name="event" value="<%=event.getId()%>"/>
