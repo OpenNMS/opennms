@@ -50,7 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-@Transactional
+@Transactional(readOnly=false)
 public interface PollerBackEnd {
     
     /**
