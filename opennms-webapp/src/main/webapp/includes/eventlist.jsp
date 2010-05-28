@@ -202,7 +202,7 @@
        <td class="standard" colspan="2">
          <%
          String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
-         if( !(request.isUserInRole( Authentication.READONLY_ROLE )) && acknowledgeEvent.equals("true")) { %>
+         if( !(request.isUserInRole( Authentication.READONLY_ROLE )) && "true".equals(acknowledgeEvent)) { %>
            <nobr>
              <input type="button" value="Acknowledge" onclick="submitAck()">
              <input TYPE="reset" />
