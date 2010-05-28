@@ -122,6 +122,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private void addCriteriaForCommand(OnmsCriteria criteria, NodeListCommand command) {
         if (command.hasNodename()) {
             addCriteriaForNodename(criteria, command.getNodename());
+        } else if (command.hasNodeId()) {
+            addCriteriaForNodeId(criteria, command.getNodeId());
         } else if (command.hasIplike()) {
             addCriteriaForIpLike(criteria, command.getIplike());
         } else if (command.hasService()) {
@@ -184,6 +186,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
     private void addCriteriaForNodename(OnmsCriteria criteria, String nodeName) {
         criteria.add(Restrictions.ilike("node.label", nodeName, MatchMode.ANYWHERE));
+    }
+    
+    private void addCriteriaForNodeId(OnmsCriteria criteria, int nodeId) {
+        criteria.add(Restrictions.idEq(nodeId));
     }
     
     private void addCriteriaForForeignSource(OnmsCriteria criteria, String foreignSource) {

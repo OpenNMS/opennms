@@ -40,9 +40,28 @@
 
 --%>
 
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="
+		java.util.*,
+		org.opennms.web.element.*,
+		org.opennms.web.asset.*
+	"
+%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+  pageContext.setAttribute("serviceNameMap", new TreeMap(NetworkElementFactory.getServiceNameToIdMap()).entrySet());
+%>
 <h3 class="o-box">Quick Search</h3>
 <div class="boxWrapper">
   <div class="searchHost" style="position:relative; left: 0px;">
+    <form action="element/nodeList.htm" method="get">
+      <font style="font-size: 70%; line-height: 1.25em; align=left">Node ID:</font><br />
+      <input type="hidden" name="listInterfaces" value="false"/>
+      <input type="text" size="20" name="nodeId" />
+      <input type="submit" value="Search"/>
+    </form>
     <form action="element/nodeList.htm" method="get">
       <font style="font-size: 70%; line-height: 1.25em; align=left">Node label like:</font><br />
       <input type="hidden" name="listInterfaces" value="true"/>
@@ -53,6 +72,16 @@
       <font style="font-size: 70%; line-height: 1.25em; align=left">TCP/IP Address like:</font><br />
       <input type="hidden" name="listInterfaces" value="false"/>
       <input type="text" name="iplike" value="*.*.*.*" />
+      <input type="submit" value="Search"/>               
+    </form>
+    <form action="element/nodeList.htm" method="GET">
+      <font style="font-size: 70%; line-height: 1.25em; align=left">Providing service:</font><br />
+      <input type="hidden" name="listInterfaces" value="false"/>
+      <select name="service" size="1">
+      <c:forEach var="serviceNameId" items="${serviceNameMap}">
+        <option value="${serviceNameId.value}">${serviceNameId.key}</option>
+      </c:forEach>
+      </select>
       <input type="submit" value="Search"/>               
     </form>
   </div>
