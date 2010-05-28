@@ -44,13 +44,11 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-@Transactional(readOnly=false)
 public interface PollerBackEnd {
     
     /**
@@ -58,7 +56,6 @@ public interface PollerBackEnd {
      * 
      * @returns the set of monitoring loat
      */
-    @Transactional(readOnly=true)
     public abstract Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
     
     /**
@@ -114,7 +111,6 @@ public interface PollerBackEnd {
      * @param locationMonitorId the id of the requesting location monitor
      * @return the PollerConfiguration for the indicicated location monitor
      */
-    @Transactional(readOnly=true)
     public abstract PollerConfiguration getPollerConfiguration(int locationMonitorId);
     
     /**
