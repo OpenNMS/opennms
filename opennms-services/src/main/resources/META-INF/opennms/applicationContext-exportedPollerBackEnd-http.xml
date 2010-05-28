@@ -7,7 +7,7 @@
 
   <bean id="pollerBackEnd" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
     <qualifier value="http" />
-    <property name="service" ref="daemon" />
+    <property name="service" ref="backend" />
     <property name="serviceInterface" value="org.opennms.netmgt.poller.remote.PollerBackEnd" />
   </bean>
 </beans>

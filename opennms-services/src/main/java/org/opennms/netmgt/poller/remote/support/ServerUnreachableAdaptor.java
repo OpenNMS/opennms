@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -88,6 +89,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             return config;
         } catch (final RemoteAccessException e) {
             m_serverUnresponsive = true;
+            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
             return new EmptyPollerConfiguration();
         }
     }
@@ -101,6 +103,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         } catch (final RemoteAccessException e) {
             // we have failed to check in properly with the server
             m_serverUnresponsive = true;
+            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
             return MonitorStatus.DISCONNECTED;
         }
     }
@@ -117,6 +120,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             
         } catch (final RemoteAccessException e) {
             m_serverUnresponsive = true;
+            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
             return true;
         }
     }
@@ -136,6 +140,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
                 m_remoteBackEnd.reportResult(locationMonitorID, serviceId, status);
             } catch (RemoteAccessException e) {
                 m_serverUnresponsive = true;
+                LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
             }
         }
     }
@@ -146,6 +151,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             return m_remoteBackEnd.getServiceMonitorLocators(context);
         } catch (RemoteAccessException e) {
             m_serverUnresponsive = true;
+            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
             return Collections.emptyList();
         }
     }
@@ -155,6 +161,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         try {
             return m_remoteBackEnd.getMonitorName(locationMonitorId);
         } catch (RemoteAccessException e) {
+            LogUtils.warnf(this, e, "Server is unable to respond due to the following exception.");
             return (m_monitorName == null ? ""+locationMonitorId : m_monitorName);
         }
     }

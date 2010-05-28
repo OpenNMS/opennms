@@ -47,6 +47,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +63,7 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -90,7 +93,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase()
 public class PollerBackEndIntegrationTest{
     
-    @Autowired
+    @Resource(name="daemon")
     PollerBackEnd m_backEnd;
     
     @Autowired

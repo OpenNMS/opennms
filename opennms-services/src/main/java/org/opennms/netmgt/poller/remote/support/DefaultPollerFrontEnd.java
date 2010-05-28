@@ -607,6 +607,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             fireConfigurationChange(oldTime, getCurrentConfigTimestamp());
         } catch (final Exception e) {
             LogUtils.warnf(this, e, "Unable to get updated poller configuration.");
+            if (m_pollerConfiguration == null) {
+                m_pollerConfiguration = new EmptyPollerConfiguration();
+            }
         }
     }
 
