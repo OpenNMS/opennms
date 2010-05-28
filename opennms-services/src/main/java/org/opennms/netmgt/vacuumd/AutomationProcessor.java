@@ -587,7 +587,7 @@ public class AutomationProcessor implements ReadyRunnable {
             log().debug("runAutomation: Sending any possible configured event for automation: " + m_automationName);
 
             if (hasEvent()) {
-                EventBuilder bldr = new EventBuilder(new Event());
+                EventBuilder bldr = new EventBuilder(new Event(), "Automation");
                 buildEvent(bldr, new InvalidSymbolTable());
                 sendEvent(bldr.getEvent());
 
@@ -616,8 +616,7 @@ public class AutomationProcessor implements ReadyRunnable {
 
             // Loop through the select results
             while (triggerResultSet.next()) {
-                EventBuilder bldr = new EventBuilder(new Event());
-                bldr.setSource("Automation");
+                EventBuilder bldr = new EventBuilder(new Event(), "Automation");
                 ResultSetSymbolTable symbols = new ResultSetSymbolTable(triggerResultSet);
 
                 try {
