@@ -6,9 +6,10 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="opennmsnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-opennmsnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="acks" />
+		<tableExists tableName="applications" />
 		<tableExists tableName="assets" />
 		<tableExists tableName="atinterface" />
 		<tableExists tableName="datalinkinterface" />
@@ -16,6 +17,8 @@
 		<tableExists tableName="ifservices" />
 		<tableExists tableName="ipinterface" />
 		<tableExists tableName="linkstate" />
+		<tableExists tableName="location_monitors" />
+		<tableExists tableName="location_specific_status_changes" />
 		<tableExists tableName="map" />
 		<tableExists tableName="resourcereference" />
 		<tableExists tableName="snmpinterface" />
@@ -26,26 +29,29 @@
 		SELECT pg_catalog.setval(
 			'opennmsnxtid',
 			(SELECT max(multiMax.id) + 1 AS id FROM (
-				(SELECT max(id)    AS id FROM acks                 LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM assets               LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM atinterface          LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM datalinkinterface    LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM element              LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM ifservices           LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM ipinterface          LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM linkstate            LIMIT 1) UNION
-				(SELECT max(mapid) AS id FROM map                  LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM resourcereference    LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM snmpinterface        LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM statisticsreport     LIMIT 1) UNION
-				(SELECT max(id)    AS id FROM statisticsreportdata LIMIT 1)
+				(SELECT max(id)    AS id FROM acks                             LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM assets                           LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM applications                     LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM atinterface                      LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM datalinkinterface                LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM element                          LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM ifservices                       LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM ipinterface                      LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM linkstate                        LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM location_monitors                LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM location_specific_status_changes LIMIT 1) UNION
+				(SELECT max(mapid) AS id FROM map                              LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM resourcereference                LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM snmpinterface                    LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM statisticsreport                 LIMIT 1) UNION
+				(SELECT max(id)    AS id FROM statisticsreportdata             LIMIT 1)
 			) AS multiMax LIMIT 1),
 			true
 		);
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="nodenxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-nodenxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="node" />
 	</preConditions>
@@ -58,7 +64,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="servicenxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-servicenxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="service" />
 	</preConditions>
@@ -71,7 +77,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="eventsnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-eventsnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="events" />
 	</preConditions>
@@ -84,7 +90,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="alarmsnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-alarmsnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="alarms" />
 	</preConditions>
@@ -97,7 +103,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="outagenxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-outagenxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="outages" />
 	</preConditions>
@@ -110,7 +116,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="notifynxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-notifynxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="notifications" />
 	</preConditions>
@@ -123,7 +129,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="vulnnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-vulnnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="vulnerabilities" />
 	</preConditions>
@@ -136,7 +142,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="catnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-catnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="categories" />
 	</preConditions>
@@ -149,7 +155,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="usernotifnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-usernotifnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="usersnotified" />
 	</preConditions>
@@ -162,7 +168,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="demandpollnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-demandpollnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="demandpolls" />
 	</preConditions>
@@ -175,7 +181,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="pollresultnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-pollresultnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="pollresults" />
 	</preConditions>
@@ -188,7 +194,7 @@
 	</sql>
 </changeSet>
 
-<changeSet runAlways="true" runOnChange="true" author="rangerrick" id="mapnxtid-update-sequence" context="production">
+<changeSet author="rangerrick" id="1.7.92-repair-mapnxtid-fo-shizzle">
 	<preConditions onFail="MARK_RAN">
 		<tableExists tableName="map" />
 	</preConditions>
