@@ -213,7 +213,7 @@
 
       <% 
       String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
-      if( !(request.isUserInRole( org.opennms.web.springframework.security.Authentication.READONLY_ROLE )) && acknowledgeEvent.equals("true")) { %>
+      if( !(request.isUserInRole( org.opennms.web.springframework.security.Authentication.READONLY_ROLE )) && "true".equals(acknowledgeEvent)) { %>
         <form method="post" action="event/acknowledge">
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <input type="hidden" name="event" value="<%=event.getId()%>"/>
