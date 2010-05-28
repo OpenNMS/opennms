@@ -15,80 +15,27 @@
 
 package org.opennms.web.springframework.security;
 
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.ldap.SpringSecurityLdapTemplate;
-import org.springframework.security.ldap.LdapAuthoritiesPopulator;
-import org.springframework.ldap.core.ContextSource;
-import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.util.Assert;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.naming.directory.SearchControls;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
+
+import javax.naming.directory.SearchControls;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.GrantedAuthorityImpl;
+import org.springframework.security.ldap.LdapAuthoritiesPopulator;
+import org.springframework.security.ldap.SpringSecurityLdapTemplate;
+import org.springframework.util.Assert;
 
 
 /**
- * The default strategy for obtaining user role information from the directory.
- * <p>
- * It obtains roles by performing a search for "groups" the user is a member of.
- * <p>
- * A typical group search scenario would be where each group/role is specified using the <tt>groupOfNames</tt>
- * (or <tt>groupOfUniqueNames</tt>) LDAP objectClass and the user's DN is listed in the <tt>member</tt> (or
- * <tt>uniqueMember</tt>) attribute to indicate that they should be assigned that role. The following LDIF sample has
- * the groups stored under the DN <tt>ou=groups,dc=springframework,dc=org</tt> and a group called "developers" with
- * "ben" and "luke" as members:
- * <pre>
- * dn: ou=groups,dc=springframework,dc=org
- * objectClass: top
- * objectClass: organizationalUnit
- * ou: groups
- *
- * dn: cn=developers,ou=groups,dc=springframework,dc=org
- * objectClass: groupOfNames
- * objectClass: top
- * cn: developers
- * description: Spring Security Developers
- * member: uid=ben,ou=people,dc=springframework,dc=org
- * member: uid=luke,ou=people,dc=springframework,dc=org
- * ou: developer
- * </pre>
- * <p>
- * The group search is performed within a DN specified by the <tt>groupSearchBase</tt> property, which should
- * be relative to the root DN of its <tt>InitialDirContextFactory</tt>. If the search base is null, group searching is
- * disabled. The filter used in the search is defined by the <tt>groupSearchFilter</tt> property, with the filter
- * argument {0} being the full DN of the user. You can also optionally use the parameter {1}, which will be substituted
- * with the username. You can also specify which attribute defines the role name by setting
- * the <tt>groupRoleAttribute</tt> property (the default is "cn").
- * <p>
- * The configuration below shows how the group search might be performed with the above schema.
- * <pre>
- * &lt;bean id="ldapAuthoritiesPopulator"
- *       class="org.springframework.security.providers.ldap.populator.DefaultLdapAuthoritiesPopulator">
- *   &lt;constructor-arg ref="contextSource"/>
- *   &lt;constructor-arg value="ou=groups"/>
- *   &lt;property name="groupRoleAttribute" value="ou"/>
- * &lt;!-- the following properties are shown with their default values -->
- *   &lt;property name="searchSubTree" value="false"/>
- *   &lt;property name="rolePrefix" value="ROLE_"/>
- *   &lt;property name="convertToUpperCase" value="true"/>
- * &lt;/bean>
- * </pre>
- * A search for roles for user "uid=ben,ou=people,dc=springframework,dc=org" would return the single granted authority
- * "ROLE_DEVELOPER".
- * <p>
- * The single-level search is performed by default. Setting the <tt>searchSubTree</tt> property to true will enable
- * a search of the entire subtree under <tt>groupSearchBase</tt>.
- *
  * @author Luke Taylor
  * @version $Id: DefaultLdapAuthoritiesPopulator.java 3260 2008-08-26 12:38:02Z luke_t $
  */
@@ -130,12 +77,6 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
     
     private Map<String, List<String>> groupToRoleMap = new HashMap<String, List<String>>();
 
-    /**
-     * Attributes of the User's LDAP Object that contain role name information.
-     */
-
-//    private String[] userRoleAttributes = null;
-
     //~ Constructors ===================================================================================================
 
     /**
@@ -156,19 +97,6 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
     //~ Methods ========================================================================================================
 
     /**
-     * This method should be overridden if required to obtain any additional
-     * roles for the given user (on top of those obtained from the standard
-     * search implemented by this class).
-     *
-     * @param user the context representing the user who's roles are required
-     * @return the extra roles which will be merged with those returned by the group search
-     */
-
-    protected Set getAdditionalRoles(DirContextOperations user, String username) {
-        return null;
-    }
-
-    /**
      * Obtains the authorities for the user who's directory entry is represented by
      * the supplied LdapUserDetails object.
      *
@@ -182,44 +110,36 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
             logger.debug("Getting authorities for user " + userDn);
         }
 
-        Set roles = getGroupMembershipRoles(userDn, username);
-
-        Set extraRoles = getAdditionalRoles(user, username);
-
-        if (extraRoles != null) {
-            roles.addAll(extraRoles);
-        }
+        Set<GrantedAuthority> roles = getGroupMembershipRoles(userDn, username);
 
         if (defaultRole != null) {
             roles.add(defaultRole);
+            logger.debug("Added default role: " + defaultRole);
         }
 
         return (GrantedAuthority[]) roles.toArray(new GrantedAuthority[roles.size()]);
     }
 
-    public Set getGroupMembershipRoles(String userDn, String username) {
-        Set authorities = new HashSet();
+    @SuppressWarnings("unchecked")
+	public Set<GrantedAuthority> getGroupMembershipRoles(String userDn, String username) {
+        Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 
         if (getGroupSearchBase() == null) {
             return authorities;
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Searching for roles for user '" + username + "', DN = " + "'" + userDn + "', with filter "
+        logger.debug("Searching for groups for user '" + username + "', DN = " + "'" + userDn + "', with filter "
                     + groupSearchFilter + " in search base '" + getGroupSearchBase() + "'");
-        }
 
-        Set groups = ldapTemplate.searchForSingleAttributeValues(getGroupSearchBase(), groupSearchFilter,
+        Set<String> groups = ldapTemplate.searchForSingleAttributeValues(getGroupSearchBase(), groupSearchFilter,
                 new String[]{userDn, username}, groupRoleAttribute);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Roles from search: " + groups);
-        }
+        logger.debug("Groups from search: " + groups); 
         
         
-        Set roles = getRolesFromGroups(groups);
+        Set<String> roles = getRolesFromGroups(groups);
 
-        Iterator it = roles.iterator();
+        Iterator<String> it = roles.iterator();
         while (it.hasNext()) {
             String role = (String) it.next();
 
@@ -235,10 +155,11 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         
         for(String group : groups) {
             List<String> rolesForGroup = groupToRoleMap.get(group);
-        
+            logger.debug("Checking " + group + " for an associated role");
             if (rolesForGroup != null) {
                 for(String role : rolesForGroup) {
                     roles.add(role);
+                    logger.debug("Added role: " + role + " based on group " + group);
                 }
             }
         }
