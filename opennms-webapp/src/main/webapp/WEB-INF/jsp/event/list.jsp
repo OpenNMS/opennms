@@ -425,7 +425,9 @@
       </table>
         
         <p><%=events.length%> events
-          <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <% 
+          String acknowledgeEvents = System.getProperty("opennms.eventlist.acknowledge");
+          if( !(req.isUserInRole( Authentication.READONLY_ROLE )) && "true".equals(acknowledgeEvents)) { %>
             <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
               <input type="button" value="Acknowledge Events" onClick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
               <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>

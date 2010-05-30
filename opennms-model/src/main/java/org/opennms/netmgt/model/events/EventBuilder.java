@@ -69,8 +69,14 @@ public class EventBuilder {
         this(event, new Date());
     }
 
+    public EventBuilder(Event event, String source) {
+        this(event);
+        setSource(source);
+    }
+
     public EventBuilder(Event event, Date date) {
     	m_event = event;
+    	setSource(event.getSource());
 	    setTime(date);
 	    setCreationTime(date);
 	}
@@ -78,7 +84,7 @@ public class EventBuilder {
 	public Event getEvent() {
         return m_event;
     }
-    
+
     public EventBuilder setTime(Date date) {
        m_event.setTime(EventConstants.formatToString(date));
        return this;
