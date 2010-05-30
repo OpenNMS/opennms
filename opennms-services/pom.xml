@@ -227,11 +227,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.samba.jcifs</groupId>
-      <artifactId>jcifs</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>mx4j</groupId>
       <artifactId>mx4j-tools</artifactId>
       <scope>compile</scope>
@@ -295,6 +290,10 @@
       <groupId>com.novell.ldap</groupId>
       <artifactId>jldap</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jcifs-dependencies</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

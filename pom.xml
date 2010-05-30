@@ -981,6 +981,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jcifs-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jinterop-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1741,11 +1746,6 @@
         <groupId>org.dhcp.jdhcp</groupId>
         <artifactId>jdhcp</artifactId>
         <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.samba.jcifs</groupId>
-        <artifactId>jcifs</artifactId>
-        <version>1.2.19</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
