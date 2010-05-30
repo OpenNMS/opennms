@@ -19,6 +19,10 @@
   	</dependency>
   	<dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jcifs-dependencies</artifactId>
+  	</dependency>
+  	<dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
   	</dependency>
   	<dependency>
@@ -71,10 +75,6 @@
    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.phonebook</artifactId>
-   </dependency>
-   <dependency>
-      <groupId>org.samba.jcifs</groupId>
-      <artifactId>jcifs</artifactId>
    </dependency>
 
   </dependencies>
