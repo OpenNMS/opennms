@@ -181,6 +181,11 @@ public class NodeRestService extends OnmsRestService {
         return m_context.getResource(OnmsCategoryResource.class);
     }
 
+    @Path("{nodeCriteria}/assetRecord")
+    public AssetRecordResource getAssetRecordResource() {
+        return m_context.getResource(AssetRecordResource.class);
+    }
+    
     private OnmsCriteria getQueryFilters() {
         MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
