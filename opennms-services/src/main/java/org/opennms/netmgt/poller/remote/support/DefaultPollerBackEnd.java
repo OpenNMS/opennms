@@ -71,6 +71,7 @@ import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -78,6 +79,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
+@Transactional
 public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon {
 
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
@@ -178,10 +180,12 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return m_configurationTimestamp;
     }
 
+    @Transactional(readOnly=true)
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         return m_locMonDao.findAllMonitoringLocationDefinitions();
     }
 
+    @Transactional(readOnly=true)
     public String getMonitorName(final int locationMonitorId) {
         final OnmsLocationMonitor locationMonitor = m_locMonDao.load(locationMonitorId);
         return locationMonitor.getName();
@@ -203,6 +207,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return paramMap;
     }
 
+    @Transactional(readOnly=true)
     public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
         try {
 			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
@@ -247,6 +252,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return pkg;
     }
 
+    @Transactional(readOnly=true)
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
     	try {
 	        final Collection<ServiceMonitorLocator> locators = m_pollerConfig.getServiceMonitorLocators(context);

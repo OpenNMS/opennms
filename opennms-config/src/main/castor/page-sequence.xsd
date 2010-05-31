@@ -61,6 +61,7 @@
       <attribute name="failureMatch" type="string" use="optional" />
       <attribute name="failureMessage" type="string" use="optional" />
       <attribute name="successMatch" type="string" use="optional" />
+      <attribute name="locationMatch" type="string" use="optional" />
       <attribute name="response-range" type="string" use="optional" default="100-399" />
       <attribute name="ds-name" type="string" use="optional" />
     </complexType>

@@ -89,12 +89,15 @@ var selBoxTriangleStyles = {"fill":"dimgray"};
 var selBoxpreSelect = 0;
 
 // These are variables to set <ContextMenu> object style
-var cmdelta= 20;
-var cmwidth = 100;
-var cmmenuStyle={"fill":"grey"};
-var cmmenuElementStyle = {"fill":"grey"};
-var cmmenuElementTextStyle={"font-size": titleFontSize,"font-family":textFamily,"fill":"black"};
-var cmmenuElementMouseStyle={"fill":"grey","fill-opacity":0};
+var cmheight;
+var cmdelta= 30;
+var cmwidth = 200;
+
+var cmmenuStyle={"stroke":"dimgray","stroke-width":1,"fill":"mintcream"};
+var cmmenuElementStyle = {"fill":"mintcream", "fill-opacity":1.0};
+var cmmenuElementTextStyle={"font-size": 16,"font-family":"Times","fill":"black"};
+var cmmenuBarStyle={"stroke":"dimgray","stroke-width":0.5};
+var cmmenuElementMouseStyle={"fill":"blue"};
 
 // These are variables to set <ToolTip> object style
 var tooltipTextStyles = {"font-family":"Arial,Helvetica","fill":"dimgray","font-size":titleFontSize};
@@ -315,9 +318,5 @@ var currentMapAccess="", currentMapName="", currentMapOwner="", currentMapUserla
 //vars for set background color
 var x_picker,pick_begin,pick_color,pick_appui,comp_rouge=128,comp_vert=128,comp_bleu=128,pick_prefixe="pickColor",node,cible;
 	
-
-// Context menu height
-var cmheight;
-
 // Max number of links between two mapElements
 var maxLinks;

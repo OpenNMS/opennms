@@ -210,7 +210,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                         break;
                 }
             } catch (final Exception e) {
-                LogUtils.errorf(this, e, "Unexpected exception occurred loading the configs.");
+                LogUtils.errorf(this, e, "Unexpected exception occurred while checking in.");
                 setState(new FatalExceptionOccurred());
             }
             final String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
@@ -234,7 +234,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                 doStop();
                 setState(new Registering());
             } catch (final Exception e) {
-                LogUtils.errorf(this, e, "Unexpected exception occurred loading the configs.");
+                LogUtils.errorf(this, e, "Unexpected exception occurred while stopping.");
                 setState(new FatalExceptionOccurred());
             }
         }
@@ -269,7 +269,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             try {
                 doPollService(polledServiceId);
             } catch (Exception e) {
-                LogUtils.errorf(this, e, "Unexpected exception occurred loading the configs.");
+                LogUtils.errorf(this, e, "Unexpected exception occurred while polling service ID %s.", polledServiceId);
                 setState(new FatalExceptionOccurred());
             }
 
@@ -607,6 +607,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             fireConfigurationChange(oldTime, getCurrentConfigTimestamp());
         } catch (final Exception e) {
             LogUtils.warnf(this, e, "Unable to get updated poller configuration.");
+            if (m_pollerConfiguration == null) {
+                m_pollerConfiguration = new EmptyPollerConfiguration();
+            }
         }
     }
 

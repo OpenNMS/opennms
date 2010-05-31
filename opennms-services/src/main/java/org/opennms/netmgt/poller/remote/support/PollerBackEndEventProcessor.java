@@ -9,8 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @EventListener(name="pollerBackEnd")
 public class PollerBackEndEventProcessor {
-    @Autowired
+
     private PollerBackEnd m_pollerBackEnd;
+    
+    public void setPollerBackEnd(PollerBackEnd pollerBackEnd) {
+        m_pollerBackEnd = pollerBackEnd;
+    }
 
     @EventHandler(uei=EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI)
     public void handleSnmpPollerConfigChanged(final Event event) {

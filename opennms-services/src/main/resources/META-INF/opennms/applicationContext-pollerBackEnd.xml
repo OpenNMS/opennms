@@ -24,8 +24,14 @@
     <property name="eventIpcManager" ref="eventIpcManager" />
     <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout" />
   </bean>
+  
+  <bean name="backend" class="org.opennms.netmgt.poller.remote.support.ExceptionProtectedPollerBackEnd">
+    <property name="delegate" ref="daemon" />
+  </bean>
 
-  <bean name="pollerBackEndEventProcessor" class="org.opennms.netmgt.poller.remote.support.PollerBackEndEventProcessor" />
+  <bean name="pollerBackEndEventProcessor" class="org.opennms.netmgt.poller.remote.support.PollerBackEndEventProcessor" >
+    <property name="pollerBackEnd" ref="daemon" />
+  </bean>
 
   <bean name="pollerBackEndEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="pollerBackEndEventProcessor" />

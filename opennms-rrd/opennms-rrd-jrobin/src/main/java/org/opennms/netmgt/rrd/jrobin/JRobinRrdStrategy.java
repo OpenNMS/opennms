@@ -397,11 +397,11 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
             } else if (arg.startsWith("--width=")) {
                 String[] argParm = tokenize(arg, "=", true);
                 width = Integer.parseInt(argParm[1]);
-                log().debug("JRobin width: "+height);
+                log().debug("JRobin width: "+width);
             } else if (arg.equals("--width")) {
                 if (i + 1 < commandArray.length) {
                     width = Integer.parseInt(commandArray[++i]);
-                    log().debug("JRobin width: "+height);
+                    log().debug("JRobin width: "+width);
                 } else {
                     throw new IllegalArgumentException("--width must be followed by a number");
                 }

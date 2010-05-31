@@ -98,6 +98,10 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
         importResource("classpath:/dw/import/dw_test_import.xml");
 
         OnmsNode onmsNode = m_nodeDao.findByForeignId("dw", "arthur");
+        
+	//NodeScan scan = m_provisioner.createNodeScan(onmsNode.getId(), onmsNode.getForeignSource(), onmsNode.getForeignId());
+        //runScan(scan);
+
         eventRecieved.await();
 
         String sysObjectId = onmsNode.getSysObjectId();

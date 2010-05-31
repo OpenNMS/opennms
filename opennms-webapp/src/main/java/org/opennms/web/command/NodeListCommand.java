@@ -56,7 +56,17 @@ public class NodeListCommand {
     private boolean m_nodesWithOutages = false;
     private boolean m_nodesWithDownAggregateStatus = false;
     private boolean m_listInterfaces = false;
+    private int m_nodeId = -1;
     
+    public void setNodeId(int nodeId) {
+        m_nodeId = nodeId;
+    }
+    public int getNodeId() {
+        return m_nodeId;
+    }
+    public boolean hasNodeId() {
+        return m_nodeId >= 0;
+    }
     public void setNodename(String nodename) {
         m_nodename = nodename;
     }
