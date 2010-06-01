@@ -443,7 +443,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
     }
 
-    public void doPollService(Integer polledServiceId) {
+    public void doPollService(final Integer polledServiceId) {
         final PollStatus result = doPoll(polledServiceId);
         if (result == null)
             return;
@@ -470,7 +470,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         final HashMap<String, String> details = new HashMap<String, String>();
         final Properties p = System.getProperties();
 
-        for (Map.Entry<Object, Object> e : p.entrySet()) {
+        for (final Map.Entry<Object, Object> e : p.entrySet()) {
             if (e.getKey().toString().startsWith("os.") && e.getValue() != null) {
                 details.put(e.getKey().toString(), e.getValue().toString());
             }
@@ -550,6 +550,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
     public void setInitialPollTime(final Integer polledServiceId, final Date initialPollTime) {
         final ServicePollState pollState = getServicePollState(polledServiceId);
+        if (pollState == null) return;
+
         pollState.setInitialPollTime(initialPollTime);
         fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
     }
@@ -598,7 +600,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
                 int i = 0;
                 m_pollState.clear();
-                for (PolledService service : getPolledServices()) {
+                for (final PolledService service : getPolledServices()) {
                     m_pollService.initialize(service);
                     m_pollState.put(service.getServiceId(), new ServicePollState(service, i++));
                 }
@@ -616,9 +618,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     private PollStatus doPoll(final Integer polledServiceId) {
 
         final PolledService polledService = getPolledService(polledServiceId);
-        if (polledService == null) {
-            return null;
-        }
+        if (polledService == null) return null;
         final PollStatus result = m_pollService.poll(polledService);
         return result;
     }
@@ -697,6 +697,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
     private void updateServicePollState(final Integer polledServiceId, final PollStatus result) {
         final ServicePollState pollState = getServicePollState(polledServiceId);
+        if (pollState == null) return;
         pollState.setLastPoll(result);
         fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
     }
