@@ -92,6 +92,7 @@ var selBoxpreSelect = 0;
 var cmheight;
 var cmdelta= 30;
 var cmwidth = 200;
+var cmsubwidth = 150;
 
 var cmmenuStyle={"stroke":"dimgray","stroke-width":1,"fill":"mintcream"};
 var cmmenuElementStyle = {"fill":"mintcream", "fill-opacity":1.0};

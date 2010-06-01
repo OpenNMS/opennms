@@ -56,7 +56,7 @@ function onMouseDownOnSLink(evt) {
 			var x=evt.clientX + 2;
 			var y=evt.clientY + 4;
 			var height = cmdelta * (slink.getNumberOfMultiLinks()+2);
-			var cm =  new ContextMenuSimulator(winSvgElement,slink.id,"Summary Link",x,y,cmwidth,height,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
+			var cm =  new ContextMenuSimulator(winSvgElement,slink.id,"Summary Link",x,y,cmwidth,cmsubwidth,height,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
 			cm.addItem(slink.id,LINK_TEXT[slink.getTypology()],execLinkCMAction,true);
 			for ( var linkid in slink.getLinks() ) {
 			    var link = slink.getLinks()[linkid];
@@ -101,7 +101,7 @@ function onClickMapElement(evt)
 			var x = mapElement.getX() + mapElemDimension;
 			var y = mapElement.getY() ;
 			
-			var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
+			var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmsubwidth,cmheight,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
 			var addcmbar=true;
 			for(var index in CM_COMMANDS){
 				if(CM_COMMANDS[index]=="-"){
@@ -121,10 +121,6 @@ function onClickMapElement(evt)
 			
 	}
 }
-
-function openContextMenu(mapElement) {
-}
-
 
 function onMouseDownOnMapElement(evt)
 {	
@@ -294,6 +290,7 @@ function onMouseDownOnLink(evt)
 		{			
 			var nodeid1,label1,maplabel1;
 			var nodeid2,label2,maplabel2;
+			var label = new String();
 			// First node
 			var first = mapLink.getMapElement1();
 			var second = mapLink.getMapElement2();
@@ -302,45 +299,42 @@ function onMouseDownOnLink(evt)
 			{
 				nodeid1 = first.getNodeId();
 				label1 = first.getLabel();
+				label +=label1;
 			} else {
 				nodeid1 = mapLink.getFirstNodeId();
 				label1 = nodeidSortAss[nodeid1].getLabel();
 				maplabel1 = first.getLabel();
+				label +=maplabel1;
 			}
+			label+=" - ";
 
 			if(second.isNode())
 			{
 				nodeid2 = second.getNodeId();
 				label2 = second.getLabel();
-					
+				label += label2;
 			} else {
 				nodeid2 = mapLink.getSecondNodeId();
 				label2 = nodeidSortAss[nodeid2].getLabel();
 				maplabel2 = second.getLabel();
+				label += maplabel2;
 			}
 			var x=evt.clientX + 2;
 			var y=evt.clientY + 4;
-			var cm=new ContextMenuSimulator(winSvgElement,id,"Node List",x,y,cmwidth,3*cmdelta,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
-			var kk=0;
-			for(var index in CM_COMMANDS){
-				if(CM_COMMANDS[index]!="-") 
-					kk++;
-			}
-			cm.addSubMenu(nodeid1,label1,execSelectedCMActionFromSubMenu,true,kk);
-			cm.addSubMenu(nodeid2,label2,execSelectedCMActionFromSubMenu,false,kk);
+			var cm=new ContextMenuSimulator(winSvgElement,id,label,x,y,cmwidth,cmsubwidth,cmheight,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
 
-			var cmaddbar=true;			
+			var addcmbar=true;			
 			for(var index in CM_COMMANDS){
 				if(CM_COMMANDS[index]=="-"){
-					cmaddbar=true;			
+					addcmbar=true;
 				}else{
 					var commandLabel = unescape(CM_COMMANDS[index]);
-					cm.addSubMenuItem(nodeid1,index,commandLabel,cmaddbar);
-					cm.addSubMenuItem(nodeid2,index,commandLabel,cmaddbar);
-					cmaddbar=false;			
+					cm.addSubMenu(index,commandLabel,execSelectedCMActionFromSubMenu,addcmbar,2);
+					cm.addSubMenuItem(index,nodeid1,label1,false);
+					cm.addSubMenuItem(index,nodeid2,label2,false);
+					addcmbar=false;
 				}
 			}
-
 //if (first.isMap())
 //cm1.addItem("Mapbase","Map: " + maplabel1, ciao,false);
 //if (second.isMap())
@@ -472,7 +466,7 @@ function ciao() {
 	return;
 }
 
-function execSelectedCMActionFromSubMenu(nodeid,id,menulabel,index) {
+function execSelectedCMActionFromSubMenu(index,id,menulabel,nodeid) {
 	if(CM_COMMANDS[index]){
 		var link = CM_LINKS[index];
 		var params = CM_PARAMS[index];				
