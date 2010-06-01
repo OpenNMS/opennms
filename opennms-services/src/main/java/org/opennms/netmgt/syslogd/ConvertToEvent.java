@@ -53,7 +53,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -263,7 +262,7 @@ final class ConvertToEvent {
         // These 2 debugs will aid in analyzing the regexes as syslog seems
         // to differ a lot depending on implementation or message structure.
 
-        boolean traceEnabled = log.isEnabledFor(Level.TRACE);
+        boolean traceEnabled = log.isEnabledFor(ThreadCategory.Level.TRACE);
 
         if (traceEnabled) {
             log.trace("Message : " + message);

@@ -54,8 +54,8 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -249,7 +249,7 @@ final public class NrpeMonitor extends IPv4Monitor {
                 }
             } catch (NoRouteToHostException e) {
 				reason = "No route to host exception for address " + ipv4Addr.getHostAddress();
-                if (log().isEnabledFor(Level.WARN)) {
+                if (log().isEnabledFor(ThreadCategory.Level.WARN)) {
 	                e.fillInStackTrace();
                     log().warn("poll: " + reason, e);
                 }

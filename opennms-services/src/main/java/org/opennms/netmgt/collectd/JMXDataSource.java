@@ -40,7 +40,6 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
@@ -212,7 +211,7 @@ public class JMXDataSource  {
                 // Truncate MIB object name/alias if it exceeds the 19 char max for
                 // RRD data source names.
                 if (this.getName().length() > MAX_DS_NAME_LENGTH) {
-                        if (log.isEnabledFor(Level.WARN))
+                        if (log.isEnabledFor(ThreadCategory.Level.WARN))
                                 log.warn(
                                         "buildDataSourceList: Mib object name/alias '"
                                                 + obj.getAlias()
