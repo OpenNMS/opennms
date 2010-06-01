@@ -111,7 +111,7 @@ public class IpInterfaceScan implements RunInBatch {
             }
 
             public void handleException(Throwable t) {
-                infof(this, t, "Exception occurred trying to detect service %s on address %s", serviceName, getAddress().getHostAddress());
+                infof(this, t, "Exception occurred while trying to detect service %s on address %s", serviceName, getAddress().getHostAddress());
             }
         };
     }

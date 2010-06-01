@@ -35,11 +35,12 @@
 //
 package org.opennms.netmgt.collectd;
 
-import org.opennms.core.utils.ThreadCategory;
 
 public class CollectionException extends Exception {
-    
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9090428901522833535L;
 
     private int m_errorCode = ServiceCollector.COLLECTION_FAILED;
 
@@ -57,23 +58,6 @@ public class CollectionException extends Exception {
 
     public CollectionException(Throwable cause) {
         super(cause);
-    }
-
-    public int reportError() {
-        logError();
-    	return getErrorCode();
-    }
-
-    protected void logError() {
-        if (getCause() == null) {
-            log().error(getMessage());
-    	} else {
-            log().error(getMessage(), getCause());
-    	}
-    }
-
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     void setErrorCode(int errorCode) {

@@ -36,7 +36,11 @@
 package org.opennms.netmgt.collectd;
 
 public class CollectionFailed extends CollectionException {
-    private static final long serialVersionUID = 1L;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3306639630332715369L;
 
     public CollectionFailed() {
         super();
@@ -56,13 +60,5 @@ public class CollectionFailed extends CollectionException {
 
     public CollectionFailed(Throwable cause) {
         super(cause);
-    }
-
-    protected void logError() {
-        if (getCause() == null) {
-            log().warn(getMessage());
-        } else {
-            log().warn(getMessage(), getCause());
-        }
     }
 }

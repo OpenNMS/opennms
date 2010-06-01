@@ -52,7 +52,6 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
@@ -512,7 +511,7 @@ public class NodeScan implements RunInBatch {
             
             getProvisionService().deleteObsoleteInterfaces(getNodeId(), getScanStamp());
             
-            LogUtils.debugf(this, "Finished phase " + phase);
+            debugf(this, "Finished phase " + phase);
         }
 
         public void run(ContainerTask<?> parent) {
