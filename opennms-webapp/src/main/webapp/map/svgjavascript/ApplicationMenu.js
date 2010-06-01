@@ -1887,13 +1887,37 @@ function getInfoOnSLink(slink)
 	tspanContent = document.createTextNode(" Type: "+LINK_TEXT[slink.getTypology()]);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
+
+	var nodeids = slink.getNodeIds();
+	var numberofnodes=0;
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	for (var k in nodeids) {
+		numberofnodes++;
+		if (k<8) {
+			var tspanContent = document.createTextNode(" Linked Node: " + nodeidSortAss[nodeids[k]].getLabel());
+			tspan.appendChild(tspanContent);
+			text.appendChild(tspan);
+			tspan = document.createElementNS(svgNS,"tspan");
+			tspan.setAttributeNS(null, "x","3");
+			tspan.setAttributeNS(null, "dy","15");
+		} else {
+			var tspanContent = document.createTextNode(" More Linked Node found....");
+			tspan.appendChild(tspanContent);
+			text.appendChild(tspan);
+			tspan = document.createElementNS(svgNS,"tspan");
+			tspan.setAttributeNS(null, "x","3");
+			tspan.setAttributeNS(null, "dy","15");
+		}
+	}
 	
 	for (var linkid in slink.getLinks()) {
 		var link = slink.getLinks()[linkid];
 		tspan = document.createElementNS(svgNS,"tspan");
 		tspan.setAttributeNS(null, "x","3");
 		tspan.setAttributeNS(null, "dy","15");
-		tspanContent = document.createTextNode(" Type(#links): " + LINK_TEXT[link.getTypology()] + "(" + link.getNumberOfLinks() + ")");
+		tspanContent = document.createTextNode(" Type: " + LINK_TEXT[link.getTypology()] + "(" + link.getNumberOfLinks() + " links)");
 		tspan.appendChild(tspanContent);
 		text.appendChild(tspan);
 	}
@@ -1919,6 +1943,13 @@ function getInfoOnSLink(slink)
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
 	tspanContent = document.createTextNode(" Number of MultiLinks: "+slink.getNumberOfMultiLinks());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of Nodes: "+numberofnodes);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);	
 	

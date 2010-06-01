@@ -78,6 +78,7 @@ function SLink(id, typology, mapElement1,mapElement2, stroke, stroke_width, dash
 	
 		this.links = new Array();
 		this.statusMap = new Array();
+		this.nodeids = new Array();
 		this.numberOfLinks=0;
 		this.numberOfMultiLinks=0;
 		this.statutes=0
@@ -229,7 +230,21 @@ SLink.prototype.addLink = function(link)
 		this.statusStroke = this.stroke;
 		this.line.setAttributeNS(null,"stroke", this.stroke);
 	}
+	
+	var linknodeids = link.getNodeIds();
+	for (var k in linknodeids ) {
+		var nodeid = linknodeids[k];
+		var index = this.nodeids.indexOf(nodeid);
+		if ( index == -1 )
+		  this.nodeids.push(nodeid);
+	}
 }
+
+SLink.prototype.getNodeIds = function()
+{
+	return this.nodeids;
+}
+
 
 SLink.prototype.switchLink = function(linkId)
 {
