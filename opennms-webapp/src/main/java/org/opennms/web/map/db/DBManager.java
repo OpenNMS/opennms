@@ -1158,57 +1158,25 @@ public class DBManager extends Manager {
     public Vector<VElementInfo> getAllElementInfo() throws MapsException {
         Connection conn = createConnection();
         try {
-            final String sqlQuery = " SELECT  nodeid,nodelabel FROM node WHERE nodetype!='D'";
+            final String sqlQuery = "SELECT  n.nodeid,n.nodelabel,i.ipaddr FROM node n left join ipinterface i on n.nodeid=i.nodeid" +
+            		" WHERE n.nodetype!='D' and (i.issnmpprimary='P' or i.issnmpprimary='N') order by nodeid,issnmpprimary desc";
             PreparedStatement statement = conn.prepareStatement(sqlQuery);
             ResultSet rs = statement.executeQuery();
             Vector<VElementInfo> elements = new Vector<VElementInfo>();
+            int previousNodeid = -1;
             while (rs.next()) {
-                VElementInfo ei = new VElementInfo(
-                                                   rs.getInt("nodeid"),
-                                                   "",
-                                                   0,
-                                                   (rs.getString("nodelabel") != null) ? rs.getString("nodelabel")
-                                                                                      : "("
-                                                                                              + rs.getInt("nodeid")
-                                                                                              + ")");
-                elements.add(ei);
+                int curnodeid = rs.getInt("nodeid");
+                if (curnodeid != previousNodeid) {
+                    VElementInfo ei = new VElementInfo(curnodeid,rs.getString("ipaddr"),rs.getString("nodelabel"));
+                    elements.add(ei);
+                }
+                previousNodeid=curnodeid;
             }
             rs.close();
             statement.close();
             return elements;
         } catch (Exception e) {
             log.error("Exception while getting all element infos", e);
-            throw new MapsException(e);
-        } finally {
-            releaseConnection(conn);
-        }
-    }
-
-    public Vector<VElementInfo> getElementInfoLike(String like)
-            throws MapsException {
-        Connection conn = createConnection();
-        try {
-            final String sqlQuery = " SELECT  nodeid,nodelabel FROM node WHERE nodelabel like '"
-                    + like + "%' AND  nodetype!='D'";
-            PreparedStatement statement = conn.prepareStatement(sqlQuery);
-            ResultSet rs = statement.executeQuery();
-            Vector<VElementInfo> elements = new Vector<VElementInfo>();
-            while (rs.next()) {
-                VElementInfo ei = new VElementInfo(
-                                                   rs.getInt("nodeid"),
-                                                   "",
-                                                   0,
-                                                   (rs.getString("nodelabel") != null) ? rs.getString("nodelabel")
-                                                                                      : "("
-                                                                                              + rs.getInt("nodeid")
-                                                                                              + ")");
-                elements.add(ei);
-            }
-            rs.close();
-            statement.close();
-            return elements;
-        } catch (Exception e) {
-            log.error("Exception while getting element infos like " + like, e);
             throw new MapsException(e);
         } finally {
             releaseConnection(conn);

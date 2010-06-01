@@ -37,8 +37,6 @@ package org.opennms.web.map.view;
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 public class VElementInfo implements Cloneable {
     
@@ -50,9 +48,13 @@ public class VElementInfo implements Cloneable {
     
     private String label;
     
+    private String ipaddr;
     
     
-	public String getLabel() {
+	public String getIpaddr() {
+        return ipaddr;
+    }
+    public String getLabel() {
 		return label;
 	}
 	public int getId() {
@@ -73,11 +75,10 @@ public class VElementInfo implements Cloneable {
 	 * @param severity
 	 * @param label
 	 */
-	public VElementInfo(int id, String uei, int severity, String label) {
+	public VElementInfo(int id, String ipaddr, String label) {
 		super();
 		this.id = id;
-		this.uei = uei;
-		this.severity = severity;
+		this.ipaddr = ipaddr;
 		this.label=label;
 	}
 	
