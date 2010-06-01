@@ -54,7 +54,12 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
  */
 public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 
-    protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6445179110488848137L;
+
+	protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

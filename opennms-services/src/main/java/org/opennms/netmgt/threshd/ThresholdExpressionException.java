@@ -40,6 +40,11 @@ package org.opennms.netmgt.threshd;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  */
 public class ThresholdExpressionException extends Exception {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6699551250959285584L;
+
     public ThresholdExpressionException(String message) {
         super(message);
     }

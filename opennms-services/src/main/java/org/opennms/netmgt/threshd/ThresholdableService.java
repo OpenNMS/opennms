@@ -68,6 +68,11 @@ import org.opennms.netmgt.xml.event.Event;
  * @deprecated Thresholding now done in CollectableService (in colle 
  */
 final class ThresholdableService extends IPv4NetworkInterface implements ThresholdNetworkInterface, ReadyRunnable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2477161545461824755L;
+
     /**
      * Interface's parent node identifier
      */

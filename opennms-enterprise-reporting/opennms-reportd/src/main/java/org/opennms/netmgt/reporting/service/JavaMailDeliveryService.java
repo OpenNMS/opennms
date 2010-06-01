@@ -35,11 +35,11 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
             sm.send();
 
         } catch (JavaMailerException e) {
-            LogUtils.errorf(this,"Problem with JavaMailer %s", e.getMessage());
+            LogUtils.errorf(this, e, "Problem with JavaMailer %s", e.getMessage());
         } catch (MessagingException e) {
-            LogUtils.errorf(this,"Problem with Messaing %s", e.getMessage());
+            LogUtils.errorf(this, e, "Problem with Messaging %s", e.getMessage());
         } catch (Exception e) {
-            LogUtils.errorf(this,"Non Specific Error: %s",e.getMessage());
+            LogUtils.errorf(this, e, "Unexpected exception: %s",e.getMessage());
         }
         
     }
