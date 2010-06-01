@@ -366,7 +366,7 @@ function load(evt){
 		</svg>	
 		
 		<!-- ********* TOP I N F O ********* -->
-    	<svg  y="220" width="100%" height="130" id="TopInfo">
+    	<svg  y="220" width="100%" height="250" id="TopInfo">
 			<g id="TopInfoText" x="5" y="5"/>
 			<g id="nodes" />
 			<g id="categories" />

@@ -39,6 +39,8 @@ package org.opennms.web.map.view;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.web.map.MapsConstants;
 
@@ -52,9 +54,9 @@ final public class VLink {
 	private int elem1Id;
 	private String elem2Type;
     private int elem2Id;	
-	private int nodeid1;
-	private int nodeid2;
-	private Map<String, Integer> vlinkStatusMap;
+    private Set<Integer> nodeids;
+
+    private Map<String, Integer> vlinkStatusMap;
 	private int numberOfLinks;
     //the link type defined in the map properties file
 	private int linkTypeId;
@@ -84,6 +86,7 @@ final public class VLink {
         }
 		id = id+"-"+linkTypeId;
 		this.id = id;
+		this.nodeids = new TreeSet<Integer>();
 	}
 	
 	public Map<String, Integer> getVlinkStatusMap() {
@@ -142,22 +145,6 @@ final public class VLink {
     public String getId() {
 		return id;
 	}
-
-    public int getFirstNodeid() {
-        return nodeid1;
-    }
-
-    public void setFirstNodeid(int nodeid) {
-        this.nodeid1 =nodeid;
-    }
-
-    public int getSecondNodeid() {
-        return nodeid2;
-    }
-
-    public void setSecondNodeid(int nodeid) {
-        this.nodeid2 =nodeid;
-    }
     
     public int increaseLinks() {
         return ++numberOfLinks;
@@ -170,6 +157,14 @@ final public class VLink {
         } 
         vlinkStatusMap.put(statusString, ++i);
         return i;
+    }
+
+    public Set<Integer> getNodeids() {
+        return nodeids;
+    }
+
+    public void setNodeids(Set<Integer> nodeids) {
+        this.nodeids = nodeids;
     }
 
 }

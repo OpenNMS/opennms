@@ -280,21 +280,20 @@ function handleAddElementResponse(data) {
 	}	
 	// Links
 
-	var vlink,id1,id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
+	var vlink,id1,id2, typology, status,nodeids,numberOfLinks, statusMap;
 	for(var linksIndex in addElem.links) {
 		vlink = addElem.links[linksIndex];
 		id1=vlink.first;
 		id2=vlink.second;
 		typology=vlink.linkTypeId;
 		status=vlink.linkStatusString;
-		nodeid1=vlink.firstNodeid;
-		nodeid2=vlink.secondNodeid;
+		nodeids=vlink.nodeids;
 		numberOfLinks=vlink.numberOfLinks;
 		statusMap=vlink.vlinkStatusMap;
 		if ( numberOfLinks == 1 )
-			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);
 		else
-			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);		
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);		
 	}
 		
 	map.render();
@@ -504,20 +503,19 @@ function handleLoadingMap(data) {
 		}
 	}
 	for ( var link in openingMap.links ) {
-		var id1, id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
+		var id1, id2, typology, status,nodeids,numberOfLinks, statusMap;
 		var vlink = openingMap.links[link];
 		id1=vlink.first;
 		id2=vlink.second;
 		typology=vlink.linkTypeId;
 		status=vlink.linkStatusString;
-		nodeid1=vlink.firstNodeid;
-		nodeid2=vlink.secondNodeid;
+		nodeids=vlink.nodeids;
 		numberOfLinks=vlink.numberOfLinks;
 		statusMap=vlink.vlinkStatusMap;
 		if ( numberOfLinks == 1 )
-			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);
 		else
-			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);		
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);		
 	}
 	
 	savedMapString=getMapString();
@@ -799,21 +797,20 @@ function handleRefreshNodesResponse(data) {
 		}
 	}
 	// Links		
-	var vlink,id1,id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
+	var vlink,id1,id2, typology, status,nodeids,numberOfLinks, statusMap;
 	for(var linksIndex in refreshResponse.links) {
 		vlink = refreshResponse.links[linksIndex];
 		id1=vlink.first;
 		id2=vlink.second;
 		typology=vlink.linkTypeId;
 		status=vlink.linkStatusString;
-		nodeid1=vlink.firstNodeid;
-		nodeid2=vlink.secondNodeid;
+		nodeids=vlink.nodeids;
 		numberOfLinks=vlink.numberOfLinks;
 		statusMap=vlink.vlinkStatusMap;
 		if ( numberOfLinks == 1 )
-			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);
 		else
-			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);		
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);		
 	}
 	map.render();
 

@@ -272,11 +272,9 @@ function resetDraggableObject(){
 	}
 }		
 		
-function onMouseDownOnLink(evt)
-{
+function onMouseDownOnLink(evt) {
 	resetSelectedObjects();
-	if ((typeof map) == "object")
-	{
+	if ((typeof map) == "object") {
 		// close other menus
 		windowsClean();
 
@@ -286,60 +284,32 @@ function onMouseDownOnLink(evt)
 		var mapLink = map.mapLinks[id];
 		writeTopInfoText(getInfoOnLink(mapLink));
 		
-		if (evt.detail == 2)
-		{			
-			var nodeid1,label1,maplabel1;
-			var nodeid2,label2,maplabel2;
+		if (evt.detail == 2) {			
 			var label = new String();
-			// First node
-			var first = mapLink.getMapElement1();
-			var second = mapLink.getMapElement2();
 
-			if(first.isNode())
-			{
-				nodeid1 = first.getNodeId();
-				label1 = first.getLabel();
-				label +=label1;
-			} else {
-				nodeid1 = mapLink.getFirstNodeId();
-				label1 = nodeidSortAss[nodeid1].getLabel();
-				maplabel1 = first.getLabel();
-				label +=maplabel1;
-			}
+			label += mapLink.getMapElement1().getLabel();
 			label+=" - ";
+			label+= mapLink.getMapElement2().getLabel();
 
-			if(second.isNode())
-			{
-				nodeid2 = second.getNodeId();
-				label2 = second.getLabel();
-				label += label2;
-			} else {
-				nodeid2 = mapLink.getSecondNodeId();
-				label2 = nodeidSortAss[nodeid2].getLabel();
-				maplabel2 = second.getLabel();
-				label += maplabel2;
-			}
 			var x=evt.clientX + 2;
 			var y=evt.clientY + 4;
 			var cm=new ContextMenuSimulator(winSvgElement,id,label,x,y,cmwidth,cmsubwidth,cmheight,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
 
 			var addcmbar=true;			
-			for(var index in CM_COMMANDS){
-				if(CM_COMMANDS[index]=="-"){
+			for(var index in CM_COMMANDS) {
+				if(CM_COMMANDS[index]=="-") {
 					addcmbar=true;
-				}else{
+				} else {
 					var commandLabel = unescape(CM_COMMANDS[index]);
-					cm.addSubMenu(index,commandLabel,execSelectedCMActionFromSubMenu,addcmbar,2);
-					cm.addSubMenuItem(index,nodeid1,label1,false);
-					cm.addSubMenuItem(index,nodeid2,label2,false);
+					var nodeids = mapLink.getNodeIds();
+					cm.addSubMenu(index,commandLabel,execSelectedCMActionFromSubMenu,addcmbar,nodeids.length);
+					for (var k in nodeids ) {
+					     var nodeid = nodeids[k];
+						cm.addSubMenuItem(index,nodeid,nodeidSortAss[nodeid].getLabel(),false);
+					}
 					addcmbar=false;
 				}
 			}
-//if (first.isMap())
-//cm1.addItem("Mapbase","Map: " + maplabel1, ciao,false);
-//if (second.isMap())
-//cm2.addItem("Mapbase","Map: " + maplabel2, ciao,false);
-//						
 		}
 	}		
 }
