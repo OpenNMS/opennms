@@ -108,13 +108,12 @@ function handleLoadNodesResponse(data) {
 		nodeLabels = [" "];
 	    var nodeSorts = [null];
 	    var nodeids = [null];
-	    var id,label,tmpNode;
+	    var id,label,ipaddr,tmpNode;
 		for(var n in currNodes){
 			id =currNodes[n].id;
 			label = currNodes[n].label;
-			// the second label should be the ip address but for the moment we are still using the FQDN
-			tmpNode = new Node(id,label,label);
-			
+			ipaddr = currNodes[n].ipaddr;
+			tmpNode = new Node(id,label,ipaddr);
 			nodeids.push(id);
 			nodeLabels.push(label);
 			nodeSorts.push(tmpNode);
