@@ -36,7 +36,10 @@
 package org.opennms.netmgt.collectd;
 
 public class CollectionWarning extends CollectionException {
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3828799913299413271L;
 
     public CollectionWarning() {
         super();
@@ -52,13 +55,5 @@ public class CollectionWarning extends CollectionException {
 
     public CollectionWarning(Throwable cause) {
         super(cause);
-    }
-
-    protected void logError() {
-        if (getCause() == null) {
-            log().warn(getMessage());
-        } else {
-            log().warn(getMessage(), getCause());
-        }
     }
 }

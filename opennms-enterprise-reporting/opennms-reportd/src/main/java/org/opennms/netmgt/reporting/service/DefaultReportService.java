@@ -40,9 +40,9 @@ public class DefaultReportService implements ReportService {
             outputFile = saveReport(print,report.getReportFormat(),outputFile);    
             
         } catch (JRException e) {
-            LogUtils.errorf(this, "error running report: %s",e.getMessage());
+            LogUtils.errorf(this, e, "Error running report: %s", e.getMessage());
         }  catch (Exception e){
-            LogUtils.errorf(this, "Exception: %s", e.getMessage());
+            LogUtils.errorf(this, e, "Unexpected exception: %s", e.getMessage());
         }        
  
         return outputFile;
