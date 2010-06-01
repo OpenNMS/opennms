@@ -261,7 +261,7 @@ Map.prototype.deleteLinksOnElement = function(id)
 }
 
 // add a new link to map
-Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, status, stroke, stroke_width, dash_array, flash, deltaLink,nodeid1,nodeid2)
+Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, status, stroke, stroke_width, dash_array, flash, deltaLink,nodeids)
 {
 	var id = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[id]!= undefined) {
@@ -297,7 +297,7 @@ Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, s
 	var sid =  this.getLinkId(id1,id2,this.sLinkId);
     
     if (this.linksBetweenElements[idWithoutTypology] <= this.maxlinks-1) {
-		link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology], deltaLink,nodeid1,nodeid2);		
+		link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.linksBetweenElements[idWithoutTypology], deltaLink,nodeids);		
 		this.mapLinkSize++;
 
 		this.mapLinks[id] = link;
@@ -306,7 +306,7 @@ Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, s
 		}
 		this.linksBetweenElements[idWithoutTypology]++;    	
 	} else {		
-		link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.maxlinks-1, deltaLink,nodeid1,nodeid2);
+		link = new Link(id, typology, status, numberOfLinks, statusMap, first, second, stroke, stroke_width, dash_array, flash,this.maxlinks-1, deltaLink,nodeids);
 		var summaryLink;
 		
 		if (this.mapLinks[sid]==undefined) {

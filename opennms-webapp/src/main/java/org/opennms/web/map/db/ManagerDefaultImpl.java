@@ -912,9 +912,6 @@ public class ManagerDefaultImpl implements Manager {
     public boolean foundLoopOnMaps(VMap parentMap, int mapId)
             throws MapsException {
 
-        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-
         java.util.Map<Integer, Set<Integer>> maps = dbManager.getMapsStructure();
         Set<Integer> childSet = new TreeSet<Integer>();
         for (VElement elem : parentMap.getElements().values()) {
@@ -1294,16 +1291,20 @@ public class ManagerDefaultImpl implements Manager {
                                   + " with new found status "
                                   + vlink.getLinkStatusString());
                             alreadyIn.setLinkStatusString(statusString);
-                            alreadyIn.setFirstNodeid(linfo.nodeid);
-                            alreadyIn.setSecondNodeid(linfo.nodeparentid);
                         }
+                        Set<Integer> nodeids=alreadyIn.getNodeids();
+                        nodeids.add(linfo.nodeid);
+                        nodeids.add(linfo.nodeparentid);
+                        alreadyIn.setNodeids(nodeids);
                         links.set(index,alreadyIn);
                     } else {
                         log.debug("adding new link: " + vlink.getId() );
                         vlink.setLinkStatusString(statusString);
                         vlink.increaseStatusMapLinks(statusString);
-                        vlink.setFirstNodeid(linfo.nodeid);
-                        vlink.setSecondNodeid(linfo.nodeparentid);
+                        Set<Integer> nodeids=vlink.getNodeids();
+                        nodeids.add(linfo.nodeid);
+                        nodeids.add(linfo.nodeparentid);
+                        vlink.setNodeids(nodeids);
                         links.add(vlink);
                     }
                 } // end second element for
