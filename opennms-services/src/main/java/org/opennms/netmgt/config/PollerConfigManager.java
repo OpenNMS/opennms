@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -818,7 +817,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             try {
                 m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor());
             } catch (Throwable t) {
-                if (log.isEnabledFor(Level.WARN)) {
+                if (log.isEnabledFor(ThreadCategory.Level.WARN)) {
                     log.warn("start: Failed to create monitor " + locator.getServiceLocatorKey() + " for service " + locator.getServiceName(), t);
                 }
             }
