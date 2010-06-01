@@ -55,12 +55,27 @@ function onMouseDownOnSLink(evt) {
 		{
 			var x=evt.clientX + 2;
 			var y=evt.clientY + 4;
-			var height = cmdelta * (slink.getNumberOfMultiLinks()+2);
+			var height = cmheight+cmdelta * (slink.getNumberOfMultiLinks()+1);
 			var cm =  new ContextMenuSimulator(winSvgElement,slink.id,"Summary Link",x,y,cmwidth,cmsubwidth,height,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
 			cm.addItem(slink.id,LINK_TEXT[slink.getTypology()],execLinkCMAction,true);
 			for ( var linkid in slink.getLinks() ) {
 			    var link = slink.getLinks()[linkid];
 				cm.addItem(linkid,LINK_TEXT[link.getTypology()],execLinkCMAction,false);	
+			}
+			var addcmbar=true;			
+			for(var index in CM_COMMANDS) {
+				if(CM_COMMANDS[index]=="-") {
+					addcmbar=true;
+				} else {
+					var commandLabel = unescape(CM_COMMANDS[index]);
+					var nodeids = slink.getNodeIds();
+					cm.addSubMenu(index,commandLabel,execSelectedCMActionFromSubMenu,addcmbar,nodeids.length);
+					for (var k in nodeids ) {
+					     var nodeid = nodeids[k];
+						cm.addSubMenuItem(index,nodeid,nodeidSortAss[nodeid].getLabel(),false);
+					}
+					addcmbar=false;
+				}
 			}
 		}		
 	}
