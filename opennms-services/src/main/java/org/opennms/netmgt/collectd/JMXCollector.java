@@ -42,7 +42,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -58,11 +57,10 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -756,7 +754,7 @@ public abstract class JMXCollector implements ServiceCollector {
                      */
                     String ds_name = attr.getAlias();
                     if (ds_name.length() > MAX_DS_NAME_LENGTH) {
-                        if (log.isEnabledFor(Level.WARN))
+                        if (log.isEnabledFor(ThreadCategory.Level.WARN))
                             log.warn("buildDataSourceList: alias '"
                                     + attr.getAlias()
                                     + "' exceeds 19 char maximum for RRD data "
@@ -785,7 +783,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
                     // Add the new data source to the list
                     dsList.put(objectName + "|" + attr.getName(), ds);
-                } else if (log.isEnabledFor(Level.WARN)) {
+                } else if (log.isEnabledFor(ThreadCategory.Level.WARN)) {
                     log.warn("buildDataSourceList: Data type '"
                             + attr.getType()
                             + "' not supported.  Only integer-type data may be "

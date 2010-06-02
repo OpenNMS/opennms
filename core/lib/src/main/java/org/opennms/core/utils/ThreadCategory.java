@@ -347,8 +347,27 @@ public class ThreadCategory {
 	 * @return
 	 * @see org.apache.log4j.Category#isEnabledFor(org.apache.log4j.Priority)
 	 */
-	public boolean isEnabledFor(Priority level) {
-		return m_delegate.isEnabledFor(level);
+	public boolean isEnabledFor(Level level) {
+		switch(level) {
+		case FATAL:
+			return m_delegate.isEnabledFor(org.apache.log4j.Level.FATAL);
+		case ERROR:
+			return m_delegate.isEnabledFor(org.apache.log4j.Level.ERROR);
+		case WARN:
+			return m_delegate.isEnabledFor(org.apache.log4j.Level.WARN);
+		case INFO:
+			return m_delegate.isEnabledFor(org.apache.log4j.Level.INFO);
+		case DEBUG:
+			return m_delegate.isEnabledFor(org.apache.log4j.Level.DEBUG);
+		case TRACE:
+			return m_delegate.isEnabledFor(org.apache.log4j.Level.TRACE);
+		case ALL:
+			return m_delegate.isEnabledFor(org.apache.log4j.Level.ALL);
+		case OFF:
+			return m_delegate.isEnabledFor(org.apache.log4j.Level.OFF);
+		default:
+			throw new IllegalArgumentException("Invalid logging level: " + level);
+		}
 	}
 
 	/**

@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -170,7 +169,7 @@ public abstract class ThreshdConfigManager {
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
-                if (log.isEnabledFor(Level.ERROR)) {
+                if (log.isEnabledFor(ThreadCategory.Level.ERROR)) {
                     log.error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List", t);
                 }
             }

@@ -53,7 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -270,7 +269,7 @@ public class Poller extends AbstractServiceDaemon {
 
             getScheduler().start();
         } catch (RuntimeException e) {
-            if (log().isEnabledFor(Level.FATAL))
+            if (log().isEnabledFor(ThreadCategory.Level.FATAL))
                 log().fatal("start: Failed to start scheduler", e);
             throw e;
         }

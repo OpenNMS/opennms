@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Level;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.threshd.Package;
@@ -173,7 +173,7 @@ public final class Threshd extends AbstractServiceDaemon {
 
             m_receiver = new BroadcastEventProcessor(this, m_thresholdableServices);
         } catch (Throwable t) {
-            if (log().isEnabledFor(Level.FATAL))
+            if (log().isEnabledFor(ThreadCategory.Level.FATAL))
                 log().fatal("start: Failed to initialized the broadcast event receiver", t);
 
             throw new UndeclaredThrowableException(t);

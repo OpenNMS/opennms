@@ -43,7 +43,6 @@ package org.opennms.netmgt.syslogd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -143,7 +142,7 @@ final class SyslogProcessor implements Runnable {
         // get a logger
         ThreadCategory.setPrefix(m_logPrefix);
         ThreadCategory log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isEnabledFor(Level.TRACE);
+        boolean isTracing = log.isEnabledFor(ThreadCategory.Level.TRACE);
 
         if (m_stop) {
             if (isTracing)
