@@ -25,6 +25,7 @@ Semaphore.prototype.init = function(r, cx, cy, fill, stroke)
 	this.svgNode.setAttributeNS(null,this.attributeY, cy);
 	this.svgNode.setAttributeNS(null,"fill", fill);
 	this.svgNode.setAttributeNS(null,"stroke", stroke);
+	this.svgNode.setAttributeNS(null,"opacity", "1.0");
 
 	this.animateTag = document.createElementNS(svgNS,"animate");
 	this.animateTag.setAttributeNS(null,"attributeName", "fill");	

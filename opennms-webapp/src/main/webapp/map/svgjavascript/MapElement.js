@@ -48,6 +48,12 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	// renderize element
 	this.svgNode = document.createElementNS(svgNS,"g");
 	this.svgNode.setAttributeNS(null,"id", this.id);
+	this.svgNode.addEventListener("click", this.onClick, false);
+	this.svgNode.addEventListener("mousedown", this.onMouseDown, false);
+	this.svgNode.addEventListener("mousemove", this.onMouseMove, false);
+	this.svgNode.addEventListener("mouseup", this.onMouseUp, false);
+	this.svgNode.addEventListener("mouseover", this.onMouseOver, false);
+	this.svgNode.addEventListener("mouseout", this.onMouseOut, false);
 
 	// renderize icon
 	this.image = document.createElementNS(svgNS,"image");
@@ -58,12 +64,6 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	this.image.setAttributeNS(null,"preserveAspectRatio", "xMinYMin");
 	this.image.setAttributeNS(null,"cursor", "pointer");
 	this.image.setAttributeNS(xlinkNS, "xlink:href",this.icon.getUrl());
-	this.image.addEventListener("click", this.onClick, false);
-	this.image.addEventListener("mousedown", this.onMouseDown, false);
-	this.image.addEventListener("mousemove", this.onMouseMove, false);
-	this.image.addEventListener("mouseup", this.onMouseUp, false);
-	this.image.addEventListener("mouseover", this.onMouseOver, false);
-	this.image.addEventListener("mouseout", this.onMouseOut, false);
 	
 	var labelx = Math.round(this.width/2);
 	var labely = this.height + dimension*0.7;
@@ -87,8 +87,8 @@ MapElement.prototype.init = function(id,icon, labelText, semaphoreColor, semapho
 	this.semaphore.flash(semaphoreFlash);
 
 	this.svgNode.appendChild(this.semaphore.getSvgNode());
-	this.svgNode.appendChild(this.image);
 	this.svgNode.appendChild(this.label.getSvgNode());
+	this.svgNode.appendChild(this.image);
 	
 	this.svgNode.setAttributeNS(null,"transform", "translate(" + this.x + "," + this.y + ")");
 	this.svgNode.setAttributeNS(null,"opacity", "0.9");
