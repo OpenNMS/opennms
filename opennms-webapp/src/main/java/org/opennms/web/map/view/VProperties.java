@@ -31,6 +31,8 @@ public class VProperties {
     int summaryLink;
     
     String summaryLinkColor;
+    String multilinkIgnoreColor;
+    String multilinkStatus;
 
     ContextMenu contextMenu;
 
@@ -47,12 +49,27 @@ public class VProperties {
 	java.util.Map<String,String> backgroundImages;
 	java.util.Map<String, String> mapElementDimensions;
     
-	String defaultNodeIcon;
+    String defaultNodeIcon;
     String defaultMapIcon;
     String defaultBackgroundColor;
 	
 	List<String> categories;
 	
+    public String getMultilinkIgnoreColor() {
+        return multilinkIgnoreColor;
+    }
+
+    public void setMultilinkIgnoreColor(String multilinkIgnoreColor) {
+        this.multilinkIgnoreColor = multilinkIgnoreColor;
+    }
+
+    public String getMultilinkStatus() {
+        return multilinkStatus;
+    }
+
+    public void setMultilinkStatus(String multilinkStatus) {
+        this.multilinkStatus = multilinkStatus;
+    }
 	
     public String getSummaryLinkColor() {
         return summaryLinkColor;

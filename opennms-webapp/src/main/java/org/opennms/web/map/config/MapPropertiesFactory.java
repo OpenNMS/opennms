@@ -127,10 +127,12 @@ public class MapPropertiesFactory extends Object {
     public static final  String MULTILINK_IGNORE_STATUS ="ignore";
 
     protected  String multilinkStatus = MULTILINK_BEST_STATUS;
-	
-	protected  int defaultLink = -1;
 
-	protected  Severity defaultSeverity;
+    protected String multilinkIgnoreColor = "yellow";
+
+    protected  int defaultLink = -1;
+
+    protected  Severity defaultSeverity;
 	
 	protected  Severity indeterminateSeverity;
 	
@@ -637,6 +639,10 @@ public class MapPropertiesFactory extends Object {
 		}
 		log.debug("found multilink.status:"+multilinkStatus);
 				
+        if(props.getProperty("multilink.ignore.color")!=null){
+            multilinkIgnoreColor = props.getProperty("multilink.ignore.color");    
+        }
+        log.debug("found multilink.ignore.color:"+multilinkIgnoreColor);
 			
 		// look up statuses and their properties
 		String[] statuses = BundleLists.parseBundleList(props
@@ -1025,7 +1031,11 @@ public class MapPropertiesFactory extends Object {
     public int getSummaryLink() {
         return summaryLink;
     }
-    
+
+    public String getMultilinkIgnoreColor() {
+        return multilinkIgnoreColor;
+    }
+
     public boolean isUseSemaphore() {
         return useSemaphore;
     }

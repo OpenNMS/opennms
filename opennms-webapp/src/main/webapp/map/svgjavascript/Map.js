@@ -19,15 +19,15 @@ Map.superclass = SVGElement.prototype;
 //                         is like 'idElem1-idElem2' and the value is an integer representing the number of 
 //                         links between elem1 and elem2
 
-function Map(defaultcolor, id, width, height, x, y, maxlinks, sLink,stroke,strokewidth,strokedasharray)
+function Map(defaultcolor, id, width, height, x, y, maxlinks, sLink,stroke,strokewidth,strokedasharray,ignoreLinkStatus,ignoreStroke)
 {
- 	if ( arguments.length == 11 )
-		this.init(defaultcolor, id, width, height, x, y, maxlinks,sLink,stroke,strokewidth,strokedasharray);
+ 	if ( arguments.length == 13 )
+		this.init(defaultcolor, id, width, height, x, y, maxlinks,sLink,stroke,strokewidth,strokedasharray,ignoreLinkStatus,ignoreStroke);
 	else
 		alert("Map constructor call error");
 }
 
-Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,stroke,strokewidth,strokedasharray)
+Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,stroke,strokewidth,strokedasharray,ignoreLinkStatus,ignoreStroke)
 {
 	//following attributes are the starting and the ending SVGPoints of the rectangle 
 	//for the selection of the nodes on the map.
@@ -46,6 +46,9 @@ Map.prototype.init = function(color, id, width, height, x, y, maxlinks, sLink,st
 	this.sLinkStrokeDashArray=strokedasharray;
 	this.sLinkStrokeWidth=strokewidth;
 
+	this.ignoreLinkStatus = ignoreLinkStatus;
+	this.ignoreStroke=ignoreStroke;
+	
 	this.startSelectionRectangle = null;
 	this.endSelectionRectangle = null;
 	this.draggableObject = null;
@@ -265,10 +268,18 @@ Map.prototype.addLink = function(id1, id2, typology, numberOfLinks, statusMap, s
 {
 	var id = this.getLinkId(id1,id2,typology);
 	if(this.mapLinks[id]!= undefined) {
-		return false
+		for (var l in nodeids)
+		id+="-"+nodeids[l];
 	}
 	// check parameter
 
+	var statuscount=0;
+	for (var status in statusMap) {
+	 statuscount++;
+	}
+	if (this.ignoreLinkStatus && statuscount > 1 ) 
+		stroke=this.ignoreStroke
+	
 	var first = null;
 	var second = null;
 
