@@ -444,7 +444,10 @@ function addRenameMapBox(){
 }
 
 function renameMap(){
-	var newMapName = getTextBoxValue();
+	renameMapWithName(getTextBoxValue());
+}
+
+function renameMapWithName(newMapName){
 	mapTabRename(currentMapName,newMapName)
 	clearTopInfo();
 	if(newMapName != null && trimAll(newMapName)!=""){
@@ -455,7 +458,6 @@ function renameMap(){
 		writeDownInfo("Name not valid.");
 	}
 }
-
 // Delete Map
 function deleteMapSetUp() {	
 	closeAllMenu();

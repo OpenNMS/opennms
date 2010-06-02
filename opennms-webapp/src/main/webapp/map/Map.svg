@@ -41,6 +41,7 @@
 <script type="text/ecmascript"><![CDATA[
 
 var startingup=true;
+var saving = false;
 
 top.resizeSVG = resizeSVG;
 
@@ -52,9 +53,26 @@ function resizeSVG() {
 		resetFlags();
 		saveMap();
 		top.resize(3000);
+	} else if (currentMapId == NEW_MAP ) {
+		setTimeout("manageNewMapNotSavedOnResizing();",600);
 	} else {
 		top.resize(1000);
 	}
+}
+
+function manageNewMapNotSavedOnResizing() {
+	var r=confirm("Resizing.... Do you want to save NewMap work?");
+	if (r==true) {
+		var name=prompt("Enter Map Name","TemporaryMap");
+		if (name!=null && name!="") {
+			renameMapWithName(name);
+			setTimeout("saveMap();",500);
+			top.resize(3500);
+		}
+	} else {
+		top.resize(1000);
+	}
+
 }
 
 function historyCallBack(hash) {
@@ -68,7 +86,10 @@ function historyCallBack(hash) {
 		return;
 	}
 	if(hash) {
-		openBookMarkedMap(hash);
+		if (saving)
+			saving=false;
+		else
+			openBookMarkedMap(hash);
 	} else {
 		close();
 	}
