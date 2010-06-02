@@ -543,6 +543,7 @@ function handleLoadingMap(data) {
 }
 
 function saveMap() {
+	saving=true;
 	var data="Nodes";
 	var firstItem=true;
 	for (elemToRender in map.mapElements){
@@ -599,6 +600,7 @@ function handleSaveResponse(data) {
 	
 	savedMapString = getMapString();			
 	saveMapInHistory();
+	top.$j.history.load(currentMapId);
 	
 	writeMapInfo();
 	showHistory();
