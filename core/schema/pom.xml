@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
-      <version>1.9.3-onms</version>
+      <version>1.9.3-onms2</version>
       <scope>compile</scope>
     </dependency>
 
