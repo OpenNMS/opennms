@@ -109,12 +109,12 @@ function onClickMapElement(evt)
 	if (evt.detail == 2)
 	{
 		myMapApp.disableTooltips()
+		var label = mapElement.getLabel();
+		var x = mapElement.getX() + mapElemDimension;
+		var y = mapElement.getY() ;
 		if(mapElement.isNode())
 		{
 			var nodeid = mapElement.getNodeId();
-			var label = mapElement.getLabel();
-			var x = mapElement.getX() + mapElemDimension;
-			var y = mapElement.getY() ;
 			
 			var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmsubwidth,cmheight,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
 			var addcmbar=true;
@@ -131,12 +131,45 @@ function onClickMapElement(evt)
 	
 		if(mapElement.isMap())
 		{
-			openMapSetUp(mapElement.getMapId(),true);
+			var mapid=mapElement.getMapId();
+			var mapname=mapidSortAss[mapid];
+			var topmaplist = new Array();
+			for (var elemlabel in nodeLabelMap) {
+				if (mapname == elemlabel ) {
+				    var mapLbl = nodeLabelMap[elemlabel];
+				    if (mapLbl!=undefined) {
+						for (var j=0; j<mapLbl.length;j++ ){
+							var mapnamecursor = mapLbl[j];
+							if (mapnamecursor != currentMapName)
+								topmaplist.push(mapnamecursor);
+						}
+					}
+					break;
+				}  
+			}
+			if (topmaplist.length > 0 ) {
+				var cm =  new ContextMenuSimulator(winSvgElement,mapid,label,x,y,cmwidth,cmsubwidth,3*cmdelta,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
+				cm.addItem(mapid,"Open",execOpenMapCMAction,true);
+				cm.addSubMenu("Top"+mapid,"Up",execOpenMapCMActionFromSubMenu,false,topmaplist.length);
+				for ( var alfa in topmaplist ) {
+					var mapnamecursor=topmaplist[alfa];
+					cm.addSubMenuItem("Top"+mapid,mapSortAss[mapnamecursor].id,mapnamecursor,false);					
+				}
+			} else {
+				openMapSetUp(mapid,true);
+			}
 		}
 			
 	}
 }
 
+function execOpenMapCMAction(mapid) {
+	openMapSetUp(mapid,true);
+}
+
+function execOpenMapCMActionFromSubMenu(index,id,menulabel,mapid) {
+	openMapSetUp(mapid,true);
+}
 function onMouseDownOnMapElement(evt)
 {	
 	if ((typeof map) == "object")
