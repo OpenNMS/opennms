@@ -82,7 +82,7 @@ function openBookMarkedMap(mapId) {
 
 function startUp() {
 	// Instantiate the default map
-	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0, maxLinks,summaryLinkId,summaryLinkColor,LINK_WIDTH[summaryLinkId],LINK_DASHARRAY[summaryLinkId]);
+	map = new Map("#"+DEFAULT_BG_COLOR,"Background", mapWidth, mapHeight, 0, 0, maxLinks,summaryLinkId,summaryLinkColor,LINK_WIDTH[summaryLinkId],LINK_DASHARRAY[summaryLinkId],multilinkStatus,multilinkIgnoreColor);
 	
 	mapSvgElement.appendChild(map.getSvgNode());
 
@@ -141,6 +141,9 @@ function handleInit(data) {
 		summaryLinkId = mapsPropertiesFactory.summaryLink;
 		summaryLinkColor = mapsPropertiesFactory.summaryLinkColor;
 		useSemaphore=mapsPropertiesFactory.useSemaphore;
+		if (mapsPropertiesFactory.multilinkStatus == "ignore" )
+			multilinkStatus=true;
+		multilinkIgnoreColor=mapsPropertiesFactory.multilinkIgnoreColor;
 		
 		DEFAULT_ICON = mapsPropertiesFactory.defaultNodeIcon;
 		DEFAULT_MAP_ICON = mapsPropertiesFactory.defaultMapIcon;

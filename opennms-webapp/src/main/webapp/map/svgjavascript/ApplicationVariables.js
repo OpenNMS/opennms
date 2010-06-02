@@ -207,6 +207,10 @@ var nodeLabelMap =new Array();
 // variable to support the default map
 var defaultMap;
 
+//variables to support multilinkstatus
+var multilinkStatus=false;
+var multilinkIgnoreColor="yellow";
+
 //variables for Hide Maps
 var hideMapsIds = "";
 var hasHideMaps = false;

@@ -119,7 +119,17 @@ final public class VLink {
 	public boolean equals(Object otherLink) {
 		if (!(otherLink instanceof VLink)) return false;
 		VLink link = (VLink) otherLink;
-		return ( getId().equals(link.getId()));
+		if ( !getId().equals(link.getId())) return false;
+		for (int nodeid : getNodeids()) {
+		    if (!link.getNodeids().contains(nodeid))
+		        return false;
+		}
+        for (int nodeid : link.getNodeids()) {
+            if (!getNodeids().contains(nodeid))
+                return false;
+        }
+
+		return true;
 	}
 	
 	public String getFirst() {
@@ -139,13 +149,16 @@ final public class VLink {
 	}
 
 	public String toString() {
-			return ""+getFirst()+"-"+getSecond()+"-"+linkTypeId+"-"+linkStatusString+" hashCode:"+this.hashCode();
+			return ""+getFirst()+"-"+getSecond()+"-"+linkTypeId+"-"+linkStatusString+" nodeids:"+this.nodeids.toString();
 	}
 	
     public String getId() {
 		return id;
 	}
     
+    public String getIdWithoutLinkType() {
+        return id.substring(0, id.lastIndexOf("-"));
+    }
     public int increaseLinks() {
         return ++numberOfLinks;
     }

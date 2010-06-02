@@ -59,7 +59,7 @@ import org.opennms.web.map.db.DbMap;
 final public class VMap extends DbMap {
     Hashtable<String, VElement> elements = new Hashtable<String, VElement>();
     
-    Hashtable<String, VLink> links = new Hashtable<String, VLink>();
+    List<VLink> links = new ArrayList<VLink>();
     
     String createTimeString;
     String lastModifiedTimeString;
@@ -116,15 +116,11 @@ final public class VMap extends DbMap {
 
 
     public void addLink(VLink link) {
-    	links.put(link.getId(), link);
+    	this.links.add(link);
     }
  
-    public void addLinks(List<VLink> elems) {
-        if (elems != null) {
-            for (VLink elem : elems) {
-                addLink(elem);
-            }
-        }
+    public void addLinks(List<VLink> links) {
+        this.links.addAll(links);
     }
 
 
@@ -139,15 +135,16 @@ final public class VMap extends DbMap {
     }
 
     public VLink removeLink(VLink link) {
-    	return links.remove(link.getId());
+        int index = links.indexOf(link);
+    	return links.remove(index);
     }
         
     public List<VLink> getLinksOnElement(int id, String type) {
     	List<VLink> lns = new ArrayList<VLink>();
         
-        for (String linkId : links.keySet()) {
-    		if (linkId.indexOf(getElementId(id, type)) != -1) {
-    			lns.add(links.get(linkId));
+        for (VLink vlink : links) {
+    		if (vlink.getId().indexOf(getElementId(id, type)) != -1) {
+    			lns.add(vlink);
     		}
     	}
         
@@ -180,7 +177,7 @@ final public class VMap extends DbMap {
         return elements;
     } 
 
-    public java.util.Map<String,VLink> getLinks() {
+    public List<VLink> getLinks() {
     	return links;
     } 
     
@@ -205,7 +202,7 @@ final public class VMap extends DbMap {
     }
 
     public boolean containsLink(VLink link) {
-     	return links.containsKey(link.getId());
+     	return links.contains(link);
     }
     
     public  void setAccessMode(String accessMode) {
