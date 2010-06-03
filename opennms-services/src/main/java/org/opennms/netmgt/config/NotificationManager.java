@@ -109,6 +109,7 @@ public abstract class NotificationManager {
     public static final String PARAM_HOME_PHONE = "-hphone";
     public static final String PARAM_MOBILE_PHONE = "-mphone";
     public static final String PARAM_TUI_PIN = "-tuipin";
+    public static final String PARAM_MICROBLOG_USERNAME = "-ublog";
     
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;

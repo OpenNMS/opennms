@@ -88,6 +88,7 @@ import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
+import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
@@ -586,6 +587,9 @@ public class WillItUnmarshalTest {
     }
     @Test public void testXmpDatacollectionConfig() throws Exception {
         unmarshal("xmp-datacollection-config.xml", XmpDatacollectionConfig.class);
+    }
+    @Test public void testMicroblogConfiguration() throws Exception {
+        unmarshal("microblog-configuration.xml", MicroblogConfiguration.class);
     }
     
     @Test

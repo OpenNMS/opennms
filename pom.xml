@@ -1356,6 +1356,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>twitter4j-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-xmp</artifactId>
         <version>${project.version}</version>

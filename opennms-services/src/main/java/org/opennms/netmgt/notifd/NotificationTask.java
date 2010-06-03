@@ -335,6 +335,8 @@ public class NotificationTask extends Thread {
                 value = getUserManager().getMobilePhone(m_user.getUserId());
             } else if (NotificationManager.PARAM_HOME_PHONE.equals(aSwitch)) {
                 value = getUserManager().getHomePhone(m_user.getUserId());
+            } else if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(aSwitch)) {
+                value = getUserManager().getMicroblogName(m_user.getUserId());
             } else if (m_params.containsKey(aSwitch)) {
                 value = m_params.get(aSwitch);
             }
