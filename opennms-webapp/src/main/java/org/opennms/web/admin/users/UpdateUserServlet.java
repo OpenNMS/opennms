@@ -97,6 +97,7 @@ public class UpdateUserServlet extends HttpServlet {
             String email = request.getParameter("email");
             String pagerEmail = request.getParameter("pemail");
             String xmppAddress = request.getParameter("xmppAddress");
+            String microblog = request.getParameter("microblog");
             String numericPage = request.getParameter("numericalService");
             String numericPin = request.getParameter("numericalPin");
             String textPage = request.getParameter("textService");
@@ -120,6 +121,11 @@ public class UpdateUserServlet extends HttpServlet {
             tmpContact = new Contact();
             tmpContact.setInfo(xmppAddress);
             tmpContact.setType("xmppAddress");
+            newUser.addContact(tmpContact);
+            
+            tmpContact = new Contact();
+            tmpContact.setInfo(microblog);
+            tmpContact.setType("microblog");
             newUser.addContact(tmpContact);
             
             tmpContact = new Contact();
