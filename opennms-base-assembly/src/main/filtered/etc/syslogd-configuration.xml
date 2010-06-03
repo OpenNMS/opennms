@@ -22,6 +22,26 @@
                  parenthesized match groups above:
                  %parm[group1]% or %parm[#1]% will have the username
                  %parm[group2[% or %parm[#2]% will have the device name
+                 
+                 These mappings are created by default. The definition below
+                 shows how to suppress them and how to map matching groups
+                 to user-specified event parameters.
+            -->
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*shmancyd: .*failed for user (\S+) on ((pts\/\d+)|(tty\d+)).*" default-parameter-mapping="false"/>
+            <uei>uei.example.org/syslog/shmancyd/userFailure</uei>
+        	<parameter-assignment matching-group="1" parameter-name="userName" />
+        	<parameter-assignment matching-group="2" parameter-name="terminalName" />
+        	<parameter-assignment matching-group="3" parameter-name="ptsName" />
+        	<parameter-assignment matching-group="4" parameter-name="ttyName" />
+            <!-- The event created by this definition will not have the "groupN" parameters.
+                 If the message refers to a user on terminal pts/3, the "ptsName" parameter
+                 will be set to "pts/3" and the "ttyName" parameter will be present with an
+                 empty string value.  If the message instead refers to a user on tty4, then
+                 the "ttyName" parameter will be set to "tty4" and the "ptsName" parameter
+                 will have an empty string value.  In either case, the "terminalName" parameter
+                 will contain the terminal name that matched.                  
             -->
         </ueiMatch>
         <!-- Use the following to discard a syslog message without ever creating an event for it.
