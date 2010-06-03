@@ -238,9 +238,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
   </bean>
 
-  <bean id="databaseSchemaConfigFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="databaseSchemaConfigFactory-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.getInstance</value></property>
-  </bean>
+  <bean id="databaseSchemaConfigFactory" class="org.opennms.netmgt.config.DatabaseSchemaConfigFactory" depends-on="databaseSchemaConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="filterDao" class="org.opennms.netmgt.dao.support.JdbcFilterDao">
     <property name="dataSource" ref="dataSource" />
@@ -252,17 +250,13 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
   </bean>
 
-  <bean id="collectdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="collectdConfig-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.getInstance</value></property>
-  </bean>
+  <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory" depends-on="collectdConfig-init" factory-method="getInstance"/>
 
   <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.init</value></property>
   </bean>
 
-  <bean id="dataCollectionConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dataCollectionConfig-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataCollectionConfigFactory.getInstance</value></property>
-  </bean>
+  <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance"/>
 
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
@@ -272,9 +266,7 @@
     <property name="rrdDirectory" value="${rrd.base.dir}" />
   </bean>
 
-  <bean id="rrdStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.rrd.RrdUtils.getStrategy</value></property>
-  </bean>
+  <bean id="rrdStrategy" class="org.opennms.netmgt.rrd.RrdUtils" factory-method="getStrategy"/>
 
   <bean id="rrdDao" class="org.opennms.netmgt.dao.support.DefaultRrdDao">
     <property name="rrdStrategy" ref="rrdStrategy" />
@@ -316,9 +308,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
   </bean>
 
-  <bean id="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-snmpPeerFactory">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.getInstance</value></property>
-  </bean>
+  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="init-snmpPeerFactory" factory-method="getInstance"/>
   
   <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
     <constructor-arg ref="jdbcTemplate" />
