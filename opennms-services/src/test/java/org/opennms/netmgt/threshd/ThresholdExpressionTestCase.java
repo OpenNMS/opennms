@@ -187,7 +187,7 @@ public class ThresholdExpressionTestCase extends TestCase {
     }
 
     public void testEvaluateConditionalFalse() throws Exception {
-        expression.setExpression("if(a < b) { trueval } else { falseval }");
+        expression.setExpression("a < b ? trueval : falseval");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
         
         Map<String, Double> values=new HashMap<String,Double>();
@@ -201,7 +201,7 @@ public class ThresholdExpressionTestCase extends TestCase {
     }
     
     public void testEvaluateConditionalTrue() throws Exception {
-        expression.setExpression("if(a < b) { trueval } else { falseval }");
+        expression.setExpression("a < b ? trueval : falseval");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
         
         Map<String, Double> values=new HashMap<String,Double>();
@@ -212,5 +212,22 @@ public class ThresholdExpressionTestCase extends TestCase {
         
         double result=wrapper.evaluate(values);
         assertEquals("Conditional Expression result", new Double(result), new Double(3.0));
+    }
+    
+    public void testAbsoluteValues() throws Exception {
+        expression.setExpression("math.abs(variable + 5)");
+        ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        
+        Map<String,Double> values=new HashMap<String,Double>();
+        values.put("variable", -25.0);
+        
+        double result = wrapper.evaluate(values);
+        assertEquals("Conditional Expression result", new Double(20.0), result);
+        
+        values.clear();
+        values.put("variable", 25.0);
+        
+        result = wrapper.evaluate(values);
+        assertEquals("Conditional Expression result", new Double(30.0), result);
     }
 }
