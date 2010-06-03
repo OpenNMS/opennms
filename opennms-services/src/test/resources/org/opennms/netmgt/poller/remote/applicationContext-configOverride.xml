@@ -13,10 +13,7 @@
     <property name="verifyServer" value="false"/>
   </bean>
 
-  <bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="pollerConfigDao"/>
-    <property name="targetMethod" value="getPollerConfig"/>
-  </bean>
+  <bean id="pollerConfig" factory-bean="pollerConfigDao" factory-method="getPollerConfig"/>
   
   <bean id="setupIpLike" class="java.lang.Boolean">
     <constructor-arg><value>true</value></constructor-arg>

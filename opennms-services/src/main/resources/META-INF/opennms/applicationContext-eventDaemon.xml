@@ -21,9 +21,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.init</value></property>
   </bean>
 
-  <bean id="eventdConfigManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventdConfigManager-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.getInstance</value></property>
-  </bean>
+  <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigFactory" depends-on="eventdConfigManager-init" factory-method="getInstance"/>
 
   <bean id="eventconfFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.EventconfFactory.setInstance</value></property>
@@ -44,10 +42,7 @@
     <property name="eventIpcManagerProxy" ref="eventIpcManager"/>
   </bean>
 
-  <bean id="eventIpcManagerHandlerPoolSize" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="eventdConfigManager"/>
-    <property name="targetMethod" value="getReceivers"/>
-  </bean>
+  <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
   
   <!-- 
   <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.JdbcEventdServiceManager">
@@ -75,10 +70,7 @@
     <property name="eventdServiceManager" ref="eventdServiceManager"/>
   </bean>
 
-  <bean id="getNextEventIdSql" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="eventdConfigManager"/>
-    <property name="targetMethod" value="getGetNextEventID"/>
-  </bean>
+  <bean id="getNextEventIdSql" factory-bean="eventdConfigManager" factory-method="getGetNextEventID"/>
   
   <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
     <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
@@ -108,25 +100,13 @@
     </property>
   </bean>
   
-  <bean id="tcpIpAddress" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="eventdConfigManager"/>
-    <property name="targetMethod" value="getTCPIpAddress"/>
-  </bean>
+  <bean id="tcpIpAddress" factory-bean="eventdConfigManager" factory-method="getTCPIpAddress"/>
 
-  <bean id="tcpPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="eventdConfigManager"/>
-    <property name="targetMethod" value="getTCPPort"/>
-  </bean>
+  <bean id="tcpPort" factory-bean="eventdConfigManager" factory-method="getTCPPort"/>
 
-  <bean id="udpIpAddress" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="eventdConfigManager"/>
-    <property name="targetMethod" value="getUDPIpAddress"/>
-  </bean>
+  <bean id="udpIpAddress" factory-bean="eventdConfigManager" factory-method="getUDPIpAddress"/>
   
-  <bean id="udpPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="eventdConfigManager"/>
-    <property name="targetMethod" value="getUDPPort"/>
-  </bean>
+  <bean id="udpPort" factory-bean="eventdConfigManager" factory-method="getUDPPort"/>
   
   <bean id="broadcastEventProcessor" class="org.opennms.netmgt.eventd.BroadcastEventProcessor" depends-on="eventIpcManagerImpl">
     <constructor-arg><ref bean="eventIpcManager"/></constructor-arg>

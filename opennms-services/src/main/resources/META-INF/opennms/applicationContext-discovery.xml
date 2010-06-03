@@ -9,9 +9,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.init</value></property>
   </bean>
 
-  <bean id="discoveryFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-capsdConfig-factory">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.getInstance</value></property>
-  </bean>
+  <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" depends-on="init-discoveryConfig-factory" factory-method="getInstance"/>
 
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />

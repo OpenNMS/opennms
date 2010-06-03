@@ -5,13 +5,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-  <bean id="localHostAddress" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.daemon.DaemonUtils.getLocalHostAddress</value></property>
-  </bean>
+  <bean id="localHostAddress" class="org.opennms.netmgt.daemon.DaemonUtils" factory-method="getLocalHostAddress"/>
   
-  <bean id="localHostName" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.daemon.DaemonUtils.getLocalHostName</value></property>
-  </bean>
+  <bean id="localHostName" class="org.opennms.netmgt.daemon.DaemonUtils" factory-method="getLocalHostName"/>
   
   <!--  Instead of doing all of the work to create an EventIpcManagerDefaultImpl class
         here including all of its dependencies, we create a late-initializing proxy here
