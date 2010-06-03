@@ -551,7 +551,7 @@ public class DefaultProvisionService implements ProvisionService {
                 }
             }
 
-            NodeScanSchedule nSchedule = new NodeScanSchedule(node.getId(), effectiveForeignSource, node.getForeignId(), initialDelay, scanInterval);
+            NodeScanSchedule nSchedule = new NodeScanSchedule(node.getId(), actualForeignSource, node.getForeignId(), initialDelay, scanInterval);
 
             return nSchedule;
         } catch (ForeignSourceRepositoryException e) {
