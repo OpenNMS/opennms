@@ -59,6 +59,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.castor.CastorUtils;
@@ -392,19 +393,37 @@ final class ConvertToEvent {
                             log.trace("Changed the UEI of a Syslogd event, based on regex match, to :" + uei.getUei());
                         }
                         event.setUei(uei.getUei());
-                		if (msgMat.groupCount() > 0) {
-                			for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
-                			    if (traceEnabled) {
-                			        log.trace("Added parm 'group"+groupNum+"' with value '"+msgMat.group(groupNum)+"' to Syslogd event based on regex match group");
-                			    }
-                				eventParm = new Parm();
-                				eventParm.setParmName("group"+groupNum);
-                				parmValue = new Value();
-                				parmValue.setContent(msgMat.group(groupNum));
-                				eventParm.setValue(parmValue);
-                				eventParms.addParm(eventParm);
-                			}
-                		}
+                        if (msgMat.groupCount() > 0 && uei.getMatch().isDefaultParameterMapping()) {
+                            log.trace("Doing default parameter mappings for this regex match.");
+                            for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
+                                if (traceEnabled) {
+                                    log.trace("Added parm 'group"+groupNum+"' with value '"+msgMat.group(groupNum)+"' to Syslogd event based on regex match group");
+                                }
+                                eventParm = new Parm();
+                                eventParm.setParmName("group"+groupNum);
+                                parmValue = new Value();
+                                parmValue.setContent(msgMat.group(groupNum));
+                                eventParm.setValue(parmValue);
+                                eventParms.addParm(eventParm);
+                            }
+                        }
+                        if (msgMat.groupCount() > 0 && uei.getParameterAssignmentCount() > 0) {
+                            log.trace("Doing user-specified parameter assignments for this regex match.");
+                            for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
+                                eventParm = new Parm();
+                                eventParm.setParmName(assignment.getParameterName());
+                                parmValue = new Value();
+                                String vettedValue = msgMat.group(assignment.getMatchingGroup());
+                                if (vettedValue == null)
+                                    vettedValue = "";
+                                parmValue.setContent(vettedValue);
+                                eventParm.setValue(parmValue);
+                                eventParms.addParm(eventParm);
+                                if (traceEnabled) {
+                                    log.trace("Added parm '" + eventParm.getParmName() + "' with value '" + parmValue.getContent() + "' to Syslogd event based on user-specified parameter assignment");
+                                }
+                            }
+                        }
                         // I think we want to stop processing here so the first
                         // ueiMatch wins, right?
                 		break;

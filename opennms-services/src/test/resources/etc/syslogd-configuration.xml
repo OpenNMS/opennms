@@ -26,6 +26,21 @@
         	<match type="regex" expression="[Tt][Rr][Aa][Ss][Hh]"/>
         	<uei>DISCARD-MATCHING-MESSAGES</uei>
         </ueiMatch>
+        <ueiMatch>
+        	<match type="regex" expression=".*?coffee: Secretly replaced (\S+) coffee with (\d+) (\S+)$"/>
+        	<uei>uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/bothKinds</uei>
+        	<parameter-assignment matching-group="1" parameter-name="whoseBeverage" />
+        	<parameter-assignment matching-group="2" parameter-name="count" />
+        	<parameter-assignment matching-group="3" parameter-name="replacementItem" />        	
+        </ueiMatch>
+        <ueiMatch>
+        	<match type="regex" expression=".*?tea: Secretly replaced (\S+) tea with (\d+) (\S+)$" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly</uei>
+        	<parameter-assignment matching-group="1" parameter-name="whoseBeverage" />
+        	<parameter-assignment matching-group="2" parameter-name="count" />
+        	<parameter-assignment matching-group="3" parameter-name="replacementItem" />
+        </ueiMatch>
+        
     </ueiList>
 
     <hideMessage>

@@ -407,4 +407,158 @@ public class SyslogdTest extends OpenNMSTestCase {
         assertEquals("syslogd", ne.getSource());
         assertEquals(testMsg, ne.getLogmsg().getContent());    
     }
+
+    public void testRegexUEIWithBothKindsOfParameterAssignments() throws InterruptedException {
+    	String localhost = myLocalHost();
+    	final String testPDU = "2007-01-01 www.opennms.org coffee: Secretly replaced rangerrick's coffee with 42 wombats";
+    	final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/bothKinds";
+    	final String testMsg = "Secretly replaced rangerrick's coffee with 42 wombats";
+    	final String[] testGroups = { "rangerrick's", "42", "wombats" };
+    	
+        Event e = new Event();
+        e.setUei(testUEI);
+        e.setSource("syslogd");
+        e.setInterface(localhost);
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent(testMsg);
+        e.setLogmsg(logmsg);
+        
+        Parms eventParms = new Parms();
+        Parm eventParm = null;
+        Value parmValue = null;
+        
+        eventParm = new Parm();
+        eventParm.setParmName("group1");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[0]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+        
+        eventParm = new Parm();
+        eventParm.setParmName("group2");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[1]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+        
+        eventParm = new Parm();
+        eventParm.setParmName("group3");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[2]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        eventParm = new Parm();
+        eventParm.setParmName("whoseBeverage");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[0]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+        
+        eventParm = new Parm();
+        eventParm.setParmName("count");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[1]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+        
+        eventParm = new Parm();
+        eventParm.setParmName("replacementItem");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[2]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        e.setParms(eventParms);
+    
+        EventAnticipator ea = new EventAnticipator();
+        ea.anticipateEvent(e);
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+    
+        assertEquals(1, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+        
+        assertFalse(ea.getAnticipatedEvents().isEmpty());
+        
+        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
+        assertEquals(testUEI, ne.getUei());
+        assertEquals("syslogd", ne.getSource());
+        assertEquals(testMsg, ne.getLogmsg().getContent());      
+    }
+
+    public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException {
+        String localhost = myLocalHost();
+        final String testPDU = "2007-01-01 www.opennms.org tea: Secretly replaced cmiskell's tea with 666 ferrets";
+        final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly";
+        final String testMsg = "Secretly replaced cmiskell's tea with 666 ferrets";
+        final String[] testGroups = { "cmiskell's", "666", "ferrets" };
+        
+        Event e = new Event();
+        e.setUei(testUEI);
+        e.setSource("syslogd");
+        e.setInterface(localhost);
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent(testMsg);
+        e.setLogmsg(logmsg);
+        
+        Parms eventParms = new Parms();
+        Parm eventParm = null;
+        Value parmValue = null;
+        
+        eventParm = new Parm();
+        eventParm.setParmName("whoseBeverage");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[0]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+        
+        eventParm = new Parm();
+        eventParm.setParmName("count");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[1]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+        
+        eventParm = new Parm();
+        eventParm.setParmName("replacementItem");
+        parmValue = new Value();
+        parmValue.setContent(testGroups[2]);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        e.setParms(eventParms);
+    
+        EventAnticipator ea = new EventAnticipator();
+        ea.anticipateEvent(e);
+        
+        SyslogClient s = null;
+        try {
+            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        } catch (UnknownHostException uhe) {
+            //Failures are for weenies
+        }
+    
+        assertEquals(1, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+        
+        assertFalse(ea.getAnticipatedEvents().isEmpty());
+        
+        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
+        assertEquals(testUEI, ne.getUei());
+        assertEquals("syslogd", ne.getSource());
+        assertEquals(testMsg, ne.getLogmsg().getContent());      
+    }
+
 }
