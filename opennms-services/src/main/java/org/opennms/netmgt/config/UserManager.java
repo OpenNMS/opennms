@@ -254,7 +254,36 @@ public abstract class UserManager {
     
         return m_users.get(user.getUserId()).getTuiPin();
     }
+    
+    /**
+     * Get a user's microblog username by username
+     * 
+     * @param name
+     *            the username of the user whose microblog username should be returned
+     * @return the microblog username of the specified user
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+    public String getMicroblogName(String name) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        return getContactInfo(name, "microblog");
+    }
 
+    /**
+     * Get a user's microblog username by User
+     * 
+     * @param user
+     *            the user object of the user whose microblog username should be returned
+     * @return the microblog username of the specified user
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+    public String getMicroblogName(User user) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        return getContactInfo(user, "microblog");
+    }
 
     /**
      * Get the contact info given a command string

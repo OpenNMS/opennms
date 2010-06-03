@@ -122,6 +122,10 @@ public final class ConfigFileConstants {
      */
     public static final int POLL_OUTAGES_CONFIG_FILE_NAME;
 
+    /** The opennms snmp poller config file
+     */
+    public static final int SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME;
+
     /**
      * The opennms rtc config file
      */
@@ -348,6 +352,11 @@ public final class ConfigFileConstants {
     
     public static final int HTTP_COLLECTION_CONFIG_FILE_NAME;
 
+    /**
+     * The config file for maps Adapter
+     */
+    public static final int MAPS_ADAPTER_CONFIG_FILE_NAME;
+
     //
     // End other config files
     //
@@ -446,9 +455,16 @@ public final class ConfigFileConstants {
     public static final int XMP_CONFIG_FILE_NAME;
     
     /**
-     * The Rancid configuration file
+     * The RWS (RestFul Web Service) configuration file
+     * used to access Rancid
      */
-    public static final int RANCID_PROVISIONING_ADPT_CONFIG_FILE_NAME;   
+    public static final int RWS_CONFIG_FILE_NAME;   
+
+    /**
+     * The Rancid Provisioning Adapter configuration file
+     */
+    public static final int RANCID_CONFIG_FILE_NAME;
+
 
     /**
      * The WMI collection configuration file
@@ -456,19 +472,19 @@ public final class ConfigFileConstants {
     public static final int WMI_COLLECTION_CONFIG_FILE_NAME;
     
     /**
-     * The L2 interface poller configuration file
-     */
-    public static final int SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME;
-
-    /**
-     * The Asterisk global configuration file (for notification, etc).
+     * The Asterisk global configuration file (for notifications, etc.)
      */
     public static final int ASTERISK_CONFIG_FILE_NAME;
-    
+
     /**
      * The AMI agent configuration file
      */
     public static final int AMI_CONFIG_FILE_NAME;
+    
+    /**
+     * The config file for microblog notifications and acks
+     */
+    public static final int MICROBLOG_CONFIG_FILE_NAME;
 
     //
     // Initialize the class data. This section is used to initialize the
@@ -581,21 +597,27 @@ public final class ConfigFileConstants {
         
         OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 69;
         
-        RANCID_PROVISIONING_ADPT_CONFIG_FILE_NAME = 70;
+        RWS_CONFIG_FILE_NAME = 70;
 
         XMP_COLLECTION_CONFIG_FILE_NAME = 71;
         
         XMP_CONFIG_FILE_NAME = 72;
-        
+
         SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
         
         ASTERISK_CONFIG_FILE_NAME = 74;
         
         AMI_CONFIG_FILE_NAME = 75;
         
+        MAPS_ADAPTER_CONFIG_FILE_NAME = 76;
+        
+        RANCID_CONFIG_FILE_NAME = 77;
+        
+        MICROBLOG_CONFIG_FILE_NAME = 78;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[76];
+        FILE_ID_TO_NAME = new String[79];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -672,7 +694,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
         FILE_ID_TO_NAME[LINKD_CONFIG_FILE_NAME] = "linkd-configuration.xml";
-		FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
+        FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
         FILE_ID_TO_NAME[MONITORING_LOCATIONS_FILE_NAME] = "monitoring-locations.xml";
@@ -682,12 +704,15 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[WMI_CONFIG_FILE_NAME] = "wmi-config.xml";
         FILE_ID_TO_NAME[WMI_COLLECTION_CONFIG_FILE_NAME] = "wmi-datacollection-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
-        FILE_ID_TO_NAME[RANCID_PROVISIONING_ADPT_CONFIG_FILE_NAME] = "rancid_provisioning-adpt-config.xml";
+        FILE_ID_TO_NAME[RWS_CONFIG_FILE_NAME] = "rws-configuration.xml";
+        FILE_ID_TO_NAME[RANCID_CONFIG_FILE_NAME] = "rancid-configuration.xml";
         FILE_ID_TO_NAME[XMP_COLLECTION_CONFIG_FILE_NAME] = "xmp-datacollection-config.xml";
         FILE_ID_TO_NAME[XMP_CONFIG_FILE_NAME] = "xmp-config.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
         FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
         FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
+        FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
+        FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.properties";
     }
 
     /**
@@ -863,4 +888,6 @@ public final class ConfigFileConstants {
     public static final String getTimezoneFileDir() {
         return File.separator + "usr" + File.separator + "share" + File.separator + "zoneinfo" + File.separator + "US";
     }
+
+    public static final int RRD_DS_MAX_SIZE = 19;
 }
