@@ -35,9 +35,9 @@
  */
 package org.opennms.netmgt.threshd;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -71,6 +71,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		 */
 		private static final long serialVersionUID = 5595028572061424206L;
 		private final Set<String> m_sniffedKeys = new HashSet<String>();
+		private final String[] ignoreTheseKeys = new String[] { "math" };
 
 		@Override
 		public Object get(Object key) {
@@ -88,6 +89,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
 		public Set<String> getSniffedKeys() {
 			LogUtils.tracef(this, "Bindings.getSniffedKeys(%s)");
+			m_sniffedKeys.removeAll(Arrays.asList(ignoreTheseKeys));
 			return Collections.unmodifiableSet(m_sniffedKeys);
 		}
 	}
@@ -104,6 +106,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		m_parser = mgr.getEngineByName("jexl");
 
 		BindingsSniffer sniffer = new BindingsSniffer();
+		sniffer.put("math", new MathBinding());
 
 		// Test parsing of the expression and collect the variable names by using
 		// a Bindings instance that sniffs all of the variable names
@@ -125,10 +128,73 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 		return m_datasources;
 	}
 
+	/**
+	 * This class provides an instance that gives access to the {@link java.lang.Math} functions.
+	 * You can access this variable in your expressions by using the <code>math</code> variable 
+	 * (ie. <code>math.abs(-1)</code>).
+	 */
+	private static class MathBinding {
+		double abs(double a) { return Math.abs(a); }
+		// float abs(float a) { return Math.abs(a); }
+		// int abs(int a) { return Math.abs(a); }
+		// long abs(long a) { return Math.abs(a); }
+		double acos(double a) { return Math.acos(a); }
+		double asin(double a) { return Math.asin(a); }
+		double atan(double a) { return Math.atan(a); }
+		double atan2(double a, double b) { return Math.atan2(a, b); }
+		double cbrt(double a) { return Math.cbrt(a); }
+		double ceil(double a) { return Math.ceil(a); }
+		double copySign(double magnitude, double sign) { return Math.copySign(magnitude, sign); }
+		// float copySign(float magnitude, float sign) { return Math.copySign(magnitude, sign); }
+		double cos(double a) { return Math.cos(a); }
+		double cosh(double a) { return Math.cosh(a); }
+		double exp(double a) { return Math.exp(a); }
+		double expm1(double a) { return Math.expm1(a); }
+		double floor(double a) { return Math.floor(a); }
+		int getExponent(double a) { return Math.getExponent(a); }
+		// int getExponent(float a) { return Math.getExponent(a); }
+		double hypot(double a, double b) { return Math.hypot(a, b); }
+		double IEEEremainder(double a, double b) { return Math.IEEEremainder(a, b); }
+		double log(double a) { return Math.log(a); }
+		double log10(double a) { return Math.log10(a); }
+		double log1p(double a) { return Math.log1p(a); }
+		double max(double a, double b) { return Math.max(a, b); }
+		// float max(float a, float b) { return Math.max(a, b); }
+		// int max(int a, int b) { return Math.max(a, b); }
+		// long max(long a, long b) { return Math.max(a, b); }
+		double min(double a, double b) { return Math.min(a, b); }
+		// float min(float a, float b) { return Math.min(a, b); }
+		// int min(int a, int b) { return Math.min(a, b); }
+		// long min(long a, long b) { return Math.min(a, b); }
+		double nextAfter(double a, double direction) { return Math.nextAfter(a, direction); }
+		// float nextAfter(float a, double direction) { return Math.nextAfter(a, direction); }
+		double nextUp(double a) { return Math.nextUp(a); }
+		// float nextUp(float a) { return Math.nextUp(a); }
+		double pow(double a, double b) { return Math.pow(a, b); }
+		double random() { return Math.random(); }
+		double rint(double a) { return Math.rint(a); }
+		long round(double a) { return Math.round(a); }
+		// int round(float a) { return Math.round(a); }
+		double scalb(double a, int scaleFactor) { return Math.scalb(a, scaleFactor); }
+		// float scalb(float a, int scaleFactor) { return Math.scalb(a, scaleFactor); }
+		double signum(double a) { return Math.signum(a); }
+		// float signum(float a) { return Math.signum(a); }
+		double sin(double a) { return Math.sin(a); }
+		double sinh(double a) { return Math.sinh(a); }
+		double sqrt(double a) { return Math.sqrt(a); }
+		double tan(double a) { return Math.tan(a); }
+		double tanh(double a) { return Math.tanh(a); }
+		double toDegrees(double a) { return Math.toDegrees(a); }
+		double toRadians(double a) { return Math.toRadians(a); }
+		double ulp(double a) { return Math.ulp(a); }
+		// float ulp(float a) { return Math.ulp(a); }
+	}
+
 	@Override
 	public double evaluate(Map<String, Double> values) throws ThresholdExpressionException {
 		// Add all of the variable values to the script context
 		m_parser.getBindings(ScriptContext.ENGINE_SCOPE).putAll(values);
+		m_parser.getBindings(ScriptContext.ENGINE_SCOPE).put("math", new MathBinding());
 		double result = Double.NaN;
 		try {
 			// Evaluate the script expression

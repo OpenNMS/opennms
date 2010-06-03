@@ -120,8 +120,9 @@ public class ThresholdingVisitorTest {
         // Resets Counters Cache Data
         System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "false");
         CollectionResourceWrapper.s_cache.clear();
-        
-        m_defaultErrorLevelToCheck = Level.WARN;
+
+        // This is set at ERROR because JEXL prints some harmless, expected warning messages
+        m_defaultErrorLevelToCheck = Level.ERROR;
         System.setProperty("mock.logLevel", "DEBUG");
         MockLogAppender.setupLogging();
 
