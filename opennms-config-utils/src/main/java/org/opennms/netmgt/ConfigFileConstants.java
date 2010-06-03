@@ -463,7 +463,7 @@ public final class ConfigFileConstants {
     /**
      * The Rancid Provisioning Adapter configuration file
      */
-    public static final int RANCID_CONFIG_FILE_NAME;   
+    public static final int RANCID_CONFIG_FILE_NAME;
 
 
     /**
@@ -480,6 +480,11 @@ public final class ConfigFileConstants {
      * The AMI agent configuration file
      */
     public static final int AMI_CONFIG_FILE_NAME;
+    
+    /**
+     * The config file for microblog notifications and acks
+     */
+    public static final int MICROBLOG_CONFIG_FILE_NAME;
 
     //
     // Initialize the class data. This section is used to initialize the
@@ -608,9 +613,11 @@ public final class ConfigFileConstants {
         
         RANCID_CONFIG_FILE_NAME = 77;
         
+        MICROBLOG_CONFIG_FILE_NAME = 78;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[78];
+        FILE_ID_TO_NAME = new String[79];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -705,6 +712,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
         FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
+        FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.xml";
     }
 
     /**

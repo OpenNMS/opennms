@@ -72,7 +72,7 @@
       <attribute name="type" use="required">
         <simpleType>
           <restriction base="string">
-            <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage|snmpTrap|workPhone|homePhone|mobilePhone)"/>
+            <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage|snmpTrap|workPhone|homePhone|mobilePhone|microblog)"/>
           </restriction>
         </simpleType>
       </attribute>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<microblog-configuration default-microblog-profile-name="bogus">
+	<microblog-profile
+		name="bogus"
+		service-url="https://sliejvwleijvw.opennms.org/api/"
+		authen-username="thisIsBogus"
+		authen-password="thisIsAlsoBogus"
+	/>
+	<microblog-profile
+		name="notifd"
+		service-url="https://identi.ca/api/"
+		authen-username="opennmsunittest"
+		authen-password="testDrivenDenting"
+	/>
+</microblog-configuration>
