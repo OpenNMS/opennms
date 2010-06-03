@@ -187,6 +187,77 @@
 
 	</section>
 
+	<section id="opennms-1.7.92">
+		<title>Changes in OpenNMS 1.7.92</title>
+
+		<section id="opennms-1.7.92-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>It is now possible to search for a node by node ID and foreign source. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2914">#2914</ulink> and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3796">#3796</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Page Sequence Monitor now supports matching the Location: field of
+					a 3xx REDIRECT.  Note that the behavior of following a POST redirect with a GET
+					automatically has changed.  See the bug for more details. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3785">#3785</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The node page now displays the foreign source if it has one. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3789">#3789</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.7.92-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The "Delete Node" admin page would delete even if you clicked "Cancel." (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3574">#3574</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Device icons stick when attempting to drag and drop in SVG maps. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3750">#3750</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Vacuumd would fail in some cases when for-each-result=false. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3786">#3786</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>RADIUS authentication would fail because of a missing gnu-crypto dependency. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3801">#3801</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Liquibase sequence repair changeset could set sequences incorrectly on upgrade. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3810">#3810</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Exceptions on the server side could cause the remote monitor to exit. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3811">#3811</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.7.91">
 		<title>Changes in OpenNMS 1.7.91</title>
 
