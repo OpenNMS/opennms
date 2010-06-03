@@ -202,6 +202,7 @@
         String workPhone = null;
         String mobilePhone = null;
         String homePhone = null;
+        String microblog = null;
         String fullName = null;
         String comments = null;
         Boolean isReadOnly = false;
@@ -218,6 +219,7 @@
                     workPhone = userFactory.getWorkPhone(userid);
                     mobilePhone = userFactory.getMobilePhone(userid);
                     homePhone = userFactory.getHomePhone(userid);
+                    microblog = userFactory.getMicroblogName(userid);
             } else {
                     Contact[] contact = user.getContact();
                     for (int i = 0; i < contact.length; i++) {
@@ -238,6 +240,8 @@
                                     mobilePhone = contact[i].getInfo();
                             } else if (contact[i].getType().equals("homePhone")) {
                                     homePhone = contact[i].getInfo();
+                            } else if (contact[i].getType().equals("microblog")) {
+                            		microblog = contact[i].getInfo();
                             }
                     }
             }
@@ -316,6 +320,14 @@
               </td>
               <td valign="top">
                 <input id="xmppAddress" type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'/>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                <label id="microblogLabel" for="microblog">Microblog Username:</label>
+              </td>
+              <td valign="top">
+                <input type="text" size="35" id="microblog" name="microblog" value='<%=(microblog == null ? "":microblog)%>'/>
               </td>
             </tr>
             <tr>
