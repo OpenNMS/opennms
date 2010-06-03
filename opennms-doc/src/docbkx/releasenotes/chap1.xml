@@ -4,6 +4,22 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.7.92">
+		<title>Release 1.7.92</title>
+
+		<para>
+			Release 1.7.92 is the second release candidate in the 1.8 series.  It
+			represents what will eventually become OpenNMS 1.8.0 when it is declared stable.
+		</para>
+		<para>
+			Since 1.7.91, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.7.92">more bugfixing</ulink>
+			has been going on in preparation for the 1.8 release.
+		</para>
+		<para>
+			The codename for 1.7.92 is <emphasis>FRIA</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.7.91">
 		<title>Release 1.7.91</title>
 
