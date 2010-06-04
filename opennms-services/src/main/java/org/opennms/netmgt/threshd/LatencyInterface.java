@@ -127,7 +127,7 @@ public class LatencyInterface {
 	 *            Event identifier
 	 * @param date
 	 *            source of event's timestamp
-	 * @param nodeId
+	 * @param m_nodeId
 	 *            Node identifier of the affected interface
 	 * @param ipAddr
 	 *            IP address of the affected interface

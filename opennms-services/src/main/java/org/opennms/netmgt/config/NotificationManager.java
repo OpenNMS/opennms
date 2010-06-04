@@ -472,9 +472,9 @@ public abstract class NotificationManager {
                         update.executeUpdate();
                         update.close();
                         if(wasAcked) {
-                            notifIDs.add(new Integer(-1 * notifID));
+                            notifIDs.add(-1 * notifID);
                         } else {
-                            notifIDs.add(new Integer(notifID));
+                            notifIDs.add(notifID);
                         }
                     }
                 }
@@ -510,7 +510,7 @@ public abstract class NotificationManager {
                 while (rset.next()) {
                     int nodeID = rset.getInt(1);
     
-                    allNodes.add(new Integer(nodeID));
+                    allNodes.add(nodeID);
                 }
             }
             return allNodes;
@@ -914,7 +914,7 @@ public abstract class NotificationManager {
                 }
             }
         };
-        querier.execute(new Integer(notifId));
+        querier.execute(notifId);
         return parmMap;
     }
 
@@ -938,8 +938,8 @@ public abstract class NotificationManager {
      * @return
      */
     public void forEachUserNotification(final int notifId, final RowProcessor rp) {
-        Querier querier = new Querier(m_dataSource, "select * from usersNotified where notifyId = ? order by notifytime", rp);
-        querier.execute(new Integer(notifId));
+        final Querier querier = new Querier(m_dataSource, "select * from usersNotified where notifyId = ? order by notifytime", rp);
+        querier.execute(notifId);
     }
 
     /**
@@ -947,8 +947,8 @@ public abstract class NotificationManager {
      * @return
      */
     public String getQueueForNotification(final int notifId) {
-        SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select queueID from notifications where notifyId = ?");
-        querier.execute(new Integer(notifId));
+        final SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select queueID from notifications where notifyId = ?");
+        querier.execute(notifId);
         return (String)querier.getResult();
     }
     
@@ -1003,7 +1003,7 @@ public abstract class NotificationManager {
             }
             
         });
-        querier.execute(new Integer(eventid));
+        querier.execute(eventid);
         return event;
     }
 

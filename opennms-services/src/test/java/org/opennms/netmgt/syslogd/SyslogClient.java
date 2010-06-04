@@ -100,7 +100,7 @@ public class SyslogClient {
     // @exception SyslogException if there was a problem
     public SyslogClient(String ident, int logopt, int facility) throws UnknownHostException {
         if (ident == null) {
-            this.ident = new String(Thread.currentThread().getName());
+            this.ident = Thread.currentThread().getName();
         } else {
             this.ident = ident;
         }

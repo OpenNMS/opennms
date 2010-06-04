@@ -305,13 +305,13 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     }
 
     public Integer getPort() {
-        return new Integer(m_tcpPort);
+        return m_tcpPort;
     }
 
-    public void setPort(Integer port) {
+    public void setPort(final Integer port) {
         assertNotRunning();
         
-        m_tcpPort = port.intValue();
+        m_tcpPort = port;
     }
 
     public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {

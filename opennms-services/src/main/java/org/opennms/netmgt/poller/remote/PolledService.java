@@ -40,6 +40,8 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -51,7 +53,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
  */
 public class PolledService implements MonitoredService, Serializable, Comparable<PolledService> {
     
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     private IPv4NetworkInterface m_netInterface;
     private Map<String,Object> m_monitorConfiguration;
@@ -61,7 +63,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     private String m_nodeLabel;
     private String m_svcName;
 	
-	public PolledService(OnmsMonitoredService monitoredService, Map<String,Object> monitorConfiguration, OnmsPollModel pollModel) {
+	public PolledService(final OnmsMonitoredService monitoredService, final Map<String,Object> monitorConfiguration, final OnmsPollModel pollModel) {
         m_serviceId = monitoredService.getId();
         m_nodeId = monitoredService.getNodeId();
         m_nodeLabel = monitoredService.getIpInterface().getNode().getLabel();
@@ -110,6 +112,31 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     @Override
     public String toString() {
         return getNodeId()+":"+getIpAddr()+":"+getSvcName();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(3, 57)
+        .append(this.getNodeLabel())
+        .append(this.getIpAddr())
+        .append(this.getNodeId())
+        .append(this.getSvcName())
+        .append(this.getServiceId())
+        .toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null) return false;
+        if (!(o instanceof PolledService)) {
+            return false;
+        }
+        final PolledService that = (PolledService)o;
+        return new EqualsBuilder()
+            .append(this.getServiceId(), that.getServiceId())
+            .append(this.getNodeId(), that.getNodeId())
+            .append(this.getIpAddr(), that.getIpAddr())
+            .isEquals();
     }
 
     public int compareTo(final PolledService that) {

@@ -347,7 +347,7 @@ public final class SmtpPlugin extends AbstractPlugin {
 
         boolean result = isServer(address, port, retries, timeout);
         if (result && qualifiers != null && !qualifiers.containsKey("port"))
-            qualifiers.put("port", new Integer(port));
+            qualifiers.put("port", port);
 
         return result;
     }

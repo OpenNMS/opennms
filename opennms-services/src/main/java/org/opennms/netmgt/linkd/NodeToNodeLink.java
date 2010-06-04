@@ -36,16 +36,21 @@
 
 package org.opennms.netmgt.linkd;
 
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * 
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class NodeToNodeLink {
+public class NodeToNodeLink implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-	int nodeId;
-	int ifindex;
-	int nodeparentid;
-	int parentifindex;
+    int m_nodeId;
+	int m_ifIndex;
+	int m_nodeParentId;
+	int m_parentIfIndex;
 
 
 	@SuppressWarnings("unused")
@@ -53,16 +58,17 @@ public class NodeToNodeLink {
 		throw new UnsupportedOperationException("default constructor not supported");
 	}
 
-	public NodeToNodeLink(int nodeId, int ifindex) {
-		this.nodeId = nodeId;
-		this.ifindex = ifindex;
+	public NodeToNodeLink(final int nodeId, final int ifindex) {
+		this.m_nodeId = nodeId;
+		this.m_ifIndex = ifindex;
 	}
 
+	@Override
 	public String toString() {
-		StringBuffer str = new StringBuffer("Node Id = " + nodeId);
-		str.append(" IfIndex = " + ifindex);
-		str.append(" Node ParentId = " + nodeparentid );
-		str.append(" Parent IfIndex = " + parentifindex );
+		StringBuffer str = new StringBuffer("Node Id = " + m_nodeId);
+		str.append(" IfIndex = " + m_ifIndex);
+		str.append(" Node ParentId = " + m_nodeParentId );
+		str.append(" Parent IfIndex = " + m_parentIfIndex );
 		return str.toString();
 	}
 
@@ -70,49 +76,64 @@ public class NodeToNodeLink {
 	 * @return Returns the nodeparentid.
 	 */
 	public int getNodeparentid() {
-		return nodeparentid;
+		return m_nodeParentId;
 	}
 	/**
-	 * @param nodeparentid The nodeparentid to set.
+	 * @param nodeParentId The nodeparentid to set.
 	 */
-	public void setNodeparentid(int nodeparentid) {
-		this.nodeparentid = nodeparentid;
+	public void setNodeparentid(final int nodeParentId) {
+		this.m_nodeParentId = nodeParentId;
 	}
 	/**
 	 * @return Returns the parentifindex.
 	 */
 	public int getParentifindex() {
-		return parentifindex;
+		return m_parentIfIndex;
 	}
 	/**
-	 * @param parentifindex The parentifindex to set.
+	 * @param parentIfIndex The parentifindex to set.
 	 */
-	public void setParentifindex(int parentifindex) {
-		this.parentifindex = parentifindex;
+	public void setParentifindex(final int parentIfIndex) {
+		this.m_parentIfIndex = parentIfIndex;
 	}
 	/**
 	 * @return Returns the ifindex.
 	 */
 	public int getIfindex() {
-		return ifindex;
+		return m_ifIndex;
 	}
 	/**
 	 * @return
 	 */
 	public int getNodeId() {
-		return nodeId;
+		return m_nodeId;
 	}
-	
-	public boolean equals(NodeToNodeLink nodelink) {
-		if (this.nodeId == nodelink.getNodeId() && 
-			this.ifindex == nodelink.getIfindex()	&&
-			this.nodeparentid == nodelink.getNodeparentid() &&
-			this.parentifindex == nodelink.getParentifindex()) return true;
 
-		if (this.nodeId == nodelink.getNodeparentid() && 
-			this.ifindex == nodelink.getParentifindex()	&&
-			this.nodeparentid == nodelink.getNodeId() &&
-			this.parentifindex == nodelink.getIfindex()) return true;
+	@Override
+	public int hashCode() {
+	    return new HashCodeBuilder(17, 57)
+	        .append(m_nodeId)
+	        .append(m_ifIndex)
+	        .append(m_nodeParentId)
+	        .append(m_parentIfIndex)
+	        .toHashCode();
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+	    if (o == null) return false;
+	    if (!(o instanceof NodeToNodeLink)) return false;
+	    final NodeToNodeLink nodelink = (NodeToNodeLink)o;
+
+		if (this.m_nodeId == nodelink.getNodeId() && 
+			this.m_ifIndex == nodelink.getIfindex()	&&
+			this.m_nodeParentId == nodelink.getNodeparentid() &&
+			this.m_parentIfIndex == nodelink.getParentifindex()) return true;
+
+		if (this.m_nodeId == nodelink.getNodeparentid() && 
+			this.m_ifIndex == nodelink.getParentifindex()	&&
+			this.m_nodeParentId == nodelink.getNodeId() &&
+			this.m_parentIfIndex == nodelink.getIfindex()) return true;
 		
 		return false;
 

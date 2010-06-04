@@ -787,7 +787,7 @@ public final class BroadcastEventProcessor implements EventListener {
      *            a map that will supply the substitution values
      */
     public static String expandNotifParms(final String input, final Map<String, String> paramMap) {
-        String expanded = new String(input);
+        String expanded = input;
 
         if (m_expandRE.match(expanded)) {
             String key = m_expandRE.getParen(1);

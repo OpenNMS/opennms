@@ -375,7 +375,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * @param thresholdMap
      *            Map of node level ThresholdEntity objects keyed by datasource
      *            name.
-     * @param nodeId
+     * @param m_nodeId
      *            Node identifier
      * @param primary
      *            Primary SNMP interface address
@@ -482,7 +482,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * @param events
      *            Castor events object containing any events to be generated as
      *            a result of threshold checking.
-     * @param nodeId
+     * @param m_nodeId
      *            Node identifier
      * @param primary
      *            Primary SNMP interface address

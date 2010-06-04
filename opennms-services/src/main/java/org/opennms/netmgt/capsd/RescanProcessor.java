@@ -1631,7 +1631,7 @@ public final class RescanProcessor implements Runnable {
         }
 
         for (int i = 0; i < dbSupportedServices.length; i++) {
-            Integer id = new Integer(dbSupportedServices[i].getServiceId());
+            Integer id = dbSupportedServices[i].getServiceId();
             String sn = (serviceNames.get(id)).toString();
 
             DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.get(node.getNodeId(), ifaddr, dbSupportedServices[i].getServiceId());
@@ -2509,10 +2509,6 @@ public final class RescanProcessor implements Runnable {
                             if (smbc.getDomainName() != null) {
                                 currNodeEntry.setDomainName(smbc.getDomainName());
                             }
-
-                            if (smbc.getOS() != null) {
-                                currNodeEntry.setOS(smbc.getOS());
-                            }
                         }
                     }
                 }
@@ -2547,10 +2543,6 @@ public final class RescanProcessor implements Runnable {
 
             if (savedSmbcRef.getDomainName() != null) {
                 currNodeEntry.setDomainName(savedSmbcRef.getDomainName());
-            }
-
-            if (savedSmbcRef.getOS() != null) {
-                currNodeEntry.setOS(savedSmbcRef.getOS());
             }
         }
 

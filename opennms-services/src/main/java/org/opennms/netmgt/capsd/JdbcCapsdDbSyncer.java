@@ -527,9 +527,8 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     insStmt.setString(2, protocol);
                     insStmt.executeUpdate();
     
-                    Integer xid = new Integer(id);
-                    m_serviceIdToName.put(xid, protocol);
-                    m_serviceNameToId.put(protocol, xid);
+                    m_serviceIdToName.put(id, protocol);
+                    m_serviceNameToId.put(protocol, id);
     
                     serviceNames.add(protocol);
                     
@@ -748,7 +747,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                             svcStatus = str.charAt(0);
                         }
     
-                        String svcName = getServiceName(new Integer(svcId));
+                        String svcName = getServiceName(svcId);
                         /*
                          * try the first package that had the ip first, if
                          * service is not enabled, try all packages
@@ -915,7 +914,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     ifList.add(new LightWeightIfEntry(nodeId, ifIndex, address, DbIpInterfaceEntry.STATE_UNKNOWN, primarySnmpState, ifType));
     
                     // Add interface entry list to the map
-                    nodes.put(new Integer(nodeId), ifList);
+                    nodes.put(nodeId, ifList);
                 } else {
                     // Just add the current interface to the
                     // node's interface list

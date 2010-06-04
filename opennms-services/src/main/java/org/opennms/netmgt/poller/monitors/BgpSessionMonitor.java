@@ -218,7 +218,7 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {   
         NetworkInterface iface = svc.getNetInterface();
         
-        String returnValue = new String ();
+        String returnValue = "";
 
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();

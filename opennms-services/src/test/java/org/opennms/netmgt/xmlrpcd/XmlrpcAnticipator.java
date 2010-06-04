@@ -45,6 +45,7 @@ import java.util.Vector;
 
 import junit.framework.AssertionFailedError;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 import org.apache.xmlrpc.WebServer;
 import org.apache.xmlrpc.XmlRpcHandler;
@@ -78,19 +79,30 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
             m_method = method;
             m_vector = vector;
         }
-        
+
+        @Override
         public String toString() {
-            StringBuffer b = new StringBuffer();
+            final StringBuffer b = new StringBuffer();
             b.append("Method: " + m_method + "\n");
-            for (Iterator i = m_vector.iterator(); i.hasNext(); ) {
-                Object o = i.next();
+            for (final Object o : m_vector) {
                 b.append("Parameter (" + o.getClass().getName() + ") "+ o + "\n");
             }
             return b.toString();
         }
-        
-        public boolean equals(Object o) {
-            XmlrpcCall c = (XmlrpcCall) o;
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(9, 3)
+                .append(m_method)
+                .append(m_vector)
+                .toHashCode();
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (o == null) return false;
+            if (!(o instanceof XmlrpcCall)) return false;
+            final XmlrpcCall c = (XmlrpcCall) o;
             if (!m_method.equals(c.m_method)) {
                 return false;
             }

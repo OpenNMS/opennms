@@ -248,7 +248,7 @@ public class CollectdTest extends TestCase {
 
     private OnmsIpInterface getInterface() {
         OnmsNode node = new OnmsNode();
-        node.setId(new Integer(1));
+        node.setId(1);
         OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
         iface.setId(1);
         return iface;

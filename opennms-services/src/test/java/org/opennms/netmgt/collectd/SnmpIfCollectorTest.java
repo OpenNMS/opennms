@@ -155,10 +155,10 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         return collector;
     }
 
-    private OnmsEntity createSnmpInterface(int ifIndex, int ifType, String ifName, boolean collectionEnabled) {
-        OnmsSnmpInterface m_snmpIface = new OnmsSnmpInterface();
-    	m_snmpIface.setIfIndex(new Integer(ifIndex));
-    	m_snmpIface.setIfType(new Integer(ifType));
+    private OnmsEntity createSnmpInterface(final int ifIndex, final int ifType, final String ifName, final boolean collectionEnabled) {
+        final OnmsSnmpInterface m_snmpIface = new OnmsSnmpInterface();
+    	m_snmpIface.setIfIndex(ifIndex);
+    	m_snmpIface.setIfType(ifType);
     	m_snmpIface.setIfName(ifName);
     	m_snmpIface.setCollectionEnabled(collectionEnabled);
     	m_node.addSnmpInterface(m_snmpIface);

@@ -61,7 +61,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version 1.1.1.1
  * 
  */
-public class JMXDataSource  {
+public class JMXDataSource implements Cloneable {
 	private static final int MAX_DS_NAME_LENGTH = 19;
 	public static final String RRD_ERROR = "RRD_ERROR";
 
@@ -370,6 +370,7 @@ public class JMXDataSource  {
      * 
      * @return A newly created copy of self.
      */
+    @Override
     public Object clone() {
         return new JMXDataSource(this);
     }

@@ -1090,7 +1090,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                     log().debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
                 }
                 int nodeId = rs.getInt(1);
-                nodeIdList.add(new Integer(nodeId));
+                nodeIdList.add(nodeId);
             }
             nodeIds = new int[nodeIdList.size()];
             int i = 0;
@@ -1127,7 +1127,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             d.watch(rs);
             List<Long> nodeIdList = new LinkedList<Long>();
             while (rs.next()) {
-                nodeIdList.add(new Long(rs.getLong(1)));
+                nodeIdList.add(rs.getLong(1));
             }
 
             long[] nodeIds = new long[nodeIdList.size()];

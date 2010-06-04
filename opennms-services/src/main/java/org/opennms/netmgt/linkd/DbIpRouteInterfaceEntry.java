@@ -683,8 +683,8 @@ final class DbIpRouteInterfaceEntry {
 			return false;
 	}
 
-	boolean updateRouteMask(String routemask) {
-		if (routemask != m_routemask) {
+	boolean updateRouteMask(final String routemask) {
+		if (!m_routemask.equals(routemask)) {
 			set_routemask(routemask);
 			return true;
 		} else
@@ -710,8 +710,8 @@ final class DbIpRouteInterfaceEntry {
 			return false;
 	}
 
-	boolean updateRouteNextHop(String routenexthop) {
-		if (routenexthop != m_routenexthop) {
+	boolean updateRouteNextHop(final String routenexthop) {
+		if (!m_routenexthop.equals(routenexthop)) {
 			set_routenexthop(routenexthop);
 			return true;
 		} else

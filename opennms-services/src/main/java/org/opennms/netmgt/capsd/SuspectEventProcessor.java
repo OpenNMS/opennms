@@ -473,11 +473,6 @@ final class SuspectEventProcessor implements Runnable {
                     entryNode.setDomainName(smbc.getDomainName());
                 }
             }
-
-            // Operating System
-            if (smbc.getOS() != null) {
-                entryNode.setOS(smbc.getOS());
-            }
         }
 
         entryNode.store(dbc);

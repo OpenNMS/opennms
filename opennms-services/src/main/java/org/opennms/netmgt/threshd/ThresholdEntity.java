@@ -303,7 +303,7 @@ public final class ThresholdEntity implements Cloneable {
         List<ThresholdEvaluatorState> defaultList=m_thresholdEvaluatorStates.get(null);
 
         for (ThresholdEvaluatorState item : defaultList) {
-            if (item.getThresholdConfig().getType() == threshold.getType()) {
+            if (threshold.getType().equals(item.getThresholdConfig().getType())) {
                 throw new IllegalStateException(threshold.getType().toString() + " threshold already set.");
             }
         }

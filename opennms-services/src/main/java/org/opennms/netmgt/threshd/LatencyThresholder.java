@@ -418,7 +418,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * @param iface 
      * @param directory
      *            RRD repository directory
-     * @param nodeId
+     * @param m_nodeId
      *            Node identifier of interface being checked
      * @param ipAddr
      *            IP address of the interface being checked

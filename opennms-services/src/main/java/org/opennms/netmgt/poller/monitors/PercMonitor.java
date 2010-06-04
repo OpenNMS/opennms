@@ -204,7 +204,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
 
             // First walk the physical OID Tree and check the returned values 
 
-            String returnValue = new String(); 
+            String returnValue = ""; 
           
             SnmpValue value = SnmpUtils.get(agentConfig,snmpObjectId);
             

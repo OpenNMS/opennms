@@ -217,8 +217,7 @@ public final class NSClientPeerFactory extends PeerFactory {
             // Sort ranges
             TreeMap<Integer, Range> rangesMap = new TreeMap<Integer, Range>();
             for (Range range : definition.getRangeCollection()) {
-                rangesMap.put(new Integer(new IPv4Address(range.getBegin()).getAddress()),
-                              range);
+                rangesMap.put(new IPv4Address(range.getBegin()).getAddress(), range);
             }
 
             // Combine consecutive specifics into ranges

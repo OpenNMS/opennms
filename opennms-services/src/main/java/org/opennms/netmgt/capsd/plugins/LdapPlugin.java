@@ -250,7 +250,7 @@ public final class LdapPlugin extends AbstractPlugin {
 
         for (int i = 0; i < ports.length; i++) {
             if (isServer(address, ports[i], retries, timeout)) {
-                qualifiers.put("port", new Integer(ports[i]));
+                qualifiers.put("port", ports[i]);
                 return true;
             }
         }

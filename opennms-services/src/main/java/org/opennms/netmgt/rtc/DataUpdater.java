@@ -283,7 +283,7 @@ final class DataUpdater implements Runnable {
         ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (eventParms == null) {
-            log.warn(m_event.getUei() + " ignored - info incomplete - parms: " + eventParms);
+            log.warn(m_event.getUei() + " ignored - info incomplete (null event parms)");
             return;
         }
 
@@ -340,7 +340,7 @@ final class DataUpdater implements Runnable {
         ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (eventParms == null) {
-            log.warn(m_event.getUei() + " ignored - info incomplete - parms: " + eventParms);
+            log.warn(m_event.getUei() + " ignored - info incomplete (null event parms)");
             return;
         }
 

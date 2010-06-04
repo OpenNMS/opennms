@@ -88,8 +88,6 @@ import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * Collect data via URI
@@ -306,7 +304,7 @@ public class HttpCollector implements ServiceCollector {
                 } catch (NumberFormatException nfe) { /* Fall through */ }
             }
             if (log().isDebugEnabled()) {
-                log().debug("Value for attribute " + this + " does not appear to be a number, skipping");
+                log().debug("Value for attribute " + this.toString() + " does not appear to be a number, skipping");
             }
             return null;
         }
@@ -664,7 +662,7 @@ public class HttpCollector implements ServiceCollector {
     
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         log().debug("initialize: Initializing HTTP collection for agent: "+agent);
-        final Integer scheduledNodeKey = new Integer(agent.getNodeId());
+        final Integer scheduledNodeKey = agent.getNodeId();
         final String scheduledAddress = m_scheduledNodes.get(scheduledNodeKey);
         
         if (scheduledAddress != null) {

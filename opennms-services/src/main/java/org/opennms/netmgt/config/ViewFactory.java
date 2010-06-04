@@ -195,7 +195,7 @@ public class ViewFactory {
             views.setView(new ArrayList<View>(map.values()));
             saveViews(views);
         } else {
-            throw new Exception("ViewFactory:delete Invalid user name:" + name);
+            throw new Exception("ViewFactory: attempt to delete null user name.");
         }
     }
 
@@ -297,10 +297,10 @@ public class ViewFactory {
         View view;
 
         // Check if the group exists
-        if (oldName == null || oldName == "") {
+        if (oldName == null || "".equals(oldName)) {
             throw new Exception("ViewFactory:rename Invalid old view name");
         }
-        if (newName == null || newName == "") {
+        if (newName == null || "".equals(newName)) {
             throw new Exception("ViewFactory:rename Invalid new view name");
         }
         if (m_views.containsKey(oldName)) {

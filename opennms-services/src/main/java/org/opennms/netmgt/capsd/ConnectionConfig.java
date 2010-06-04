@@ -131,7 +131,7 @@ public class ConnectionConfig {
 
     public void saveKeyedInteger(String key, int value) {
         if (m_qualifiers != null && !m_qualifiers.containsKey(key))
-            m_qualifiers.put(key, new Integer(value));
+            m_qualifiers.put(key, Integer.valueOf(value));
     }
 
     /**

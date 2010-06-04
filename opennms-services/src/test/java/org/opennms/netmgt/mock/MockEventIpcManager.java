@@ -49,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcBroadcaster;
@@ -71,26 +72,36 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
 
         Set<String> m_ueiList;
 
-        ListenerKeeper(EventListener listener, Set<String> ueiList) {
+        ListenerKeeper(final EventListener listener, final Set<String> ueiList) {
             m_listener = listener;
             m_ueiList = ueiList;
         }
 
-        public boolean equals(Object o) {
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(27, 31)
+                .append(m_listener)
+                .append(m_ueiList)
+                .toHashCode();
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (o == null) return false;
             if (o instanceof ListenerKeeper) {
-                ListenerKeeper keeper = (ListenerKeeper) o;
+                final ListenerKeeper keeper = (ListenerKeeper) o;
                 return m_listener.equals(keeper.m_listener) && (m_ueiList == null ? keeper.m_ueiList == null : m_ueiList.equals(keeper.m_ueiList));
             }
             return false;
         }
 
-        private boolean eventMatches(Event e) {
+        private boolean eventMatches(final Event e) {
             if (m_ueiList == null)
                 return true;
             return m_ueiList.contains(e.getUei());
         }
 
-        public void sendEventIfAppropriate(Event e) {
+        public void sendEventIfAppropriate(final Event e) {
             if (eventMatches(e)) {
                 m_listener.onEvent(e);
             }
@@ -101,20 +112,19 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
      * This class implements {@link EventConfDao} but every call returns null.
      */
     private static class EmptyEventConfDao implements EventConfDao {
-        public void addEvent(org.opennms.netmgt.xml.eventconf.Event event) {}
+        public void addEvent(final org.opennms.netmgt.xml.eventconf.Event event) {}
 
-        public void addEventToProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event event) {}
+        public void addEventToProgrammaticStore(final org.opennms.netmgt.xml.eventconf.Event event) {}
 
-        public org.opennms.netmgt.xml.eventconf.Event findByEvent(
-                Event matchingEvent) {
+        public org.opennms.netmgt.xml.eventconf.Event findByEvent(final Event matchingEvent) {
             return null;
         }
 
-        public org.opennms.netmgt.xml.eventconf.Event findByUei(String uei) {
+        public org.opennms.netmgt.xml.eventconf.Event findByUei(final String uei) {
             return null;
         }
 
-        public String getEventLabel(String uei) {
+        public String getEventLabel(final String uei) {
             return null;
         }
 
@@ -126,7 +136,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
             return null;
         }
 
-        public List<org.opennms.netmgt.xml.eventconf.Event> getEvents(String uei) {
+        public List<org.opennms.netmgt.xml.eventconf.Event> getEvents(final String uei) {
             return null;
         }
 
@@ -134,13 +144,13 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
             return null;
         }
 
-        public boolean isSecureTag(String tag) {
+        public boolean isSecureTag(final String tag) {
             return false;
         }
 
         public void reload() throws DataAccessException {}
 
-        public boolean removeEventFromProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event event) {
+        public boolean removeEventFromProgrammaticStore(final org.opennms.netmgt.xml.eventconf.Event event) {
             return false;
         }
 
@@ -150,7 +160,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     private EventAnticipator m_anticipator;
     
     private EventWriter m_eventWriter = new EventWriter() {
-        public void writeEvent(Event e) {
+        public void writeEvent(final Event e) {
             
         }
     };
@@ -159,7 +169,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
 
     private int m_pendingEvents;
 
-    private int m_eventDelay = 20;
+    private volatile int m_eventDelay = 20;
 
     private boolean m_synchronous = true;
     
@@ -171,27 +181,27 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_anticipator = new EventAnticipator();
     }
     
-    public void addEventListener(EventListener listener) {
+    public void addEventListener(final EventListener listener) {
         m_listeners.add(new ListenerKeeper(listener, null));
     }
 
-    public void addEventListener(EventListener listener, Collection<String> ueis) {
+    public void addEventListener(final EventListener listener, final Collection<String> ueis) {
         m_listeners.add(new ListenerKeeper(listener, new HashSet<String>(ueis)));
     }
 
-    public void addEventListener(EventListener listener, String uei) {
+    public void addEventListener(final EventListener listener, final String uei) {
         m_listeners.add(new ListenerKeeper(listener, Collections.singleton(uei)));
     }
 
-    public void broadcastNow(Event event) {
+    public void broadcastNow(final Event event) {
         MockUtil.println("Sending: " + new EventWrapper(event));
-        List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
+        final List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
         for (ListenerKeeper k : listeners) {
             k.sendEventIfAppropriate(event);
         }
     }
     
-    public void setEventWriter(EventWriter eventWriter) {
+    public void setEventWriter(final EventWriter eventWriter) {
         m_eventWriter = eventWriter;
     }
 
@@ -199,23 +209,23 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         return m_anticipator;
     }
     
-    public void setEventAnticipator(EventAnticipator anticipator) {
+    public void setEventAnticipator(final EventAnticipator anticipator) {
         m_anticipator = anticipator;
     }
 
-    public void removeEventListener(EventListener listener) {
+    public void removeEventListener(final EventListener listener) {
         m_listeners.remove(new ListenerKeeper(listener, null));
     }
 
-    public void removeEventListener(EventListener listener, Collection<String> ueis) {
+    public void removeEventListener(final EventListener listener, final Collection<String> ueis) {
         m_listeners.remove(new ListenerKeeper(listener, new HashSet<String>(ueis)));
     }
 
-    public void removeEventListener(EventListener listener, String uei) {
+    public void removeEventListener(final EventListener listener, final String uei) {
         m_listeners.remove(new ListenerKeeper(listener, Collections.singleton(uei)));
     }
     
-    public void setEventDelay(int millis) {
+    public synchronized void setEventDelay(final int millis) {
         m_eventDelay  = millis;
     }
 
@@ -227,7 +237,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         broadcastNow(event);
     }
 
-    public void setSynchronous(boolean syncState) {
+    public void setSynchronous(final boolean syncState) {
         m_synchronous = syncState;
     }
     
@@ -237,7 +247,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     
     public synchronized void sendNow(final Event event) {
         // Expand the event parms
-        EventExpander expander = new EventExpander();
+        final EventExpander expander = new EventExpander();
         expander.setEventConfDao(new EmptyEventConfDao());
         expander.expandEvent(event);
         m_pendingEvents++;
@@ -245,7 +255,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         MockUtil.println("Received: "+ new EventWrapper(event));
         m_anticipator.eventReceived(event);
 
-        Runnable r = new Runnable() {
+        final Runnable r = new Runnable() {
             public void run() {
                 try {
                     m_eventWriter.writeEvent(event);
@@ -275,8 +285,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         return m_scheduler;
     }
 
-    public void sendNow(Log eventLog) {
-        for (Event event : eventLog.getEvents().getEventCollection()) {
+    public void sendNow(final Log eventLog) {
+        for (final Event event : eventLog.getEvents().getEventCollection()) {
             sendNow(event);
         }
     }
@@ -289,7 +299,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
             MockUtil.println("Waiting for event processing: m_pendingEvents = "+m_pendingEvents);
             try {
                 wait();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 // Do nothing
             }
         }
@@ -300,12 +310,12 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         return null;
     }
 
-    public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr) {
+    public void setEventdConfigMgr(final EventdConfigManager eventdConfigMgr) {
         // TODO Auto-generated method stub
         
     }
 
-    public void setDataSource(DataSource instance) {
+    public void setDataSource(final DataSource instance) {
         // TODO Auto-generated method stub
         
     }
@@ -318,7 +328,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_anticipator.reset();
     }
 
-    public void setEventIpcManagerProxy(EventIpcManagerProxy proxy) {
+    public void setEventIpcManagerProxy(final EventIpcManagerProxy proxy) {
         m_proxy = proxy;
     }
 
@@ -327,11 +337,11 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         m_proxy.setDelegate(this);
     }
 
-    public void send(Event event) throws EventProxyException {
+    public void send(final Event event) throws EventProxyException {
         sendNow(event);
     }
 
-    public void send(Log eventLog) throws EventProxyException {
+    public void send(final Log eventLog) throws EventProxyException {
         sendNow(eventLog);
     }
 

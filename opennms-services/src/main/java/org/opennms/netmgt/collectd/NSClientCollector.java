@@ -366,7 +366,7 @@ public class NSClientCollector implements ServiceCollector {
 
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         log().debug("initialize: Initializing NSClient collection for agent: " + agent);
-        Integer scheduledNodeKey = new Integer(agent.getNodeId());
+        Integer scheduledNodeKey = agent.getNodeId();
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
 
         if (nodeState != null) {
@@ -391,8 +391,8 @@ public class NSClientCollector implements ServiceCollector {
         m_scheduledNodes.clear();
     }
 
-    public void release(CollectionAgent agent) {
-        Integer scheduledNodeKey = new Integer(agent.getNodeId());
+    public void release(final CollectionAgent agent) {
+        final Integer scheduledNodeKey = agent.getNodeId();
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
         if (nodeState != null) {
             m_scheduledNodes.remove(scheduledNodeKey);
