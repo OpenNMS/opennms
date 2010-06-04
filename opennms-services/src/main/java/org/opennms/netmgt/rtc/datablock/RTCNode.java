@@ -37,6 +37,7 @@ package org.opennms.netmgt.rtc.datablock;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.rtc.RTCConstants;
 
 /**
@@ -382,17 +383,29 @@ public class RTCNode {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(3, 7)
+            .append(m_nodeID)
+            .append(m_ip)
+            .append(m_svcName)
+            .append(m_categories)
+            .append(m_svcTimesList)
+            .toHashCode();
+    }
+
     /**
      * Compare RTCNodes. Overrides the 'equals()' method in the superclass
      * 
      * @return true if all the attributes are equal
      */
-    public boolean equals(Object o) {
+    @Override
+    public boolean equals(final Object o) {
         if (!(o instanceof RTCNode)) {
             return false;
         }
 
-        RTCNode obj = (RTCNode) o;
+        final RTCNode obj = (RTCNode) o;
 
         if (m_nodeID == obj.getNodeID() && m_ip.equals(obj.getIP()) && m_svcName.equals(obj.getSvcName())) {
             return true;
@@ -407,6 +420,7 @@ public class RTCNode {
      * 
      * @return the string representation of this object
      */
+    @Override
     public String toString() {
         String s = "RTCNode\n[\n\t" + "nodeID       = " + m_nodeID + "\n\t" + "IP           = " + m_ip + "\n\t" + "Service      = " + m_svcName + "\n\t" + "\n]\n";
         return s;

@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -313,7 +314,10 @@ public final class ReparentViaSmb {
          * 
          * @return true if this and the passed object are equivalent.
          */
-        public boolean equals(Object o) {
+        @Override
+        public boolean equals(final Object o) {
+            if (o == null) return false;
+            if (!(o instanceof LightWeightNodeEntry)) return false;
             LightWeightNodeEntry node = (LightWeightNodeEntry) o;
 
             if (m_netbiosName == null || node.getNetbiosName() == null)
@@ -322,6 +326,16 @@ public final class ReparentViaSmb {
                 return true;
             else
                 return false;
+        }
+        
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(7, 23)
+                .append(m_nodeId)
+                .append(m_netbiosName)
+                .append(m_duplicate)
+                .append(m_hwNodeEntry)
+                .toHashCode();
         }
     }
 

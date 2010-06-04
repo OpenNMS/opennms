@@ -166,16 +166,16 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 		super.storeResult(res);
 		if (!SnmpObjId.get(FDB_ADDRESS_OID).isPrefixOf(res.getBase()) && !hasFdbAddressFromBase) {
 			int[] identifiers = res.getInstance().getIds();
-			String mac = "";
+			StringBuilder sb = new StringBuilder();
 			for (int i = identifiers.length-6; i<identifiers.length; i++) {
                 if (identifiers[i] >= 16 ) {
-                    mac+= Integer.toHexString(identifiers[i]);
+                    sb.append(Integer.toHexString(identifiers[i]));
                 } else {
-                    mac+= "0"+Integer.toHexString(identifiers[i]);
+                    sb.append("0").append(Integer.toHexString(identifiers[i]));
                 }
             }
 			super.storeResult(new SnmpResult(SnmpObjId.get(FDB_ADDRESS_OID), res.getInstance(), 
-						SnmpUtils.getValueFactory().getOctetString(mac.getBytes())));
+						SnmpUtils.getValueFactory().getOctetString(sb.toString().getBytes())));
 			hasFdbAddressFromBase = true;
 		}
 	}

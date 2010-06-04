@@ -148,7 +148,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         }
         
         // Collapse whitespace in final message
-        messageBody.replaceAll("\\s+", " ");
+        messageBody = messageBody.replaceAll("\\s+", " ");
         if (log().isDebugEnabled()) {
             log().debug("Final message body after collapsing whitespace is: '" + messageBody + "'");
         }

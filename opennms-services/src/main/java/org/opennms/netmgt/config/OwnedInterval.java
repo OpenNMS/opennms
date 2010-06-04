@@ -88,25 +88,28 @@ public class OwnedInterval extends TimeInterval {
     public boolean isOwned() { return !m_owners.isEmpty(); }
     
     public String toString() {
-        String ownerString = "";
+        StringBuffer sb = new StringBuffer();
         if (m_owners.isEmpty()) {
-            ownerString = "UNOWNED";
+            sb.append("UNOWNED");
         } else {
             for (int i = 0; i < m_owners.size(); i++) {
                 if (i != 0) {
-                    ownerString += ",";
+                    sb.append(",");
                 }
-                ownerString += m_owners.get(i);
+                sb.append(m_owners.get(i));
             }
         }
-        return ownerString+super.toString();
+        return sb.toString()+super.toString();
     }
     
+    @Override
     public int hashCode() { return 123; }
     
-    public boolean equals(Object o) {
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null) return false;
         if (o instanceof OwnedInterval) {
-            OwnedInterval owned = (OwnedInterval) o;
+            final OwnedInterval owned = (OwnedInterval) o;
             return super.equals(owned) && m_owners.equals(owned.m_owners);
         }
         return false;

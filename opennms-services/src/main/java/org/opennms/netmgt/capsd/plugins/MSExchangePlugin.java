@@ -286,13 +286,13 @@ public final class MSExchangePlugin extends AbstractPlugin {
         boolean[] result = isServer(address, new int[] { pop3port, imapport, mapiport }, retries, timeout);
         if (qualifiers != null) {
             if (result[0] && !qualifiers.containsKey("pop3 port"))
-                qualifiers.put("pop3 port", new Integer(pop3port));
+                qualifiers.put("pop3 port", pop3port);
 
             if (result[1] && !qualifiers.containsKey("imap port"))
-                qualifiers.put("imap port", new Integer(imapport));
+                qualifiers.put("imap port", imapport);
 
             if (result[2] && !qualifiers.containsKey("mapi port"))
-                qualifiers.put("mapi port", new Integer(mapiport));
+                qualifiers.put("mapi port", mapiport);
         }
 
         return (result[0] || result[1] || result[2]);

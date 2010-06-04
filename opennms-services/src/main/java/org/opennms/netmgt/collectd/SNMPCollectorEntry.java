@@ -132,7 +132,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
             return null;
         }
     
-        snmpVar.trim();
+        snmpVar = snmpVar.trim();
     
         if (snmpVar.equals("")) {
             return null;

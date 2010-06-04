@@ -256,7 +256,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     public Integer getPort() {
-        return new Integer(m_dgPort);
+        return m_dgPort;
     }
 
     /**

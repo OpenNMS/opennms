@@ -48,7 +48,7 @@ public class DhcpTestDetector {
      * The port where the DHCP server is detected. This is a well known port and
      * this integer is always returned in the qualifier map.
      */
-    private final static Integer PORT_NUMBER = new Integer(67);
+    private final static Integer PORT_NUMBER = 67;
 
     /**
      * <P>

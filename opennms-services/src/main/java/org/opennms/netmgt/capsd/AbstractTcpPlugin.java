@@ -286,7 +286,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
     final protected void saveKeyedInteger(Map<String, Object> qualifiers, String key, int value) {
         if (qualifiers != null && !qualifiers.containsKey(key))
-            qualifiers.put(key, new Integer(value));
+            qualifiers.put(key, Integer.valueOf(value));
     }
 
     /**

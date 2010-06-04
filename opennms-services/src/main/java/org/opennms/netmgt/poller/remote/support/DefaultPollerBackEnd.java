@@ -265,7 +265,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     private boolean logicalStatusChanged(final OnmsLocationSpecificStatus currentStatus, final OnmsLocationSpecificStatus newStatus) {
-        return currentStatus != null || (currentStatus == null && !newStatus.getPollResult().isAvailable());
+        return currentStatus != null || (!newStatus.getPollResult().isAvailable());
     }
 
 

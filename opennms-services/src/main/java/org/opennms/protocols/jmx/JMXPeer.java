@@ -250,6 +250,7 @@ public class JMXPeer extends Object implements Cloneable {
      * @return A duplicate peer object.
      * 
      */
+    @Override
     public Object clone() {
         return new JMXPeer(this);
     }

@@ -61,7 +61,7 @@ public class IfAliasResourceType extends ResourceType {
         return null;
     }
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
-        Integer key = new Integer(inst.toInt());
+        Integer key = inst.toInt();
         AliasedResource resource = (AliasedResource) m_aliasedIfs.get(key);
         if (resource == null) {
             IfInfo ifInfo = (IfInfo)m_ifResourceType.findResource(inst);

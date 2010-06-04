@@ -298,7 +298,7 @@ final class ConvertToEvent {
             }
 
             // We will try to extract an IP address from a hostname.....
-            String myHost = "";
+            final StringBuffer sb = new StringBuffer();
 
             try {
                 final InetAddress address = InetAddress.getByName(m.group(hostGroup));
@@ -307,15 +307,16 @@ final class ConvertToEvent {
                 // Convert to dot representation
                 for (int i = 0; i < ipAddr.length; i++) {
                     if (i > 0) {
-                        myHost += ".";
+                        sb.append(".");
                     }
-                    myHost += ipAddr[i] & 0xFF;
+                    sb.append(ipAddr[i] & 0xFF);
                 }
             } catch (final UnknownHostException e1) {
                 log.warn("Could not parse the host: " + e1);
 
             }
 
+            final String myHost = sb.toString();
             if (!"".equals(myHost)) {
                 nodeId = SyslogdIPMgr.getNodeId(myHost.replaceAll("/", ""));
 

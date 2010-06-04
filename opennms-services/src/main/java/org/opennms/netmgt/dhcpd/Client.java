@@ -177,7 +177,7 @@ final class Client extends Observable implements Runnable, Fiber {
             }
 
             if (log.isDebugEnabled())
-                log.debug("thread " + this.getName() + " exiting...");
+                log.debug("thread " + super.getName() + " exiting...");
         }
     }
 

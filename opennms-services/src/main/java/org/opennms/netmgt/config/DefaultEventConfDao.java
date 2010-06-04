@@ -51,6 +51,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -94,8 +96,10 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
      */
     private Resource m_programmaticStoreConfigResource;
 
-    private static class EventLabelComparator implements Comparator<Event> {
-        public int compare(Event e1, Event e2) {
+    private static class EventLabelComparator implements Comparator<Event>, Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public int compare(final Event e1, final Event e2) {
             return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
         }
     }
@@ -309,7 +313,9 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
             // Delete the programmatic store if it exists on disk, but isn't in the main store.  This is for cleanliness
             if (programmaticStoreFile.exists() && (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource()))) {
                 log().info("Deleting programmatic store configuration file because it is no longer referenced in the root config file " + getConfigResource());
-                programmaticStoreFile.delete(); 
+                if (!programmaticStoreFile.delete()) {
+                    LogUtils.warnf(this, "Attempted to delete %s, but failed.", programmaticStoreFile);
+                }
             }
         }
         

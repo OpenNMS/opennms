@@ -67,7 +67,7 @@ public class EventUtilTest extends OpenNMSTestCase {
      */
     public void testGetValueAsString() {
         Value v = new Value();
-        v.setContent(new String(Base64.encodeBase64((new String("test")).getBytes())));
+        v.setContent(String.valueOf(Base64.encodeBase64((new String("test")).getBytes())));
         v.setEncoding("base64");
         
         assertEquals("test", EventUtil.getValueAsString(v));

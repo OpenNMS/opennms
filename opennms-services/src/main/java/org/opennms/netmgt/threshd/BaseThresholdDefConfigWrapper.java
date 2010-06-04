@@ -38,6 +38,7 @@ package org.opennms.netmgt.threshd;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.Threshold;
@@ -138,13 +139,22 @@ public abstract class BaseThresholdDefConfigWrapper {
      * values.
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof BaseThresholdDefConfigWrapper)) return false;
         BaseThresholdDefConfigWrapper o = (BaseThresholdDefConfigWrapper)obj;
         return getType().equals(o.getType())
         && getDsType().equals(o.getDsType())
         && getDatasourceExpression().equals(o.getDatasourceExpression());
     }
     
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(97, 3)
+            .append(m_baseDef)
+            .toHashCode();
+    }
+
     /*
      * Returns true only if parameter object has exactly the same values for all attributes of
      * the current object.

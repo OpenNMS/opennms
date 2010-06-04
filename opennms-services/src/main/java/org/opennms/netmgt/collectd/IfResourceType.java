@@ -59,8 +59,8 @@ public class IfResourceType extends ResourceType {
         return m_ifMap;
     }
 
-    private void addIfInfo(IfInfo ifInfo) {
-        getIfMap().put(new Integer(ifInfo.getIndex()), ifInfo);
+    private void addIfInfo(final IfInfo ifInfo) {
+        getIfMap().put(ifInfo.getIndex(), ifInfo);
     }
 
     private void addKnownIfResources() {

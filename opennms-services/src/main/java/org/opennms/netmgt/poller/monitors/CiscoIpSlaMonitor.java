@@ -188,7 +188,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents
      *                the plug-in from functioning.
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<String,Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
@@ -239,10 +239,10 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
-        String returnValue = new String("SNMP request failed or Cisco IP SLA tag ");
+        String returnValue = "SNMP request failed or Cisco IP SLA tag ";
         boolean monitorThresh = false;
         
         PollStatus status = PollStatus.unavailable();

@@ -1,34 +1,18 @@
 /*******************************************************************************
- * This file is part of the OpenNMS(R) Application.
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc.:
- *
- *      51 Franklin Street
- *      5th Floor
- *      Boston, MA 02110-1301
- *      USA
- *
- * For more information contact:
- *
- *      OpenNMS Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- *
+ * This file is part of the OpenNMS(R) Application. OpenNMS(R) is a registered
+ * trademark of The OpenNMS Group, Inc. Copyright (C) 2009 The OpenNMS Group,
+ * Inc. All rights reserved. This program is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.: 51
+ * Franklin Street 5th Floor Boston, MA 02110-1301 USA For more information
+ * contact: OpenNMS Licensing <license@opennms.org> http://www.opennms.org/
+ * http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.poller.monitors;
@@ -102,8 +86,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      * Implement the dell status
      */
     private enum DELL_STATUS {
-        OTHER(1), UNKNOWN(2), OK(3), NON_CRITICAL(4), CRITICAL(5), NON_RECOVERABLE(
-                6);
+        OTHER(1), UNKNOWN(2), OK(3), NON_CRITICAL(4), CRITICAL(5), NON_RECOVERABLE(6);
 
         private final int state; // state code
 
@@ -138,7 +121,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      *                Thrown if an unrecoverable error occurs that prevents
      *                the plug-in from functioning.
      */
-    public void initialize(Map parameters) {
+    public void initialize(Map<String,Object> parameters) {
         // Initialize the SnmpPeerFactory
         //
         try {
@@ -189,10 +172,10 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
-    public PollStatus poll(MonitoredService svc, Map parameters) {
+    public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
 
-        String returnValue = new String();
+        String returnValue = "";
 
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
@@ -207,26 +190,15 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
         // Retrieve this interface's SNMP peer object
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
-        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        if (agentConfig == null)
+            throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
         log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
 
         // set timeout and retries on SNMP peer object
         //
-        agentConfig.setTimeout(ParameterMap.getKeyedInteger(
-                                                            parameters,
-                                                            "timeout",
-                                                            agentConfig.getTimeout()));
-        agentConfig.setRetries(ParameterMap.getKeyedInteger(
-                                                            parameters,
-                                                            "retry",
-                                                            ParameterMap.getKeyedInteger(
-                                                                                         parameters,
-                                                                                         "retries",
-                                                                                         agentConfig.getRetries())));
-        agentConfig.setPort(ParameterMap.getKeyedInteger(
-                                                         parameters,
-                                                         "port",
-                                                         agentConfig.getPort()));
+        agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
+        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
+        agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
         // Establish SNMP session with interface
         //
@@ -237,8 +209,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
 
             // Get the chassis status
             SnmpObjId chassisStatusSnmpObject = SnmpObjId.get(CHASSIS_STATUS_OID);
-            SnmpValue chassisStatus = SnmpUtils.get(agentConfig,
-                                                    chassisStatusSnmpObject);
+            SnmpValue chassisStatus = SnmpUtils.get(agentConfig, chassisStatusSnmpObject);
 
             // If no chassis status is received or SNMP is not possible,
             // service is down
@@ -257,24 +228,19 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
              */
             if (chassisStatus.toInt() == DELL_STATUS.OK.value()) {
                 if (log().isDebugEnabled()) {
-                    log().debug(
-                                "poll: chassis status: "
-                                        + chassisStatus.toInt());
+                    log().debug("poll: chassis status: " + chassisStatus.toInt());
                 }
                 return PollStatus.available();
             } else {
                 if (log().isDebugEnabled()) {
-                    log().debug(
-                                "poll: chassis status: "
-                                        + chassisStatus.toInt());
+                    log().debug("poll: chassis status: " + chassisStatus.toInt());
                 }
                 chassisStatusTxt = resolveDellStatus(chassisStatus.toInt());
             }
 
             // Chassis status is not OK gather some information
             SnmpObjId eventLogStatusSnmpObject = SnmpObjId.get(EVENT_LOG_STATUS_OID);
-            SnmpValue eventLogStatus = SnmpUtils.get(agentConfig,
-                                                     eventLogStatusSnmpObject);
+            SnmpValue eventLogStatus = SnmpUtils.get(agentConfig, eventLogStatusSnmpObject);
             // Check correct MIB-Support
             if (eventLogStatus == null) {
                 log().warn("Cannot receive eventLogStatus.");
@@ -286,8 +252,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             }
 
             SnmpObjId manufacturerSnmpObject = SnmpObjId.get(MANUFACTURER_OID);
-            SnmpValue manufacturer = SnmpUtils.get(agentConfig,
-                                                   manufacturerSnmpObject);
+            SnmpValue manufacturer = SnmpUtils.get(agentConfig, manufacturerSnmpObject);
             // Check correct MIB-Support
             if (manufacturer == null) {
                 log().warn("Cannot receive manufacturer.");
@@ -311,8 +276,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             }
 
             SnmpObjId serviceTagSnmpObject = SnmpObjId.get(SERVICE_TAG_OID);
-            SnmpValue serviceTag = SnmpUtils.get(agentConfig,
-                                                 serviceTagSnmpObject);
+            SnmpValue serviceTag = SnmpUtils.get(agentConfig, serviceTagSnmpObject);
             // Check correct MIB-Support
             if (serviceTag == null) {
                 log().warn("Cannot receive service tag");
@@ -323,35 +287,19 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
                 serviceTagTxt = serviceTag.toString();
             }
 
-            returnValue = "Chassis status from "
-                    + manufacturerName
-                    + " "
-                    + modelName
-                    + " with service tag "
-                    + serviceTagTxt
-                    + " is "
-                    + chassisStatusTxt
-                    + ". Last event log status is "
-                    + eventLogStatusTxt
-                    + ". For further information, check your OpenManage website!";
+            returnValue = "Chassis status from " + manufacturerName + " " + modelName + " with service tag " + serviceTagTxt + " is " + chassisStatusTxt
+                    + ". Last event log status is " + eventLogStatusTxt + ". For further information, check your OpenManage website!";
             // Set service down and return gathered information
             status = PollStatus.unavailable(returnValue);
 
         } catch (NullPointerException e) {
-            status = logDown(Level.WARN,
-                             "Unexpected error during SNMP poll of interface "
-                                     + ipaddr.getHostAddress(), e);
+            status = logDown(Level.WARN, "Unexpected error during SNMP poll of interface " + ipaddr.getHostAddress(), e);
         } catch (NumberFormatException e) {
-            status = logDown(Level.WARN,
-                             "Number operator used on a non-number "
-                                     + e.getMessage());
+            status = logDown(Level.WARN, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.WARN, "Invalid Snmp Criteria: "
-                    + e.getMessage());
+            status = logDown(Level.WARN, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            status = logDown(Level.WARN,
-                             "Unexpected exception during SNMP poll of interface "
-                                     + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
         }
 
         // If matchAll is set to true, then the status is set to available
