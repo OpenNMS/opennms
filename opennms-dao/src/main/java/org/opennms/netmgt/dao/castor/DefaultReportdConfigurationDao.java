@@ -94,6 +94,10 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
     public String getStorageDirectory() {
         return getConfig().getStorageLocation();
     }
-
+    
+    public boolean deleteReport(String report){
+        return getConfig().removeReport(getReport(report));
+    }
+    
         
 }
