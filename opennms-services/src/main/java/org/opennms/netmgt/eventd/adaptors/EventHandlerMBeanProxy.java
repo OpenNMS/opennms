@@ -38,6 +38,9 @@
 
 package org.opennms.netmgt.eventd.adaptors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -62,7 +65,8 @@ public class EventHandlerMBeanProxy implements EventHandler {
     private ObjectName m_listener;
 
     private void findServer() throws InstanceNotFoundException {
-        for (final MBeanServer sx : MBeanServerFactory.findMBeanServer(null)) {
+        
+        for (final MBeanServer sx : findMBeanServers()) {
             try {
                 if (sx.getObjectInstance(m_listener) != null) {
                     m_mbserver = sx;
@@ -72,8 +76,16 @@ public class EventHandlerMBeanProxy implements EventHandler {
                 // do nothing
             }
         }
-        if (m_mbserver == null)
+        if (m_mbserver == null) {
             throw new InstanceNotFoundException("could not locate mbean server instance");
+        }
+        
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<MBeanServer> findMBeanServers() {
+        // In java 1.5 this returns a generic ArrayList
+        return MBeanServerFactory.findMBeanServer(null);
     }
 
     public EventHandlerMBeanProxy(final String name) throws MalformedObjectNameException, InstanceNotFoundException {
