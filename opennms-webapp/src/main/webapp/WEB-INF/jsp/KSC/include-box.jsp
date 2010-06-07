@@ -102,23 +102,53 @@
     </c:when>
     
     <c:otherwise>
-      <form method="get" name="kscBoxForm" action="KSC/formProcMain.htm">
-        <input type="hidden" name="report_action" value="View"/>
-        <input type="hidden" name="report" value="" />
-      </form>
-  
-      <form method="get" name="kscBoxReportList" action="do_nothing">
-        <select style="width: 100%;" name="report" onchange="goKscBoxChange();">
-          <option value="">-- Choose a report to view --</option>
-          <c:forEach var="report" items="${reports}">
-            <option value="${report.key}">${report.value}</option>
-          </c:forEach>
-        </select>
-      </form>
+      <script type="text/javascript">      
+      var kscComboData = [<c:set var="first" value="true"/>
+                      <c:forEach var="report" items="${reports}" varStatus="reportCount">
+                        <c:choose>
+                          <c:when test="${first == true}">
+                            <c:set var="first" value="false"/>
+                              [${report.key}, "${report.value}"]
+                          </c:when>
+                          <c:otherwise>
+                            ,[${report.key}, "${report.value}"]
+                          </c:otherwise>
+                        </c:choose>
+                      </c:forEach>];
+      
+      Ext.onReady(function(){
+          var kscCombo = new Ext.form.ComboBox({
+                triggerAction: 'all',
+                displayField: 'value',
+                valueField: 'id',
+                lazyRender:true,
+                mode: 'local',
+                store: new Ext.data.Store({
+                    data: kscComboData,
+                    reader: new Ext.data.ArrayReader({
+                        fields: Ext.data.Record.create([
+                                {name: 'id', mapping: 0},
+                                {name: 'value', mapping: 1}
+                        ]),
+                        idIndex: 0
+                    })
+                }),
+                renderTo:'ksc-combo',
+                emptyText:"-- Choose A Report to View --",
+                width:220,
+                onSelect:chooseResourceBoxChange,
+            })
+          });
+
+      function chooseResourceBoxChange(record){
+    	    window.location="KSC/customView.htm?type=custom&report=" + record.data.id;
+      }
+      </script>
       
       <script type="text/javascript">
         resetKscBoxSelected();
       </script>
     </c:otherwise>
   </c:choose>
+  <div id="ksc-combo"></div>
 </div>
