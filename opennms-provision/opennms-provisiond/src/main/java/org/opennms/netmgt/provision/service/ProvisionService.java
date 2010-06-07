@@ -121,6 +121,10 @@ public interface ProvisionService {
     @Transactional
     public abstract void deleteNode(Integer nodeId);
 
+    @Transactional
+    public abstract void deleteInterface(Integer nodeId, String ipAddr);
+
+
     /**
      * Insert the provided node into the database
      */
@@ -224,6 +228,7 @@ public interface ProvisionService {
 
     @Transactional
     public abstract OnmsNode getNode(Integer nodeId);
+
 
 
 

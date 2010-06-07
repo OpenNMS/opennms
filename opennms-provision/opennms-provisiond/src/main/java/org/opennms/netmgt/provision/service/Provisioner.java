@@ -81,7 +81,7 @@ import org.springframework.util.Assert;
 @EventListener(name="Provisiond:EventListener")
 public class Provisioner implements SpringServiceDaemon {
     
-    public static final String NAME = "Provisioner";
+    public static final String NAME = "Provisiond";
 
     private DefaultTaskCoordinator m_taskCoordinator;
     private CoreImportActivities m_importActivities;
@@ -495,7 +495,131 @@ public class Provisioner implements SpringServiceDaemon {
         log().debug("isReloadConfigEventTarget: Provisiond was target of reload event: "+isTarget);
         return isTarget;
     }
+    
+    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
+    public void handleAddInterface(Event event) {
+        if (m_provisionService.isDiscoveryEnabled()) {
+            try {
+                doAddInterface(event.getNodeid(), event.getInterface());
+            } catch (Exception e) {
+                log().error("Unexpected exception processing event: " + event.getUei(), e);
+            }
+        }
+    }
+    
+    private void doAddInterface(long nodeId, String ipAddr) {
+        throw new UnsupportedOperationException("Provisioner.doAddInterface is not yet implemented");
+    }
 
+    @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
+    public void handleAddNode(Event event) {
+        if (m_provisionService.isDiscoveryEnabled()) {
+            try {
+                doAddNode(event.getNodeid());
+            } catch (Exception e) {
+                log().error("Unexpected exception processing event: " + event.getUei(), e);
+            }
+        }
+    }
+    
+    private void doAddNode(long nodeId) {
+        throw new UnsupportedOperationException("Provisioner.doAddNode is not yet implemented");
+    }
+
+    @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
+    public void handleChangeService(Event event) {
+        if (m_provisionService.isDiscoveryEnabled()) {
+            try {
+                doChangeService(event.getInterface(), event.getService(), EventUtils.getParm(event, EventConstants.PARM_ACTION));
+            } catch (Exception e) {
+                log().error("Unexpected exception processing event: " + event.getUei(), e);
+            }
+        }
+    }
+    
+    private void doChangeService(String ipAddr, String service, String action) {
+        throw new UnsupportedOperationException("Provisioner.doChangeService is not yet implemented");
+    }
+
+    @EventHandler(uei=EventConstants.DELETE_INTERFACE_EVENT_UEI)
+    public void handleDeleteInterface(Event event) {
+        if (m_provisionService.isDiscoveryEnabled()) {
+            try {
+                doDeleteInterface(event.getNodeid(), event.getInterface());
+            } catch (Exception e) {
+                log().error("Unexpected exception processing event: " + event.getUei(), e);
+            }
+        }
+    }
+    
+    private void doDeleteInterface(long nodeId, String ipAddr) {
+        m_provisionService.deleteInterface((int)nodeId, ipAddr);
+    }
+
+    @EventHandler(uei=EventConstants.DELETE_NODE_EVENT_UEI)
+    public void handleDeleteNode(Event event) {
+        if (m_provisionService.isDiscoveryEnabled()) {
+            try {
+                doDeleteNode(event.getNodeid());
+            } catch (Exception e) {
+                log().error("Unexpected exception processing event: " + event.getUei(), e);
+            }
+        }
+    }
+    
+    private void doDeleteNode(long nodeId) {
+        m_provisionService.deleteNode((int)nodeId);
+    }
+
+    @EventHandler(uei=EventConstants.DELETE_SERVICE_EVENT_UEI)
+    public void handleDeleteService(Event event) {
+        if (m_provisionService.isDiscoveryEnabled()) {
+            try {
+                doDeleteService(event.getNodeid(), event.getInterface(), event.getService());
+            } catch (Exception e) {
+                log().error("Unexpected exception processing event: " + event.getUei(), e);
+            }
+        }
+    }
+    
+    private void doDeleteService(long nodeId, String ipAddr, String service) {
+        throw new UnsupportedOperationException("Provisioner.doDeleteService is not yet implemented");
+    }
+
+    @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)
+    public void handleUpdateServer(Event event) {
+        if (m_provisionService.isDiscoveryEnabled()) {
+            try {
+                doUpdateServer(event.getInterface(), event.getHost(), 
+                        EventUtils.getParm(event, EventConstants.PARM_ACTION),
+                        EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
+            } catch (Exception e) {
+                log().error("Unexpected exception processing event: " + event.getUei(), e);
+            }
+        }
+    }
+    
+    private void doUpdateServer(String ipAddr, String host, String action, String nodeLabel) {
+        throw new UnsupportedOperationException("Provisioner.doUpdateServer is not yet implemented");
+    }
+
+    @EventHandler(uei=EventConstants.UPDATE_SERVICE_EVENT_UEI)
+    public void handleUpdateService(Event event) {
+        if (m_provisionService.isDiscoveryEnabled()) {
+            try {
+                doUpdateService(event.getInterface(), event.getService(), 
+                        EventUtils.getParm(event, EventConstants.PARM_ACTION),
+                        EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
+            } catch (Exception e) {
+                log().error("Unexpected exception processing event: " + event.getUei(), e);
+            }
+        }
+    }
+    
+    
+    private void doUpdateService(String ipAddr, String service, String action, String nodeLabel) {
+        throw new UnsupportedOperationException("Provisioner.doUpdateService is not yet implemented");
+    }
 
     private String getEventUrl(Event event) {
         return EventUtils.getParm(event, EventConstants.PARM_URL);

@@ -44,6 +44,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
@@ -65,6 +66,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     
     private volatile String m_name = null;
     private volatile Object m_annotatedListener;
+    private volatile String m_logPrefix = null;
     private volatile EventSubscriptionService m_subscriptionService;
 
     private final Map<String, Method> m_ueiToHandlerMap = new HashMap<String, Method>();
@@ -97,6 +99,20 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     public void setName(String name) {
         m_name = name;
     }
+    
+    /**
+     * @return the logPrefix
+     */
+    public String getLogPrefix() {
+        return m_logPrefix;
+    }
+
+    /**
+     * @param logPrefix the logPrefix to set
+     */
+    public void setLogPrefix(String logPrefix) {
+        m_logPrefix = logPrefix;
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
@@ -117,7 +133,12 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
             }
         }
         
+        String oldPrefix = ThreadCategory.getPrefix();
         try {
+            
+            if (m_logPrefix != null) {
+                ThreadCategory.setPrefix(m_logPrefix);
+            }
             
             preprocessEvent(event);
             
@@ -130,6 +151,8 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
             throw new UndeclaredThrowableException(e);
         } catch (InvocationTargetException e) {
             handleException(event, e.getCause());
+        } finally {
+            ThreadCategory.setPrefix(oldPrefix);
         }
     }
 

@@ -194,6 +194,17 @@ public class DefaultProvisionService implements ProvisionService {
     
     }
     
+    @Transactional
+    public void deleteInterface(Integer nodeId, String ipAddr) {
+        OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddr);
+        if (iface != null) {
+            m_ipInterfaceDao.delete(iface);
+            
+            iface.visit(new DeleteEventVisitor(m_eventForwarder));
+        }
+        
+    }
+    
     private void assertNotNull(Object o, String format, Object... args) {
         if (o == null) {
             throw new IllegalArgumentException(String.format(format, args));
