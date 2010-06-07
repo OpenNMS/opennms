@@ -38,7 +38,6 @@
 
 package org.opennms.netmgt.eventd.adaptors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.management.InstanceNotFoundException;
