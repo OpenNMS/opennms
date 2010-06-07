@@ -37,8 +37,8 @@ package org.opennms.netmgt.dao.castor;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reportd.Report;
+import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.dao.ReportdConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
@@ -97,6 +97,12 @@ public class DefaultReportdConfigurationDao extends AbstractCastorConfigDao<Repo
     
     public boolean deleteReport(String report){
         return getConfig().removeReport(getReport(report));
+    }
+
+    public void saveReport(Report report) {
+        List<Report> reports = getConfig().getReportCollection();
+        reports.add(report);
+        getConfig().setReport(reports);
     }
     
         
