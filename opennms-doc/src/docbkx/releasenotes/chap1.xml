@@ -4,6 +4,21 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.8.0">
+		<title>Release 1.8.0</title>
+
+		<para>
+			Release 1.8.0 is the first in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.7.92, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.0">a few more bug fixes</ulink>
+			went in.
+		</para>
+		<para>
+			The codename for 1.8.0 is <emphasis>Cardinal</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.7.92">
 		<title>Release 1.7.92</title>
 
