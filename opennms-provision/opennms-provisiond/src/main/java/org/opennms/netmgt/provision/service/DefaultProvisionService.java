@@ -205,6 +205,16 @@ public class DefaultProvisionService implements ProvisionService {
         
     }
     
+    @Transactional
+    public void deleteService(Integer nodeId, String ipAddr, String service) {
+        OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, ipAddr, service);
+        if (monSvc != null) {
+            m_monitoredServiceDao.delete(monSvc);
+            monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
+        }
+        
+    }
+    
     private void assertNotNull(Object o, String format, Object... args) {
         if (o == null) {
             throw new IllegalArgumentException(String.format(format, args));
