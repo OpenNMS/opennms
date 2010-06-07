@@ -75,9 +75,15 @@
     </resourceType>
 
     <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)"
-                  resourceLabel="${hrStorageDescr} (index ${index})">
+                  resourceLabel="${hrStorageDescr}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="hrStorageNonUnique" label="Storage (MIB-2 Host Resources, non-unique descriptions)"
+                  resourceLabel="${hrStorageDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ipuMGCPMsgStatsEntry" label="IP Unity MGCP Message Stats"
@@ -528,6 +534,17 @@
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageIndex" alias="hrStorageAllocUnits" type="gauge" />
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageIndex" alias="hrStorageSize"       type="gauge" />
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="hrStorageIndex" alias="hrStorageUsed"       type="gauge" />
+       </group>
+
+      <!-- A copy of mib2-host-resources-storage, but using a different resource type to work around
+           certain agents (notably AS/400) whose hrStorageTable entries have non-unique values of
+           hrStorageDescr and are therefore unsuitable for the HostFileSystemStorageStrategy -->
+      <group name="mib2-host-resources-storage-non-unique" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.2" instance="hrStorageNonUnique" alias="hrStorageType"       type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="hrStorageNonUnique" alias="hrStorageDescr"      type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageNonUnique" alias="hrStorageAllocUnits" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageNonUnique" alias="hrStorageSize"       type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="hrStorageNonUnique" alias="hrStorageUsed"       type="gauge" />
        </group>
 
       <group name="mib2-host-resources-system" ifType="ignore">
@@ -3401,7 +3418,7 @@
      <systemDef name="IBM-AS400">
         <sysoid>.1.3.6.1.4.1.2.6.11</sysoid>
         <collect>
-          <includeGroup>mib2-host-resources-storage</includeGroup>
+          <includeGroup>mib2-host-resources-storage-non-unique</includeGroup>
           <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>mib2-host-resources-processor</includeGroup>
