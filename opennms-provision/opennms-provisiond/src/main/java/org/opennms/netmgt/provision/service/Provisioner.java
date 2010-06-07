@@ -55,6 +55,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -515,15 +517,24 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleAddNode(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
             try {
-                doAddNode(event.getNodeid());
+                doAddNode(event.getInterface(), EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL));
             } catch (Exception e) {
                 log().error("Unexpected exception processing event: " + event.getUei(), e);
             }
         }
     }
     
-    private void doAddNode(long nodeId) {
-        throw new UnsupportedOperationException("Provisioner.doAddNode is not yet implemented");
+    private void doAddNode(String ipAddr, String nodeLabel) {
+
+        OnmsNode node = new OnmsNode();
+        node.setLabel(nodeLabel);
+        
+        OnmsIpInterface iface = new OnmsIpInterface(ipAddr, node);
+        iface.setIsManaged("M");
+        iface.setPrimaryString("N");
+        
+        m_provisionService.insertNode(node);
+        
     }
 
     @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
