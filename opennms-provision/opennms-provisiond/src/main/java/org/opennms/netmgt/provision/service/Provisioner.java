@@ -583,7 +583,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     private void doDeleteService(long nodeId, String ipAddr, String service) {
-        throw new UnsupportedOperationException("Provisioner.doDeleteService is not yet implemented");
+        m_provisionService.deleteService((int)nodeId, ipAddr, service);
     }
 
     @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)

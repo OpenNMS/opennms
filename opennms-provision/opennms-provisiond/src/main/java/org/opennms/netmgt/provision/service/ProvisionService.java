@@ -124,6 +124,9 @@ public interface ProvisionService {
     @Transactional
     public abstract void deleteInterface(Integer nodeId, String ipAddr);
 
+    @Transactional
+    public abstract void deleteService(Integer nodeId, String ipAddr, String service);
+
 
     /**
      * Insert the provided node into the database
