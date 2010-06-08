@@ -510,6 +510,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     private void doAddInterface(long nodeId, String ipAddr) {
+        // FIXME: Handle Rackspace ADD_INTERFACE event
         throw new UnsupportedOperationException("Provisioner.doAddInterface is not yet implemented");
     }
 
@@ -549,6 +550,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     private void doChangeService(String ipAddr, String service, String action) {
+        // FIXME: Handle Rackspace CHANGE_SERVICE event
         throw new UnsupportedOperationException("Provisioner.doChangeService is not yet implemented");
     }
 
@@ -611,6 +613,7 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     private void doUpdateServer(String ipAddr, String host, String action, String nodeLabel) {
+        // FIXME: Handle Rackspace UPDATE_SERVER event
         throw new UnsupportedOperationException("Provisioner.doUpdateServer is not yet implemented");
     }
 
@@ -629,6 +632,7 @@ public class Provisioner implements SpringServiceDaemon {
     
     
     private void doUpdateService(String ipAddr, String service, String action, String nodeLabel) {
+        // FIXME: Handle Rackspace UPDATE_SERVICE event
         throw new UnsupportedOperationException("Provisioner.doUpdateService is not yet implemented");
     }
 
