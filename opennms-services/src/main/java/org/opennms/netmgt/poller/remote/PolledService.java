@@ -53,7 +53,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
  */
 public class PolledService implements MonitoredService, Serializable, Comparable<PolledService> {
     
-    private static final long serialVersionUID = 3L;
+    private static final long serialVersionUID = 2L;
 
     private IPv4NetworkInterface m_netInterface;
     private Map<String,Object> m_monitorConfiguration;
