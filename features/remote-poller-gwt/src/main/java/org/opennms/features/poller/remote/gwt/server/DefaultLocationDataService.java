@@ -436,7 +436,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         for (final ApplicationHandler handler : handlers) {
             handler.start(apps.size());
         }
-        for (final OnmsApplication app : m_applicationDao.findAll()) {
+        for (final OnmsApplication app : apps) {
             for (final ApplicationHandler handler : handlers) {
                 handler.handle(app);
             }
