@@ -132,25 +132,25 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return false;
 	}
 
-	protected int getMonitorsStarted() {
+	public int getMonitorsStarted() {
 		return m_monitorsStarted.size();
 	}
 
-	protected int getMonitorsStopped() {
+	public int getMonitorsStopped() {
 		return m_monitorsStopped.size();
 	}
 	
-	protected int getMonitorsDisconnected() {
+	public int getMonitorsDisconnected() {
 		return m_monitorsDisconnected.size();
 	}
 
-	protected Collection<String> getServiceNames() {
+	private Collection<String> getServiceNames() {
 		final List<String> serviceNames = Collections.list(Collections.enumeration(m_serviceNames));
 		Collections.sort(serviceNames);
 		return serviceNames;
 	}
 
-	protected Collection<GWTMonitoredService> getServices() {
+	public Collection<GWTMonitoredService> getServices() {
 	    final Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
 	    for (final GWTLocationSpecificStatus status : m_locationStatuses) {
 	        services.add(status.getMonitoredService());
@@ -158,7 +158,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	    return services;
 	}
 
-	protected Collection<String> getServicesDown() {
+	public Collection<String> getServicesDown() {
 		final Set<String> servicesDown = new HashSet<String>();
 		for (final GWTLocationSpecificStatus status : m_locationStatuses) {
 			final GWTMonitoredService service = status.getMonitoredService();
@@ -170,7 +170,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return servicesDown;
 	}
 
-	protected Collection<GWTLocationMonitor> getMonitorsWithServicesDown() {
+	public Collection<GWTLocationMonitor> getMonitorsWithServicesDown() {
 		final Set<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
 		for (final GWTLocationSpecificStatus status : m_locationStatuses) {
 			final GWTPollResult result = status.getPollResult();
@@ -181,7 +181,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return monitors;
 	}
 
-	protected StatusDetails getStatusDetailsUncached() {
+	private StatusDetails getStatusDetailsUncached() {
 		// blue/unknown: If no monitors are started for a location
 		if (noMonitorsStarted()) {
 			return StatusDetails.unknown("No monitors are started for this location.");

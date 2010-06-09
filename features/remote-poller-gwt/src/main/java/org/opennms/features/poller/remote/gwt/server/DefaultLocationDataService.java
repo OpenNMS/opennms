@@ -296,7 +296,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         final Date to = new Date();
         final Date from = new Date(to.getTime() - AVAILABILITY_MS);
-        for (OnmsLocationSpecificStatus status : m_locationDao.getStatusChangesBetween(from, to)) {
+        for (OnmsLocationSpecificStatus status : m_locationDao.getAllMostRecentStatusChanges()) {
             mst.onStatus(status);
             ast.onStatus(status);
         }
