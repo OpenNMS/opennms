@@ -356,17 +356,28 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     
     public Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(final Date timestamp) {
-    	return findObjects(OnmsLocationSpecificStatus.class,
-    			"from OnmsLocationSpecificStatus as status " +
-    			"where status.pollResult.timestamp = ( " +
-    			"    select max(recentStatus.pollResult.timestamp) " +
-    			"    from OnmsLocationSpecificStatus as recentStatus " +
-    			"    where recentStatus.pollResult.timestamp < ? " +
-    			"    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
-    			"    having recentStatus.locationMonitor = status.locationMonitor " +
-    			"    and recentStatus.monitoredService = status.monitoredService " +
-    			")",
-    			timestamp); 
+        //select lm.*, lssc.* from location_specific_status_changes lssc join 
+        //location_monitors lm on lm.id = lssc.locationmonitorid where lssc.id in 
+        //(select max(id) from location_specific_status_changes group by locationmonitorid, ifserviceid) order by statustime;
+        return findObjects(OnmsLocationSpecificStatus.class,
+                "from OnmsLocationSpecificStatus as status " +
+                "where status.id in (" +
+                    "select max(s.id) from OnmsLocationSpecificStatus as s " +
+                    "where s.pollResult.timestamp <? " +
+                    "group by s.locationMonitor, s.monitoredService " +
+                    ")",
+                timestamp);
+        //    	return findObjects(OnmsLocationSpecificStatus.class,
+//    			"from OnmsLocationSpecificStatus as status " +
+//    			"where status.pollResult.timestamp = ( " +
+//    			"    select max(recentStatus.pollResult.timestamp) " +
+//    			"    from OnmsLocationSpecificStatus as recentStatus " +
+//    			"    where recentStatus.pollResult.timestamp < ? " +
+//    			"    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
+//    			"    having recentStatus.locationMonitor = status.locationMonitor " +
+//    			"    and recentStatus.monitoredService = status.monitoredService " +
+//    			")",
+//    			timestamp); 
     }
     
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(final Date startDate, final Date endDate) {
