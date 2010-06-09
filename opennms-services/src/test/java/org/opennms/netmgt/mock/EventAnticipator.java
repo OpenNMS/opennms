@@ -55,11 +55,24 @@ public class EventAnticipator implements EventListener {
     
     boolean m_discardUnanticipated = false;
 
-    List<EventWrapper> m_anticipatedEvents = new ArrayList<EventWrapper>();
+    /**
+     * This collection contains events that are expected to be received during the
+     * given unit test.
+     */
+    final List<EventWrapper> m_anticipatedEvents = new ArrayList<EventWrapper>();
     
-    List<Event> m_anticipatedEventsReceived = new ArrayList<Event>();
+    /**
+     * This collection contains events that have been received during the unit test.
+     * These events are removed from {@link #m_anticipatedEvents} as they are received.
+     */
+    final List<Event> m_anticipatedEventsReceived = new ArrayList<Event>();
 
-    List<Event> m_unanticipatedEvents = new ArrayList<Event>();
+    /**
+     * This list contains events that were received during the test duration but were not
+     * in the {@link #m_anticipatedEvents} list. The {@link #m_unanticipatedEvents} list is 
+     * only populated if {@link #m_discardUnanticipated} is set to <code>false</code>.
+     */
+    final List<Event> m_unanticipatedEvents = new ArrayList<Event>();
 
     /**
      */
@@ -146,12 +159,12 @@ public class EventAnticipator implements EventListener {
     }
 
     public void resetUnanticipated() {
-        m_unanticipatedEvents = new ArrayList<Event>();
+        m_unanticipatedEvents.clear();
     }
 
     public void resetAnticipated() {
-        m_anticipatedEvents = new ArrayList<EventWrapper>();
-        m_anticipatedEventsReceived = new ArrayList<Event>();
+        m_anticipatedEvents.clear();
+        m_anticipatedEventsReceived.clear();
     }
 
     /**
@@ -233,7 +246,7 @@ public class EventAnticipator implements EventListener {
 
         for (Event event : events) {
             b.append(prefix);
-            b.append(event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
+            b.append(event.getUei() + " / " + event.getNodeid() + " / " + event.getInterface() + " / " + event.getService());
             b.append("\n");
         }
 
