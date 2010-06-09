@@ -48,10 +48,11 @@
 
 	<!-- Left Column -->
 	<div id="index-contentleft">
-		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
-		<hr />
 		<!-- Services down box -->
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
+		<hr />
+		<!-- Quick Search box -->
+		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
 		<hr />
 	</div>
 
