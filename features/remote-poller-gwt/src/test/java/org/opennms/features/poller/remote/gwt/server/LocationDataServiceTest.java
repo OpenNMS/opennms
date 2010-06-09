@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
+import org.opennms.features.poller.remote.gwt.client.LocationMonitorState;
 import org.opennms.features.poller.remote.gwt.client.Status;
 import org.opennms.features.poller.remote.gwt.client.StatusDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
@@ -152,7 +153,7 @@ public class LocationDataServiceTest {
         m_rduMonitor2.setLastCheckInTime(m_pollingEnd);
         m_rduMonitor2.setStatus(MonitorStatus.STARTED);
         m_locationMonitorDao.saveOrUpdate(m_rduMonitor2);
-
+        
         m_applicationDao.flush();
         m_distPollerDao.flush();
         m_nodeDao.flush();
@@ -165,6 +166,22 @@ public class LocationDataServiceTest {
         m_pollingStart = new Date(m_pollingEnd.getTime() - (1000 * 60 * 60 * 24));
 }
 
+    private long days(int numDays) {
+        return 86400000 * numDays;
+    }
+    
+    private long hours(int numHours) {
+        return 3600000 * numHours;
+    }
+    
+    private long minutes(int numMinutes) {
+        return 60000 * numMinutes;
+    }
+
+    private long now() {
+        return System.currentTimeMillis();
+    }
+    
     private OnmsMonitoredService createService(OnmsApplication app, OnmsIpInterface localhostIpInterface, OnmsServiceType httpServiceType) {
         OnmsMonitoredService service = new OnmsMonitoredService();
         service.setApplications(Collections.singleton(app));
@@ -182,25 +199,72 @@ public class LocationDataServiceTest {
     @Test
     @Transactional
     public void testLocationInfo() throws Exception {
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - days(20) - hours(3))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getDown(new Date(now() - days(20) - hours(2))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - days(20) - hours(1))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_googleHttpService.getId(), getDown(new Date(now() - days(20) - hours(4))));
+        
         LocationInfo li = m_locationDataService.getLocationInfo("RDU");
         assertEquals("RDU", li.getName());
-        assertEquals(Status.UNKNOWN, li.getStatusDetails().getStatus());
+        assertEquals(Status.MARGINAL, li.getStatusDetails().getStatus());
     }
 
     @Test
     @Transactional
     public void testLocationDetails() throws Exception {
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - days(20) - hours(3))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getDown(new Date(now() - days(20) - hours(2))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - days(20) - hours(1))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_googleHttpService.getId(), getDown(new Date(now() - days(20) - hours(4))));
+        
         LocationDetails ld = m_locationDataService.getLocationDetails("RDU");
         assertEquals(Status.UNKNOWN, ld.getApplicationState().getStatusDetails().getStatus());
-        assertEquals(Status.UNKNOWN, ld.getLocationMonitorState().getStatusDetails().getStatus());
+        assertEquals(Status.MARGINAL, ld.getLocationMonitorState().getStatusDetails().getStatus());
+    }
+    
+    @Test
+    public void testLocationMonitorState() throws Exception {
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - days(20) - hours(3))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getDown(new Date(now() - days(20) - hours(2))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - days(20) - hours(1))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_googleHttpService.getId(), getDown(new Date(now() - days(20) - hours(4))));
+        
+        LocationDetails ld = m_locationDataService.getLocationDetails("RDU");
+        LocationMonitorState lms = ld.getLocationMonitorState();
+        assertEquals(Status.MARGINAL, lms.getStatusDetails().getStatus());
+        assertEquals(2, lms.getServices().size());
+        assertEquals(1, lms.getServicesDown().size());
+        assertEquals(1, lms.getMonitorsWithServicesDown().size());
+        assertEquals(2, lms.getMonitorsStarted());
+        assertEquals(0, lms.getMonitorsStopped());
+        assertEquals(0, lms.getMonitorsDisconnected());
+        
+        
     }
 
     @Test
     @Transactional
     public void testApplicationInfo() throws Exception {
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - hours(3))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getDown(new Date(now() - hours(2))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - hours(1))));
+        
+        m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_googleHttpService.getId(), getDown(new Date(now() - hours(4))));
+        
         ApplicationInfo ai = m_locationDataService.getApplicationInfo("TestApp1");
         assertEquals("TestApp1", ai.getName());
-        assertEquals(Status.UNKNOWN, ai.getStatusDetails().getStatus());
+        assertEquals(Status.DOWN, ai.getStatusDetails().getStatus());
     }
 
     @Test
