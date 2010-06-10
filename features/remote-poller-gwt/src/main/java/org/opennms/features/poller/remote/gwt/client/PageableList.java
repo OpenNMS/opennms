@@ -122,14 +122,14 @@ public abstract class PageableList extends Composite {
     public void onPrevBtnClick(final ClickEvent event) {
         final int newIndex = getCurrentPageIndex() - 1;
         setCurrentPageIndex(newIndex);
-        updateListDisplay(newIndex);
+        //updateListDisplay(newIndex);
     }
 
     @UiHandler("nextBtn")
     public void onNextBtnClick(final ClickEvent event) {
         final int newIndex = getCurrentPageIndex() + 1;
         setCurrentPageIndex(newIndex);
-        updateListDisplay(newIndex);
+        //updateListDisplay(newIndex);
     }
 
     public void addLocationPanelSelectEventHandler(final LocationPanelSelectEventHandler handler) {
@@ -142,6 +142,7 @@ public abstract class PageableList extends Composite {
         } else if(currentPageIndex > 0 && currentPageIndex <= getTotalPages()) {
             m_currentPageIndex = currentPageIndex;
         }
+        updateListDisplay(m_currentPageIndex);
     }
 
     protected int getCurrentPageIndex() {

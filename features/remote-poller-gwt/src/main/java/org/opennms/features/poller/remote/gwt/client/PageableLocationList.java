@@ -77,7 +77,8 @@ public class PageableLocationList extends PageableList {
      */
     public void updateList(final ArrayList<? extends LocationInfo> locations) {
         setLocations(locations);
-        refresh();
+        showFirstPage();
+        //refresh();
     }
 
     private ArrayList<? extends LocationInfo> getLocations() {
