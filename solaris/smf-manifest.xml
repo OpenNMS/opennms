@@ -30,10 +30,10 @@
     </dependency>
   
     <dependent
-         name='opennms_multi-user'
+         name='opennms_multi-user-server'
          grouping='require_all'
          restart_on='none'>
-       <service_fmri value='svc:/milestone/multi-user' />
+       <service_fmri value='svc:/milestone/multi-user-server' />
     </dependent>
   
     <exec_method
