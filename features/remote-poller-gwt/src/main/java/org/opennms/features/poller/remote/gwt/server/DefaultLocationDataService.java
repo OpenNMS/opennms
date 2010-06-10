@@ -282,17 +282,17 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             applications.add(transformApplication(m_monitoredServiceDao.findByApplication(application), application));
         }
 
-        for (final OnmsMonitoredService service : m_monitoredServiceDao.findAll()) {
-            for (final OnmsApplication app : service.getApplications()) {
-                final String appName = app.getName();
-                Set<OnmsMonitoredService> serv = services.get(appName);
-                if (serv == null) {
-                    serv = new HashSet<OnmsMonitoredService>();
-                    services.put(appName, serv);
-                }
-                serv.add(service);
-            }
-        }
+//        for (final OnmsMonitoredService service : m_monitoredServiceDao.findAll()) {
+//            for (final OnmsApplication app : service.getApplications()) {
+//                final String appName = app.getName();
+//                Set<OnmsMonitoredService> serv = services.get(appName);
+//                if (serv == null) {
+//                    serv = new HashSet<OnmsMonitoredService>();
+//                    services.put(appName, serv);
+//                }
+//                serv.add(service);
+//            }
+//        }
 
         final Date to = new Date();
         final Date from = new Date(to.getTime() - AVAILABILITY_MS);
