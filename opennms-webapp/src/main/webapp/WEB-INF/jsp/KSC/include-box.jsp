@@ -136,11 +136,11 @@
                 renderTo:'ksc-combo',
                 emptyText:"-- Choose A Report to View --",
                 width:220,
-                onSelect:chooseResourceBoxChange,
+                onSelect:chooseKSCBoxChange,
             })
           });
 
-      function chooseResourceBoxChange(record){
+      function chooseKSCBoxChange(record){
     	    window.location="KSC/customView.htm?type=custom&report=" + record.data.id;
       }
       </script>
