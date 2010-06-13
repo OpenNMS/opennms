@@ -54,7 +54,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -240,7 +239,7 @@ public final class DiscoveryConfigFactory {
      *            the retries for all entries in this URL
      */
     public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, String url, long timeout, int retries) {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
         
         // open the file indicated by the URL
         InputStream is = null;
@@ -273,7 +272,7 @@ public final class DiscoveryConfigFactory {
     }
     
     public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, InputStream is, long timeout, int retries) throws IOException {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
     
         boolean bRet = true;
     

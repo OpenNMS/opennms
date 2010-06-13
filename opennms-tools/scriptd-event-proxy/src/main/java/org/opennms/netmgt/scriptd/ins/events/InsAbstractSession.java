@@ -2,7 +2,6 @@ package org.opennms.netmgt.scriptd.ins.events;
 
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -18,7 +17,7 @@ public abstract class InsAbstractSession extends Thread {
 
     private String m_criteria;
     
-    private Category log;
+    private ThreadCategory log;
 	/**
 	 * the shared string for client authentication
 	 * If the shared string is not set, then server doesn't require authentication 
@@ -54,11 +53,11 @@ public abstract class InsAbstractSession extends Thread {
         log.debug("InsAbstract Session Constructor: loaded");
     }
 
-    public Category getLog() {
+    public ThreadCategory getLog() {
         return log;
     }
     
-    public void setLog(Category log) {
+    public void setLog(ThreadCategory log) {
         this.log = log;
     }
 	

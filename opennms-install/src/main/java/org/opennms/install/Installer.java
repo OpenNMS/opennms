@@ -1058,7 +1058,7 @@ public class Installer {
         short m_icmpId = 2;
 
         Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
-        Thread t = new Thread(s);
+        Thread t = new Thread(s, Ping.class.getSimpleName());
         t.start();
 
         int count = 3;

@@ -36,7 +36,6 @@ package org.opennms.netmgt.charts;
 import java.awt.Color;
 import java.awt.Paint;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -98,7 +97,7 @@ public class SeveritySeriesColors implements CustomSeriesColors {
      * 
      * @return A log4j <code>Category</code>.
      */
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SeveritySeriesColors.class);
     }
 

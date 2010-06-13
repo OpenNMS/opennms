@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
@@ -59,8 +58,8 @@ import org.opennms.netmgt.config.vacuumd.Assignment;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
-import org.opennms.netmgt.eventd.db.Parameter;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
@@ -98,7 +97,7 @@ public class AutomationProcessor implements ReadyRunnable {
             m_trigger = trigger;
         }
 
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -240,7 +239,7 @@ public class AutomationProcessor implements ReadyRunnable {
             return m_action;
         }
 
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -434,7 +433,7 @@ public class AutomationProcessor implements ReadyRunnable {
             m_autoEvent = autoEvent;
         }
         
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -522,7 +521,7 @@ public class AutomationProcessor implements ReadyRunnable {
             m_assignment = assignment;
         }
 
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -567,7 +566,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
         }
         
-        public Category log() {
+        public ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
         
@@ -578,7 +577,7 @@ public class AutomationProcessor implements ReadyRunnable {
         void send() {
             
             if (hasEvent()) {
-                EventBuilder bldr = new EventBuilder(new Event());
+                EventBuilder bldr = new EventBuilder(new Event(), "Automation");
                 buildEvent(bldr, new InvalidSymbolTable());
                 log().debug("ActionEventProcessor: Sending action-event " + bldr.getEvent().getUei() + " for automation "+m_automationName);
                 sendEvent(bldr.getEvent());
@@ -610,8 +609,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
             //Loop through the select results
             while (triggerResultSet.next()) {  
-                EventBuilder bldr = new EventBuilder(new Event());
-                bldr.setSource("Automation");
+                EventBuilder bldr = new EventBuilder(new Event(), "Automation");
                 ResultSetSymbolTable symbols = new ResultSetSymbolTable(triggerResultSet);
                 
                 try {
@@ -855,7 +853,7 @@ public class AutomationProcessor implements ReadyRunnable {
         m_schedule = schedule;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(AutomationProcessor.class);        
     }
 

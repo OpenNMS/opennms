@@ -90,7 +90,7 @@ public final class RTCConfigFactory {
         String minStr = null;
         String secStr = null;
 
-        rolling.toLowerCase();
+        rolling = rolling.toLowerCase();
 
         int hIndex = rolling.indexOf('h');
         int mIndex = rolling.indexOf('m');

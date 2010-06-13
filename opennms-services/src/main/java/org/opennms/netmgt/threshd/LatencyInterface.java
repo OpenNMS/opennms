@@ -37,7 +37,6 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
@@ -114,7 +113,7 @@ public class LatencyInterface {
 	    return latencyDir;
 	}
 	
-	private final Category log() {
+	private final ThreadCategory log() {
 		return ThreadCategory.getInstance(LatencyInterface.class);
 	}
 
@@ -128,7 +127,7 @@ public class LatencyInterface {
 	 *            Event identifier
 	 * @param date
 	 *            source of event's timestamp
-	 * @param nodeId
+	 * @param m_nodeId
 	 *            Node identifier of the affected interface
 	 * @param ipAddr
 	 *            IP address of the affected interface
@@ -140,7 +139,7 @@ public class LatencyInterface {
 		int nodeId = getNodeId();
 		InetAddress ipAddr = getInetAddress();
 		
-		Category log = ThreadCategory.getInstance(LatencyInterface.class);
+		ThreadCategory log = ThreadCategory.getInstance(LatencyInterface.class);
 	
 	    if (threshold == null)
 	        throw new IllegalArgumentException("threshold cannot be null.");

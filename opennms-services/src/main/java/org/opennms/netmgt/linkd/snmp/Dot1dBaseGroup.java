@@ -40,7 +40,6 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
@@ -162,7 +161,7 @@ public final class Dot1dBaseGroup extends AggregateTracker
         log().info("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     

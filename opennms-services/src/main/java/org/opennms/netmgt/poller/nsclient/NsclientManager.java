@@ -48,7 +48,6 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -180,7 +179,7 @@ public class NsclientManager {
     /**
      * Stores the String -> CHECK_ id mappings for lookups.
      */
-    public static Map<String, String> CheckStrings = new HashMap<String, String>();
+    public static final Map<String, String> CheckStrings = new HashMap<String, String>();
     /**
      * This static block initializes the global check strings map with the
      * default values used for performing string->type->string conversions.
@@ -1071,7 +1070,7 @@ public class NsclientManager {
         }
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

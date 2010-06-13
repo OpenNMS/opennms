@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
@@ -492,7 +491,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         return m_listeners.remove(listener);
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

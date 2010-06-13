@@ -4,18 +4,17 @@ import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
 
 import com.google.gwt.event.shared.GwtEvent;
 
-public class ApplicationDetailsRetrievedEvent extends
-        GwtEvent<ApplicationDetailsRetrievedEventHandler> {
+public class ApplicationDetailsRetrievedEvent extends GwtEvent<ApplicationDetailsRetrievedEventHandler> {
 
     public final static Type<ApplicationDetailsRetrievedEventHandler> TYPE = new Type<ApplicationDetailsRetrievedEventHandler>();
     private ApplicationDetails m_applicationDetails;
 
-    public ApplicationDetailsRetrievedEvent(ApplicationDetails details) {
+    public ApplicationDetailsRetrievedEvent(final ApplicationDetails details) {
         setApplicationDetails(details);
     }
 
     @Override
-    protected void dispatch(ApplicationDetailsRetrievedEventHandler handler) {
+    protected void dispatch(final ApplicationDetailsRetrievedEventHandler handler) {
         handler.onApplicationDetailsRetrieved(this);
 
     }
@@ -25,7 +24,7 @@ public class ApplicationDetailsRetrievedEvent extends
         return TYPE;
     }
 
-    private void setApplicationDetails(ApplicationDetails applicationDetails) {
+    private void setApplicationDetails(final ApplicationDetails applicationDetails) {
         m_applicationDetails = applicationDetails;
     }
 

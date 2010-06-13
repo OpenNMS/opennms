@@ -36,11 +36,11 @@
     </group>
     <group name="extreme" rrdRepository="/opt/opennms/share/rrd/snmp/">
         <expression type="absoluteChange" ds-type="if" value="5.0"
-            rearm="0.0" trigger="1" ds-label="ifName" expression="abs (ifHCOutOctets * 8 / ifHighSpeed /1000000 * 100)">
+            rearm="0.0" trigger="1" ds-label="ifName" expression="math.abs(ifHCOutOctets * 8 / ifHighSpeed /1000000 * 100)">
             <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
         </expression>
         <expression type="absoluteChange" ds-type="if" value="5.0"
-            rearm="0.0" trigger="1" ds-label="ifName" expression="abs (ifHCInOctets * 8 / ifHighSpeed / 1000000 * 100)">
+            rearm="0.0" trigger="1" ds-label="ifName" expression="math.abs(ifHCInOctets * 8 / ifHighSpeed / 1000000 * 100)">
             <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
         </expression>
     </group>
@@ -48,11 +48,11 @@
         <threshold type="absoluteChange" ds-type="if" value="2.0"
             rearm="0.0" trigger="1" ds-label="ifName" ds-name="locIfInCRC"/>
         <expression type="absoluteChange" ds-type="if" value="12.0"
-            rearm="0.0" trigger="1" ds-label="ifName" expression="abs (ifHCInOctets * 8 / ifHighSpeed / 1000000 * 100)">
+            rearm="0.0" trigger="1" ds-label="ifName" expression="math.abs(ifHCInOctets * 8 / ifHighSpeed / 1000000 * 100)">
             <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
         </expression>
         <expression type="absoluteChange" ds-type="if" value="12.0"
-            rearm="0.0" trigger="1" ds-label="ifName" expression="abs(ifHCOutOctets * 8 / ifHighSpeed / 1000000 * 100)">
+            rearm="0.0" trigger="1" ds-label="ifName" expression="math.abs(ifHCOutOctets * 8 / ifHighSpeed / 1000000 * 100)">
             <resource-filter field="ifHighSpeed">^[1-9][0-9]+$</resource-filter>
         </expression>
     </group>

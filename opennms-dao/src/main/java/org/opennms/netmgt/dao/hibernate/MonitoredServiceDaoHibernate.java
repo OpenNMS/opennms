@@ -82,7 +82,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
         
         List<OnmsMonitoredService> matchingServices = new LinkedList<OnmsMonitoredService>();
-        Collection<OnmsMonitoredService> services = findAll();
+        Collection<OnmsMonitoredService> services = findActive();
         for (OnmsMonitoredService svc : services) {
             if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) &&
                 matchingIps.contains(svc.getIpAddress())) {
@@ -94,6 +94,10 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         
         
         return matchingServices;
+    }
+
+    private Collection<OnmsMonitoredService> findActive() {
+        return find("select distinct svc from OnmsMonitoredService as svc where (svc.status is null or svc.status not in ('F','U','D'))");
     }
 
     public Collection<OnmsMonitoredService> findByApplication(OnmsApplication application) {

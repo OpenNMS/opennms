@@ -35,7 +35,6 @@
  */
 package org.opennms.netmgt.correlation.drools;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.style.ToStringCreator;
 
@@ -133,7 +132,7 @@ public class FlapCount {
         return creator.toString();
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

@@ -49,38 +49,37 @@ abstract public class JDBCTemplate {
     private DataSource m_db;
     private String m_sql;
     
-    protected JDBCTemplate(DataSource db, String sql) {
+    protected JDBCTemplate(final DataSource db, final String sql) {
         m_db = db;
         m_sql = sql;
     }
 
-    public void execute(Object ... values) {
+    public void execute(final Object ... values) {
          try {
              doExecute(values);
-         } catch (SQLException e) {
-             String vals = argsToString(values);
+         } catch (final SQLException e) {
+             final String vals = argsToString(values);
              throw new DataRetrievalFailureException("Problem executing statement: "+m_sql+" with values "+vals, e);
          }
      }
 
-    private String argsToString(Object[] values) {
-        String vals = "[";
+    private String argsToString(final Object[] values) {
+        final StringBuffer sb = new StringBuffer("[");
          for(int i = 0; i < values.length; i++) {
              if (i != 0)
-                 vals += ", ";
-             vals += values[i];
+                 sb.append(", ");
+             sb.append(values[i]);
          }
-         vals += "]";
-        return vals;
+         sb.append("]");
+         return sb.toString();
     }
 
-    private void doExecute(Object values[]) throws SQLException {
+    private void doExecute(final Object values[]) throws SQLException {
         final DBUtils d = new DBUtils(getClass());
         try {
-             
-            Connection conn = m_db.getConnection();
+            final Connection conn = m_db.getConnection();
             d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement(m_sql);
+            final PreparedStatement stmt = conn.prepareStatement(m_sql);
             d.watch(stmt);
             for(int i = 0; i < values.length; i++) {
                 stmt.setObject(i+1, values[i]);
@@ -91,7 +90,7 @@ abstract public class JDBCTemplate {
         }
     }
     
-    public String reproduceStatement(Object values[]) {
+    public String reproduceStatement(final Object values[]) {
     		return m_sql+": with vals "+argsToString(values);
     }
     

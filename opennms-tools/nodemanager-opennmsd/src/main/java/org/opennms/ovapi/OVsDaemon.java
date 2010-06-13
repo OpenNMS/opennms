@@ -16,7 +16,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-¯ * GNU General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -123,7 +123,7 @@ public abstract class OVsDaemon {
     private int m_ovspmdFd;
     private boolean m_finished = false;
     
-    private List m_scheduledTasks = new LinkedList();
+    private List<ScheduledTask> m_scheduledTasks = new LinkedList<ScheduledTask>();
     private long m_selectedMillis;
 
     protected abstract String onInit();
@@ -236,11 +236,10 @@ public abstract class OVsDaemon {
     protected void processTimeouts() {
 
         // we clone the list so we don't have concurrent modifications if tasks add new tasks
-        List tasks = new LinkedList(m_scheduledTasks);
+        List<ScheduledTask> tasks = new LinkedList<ScheduledTask>(m_scheduledTasks);
 
         long now = System.currentTimeMillis();
-        for(Iterator it = tasks.iterator(); it.hasNext(); ) {
-            ScheduledTask task = (ScheduledTask)it.next();
+        for(ScheduledTask task : tasks) {
             if (task.isReady(now)) {
                 task.run();
                 
@@ -282,8 +281,7 @@ public abstract class OVsDaemon {
 
     private void setTimeout(timeval tm) {
         long now = System.currentTimeMillis();
-        for(Iterator it = m_scheduledTasks.iterator(); it.hasNext();) {
-            ScheduledTask task = (ScheduledTask)it.next();
+        for(ScheduledTask task : m_scheduledTasks) {
             task.setTimeout(now, tm);
         }
     }

@@ -36,9 +36,7 @@
       <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory.init</value></property>
     </bean>
 
-    <bean id="snmpinterfacepollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-snmpinterfacepollerConfig-factory">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory.getInstance</value></property>
-    </bean>
+    <bean id="snmpinterfacepollerConfig" class="org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory" depends-on="init-snmpinterfacepollerConfig-factory" factory-method="getInstance"/>
 	
     <bean id="snmpPollerEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
   	  <property name="annotatedListener" ref="daemon" />

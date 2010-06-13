@@ -40,7 +40,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
@@ -55,7 +54,7 @@ public class BasicScheduleUtils {
     public static String FORMAT2 = "HH:mm:ss";
 
     public static boolean isTimeInSchedule(Calendar cal, BasicSchedule sched) {
-        Category log = ThreadCategory.getInstance(BasicScheduleUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(BasicScheduleUtils.class);
         
         if (log.isDebugEnabled())
             log.debug("isTimeInOutage: checking for time '" + cal.getTime() + "' in schedule '" + sched.getName() + "'");
@@ -253,13 +252,13 @@ public class BasicScheduleUtils {
     private static void createDayOfWeekMapping() {
         if (BasicScheduleUtils.m_dayOfWeekMap == null) {
             BasicScheduleUtils.m_dayOfWeekMap = new HashMap<String,Integer>();
-            BasicScheduleUtils.m_dayOfWeekMap.put("sunday", new Integer(Calendar.SUNDAY));
-            BasicScheduleUtils.m_dayOfWeekMap.put("monday", new Integer(Calendar.MONDAY));
-            BasicScheduleUtils.m_dayOfWeekMap.put("tuesday", new Integer(Calendar.TUESDAY));
-            BasicScheduleUtils.m_dayOfWeekMap.put("wednesday", new Integer(Calendar.WEDNESDAY));
-            BasicScheduleUtils.m_dayOfWeekMap.put("thursday", new Integer(Calendar.THURSDAY));
-            BasicScheduleUtils.m_dayOfWeekMap.put("friday", new Integer(Calendar.FRIDAY));
-            BasicScheduleUtils.m_dayOfWeekMap.put("saturday", new Integer(Calendar.SATURDAY));
+            BasicScheduleUtils.m_dayOfWeekMap.put("sunday", Calendar.SUNDAY);
+            BasicScheduleUtils.m_dayOfWeekMap.put("monday", Calendar.MONDAY);
+            BasicScheduleUtils.m_dayOfWeekMap.put("tuesday", Calendar.TUESDAY);
+            BasicScheduleUtils.m_dayOfWeekMap.put("wednesday", Calendar.WEDNESDAY);
+            BasicScheduleUtils.m_dayOfWeekMap.put("thursday", Calendar.THURSDAY);
+            BasicScheduleUtils.m_dayOfWeekMap.put("friday", Calendar.FRIDAY);
+            BasicScheduleUtils.m_dayOfWeekMap.put("saturday", Calendar.SATURDAY);
         }
     }
 

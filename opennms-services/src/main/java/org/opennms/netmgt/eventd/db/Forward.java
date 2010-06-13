@@ -38,6 +38,8 @@
 
 package org.opennms.netmgt.eventd.db;
 
+import org.opennms.netmgt.model.events.Constants;
+
 /**
  * This is an utility class used to format the event forward info - to be
  * inserted into the 'events' table

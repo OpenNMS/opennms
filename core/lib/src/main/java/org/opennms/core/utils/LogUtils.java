@@ -13,10 +13,11 @@ public class LogUtils {
     public static void tracef(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isTraceEnabled()) {
+            String logMessage = ((args == null || args.length < 1) ? format : String.format(format, args));
             if (throwable == null) {
-                log.trace(String.format(format, args));
+                log.trace(logMessage);
             } else {
-                log.trace(String.format(format, args), throwable);
+                log.trace(logMessage, throwable);
             }
         }
     }
@@ -28,10 +29,11 @@ public class LogUtils {
     public static void debugf(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isDebugEnabled()) {
+            String logMessage = ((args == null || args.length < 1) ? format : String.format(format, args));
             if (throwable == null) {
-                log.debug(String.format(format, args));
+                log.debug(logMessage);
             } else {
-                log.debug(String.format(format, args), throwable);
+                log.debug(logMessage, throwable);
             }
         }
     }
@@ -43,10 +45,11 @@ public class LogUtils {
     public static void infof(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isInfoEnabled()) {
+            String logMessage = ((args == null || args.length < 1) ? format : String.format(format, args));
             if (throwable == null) {
-                log.info(String.format(format, args));
+                log.info(logMessage);
             } else {
-                log.info(String.format(format, args), throwable);
+                log.info(logMessage, throwable);
             }
         }
     }
@@ -58,10 +61,11 @@ public class LogUtils {
     public static void warnf(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isWarnEnabled()) {
+            String logMessage = ((args == null || args.length < 1) ? format : String.format(format, args));
             if (throwable == null) {
-                log.warn(String.format(format, args));
+                log.warn(logMessage);
             } else {
-                log.warn(String.format(format, args), throwable);
+                log.warn(logMessage, throwable);
             }
         }
     }
@@ -73,20 +77,27 @@ public class LogUtils {
     public static void errorf(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isErrorEnabled()) {
+            String logMessage = ((args == null || args.length < 1) ? format : String.format(format, args));
             if (throwable == null) {
-                log.error(String.format(format, args));
+                log.error(logMessage);
             } else {
-                log.error(String.format(format, args), throwable);
+                log.error(logMessage, throwable);
             }
         }
     }
 
+    /**
+     * @deprecated SLF4J doesn't support fatal, so this just goes to {@link #errorf} anyways.
+     */
     public static void fatalf(final Object logee, final String format, final Object... args) {
         errorf(logee, null, format, args);
     }
 
+    /**
+     * @deprecated SLF4J doesn't support fatal, so this just goes to {@link #errorf} anyways.
+     */
     public static void fatalf(final Object logee, final Throwable throwable, final String format, final Object... args) {
-        errorf(logee, null, format, args);
+        errorf(logee, throwable, format, args);
     }
 
     public static void logToConsole() {

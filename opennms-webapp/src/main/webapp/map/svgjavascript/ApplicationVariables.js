@@ -26,9 +26,9 @@ var Y_FACTOR = 2.625;
 
 //TabGroup Object Style
 var tabStyles = {"fill":"navy","stroke":"navy","stroke-width":1,"cursor":"pointer"};
-var tabwindowStyles = {"fill":"white","stroke":"navy","stroke-width":1};
 var tabtextStyles = {"font-family":textFamily,"font-size":titleFontSize,"fill":"white","font-weight":"normal"};
 var tabactivetabBGColor = "blue";
+var tabwidth=200;
 
 // Menu ObjectStyle
 //Variables used for Menu style
@@ -89,12 +89,16 @@ var selBoxTriangleStyles = {"fill":"dimgray"};
 var selBoxpreSelect = 0;
 
 // These are variables to set <ContextMenu> object style
-var cmdelta= 20;
-var cmwidth = 100;
-var cmmenuStyle={"fill":"grey"};
-var cmmenuElementStyle = {"fill":"grey"};
-var cmmenuElementTextStyle={"font-size": titleFontSize,"font-family":textFamily,"fill":"black"};
-var cmmenuElementMouseStyle={"fill":"grey","fill-opacity":0};
+var cmheight;
+var cmdelta= 30;
+var cmwidth = 200;
+var cmsubwidth = 150;
+
+var cmmenuStyle={"stroke":"dimgray","stroke-width":1,"fill":"mintcream"};
+var cmmenuElementStyle = {"fill":"mintcream", "fill-opacity":1.0};
+var cmmenuElementTextStyle={"font-size": 16,"font-family":"Times","fill":"black"};
+var cmmenuBarStyle={"stroke":"dimgray","stroke-width":0.5};
+var cmmenuElementMouseStyle={"fill":"blue"};
 
 // These are variables to set <ToolTip> object style
 var tooltipTextStyles = {"font-family":"Arial,Helvetica","fill":"dimgray","font-size":titleFontSize};
@@ -203,6 +207,10 @@ var nodeLabelMap =new Array();
 // variable to support the default map
 var defaultMap;
 
+//variables to support multilinkstatus
+var multilinkStatus=false;
+var multilinkIgnoreColor="yellow";
+
 //variables for Hide Maps
 var hideMapsIds = "";
 var hasHideMaps = false;
@@ -283,6 +291,8 @@ var LINK_SPEED = new Array();
 var LINK_TEXT = new Array();
 var LINK_WIDTH = new Array();
 var LINK_DASHARRAY = new Array();	
+var MULTILINK_WIDTH = new Array();
+var MULTILINK_DASHARRAY = new Array();	
 var LINKSTATUS_COLOR = new Array();	
 var LINKSTATUS_FLASH = new Array();	
 
@@ -313,9 +323,5 @@ var currentMapAccess="", currentMapName="", currentMapOwner="", currentMapUserla
 //vars for set background color
 var x_picker,pick_begin,pick_color,pick_appui,comp_rouge=128,comp_vert=128,comp_bleu=128,pick_prefixe="pickColor",node,cible;
 	
-
-// Context menu height
-var cmheight;
-
 // Max number of links between two mapElements
 var maxLinks;

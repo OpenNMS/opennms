@@ -45,10 +45,12 @@ public class Link {
 	int dasharray=-1;
 	int snmptype;
 	int id;
+	String multilinkwidth;
+	int multilinkdasharray;
 	
 	
 	
-	public Link(int id,String speed, String text, String width, int dasharray,int snmptype) {
+	public Link(int id,String speed, String text, String width, int dasharray,int snmptype, String multilinkwidth, int multilinkdasharray) {
 		super();
 		this.id=id;
 		this.speed = speed;
@@ -56,11 +58,37 @@ public class Link {
 		this.width = width;
 		this.dasharray = dasharray;
 		this.snmptype = snmptype;
+		this.multilinkwidth = multilinkwidth;
+		this.multilinkdasharray = multilinkdasharray;
 	}
 	
 	
 	
-	public int getId() {
+	public String getMultilinkwidth() {
+        return multilinkwidth;
+    }
+
+
+
+    public void setMultilinkwidth(String multilinkwidth) {
+        this.multilinkwidth = multilinkwidth;
+    }
+
+
+
+    public int getMultilinkdasharray() {
+        return multilinkdasharray;
+    }
+
+
+
+    public void setMultilinkdasharray(int multilinkdasharray) {
+        this.multilinkdasharray = multilinkdasharray;
+    }
+
+
+
+    public int getId() {
 		return id;
 	}
 

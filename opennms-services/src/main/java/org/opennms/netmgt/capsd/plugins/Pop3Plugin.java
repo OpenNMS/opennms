@@ -55,7 +55,6 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -117,7 +116,7 @@ public final class Pop3Plugin extends AbstractPlugin {
      * @return True if server is running MS Exchange, false otherwise
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
@@ -238,7 +237,7 @@ public final class Pop3Plugin extends AbstractPlugin {
 
         boolean result = isServer(address, port, retries, timeout);
         if (result && qualifiers != null && !qualifiers.containsKey("port"))
-            qualifiers.put("port", new Integer(port));
+            qualifiers.put("port", port);
 
         return result;
     }

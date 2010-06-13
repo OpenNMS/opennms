@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 /**
@@ -579,7 +578,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     }
 
     
-    private Category log() {
+    private Logger log() {
         return Logger.getLogger(m_category);
     }
 
@@ -611,8 +610,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     public synchronized void ensureThreadsStarted() {
         if (threadsRunning < m_writeThreads) {
             threadsRunning++;
-            Thread t = new Thread(this);
-            t.start();
+            new Thread(this, this.getClass().getSimpleName() + "-" + threadsRunning).start();
         }
     }
 
@@ -1046,6 +1044,8 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     }
 
     public void logStats() {
+        // TODO: Seth 2010-05-21: Change this so that it avoids the overhead of 
+        // calling getStats() unless debug logging is enabled?
         logLapTime(getStats());
     }
 

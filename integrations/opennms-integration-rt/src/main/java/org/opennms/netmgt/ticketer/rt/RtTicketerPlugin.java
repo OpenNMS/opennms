@@ -45,7 +45,6 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.log4j.Category;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
@@ -385,7 +384,7 @@ public class RtTicketerPlugin implements Plugin {
 	 * 
 	 * @return a log4j Category for this class
 	 */
-	Category log() {
+	ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 	

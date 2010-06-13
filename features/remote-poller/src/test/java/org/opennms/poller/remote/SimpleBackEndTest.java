@@ -23,7 +23,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
-	DependencyInjectionTestExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
     JUnitHttpServerExecutionListener.class
 })
 @ContextConfiguration(locations="classpath:/applicationContext-client.xml")

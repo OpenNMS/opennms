@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -303,7 +302,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         return ipList;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 
@@ -336,7 +335,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      *         otherwise.
      */
     public synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        Category log = log();
+        ThreadCategory log = log();
     
         boolean filterPassed = false;
     

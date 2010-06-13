@@ -44,7 +44,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -183,7 +182,7 @@ public class DbVlanEntry
 				throw new IllegalStateException(
 						"The record already exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -276,7 +275,7 @@ public class DbVlanEntry
 				throw new IllegalStateException(
 						"The record does not exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -372,7 +371,7 @@ public class DbVlanEntry
 				throw new IllegalStateException(
 						"The record does not exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			final DBUtils d = new DBUtils(getClass());
             PreparedStatement stmt = null;
@@ -491,8 +490,8 @@ public class DbVlanEntry
 				return false;
 		}
 
-		boolean updateVlanName(String vlanname) {
-			if (vlanname != m_vlanname) {
+		boolean updateVlanName(final String vlanname) {
+			if (!m_vlanname.equals(vlanname)) {
 				setVlanName(vlanname);
 				return true;
 			} else

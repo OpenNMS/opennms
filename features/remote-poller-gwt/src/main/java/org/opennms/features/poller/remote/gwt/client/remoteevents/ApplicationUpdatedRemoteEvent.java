@@ -16,5 +16,8 @@ public class ApplicationUpdatedRemoteEvent implements MapRemoteEvent {
 	public void dispatch(final RemotePollerPresenter presenter) {
 		presenter.updateApplication(m_applicationInfo);
 	}
-
+	
+	public String toString() {
+	    return "ApplicationUpdatedRemoteEvent[applicationInfo=" + m_applicationInfo + "]";
+	}
 }

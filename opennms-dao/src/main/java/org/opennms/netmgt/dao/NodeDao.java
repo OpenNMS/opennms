@@ -91,4 +91,6 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     void updateNodeScanStamp(Integer nodeId, Date scanStamp);
 
     Collection<Integer> getNodeIds();
+
+    List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress);
 }

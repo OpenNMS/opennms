@@ -58,7 +58,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.apache.log4j.Category;
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpVar;
 import org.opennms.core.utils.ThreadCategory;
@@ -80,7 +79,7 @@ class XmpCollectionAttributeType implements CollectionAttributeType
     }
 
     /* private methods *********************************** */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

@@ -55,7 +55,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.Resource;
 
@@ -77,7 +76,7 @@ public class HTMLReportRenderer implements ReportRenderer {
 
     private String m_baseDir;
 
-    private Category log;
+    private ThreadCategory log;
 
     public HTMLReportRenderer() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);

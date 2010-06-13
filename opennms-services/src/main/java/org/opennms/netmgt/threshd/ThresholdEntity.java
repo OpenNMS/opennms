@@ -48,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -127,7 +126,7 @@ public final class ThresholdEntity implements Cloneable {
     }
 
     /**
-     * Returns the names of the dataousrces required to evaluate this threshold entity
+     * Returns the names of the datasources required to evaluate this threshold entity
      * 
      * @return Collection of the names of datasources 
      */
@@ -247,7 +246,7 @@ public final class ThresholdEntity implements Cloneable {
         return events;
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(ThresholdEntity.class);
     }
 
@@ -304,7 +303,7 @@ public final class ThresholdEntity implements Cloneable {
         List<ThresholdEvaluatorState> defaultList=m_thresholdEvaluatorStates.get(null);
 
         for (ThresholdEvaluatorState item : defaultList) {
-            if (item.getThresholdConfig().getType() == threshold.getType()) {
+            if (threshold.getType().equals(item.getThresholdConfig().getType())) {
                 throw new IllegalStateException(threshold.getType().toString() + " threshold already set.");
             }
         }

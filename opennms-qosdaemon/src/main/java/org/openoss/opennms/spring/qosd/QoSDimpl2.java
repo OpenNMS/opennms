@@ -132,8 +132,8 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	/**
 	 *  Method to get the QosD's logger from OpenNMS
 	 */
-	public static Logger getLog() {
-		return (Logger)ThreadCategory.getInstance(QoSDimpl2.class);	
+	public static ThreadCategory getLog() {
+		return ThreadCategory.getInstance(QoSDimpl2.class);	
 	}
 
 	// ---------------SPRING DAO DECLARATIONS----------------
@@ -273,7 +273,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	/** Method to set up the fiber
 	 *  Note - not used in Spring activation */
 	protected void onInit(){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		log.info("Initialising QoSD");
 	}
 
@@ -282,7 +282,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 */
 	protected void onStart() {
 		String jnp_host;
-		Logger log = getLog();		//Get a reference to the QosD logger instance assigned by OpenNMS
+		ThreadCategory log = getLog();		//Get a reference to the QosD logger instance assigned by OpenNMS
 
 		log.info("Qosd.start(): Preparing to load configuration");
 
@@ -447,7 +447,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 * database connections, before the fiber's execution is ended. 
 	 */
 	protected void onStop() {
-		Logger log = getLog();		//Get a reference to the QoSD logger
+		ThreadCategory log = getLog();		//Get a reference to the QoSD logger
 
 		log.info("Stopping QosD");
 
@@ -479,7 +479,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 * a paused state.
 	 */
 	protected void onResume() {
-		Logger log = getLog();		//Get a reference to the QosD logger
+		ThreadCategory log = getLog();		//Get a reference to the QosD logger
 		//instance assigned by OpenNMS
 		log.info("Resuming QosD");
 		registerListener();		//start responding to OpenNMS events
@@ -492,7 +492,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 * suspended state until it can be later resumed.
 	 */
 	protected void onPause() {
-		Logger log = getLog();		//Get a reference to the QosD logger
+		ThreadCategory log = getLog();		//Get a reference to the QosD logger
 		//instance assigned by OpenNMS
 		log.info("Pausing QosD");
 		unregisterListener();		//stop responding to OpenNMS events
@@ -505,7 +505,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 * method of this object.
 	 */
 	public void registerListener() 	{
-		Logger log =getLog();
+		ThreadCategory log =getLog();
 		List<String> ueiList = new ArrayList<String>();
 		String[] temp = config.getEventlist().getUei();
 		for(int i=0; i<temp.length; i++)
@@ -521,7 +521,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 * an event occurs.
 	 */
 	public void unregisterListener() {
-		Logger log = getLog();
+		ThreadCategory log = getLog();
 
 		log.info("QosD Unregistering for events");
 		eventIpcManager.removeEventListener(this);
@@ -534,7 +534,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 */ 
 	public void onEvent(Event event) {
 
-		Logger log = getLog();
+		ThreadCategory log = getLog();
 		if (log.isDebugEnabled()) log.debug("Qosd.onEvent: OpenNMS Event Detected by QosD. uei '"+ event.getUei()+"' Dbid(): "+event.getDbid()+"  event.getTime(): " + event.getTime());
 
 		String s = event.getUei();
@@ -601,7 +601,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	 * This is called from ossDao every time there is an update to the database.
 	 */
 	public void sendAlarms() {
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 
 		Hashtable<AlarmKey,AlarmValue> ossjAlarmUpdateList = new Hashtable<AlarmKey,AlarmValue>();
 		OnmsAlarm[] onmsAlarmUpdateList = null;

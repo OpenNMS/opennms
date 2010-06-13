@@ -35,7 +35,6 @@
  */
 package org.opennms.netmgt.alarmd;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.EventDao;
@@ -159,7 +158,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return true;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(AlarmPersisterImpl.class);
     }
     

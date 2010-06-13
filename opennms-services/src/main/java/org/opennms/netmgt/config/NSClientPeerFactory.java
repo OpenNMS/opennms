@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -127,7 +126,7 @@ public final class NSClientPeerFactory extends PeerFactory {
         m_loaded = true;
     }
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(NSClientPeerFactory.class);
     }
 
@@ -176,7 +175,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      * Snmp and NSClient.  Maybe some sort of visitor methodology would work.  The basic logic should be fine as it's all IP address manipulation
      */
     private static void optimize() throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // First pass: Remove empty definition elements
         for (Iterator<Definition> definitionsIterator =
@@ -218,8 +217,7 @@ public final class NSClientPeerFactory extends PeerFactory {
             // Sort ranges
             TreeMap<Integer, Range> rangesMap = new TreeMap<Integer, Range>();
             for (Range range : definition.getRangeCollection()) {
-                rangesMap.put(new Integer(new IPv4Address(range.getBegin()).getAddress()),
-                              range);
+                rangesMap.put(new IPv4Address(range.getBegin()).getAddress(), range);
             }
 
             // Combine consecutive specifics into ranges
@@ -355,7 +353,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
      */
     public void define(InetAddress ip, String password) throws UnknownHostException {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Convert IP to long so that it easily compared in range elements
         int address = new IPv4Address(ip).getAddress();
@@ -484,8 +482,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("NSClientPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                    log().warn("NSClientPeerFactory: could not convert host " + saddr + " to InetAddress", e);
                 }
             }
 
@@ -505,8 +502,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("NSClientPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                    log().warn("NSClientPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
                 }
             }
             

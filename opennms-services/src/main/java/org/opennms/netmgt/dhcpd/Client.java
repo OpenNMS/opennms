@@ -49,7 +49,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Observable;
 
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -123,7 +122,7 @@ final class Client extends Observable implements Runnable, Fiber {
          * client which requested that the DHCP request be generated.
          */
         public void run() {
-            Category log = ThreadCategory.getInstance(this.getClass());
+            ThreadCategory log = ThreadCategory.getInstance(this.getClass());
 
             if (log.isDebugEnabled())
                 log.debug("thread " + this.getName() + " running...");
@@ -133,8 +132,7 @@ final class Client extends Observable implements Runnable, Fiber {
             try {
                 m_incomingUdp.setSoTimeout(1000);
             } catch (IOException ioE) {
-                log.error("UnicastListener.run: unable to set socket timeout, reason: " + ioE.getLocalizedMessage());
-                log.debug(ioE);
+                log.error("UnicastListener.run: unable to set socket timeout, reason: " + ioE.getMessage());
                 m_keepListening = true;
             }
 
@@ -179,7 +177,7 @@ final class Client extends Observable implements Runnable, Fiber {
             }
 
             if (log.isDebugEnabled())
-                log.debug("thread " + this.getName() + " exiting...");
+                log.debug("thread " + super.getName() + " exiting...");
         }
     }
 
@@ -243,7 +241,7 @@ final class Client extends Observable implements Runnable, Fiber {
     }
 
     public void run() {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         boolean isOk = true;
 
         // get the input stream as a object stream

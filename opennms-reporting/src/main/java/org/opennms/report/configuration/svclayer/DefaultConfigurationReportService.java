@@ -23,7 +23,7 @@ public class DefaultConfigurationReportService implements ConfigurationReportSer
           m_reportRunner.setReportFormat(criteria.getReportFormat());
           m_reportRunner.setReportRequestDate(criteria.getReportRequestDate());
             
-          new Thread(m_reportRunner).start();                    
+          new Thread(m_reportRunner, m_reportRunner.getClass().getSimpleName()).start();                    
     
           return true;
     }   

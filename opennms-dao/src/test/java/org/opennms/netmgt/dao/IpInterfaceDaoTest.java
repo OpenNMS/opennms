@@ -84,4 +84,5 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         assertEquals("node ID for 192.168.2.1", new Integer(2), interfaceNodes.get("192.168.2.1"));
         assertFalse("node ID for *BOGUS*IP* should not have been found", interfaceNodes.containsKey("*BOGUS*IP*"));
     }
+    
 }

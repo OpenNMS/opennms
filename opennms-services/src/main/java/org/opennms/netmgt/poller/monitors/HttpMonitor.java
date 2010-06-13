@@ -502,28 +502,30 @@ public class HttpMonitor extends IPv4Monitor {
              * Sorting this map just in case the poller gets changed and the Map
              * is no longer a TreeMap.
              */
-            String cmd = "GET " + determineUrl(m_parameters) + " HTTP/1.1\r\n";
-            cmd += "Connection: CLOSE \r\n";
-            cmd = cmd + "Host: " + determineVirtualHost(m_iface, m_parameters) +"\r\n";
-            cmd += "User-Agent: "+determineUserAgent(m_parameters) +"\r\n";
+            StringBuilder sb = new StringBuilder();
+            sb.append("GET ").append(determineUrl(m_parameters)).append(" HTTP/1.1\r\n");
+            sb.append("Connection: CLOSE \r\n");
+            sb.append("Host: ").append(determineVirtualHost(m_iface, m_parameters)).append("\r\n");
+            sb.append("User-Agent: ").append(determineUserAgent(m_parameters)).append("\r\n");
             
             if (determineBasicAuthentication(m_parameters) != null) {
-                cmd += "Authorization: Basic "+determineBasicAuthentication(m_parameters) +"\r\n";
+                sb.append("Authorization: Basic ").append(determineBasicAuthentication(m_parameters)).append("\r\n");
             }
 
             for (String string : m_parameters.keySet()) {
                 String parmKey = string;
                 if (parmKey.matches("header[0-9]+$")) {
-                    cmd += determineHttpHeader(m_parameters, parmKey)+"\r\n";
+                    sb.append(determineHttpHeader(m_parameters, parmKey)).append("\r\n");
                 }
             }
-            
-            cmd = cmd + "\r\n";
+
+            sb.append("\r\n");
+            final String cmd = sb.toString();
             log().debug("checkStatus: cmd:\n" + cmd);
             m_httpCmd = cmd;
         }
 
-        public void setReason(String reason) {
+        public void setReason(final String reason) {
             m_reason = reason;
         }
         

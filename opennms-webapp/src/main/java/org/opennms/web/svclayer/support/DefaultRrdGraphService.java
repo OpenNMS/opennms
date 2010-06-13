@@ -50,7 +50,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
@@ -126,7 +125,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
             tempIn = m_rrdDao.createGraph(command, workDir);
         } catch (DataAccessException e) {
-            log().warn(e);
+            log().warn(e.getMessage());
             if (debug) {
                 throw e;
             } else {
@@ -334,7 +333,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return command;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 

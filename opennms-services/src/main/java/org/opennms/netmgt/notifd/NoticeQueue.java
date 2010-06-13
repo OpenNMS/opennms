@@ -32,7 +32,6 @@
 
 package org.opennms.netmgt.notifd;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -56,7 +55,7 @@ public class NoticeQueue extends DuplicateTreeMap<Long, NotificationTask> {
     public NotificationTask putItem(Long key, NotificationTask value) {
         NotificationTask ret = super.putItem(key, value);
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         
         if (log.isDebugEnabled()) {
             if (value.getNotifyId() == -1) {

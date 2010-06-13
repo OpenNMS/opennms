@@ -71,7 +71,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * init() must be called before the run() method.
 	 */
 	public void run() throws IllegalStateException 	{
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		//instance=this;
 		boolean localupdateNCache=false;
 		boolean localsendList=false;
@@ -119,7 +119,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * Initialise the Thread. Must be called before a call to run.
 	 */
 	synchronized public void init()	{
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.init() initialised");
 		init = true;	//inform the thread that it has been initialised 
 		//and can execute the run() method.
@@ -135,7 +135,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 		// Thread.stop() is unsafe so ending run method by changing
 		// a status variable that tells the run method to return
 		// and end execution.
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.kill() request received to kill thread");
 		runThread=false;
 		//instance.notify();
@@ -149,7 +149,7 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * another update when the previous one completes
 	 */
 	synchronized public void sendAlarmList(){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.sendAlarmList() request received to update alarm list");
 		sendList=true;
 		//instance.notify();
@@ -165,15 +165,15 @@ public class OpenNMSEventHandlerThread extends Thread {
 	 * in only one update when the previous one completes 
 	 */
 	synchronized public void updateNodeCache(){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.updateNodeCache() request received to update node list");
 		updateNCache=true;
 		//instance.notify();
 		notify();
 	}
 
-	private static Logger getLog() {
-		return (Logger)ThreadCategory.getInstance(OpenNMSEventHandlerThread.class);	
+	private static ThreadCategory getLog() {
+		return ThreadCategory.getInstance(OpenNMSEventHandlerThread.class);	
 	}
 
 }

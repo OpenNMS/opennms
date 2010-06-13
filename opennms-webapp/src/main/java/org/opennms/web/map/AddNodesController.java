@@ -49,7 +49,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
@@ -72,7 +71,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class AddNodesController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	
@@ -183,7 +182,7 @@ public class AddNodesController implements Controller {
 				map = manager.addElements(map, velems);
 				log.debug("After getting/adding links");
 	
-				bw.write(ResponseAssembler.getAddElementResponse(null, velems, map.getLinks().values()));
+				bw.write(ResponseAssembler.getAddElementResponse(null, velems, map.getLinks()));
 			}
 		} catch (Exception e) {
 			log.error("Error while adding nodes for action: "+action,e);

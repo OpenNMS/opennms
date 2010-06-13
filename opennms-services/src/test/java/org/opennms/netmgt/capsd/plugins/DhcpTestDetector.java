@@ -35,7 +35,6 @@ import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dhcpd.Dhcpd;
@@ -49,7 +48,7 @@ public class DhcpTestDetector {
      * The port where the DHCP server is detected. This is a well known port and
      * this integer is always returned in the qualifier map.
      */
-    private final static Integer PORT_NUMBER = new Integer(67);
+    private final static Integer PORT_NUMBER = 67;
 
     /**
      * <P>
@@ -85,7 +84,7 @@ public class DhcpTestDetector {
     private boolean isServer(InetAddress host, int retries, int timeout) {
         // Load the category for logging
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
         long responseTime = -1;

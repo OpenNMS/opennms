@@ -38,7 +38,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -64,7 +63,7 @@ public class CommandExecutor implements ExecutorStrategy {
      */
     public int execute(String commandLine, List<Argument> arguments) {
         int returnCode = 0;
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         List<String> commandList = new ArrayList<String>();
         commandList.add(commandLine);
@@ -101,16 +100,25 @@ public class CommandExecutor implements ExecutorStrategy {
         try {
             // set up the process
             String commandArray[] = new String[commandList.size()];
-            commandArray = (String[]) commandList.toArray(commandArray);
+            commandArray = commandList.toArray(commandArray);
             if (log.isDebugEnabled()) {
-                log.debug(commandList);
+                StringBuffer list = new StringBuffer();
+                list.append("{ ");
+                for (int i = 0; i < commandArray.length; i++) {
+                    if (i != 0) {
+                        list.append(", ");
+                    }
+                    list.append(commandArray[i]);
+                }
+                list.append(" }");
+                log.debug(list.toString());
             }
 
             Process command = Runtime.getRuntime().exec(commandArray);
 
             // see if we have streamed arguments
             if (streamed) {
-                // make sure the output we are writting is buffered
+                // make sure the output we are writing is buffered
                 BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(command.getOutputStream(), "UTF-8"));
 
                 // put the streamed arguments into the stream

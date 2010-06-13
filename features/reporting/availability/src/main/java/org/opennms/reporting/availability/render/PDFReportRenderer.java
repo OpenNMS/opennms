@@ -59,7 +59,6 @@ import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.Resource;
 
@@ -82,7 +81,7 @@ public class PDFReportRenderer implements ReportRenderer {
 
     private String m_baseDir;
 
-    private Category log;
+    private ThreadCategory log;
 
     public PDFReportRenderer() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -211,6 +210,7 @@ public class PDFReportRenderer implements ReportRenderer {
         try {
 
             FopFactory fopFactory = FopFactory.newInstance();
+            fopFactory.setStrictValidation(false);
             Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out);
 
             TransformerFactory tfact = TransformerFactory.newInstance();

@@ -44,7 +44,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -64,8 +63,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
      */
     private class RunnableActor extends Thread {
         private final BlockingQueue<Future<Runnable>> m_queue;
-        public RunnableActor(BlockingQueue<Future<Runnable>> queue) {
-            super("RunnableActor");
+        public RunnableActor(String name, BlockingQueue<Future<Runnable>> queue) {
+            super(name);
             m_queue = queue;
             start();
         }
@@ -103,14 +102,14 @@ public class DefaultTaskCoordinator implements InitializingBean {
     // This is used to adjust timing during testing
     private Long m_loopDelay;
 
-    public DefaultTaskCoordinator() {
+    public DefaultTaskCoordinator(String name) {
         m_queue = new LinkedBlockingQueue<Future<Runnable>>();
-        m_actor = new RunnableActor(m_queue);
+        m_actor = new RunnableActor(name+"-TaskScheduler", m_queue);
         addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor());
     }
     
-    public DefaultTaskCoordinator(Executor defaultExecutor) {
-        this();
+    public DefaultTaskCoordinator(String name, Executor defaultExecutor) {
+        this(name);
         m_defaultExecutor = SyncTask.DEFAULT_EXECUTOR;
         addExecutor(SyncTask.DEFAULT_EXECUTOR, defaultExecutor);
         afterPropertiesSet();
@@ -129,26 +128,55 @@ public class DefaultTaskCoordinator implements InitializingBean {
         
     }
     
-    public SyncTask createTask(ContainerTask parent, Runnable r) {
+    public SyncTask createTask(ContainerTask<?> parent, Runnable r) {
         return new SyncTask(this, parent, r);
     }
     
-    public SyncTask createTask(ContainerTask parent, Runnable r, String schedulingHint) {
+    public SyncTask createTask(ContainerTask<?> parent, Runnable r, String schedulingHint) {
         return new SyncTask(this, parent, r, schedulingHint);
     }
     
-    public <T> AsyncTask<T> createTask(ContainerTask parent, Async<T> async, Callback<T> cb) {
+    public <T> AsyncTask<T> createTask(ContainerTask<?> parent, Async<T> async, Callback<T> cb) {
         return new AsyncTask<T>(this, parent, async, cb);
     }
     
 
-    public BatchTask createBatch(ContainerTask parent) {
-        return new BatchTask(this, parent);
+    public TaskBuilder<BatchTask> createBatch(ContainerTask<?> parent) {
+        return new TaskBuilder<BatchTask>(new BatchTask(this, parent));
     }
     
-    public SequenceTask createSequence(ContainerTask parent) {
-        return new SequenceTask(this, parent);
+    public TaskBuilder<BatchTask> createBatch() {
+        return createBatch((ContainerTask<?>)null);
     }
+    
+    public BatchTask createBatch(ContainerTask<?> parent, Runnable... tasks) {
+        return createBatch(parent).add(tasks).get(parent);
+    }
+
+    
+    public BatchTask createBatch(Runnable... tasks) {
+        return createBatch().add(tasks).get();
+    }
+
+    
+    public TaskBuilder<SequenceTask> createSequence(ContainerTask<?> parent) {
+        return new TaskBuilder<SequenceTask>(new SequenceTask(this, parent));
+    }
+    
+    public TaskBuilder<SequenceTask> createSequence() {
+        return createSequence((ContainerTask<?>)null);
+    }
+    
+    public SequenceTask createSequence(ContainerTask<?> parent, Runnable... tasks) {
+        return createSequence(parent).add(tasks).get(parent);
+    }
+
+    
+    public SequenceTask createSquence(Runnable... tasks) {
+        return createSequence().add(tasks).get();
+    }
+
+    
     
     public void setLoopDelay(long millis) {
         m_loopDelay = millis;
@@ -291,7 +319,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
+
 }

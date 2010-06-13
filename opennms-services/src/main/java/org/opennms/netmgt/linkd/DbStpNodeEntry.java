@@ -44,7 +44,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -245,7 +244,7 @@ public class DbStpNodeEntry
 				throw new IllegalStateException(
 						"The record already exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -386,7 +385,7 @@ public class DbStpNodeEntry
 				throw new IllegalStateException(
 						"The record does not exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -529,7 +528,7 @@ public class DbStpNodeEntry
 			if (!m_fromDb)
 				throw new IllegalStateException("The record does not exists in the database");
 
-			Category log = ThreadCategory.getInstance(getClass());
+			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			final DBUtils d = new DBUtils(getClass());
 			try {
@@ -634,7 +633,7 @@ public class DbStpNodeEntry
 				m_stpprotocolspecification = -1;
 				m_stppriority = -1;
 				m_stprootcost = -1;
-				m_stprootcost = -1;
+				m_stprootport = -1;
 				m_basevlan = basevlan;
                 m_basebridgeaddress = null;
                 m_stpdesignatedroot = null;
@@ -677,8 +676,8 @@ public class DbStpNodeEntry
 				return false;
 		}
 
-		boolean updateBaseVlanName(String basevlanname) {
-			if (basevlanname != m_basevlanname) {
+		boolean updateBaseVlanName(final String basevlanname) {
+			if (!m_basevlanname.equals(basevlanname)) {
 				set_basevlanname(basevlanname);
 				return true;
 			} else
@@ -704,8 +703,8 @@ public class DbStpNodeEntry
 				return false;
 		}
 
-		boolean updateBaseBridgeAddress(String basebridgeaddress) {
-			if (basebridgeaddress != m_basebridgeaddress) {
+		boolean updateBaseBridgeAddress(final String basebridgeaddress) {
+			if (!m_basebridgeaddress.equals(basebridgeaddress)) {
 				set_basebridgeaddress(basebridgeaddress);
 				return true;
 			} else
@@ -788,8 +787,8 @@ public class DbStpNodeEntry
 				return false;
 		}
 
-		boolean updateStpDesignatedRoot(String stpdesignatedroot) {
-			if (stpdesignatedroot != m_stpdesignatedroot) {
+		boolean updateStpDesignatedRoot(final String stpdesignatedroot) {
+			if (!m_stpdesignatedroot.equals(stpdesignatedroot)) {
 				set_stpdesignatedroot(stpdesignatedroot);
 				return true;
 			} else

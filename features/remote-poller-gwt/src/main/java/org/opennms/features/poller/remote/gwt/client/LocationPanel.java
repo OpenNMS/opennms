@@ -74,6 +74,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     public void showLocationList() {
         setVisible(locationList.getElement(), true);
         setVisible(applicationList.getElement(), false);
+        locationList.refreshLocationListResize();
     }
     
     /**

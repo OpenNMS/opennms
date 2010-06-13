@@ -132,7 +132,9 @@ public class SerializationTest {
 		statuses.add(getLocationSpecificStatus());
 		final Date to = new Date();
 		final Date from = new Date(to.getTime() - (1000 * 60 * 60 * 24));
-		return new ApplicationState(to, from, applications, applicationStatuses);
+		List<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
+		monitors.add(getMonitor());
+		return new ApplicationState(to, from, applications, monitors, applicationStatuses);
 	}
 
 	private LocationMonitorState getLocationMonitorState() {

@@ -32,6 +32,9 @@
 // Tab Size = 8
 
 package org.opennms.netmgt.notifd.mock;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * @author david
  */
@@ -43,11 +46,22 @@ public class MockNotification {
 	private String m_textMsg;
     private long m_expectedTime;
     
-    
-    public boolean equals(Object o) {
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(3, 57)
+            .append(m_subject)
+            .append(m_email)
+            .append(m_pemail)
+            .append(m_textMsg)
+            .append(m_expectedTime)
+            .toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
         
         if(o instanceof MockNotification) {
-            MockNotification m = (MockNotification)o;
+            final MockNotification m = (MockNotification)o;
             return (m_subject == null ? m.m_subject == null : m_subject.equals(m.m_subject))
                 && (m_textMsg == null ? m.m_textMsg == null : m_textMsg.equals(m.m_textMsg))
                 && (m_email == null ? m.m_email == null : m_email.equals(m.m_email))
@@ -66,7 +80,7 @@ public class MockNotification {
     /**
      * @param email The email to set.
      */
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         m_email = email;
     }
     /**
@@ -78,7 +92,7 @@ public class MockNotification {
     /**
      * @param pmail The pmail to set.
      */
-    public void setPmail(String pmail) {
+    public void setPmail(final String pmail) {
         m_pemail = pmail;
     }
     /**
@@ -90,7 +104,7 @@ public class MockNotification {
     /**
      * @param subject The subject to set.
      */
-    public void setSubject(String subject) {
+    public void setSubject(final String subject) {
         m_subject = subject;
     }
     
@@ -98,7 +112,7 @@ public class MockNotification {
         return m_expectedTime;
     }
 
-    public void setExpectedTime(long expectedTime) {
+    public void setExpectedTime(final long expectedTime) {
         m_expectedTime = expectedTime;
     }
 
@@ -113,10 +127,11 @@ public class MockNotification {
 	/**
 	 * @param textMsg The m_textMsg to set.
 	 */
-	public void setTextMsg(String textMsg) {
+	public void setTextMsg(final String textMsg) {
 		m_textMsg = textMsg;
 	}
 
+	@Override
     public String toString() {
         return 
         "[" +

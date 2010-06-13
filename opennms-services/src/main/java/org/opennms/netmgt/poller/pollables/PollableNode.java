@@ -38,7 +38,6 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.PollStatus;
@@ -61,7 +60,7 @@ public class PollableNode extends PollableContainer {
         private int m_obtainCount = 0;
         
         public synchronized void obtain() {
-            Category log = ThreadCategory.getInstance(getClass());
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
             
             if (m_owner != Thread.currentThread()) {
                 log.debug("Trying to obtain lock for "+PollableNode.this);
@@ -75,7 +74,7 @@ public class PollableNode extends PollableContainer {
         }
         
         public synchronized void obtain(long timeout) {
-            Category log = ThreadCategory.getInstance(getClass());
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
             
             if (m_owner != Thread.currentThread()) {
                 log.debug("Trying to obtain lock for "+PollableNode.this);

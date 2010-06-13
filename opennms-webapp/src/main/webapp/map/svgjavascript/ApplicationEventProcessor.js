@@ -55,12 +55,27 @@ function onMouseDownOnSLink(evt) {
 		{
 			var x=evt.clientX + 2;
 			var y=evt.clientY + 4;
-			var height = cmdelta * slink.getNumberOfMultiLinks();
-			var cm =  new ContextMenuSimulator(winSvgElement,slink.id,"ProvaMenu",x,y,cmwidth,height,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
-			cm.addItem(slink.id,LINK_TEXT[slink.getTypology()],execLinkCMAction);
+			var height = cmheight+cmdelta * (slink.getNumberOfMultiLinks()+1);
+			var cm =  new ContextMenuSimulator(winSvgElement,slink.id,"Summary Link",x,y,cmwidth,cmsubwidth,height,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
+			cm.addItem(slink.id,LINK_TEXT[slink.getTypology()],execLinkCMAction,true);
 			for ( var linkid in slink.getLinks() ) {
 			    var link = slink.getLinks()[linkid];
-				cm.addItem(linkid,LINK_TEXT[link.getTypology()],execLinkCMAction);	
+				cm.addItem(linkid,LINK_TEXT[link.getTypology()],execLinkCMAction,false);	
+			}
+			var addcmbar=true;			
+			for(var index in CM_COMMANDS) {
+				if(CM_COMMANDS[index]=="-") {
+					addcmbar=true;
+				} else {
+					var commandLabel = unescape(CM_COMMANDS[index]);
+					var nodeids = slink.getNodeIds();
+					cm.addSubMenu(index,commandLabel,execSelectedCMActionFromSubMenu,addcmbar,nodeids.length);
+					for (var k in nodeids ) {
+					     var nodeid = nodeids[k];
+						cm.addSubMenuItem(index,nodeid,nodeidSortAss[nodeid].getLabel(),false);
+					}
+					addcmbar=false;
+				}
 			}
 		}		
 	}
@@ -94,38 +109,67 @@ function onClickMapElement(evt)
 	if (evt.detail == 2)
 	{
 		myMapApp.disableTooltips()
+		var label = mapElement.getLabel();
+		var x = mapElement.getX() + mapElemDimension;
+		var y = mapElement.getY() ;
 		if(mapElement.isNode())
 		{
 			var nodeid = mapElement.getNodeId();
-			var label = mapElement.getLabel();
-			var x = mapElement.getX() + mapElemDimension;
-			var y = mapElement.getY() ;
 			
-			var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
-			cm.addItem("base",label, ciao);
-			cm.addItem(label+"00","-----------------------",ciao);
+			var cm =  new ContextMenuSimulator(winSvgElement,nodeid,label,x,y,cmwidth,cmsubwidth,cmheight,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
+			var addcmbar=true;
 			for(var index in CM_COMMANDS){
 				if(CM_COMMANDS[index]=="-"){
-					cm.addItem(label+index,"-----------------------",ciao);
+					addcmbar=true;
 				}else{
 					var commandLabel = unescape(CM_COMMANDS[index]);
-					cm.addItem(index,commandLabel,execSelectedCMAction);
+					cm.addItem(index,commandLabel,execSelectedCMAction,addcmbar);
+					addcmbar=false;
 				}
 			}
 		}
 	
 		if(mapElement.isMap())
 		{
-			openMapSetUp(mapElement.getMapId(),true);
+			var mapid=mapElement.getMapId();
+			var mapname=mapidSortAss[mapid];
+			var topmaplist = new Array();
+			for (var elemlabel in nodeLabelMap) {
+				if (mapname == elemlabel ) {
+				    var mapLbl = nodeLabelMap[elemlabel];
+				    if (mapLbl!=undefined) {
+						for (var j=0; j<mapLbl.length;j++ ){
+							var mapnamecursor = mapLbl[j];
+							if (mapnamecursor != currentMapName)
+								topmaplist.push(mapnamecursor);
+						}
+					}
+					break;
+				}  
+			}
+			if (topmaplist.length > 0 ) {
+				var cm =  new ContextMenuSimulator(winSvgElement,mapid,label,x,y,cmwidth,cmsubwidth,3*cmdelta,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
+				cm.addItem(mapid,"Open",execOpenMapCMAction,true);
+				cm.addSubMenu("Top"+mapid,"Up",execOpenMapCMActionFromSubMenu,false,topmaplist.length);
+				for ( var alfa in topmaplist ) {
+					var mapnamecursor=topmaplist[alfa];
+					cm.addSubMenuItem("Top"+mapid,mapSortAss[mapnamecursor].id,mapnamecursor,false);					
+				}
+			} else {
+				openMapSetUp(mapid,true);
+			}
 		}
 			
 	}
 }
 
-function openContextMenu(mapElement) {
+function execOpenMapCMAction(mapid) {
+	openMapSetUp(mapid,true);
 }
 
-
+function execOpenMapCMActionFromSubMenu(index,id,menulabel,mapid) {
+	openMapSetUp(mapid,true);
+}
 function onMouseDownOnMapElement(evt)
 {	
 	if ((typeof map) == "object")
@@ -276,11 +320,9 @@ function resetDraggableObject(){
 	}
 }		
 		
-function onMouseDownOnLink(evt)
-{
+function onMouseDownOnLink(evt) {
 	resetSelectedObjects();
-	if ((typeof map) == "object")
-	{
+	if ((typeof map) == "object") {
 		// close other menus
 		windowsClean();
 
@@ -290,64 +332,32 @@ function onMouseDownOnLink(evt)
 		var mapLink = map.mapLinks[id];
 		writeTopInfoText(getInfoOnLink(mapLink));
 		
-		if (evt.detail == 2)
-		{			
-			var nodeid1,label1,maplabel1;
-			var nodeid2,label2,maplabel2;
-			// First node
-			var first = mapLink.getMapElement1();
-			var second = mapLink.getMapElement2();
+		if (evt.detail == 2) {			
+			var label = new String();
 
-			if(first.isNode())
-			{
-				nodeid1 = first.getNodeId();
-				label1 = first.getLabel();
-			} else {
-				nodeid1 = mapLink.getFirstNodeId();
-				label1 = nodeidSortAss[nodeid1].getLabel();
-				maplabel1 = first.getLabel();
-			}
+			label += mapLink.getMapElement1().getLabel();
+			label+=" - ";
+			label+= mapLink.getMapElement2().getLabel();
 
-			if(second.isNode())
-			{
-				nodeid2 = second.getNodeId();
-				label2 = second.getLabel();
-					
-			} else {
-				nodeid2 = mapLink.getSecondNodeId();
-				label2 = nodeidSortAss[nodeid2].getLabel();
-				maplabel2 = second.getLabel();
-			}
-//			alert("first:" + maplabel1 + "nodeid1:" + nodeid1 +" ---- second:" + maplabel2 + "nodeid2:" + nodeid2);
 			var x=evt.clientX + 2;
 			var y=evt.clientY + 4;
-			var cm1 =  
-new ContextMenuSimulator(winSvgElement,nodeid1,label1,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
+			var cm=new ContextMenuSimulator(winSvgElement,id,label,x,y,cmwidth,cmsubwidth,cmheight,mapWidth-x,mapHeight-y,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuBarStyle,cmmenuElementMouseStyle,cmdelta);
 
-			x = x + cmwidth + 2;
-			var cm2 =  
-new ContextMenuSimulator(winSvgElement,nodeid2,label2,x,y,cmwidth,cmheight,cmmenuStyle,cmmenuElementStyle,cmmenuElementTextStyle,cmmenuElementMouseStyle,cmdelta);
-			
-			if (first.isMap())
-				cm1.addItem("Mapbase","Map: " + maplabel1, ciao);
-			if (second.isMap())
-				cm2.addItem("Mapbase","Map: " + maplabel2, ciao);
-			
-			cm1.addItem("base",label1, ciao);
-			cm2.addItem("base",label2, ciao);
-			cm1.addItem(label1+"00","-----------------------",ciao);
-			cm2.addItem(label2+"00","-----------------------",ciao);
-			
-			for(var index in CM_COMMANDS){
-				if(CM_COMMANDS[index]=="-"){
-					cm1.addItem(label1+index,"-----------------------",ciao);
-					cm2.addItem(label2+index,"-----------------------",ciao);
-				}else{
+			var addcmbar=true;			
+			for(var index in CM_COMMANDS) {
+				if(CM_COMMANDS[index]=="-") {
+					addcmbar=true;
+				} else {
 					var commandLabel = unescape(CM_COMMANDS[index]);
-					cm1.addItem(index,commandLabel,execSelectedCMAction);
-					cm2.addItem(index,commandLabel,execSelectedCMAction);
+					var nodeids = mapLink.getNodeIds();
+					cm.addSubMenu(index,commandLabel,execSelectedCMActionFromSubMenu,addcmbar,nodeids.length);
+					for (var k in nodeids ) {
+					     var nodeid = nodeids[k];
+						cm.addSubMenuItem(index,nodeid,nodeidSortAss[nodeid].getLabel(),false);
+					}
+					addcmbar=false;
 				}
-			}						
+			}
 		}
 	}		
 }
@@ -474,7 +484,22 @@ function ciao() {
 	return;
 }
 
-function execSelectedCMAction(index,nodeid,nodelabel,evt) {
+function execSelectedCMActionFromSubMenu(index,id,menulabel,nodeid) {
+	if(CM_COMMANDS[index]){
+		var link = CM_LINKS[index];
+		var params = CM_PARAMS[index];				
+		link = link.replace("ELEMENT_ID",""+nodeid);
+		link = link.replace("ELEMENT_LABEL",nodeidSortAss[nodeid].getLabel());
+		link = link.replace("ELEMENT_HOSTNAME",nodeidSortAss[nodeid].getLabel());
+		link = link.replace("ELEMENT_IP",nodeidSortAss[nodeid].getIpAddr());
+		openLink(escape(link),params);
+	} else {
+		alert("Windows Menu Command Error");
+	}
+}
+
+
+function execSelectedCMAction(index,nodeid,nodelabel) {
 	if(CM_COMMANDS[index]){
 		var link = CM_LINKS[index];
 		var params = CM_PARAMS[index];				
@@ -488,12 +513,42 @@ function execSelectedCMAction(index,nodeid,nodelabel,evt) {
 	}
 }
 
-function execLinkCMAction(linkid,sid,label,evt) {
+function execLinkCMAction(linkid,sid,label) {
 	var sLink=map.mapLinks[sid];
 	sLink.switchLink(linkid);
 }
 
-function activateTabMap(id,tabTitle,tabindex) {
+function onClickTab(evt) {
+	var tab = evt.target;
+	var id = tab.getAttributeNS(null,"id");
+	var idArray = id.split("__");
+	var index = parseInt(idArray[1]);
+	mapTabGroup.activateTabByIndex(index);
+	var tabTitle = mapTabGroup.getTabTitleByIndex(index);
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if ( tabTitle == NEW_MAP_NAME ) {
+		newMapSetUp();
+	} else {
+		openMapSetUp(mapSortAss[tabTitle].id,false);
+	}
+}
+
+function onCloseTab(evt) {
+	var tab = evt.target;
+	var id = tab.getAttributeNS(null,"id");
+	var idArray = id.split("__");
+	var index = parseInt(idArray[1]);
+	var tabTitle = mapTabGroup.getTabTitleByIndex(index);
+	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
+	if (mapTabGroup.getActiveTabIndex() == index ) {
+		closeSetUp();
+	} else {
+		mapTabClose(tabTitle);
+	}
+}
+
+function onClosingActiveTab() {
+	var tabTitle = mapTabGroup.getActiveTabTitle();
 	if ( tabTitle == MAP_NOT_OPENED_NAME ) return;
 	if ( tabTitle == NEW_MAP_NAME ) {
 		newMapSetUp();

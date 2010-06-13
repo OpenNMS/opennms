@@ -110,7 +110,7 @@
           </td>
       </table>
       <br/>
-      <form METHOD="POST" NAME="addresses" ACTION="admin/notification/noticeWizard/notificationWizard">
+      <form method="post" name="addresses" action="admin/notification/noticeWizard/notificationWizard">
         <%=Util.makeHiddenTags(request)%>
         <input type="hidden" name="userAction" value=""/>
         <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE%>"/>
@@ -128,8 +128,8 @@
         <table width="100%" cellspacing="2" cellpadding="2" border="0">
          <tr> 
           <td>
-           <a HREF="javascript:rebuild()">&#060;&#060;&#060; Rebuild</a>&nbsp;&nbsp;&nbsp;
-           <a HREF="javascript:next()">Next &#062;&#062;&#062;</a>
+           <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;
+           <a HREF="javascript:next()">Next &#155;&#155;&#155;</a>
           </td>
         </tr>
         </table>
@@ -144,6 +144,9 @@
           StringBuffer buffer = new StringBuffer();
           //Filter filter = new Filter();
           //return filter.getIPServiceMap(rule);
+          
+          // TODO: BUG 2009: Also list node names for each IP address that is selected by the
+          // filter?
           
           Map<String, Set<String>> interfaces = FilterDaoFactory.getInstance().getIPServiceMap(rule);
           

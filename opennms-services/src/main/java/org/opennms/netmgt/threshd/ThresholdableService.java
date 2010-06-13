@@ -45,7 +45,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Package;
@@ -53,8 +53,8 @@ import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
-import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -68,6 +68,12 @@ import org.opennms.netmgt.xml.event.Event;
  * @deprecated Thresholding now done in CollectableService (in colle 
  */
 final class ThresholdableService extends IPv4NetworkInterface implements ThresholdNetworkInterface, ReadyRunnable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2477161545461824755L;
+
+
     /**
      * Interface's parent node identifier
      */
@@ -285,7 +291,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * uei Universal event identifier of event to generate.
      */
     private void sendEvent(String uei) {
-        Category log = log();
+        ThreadCategory log = log();
         Event event = new Event();
         event.setUei(uei);
         event.setNodeid((long) m_nodeId);
@@ -321,7 +327,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * 
      */
     public void run() {
-        Category log = log();
+        ThreadCategory log = log();
 
         // Process any oustanding updates.
         //
@@ -441,7 +447,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      *         (for example due to deletion flag being set), false otherwise.
      */
     private boolean processUpdates() {
-        Category log = log();
+        ThreadCategory log = log();
 
         // All update processing takes place within synchronized block
         // to ensure that no updates are missed.

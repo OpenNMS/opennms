@@ -38,7 +38,6 @@ package org.opennms.netmgt.eventd;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -95,7 +94,7 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

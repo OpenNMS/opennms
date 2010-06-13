@@ -225,10 +225,10 @@ public class LinkableNode extends Object {
 	 * add bridgeport to backbone ports
 	 * @param bridgeport
 	 */
-	void addBackBoneBridgePorts(int bridgeport) {
+	void addBackBoneBridgePorts(final int bridgeport) {
 		if (backBoneBridgePorts.contains(new Integer(bridgeport)))
 			return;
-		backBoneBridgePorts.add(new Integer(bridgeport));
+		backBoneBridgePorts.add(bridgeport);
 	}
 
 	/**
@@ -279,7 +279,7 @@ public class LinkableNode extends Object {
 		}
 		macs.add(macAddress);
 
-		portMacs.put(new Integer(bridgeport), macs);
+		portMacs.put(bridgeport, macs);
 		macsVlan.put(macAddress, vlan);
 	}
 
@@ -324,8 +324,7 @@ public class LinkableNode extends Object {
 
 	int getIfindex(int bridgeport) {
 		if (bridgePortIfindex.containsKey(new Integer(bridgeport))) {
-			Integer ifindex = bridgePortIfindex.get(new Integer(
-					bridgeport));
+		    final Integer ifindex = bridgePortIfindex.get(bridgeport);
 			return ifindex.intValue();
 		}
 		return -1;

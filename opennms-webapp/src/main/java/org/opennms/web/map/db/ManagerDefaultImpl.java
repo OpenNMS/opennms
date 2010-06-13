@@ -41,6 +41,8 @@
 
 package org.opennms.web.map.db;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
@@ -49,12 +51,13 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -132,7 +135,11 @@ public class ManagerDefaultImpl implements Manager {
 
     boolean adminMode = false;
 
-    private Category log = null;
+    private ThreadCategory log = null;
+    
+    private List<VElementInfo> elemInfo = new ArrayList<VElementInfo>();
+
+    private List<VMapInfo> mapInfo = new ArrayList<VMapInfo>();
 
     public String getFilter() {
         return filter;
@@ -576,7 +583,8 @@ public class ManagerDefaultImpl implements Manager {
                 }
             }
         }
-        return maps;
+        mapInfo = maps;
+        return mapInfo;
     }
 
     /**
@@ -905,9 +913,6 @@ public class ManagerDefaultImpl implements Manager {
     public boolean foundLoopOnMaps(VMap parentMap, int mapId)
             throws MapsException {
 
-        ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(this.getClass());
-
         java.util.Map<Integer, Set<Integer>> maps = dbManager.getMapsStructure();
         Set<Integer> childSet = new TreeSet<Integer>();
         for (VElement elem : parentMap.getElements().values()) {
@@ -958,7 +963,8 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     public List<VElementInfo> getElementInfo() throws MapsException {
-        return dbManager.getAllElementInfo();
+        elemInfo=  dbManager.getAllElementInfo();
+        return elemInfo;
     }
 
     public org.opennms.web.map.db.Manager getDataAccessManager() {
@@ -1227,6 +1233,9 @@ public class ManagerDefaultImpl implements Manager {
             return null;
         String multilinkStatus = mapsPropertiesFactory.getMultilinkStatus();
         List<VLink> links = new ArrayList<VLink>();
+        Map<String,List<VLink>> singlevlinkmap = new HashMap<String,List<VLink>>();
+        Map<String,VLink> multivlinkmap = new HashMap<String,VLink>();
+        Map<String,Integer> numberofsinglelinksmap = new HashMap<String,Integer>();
 
         java.util.Map<Integer, Set<VElement>> node2Element = new HashMap<Integer, Set<VElement>>();
 
@@ -1256,14 +1265,43 @@ public class ManagerDefaultImpl implements Manager {
                         continue;
                     }
                     
-                    VLink vlink = new VLink(first.getId(), first.getType(),
-                                            second.getId(), second.getType(), getLinkTypeId(linfo));
                     int status=getLinkStatus(linfo);
                     String statusString = getLinkStatusString(status);
-                    int index = links.indexOf(vlink);
+ 
+                    VLink vlink = new VLink(first.getId(), first.getType(),
+                                            second.getId(), second.getType(), getLinkTypeId(linfo));
+                    vlink.setLinkStatusString(statusString);
+                    vlink.increaseStatusMapLinks(statusString);
+                    Set<Integer> nodeids=vlink.getNodeids();
+                    nodeids.add(linfo.nodeid);
+                    nodeids.add(linfo.nodeparentid);
+                    vlink.setNodeids(nodeids);
+                    log.debug("adding new link as single link: " + vlink.toString());
                     
-                    if (index != -1) {
-                        VLink alreadyIn = links.get(index);
+                    List<VLink> templinks=null;
+                    if (singlevlinkmap.containsKey(vlink.getId())) {
+                        templinks=singlevlinkmap.get(vlink.getId());
+                    } else {
+                        templinks = new ArrayList<VLink>();
+                    }
+                    templinks.add(vlink);
+                    singlevlinkmap.put(vlink.getId(), templinks);
+                    
+                    int numberofelement=1;
+                    if (numberofsinglelinksmap.containsKey(vlink.getIdWithoutLinkType())) {
+                        numberofelement = numberofsinglelinksmap.get(vlink.getIdWithoutLinkType());
+                        numberofelement++;
+                    }
+                    numberofsinglelinksmap.put(vlink.getIdWithoutLinkType(), numberofelement);
+                    log.debug("updated link counter between elements: " + vlink.getIdWithoutLinkType() + " Found #" + numberofelement);
+
+
+                    VLink vmultilink = new VLink(first.getId(), first.getType(),
+                                                 second.getId(), second.getType(), getLinkTypeId(linfo));
+                    vmultilink.setLinkStatusString(statusString);
+                    vmultilink.increaseStatusMapLinks(statusString);
+                    if (multivlinkmap.containsKey(vmultilink.getId())) {
+                        VLink alreadyIn = multivlinkmap.get(vmultilink.getId());
                         int numberOfLinks = alreadyIn.increaseLinks();
                         log.debug("Updated " + numberOfLinks + " on Link: " + alreadyIn.getId());
                         int numberOfLinkwithStatus = alreadyIn.increaseStatusMapLinks(statusString);
@@ -1282,25 +1320,53 @@ public class ManagerDefaultImpl implements Manager {
                                   + alreadyIn.getLinkStatusString());
 
                             log.debug("setting link properties: "
-                                  + vlink.toString()
+                                  + vmultilink.toString()
                                   + " with new found status "
-                                  + vlink.getLinkStatusString());
+                                  + vmultilink.getLinkStatusString());
                             alreadyIn.setLinkStatusString(statusString);
-                            alreadyIn.setFirstNodeid(linfo.nodeid);
-                            alreadyIn.setSecondNodeid(linfo.nodeparentid);
                         }
-                        links.set(index,alreadyIn);
+                        nodeids=alreadyIn.getNodeids();
+                        nodeids.add(linfo.nodeid);
+                        nodeids.add(linfo.nodeparentid);
+                        alreadyIn.setNodeids(nodeids);
+                        log.debug("updating multi link: " + alreadyIn.toString());
+                        multivlinkmap.put(alreadyIn.getId(),alreadyIn);
                     } else {
-                        log.debug("adding new link: " + vlink.getId() );
-                        vlink.setLinkStatusString(statusString);
-                        vlink.increaseStatusMapLinks(statusString);
-                        vlink.setFirstNodeid(linfo.nodeid);
-                        vlink.setSecondNodeid(linfo.nodeparentid);
-                        links.add(vlink);
+                        Set<Integer> vmnodeids=vmultilink.getNodeids();
+                        vmnodeids.add(linfo.nodeid);
+                        vmnodeids.add(linfo.nodeparentid);
+                        vmultilink.setNodeids(vmnodeids);
+                        log.debug("adding multi link: " + vmultilink.toString());
+                        multivlinkmap.put(vmultilink.getId(),vmultilink);
                     }
                 } // end second element for
             } //end first element for
         } // end linkinfo for
+        // Now add the VLink to links......
+        int maxlinks=mapsPropertiesFactory.getMaxLinks();
+        for (String elid : numberofsinglelinksmap.keySet()) {
+            log.debug("parsing link between element: " + elid + " with #links " + numberofsinglelinksmap.get(elid));
+            if (numberofsinglelinksmap.get(elid) <= maxlinks) {
+                for (String linkid : singlevlinkmap.keySet()) {
+                    if (linkid.indexOf(elid) != -1) {
+                        log.debug("adding single links for " + linkid + " Adding links # " + singlevlinkmap.get(linkid).size());
+                        links.addAll(singlevlinkmap.get(linkid));
+                    }
+                }
+            } else {
+                for (String linkid : multivlinkmap.keySet()) {
+                    if (linkid.indexOf(elid) != -1) { 
+                        log.debug("adding multi link for : " + linkid);
+                        links.add(multivlinkmap.get(linkid));
+                    }
+                }
+                
+            }
+        }
+        log.debug("Found links #" + links.size());
+        for (VLink vlink : links) {
+            log.debug(vlink.toString());
+        }
         return links;
     }
 
@@ -1384,24 +1450,51 @@ public class ManagerDefaultImpl implements Manager {
 
     public java.util.Map<String, Set<Integer>> getNodeLabelToMaps(String user)
             throws MapsException {
-        List<Integer> maps = new ArrayList<Integer>();
-        for (VMapInfo mapinfo : getMapsMenuByuser(user)) {
-            maps.add(new Integer(mapinfo.getId()));
+        Map<Integer,String> maps = new HashMap<Integer,String>();
+        for (VMapInfo mapinfo :mapInfo) {
+            maps.put(new Integer(mapinfo.getId()),mapinfo.getName());
+        }
+        Map<Integer,String> elemInfoMap = new HashMap<Integer,String>();
+        for (VElementInfo elem: elemInfo) {
+            elemInfoMap.put(elem.getId(), elem.getLabel());
         }
         DbElement[] elems = dbManager.getAllElements();
         java.util.Map<String, Set<Integer>> nodelabelMap = new HashMap<String, Set<Integer>>();
         for (int i = 0; i < elems.length; i++) {
             DbElement elem = elems[i];
+            Integer mapId = new Integer(elem.getMapId());
+            if (!maps.containsKey(mapId))
+                continue;
+
             String label = elem.getLabel();
             log.debug("getNodeLabelToMaps: found element with label: "
                     + label);
-            Integer mapId = new Integer(elem.getMapId());
-            if (!elem.isNode())
-                continue;
-            if (!maps.contains(mapId))
-                continue;
-
             Set<Integer> mapids = null;
+            if (nodelabelMap.containsKey(label)) {
+                mapids = nodelabelMap.get(label);
+            } else {
+                mapids = new TreeSet<Integer>();
+            }
+            mapids.add(mapId);
+            nodelabelMap.put(label, mapids);
+            // Adding the MapName if is a map
+            if (elem.isMap()) {
+                String mapName=maps.get(elem.getId());
+                if (mapName.equals(label))
+                    continue;
+                else
+                    label=mapName;
+                log.debug("getNodeLabelToMaps: found map with name: "
+                          + label);
+            } else {
+                String nodename=elemInfoMap.get(elem.getId());
+                if (nodename.equals(label))
+                    continue;
+                else
+                    label=nodename;
+                log.debug("getNodeLabelToMaps: found node with name: "
+                          + label);
+            }
             if (nodelabelMap.containsKey(label)) {
                 mapids = nodelabelMap.get(label);
             } else {
@@ -1440,6 +1533,8 @@ public class ManagerDefaultImpl implements Manager {
         inObj.setSummaryLink(mapsPropertiesFactory.getSummaryLink());
         inObj.setSummaryLinkColor(mapsPropertiesFactory.getSummaryLinkColor());
         inObj.setUseSemaphore(mapsPropertiesFactory.isUseSemaphore());
+        inObj.setMultilinkStatus(mapsPropertiesFactory.getMultilinkStatus());
+        inObj.setMultilinkIgnoreColor(mapsPropertiesFactory.getMultilinkIgnoreColor());
         return inObj;
     }
 
@@ -1462,5 +1557,15 @@ public class ManagerDefaultImpl implements Manager {
         }            
         map.addLinks(getLinks(map.getElements().values()));
         return map;
+    }
+
+    public void reloadConfig() throws MapsException {
+        try {
+            mapsPropertiesFactory.reload(true);
+        } catch (FileNotFoundException e) {
+            throw new MapsException(e);
+        } catch (IOException e) {
+            throw new MapsException(e);
+        }
     }
 }

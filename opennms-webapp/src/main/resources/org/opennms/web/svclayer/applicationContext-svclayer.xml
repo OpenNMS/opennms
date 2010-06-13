@@ -46,9 +46,7 @@
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao" />
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao" />
  
-  <bean id="eventProxy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.web.Util.createEventProxy</value></property>
-  </bean>
+  <bean id="eventProxy" class="org.opennms.web.Util" factory-method="createEventProxy"/>
  
   <bean id="pollerApi" class="org.opennms.web.services.DefaultPollerService">
     <property name="eventProxy" ref="eventProxy"></property>
@@ -182,9 +180,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
   </bean>
 
-  <bean id="kscReportFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="kscReportFactory-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.getInstance</value></property>
-  </bean>
+  <bean id="kscReportFactory" class="org.opennms.netmgt.config.KSC_PerformanceReportFactory" depends-on="kscReportFactory-init" factory-method="getInstance"/>
   
   <bean id="kscReportService" class="org.opennms.web.svclayer.support.DefaultKscReportService">
     <property name="resourceService" ref="resourceService"/>
@@ -195,10 +191,8 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
   </bean>
 
-  <bean id="groupManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="groupManager-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.getInstance</value></property>
-  </bean>
-  
+  <bean id="groupManager" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupManager-init" factory-method="getInstance"/>
+
   <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
     <property name="groupManager" ref="groupManager"/>
   </bean>
@@ -207,12 +201,8 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
   </bean>
 
-  <bean id="userManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="userManager-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.getInstance</value></property>
-  </bean>
-  
+  <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
 
-  
   <!-- Availability Report Beans -->
   
   <bean id="categoryConfigService" class="org.opennms.web.svclayer.support.DefaultCategoryConfigService">

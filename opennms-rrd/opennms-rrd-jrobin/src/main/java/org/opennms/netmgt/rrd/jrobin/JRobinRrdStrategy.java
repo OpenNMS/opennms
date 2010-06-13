@@ -50,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -398,11 +397,11 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
             } else if (arg.startsWith("--width=")) {
                 String[] argParm = tokenize(arg, "=", true);
                 width = Integer.parseInt(argParm[1]);
-                log().debug("JRobin width: "+height);
+                log().debug("JRobin width: "+width);
             } else if (arg.equals("--width")) {
                 if (i + 1 < commandArray.length) {
                     width = Integer.parseInt(commandArray[++i]);
-                    log().debug("JRobin width: "+height);
+                    log().debug("JRobin width: "+width);
                 } else {
                     throw new IllegalArgumentException("--width must be followed by a number");
                 }
@@ -683,7 +682,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         return ".jrb";
     }
 
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -705,7 +704,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @return
      */
     public static String[] tokenizeWithQuotingAndEscapes(final String line, final String delims, final boolean processQuoted, final String tokens) {
-        Category log = ThreadCategory.getInstance(StringUtils.class);
+        ThreadCategory log = ThreadCategory.getInstance(StringUtils.class);
         List<String> tokenList = new LinkedList<String>();
     
         StringBuffer currToken = new StringBuffer();

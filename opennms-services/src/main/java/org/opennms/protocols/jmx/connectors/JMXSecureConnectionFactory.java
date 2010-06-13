@@ -25,7 +25,7 @@ import org.opennms.core.utils.ThreadCategory;
 
 public class JMXSecureConnectionFactory
 {
-    static Category log = ThreadCategory.getInstance(JMXSecureConnectionFactory.class);
+    static ThreadCategory log = ThreadCategory.getInstance(JMXSecureConnectionFactory.class);
 
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address)
     {

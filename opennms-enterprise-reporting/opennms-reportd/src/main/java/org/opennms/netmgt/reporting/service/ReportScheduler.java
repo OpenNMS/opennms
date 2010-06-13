@@ -40,7 +40,7 @@ public class ReportScheduler implements InitializingBean {
         try {
             getScheduler().setJobFactory(getReportJobFactory());
         } catch (SchedulerException e) {
-            LogUtils.errorf(this,"afterPropertiesSet: couldn't set proper JobFactory for scheduler: "+e, e);
+            LogUtils.errorf(this, e, "afterPropertiesSet: couldn't set proper JobFactory for scheduler: %s", e.getMessage());
         }
     }
 
@@ -68,7 +68,7 @@ public class ReportScheduler implements InitializingBean {
                 printCurrentSchedule();
 
             } catch (DataAccessResourceFailureException e) {
-                LogUtils.errorf(this,"rebuildReportSchedule: "+e.getLocalizedMessage(),e);
+                LogUtils.errorf(this, e, "rebuildReportSchedule: %s", e.getMessage());
                 throw new IllegalStateException(e);
 
             } 
@@ -83,11 +83,11 @@ public class ReportScheduler implements InitializingBean {
         try {
             
             
-            LogUtils.infof(this,"calendarNames: "+ StringUtils.arrayToCommaDelimitedString(getScheduler().getCalendarNames()));
-            LogUtils.infof(this,"current executing jobs: "+StringUtils.arrayToCommaDelimitedString(getScheduler().getCurrentlyExecutingJobs().toArray()));
-            LogUtils.infof(this,"current job names: "+StringUtils.arrayToCommaDelimitedString(getScheduler().getJobNames(JOB_GROUP)));
-            LogUtils.infof(this,"scheduler metadata: "+getScheduler().getMetaData());
-            LogUtils.infof(this,"trigger names: "+StringUtils.arrayToCommaDelimitedString(getScheduler().getTriggerNames(JOB_GROUP)));
+            LogUtils.infof(this,"calendarNames: %s", StringUtils.arrayToCommaDelimitedString(getScheduler().getCalendarNames()));
+            LogUtils.infof(this,"current executing jobs: %s", StringUtils.arrayToCommaDelimitedString(getScheduler().getCurrentlyExecutingJobs().toArray()));
+            LogUtils.infof(this,"current job names: %s", StringUtils.arrayToCommaDelimitedString(getScheduler().getJobNames(JOB_GROUP)));
+            LogUtils.infof(this,"scheduler metadata: %s", getScheduler().getMetaData());
+            LogUtils.infof(this,"trigger names: %s", StringUtils.arrayToCommaDelimitedString(getScheduler().getTriggerNames(JOB_GROUP)));
 
             Iterator<String> it = Arrays.asList(getScheduler().getTriggerNames(JOB_GROUP)).iterator();
             while (it.hasNext()) {
@@ -113,7 +113,7 @@ public class ReportScheduler implements InitializingBean {
             }
 
         } catch (Exception e) {
-            LogUtils.errorf(this, "printCurrentSchedule: "+e.getLocalizedMessage(), e);
+            LogUtils.errorf(this, e, "printCurrentSchedule: %s", e.getMessage());
         }
 
         
@@ -135,9 +135,9 @@ public class ReportScheduler implements InitializingBean {
                     getScheduler().scheduleJob(detail, trigger);
 
                 } catch (ParseException e) {
-                    LogUtils.errorf(this, "buildReportSchedule: "+e.getLocalizedMessage(), e);
+                    LogUtils.errorf(this, e, "buildReportSchedule: %s", e.getMessage());
                 } catch (SchedulerException e) {
-                    LogUtils.errorf(this, "buildReportSchedule: "+e.getLocalizedMessage(), e);
+                    LogUtils.errorf(this, e, "buildReportSchedule: %s", e.getMessage());
                 }
             }
         }
@@ -156,7 +156,7 @@ public class ReportScheduler implements InitializingBean {
             }
         
             } catch (SchedulerException e) {
-                    LogUtils.errorf(this, "removeCurrentJobsFromSchedule: "+e.getLocalizedMessage(), e);
+                    LogUtils.errorf(this, e, "removeCurrentJobsFromSchedule: %s", e.getMessage());
                 }
             }        
     }

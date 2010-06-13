@@ -38,7 +38,6 @@
 
 package org.opennms.netmgt.eventd.adaptors;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.management.InstanceNotFoundException;
@@ -47,6 +46,7 @@ import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
@@ -64,58 +64,72 @@ public class EventHandlerMBeanProxy implements EventHandler {
     private ObjectName m_listener;
 
     private void findServer() throws InstanceNotFoundException {
-        List<MBeanServer> servers = MBeanServerFactory.findMBeanServer(null);
-        Iterator<MBeanServer> i = servers.iterator();
-        while (i.hasNext()) {
+        
+        for (final MBeanServer sx : findMBeanServers()) {
             try {
-                MBeanServer sx = i.next();
                 if (sx.getObjectInstance(m_listener) != null) {
                     m_mbserver = sx;
                     break;
                 }
-            } catch (InstanceNotFoundException e) {
+            } catch (final InstanceNotFoundException e) {
                 // do nothing
             }
         }
-        if (m_mbserver == null)
+        if (m_mbserver == null) {
             throw new InstanceNotFoundException("could not locate mbean server instance");
+        }
+        
     }
 
-    public EventHandlerMBeanProxy(String name) throws MalformedObjectNameException, InstanceNotFoundException {
+    @SuppressWarnings("unchecked")
+    private List<MBeanServer> findMBeanServers() {
+        // In java 1.5 this returns a generic ArrayList
+        return MBeanServerFactory.findMBeanServer(null);
+    }
+
+    public EventHandlerMBeanProxy(final String name) throws MalformedObjectNameException, InstanceNotFoundException {
         m_listener = new ObjectName(name);
         findServer();
     }
 
-    public EventHandlerMBeanProxy(ObjectName name) throws InstanceNotFoundException {
+    public EventHandlerMBeanProxy(final ObjectName name) throws InstanceNotFoundException {
         m_listener = name;
         findServer();
     }
 
-    public EventHandlerMBeanProxy(ObjectName name, MBeanServer server) {
+    public EventHandlerMBeanProxy(final ObjectName name, final MBeanServer server) {
         m_listener = name;
         m_mbserver = server;
     }
 
-    public boolean processEvent(Event event) {
+    public boolean processEvent(final Event event) {
         boolean result = false;
         try {
-            Boolean r = (Boolean) m_mbserver.invoke(m_listener, "processEvent", new Object[] { event }, new String[] { "org.opennms.netmgt.xml.event.Event" });
-            result = r.booleanValue();
-        } catch (Throwable t) {
+            result = (Boolean) m_mbserver.invoke(m_listener, "processEvent", new Object[] { event }, new String[] { "org.opennms.netmgt.xml.event.Event" });
+        } catch (final Throwable t) {
             ThreadCategory.getInstance(getClass()).warn("Invocation on object " + m_listener + " failed", t);
         }
 
         return result;
     }
 
-    public void receiptSent(EventReceipt receipt) {
+    public void receiptSent(final EventReceipt receipt) {
         try {
             m_mbserver.invoke(m_listener, "receiptSent", new Object[] { receipt }, new String[] { "org.opennms.netmgt.xml.event.EventReceipt" });
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             ThreadCategory.getInstance(getClass()).warn("Invocation on object " + m_listener + " failed", t);
         }
     }
 
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(9, 13)
+            .append(m_mbserver)
+            .append(m_listener)
+            .toHashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         boolean rc = false;
         if (this == obj) {

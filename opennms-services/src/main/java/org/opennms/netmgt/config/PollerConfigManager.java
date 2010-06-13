@@ -53,8 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -406,7 +404,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         return ipList;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 
@@ -439,7 +437,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      *         otherwise.
      */
     public synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        Category log = log();
+        ThreadCategory log = log();
     
         boolean filterPassed = false;
     
@@ -804,7 +802,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return
      */
     private synchronized void createServiceMonitors() {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
     
         // Load up an instance of each monitor from the config
         // so that the event processor will have them for
@@ -819,7 +817,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             try {
                 m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor());
             } catch (Throwable t) {
-                if (log.isEnabledFor(Level.WARN)) {
+                if (log.isEnabledFor(ThreadCategory.Level.WARN)) {
                     log.warn("start: Failed to create monitor " + locator.getServiceLocatorKey() + " for service " + locator.getServiceName(), t);
                 }
             }

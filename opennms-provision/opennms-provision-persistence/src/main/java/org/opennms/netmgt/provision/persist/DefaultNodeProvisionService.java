@@ -2,7 +2,6 @@ package org.opennms.netmgt.provision.persist;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -151,7 +150,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         m_eventForwarder = new TransactionAwareEventForwarder(proxyForwarder);
     }
 
-    protected Category log() {
+    protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

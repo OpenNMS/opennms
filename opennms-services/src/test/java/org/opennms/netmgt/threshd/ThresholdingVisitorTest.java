@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.easymock.EasyMock;
@@ -121,8 +120,9 @@ public class ThresholdingVisitorTest {
         // Resets Counters Cache Data
         System.setProperty("org.opennms.thresholds.filtersReloadEnabled", "false");
         CollectionResourceWrapper.s_cache.clear();
-        
-        m_defaultErrorLevelToCheck = Level.WARN;
+
+        // This is set at ERROR because JEXL prints some harmless, expected warning messages
+        m_defaultErrorLevelToCheck = Level.ERROR;
         System.setProperty("mock.logLevel", "DEBUG");
         MockLogAppender.setupLogging();
 
@@ -1531,7 +1531,7 @@ public class ThresholdingVisitorTest {
         return path.delete();
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

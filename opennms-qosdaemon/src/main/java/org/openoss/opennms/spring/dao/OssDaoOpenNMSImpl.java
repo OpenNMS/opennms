@@ -81,8 +81,8 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
 	 */
-	private static Logger getLog() {
-		return (Logger)ThreadCategory.getInstance(OssDaoOpenNMSImpl.class);	
+	private static ThreadCategory getLog() {
+		return ThreadCategory.getInstance(OssDaoOpenNMSImpl.class);	
 	}
 
 	// ****************
@@ -206,7 +206,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 
 	public synchronized OnmsAlarm addCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 
 		if ((alarm==null)||(alarm.getId()!=null)) 
 			throw new IllegalArgumentException("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey(): Illegal value: alarm==null or alarmID!=null");
@@ -266,7 +266,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#updateCurrentAlarmForUniqueKey(org.opennms.netmgt.model.OnmsAlarm)
 	 */
 	public synchronized OnmsAlarm updateCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 
 		if ((alarm==null)||(alarm.getId()==null)) 
 			throw new IllegalArgumentException("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey(): Illegal value: alarm==null or alarmID==null");
@@ -323,7 +323,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#getCurrentAlarmForUniqueKey(java.lang.String, java.lang.String)
 	 */
 	public synchronized OnmsAlarm getCurrentAlarmForUniqueKey(String applicationDN , String ossPrimaryKey){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 
 		if ((applicationDN==null)||(applicationDN.equals(""))) 
 			throw new IllegalArgumentException("OssDaoOpenNMSImpl().getCurrentAlarmForUniqueKey(): Illegal value: alarm ApplicationDN null or empty ");
@@ -361,7 +361,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * method to run in transaction to update from database
 	 */
 	private void localUpdateAlarmCacheTransaction(){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 
 
 		Collection<OnmsAlarm> c = _alarmDao.findAll();
@@ -434,7 +434,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @throws an IllegalStateException if qoSD not running.
 	 */
 	private void sendAlarms(){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		if ( qoSD!=null){
 			try{
 				qoSD.sendAlarms();
@@ -455,7 +455,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * Not Thread Safe - only to be called from within the synchronised methods
 	 */
 	private OnmsAlarm searchAlarmCacheForUniqueKey(String applicationDN , String ossPrimaryKey) {
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 
 		String uniqueKey=applicationDN+ossPrimaryKey;
 		OnmsAlarm alarm=(OnmsAlarm)alarmCacheByUniqueKey.get(uniqueKey);
@@ -543,7 +543,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByLabel(java.lang.String)
 	 */
 	public OnmsNode findNodeByLabel(String label) {
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 
 		if (label==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByLabel: Illegal value: label null or empty ");
 		OnmsNode node=null;
@@ -560,7 +560,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByInstanceAndType(java.lang.String, java.lang.String)
 	 */
 	public OnmsNode findNodeByInstanceAndType(String managedObjectInstance, String managedObjectType) throws IllegalArgumentException{
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		if (managedObjectInstance==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByInstanceType: Illegal value: managedObjectInstance null");
 		if (managedObjectType==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByInstanceType: Illegal value: label managedObjectType null");
 
@@ -581,14 +581,12 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByID(java.lang.Integer)
 	 */
 	public OnmsNode findNodeByID(Integer nodeid){
-		Logger log = getLog();	
-
 		if (nodeid==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByLabel: Illegal value: nodeid null or empty ");
 		OnmsNode node=null;
 		try {
 			node = (OnmsNode)this.nodeCacheByID.get(nodeid);
 		} catch (Exception ex){
-			log.error("\tOssDaoOpenNMSImpl().findNodeByLabel ERROR : ", ex);
+			getLog().error("\tOssDaoOpenNMSImpl().findNodeByLabel ERROR : ", ex);
 		}
 		return node; //null if not found
 	}
@@ -607,7 +605,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 * Not Thread Safe - only to be called from within the synchronised methods
 	 */
 	private void localUpdateNodeCaches(){
-		Logger log = getLog();	
+		ThreadCategory log = getLog();	
 		try{
 			nodeCacheByID.clear();
 			nodeCacheByLabel.clear();

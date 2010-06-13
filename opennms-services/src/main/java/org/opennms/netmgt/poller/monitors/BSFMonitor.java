@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
@@ -24,7 +26,7 @@ public class BSFMonitor extends IPv4Monitor {
     
     @SuppressWarnings("unchecked")
     
-    public PollStatus poll(MonitoredService svc, Map map) {
+    public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
         BSFManager bsfManager = new BSFManager();
         PollStatus pollStatus = PollStatus.unavailable();
         String fileName = ParameterMap.getKeyedString(map,"file-name", null);
@@ -44,7 +46,7 @@ public class BSFMonitor extends IPv4Monitor {
             
             if(file.exists() && file.canRead()){   
                     String code = IOUtils.getStringFromReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-                    String status = new String();
+                    String status = null;
                     
                     bsfManager.declareBean("map", map, Map.class);
                     bsfManager.declareBean("ip_addr",svc.getIpAddr(),String.class);
@@ -52,13 +54,13 @@ public class BSFMonitor extends IPv4Monitor {
                     bsfManager.declareBean("node_label", svc.getNodeLabel(), String.class);
                     bsfManager.declareBean("svc_name", svc.getSvcName(), String.class);
         
-                    for(Object obj : map.keySet()){
-                        bsfManager.declareBean(obj.toString(),map.get(obj),String.class);
+                    for (final Entry<String, Object> entry : map.entrySet()) {
+                        bsfManager.declareBean(entry.getKey(),entry.getValue(),String.class);
                     }
                     
                     status = bsfManager.eval(lang, "BSFMonitor", 0, 0, code).toString();
                     
-                    if(status=="OK"){
+                    if("OK".equals(status)){
                         pollStatus = PollStatus.available();
                     } else {
                         pollStatus = PollStatus.unavailable(status);

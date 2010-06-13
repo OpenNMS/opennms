@@ -11,26 +11,6 @@
   <tx:annotation-driven />
   <context:annotation-config/>
   
-  <context:property-placeholder location="file:${opennms.home}/etc/model-importer.properties" />
-
-<!-- 
-  <bean id="importThreads" class="java.lang.Integer">
-    <constructor-arg><value>${importer.importThreads}</value></constructor-arg>
-  </bean>
-  
-  <bean id="scanThreads" class="java.lang.Integer">
-    <constructor-arg><value>${importer.scanThreads}</value></constructor-arg>
-  </bean>
-  
-  <bean id="writeThreads" class="java.lang.Integer">
-    <constructor-arg><value>${importer.writeThreads}</value></constructor-arg>
-  </bean>
-  
-  <bean id="rescanThreads" class="java.lang.Integer">
-    <constructor-arg><value>10</value></constructor-arg>
-  </bean>
--->
-  
   <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
   </bean>
@@ -69,6 +49,7 @@
   </bean>
   
   <bean id="taskCoordinator" class="org.opennms.core.tasks.DefaultTaskCoordinator">
+    <constructor-arg value="Provisiond" />
   	<property name="defaultExecutor" value="scan" />
   	<property name="executors">
   		<map>
@@ -106,6 +87,7 @@
                     </list>
                 </constructor-arg>
             </bean>
+<!--
             <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
                 <constructor-arg value="nodeScan" />
                 <constructor-arg>
@@ -146,6 +128,7 @@
                     </list>
                 </constructor-arg>
             </bean>
+-->
   		</list>
   	</property>
   </bean> 
@@ -160,9 +143,6 @@
     <constructor-arg ref="provisionService" />
   </bean>
   
-  <!--  autowired -->
-  <bean id="coreScanActivities" class="org.opennms.netmgt.provision.service.CoreScanActivities" />
-
   <bean id="adapterManager" class="org.opennms.netmgt.provision.service.ProvisioningAdapterManager" >
     <property name="pluginRegistry" ref="pluginRegistry" />
   </bean>
@@ -173,21 +153,20 @@
     <property name="lifeCycleRepository" ref="lifeCycleRepository" />
     <property name="scheduledExecutor" ref="scheduledExecutor" />
     <property name="importSchedule" ref="provisiondImportSchedule" />
-    <property name="providers">
-    	<list>
-            <ref bean="coreImportActivities" />
-            <ref bean="coreScanActivities" />
-    	</list>
-    </property>
+    <property name="importActivities" ref="coreImportActivities" />
+    <property name="taskCoordinator" ref="taskCoordinator" />
+    <property name="agentConfigFactory" ref="snmpPeerFactory" />
   </bean>
   
   <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
+    <property name="logPrefix" value="Provisiond" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
  
   <bean id="adapterManagerListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="adapterManager" />
+    <property name="logPrefix" value="Provisiond" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 

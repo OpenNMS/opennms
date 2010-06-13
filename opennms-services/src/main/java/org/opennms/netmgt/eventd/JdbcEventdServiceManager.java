@@ -43,7 +43,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
@@ -86,7 +85,7 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
                 }
             }
             
-            m_serviceMap.put(serviceName, new Integer(serviceId));
+            m_serviceMap.put(serviceName, serviceId);
             
             log().debug("Found entry for '" + serviceName + "' (ID " + serviceId + ") in database.  Adding to service name cache.");
             
@@ -102,12 +101,12 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
         
         new JdbcTemplate(m_dataSource).query(EventdConstants.SQL_DB_SVC_TABLE_READ, new RowCallbackHandler() {
             public void processRow(ResultSet resultSet) throws SQLException {
-                m_serviceMap.put(resultSet.getString(2), new Integer(resultSet.getInt(1)));
+                m_serviceMap.put(resultSet.getString(2), resultSet.getInt(1));
             }
         });
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

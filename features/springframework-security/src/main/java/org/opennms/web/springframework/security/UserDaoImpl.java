@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.GroupFactory;
@@ -430,7 +429,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
     /**
      * Returns the Log4J category for logging web authentication messages.
      */
-    private final Category log() {
+    private final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

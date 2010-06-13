@@ -51,7 +51,6 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
@@ -257,7 +256,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     public Integer getPort() {
-        return new Integer(m_dgPort);
+        return m_dgPort;
     }
 
     /**
@@ -315,7 +314,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

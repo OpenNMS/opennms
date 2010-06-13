@@ -54,7 +54,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -136,7 +135,7 @@ public final class LdapPlugin extends AbstractPlugin {
      *         otherwise
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
 
@@ -251,7 +250,7 @@ public final class LdapPlugin extends AbstractPlugin {
 
         for (int i = 0; i < ports.length; i++) {
             if (isServer(address, ports[i], retries, timeout)) {
-                qualifiers.put("port", new Integer(ports[i]));
+                qualifiers.put("port", ports[i]);
                 return true;
             }
         }

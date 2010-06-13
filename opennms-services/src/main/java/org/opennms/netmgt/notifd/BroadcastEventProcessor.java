@@ -57,7 +57,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
@@ -323,7 +322,7 @@ public final class BroadcastEventProcessor implements EventListener {
         return isPathOk;
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -788,7 +787,7 @@ public final class BroadcastEventProcessor implements EventListener {
      *            a map that will supply the substitution values
      */
     public static String expandNotifParms(final String input, final Map<String, String> paramMap) {
-        String expanded = new String(input);
+        String expanded = input;
 
         if (m_expandRE.match(expanded)) {
             String key = m_expandRE.getParen(1);

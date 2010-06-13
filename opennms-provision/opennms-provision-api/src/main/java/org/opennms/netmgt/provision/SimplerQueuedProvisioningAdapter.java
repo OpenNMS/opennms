@@ -31,7 +31,6 @@ package org.opennms.netmgt.provision;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 
@@ -115,7 +114,7 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
     public void doNotifyConfigChange(int nodeid) {}
     
     
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(SimplerQueuedProvisioningAdapter.class);
     }
 

@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -48,7 +47,7 @@ public class NSClientCollector implements ServiceCollector {
     // copy and the key won't require the service name as part of the key.
     private final HashMap<Integer, NSClientAgentState> m_scheduledNodes = new HashMap<Integer, NSClientAgentState>();
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -367,7 +366,7 @@ public class NSClientCollector implements ServiceCollector {
 
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         log().debug("initialize: Initializing NSClient collection for agent: " + agent);
-        Integer scheduledNodeKey = new Integer(agent.getNodeId());
+        Integer scheduledNodeKey = agent.getNodeId();
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
 
         if (nodeState != null) {
@@ -392,8 +391,8 @@ public class NSClientCollector implements ServiceCollector {
         m_scheduledNodes.clear();
     }
 
-    public void release(CollectionAgent agent) {
-        Integer scheduledNodeKey = new Integer(agent.getNodeId());
+    public void release(final CollectionAgent agent) {
+        final Integer scheduledNodeKey = agent.getNodeId();
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
         if (nodeState != null) {
             m_scheduledNodes.remove(scheduledNodeKey);

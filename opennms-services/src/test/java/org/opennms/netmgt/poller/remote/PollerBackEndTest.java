@@ -79,7 +79,6 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.test.ThrowableAnticipator;
 import org.quartz.Scheduler;
 
 public class PollerBackEndTest extends TestCase {
@@ -411,10 +410,11 @@ public class PollerBackEndTest extends TestCase {
         assertEquals(m_startTime, config.getConfigurationTimestamp());
         assertNotNull(config.getPolledServices());
         assertEquals(2, config.getPolledServices().length);
-        assertEquals(m_httpService.getServiceName(), config.getPolledServices()[0].getSvcName());
-        assertEquals(m_dnsService.getServiceName(), config.getPolledServices()[1].getSvcName());
-        assertEquals(5678, config.getPolledServices()[1].getPollModel().getPollInterval());
-        assertTrue(config.getPolledServices()[1].getMonitorConfiguration().containsKey("hostname"));
+        //Because the config is sorted DNS will change from index 1 to index 0;
+        assertEquals(m_dnsService.getServiceName(), config.getPolledServices()[0].getSvcName());
+        assertEquals(m_httpService.getServiceName(), config.getPolledServices()[1].getSvcName());
+        assertEquals(5678, config.getPolledServices()[0].getPollModel().getPollInterval());
+        assertTrue(config.getPolledServices()[0].getMonitorConfiguration().containsKey("hostname"));
     }
 
     public void testGetPollerConfigurationForDeletedMonitor() {
@@ -559,16 +559,10 @@ public class PollerBackEndTest extends TestCase {
     }
     
     public void testReportResultWithNullPollResult() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("pollResult argument cannot be null"));
+    	expect(m_locMonDao.get(1)).andThrow(new RuntimeException("crazy location monitor exception"));
 
         replayMocks();
-        try {
-            m_backEnd.reportResult(1, 1, null);
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
+        m_backEnd.reportResult(1, 1, null);
         verifyMocks();
     }
 

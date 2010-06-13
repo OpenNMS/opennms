@@ -47,7 +47,6 @@ package org.opennms.netmgt.eventd;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.processor.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
@@ -145,7 +144,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
 
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

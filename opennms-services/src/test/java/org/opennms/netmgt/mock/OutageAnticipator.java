@@ -298,7 +298,7 @@ public class OutageAnticipator implements EventListener {
         
     }
     
-    private Logger log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(OutageAnticipator.class);
     }
 

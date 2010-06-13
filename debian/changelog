@@ -1,8 +1,44 @@
-opennms (1.7.90-0) unstable; urgency=low
+opennms (1.8.0-2) unstable; urgency=high
 
-  * Rearranged remote poller packaging.
+  * Handle liquibase upgrade when unable to reach liquibase.org
 
- -- Benjamin Reed <ranger@opennms.org>  Mon, 05 Apr 2010 12:00:00 -0500
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 08 Jun 2010 07:39:00 -0800
+
+opennms (1.8.0-1) unstable; urgency=high
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 07 Jun 2010 18:14:00 -0800
+
+opennms (1.7.92-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 02 Jun 2010 22:33:00 -0500
+
+opennms (1.7.91-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 26 May 2010 12:37:00 -0500
+
+opennms (1.7.90-2) unstable; urgency=medium
+
+  * Build non-SNAPSHOT jars.
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 20 May 2010 12:31:00 -0500
+
+opennms (1.7.90-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 20 May 2010 02:00:00 -0500
+
+opennms (1.7.10-4) unstable; urgency=low
+
+  * Fix PostgreSQL dependency
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 06 May 2010 10:57:00 +0200
 
 opennms (1.7.10-3) unstable; urgency=low
 

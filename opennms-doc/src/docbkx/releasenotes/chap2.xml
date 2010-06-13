@@ -4,34 +4,33 @@
 
 	<subtitle>Changes in This OpenNMS</subtitle>
 
-	<section id="opennms-1.7">
-		<title>Changes in OpenNMS 1.7.x</title>
+	<section id="opennms-1.8">
+		<title>Changes in OpenNMS 1.8</title>
 
 		<para>
-			OpenNMS 1.7.x is an unstable series, meant to be a technology preview of what's to
-			come in OpenNMS 1.8.0.  Here is a high-level overview of what's changed since the
-			1.6.x series.
+			OpenNMS 1.8.x is the latest stable OpenNMS series.  Here is a high-level overview of
+			what's changed since the 1.6.x series.
 		</para>
 
-		<section id="opennms-1.7-architectural">
+		<section id="opennms-1.8-architectural">
 			<title>Architectural Changes</title>
 
 			<glosslist>
-				<glossentry>
-					<glossterm>Database Schema Updates</glossterm>
-					<glossdef>
-						<para>The OpenNMS installer has been changed to use
-						<ulink url="http://www.liquibase.org/">LiquiBase</ulink> for database
-						schema management.  It has been tested with a number of upgrade paths, but
-						<emphasis>it is even more strongly recommended than usual that you back up
-						your database before upgrading</emphasis>.</para>
-					</glossdef>
-				</glossentry>
 				<glossentry>
 					<glossterm>DAO Updates</glossterm>
 					<glossdef>
 						<para>Many more parts of the OpenNMS data access layer have been updated to
 						be compatible with Hibernate and database abstraction.</para>
+					</glossdef>
+				</glossentry>
+				<glossentry>
+					<glossterm>Database Versioning</glossterm>
+					<glossdef>
+						<para>The OpenNMS upgrade process now uses
+						<ulink url="http://www.liquibase.org/">LiquiBase</ulink> for managing
+						schema changes between versions.
+						<emphasis>It is even more strongly recommended than usual that you back up
+						your database before upgrading.</emphasis></para>
 					</glossdef>
 				</glossentry>
 				<glossentry>
@@ -42,8 +41,8 @@
 					</glossdef>
 				</glossentry>
 				<glossentry>
-					<glossterm>Spring 2.5</glossterm>
-					<glossdef><para>OpenNMS was updated to use Spring 2.5.</para></glossdef>
+					<glossterm>Spring 3.0</glossterm>
+					<glossdef><para>OpenNMS was updated to use Spring 3.0.</para></glossdef>
 				</glossentry>
 				<glossentry>
 					<glossterm>Test Framework Updates</glossterm>
@@ -55,126 +54,509 @@
 			</glosslist>
 		</section>
 
-		<section id="opennms-1.7-features">
+		<section id="opennms-1.8-features">
 			<title>New Features</title>
 
-			<glosslist>
-				<glossentry>
-					<glossterm>Acknowledgement Daemon</glossterm>
-					<glossdef>
-						<para>A daemon for interacting with acknowledgements programmatically has
-						been added.  This will open up APIs for acknowledging alarms through cell
-						phone, IM, e-mail, and so on.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Adobe AIR Client</glossterm>
-					<glossdef>
-						<para>An Adobe AIR based client was added.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Asterisk Notification Support</glossterm>
-					<glossdef>
-						<para>It is now possible to send notifications through Asterisk.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Capsd Replacement</glossterm>
-					<glossdef>
-						<para>A complete replacement for Capsd, called
-						"<emphasis>Provisiond</emphasis>" is introduced in this release.  It
-						allows you to define specific behaviors for detecting services and attributes
-						of devices in manual, automated, and semi-automated ways, with simple APIs
-						for writing your own custom scanning behavior and detectors.</para>
-						<para>This includes a highly-scalable, highly-parallelizable threading
-						architecture which will be used for other parts of OpenNMS in future
-						releases.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>DNS Importing</glossterm>
-					<glossdef>
-						<para>Provisiond is able to provision nodes based on a DNS zone transfer.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Automatic Map Creation</glossterm>
-					<glossdef>
-						<para>Provisiond can automatically create maps and link nodes together when they
-						are provisioned.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Mobile Sequence and SMS Ping Monitors</glossterm>
-					<glossdef>
-						<para>A new pair of monitors have been added that have the ability to perform
-						monitoring of cellular networks with phones attached to the OpenNMS server.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Map Updates</glossterm>
-					<glossdef>
-						<para>The topological map support has been updated to work properly in all
-						major browsers with SVG support.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Mobile Browser Cleanups</glossterm>
-					<glossdef>
-						<para>Some updates have been made to the web UI to make them more
-						mobile-friendly.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>RADIUS Authentication</glossterm>
-					<glossdef>
-						<para>A RADIUS authentication provider has been added.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>RANCID Integration</glossterm>
-					<glossdef>
-						<para>An integration with RANCID has been added.  If configured, extra data
-						about node configuration, etc. will be available in the node UI and maps.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>RESTful Interface</glossterm>
-					<glossdef>
-						<para>A number of interfaces to OpenNMS data have been made available
-						through a RESTful interface, using the
-						<ulink url="https://jersey.dev.java.net/">Jersey</ulink> API.</para>
-						<para>This includes simple web API access to alarms, events, nodes,
-						notifications, and outages, and it is expected that this will be
-						expanded in future releases.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Web UI Updates</glossterm>
-					<glossdef>
-						<para>A number of pages, most notably the node details page, have been
-						updated to provide more detailed information thanks to the new REST service.
-						These controls also support paging, sorting, etc.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>Web UI ACLs</glossterm>
-					<glossdef>
-						<para>Support for basic access control has been added, which allows you to
-						limit which nodes, interfaces, and services a user can view based on the
-						surveillance categories their group is assigned to.</para>
-					</glossdef>
-				</glossentry>
-				<glossentry>
-					<glossterm>WMI Support</glossterm>
-					<glossdef>
-						<para>Support has been added for polling and datacollection from <ulink
-						url="http://msdn.microsoft.com/en-us/library/aa394582(VS.85).aspx">Windows
-						Management Instrumentation</ulink>.</para>
-					</glossdef>
-				</glossentry>
-			</glosslist>
+			<section id="opennms-1.8-features-core">
+				<title>Core and Infrastructure</title>
+
+				<glosslist>
+					<glossentry>
+						<glossterm>Pinger</glossterm>
+						<glossdef><para>A new multithreaded, high-performance ping infrastructure was added used by all subsystems that talk ICMP.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>RADIUS Authentication</glossterm>
+						<glossdef><para>A RADIUS authentication provider has been added.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>RANCID Integration</glossterm>
+						<glossdef><para>An integration with RANCID has been added. If configured, extra data about node configuration, etc. will be available in the node UI and maps.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>RESTful Interface</glossterm>
+						<glossdef>
+							<para>A number of interfaces to OpenNMS data have been made available through a RESTful interface, using the Jersey API.</para>
+							<para>This includes simple web API access to alarms, events, nodes, notifications, and outages, and it is expected that this will be expanded in future releases.</para>
+						</glossdef>
+					</glossentry>
+				</glosslist>
+
+			</section>
+
+			<section id="opennms-1.8-features-discovery">
+				<title>Discovery and Capability Scanning</title>
+
+				<glosslist>
+					<glossentry>
+						<glossterm>Provisioning</glossterm>
+						<glossdef><para>A complete replacement for Capsd, called "Provisiond" is introduced in this release. It allows you to define specific behaviors for detecting services and attributes of devices in manual, automated, and semi-automated ways, with simple APIs for writing your own custom scanning behavior and detectors. This includes a highly-scalable, highly-parallelizable threading architecture which will be used for other parts of OpenNMS in future releases.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>DNS Importing</glossterm>
+						<glossdef><para>Provisiond is able to provision nodes based on a DNS zone transfer.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Automatic Map Creation</glossterm>
+						<glossdef><para>Provisiond can automatically create maps and link nodes together when they are provisioned.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>New Capsd Plugins</glossterm>
+						<glossdef><para>JDBCQueryPlugin, JMXSecurePlugin, WebPlugin, WmiPlugin, XmpPlugin</para></glossdef>
+					</glossentry>
+				</glosslist>
+
+			</section>
+
+			<section id="opennms-1.8-features-monitoring">
+				<title>Monitoring and Data Collection</title>
+
+				<glosslist>
+					<glossentry>
+						<glossterm>Mobile Sequence and SMS Ping Monitors</glossterm>
+						<glossdef><para>A new pair of monitors have been added that have the ability to perform monitoring of cellular networks with phones attached to the OpenNMS server.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Remote Monitor</glossterm>
+						<glossdef><para>The remote monitor has been enhanced to communicate with the OpenNMS server through HTTP (which makes it proxyable).</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>TCP RRD Strategy</glossterm>
+						<glossdef><para>A data collection strategy that allows pushing collected data over the network.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>SNMP Poller</glossterm>
+						<glossdef><para>A service that let you snmp poll the interface operational and administration status (up/down) for selected interfaces</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>WMI Support</glossterm>
+						<glossdef><para>Support has been added for polling and datacollection from Windows Management Instrumentation.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>XMP Support</glossterm>
+						<glossdef><para>Support has been added for the XML Management Protocol (Cartographer).</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>New Poller Monitors</glossterm>
+						<glossdef><para>BSFMonitor, JDBCQueryMonitor, JMXSecureMonitor, MemcachedMonitor, WebMonitor, WmiMonitor, XmpMonitor</para></glossdef>
+					</glossentry>
+				</glosslist>
+
+			</section>
+
+			<section id="opennms-1.8-features-notifications">
+				<title>Events, Alarms, Notifications, and Acknowledgement</title>
+
+				<glosslist>
+					<glossentry>
+						<glossterm>Acknowledgement Daemon</glossterm>
+						<glossdef><para>A daemon for interacting with acknowledgements programmatically has been added. This will open up APIs for acknowledging alarms through cell phone, IM, e-mail, and so on.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Asterisk Notifications Support</glossterm>
+						<glossdef><para>It is now possible to integrate with an Asterisk server to send notifications as phone calls.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Microblog Notifications Support</glossterm>
+						<glossdef><para>It is now possible to send notifications through Twitter, Identi.ca, and similar services.</para></glossdef>
+					</glossentry>
+				</glosslist>
+
+			</section>
+
+			<section id="opennms-1.8-features-ui">
+				<title>User Interface and Reporting</title>
+
+				<glosslist>
+					<glossentry>
+						<glossterm>Adobe AIR Client</glossterm>
+						<glossdef><para>An Adobe AIR based client was added.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>SVG Map Updates</glossterm>
+						<glossdef><para>The topological map support has been updated to work properly in all major browsers with SVG support, and has had a significant number of other enhancements.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Remote Poller Maps</glossterm>
+						<glossdef><para>A new map displaying remote poller status was added.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Mobile Browser Cleanups</glossterm>
+						<glossdef><para>Some updates have been made to the web UI to make them more mobile-friendly.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Reporting</glossterm>
+						<glossdef><para>Reporting has been enhanced greatly to support Jasper reports and better scheduling.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Web UI Updates</glossterm>
+						<glossdef><para>A number of pages, most notably the node details page, have been updated to provide more detailed information thanks to the new REST service. These controls also support paging, sorting, etc.</para></glossdef>
+					</glossentry>
+					<glossentry>
+						<glossterm>Web UI ACLs</glossterm>
+						<glossdef><para>Support for basic access control has been added, which allows you to limit which nodes, interfaces, and services a user can view based on the surveillance categories their group is assigned to.</para></glossdef>
+					</glossentry>
+				</glosslist>
+
+			</section>
+
+		</section>
+
+	</section>
+
+	<section id="opennms-1.8.0">
+		<title>Changes in OpenNMS 1.8.0</title>
+
+		<section id="opennms-1.8.0-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Support was added for notifications through microblogs like Twitter and Identi.ca. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3530">#3530</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Syslogd configuration group matching has been enhanced in a number of ways. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3831">#3831</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of data collection resources were changed to use the SiblingColumnStorageStrategy. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3842">#3842</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.0-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Some confusing output in the LiquiBase upgrade process was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3214">#3214</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Event listings did not allow filtering by date in 1.7. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3586">#3586</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>"All items" in the event list would not list all items. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3590">#3590</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A provisiond rescan of nodes that were provisioned by Capsd would delete the nodes. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3819">#3819</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>When Capsd is disabled, it was impossible to remove nodes through the UI. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3836">#3836</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
+	<section id="opennms-1.7.92">
+		<title>Changes in OpenNMS 1.7.92</title>
+
+		<section id="opennms-1.7.92-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>It is now possible to search for a node by node ID and foreign source. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2914">#2914</ulink> and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3796">#3796</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Page Sequence Monitor now supports matching the Location: field of
+					a 3xx REDIRECT.  Note that the behavior of following a POST redirect with a GET
+					automatically has changed.  See the bug for more details. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3785">#3785</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The node page now displays the foreign source if it has one. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3789">#3789</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.7.92-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The "Delete Node" admin page would delete even if you clicked "Cancel." (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3574">#3574</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Device icons stick when attempting to drag and drop in SVG maps. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3750">#3750</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Vacuumd would fail in some cases when for-each-result=false. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3786">#3786</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>RADIUS authentication would fail because of a missing gnu-crypto dependency. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3801">#3801</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Liquibase sequence repair changeset could set sequences incorrectly on upgrade. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3810">#3810</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Exceptions on the server side could cause the remote monitor to exit. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3811">#3811</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
+	<section id="opennms-1.7.91">
+		<title>Changes in OpenNMS 1.7.91</title>
+
+		<section id="opennms-1.7.91-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Provisiond now properly handles newSuspect events. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2238">#2238</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>It is now possible to filter on the snmpcollect field. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3667">#3667</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.7.91-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Provisiond fires importSuccessful events now. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3518">#3518</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of bugs in IE's handling of window.location were fixed. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3532">#3532</ulink>
+					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3729">#3729</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>PDF availability reports now render properly. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3745">#3745</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>RRD queueing threads now identify themselves properly in the logs. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3768">#3768</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The up button in SVG maps was failing when there was no up map. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3772">#3772</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Outages in the node page are now properly sorted. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3775">#3775</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An exception loading the RANCID API was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3776">#3776</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Provisiond was logging to output.log. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3791">#3791</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Classes logging through LogUtils.fatalf would lose the stack trace. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3792">#3792</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Exceptions which occurred in the poller back end could cause the remote poller
+					to exit (Bug <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3793">#3793</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Exceptions during remote poller map updates could cause future updates to fail. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3794">#3794</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Javamail was spitting out an insane amount of debug info. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3795">#3795</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
+	<section id="opennms-1.7.90">
+		<title>Changes in OpenNMS 1.7.90</title>
+
+		<section id="opennms-1.7.90-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Support for data collection from JMX MXBeans was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1444">#1444</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for adding asset data in a provisiond import was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2091">#2091</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>JavaMail defaults to using quoted-printable encoding when sending mail. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2825">#2825</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for collecting JMX data over SSL was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3225">#3225</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The configuration files in examples/ have been updated to conform to current best practices. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3231">#3231</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>It is now possible to send an event to reload the thresholding configuration. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3324">#3324</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>You can now sort the alarms list by severity. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3553">#3553</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The node page now shows critical path information.
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3674">#3674</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A remote poller map UI was added.  See
+					<ulink url="http://www.opennms.org/wiki/Remote_Monitoring_Status_UI">here</ulink> for details.</para>
+				</listitem>
+
+				<listitem>
+					<para>A large number of enhancements were made to the maps.</para>
+				</listitem>
+
+				<listitem>
+					<para>The reporting engine has gone through a number of enhancements since 1.7.10.</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.7.90-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>A bug in handling tabs in include files was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=735">#735</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug where SVG availability reports would cause an acrobat error was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1247">#1247</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in handling percent signs was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2856">#2856</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2888">#2888</ulink>, and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3317">#3317</ulink>, and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3429">#3429</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Encoding bugs in marshalling and unmarshalling config files were fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3125">#3125</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug where OpenNMS would not shut down properly was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3261">#3261</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug where in-line thresholding would cause a large startup delay was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3554">#3554</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The event ID was missing from the notification list. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3558">#3558</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug that caused Jetty startup to take a long time was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3604">#3604</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Debian packages were missing the RXTX library for the SMS monitor. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3648">#3648</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An exception in the dashboard was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3700">#3700</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
 		</section>
 
 	</section>
@@ -392,7 +774,7 @@
 				<listitem>
 					<para>Data collection and graphing has been added or updated for
 					Liebert and Server Technology Sentry devices.
-					(Bugs 
+					(Bugs
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3522">#3522</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3523">#3523</ulink>,
 					and <ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3538">#3538</ulink>)</para>
@@ -459,7 +841,7 @@
 				<listitem>
 					<para>Data collection and graphing has been added or updated for
 					AudioCodes DS1, Cisco, Riverbed Steelhead, SofaWare devices.
-					(Bugs 
+					(Bugs
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3385">#3385</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3441">#3441</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3455">#3455</ulink>,
@@ -609,7 +991,7 @@
 					Cisco POE, Juniper J-Series, Dell DRAC, Kyocera MITA Printer,
 					Motorola CPEi 150 WiMAX, Blackberry, Equallogic iSCSI, NetApp,
 					AS/400, and ININ Interaction Center devices
-					(Bugs 
+					(Bugs
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3167">#3167</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3210">#3210</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3213">#3213</ulink>,
@@ -841,7 +1223,7 @@
 					<para>Data collection and graphing has been added or updated for
 					Alcatel-Lucent, Allot, Alteon, Aruba, Ascend, Avocent, Bluecat, BlueCoat,
 					Cisco Airespace, Lucent, NetApp, Overture, Packeteer, and Powerware devices
-					(Bugs 
+					(Bugs
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3096">#3096</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3099">#3099</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3109">#3109</ulink>,
@@ -972,7 +1354,7 @@
 					<para>Data collection and graphing has been added or updated for BGP MIBs
 					from Cisco and IETF, other Cisco equipment, Jupiter M-Router, Liebert UPSes,
 					MPLS, MSDP, Net-SNMP, and Netenforcer Allot
-					(Bugs 
+					(Bugs
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2990">#2990</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2998">#2998</ulink>,
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3012">#3012</ulink>,

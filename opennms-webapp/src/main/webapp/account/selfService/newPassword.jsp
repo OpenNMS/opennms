@@ -111,7 +111,7 @@
       <input type="submit" value="OK"/>
     </td>
     <td>
-      <input type="button" value="Cancel" onClick="window.location='account/selfService/index.jsp'"/>
+      <a href="account/selfService/index.jsp">Cancel</a>
     </tr>
 </table>
 </form>

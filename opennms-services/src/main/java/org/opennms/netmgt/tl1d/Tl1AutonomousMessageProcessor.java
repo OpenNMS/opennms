@@ -39,7 +39,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -227,20 +226,19 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
         message.getAutoBlock().setNtfcncde(ntfcncde);
         
         //build other params.
-        //This needs to be configuarable or able to override.
-        String addParms = null;
+        //This needs to be configurable or able to override.
+        final StringBuffer sb = new StringBuffer();
         while (autoBlockParser.hasMoreTokens())
         {
-            addParms = addParms + autoBlockParser.nextToken() + ",";
-            
+            sb.append(autoBlockParser.nextToken()).append(",");
         }
 
-        message.getAutoBlock().setAdditionalParams(addParms.trim());
+        message.getAutoBlock().setAdditionalParams(sb.toString().trim());
    
         return true;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass().getName());
     }
 }

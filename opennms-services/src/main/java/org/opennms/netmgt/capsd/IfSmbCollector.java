@@ -50,7 +50,6 @@ import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.capsd.SmbAuth;
@@ -107,11 +106,6 @@ final class IfSmbCollector implements Runnable {
     private String[] m_shares;
 
     /**
-     * The operating system name of the remote box, if it can be recovered.
-     */
-    private String m_osName;
-
-    /**
      * True if the box has MS Exchange running. This is set in the constructor.
      */
     private final boolean m_hasExchange;
@@ -151,7 +145,6 @@ final class IfSmbCollector implements Runnable {
         m_domain = null;
         m_allAddrs = null;
         m_shares = null;
-        m_osName = null;
         m_hasExchange = false;
     }
 
@@ -173,7 +166,6 @@ final class IfSmbCollector implements Runnable {
         m_domain = null;
         m_allAddrs = null;
         m_shares = null;
-        m_osName = null;
         m_hasExchange = hasExchange;
     }
 
@@ -238,13 +230,6 @@ final class IfSmbCollector implements Runnable {
     }
 
     /**
-     * Returns the naem of the Operating System if it was recovered.
-     */
-    String getOS() {
-        return m_osName;
-    }
-
-    /**
      * Returns the presence of an exchange server. This is the same value as set
      * in the class' constructor.
      */
@@ -277,7 +262,7 @@ final class IfSmbCollector implements Runnable {
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         try {
             m_addr = NbtAddress.getByName(m_target.getHostAddress());
 
@@ -296,7 +281,7 @@ final class IfSmbCollector implements Runnable {
             m_addr = null;
         }
 
-        if (containsCtrlChars(m_addr.getHostName())) {
+        if (m_addr != null && containsCtrlChars(m_addr.getHostName())) {
             log.warn("IfSmbCollector: Retrieved SMB name for address " + m_target.getHostAddress() + " contains control chars: '" + m_addr.getHostName() + "', discarding.");
             m_addr = null;
         }

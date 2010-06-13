@@ -48,7 +48,6 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 /**
@@ -233,7 +232,7 @@ public final class HttpUtils extends Object {
         OutputStreamWriter ostream = new OutputStreamWriter(conn.getOutputStream(), "US-ASCII");
 
         // log data
-        Category log = Logger.getLogger("POSTDATALOG");
+        Logger log = Logger.getLogger("POSTDATALOG");
         if (log.isDebugEnabled()) {
             String nl = System.getProperty("line.separator");
             log.debug(nl + "HTTP Post: Current time: " + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));

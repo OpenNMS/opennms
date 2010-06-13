@@ -51,7 +51,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -462,7 +461,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -528,9 +527,8 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     insStmt.setString(2, protocol);
                     insStmt.executeUpdate();
     
-                    Integer xid = new Integer(id);
-                    m_serviceIdToName.put(xid, protocol);
-                    m_serviceNameToId.put(protocol, xid);
+                    m_serviceIdToName.put(id, protocol);
+                    m_serviceNameToId.put(protocol, id);
     
                     serviceNames.add(protocol);
                     
@@ -749,7 +747,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                             svcStatus = str.charAt(0);
                         }
     
-                        String svcName = getServiceName(new Integer(svcId));
+                        String svcName = getServiceName(svcId);
                         /*
                          * try the first package that had the ip first, if
                          * service is not enabled, try all packages
@@ -916,7 +914,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     ifList.add(new LightWeightIfEntry(nodeId, ifIndex, address, DbIpInterfaceEntry.STATE_UNKNOWN, primarySnmpState, ifType));
     
                     // Add interface entry list to the map
-                    nodes.put(new Integer(nodeId), ifList);
+                    nodes.put(nodeId, ifList);
                 } else {
                     // Just add the current interface to the
                     // node's interface list

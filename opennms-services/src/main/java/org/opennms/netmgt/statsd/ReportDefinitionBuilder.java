@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.StatisticsDaemonConfigDao;
 import org.opennms.netmgt.dao.castor.statsd.PackageReport;
@@ -108,7 +107,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
         return (Class<? extends AttributeStatisticVisitorWithResults>) Class.forName(report.getClassName());
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

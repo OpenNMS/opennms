@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.apache.log4j.Category;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
@@ -63,7 +62,7 @@ public class DefaultReportStoreService implements ReportStoreService {
     
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
     
-    private Category log;
+    private ThreadCategory log;
     
     public DefaultReportStoreService () {
         
@@ -119,7 +118,7 @@ public class DefaultReportStoreService implements ReportStoreService {
         }
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

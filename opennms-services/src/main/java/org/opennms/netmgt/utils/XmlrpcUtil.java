@@ -29,7 +29,6 @@ package org.opennms.netmgt.utils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -59,8 +58,8 @@ public final class XmlrpcUtil {
      *            openNMS daemon where this event is produced.
      * 
      */
-    public static void createAndSendXmlrpcNotificationEvent(long txNo, String sourceUei, String message, int status, String generator) {
-        Category log = ThreadCategory.getInstance("XmlrpcUtil");
+    public static void createAndSendXmlrpcNotificationEvent(final long txNo, final String sourceUei, final String message, final int status, final String generator) {
+        ThreadCategory log = ThreadCategory.getInstance("XmlrpcUtil");
         if (log.isDebugEnabled())
             log.debug("createAndSendXmlrpcNotificationEvent:  txNo= " + txNo + "\n" + " uei = " + sourceUei + "\n" + " message = " + message + "\n" + " status = " + status);
 
@@ -103,7 +102,7 @@ public final class XmlrpcUtil {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_MESSAGE);
         parmValue = new Value();
-        parmValue.setContent(new String(message));
+        parmValue.setContent(message);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 

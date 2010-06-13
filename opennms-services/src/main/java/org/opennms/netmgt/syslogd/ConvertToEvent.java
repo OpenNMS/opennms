@@ -53,13 +53,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
+import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.castor.CastorUtils;
@@ -133,11 +133,9 @@ final class ConvertToEvent {
      *          US-ASCII encoding.
      * @throws MessageDiscardedException 
      */
-    static ConvertToEvent make(DatagramPacket packet, String matchPattern, int hostGroup, int messageGroup, UeiList ueiList,
-            HideMessage hideMessage, String discardUei)
+    static ConvertToEvent make(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessage, final String discardUei)
             throws UnsupportedEncodingException, MessageDiscardedException {
-        return make(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength(), matchPattern, hostGroup, messageGroup,
-                ueiList, hideMessage, discardUei);
+        return make(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength(), matchPattern, hostGroup, messageGroup, ueiList, hideMessage, discardUei);
     }
 
     /**
@@ -154,14 +152,12 @@ final class ConvertToEvent {
      *          US-ASCII encoding.
      * @throws MessageDiscardedException 
      */
-    static ConvertToEvent make(InetAddress addr, int port, byte[] data,
-                               int len, String matchPattern, int hostGroup, int messageGroup,
-                               UeiList ueiList, HideMessage hideMessage, String discardUei)
+    static ConvertToEvent make(final InetAddress addr, final int port, final byte[] data,
+                               final int len, final String matchPattern, final int hostGroup, final int messageGroup,
+                               final UeiList ueiList, final HideMessage hideMessage, final String discardUei)
             throws UnsupportedEncodingException, MessageDiscardedException {
 
-        ConvertToEvent e = new ConvertToEvent();
-
-        // Get host address /
+        final ConvertToEvent e = new ConvertToEvent();
 
         e.m_sender = addr;
         e.m_port = port;
@@ -170,14 +166,14 @@ final class ConvertToEvent {
         e.m_log = null;
 
         ThreadCategory.setPrefix(Syslogd.LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance();
 
         if (log.isDebugEnabled())
             log.debug("In the make part of UdpReceivedSyslog " + e.toString());
 
         // Build a basic event out of the syslog message
 
-        Event event = new Event();
+        final Event event = new Event();
         event.setSource("syslogd");
 
         // Set nodeId
@@ -196,7 +192,7 @@ final class ConvertToEvent {
         event.setInterface(addr.getHostAddress().replaceAll("/", ""));
 
         event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
-        Logmsg logmsg = new Logmsg();
+        final Logmsg logmsg = new Logmsg();
         logmsg.setDest("logndisplay");
 
         String message = new String(data, 0, len, "US-ASCII");
@@ -213,19 +209,19 @@ final class ConvertToEvent {
 
         try {
             priCode = Integer.parseInt(priStr);
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             log.debug("ERROR Bad priority code '" + priStr + "'");
 
         }
 
-        int facility = SyslogDefs.extractFacility(priCode);
-        int priority = SyslogDefs.extractPriority(priCode);
+        final int facility = SyslogDefs.extractFacility(priCode);
+        final int priority = SyslogDefs.extractPriority(priCode);
 
-        String priorityTxt = SyslogDefs.getPriorityName(priority);
+        final String priorityTxt = SyslogDefs.getPriorityName(priority);
         // event.setSeverity(priorityTxt);
         // We leave the priority alone, this might need to be set.
 
-        String facilityTxt = SyslogDefs.getFacilityName(facility);
+        final String facilityTxt = SyslogDefs.getFacilityName(facility);
 
         //Check for UEI matching or allow a simple standard one.
 
@@ -264,13 +260,13 @@ final class ConvertToEvent {
         // These 2 debugs will aid in analyzing the regexes as syslog seems
         // to differ a lot depending on implementation or message structure.
 
-        boolean traceEnabled = log.isEnabledFor(Level.TRACE);
+        final boolean traceEnabled = log.isEnabledFor(ThreadCategory.Level.TRACE);
 
         if (traceEnabled) {
-            log.log(Level.TRACE, "Message : " + message);
-            log.log(Level.TRACE, "Pattern : " + matchPattern);
-            log.log(Level.TRACE, "Host group: " + hostGroup);
-            log.log(Level.TRACE, "Message group: " + messageGroup);
+            log.trace("Message : " + message);
+            log.trace("Pattern : " + matchPattern);
+            log.trace("Host group: " + hostGroup);
+            log.trace("Message group: " + messageGroup);
         }
 
         // We will also here find out if, the host needs to
@@ -280,8 +276,8 @@ final class ConvertToEvent {
         // operator a password or other data that should be
         // confidential.
 
-        Pattern pattern = Pattern.compile(matchPattern);
-        Matcher m = pattern.matcher(message);
+        final Pattern pattern = Pattern.compile(matchPattern);
+        final Matcher m = pattern.matcher(message);
 
         /*
         * We matched on a regexp for host/message pair.
@@ -296,30 +292,31 @@ final class ConvertToEvent {
         if (m.matches()) {
 
             if (traceEnabled) {
-                log.log(Level.TRACE, "Regexp matched message: " + message);
-                log.log(Level.TRACE, "Host: " + m.group(hostGroup));
-                log.log(Level.TRACE, "Message: " + m.group(messageGroup));
+                log.trace("Regexp matched message: " + message);
+                log.trace("Host: " + m.group(hostGroup));
+                log.trace("Message: " + m.group(messageGroup));
             }
 
             // We will try to extract an IP address from a hostname.....
-            String myHost = "";
+            final StringBuffer sb = new StringBuffer();
 
             try {
-                InetAddress address = InetAddress.getByName(m.group(hostGroup));
-                byte[] ipAddr = address.getAddress();
+                final InetAddress address = InetAddress.getByName(m.group(hostGroup));
+                final byte[] ipAddr = address.getAddress();
 
                 // Convert to dot representation
                 for (int i = 0; i < ipAddr.length; i++) {
                     if (i > 0) {
-                        myHost += ".";
+                        sb.append(".");
                     }
-                    myHost += ipAddr[i] & 0xFF;
+                    sb.append(ipAddr[i] & 0xFF);
                 }
-            } catch (UnknownHostException e1) {
+            } catch (final UnknownHostException e1) {
                 log.warn("Could not parse the host: " + e1);
 
             }
 
+            final String myHost = sb.toString();
             if (!"".equals(myHost)) {
                 nodeId = SyslogdIPMgr.getNodeId(myHost.replaceAll("/", ""));
 
@@ -330,7 +327,7 @@ final class ConvertToEvent {
                 event.setInterface(myHost.replaceAll("/", ""));
                 message = m.group(messageGroup);
                 if (traceEnabled) {
-                    log.log(Level.TRACE, "Regexp used to find node: " + event.getNodeid());
+                    log.trace("Regexp used to find node: " + event.getNodeid());
                 }
             }
         } else {
@@ -339,7 +336,7 @@ final class ConvertToEvent {
         }
 
         // We will need these shortly
-        Parms eventParms = new Parms();
+        final Parms eventParms = new Parms();
         Parm eventParm = null;
         Value parmValue = null;
         
@@ -348,104 +345,132 @@ final class ConvertToEvent {
 
         // Time to verify UEI matching.
 
-        for (UeiMatch uei : ueiList.getUeiMatchCollection()) {
-            if (uei.getMatch().getType().equals("substr")) {
-                if (traceEnabled) {
-                    log.log(Level.TRACE, "Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
-                }
-            	if (message.contains(uei.getMatch().getExpression())) {
-            	    if (discardUei.equals(uei.getUei())) {
-            	        if (traceEnabled) {
-            	            log.log(Level.TRACE, "Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
-            	            throw new MessageDiscardedException();
-            	        }
-            	    }
-                    //We can pass a new UEI on this
-            	    if (traceEnabled) {
-            	        log.log(Level.TRACE, "Changed the UEI of a Syslogd event, based on substring match, to :" + uei.getUei());
-            	    }
-                    event.setUei(uei.getUei());
-                    // I think we want to stop processing here so the first
-                    // ueiMatch wins, right?
-                    break;
-                }
-            } else if (uei.getMatch().getType().equals("regex")) {
-                if (traceEnabled) {
-                    log.log(Level.TRACE, "Attempting regex match for text of a Syslogd event to :" + uei.getMatch().getExpression());
-                }
-                try {
-            		msgPat = Pattern.compile(uei.getMatch().getExpression(), Pattern.MULTILINE);
-            		msgMat = msgPat.matcher(message);
-                } catch(PatternSyntaxException pse) {
-            		log.warn("Failed to compile regex pattern '"+uei.getMatch().getExpression()+"'", pse);
-            		msgMat = null;
-            	}
-            	if ((msgMat != null) && (msgMat.matches())) {
-                    if (discardUei.equals(uei.getUei())) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
-                        }
-                        throw new MessageDiscardedException();
-                    }
-
-                    // We matched a UEI
+        final List<UeiMatch> ueiMatch = ueiList.getUeiMatchCollection();
+        if (ueiMatch == null) {
+            log.warn("No ueiList configured.");
+        } else {
+            for (final UeiMatch uei : ueiMatch) {
+                if (uei.getMatch().getType().equals("substr")) {
                     if (traceEnabled) {
-                        log.log(Level.TRACE, "Changed the UEI of a Syslogd event, based on regex match, to :" + uei.getUei());
+                        log.trace("Attempting substring match for text of a Syslogd event to :" + uei.getMatch().getExpression());
                     }
-                    event.setUei(uei.getUei());
-            		if (msgMat.groupCount() > 0) {
-            			for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
-            			    if (traceEnabled) {
-            			        log.log(Level.TRACE, "Added parm 'group"+groupNum+"' with value '"+msgMat.group(groupNum)+"' to Syslogd event based on regex match group");
-            			    }
-            				eventParm = new Parm();
-            				eventParm.setParmName("group"+groupNum);
-            				parmValue = new Value();
-            				parmValue.setContent(msgMat.group(groupNum));
-            				eventParm.setValue(parmValue);
-            				eventParms.addParm(eventParm);
-            			}
-            		}
-                    // I think we want to stop processing here so the first
-                    // ueiMatch wins, right?
-            		break;
-            	}
+                	if (message.contains(uei.getMatch().getExpression())) {
+                	    if (discardUei.equals(uei.getUei())) {
+                	        if (traceEnabled) {
+                	            log.trace("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
+                	            throw new MessageDiscardedException();
+                	        }
+                	    }
+                        //We can pass a new UEI on this
+                	    if (traceEnabled) {
+                	        log.trace("Changed the UEI of a Syslogd event, based on substring match, to :" + uei.getUei());
+                	    }
+                        event.setUei(uei.getUei());
+                        // I think we want to stop processing here so the first
+                        // ueiMatch wins, right?
+                        break;
+                    }
+                } else if (uei.getMatch().getType().equals("regex")) {
+                    if (traceEnabled) {
+                        log.trace("Attempting regex match for text of a Syslogd event to :" + uei.getMatch().getExpression());
+                    }
+                    try {
+                		msgPat = Pattern.compile(uei.getMatch().getExpression(), Pattern.MULTILINE);
+                		msgMat = msgPat.matcher(message);
+                    } catch(PatternSyntaxException pse) {
+                		log.warn("Failed to compile regex pattern '"+uei.getMatch().getExpression()+"'", pse);
+                		msgMat = null;
+                	}
+                	if ((msgMat != null) && (msgMat.matches())) {
+                        if (discardUei.equals(uei.getUei())) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
+                            }
+                            throw new MessageDiscardedException();
+                        }
+    
+                        // We matched a UEI
+                        if (traceEnabled) {
+                            log.trace("Changed the UEI of a Syslogd event, based on regex match, to :" + uei.getUei());
+                        }
+                        event.setUei(uei.getUei());
+                        if (msgMat.groupCount() > 0 && uei.getMatch().isDefaultParameterMapping()) {
+                            log.trace("Doing default parameter mappings for this regex match.");
+                            for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
+                                if (traceEnabled) {
+                                    log.trace("Added parm 'group"+groupNum+"' with value '"+msgMat.group(groupNum)+"' to Syslogd event based on regex match group");
+                                }
+                                eventParm = new Parm();
+                                eventParm.setParmName("group"+groupNum);
+                                parmValue = new Value();
+                                parmValue.setContent(msgMat.group(groupNum));
+                                eventParm.setValue(parmValue);
+                                eventParms.addParm(eventParm);
+                            }
+                        }
+                        if (msgMat.groupCount() > 0 && uei.getParameterAssignmentCount() > 0) {
+                            log.trace("Doing user-specified parameter assignments for this regex match.");
+                            for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
+                                eventParm = new Parm();
+                                eventParm.setParmName(assignment.getParameterName());
+                                parmValue = new Value();
+                                String vettedValue = msgMat.group(assignment.getMatchingGroup());
+                                if (vettedValue == null)
+                                    vettedValue = "";
+                                parmValue.setContent(vettedValue);
+                                eventParm.setValue(parmValue);
+                                eventParms.addParm(eventParm);
+                                if (traceEnabled) {
+                                    log.trace("Added parm '" + eventParm.getParmName() + "' with value '" + parmValue.getContent() + "' to Syslogd event based on user-specified parameter assignment");
+                                }
+                            }
+                        }
+                        // I think we want to stop processing here so the first
+                        // ueiMatch wins, right?
+                		break;
+                	}
+                }
             }
         }
 
         // Time to verify if we need to hide the message
         boolean doHide = false;
-        for (HideMatch hide : hideMessage.getHideMatchCollection()) {
-            if (hide.getMatch().getType().equals("substr")) {
-                if (message.contains(hide.getMatch().getExpression())) {
-                    // We should hide the message based on this match
-                	doHide = true;
-                }            	
-            } else if (hide.getMatch().getType().equals("regex")) {
-            	try {
-                	msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
-                	msgMat = msgPat.matcher(message);            		
-            	} catch (PatternSyntaxException pse) {
-            		log.warn("Failed to compile regex pattern '"+hide.getMatch().getExpression()+"'", pse);
-            		msgMat = null;
-            	}
-            	if ((msgMat != null) && (msgMat.matches())) {
-                    // We should hide the message based on this match
-            		doHide = true;
-            	}
-            }
-            if (doHide) {
-	            log.debug("Hiding syslog message from Event - May contain sensitive data");
-	            message = HIDDEN_MESSAGE;
-	            // We want to stop here, no point in checking further hideMatches
-	            break;
+        final List<HideMatch> hideMatch = hideMessage.getHideMatchCollection();
+        if (hideMatch == null) {
+            log.warn("No hideMessage configured.");
+        } else {
+            for (final HideMatch hide : hideMatch) {
+                if (hide.getMatch().getType().equals("substr")) {
+                    if (message.contains(hide.getMatch().getExpression())) {
+                        // We should hide the message based on this match
+                    	doHide = true;
+                    }            	
+                } else if (hide.getMatch().getType().equals("regex")) {
+                	try {
+                    	msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
+                    	msgMat = msgPat.matcher(message);            		
+                	} catch (PatternSyntaxException pse) {
+                		log.warn("Failed to compile regex pattern '"+hide.getMatch().getExpression()+"'", pse);
+                		msgMat = null;
+                	}
+                	if ((msgMat != null) && (msgMat.matches())) {
+                        // We should hide the message based on this match
+                		doHide = true;
+                	}
+                }
+                if (doHide) {
+    	            log.debug("Hiding syslog message from Event - May contain sensitive data");
+    	            message = HIDDEN_MESSAGE;
+    	            // We want to stop here, no point in checking further hideMatches
+    	            break;
+                }
             }
         }
 
         lbIdx = message.indexOf('[');
         rbIdx = message.indexOf(']');
-        int colonIdx = message.indexOf(':');
-        int spaceIdx = message.indexOf(' ');
+        final int colonIdx = message.indexOf(':');
+        final int spaceIdx = message.indexOf(' ');
 
         int processId = 0;
         String processName = "";
@@ -545,7 +570,7 @@ final class ConvertToEvent {
      *
      * @param e The event to acknowledge.
      */
-    void ackEvent(Event e) {
+    void ackEvent(final Event e) {
         if (!m_ackEvents.contains(e))
             m_ackEvents.add(e);
     }
@@ -591,9 +616,9 @@ final class ConvertToEvent {
      * @return Returns true if the objects are logically equal, false
      *         otherwise.
      */
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o != null && o instanceof ConvertToEvent) {
-            ConvertToEvent e = (ConvertToEvent) o;
+            final ConvertToEvent e = (ConvertToEvent) o;
             return (this == e || (m_port == e.m_port && m_sender.equals(e.m_sender)));
         }
         return false;
@@ -608,5 +633,14 @@ final class ConvertToEvent {
      */
     public int hashCode() {
         return (m_port ^ m_sender.hashCode());
+    }
+
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("Sender", m_sender)
+            .append("Port", m_port)
+            .append("Acknowledged Events", m_ackEvents)
+            .append("Event", m_event)
+            .toString();
     }
 }

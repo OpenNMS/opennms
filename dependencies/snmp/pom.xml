@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.7.11-SNAPSHOT</version>
+    <version>1.9.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -14,7 +14,8 @@
     can depend on to use SNMP
   </description>
   <properties>
-    <opennmsSnmpVersion>2.0.0</opennmsSnmpVersion>
+    <opennmsJoesnmpVersion>2.0.1</opennmsJoesnmpVersion>
+    <opennmsSnmpApiVersion>2.0.1</opennmsSnmpApiVersion>
   </properties>
 
 
@@ -22,27 +23,22 @@
     <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.joesnmp</artifactId>
-      <version>${opennmsSnmpVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.lib</groupId>
-      <artifactId>org.opennms.lib.service-registration</artifactId>
-      <version>${opennmsSnmpVersion}</version>
+      <version>${opennmsJoesnmpVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.lib.snmp</groupId>
       <artifactId>org.opennms.lib.snmp.api</artifactId>
-      <version>${opennmsSnmpVersion}</version>
+      <version>${opennmsSnmpApiVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.lib.snmp</groupId>
       <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
-      <version>${opennmsSnmpVersion}</version>
+      <version>${opennmsSnmpApiVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.lib.snmp</groupId>
       <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-      <version>${opennmsSnmpVersion}</version>
+      <version>${opennmsSnmpApiVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.snmp4j</groupId>

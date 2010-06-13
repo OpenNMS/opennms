@@ -44,7 +44,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -225,7 +224,7 @@ public class DbStpInterfaceEntry {
 		if (m_fromDb)
 			throw new IllegalStateException("The record already exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -353,7 +352,7 @@ public class DbStpInterfaceEntry {
 			throw new IllegalStateException(
 					"The record does not exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -483,7 +482,7 @@ public class DbStpInterfaceEntry {
 		if (!m_fromDb)
 			throw new IllegalStateException("The record does not exists in the database");
 
-		Category log = ThreadCategory.getInstance(getClass());
+		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// create the Prepared statment and then
 		// start setting the result values
@@ -718,8 +717,8 @@ public class DbStpInterfaceEntry {
 			return false;
 	}
 
-	boolean updateStpportDesignatedRoot(String stpportdesignatedroot) {
-		if (stpportdesignatedroot != m_stpportdesignatedroot) {
+	boolean updateStpportDesignatedRoot(final String stpportdesignatedroot) {
+		if (!m_stpportdesignatedroot.equals(stpportdesignatedroot)) {
 			set_stpportdesignatedroot(stpportdesignatedroot);
 			return true;
 		} else
@@ -772,8 +771,8 @@ public class DbStpInterfaceEntry {
 			return false;
 	}
 
-	boolean updateStpportDesignatedBridge(String stpportdesignatedbridge) {
-		if (stpportdesignatedbridge != m_stpportdesignatedbridge) {
+	boolean updateStpportDesignatedBridge(final String stpportdesignatedbridge) {
+		if (!m_stpportdesignatedbridge.equals(stpportdesignatedbridge)) {
 			set_stpportdesignatedbridge(stpportdesignatedbridge);
 			return true;
 		} else
@@ -799,8 +798,8 @@ public class DbStpInterfaceEntry {
 			return false;
 	}
 
-	boolean updateStpportDesignatedPort(String stpportdesignatedport) {
-		if (stpportdesignatedport != m_stpportdesignatedport) {
+	boolean updateStpportDesignatedPort(final String stpportdesignatedport) {
+		if (!m_stpportdesignatedport.equals(stpportdesignatedport)) {
 			set_stpportdesignatedport(stpportdesignatedport);
 			return true;
 		} else

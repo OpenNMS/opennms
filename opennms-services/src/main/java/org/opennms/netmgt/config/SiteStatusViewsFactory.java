@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -195,7 +194,7 @@ public class SiteStatusViewsFactory {
         m_viewsMap = map;
     }
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance();
     }
 }

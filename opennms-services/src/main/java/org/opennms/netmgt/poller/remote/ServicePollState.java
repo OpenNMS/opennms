@@ -35,22 +35,27 @@
  */
 package org.opennms.netmgt.poller.remote;
 
+import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.model.PollStatus;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class ServicePollState {
-    
+public class ServicePollState implements Comparable<ServicePollState>, Serializable {
+    private static final long serialVersionUID = 1L;
+
     private PolledService m_polledService;
     private int m_index;
     private PollStatus m_lastPoll;
     private Date m_initialPollTime;
 
-    public ServicePollState(PolledService polledService, int index) {
+    public ServicePollState(final PolledService polledService, final int index) {
         m_polledService = polledService;
         m_index = index;
     }
@@ -59,7 +64,7 @@ public class ServicePollState {
         return m_lastPoll;
     }
 
-    public void setLastPoll(PollStatus lastPoll) {
+    public void setLastPoll(final PollStatus lastPoll) {
         m_lastPoll = lastPoll;
     }
     
@@ -84,8 +89,41 @@ public class ServicePollState {
         return m_polledService;
     }
 
-    public void setInitialPollTime(Date initialPollTime) {
+    public void setInitialPollTime(final Date initialPollTime) {
         m_initialPollTime = initialPollTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 37)
+            .append(this.getIndex())
+            .append(this.getLastPoll())
+            .append(this.getPolledService())
+            .toHashCode();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null) return false;
+        if (!(o instanceof ServicePollState)) return false;
+        final ServicePollState that = (ServicePollState)o;
+        return new EqualsBuilder()
+            .append(this.getIndex(), that.getIndex())
+            .append(this.getPolledService(), that.getPolledService())
+            .isEquals();
+    }
+    
+    public int compareTo(final ServicePollState that) {
+        if (that == null) return -1;
+        final PolledService thisService = this.getPolledService();
+        final PolledService thatService = that.getPolledService();
+        return new CompareToBuilder()
+            .append(thisService.getNodeLabel(), thatService.getNodeLabel())
+            .append(thisService.getIpAddr(), thatService.getIpAddr())
+            .append(this.getLastPoll().getStatusName(), that.getLastPoll().getStatusName())
+            .append(thisService.getServiceId(), thatService.getServiceId())
+            .append(thisService.getNodeId(), thatService.getNodeId())
+            .toComparison();
     }
 
 }

@@ -42,7 +42,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -58,12 +57,10 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -198,7 +195,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
     public void initialize(Map<String, String> parameters) {
         // Log4j category
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Initialize the JMXDataCollectionConfigFactory
         try {
@@ -282,7 +279,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
 
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         InetAddress ipAddr = (InetAddress) agent.getAddress();
 
         if (log.isDebugEnabled()) {
@@ -387,7 +384,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
 
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> map) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         InetAddress ipaddr = (InetAddress) agent.getAddress();
         JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
@@ -660,7 +657,7 @@ public abstract class JMXCollector implements ServiceCollector {
     public String getRRDValue_isthis_used_(JMXDataSource ds,
             JMXCollectorEntry collectorEntry) throws IllegalArgumentException {
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         log.debug("getRRDValue: " + ds.getName());
 
@@ -683,7 +680,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * @return list of RRDDataSource objects
      */
     private Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         log.debug("buildDataSourceList - ***");
 
@@ -757,7 +754,7 @@ public abstract class JMXCollector implements ServiceCollector {
                      */
                     String ds_name = attr.getAlias();
                     if (ds_name.length() > MAX_DS_NAME_LENGTH) {
-                        if (log.isEnabledFor(Level.WARN))
+                        if (log.isEnabledFor(ThreadCategory.Level.WARN))
                             log.warn("buildDataSourceList: alias '"
                                     + attr.getAlias()
                                     + "' exceeds 19 char maximum for RRD data "
@@ -786,7 +783,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
                     // Add the new data source to the list
                     dsList.put(objectName + "|" + attr.getName(), ds);
-                } else if (log.isEnabledFor(Level.WARN)) {
+                } else if (log.isEnabledFor(ThreadCategory.Level.WARN)) {
                     log.warn("buildDataSourceList: Data type '"
                             + attr.getType()
                             + "' not supported.  Only integer-type data may be "

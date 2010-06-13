@@ -23,7 +23,7 @@
         <event-label>NET-SNMP: A dskTable Alert has been triggered.</event-label>
         <descr>
 &lt;p&gt;The Net-SNMP agent has detected that free space on %parm[#6]% is below
-threshold. The error message is: %parm[#7]%.
+threshold. The error message is &lt;strong&gt;%parm[#8]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
@@ -56,7 +56,7 @@ threshold. The error message is: %parm[#7]%.
         <event-label>NET-SNMP: A procTable Alert has been triggered.</event-label>
         <descr>
 &lt;p&gt;The Net-SNMP agent has detected an error with the %parm[#6]% process.
-The error message is: %parm[#7]%.
+The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
@@ -89,7 +89,7 @@ The error message is: %parm[#7]%.
         <event-label>NET-SNMP: A extTable Alert has been triggered.</event-label>
         <descr>
 &lt;p&gt;The Net-SNMP agent has detected an error with the configured extend/exec script %parm[#6]%.
-The error message is: %parm[#7]%.
+The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
@@ -155,7 +155,7 @@ The log file %parm[#7]% contains entries matching the pattern &quot;%parm[#8]%&q
         <event-label>NET-SNMP: A procTable Rising Alert has been generated.</event-label>
         <descr>
 &lt;p&gt;The Net-SNMP agent has detected an error with the %parm[#6]% process.
-The error message is: %parm[#7]%.
+The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
@@ -199,6 +199,72 @@ The error message is: %parm[#7]%.
                     alarm-type="2" 
                     clear-key="uei.opennms.org/standard/netsnmp/traps/procTableAlertRising:%dpname%:%nodeid%:%parm[#6]%" 
                     auto-clean="false"/>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>2</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>dskTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/dskTableAlertRising</uei>
+        <event-label>NET-SNMP: A dskTable Rising Alert has been generated.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected an error with the filesystem mounted on %parm[#6]%.
+The filesystem is %parm[#7]% percent full.
+The error message is &lt;strong&gt;%parm[#8]%&lt;/strong&gt;.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A dskTable rising alert has generated for filesystem
+                        %parm[#6]% (%parm[#7]% percent full)&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.2.1.88.2</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>3</mevalue>
+                </maskelement>
+		<varbind>
+			<vbnumber>1</vbnumber>
+			<vbvalue>dskTable</vbvalue>
+		</varbind>
+        </mask>
+        <uei>uei.opennms.org/standard/netsnmp/traps/dskTableAlertFalling</uei>
+        <event-label>NET-SNMP: A dskTable Falling Alert has been generated.</event-label>
+        <descr>
+&lt;p&gt;The Net-SNMP agent has detected that errors with the filesystem mounted on %parm[#6]% are corrected.
+The filesystem is now %parm[#7]% percent full.
+&lt;/p&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Net-SNMP Event: A dskTable falling alert has generated for filesystem %parm[#6]%. It is now %parm[#7]% percent full&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="2" auto-clean="false" />
 </event>
 
 <!-- Start of MIB: DISMAN-EVENT-MIB -->

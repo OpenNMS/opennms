@@ -32,7 +32,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.eventd.db;
+package org.opennms.netmgt.model.events;
 
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -42,8 +42,8 @@ import org.opennms.netmgt.xml.event.Value;
  * This is an utility class used to format the event parameters - to be inserted
  * into the 'events' table
  * 
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  */
 public final class Parameter {
     /**

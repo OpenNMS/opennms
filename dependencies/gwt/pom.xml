@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.7.11-SNAPSHOT</version>
+    <version>1.9.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -46,6 +46,18 @@
       <artifactId>gwteventservice</artifactId>
       <version>1.1.1</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.gwt.google-apis</groupId>
+      <artifactId>gwt-ajaxloader</artifactId>
+      <version>1.0.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-user</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
@@ -61,13 +73,6 @@
       <id>opennms-snapshots</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/snapshots</url>
-    </repository>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>hosted.tennera.svn</id>
-      <name>Tennera release repository on fedorahosted.org</name>
-      <url>http://svn.fedorahosted.org/svn/tennera/m2repo</url>
     </repository>
   </repositories>
 </project>

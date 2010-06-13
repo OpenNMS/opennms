@@ -53,8 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -248,7 +246,7 @@ public class Poller extends AbstractServiceDaemon {
 
     private void createScheduler() {
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         // Create a scheduler
         //
         try {
@@ -271,7 +269,7 @@ public class Poller extends AbstractServiceDaemon {
 
             getScheduler().start();
         } catch (RuntimeException e) {
-            if (log().isEnabledFor(Level.FATAL))
+            if (log().isEnabledFor(ThreadCategory.Level.FATAL))
                 log().fatal("start: Failed to start scheduler", e);
             throw e;
         }
@@ -310,7 +308,7 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private void scheduleExistingServices() throws Exception {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         
         scheduleMatchingServices(null);
         
@@ -330,7 +328,7 @@ public class Poller extends AbstractServiceDaemon {
     }
     
     public void scheduleService(final int nodeId, final String nodeLabel, final String ipAddr, final String svcName) {
-        final Category log = ThreadCategory.getInstance(getClass());
+        final ThreadCategory log = ThreadCategory.getInstance(getClass());
         try {
             /*
              * Do this here so that we can use the treeLock for this node as we
@@ -410,7 +408,7 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private boolean scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, boolean active, Number svcLostEventId, Date date, String svcLostUei) {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         Package pkg = findPackageForService(ipAddr, serviceName);
         if (pkg == null) {
@@ -504,7 +502,7 @@ public class Poller extends AbstractServiceDaemon {
     }
     
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
-        Category log = ThreadCategory.getInstance();
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (!getPollerConfig().serviceInPackageAndEnabled(svcName, pkg)) {
             if (log.isDebugEnabled())

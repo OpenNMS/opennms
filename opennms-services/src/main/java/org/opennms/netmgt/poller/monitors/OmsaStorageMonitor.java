@@ -104,7 +104,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
         
-        String returnValue = new String();
+        final StringBuffer returnValue = new StringBuffer();
         
         SnmpAgentConfig agentConfig = configureAgent(parameters, iface, ipaddr);
 
@@ -127,7 +127,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             if(virtualDiskRollUpStatus.toInt() != 3){
             	// array or one of its components is not happy lets find out which 	
             	
-            	returnValue = "log vol(" + virtualDiskNumber + ") degraded"; // XXX should degraded be the virtualDiskState ? 
+                returnValue.append("log vol(").append(virtualDiskNumber).append(") degraded"); // XXX should degraded be the virtualDiskState ? 
             
             	SnmpObjId arrayDiskLogicalConnectionVirtualDiskNumberSnmpObject = SnmpObjId.get(arrayDiskLogicalConnectionVirtualDiskNumber);	
             	Map<SnmpInstId,SnmpValue> arrayDisks = SnmpUtils.getOidValues(agentConfig, "OMSAStorageMonitor", arrayDiskLogicalConnectionVirtualDiskNumberSnmpObject);
@@ -160,14 +160,14 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             			SnmpObjId arrayDiskNexusIDSnmpObject = SnmpObjId.get(arrayDiskNexusID + "." + disk.getKey().toString());
             			SnmpValue nexusValue =  SnmpUtils.get(agentConfig,arrayDiskNexusIDSnmpObject);
             			
-            			returnValue += " phy drv(" + nexusValue +") " + arrayDiskState;
+            			returnValue.append(" phy drv(").append(nexusValue).append(") ").append(arrayDiskState);
             			}
             			
             		}
             		
 				}
             	
-            	return PollStatus.unavailable(returnValue);
+            	return PollStatus.unavailable(returnValue.toString());
             	
             }
             

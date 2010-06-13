@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -314,7 +314,10 @@ public final class ReparentViaSmb {
          * 
          * @return true if this and the passed object are equivalent.
          */
-        public boolean equals(Object o) {
+        @Override
+        public boolean equals(final Object o) {
+            if (o == null) return false;
+            if (!(o instanceof LightWeightNodeEntry)) return false;
             LightWeightNodeEntry node = (LightWeightNodeEntry) o;
 
             if (m_netbiosName == null || node.getNetbiosName() == null)
@@ -323,6 +326,16 @@ public final class ReparentViaSmb {
                 return true;
             else
                 return false;
+        }
+        
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(7, 23)
+                .append(m_nodeId)
+                .append(m_netbiosName)
+                .append(m_duplicate)
+                .append(m_hwNodeEntry)
+                .toHashCode();
         }
     }
 
@@ -352,7 +365,7 @@ public final class ReparentViaSmb {
      *             if an error occurs querying the database.
      */
     private void buildNodeLists() throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         m_existingNodeList = new ArrayList<LightWeightNodeEntry>();
         final DBUtils d = new DBUtils(getClass());
 
@@ -484,7 +497,7 @@ public final class ReparentViaSmb {
      *             if error occurs updating the database
      */
     private void reparentInterfaces() throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         List<LightWeightIfEntry> reparentedIfList = null;
         m_reparentedIfMap = null;
         final DBUtils d = new DBUtils(getClass());
@@ -628,7 +641,7 @@ public final class ReparentViaSmb {
         //
         // iterate through the reparent interface list
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
             log.debug("generateEvents:  Generating reparent events...reparentedIfMap size: " + m_reparentedIfMap.size());
@@ -685,7 +698,7 @@ public final class ReparentViaSmb {
      *            node
      */
     private synchronized void sendInterfaceReparentedEvent(String ipAddr, String ipHostName, int newNodeId, int oldNodeId, DbNodeEntry reparentNodeEntry) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("sendInterfaceReparentedEvent: ipAddr: " + ipAddr + " ipHostName: " + ipHostName + " newNodeId: " + newNodeId + " oldNodeId: " + oldNodeId);
 

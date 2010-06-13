@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://xmlns.opennms.org/xsd/config/microblog-configuration" 
+        xmlns:this="http://xmlns.opennms.org/xsd/config/microblog-configuration"
+        elementFormDefault="qualified">
+
+  <element name="microblog-configuration" >
+    <annotation>
+      <documentation>
+        Microblog configuration groups
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:microblog-profile" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="default-microblog-profile-name" type="string" use="required" />
+    </complexType>
+  </element>
+
+  <element name="microblog-profile" >
+    <annotation>
+      <documentation>
+        This entity defines the parameters for a microblog service.
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="service-url" type="string" use="required" />
+      <attribute name="authen-username" type="string" use="required" />
+      <attribute name="authen-password" type="string" use="required" />
+      <attribute name="name" type="string" use="required" />
+    </complexType>
+  </element>
+  
+</schema>

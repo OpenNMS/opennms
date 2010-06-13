@@ -40,7 +40,6 @@ package org.opennms.netmgt.actiond;
 
 import java.util.Enumeration;
 
-import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
@@ -94,7 +93,7 @@ final class BroadcastEventProcessor implements EventListener {
      *            The event
      */
     public void onEvent(Event event) {
-        Category log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
+        ThreadCategory log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
 
         if (event == null) {
             return;

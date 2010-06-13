@@ -94,7 +94,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -808,7 +807,7 @@ public final class RescanProcessor implements Runnable {
 
 
 
-    private static Category log() {
+    private static ThreadCategory log() {
         return ThreadCategory.getInstance(RescanProcessor.class);
     }
 
@@ -1632,7 +1631,7 @@ public final class RescanProcessor implements Runnable {
         }
 
         for (int i = 0; i < dbSupportedServices.length; i++) {
-            Integer id = new Integer(dbSupportedServices[i].getServiceId());
+            Integer id = dbSupportedServices[i].getServiceId();
             String sn = (serviceNames.get(id)).toString();
 
             DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.get(node.getNodeId(), ifaddr, dbSupportedServices[i].getServiceId());
@@ -2510,10 +2509,6 @@ public final class RescanProcessor implements Runnable {
                             if (smbc.getDomainName() != null) {
                                 currNodeEntry.setDomainName(smbc.getDomainName());
                             }
-
-                            if (smbc.getOS() != null) {
-                                currNodeEntry.setOS(smbc.getOS());
-                            }
                         }
                     }
                 }
@@ -2548,10 +2543,6 @@ public final class RescanProcessor implements Runnable {
 
             if (savedSmbcRef.getDomainName() != null) {
                 currNodeEntry.setDomainName(savedSmbcRef.getDomainName());
-            }
-
-            if (savedSmbcRef.getOS() != null) {
-                currNodeEntry.setOS(savedSmbcRef.getOS());
             }
         }
 

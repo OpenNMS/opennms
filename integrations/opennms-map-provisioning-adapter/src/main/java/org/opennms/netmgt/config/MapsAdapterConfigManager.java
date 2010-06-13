@@ -45,7 +45,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPSorter;
@@ -321,7 +320,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *         otherwise.
      */
     private synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        Category log = log();
+        ThreadCategory log = log();
     
         boolean filterPassed = false;
     
@@ -480,7 +479,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
 
     
  
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 

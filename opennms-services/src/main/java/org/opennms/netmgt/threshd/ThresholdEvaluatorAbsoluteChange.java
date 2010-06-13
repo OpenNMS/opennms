@@ -84,7 +84,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
 
             Assert.isTrue(TYPE.equals(thresholdConfig.getType()), "threshold for ds-name '" + thresholdConfig.getDatasourceExpression() + "' has type of '" + thresholdConfig.getType() + "', but this evaluator only supports thresholds with a 'type' value of '" + TYPE + "'");
 
-            Assert.isTrue(thresholdConfig.getValue() != Double.NaN, "threshold must have a 'value' value that is a number");
+            Assert.isTrue(!Double.isNaN(thresholdConfig.getValue()), "threshold must have a 'value' value that is a number");
             Assert.isTrue(thresholdConfig.getValue() != Double.POSITIVE_INFINITY && thresholdConfig.getValue() != Double.NEGATIVE_INFINITY, "threshold must have a 'value' value that is not positive or negative infinity");
             Assert.isTrue(thresholdConfig.getValue() != 0.0, "threshold must not be 0 for absolute change");
 
@@ -97,7 +97,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         }
 
         public Status evaluate(double dsValue) {
-        	if(getLastSample()!=Double.NaN) {
+        	if(!Double.isNaN(getLastSample())) {
 	            double threshold = getLastSample()+getChange();
 	
 	            if (getChange() < 0.0) {

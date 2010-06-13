@@ -51,7 +51,6 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
@@ -306,13 +305,13 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     }
 
     public Integer getPort() {
-        return new Integer(m_tcpPort);
+        return m_tcpPort;
     }
 
-    public void setPort(Integer port) {
+    public void setPort(final Integer port) {
         assertNotRunning();
         
-        m_tcpPort = port.intValue();
+        m_tcpPort = port;
     }
 
     public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
@@ -345,7 +344,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
         Assert.state(m_status == START_PENDING || m_status == STOPPED, "The fiber is already running and cannot be modified or started");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

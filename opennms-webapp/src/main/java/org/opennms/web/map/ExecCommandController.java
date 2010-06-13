@@ -47,7 +47,6 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.WebSecurityUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -62,7 +61,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class ExecCommandController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
    		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
@@ -131,9 +130,9 @@ public class ExecCommandController implements Controller {
 	    log.info("Executing "+commandToExec);
         response.setBufferSize(0);
         response.setContentType("text/html");
-        response.setHeader("pragma","no-Chache");
+        response.setHeader("pragma","no-Cache");
         response.setHeader("Expires","0");
-        response.setHeader("Chache-Control","no-Chache");
+        response.setHeader("Cache-Control","no-Cache");
         final OutputStreamWriter os = new OutputStreamWriter(response.getOutputStream(), "UTF-8");
         os.write("<html>"); 
 
@@ -149,7 +148,7 @@ public class ExecCommandController implements Controller {
 			"<div width='100%' align='right'>" +
 			"<input type='button' value='Close' onclick='window.close();'/>" +
 			"</div>" +
-    		"<h3><font face='courier,arial'>Executing "+comm+" for the ip address "+address+"</h3>");
+    		"<h3><font face='courier,arial'>Executing "+comm+" for the IP address "+address+"</h3>");
 			new Thread(new Runnable()
 			{
 			    public void run()
@@ -167,14 +166,14 @@ public class ExecCommandController implements Controller {
 			            
 			        }
 			        catch(IOException io){
-			        	log.warn(io);
+			        	log.warn(io.getMessage());
 			        }
 			    }
-			}).start();
+			}, this.getClass().getSimpleName()).start();
 			try{
 				p.waitFor();
 			}catch(Exception e){
-				log.warn(e);
+				log.warn(e.getMessage());
 			}
 
 		} catch (Exception e) {

@@ -247,14 +247,14 @@
                   <%=getAllUsersMinusInView(view)%><br/>
                   <p align=center>
                   <input type="button"  onClick="selectAllAvailableUsers()" value="Select All"><br/>
-                  <input type="button" onClick="addUsers()" value="&nbsp;&gt;&gt;&nbsp;"></p>
+                  <input type="button" onClick="addUsers()" value="&nbsp;&#155;&#155;&nbsp;"></p>
                 </td>
                 <td align="center">
                   Users Currently in View <br/>
                   <%=getUsersList(view)%><br/>
                   <p align=center>
                   <input type="button" onClick="selectAllSelectedUsers()" value="Select All"><br/>
-                  <input type="button" onClick="removeUsers()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
+                  <input type="button" onClick="removeUsers()" value="&nbsp;&#139;&#139;&nbsp;" ></p>
                 </td>
               </tr>
             </table>
@@ -275,14 +275,14 @@
                   <%=getAllGroupsMinusInView(view)%><br/>
                   <p align=center>
                   <input type="button" onClick="selectAllAvailableGroups()" value="Select All"><br/>
-                  <input type="button" onClick="addGroups()" value="&nbsp;&gt;&gt;&nbsp;"></p>
+                  <input type="button" onClick="addGroups()" value="&nbsp;&#155;&#155;&nbsp;"></p>
                 </td>
                 <td align="center">
                   Groups Currently in View <br/>
                   <%=getGroupsList(view)%><br/>
                   <p align=center>
                   <input type="button" onClick="selectAllSelectedGroups()" value="Select All"><br/>
-                  <input type="button" onClick="removeGroups()" value="&nbsp;&lt;&lt;&nbsp;" ></p>
+                  <input type="button" onClick="removeGroups()" value="&nbsp;&#139;&#139;&nbsp;" ></p>
                 </td>
               </tr>
             </table>

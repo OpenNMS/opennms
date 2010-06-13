@@ -44,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -151,7 +150,7 @@ public class OnmsSnmpCollection {
         return m_params.getSnmpPrivProtocol(current);
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

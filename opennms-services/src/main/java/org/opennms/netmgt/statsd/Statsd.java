@@ -39,7 +39,6 @@ package org.opennms.netmgt.statsd;
 import java.text.ParseException;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -202,7 +201,7 @@ public class Statsd implements SpringServiceDaemon {
     }
 
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

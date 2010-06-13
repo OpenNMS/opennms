@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Comparator;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -49,7 +48,7 @@ import org.opennms.core.utils.ThreadCategory;
  *
  */
 public class SpecificComparator implements Comparator<String> {
-    Category log = ThreadCategory.getInstance(getClass());
+    ThreadCategory log = ThreadCategory.getInstance(getClass());
 
     /**
      * returns the difference of spec1 - spec2

@@ -3,7 +3,7 @@
 Link.prototype = new SVGElement;
 Link.superclass = SVGElement.prototype;
 
-function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeid1,nodeid2)
+function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapElement2, stroke, stroke_width, dash_array, flash, totalLinks, deltaLink,nodeids)
 {
 	if (arguments.length >= 8) {
 		var idSplitted = id.split("-");
@@ -12,9 +12,6 @@ function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapEl
 			var tmp = mapElement1;
 			mapElement1=mapElement2;
 			mapElement2=tmp;
-			tmp = nodeid1;
-			nodeid1 = nodeid2;
-			nodeid2 = tmp;
 		}
 		
 		this.typology=typology;
@@ -25,8 +22,7 @@ function Link(id, typology, status, numberOfLinks, statusMap, mapElement1, mapEl
 		this.mapElement1 = mapElement1;
 		this.mapElement2 = mapElement2;
 		
-		this.nodeid1=nodeid1;
-		this.nodeid2=nodeid2;
+		this.nodeids=nodeids;
 
 		this.numberOfLinks = numberOfLinks;
 		this.statusMap = statusMap;
@@ -186,14 +182,10 @@ Link.prototype.getSecondElementId = function()
      return ids[1];
 }
 
-Link.prototype.getFirstNodeId = function()
-{
-	return this.nodeid1;
-}
 
-Link.prototype.getSecondNodeId = function()
+Link.prototype.getNodeIds = function()
 {
-	return this.nodeid2;
+	return this.nodeids;
 }
 
 Link.prototype.getStatusMap = function()

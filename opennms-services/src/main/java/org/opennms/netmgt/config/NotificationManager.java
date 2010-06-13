@@ -55,7 +55,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -110,6 +109,7 @@ public abstract class NotificationManager {
     public static final String PARAM_HOME_PHONE = "-hphone";
     public static final String PARAM_MOBILE_PHONE = "-mphone";
     public static final String PARAM_TUI_PIN = "-tuipin";
+    public static final String PARAM_MICROBLOG_USERNAME = "-ublog";
     
     NotifdConfigManager m_configManager;
     private DataSource m_dataSource;
@@ -156,7 +156,7 @@ public abstract class NotificationManager {
         update();
         List<Notification> notifList = new ArrayList<Notification>();
         boolean matchAll = getConfigManager().getNotificationMatch();
-        Category log = this.log();
+        ThreadCategory log = this.log();
   
         // This if statement will check to see if notification should be suppressed for this event.
 
@@ -245,7 +245,7 @@ public abstract class NotificationManager {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     /**
@@ -396,7 +396,7 @@ public abstract class NotificationManager {
         Connection connection = null;
         List<Integer> notifIDs = new LinkedList<Integer>();
         final DBUtils d = new DBUtils(getClass());
-        Category log = this.log();
+        ThreadCategory log = this.log();
 
         try {
             // First get most recent event ID from notifications 
@@ -472,9 +472,9 @@ public abstract class NotificationManager {
                         update.executeUpdate();
                         update.close();
                         if(wasAcked) {
-                            notifIDs.add(new Integer(-1 * notifID));
+                            notifIDs.add(-1 * notifID);
                         } else {
-                            notifIDs.add(new Integer(notifID));
+                            notifIDs.add(notifID);
                         }
                     }
                 }
@@ -510,7 +510,7 @@ public abstract class NotificationManager {
                 while (rset.next()) {
                     int nodeID = rset.getInt(1);
     
-                    allNodes.add(new Integer(nodeID));
+                    allNodes.add(nodeID);
                 }
             }
             return allNodes;
@@ -560,7 +560,7 @@ public abstract class NotificationManager {
     public void updateNoticeWithUserInfo(final String userId, final int noticeId, final String media, final String contactInfo, final String autoNotify) throws SQLException, MarshalException, ValidationException, IOException {
         if (noticeId < 0) return;
         int userNotifId = getUserNotifId();
-        Category log = this.log();
+        ThreadCategory log = this.log();
         if (log.isDebugEnabled()) {
             log.debug("updating usersnotified: ID = " + userNotifId+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
         }
@@ -914,7 +914,7 @@ public abstract class NotificationManager {
                 }
             }
         };
-        querier.execute(new Integer(notifId));
+        querier.execute(notifId);
         return parmMap;
     }
 
@@ -938,8 +938,8 @@ public abstract class NotificationManager {
      * @return
      */
     public void forEachUserNotification(final int notifId, final RowProcessor rp) {
-        Querier querier = new Querier(m_dataSource, "select * from usersNotified where notifyId = ? order by notifytime", rp);
-        querier.execute(new Integer(notifId));
+        final Querier querier = new Querier(m_dataSource, "select * from usersNotified where notifyId = ? order by notifytime", rp);
+        querier.execute(notifId);
     }
 
     /**
@@ -947,8 +947,8 @@ public abstract class NotificationManager {
      * @return
      */
     public String getQueueForNotification(final int notifId) {
-        SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select queueID from notifications where notifyId = ?");
-        querier.execute(new Integer(notifId));
+        final SingleResultQuerier querier = new SingleResultQuerier(m_dataSource, "select queueID from notifications where notifyId = ?");
+        querier.execute(notifId);
         return (String)querier.getResult();
     }
     
@@ -1003,7 +1003,7 @@ public abstract class NotificationManager {
             }
             
         });
-        querier.execute(new Integer(eventid));
+        querier.execute(eventid);
         return event;
     }
 

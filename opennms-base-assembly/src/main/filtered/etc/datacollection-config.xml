@@ -75,9 +75,15 @@
     </resourceType>
 
     <resourceType name="hrStorageIndex" label="Storage (MIB-2 Host Resources)"
-                  resourceLabel="${hrStorageDescr} (index ${index})">
+                  resourceLabel="${hrStorageDescr}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="hrStorageNonUnique" label="Storage (MIB-2 Host Resources, non-unique descriptions)"
+                  resourceLabel="${hrStorageDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ipuMGCPMsgStatsEntry" label="IP Unity MGCP Message Stats"
@@ -95,13 +101,24 @@
     <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)"
                   resourceLabel="${diskIODevice} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2021.13.15.1.1.2" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\\s//" />
+		<parameter key="replace-all" value="s/:\\\\.*//" />
+      </storageStrategy>
     </resourceType>
 
     <resourceType name="dskIndex" label="Disk Table Index (UCD-SNMP MIB)"
                   resourceLabel="${ns-dskPath} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2021.9.1.2" />
+		<parameter key="replace-first" value="s/^-$/_root_fs/" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\\s//" />
+		<parameter key="replace-all" value="s/:\\\\.*//" />
+      </storageStrategy>
     </resourceType>
 
     <resourceType name="pgmonIndex" label="SystemEDGE Process Group Monitor"
@@ -188,7 +205,10 @@
     <resourceType name="astChanType" label="Asterisk Channel Type"
                  resourceLabel="${astChanTypeName}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.22736.1.5.4.1.2" />
+		<parameter key="replace-all" value="s/\\s+//" />
+      </storageStrategy>
     </resourceType>
 
     <!-- Juniper Resource Types -->
@@ -242,13 +262,25 @@
     <!-- HP-UX fileSystemTable resource type -->
     <resourceType name="hpuxFSTable" label="HP-UX Filesystem" resourceLabel="${hpuxFSName} on ${hpuxFSDir}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.11.2.3.1.2.2.1.10" />
+		<parameter key="replace-first" value="s/^-$/_root_fs/" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\\s//" />
+      </storageStrategy>
     </resourceType>
 
     <!-- Netware Resource Types -->
     <resourceType name="netwareDisk" label="Netware Disk" resourceLabel="${nwLabel}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.23.2.28.2.14.1.2" />
+		<parameter key="replace-first" value="s/^-$/_root_fs/" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\\s//" />
+		<parameter key="replace-all" value="s/:\\\\/_/" />
+		<parameter key="replace-all" value="s/:/_/" />
+      </storageStrategy>
     </resourceType>
 
     <!-- Brocade Resource Types -->
@@ -331,31 +363,48 @@
     <resourceType name="aixVolumeGroup" label="AIX Volume Group"
                   resourceLabel="${aixVgName} (ID ${aixVgIdentifier})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.2.1.2.1.1" />
+		<parameter key="replace-all" value="s/\\+s//" />
+      </storageStrategy>
     </resourceType>
 
     <resourceType name="aixPhysicalVolume" label="AIX Physical Volume"
                   resourceLabel="${aixPvName} (VG ${aixPvNameVG})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.2.3.1.1.1" />
+		<parameter key="replace-all" value="s/\\s+//" />
+      </storageStrategy>
     </resourceType>
 
     <resourceType name="aixPagingSpace" label="AIX Paging Space"
                   resourceLabel="${aixPageName} (VG ${aixPvNameVG}, PV ${aixPageNamePV})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.2.4.2.1.1" />
+		<parameter key="replace-all" value="s/\\s+//" />
+      </storageStrategy>
     </resourceType>
 
     <resourceType name="aixPrintQueue" label="AIX Print Queue"
                   resourceLabel="${aixPrtQueName} (${aixPrtQueDevice})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.3.1.1.1.1" />
+		<parameter key="replace-all" value="s/\\s+//" />
+      </storageStrategy>
     </resourceType>
 
     <resourceType name="aixFilesystem" label="AIX Filesystem"
                   resourceLabel="${aixFsName} (${aixFsMountPoint})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-oid" value=".1.3.6.1.4.1.2.6.191.6.2.1.3" />
+		<parameter key="replace-first" value="s/^-$/_root_fs/" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\\s//" />
+      </storageStrategy>
     </resourceType>
 
     <resourceType name="pipePosition" label="Allot NetEnforcer Pipe Position" resourceLabel="${pipeName}">
@@ -485,6 +534,17 @@
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageIndex" alias="hrStorageAllocUnits" type="gauge" />
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageIndex" alias="hrStorageSize"       type="gauge" />
         <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="hrStorageIndex" alias="hrStorageUsed"       type="gauge" />
+       </group>
+
+      <!-- A copy of mib2-host-resources-storage, but using a different resource type to work around
+           certain agents (notably AS/400) whose hrStorageTable entries have non-unique values of
+           hrStorageDescr and are therefore unsuitable for the HostFileSystemStorageStrategy -->
+      <group name="mib2-host-resources-storage-non-unique" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.2" instance="hrStorageNonUnique" alias="hrStorageType"       type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="hrStorageNonUnique" alias="hrStorageDescr"      type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageNonUnique" alias="hrStorageAllocUnits" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageNonUnique" alias="hrStorageSize"       type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="hrStorageNonUnique" alias="hrStorageUsed"       type="gauge" />
        </group>
 
       <group name="mib2-host-resources-system" ifType="ignore">
@@ -3358,7 +3418,7 @@
      <systemDef name="IBM-AS400">
         <sysoid>.1.3.6.1.4.1.2.6.11</sysoid>
         <collect>
-          <includeGroup>mib2-host-resources-storage</includeGroup>
+          <includeGroup>mib2-host-resources-storage-non-unique</includeGroup>
           <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>mib2-host-resources-memory</includeGroup>
           <includeGroup>mib2-host-resources-processor</includeGroup>

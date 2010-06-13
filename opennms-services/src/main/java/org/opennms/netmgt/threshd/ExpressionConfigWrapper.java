@@ -35,12 +35,22 @@
  */
 package org.opennms.netmgt.threshd;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import org.nfunk.jep.JEP;
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.threshd.Expression;
+
 
 /**
  * 
@@ -49,42 +59,149 @@ import org.opennms.netmgt.config.threshd.Expression;
  */
 public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
-    private Expression m_expression;
-    private Collection<String> m_datasources;
-    private JEP m_parser;
-    public ExpressionConfigWrapper(Expression expression) throws ThresholdExpressionException {
-        super(expression);
-        m_expression=expression;
-        m_datasources=new ArrayList<String>();
-        m_parser = new JEP();
-        m_parser.setAllowUndeclared(true); //This is critical - we allow undelared vars, then ask the parser for what vars are used
-        m_parser.addStandardFunctions();
-        m_parser.parseExpression(m_expression.getExpression());
-        if(m_parser.hasError()) {
-            throw new ThresholdExpressionException("Could not parse threshold expression:"+m_parser.getErrorInfo());
-        }
-        m_datasources.addAll(m_parser.getSymbolTable().keySet());
-    }
-    
-    @Override
-    public String getDatasourceExpression() {
-        return m_expression.getExpression();
-    }
-    @Override
-    public Collection<String> getRequiredDatasources() {
-       return m_datasources;
-    }
+	/**
+	 * This class is used to sniff all of the variable names that a script tries
+	 * to use out of the ScriptContext during a call to eval(). This will allow
+	 * us to construct a list of required parameters for the script expression.
+	 */
+	private static class BindingsSniffer extends HashMap<String,Object> implements Bindings {
 
-    @Override
-    public double evaluate(Map<String, Double> values) throws ThresholdExpressionException {
-        for(String valueName : values.keySet()) {
-            m_parser.addVariable(valueName, values.get(valueName));
-        }
-        double result=m_parser.getValue();
-        if(m_parser.hasError()) {
-            throw new ThresholdExpressionException("Error while evaluating expression "+m_expression.getExpression()+": "+m_parser.getErrorInfo());
-        }
-        return result;
-    }
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5595028572061424206L;
+		private final Set<String> m_sniffedKeys = new HashSet<String>();
+		private final String[] ignoreTheseKeys = new String[] { "math" };
 
+		@Override
+		public Object get(Object key) {
+			LogUtils.tracef(this, "Bindings.get(%s)", key);
+			m_sniffedKeys.add((String)key);
+			return super.get(key);
+		}
+
+		@Override
+		public boolean containsKey(Object key) {
+			LogUtils.tracef(this, "Bindings.containsKey(%s)", key);
+			m_sniffedKeys.add((String)key);
+			return super.containsKey(key);
+		}
+
+		public Set<String> getSniffedKeys() {
+			LogUtils.tracef(this, "Bindings.getSniffedKeys(%s)");
+			m_sniffedKeys.removeAll(Arrays.asList(ignoreTheseKeys));
+			return Collections.unmodifiableSet(m_sniffedKeys);
+		}
+	}
+
+	private final Expression m_expression;
+	private final Collection<String> m_datasources;
+	private final ScriptEngine m_parser;
+	public ExpressionConfigWrapper(Expression expression) throws ThresholdExpressionException {
+		super(expression);
+		m_expression = expression;
+
+		// Fetch an instance of the JEXL script engine
+		ScriptEngineManager mgr = new ScriptEngineManager();
+		m_parser = mgr.getEngineByName("jexl");
+
+		BindingsSniffer sniffer = new BindingsSniffer();
+		sniffer.put("math", new MathBinding());
+
+		// Test parsing of the expression and collect the variable names by using
+		// a Bindings instance that sniffs all of the variable names
+		try {
+			m_parser.eval(m_expression.getExpression(), sniffer);
+		} catch (Throwable e) {
+			throw new ThresholdExpressionException("Could not parse threshold expression:" + e.getMessage(), e);
+		}
+
+		m_datasources = sniffer.getSniffedKeys();
+	}
+
+	@Override
+	public String getDatasourceExpression() {
+		return m_expression.getExpression();
+	}
+	@Override
+	public Collection<String> getRequiredDatasources() {
+		return m_datasources;
+	}
+
+	/**
+	 * This class provides an instance that gives access to the {@link java.lang.Math} functions.
+	 * You can access this variable in your expressions by using the <code>math</code> variable 
+	 * (ie. <code>math.abs(-1)</code>).
+	 */
+	public static class MathBinding {
+		public double abs(double a) { return Math.abs(a); }
+		public float abs(float a) { return Math.abs(a); }
+		public int abs(int a) { return Math.abs(a); }
+		public long abs(long a) { return Math.abs(a); }
+		public double acos(double a) { return Math.acos(a); }
+		public double asin(double a) { return Math.asin(a); }
+		public double atan(double a) { return Math.atan(a); }
+		public double atan2(double a, double b) { return Math.atan2(a, b); }
+		public double cbrt(double a) { return Math.cbrt(a); }
+		public double ceil(double a) { return Math.ceil(a); }
+		public double copySign(double magnitude, double sign) { return Math.copySign(magnitude, sign); }
+		public float copySign(float magnitude, float sign) { return Math.copySign(magnitude, sign); }
+		public double cos(double a) { return Math.cos(a); }
+		public double cosh(double a) { return Math.cosh(a); }
+		public double exp(double a) { return Math.exp(a); }
+		public double expm1(double a) { return Math.expm1(a); }
+		public double floor(double a) { return Math.floor(a); }
+		public int getExponent(double a) { return Math.getExponent(a); }
+		public int getExponent(float a) { return Math.getExponent(a); }
+		public double hypot(double a, double b) { return Math.hypot(a, b); }
+		public double IEEEremainder(double a, double b) { return Math.IEEEremainder(a, b); }
+		public double log(double a) { return Math.log(a); }
+		public double log10(double a) { return Math.log10(a); }
+		public double log1p(double a) { return Math.log1p(a); }
+		public double max(double a, double b) { return Math.max(a, b); }
+		public float max(float a, float b) { return Math.max(a, b); }
+		public int max(int a, int b) { return Math.max(a, b); }
+		public long max(long a, long b) { return Math.max(a, b); }
+		public double min(double a, double b) { return Math.min(a, b); }
+		public float min(float a, float b) { return Math.min(a, b); }
+		public int min(int a, int b) { return Math.min(a, b); }
+		public long min(long a, long b) { return Math.min(a, b); }
+		public double nextAfter(double a, double direction) { return Math.nextAfter(a, direction); }
+		public float nextAfter(float a, double direction) { return Math.nextAfter(a, direction); }
+		public double nextUp(double a) { return Math.nextUp(a); }
+		public float nextUp(float a) { return Math.nextUp(a); }
+		public double pow(double a, double b) { return Math.pow(a, b); }
+		public double random() { return Math.random(); }
+		public double rint(double a) { return Math.rint(a); }
+		public long round(double a) { return Math.round(a); }
+		public int round(float a) { return Math.round(a); }
+		public double scalb(double a, int scaleFactor) { return Math.scalb(a, scaleFactor); }
+		public float scalb(float a, int scaleFactor) { return Math.scalb(a, scaleFactor); }
+		public double signum(double a) { return Math.signum(a); }
+		public float signum(float a) { return Math.signum(a); }
+		public double sin(double a) { return Math.sin(a); }
+		public double sinh(double a) { return Math.sinh(a); }
+		public double sqrt(double a) { return Math.sqrt(a); }
+		public double tan(double a) { return Math.tan(a); }
+		public double tanh(double a) { return Math.tanh(a); }
+		public double toDegrees(double a) { return Math.toDegrees(a); }
+		public double toRadians(double a) { return Math.toRadians(a); }
+		public double ulp(double a) { return Math.ulp(a); }
+		public float ulp(float a) { return Math.ulp(a); }
+	}
+
+	@Override
+	public double evaluate(Map<String, Double> values) throws ThresholdExpressionException {
+		// Add all of the variable values to the script context
+		m_parser.getBindings(ScriptContext.ENGINE_SCOPE).putAll(values);
+		m_parser.getBindings(ScriptContext.ENGINE_SCOPE).put("math", new MathBinding());
+		double result = Double.NaN;
+		try {
+			// Evaluate the script expression
+			result = (Double)m_parser.eval(m_expression.getExpression());
+		} catch (Throwable e) {
+			throw new ThresholdExpressionException("Error while evaluating expression "+m_expression.getExpression()+": " + e.getMessage(), e);
+		}
+		return result;
+	}
 }

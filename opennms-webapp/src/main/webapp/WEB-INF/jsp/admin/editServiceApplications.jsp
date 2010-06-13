@@ -48,15 +48,11 @@ of node <a href="<c:url value='element/node.jsp?node=${model.service.ipInterface
     </select>
       </td>
       
-      <td align="center" class="normal">  
-        ----&gt;
-        <br/>
-        <input type="submit" name="action" value="Add"/>
+      <td class="normal" style="text-align:center; vertical-align:middle;">  
+        <input type="submit" name="action" value="Add &#155;&#155;"/>
         <br/>
         <br/>
-        <input type="submit" name="action" value="Remove"/>
-        <br/>
-        &lt;----
+        <input type="submit" name="action" value="&#139;&#139; Remove"/>
       </td>
     
       <td class="normal">  

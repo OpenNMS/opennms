@@ -80,6 +80,10 @@
   <bean name="/admin/SwitchRole.map" class="org.opennms.web.map.SwitchRoleController">
     <property name="manager" ref="manager" />
   </bean>
+
+  <bean name="/admin/ReloadConfig.map" class="org.opennms.web.map.ReloadConfigController">
+    <property name="manager" ref="manager" />
+  </bean>
  
   <bean name="/OpenMap.map" class="org.opennms.web.map.OpenMapController">
     <property name="manager" ref="manager" />

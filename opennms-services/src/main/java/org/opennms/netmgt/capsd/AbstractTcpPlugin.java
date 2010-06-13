@@ -50,7 +50,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -107,7 +106,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     final protected boolean checkConnection(ConnectionConfig config) {
         // get a log to send errors
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // don't let the user set the timeout to 0, an infinite loop will occur
         // if the server is down
@@ -287,7 +286,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
     final protected void saveKeyedInteger(Map<String, Object> qualifiers, String key, int value) {
         if (qualifiers != null && !qualifiers.containsKey(key))
-            qualifiers.put(key, new Integer(value));
+            qualifiers.put(key, Integer.valueOf(value));
     }
 
     /**

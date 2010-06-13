@@ -42,7 +42,6 @@ package org.opennms.netmgt.rtc;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
@@ -145,7 +144,7 @@ final class BroadcastEventProcessor implements EventListener {
         if (event == null)
             return;
 
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
             log.debug("About to start processing recd. event");

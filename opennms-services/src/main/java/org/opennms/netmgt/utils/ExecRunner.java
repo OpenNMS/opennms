@@ -80,10 +80,10 @@ public class ExecRunner {
     private static final String MAX_RUN_TIME_EXCEEDED_STRING = "MAX_RUN_TIME_EXCEEDED";
 
     /** String to capture STDOUT * */
-    private String out = new String();
+    private String out = "";
 
     /** String to capture STDERR * */
-    private String err = new String();
+    private String err = "";
 
     /** Default max run time (in seconds) * */
     private int maxRunTimeSecs = 0;

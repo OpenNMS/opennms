@@ -48,7 +48,12 @@
  */
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -188,7 +193,7 @@ public class EventconfFactoryTest {
     public void testGetEventUEIS() {
         List<String> ueis=EventconfFactory.getInstance().getEventUEIs();
         //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 4, ueis.size());
+        assertEquals("Count must be correct", 6, ueis.size());
         assertTrue("Must contain known UEI", ueis.contains(knownUEI1));
         assertTrue("Must contain known UEI", ueis.contains(knownSubfileUEI1));
     }
@@ -197,7 +202,7 @@ public class EventconfFactoryTest {
     public void testGetLabels() {
         Map<String,String> labels=EventconfFactory.getInstance().getEventLabels();
         //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 4, labels.size());
+        assertEquals("Count must be correct", 6, labels.size());
         assertTrue("Must contain known UEI", labels.containsKey(knownUEI1));
         assertEquals("Must have known Label", labels.get(knownUEI1), knownLabel1);
         assertTrue("Must contain known UEI", labels.containsKey(knownSubfileUEI1));
@@ -391,7 +396,9 @@ public class EventconfFactoryTest {
             } });
         Set<File> eventFilesOnDisk = new HashSet<File>(Arrays.asList(eventFilesOnDiskArray));
 
-        Events events = CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getReaderForConfigFile("eventconf.xml"));
+        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("eventconf.xml");
+        Events events = CastorUtils.unmarshal(Events.class, is);
+        is.close();
         Set<File> eventFilesIncluded = new HashSet<File>(events.getEventFileCollection().size());
         for (String eventFile : events.getEventFileCollection()) {
             eventFilesIncluded.add(new File(eventConfFile.getParentFile(), eventFile));

@@ -5,6 +5,22 @@ function testOKResponse(action, response){
 		return false;
 }
 
+function reloadConfiguration(){
+	loading++;
+	assertLoading();
+	getMapRequest ( RELOAD_CONFIG_ACTION+"."+suffix, null, handleReloadConfigResponse, "text/xml", null );	
+}
+
+function handleReloadConfigResponse(data) {
+	if((data.success || data.status==200) && testOKResponse(RELOAD_CONFIG_ACTION, data.content) ) {
+		top.reloadConfig(1000,2000);
+	} else {
+		alert('Reloading Map configuration failed');
+	}
+	loading--;	
+	assertLoading();
+    }
+
 function loadDefaultMap(){
 	loading++;
 	assertLoading();
@@ -92,13 +108,12 @@ function handleLoadNodesResponse(data) {
 		nodeLabels = [" "];
 	    var nodeSorts = [null];
 	    var nodeids = [null];
-	    var id,label,tmpNode;
+	    var id,label,ipaddr,tmpNode;
 		for(var n in currNodes){
 			id =currNodes[n].id;
 			label = currNodes[n].label;
-			// the second label should be the ip address but for the moment we are still using the FQDN
-			tmpNode = new Node(id,label,label);
-			
+			ipaddr = currNodes[n].ipaddr;
+			tmpNode = new Node(id,label,ipaddr);
 			nodeids.push(id);
 			nodeLabels.push(label);
 			nodeSorts.push(tmpNode);
@@ -264,18 +279,20 @@ function handleAddElementResponse(data) {
 	}	
 	// Links
 
-	var vlink,id1,id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
+	var vlink,id1,id2, typology, status,nodeids,numberOfLinks, statusMap;
 	for(var linksIndex in addElem.links) {
 		vlink = addElem.links[linksIndex];
 		id1=vlink.first;
 		id2=vlink.second;
 		typology=vlink.linkTypeId;
 		status=vlink.linkStatusString;
-		nodeid1=vlink.firstNodeid;
-		nodeid2=vlink.secondNodeid;
+		nodeids=vlink.nodeids;
 		numberOfLinks=vlink.numberOfLinks;
 		statusMap=vlink.vlinkStatusMap;
-		map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+		if ( numberOfLinks == 1 )
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);
+		else
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);		
 	}
 		
 	map.render();
@@ -368,6 +385,7 @@ function handleLoadingCloseMap(data) {
 		reloadGrid();
 		clearMapInfo();
 		hideMapInfo();
+		setTimeout("onClosingActiveTab();",200);
 	} else {
 	    alert('Close map failed');
 	}
@@ -484,18 +502,19 @@ function handleLoadingMap(data) {
 		}
 	}
 	for ( var link in openingMap.links ) {
-		var id1, id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
+		var id1, id2, typology, status,nodeids,numberOfLinks, statusMap;
 		var vlink = openingMap.links[link];
 		id1=vlink.first;
 		id2=vlink.second;
 		typology=vlink.linkTypeId;
 		status=vlink.linkStatusString;
-		nodeid1=vlink.firstNodeid;
-		nodeid2=vlink.secondNodeid;
+		nodeids=vlink.nodeids;
 		numberOfLinks=vlink.numberOfLinks;
 		statusMap=vlink.vlinkStatusMap;
-
-		map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+		if ( numberOfLinks == 1 )
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);
+		else
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);		
 	}
 	
 	savedMapString=getMapString();
@@ -524,6 +543,7 @@ function handleLoadingMap(data) {
 }
 
 function saveMap() {
+	saving=true;
 	var data="Nodes";
 	var firstItem=true;
 	for (elemToRender in map.mapElements){
@@ -580,6 +600,7 @@ function handleSaveResponse(data) {
 	
 	savedMapString = getMapString();			
 	saveMapInHistory();
+	top.$j.history.load(currentMapId);
 	
 	writeMapInfo();
 	showHistory();
@@ -608,14 +629,14 @@ function handleDeleteMapResponse(data) {
 		currentMapCreatetime="";
 		currentMapLastmodtime="";
 	
-		map.render();
-	
 		loadMaps();
+		setTimeout("onClosingActiveTab();",200);
 	
 		writeDownInfo("Map deleted.");
 		clearMapInfo();
 		hideMapInfo();
 		showHistory();
+
 	} else {
 		alert('Failed to delete map');
 		clearDownInfo();
@@ -777,18 +798,20 @@ function handleRefreshNodesResponse(data) {
 		}
 	}
 	// Links		
-	var vlink,id1,id2, typology, status,nodeid1,nodeid2,numberOfLinks, statusMap;
+	var vlink,id1,id2, typology, status,nodeids,numberOfLinks, statusMap;
 	for(var linksIndex in refreshResponse.links) {
 		vlink = refreshResponse.links[linksIndex];
 		id1=vlink.first;
 		id2=vlink.second;
 		typology=vlink.linkTypeId;
 		status=vlink.linkStatusString;
-		nodeid1=vlink.firstNodeid;
-		nodeid2=vlink.secondNodeid;
+		nodeids=vlink.nodeids;
 		numberOfLinks=vlink.numberOfLinks;
 		statusMap=vlink.vlinkStatusMap;
-		map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeid1,nodeid2);
+		if ( numberOfLinks == 1 )
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], LINK_WIDTH[typology], LINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);
+		else
+			map.addLink(id1,id2,typology,numberOfLinks, statusMap,status,LINKSTATUS_COLOR[status], MULTILINK_WIDTH[typology], MULTILINK_DASHARRAY[typology], LINKSTATUS_FLASH[status],deltaLink,nodeids);		
 	}
 	map.render();
 

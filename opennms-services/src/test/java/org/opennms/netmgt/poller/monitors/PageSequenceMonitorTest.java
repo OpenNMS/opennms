@@ -44,6 +44,7 @@ import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -163,10 +164,10 @@ public class PageSequenceMonitorTest {
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
 				"  <page virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" successMatch=\"Password\" />\n" + 
-				"  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" + 
-				"    <parameter key=\"j_username\" value=\"demo\"/>\n" + 
-				"    <parameter key=\"j_password\" value=\"demo\"/>\n" + 
-				"  </page>\n" + 
+				"  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" response-range=\"300-399\">\n" + 
+                "    <parameter key=\"j_username\" value=\"demo\"/>\n" + 
+                "    <parameter key=\"j_password\" value=\"demo\"/>\n" + 
+                "  </page>\n" + 
 				"  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
 				"  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
 				"</page-sequence>\n");
@@ -216,7 +217,7 @@ public class PageSequenceMonitorTest {
                 "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
                 "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
                 "  </page>\n" +
-                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" +
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" response-range=\"300-399\">\n" +
                 "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                 "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                 "  </page>\n" + 
@@ -242,17 +243,18 @@ public class PageSequenceMonitorTest {
                      "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
                      "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
                      "  </page>\n" +
-                     "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have Failed but did not\" successMatch=\"(?s)Your login attempt was not successful.*\">\n" +
+                     "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  response-range=\"300-399\" port=\"10342\" method=\"POST\">\n" +
                      "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                      "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                      "  </page>\n" + 
+                     "  <page virtual-host=\"localhost\" path=\"/opennms/spring_security_login?login_error\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have Failed but did not\" successMatch=\"(?s)Your login attempt was not successful.*\" />\n" +
                      "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
                      "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
                      "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
                      "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
                      "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
-                     "  </page>\n" +                     
-                     "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login Failed: ${1}\" successMatch=\"Log out\">\n" +
+                     "  </page>\n" +
+                     "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  response-range=\"300-399\" port=\"10342\" method=\"POST\">\n" +
                      "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                      "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                      "  </page>\n" + 
@@ -265,6 +267,82 @@ public class PageSequenceMonitorTest {
              
     }
     
+    @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
+    public void testLoginDynamicCredentialsRedirectPost() throws Exception {
+        m_params.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" + 
+                "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+                "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
+                "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
+                "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
+                "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
+                "  </page>\n" +
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" +
+                "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                "  </page>\n" + 
+                "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
+                "</page-sequence>\n");
+        
+        Map<String,Object> params = new HashMap<String,Object>();
+        for (Entry<String,Object> entry : m_params.entrySet()) {
+            params.put(entry.getKey(), entry.getValue());
+        }
+        params.put("redirect-post", "true");
+        PollStatus status = m_monitor.poll(getHttpService("localhost"), params);
+        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
+    public void testRedirectLocationMatch() throws Exception {
+        m_params.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" + 
+                "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+                "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
+                "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
+                "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
+                "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
+                "  </page>\n" +
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" response-range=\"300-399\" locationMatch=\"/opennms/\">\n" +
+                "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                "  </page>\n" + 
+                "</page-sequence>\n");
+        
+        PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
+        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        
+    }
+
+    @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
+    public void testRedirectLocationDoesNotMatch() throws Exception {
+        m_params.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" + 
+                "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
+                "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
+                "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
+                "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
+                "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
+                "  </page>\n" +
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" response-range=\"300-399\" locationMatch=\"/opensadfnms/\">\n" +
+                "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
+                "  </page>\n" + 
+                "</page-sequence>\n");
+        
+        PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
+        assertTrue("Expected down but was "+status+": reason = "+status.getReason(), status.isDown());
+        
+    }
+
     @Test
     public void testDsNamePerPage() throws Exception {
         m_params.put("page-sequence", "" +

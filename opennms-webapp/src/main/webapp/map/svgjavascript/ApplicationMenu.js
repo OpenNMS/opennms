@@ -147,6 +147,8 @@ function instantiateRefreshGroupAdminMode() {
 	refreshMenu.addElement(id, "Maps", menuDeltaX,menuDeltaY,menuWidth,menuHeight, loadMapsSetUp,null);
 	id = "LoadNodes";
 	refreshMenu.addElement(id, "Nodes", menuDeltaX,2*menuDeltaY,menuWidth,menuHeight, loadNodesSetUp,null);
+	id = "ReloadConfig";
+	refreshMenu.addElement(id, "Config", menuDeltaX,3*menuDeltaY,menuWidth,menuHeight, reloadConfigSetUp,null);
 }
 
 function instantiateRefreshGroupNormalMode() {
@@ -243,9 +245,8 @@ function addSearchMapList()
 function filterSearchMapSelectionList(textboxId,value,changeType) {
 		if (changeType == "change") {
 			var matchingMaps = new Array(); 
-			for(var i in nodeLabels) {
-				if (nodeLabels[i].indexOf(value) >= 0) {
-					var label = getLabel(nodeLabels[i]);
+			for(var label in nodeLabelMap) {
+				if (label.indexOf(value) >= 0) {
 				    var mapLbl = nodeLabelMap[label];
 				    if (mapLbl!=undefined) {
 						for (var j=0; j<mapLbl.length;j++ ){
@@ -303,6 +304,36 @@ function searchMapSetUp()
 	} else {
 		openMapSetUp();
 	}
+}
+function getTopElementsString() {
+	var elems = new String();
+	var first=true;
+	for(var label in nodeLabelMap) {
+		if (label == currentMapName ) {
+		    var mapLbl = nodeLabelMap[label];
+		    if (mapLbl!=undefined) {
+				for (var j=0; j<mapLbl.length;j++ ){
+					if (first) {
+						elems += mapSortAss[mapLbl[j]].id;
+						first = false;
+					} else {
+						elems += "," + mapSortAss[mapLbl[j]].id;
+					}
+				}
+			}
+			break;
+		}  
+	}
+	return elems;
+}
+
+function topMapSetUp(){
+	if (verifyMapString()) return;
+	windowsClean();
+	clearTopInfo();
+	clearDownInfo();
+	mapTabSetUp(SEARCH_MAP_NAME);
+	searchMap(getTopElementsString());	
 }
 
 // Open Map
@@ -404,23 +435,19 @@ function addRenameMapBox(){
 		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",undefined);
 		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
  	} else if (currentMapType == "A") {
-		alert('Cannot rename automatic map');
- 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED) {
-		clearTopInfo();
-		clearDownInfo();
-		hidePickColor();
-		resetFlags();
-
-		//first a few styling parameters:
-		textbox1 = new textbox("textbox1","textboxwithcommand",currentMapName,textboxmaxChars,textboxx,textboxy,textboxWidth,textboxHeight,textYOffset,textStyles,boxStyles,cursorStyles,seltextBoxStyles,"",undefined);
-		button1  = new button("button1","textboxwithcommand",renameMap,"rect","Rename",undefined,buttonx,buttony,buttonwidth,buttonheight,buttonTextStyles,buttonStyles,shadeLightStyles,shadeDarkStyles,shadowOffset);        
+		alert('Cannot rename Automatic map');
+ 	} else if (currentMapType == "S") {
+		alert('Cannot rename Static map');
 	}else{
 		alert('No maps opened');
     }
 }
 
 function renameMap(){
-	var newMapName = getTextBoxValue();
+	renameMapWithName(getTextBoxValue());
+}
+
+function renameMapWithName(newMapName){
 	mapTabRename(currentMapName,newMapName)
 	clearTopInfo();
 	if(newMapName != null && trimAll(newMapName)!=""){
@@ -431,7 +458,6 @@ function renameMap(){
 		writeDownInfo("Name not valid.");
 	}
 }
-
 // Delete Map
 function deleteMapSetUp() {	
 	closeAllMenu();
@@ -445,16 +471,9 @@ function deleteMapSetUp() {
 			deleteMap();
     	}
  	} else if (currentMapType == "A") {
-		alert('Cannot delete automatic map');
- 	} else if (currentMapType == "S" && currentMapId!=MAP_NOT_OPENED && currentMapId!=NEW_MAP ) {
-	    if(confirm('Are you sure to delete static the map?')==true){ 
-	 		disableMenu();
-			deleteMap();
-    	}
- 	} else if (currentMapType == "A") {
-		alert('Cannot delete automatic map');
+		alert('Cannot delete Automatic map');
  	} else if (currentMapType == "S") {
-		alert('Cannot delete static map');
+		alert('Cannot delete Static map');
 	}else{
 		alert('No maps to delete found');
     }	
@@ -604,6 +623,16 @@ function loadNodesSetUp() {
 	showHistory();
 }
 
+// Reload Nodes List
+function reloadConfigSetUp() {	
+	closeAllMenu();
+	clearTopInfo();
+	clearDownInfo();
+	hidePickColor();
+	resetFlags();
+	top.writeReload("Reloading the maps configuration.....");
+	reloadConfiguration();
+}
 // Refresh Map
 function refreshNodesSetUp() {	
 	closeAllMenu();
@@ -1433,6 +1462,15 @@ function assertRefreshing(loading){
 }
 
 function showHistory(){
+	var elems = getTopElementsString();
+	if (elems.length > 0 ) {
+		var topAction = document.getElementById("topAction");
+		topAction.setAttribute("onclick","topMapSetUp();");
+		document.getElementById("topGroup").setAttributeNS(null,'display', 'inline');
+	} else {
+		document.getElementById("topGroup").setAttributeNS(null,'display', 'none');
+	}
+		
 	if(mapHistory.length>mapHistoryIndex+1){
 		var next = mapHistory[mapHistoryIndex+1];
 		var nextName = mapHistoryName[mapHistoryIndex+1]; 
@@ -1774,20 +1812,27 @@ function getInfoOnLink(link)
 	var tspan = document.createElementNS(svgNS,"tspan");
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","20");
-	var tspanContent = document.createTextNode(" From: " + nodeidSortAss[link.getFirstNodeId()].getLabel());
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
-	tspanContent = document.createTextNode("    To: " + nodeidSortAss[link.getSecondNodeId()].getLabel());
-	tspan.appendChild(tspanContent);
-	text.appendChild(tspan);
-	
-	tspan = document.createElementNS(svgNS,"tspan");
-	tspan.setAttributeNS(null, "x","3");
-	tspan.setAttributeNS(null, "dy","15");
+	var nodeids = link.getNodeIds();
+	var numberofnodes=0;
+	for (var k in nodeids) {
+		numberofnodes++;
+		if (k<8) {
+			var tspanContent = document.createTextNode(" Linked Node: " + nodeidSortAss[nodeids[k]].getLabel());
+			tspan.appendChild(tspanContent);
+			text.appendChild(tspan);
+			tspan = document.createElementNS(svgNS,"tspan");
+			tspan.setAttributeNS(null, "x","3");
+			tspan.setAttributeNS(null, "dy","15");
+		} else {
+			var tspanContent = document.createTextNode(" More Linked Node found....");
+			tspan.appendChild(tspanContent);
+			text.appendChild(tspan);
+			tspan = document.createElementNS(svgNS,"tspan");
+			tspan.setAttributeNS(null, "x","3");
+			tspan.setAttributeNS(null, "dy","15");
+		}
+	}
+		
 	tspan.setAttributeNS(null, "fill",statusColor);
 	tspanContent = document.createTextNode(" Status: "+link.getStatus());
 	tspan.appendChild(tspanContent);
@@ -1816,6 +1861,13 @@ function getInfoOnLink(link)
 	tspanContent = document.createTextNode(" Number of Links: "+link.getNumberOfLinks());
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of Nodes: "+numberofnodes);
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
 	
 	return text;
 }
@@ -1837,13 +1889,37 @@ function getInfoOnSLink(slink)
 	tspanContent = document.createTextNode(" Type: "+LINK_TEXT[slink.getTypology()]);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);
+
+	var nodeids = slink.getNodeIds();
+	var numberofnodes=0;
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	for (var k in nodeids) {
+		numberofnodes++;
+		if (k<8) {
+			var tspanContent = document.createTextNode(" Linked Node: " + nodeidSortAss[nodeids[k]].getLabel());
+			tspan.appendChild(tspanContent);
+			text.appendChild(tspan);
+			tspan = document.createElementNS(svgNS,"tspan");
+			tspan.setAttributeNS(null, "x","3");
+			tspan.setAttributeNS(null, "dy","15");
+		} else {
+			var tspanContent = document.createTextNode(" More Linked Node found....");
+			tspan.appendChild(tspanContent);
+			text.appendChild(tspan);
+			tspan = document.createElementNS(svgNS,"tspan");
+			tspan.setAttributeNS(null, "x","3");
+			tspan.setAttributeNS(null, "dy","15");
+		}
+	}
 	
 	for (var linkid in slink.getLinks()) {
 		var link = slink.getLinks()[linkid];
 		tspan = document.createElementNS(svgNS,"tspan");
 		tspan.setAttributeNS(null, "x","3");
 		tspan.setAttributeNS(null, "dy","15");
-		tspanContent = document.createTextNode(" Type(#links): " + LINK_TEXT[link.getTypology()] + "(" + link.getNumberOfLinks() + ")");
+		tspanContent = document.createTextNode(" Type: " + LINK_TEXT[link.getTypology()] + "(" + link.getNumberOfLinks() + " links)");
 		tspan.appendChild(tspanContent);
 		text.appendChild(tspan);
 	}
@@ -1869,6 +1945,13 @@ function getInfoOnSLink(slink)
 	tspan.setAttributeNS(null, "x","3");
 	tspan.setAttributeNS(null, "dy","15");
 	tspanContent = document.createTextNode(" Number of MultiLinks: "+slink.getNumberOfMultiLinks());
+	tspan.appendChild(tspanContent);
+	text.appendChild(tspan);	
+
+	tspan = document.createElementNS(svgNS,"tspan");
+	tspan.setAttributeNS(null, "x","3");
+	tspan.setAttributeNS(null, "dy","15");
+	tspanContent = document.createTextNode(" Number of Nodes: "+numberofnodes);
 	tspan.appendChild(tspanContent);
 	text.appendChild(tspan);	
 	

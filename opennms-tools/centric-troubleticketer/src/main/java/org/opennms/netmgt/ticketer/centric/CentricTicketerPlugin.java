@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.aspcfs.apps.transfer.DataRecord;
 import org.aspcfs.utils.CRMConnection;
 import org.aspcfs.utils.XMLUtils;
@@ -256,7 +255,7 @@ public class CentricTicketerPlugin implements Plugin {
      * Convenience logging.
      * @return a log4j Category for this class
      */
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

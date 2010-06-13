@@ -32,6 +32,7 @@ import javax.oss.fm.monitor.AlarmKey;
 import javax.oss.fm.monitor.AlarmValue;
 
 import org.apache.log4j.Logger;
+import org.opennms.core.utils.ThreadCategory;
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;
 import org.openoss.opennms.spring.qosd.QoSDimpl2;
@@ -47,7 +48,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class AlarmListConnectionManagerSpringImpl implements AlarmListConnectionManager {
 
 	boolean init=false; // set true if init called
-	Logger log;
+	ThreadCategory log;
 	int status = DISCONNECTED; //  this changes to CONNECTED when the bean is instantiated 
 	
 	// ************************
@@ -99,7 +100,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#init(org.openoss.opennms.spring.qosd.PropertiesLoader, java.util.Properties)
 	 */
 	public void init(PropertiesLoader props, Properties env) {
-		log = (Logger) QoSDimpl2.getLog();	//Get a reference to the QoSD logger
+		log = QoSDimpl2.getLog();	//Get a reference to the QoSD logger
 
 		try {
 			if (log.isDebugEnabled()) log.debug("AlarmListConnectionManagerSpringImpl.init() initialising AlarmMonitorDao. Setting alarmMonitorDao.setLogName to:"+ log.getName());

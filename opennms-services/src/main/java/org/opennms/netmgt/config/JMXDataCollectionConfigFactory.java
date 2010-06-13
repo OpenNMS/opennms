@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -289,7 +288,7 @@ public final class JMXDataCollectionConfigFactory {
      * @return a list of MIB objects
      */
     public Map<String, List<Attrib>> getAttributeMap(String cName, String aSysoid, String anAddress) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = log();
         
         Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
 
@@ -508,7 +507,7 @@ public final class JMXDataCollectionConfigFactory {
         return rrdPath;
     }
     
-    private static Category log() {
+    private static ThreadCategory log() {
     	return ThreadCategory.getInstance(JMXDataCollectionConfigFactory.class);
     }
     

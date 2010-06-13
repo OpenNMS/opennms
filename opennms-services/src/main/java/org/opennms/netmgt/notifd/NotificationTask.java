@@ -46,7 +46,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -272,7 +271,7 @@ public class NotificationTask extends Thread {
         }
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -336,6 +335,8 @@ public class NotificationTask extends Thread {
                 value = getUserManager().getMobilePhone(m_user.getUserId());
             } else if (NotificationManager.PARAM_HOME_PHONE.equals(aSwitch)) {
                 value = getUserManager().getHomePhone(m_user.getUserId());
+            } else if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(aSwitch)) {
+                value = getUserManager().getMicroblogName(m_user.getUserId());
             } else if (m_params.containsKey(aSwitch)) {
                 value = m_params.get(aSwitch);
             }

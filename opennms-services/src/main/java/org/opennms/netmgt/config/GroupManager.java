@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -266,7 +265,7 @@ public abstract class GroupManager {
      * @return long, the time in milliseconds until the group is next on duty
      */
     public long groupNextOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         long next = -1;
         update();
         //if the group has no duty schedules then it is on duty

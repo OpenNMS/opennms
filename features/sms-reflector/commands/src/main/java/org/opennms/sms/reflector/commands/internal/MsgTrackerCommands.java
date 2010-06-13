@@ -141,7 +141,7 @@ public class MsgTrackerCommands implements CommandProvider
     } 
     
     public static void tracef(String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(MobileMsgResponseMatchers.class);
+        ThreadCategory log = ThreadCategory.getInstance(MobileMsgResponseMatchers.class);
         
         if (log.isTraceEnabled()) {
             log.trace(String.format(format, args));

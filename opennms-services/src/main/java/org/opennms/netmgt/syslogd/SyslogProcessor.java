@@ -43,8 +43,6 @@ package org.opennms.netmgt.syslogd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -102,7 +100,7 @@ final class SyslogProcessor implements Runnable {
         try {
             m_localAddr = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException uhE) {
-            Category log = ThreadCategory.getInstance(getClass());
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
 
             m_localAddr = "localhost";
             log.error("Error looking up local hostname; using 'localhost'", uhE);
@@ -123,7 +121,7 @@ final class SyslogProcessor implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            Category log = ThreadCategory.getInstance(getClass());
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
             if (log.isDebugEnabled())
                 log.debug("Stopping and joining thread context " + m_context.getName());
 
@@ -143,15 +141,15 @@ final class SyslogProcessor implements Runnable {
 
         // get a logger
         ThreadCategory.setPrefix(m_logPrefix);
-        Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isEnabledFor(Level.TRACE);
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
+        boolean isTracing = log.isEnabledFor(ThreadCategory.Level.TRACE);
 
         if (m_stop) {
             if (isTracing)
-                log.log(Level.TRACE, "Stop flag set before thread started, exiting");
+                log.trace("Stop flag set before thread started, exiting");
             return;
         } else if (isTracing)
-            log.log(Level.TRACE, "Thread context started");
+            log.trace("Thread context started");
 
         while (!m_stop) {
 
@@ -162,44 +160,44 @@ final class SyslogProcessor implements Runnable {
             if (o != null) {
                 try {
                     if (isTracing)  {
-                        log.log(Level.TRACE, "Processing a syslog to event dispatch" + o.toString());
+                        log.trace("Processing a syslog to event dispatch" + o.toString());
                         String uuid = o.getEvent().getUuid();
-                        log.log(Level.TRACE, "Event {");
-                        log.log(Level.TRACE, "  uuid  = "
+                        log.trace("Event {");
+                        log.trace("  uuid  = "
                                 + (uuid != null && uuid.length() > 0 ? uuid
                                 : "<not-set>"));
-                        log.log(Level.TRACE, "  uei   = " + o.getEvent().getUei());
-                        log.log(Level.TRACE, "  src   = " + o.getEvent().getSource());
-                        log.log(Level.TRACE, "  iface = " + o.getEvent().getInterface());
-                        log.log(Level.TRACE, "  time  = " + o.getEvent().getTime());
-                        log.log(Level.TRACE, "  Msg   = "
+                        log.trace("  uei   = " + o.getEvent().getUei());
+                        log.trace("  src   = " + o.getEvent().getSource());
+                        log.trace("  iface = " + o.getEvent().getInterface());
+                        log.trace("  time  = " + o.getEvent().getTime());
+                        log.trace("  Msg   = "
                                 + o.getEvent().getLogmsg().getContent());
-                        log.log(Level.TRACE, "  Dst   = "
+                        log.trace("  Dst   = "
                                 + o.getEvent().getLogmsg().getDest());
                         Parm[] parms = (o.getEvent().getParms() == null ? null
                                 : o.getEvent().getParms().getParm());
                         if (parms != null) {
-                            log.log(Level.TRACE, "  parms {");
+                            log.trace("  parms {");
                             for (Parm parm : parms) {
                                 if ((parm.getParmName() != null)
                                         && (parm.getValue().getContent() != null)) {
-                                    log.log(Level.TRACE, "    ("
+                                    log.trace("    ("
                                             + parm.getParmName().trim()
                                             + ", "
                                             + parm.getValue().getContent().trim()
                                             + ")");
                                 }
                             }
-                            log.log(Level.TRACE, "  }");
+                            log.trace("  }");
                         }
-                        log.log(Level.TRACE, "}");
+                        log.trace("}");
                     }
 
                     EventIpcManagerFactory.getIpcManager().sendNow(o.getEvent());
 
                     if (m_NewSuspectOnMessage && !o.getEvent().hasNodeid()) {
                         if (isTracing) {
-                            log.log(Level.TRACE, "Syslogd: Found a new suspect " + o.getEvent().getInterface());
+                            log.trace("Syslogd: Found a new suspect " + o.getEvent().getInterface());
                         }
                         sendNewSuspectEvent(o.getEvent().getInterface());
                     }

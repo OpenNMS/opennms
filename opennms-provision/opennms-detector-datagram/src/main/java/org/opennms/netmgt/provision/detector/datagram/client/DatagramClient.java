@@ -40,7 +40,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.support.Client;
 
@@ -97,7 +96,7 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     }
 
     
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

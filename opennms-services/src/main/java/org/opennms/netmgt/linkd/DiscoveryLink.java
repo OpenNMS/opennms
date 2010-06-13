@@ -49,7 +49,6 @@ import java.util.Set;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
@@ -153,7 +152,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		super();
 	}
 	
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
@@ -735,7 +734,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 										+ " bridge port " + endBridgePort);
 
 							endNode.addBackBoneBridgePorts(endBridgePort);
-							bridgeNodes.put(new Integer(endNodeid), endNode);
+							bridgeNodes.put(endNodeid, endNode);
 
 							// finding links between two backbone ports
 							addLinks(getMacsOnBridgeLink(curNode,
@@ -1353,7 +1352,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		if (isEndBridgePort(node1, bridgeport)) {
 
 			node1.addBackBoneBridgePorts(bridgeport);
-			bridgeNodes.put(new Integer(node1.getNodeId()), node1);
+			bridgeNodes.put(node1.getNodeId(), node1);
 			
 			Set<String> macs = node1.getMacAddressesOnBridgePort(bridgeport);
 			addLinks(macs,node1.getNodeId(),ifindex1);
@@ -1397,7 +1396,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 			bridgeNodes.put(new Integer(node1.getNodeId()), node1);
 
 			node2.addBackBoneBridgePorts(bridgeport2);
-			bridgeNodes.put(new Integer(node2.getNodeId()),node2);
+			bridgeNodes.put(node2.getNodeId(),node2);
 
 			if (log().isDebugEnabled())
 				log().debug("parseCdpLinkOn: Adding node on links.");
@@ -1609,7 +1608,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		ite = bridgenodeschanged.iterator();
 		while (ite.hasNext()) {
 			LinkableNode node = ite.next();
-			bridgeNodes.put(new Integer(node.getNodeId()), node);
+			bridgeNodes.put(node.getNodeId(), node);
 		}
 
 	}

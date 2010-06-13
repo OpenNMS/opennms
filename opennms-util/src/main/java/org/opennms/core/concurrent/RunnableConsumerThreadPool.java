@@ -39,7 +39,6 @@ package org.opennms.core.concurrent;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.queue.ClosableFifoQueue;
 import org.opennms.core.queue.FifoQueue;
@@ -338,7 +337,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
             return result;
         }
 
-        private Category log() {
+        private ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
     }
@@ -485,7 +484,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
             return m_status;
         }
 
-        private Category log() {
+        private ThreadCategory log() {
             return ThreadCategory.getInstance(getClass());
         }
     }

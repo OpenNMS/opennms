@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
@@ -150,7 +149,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         return pollEvent;
     }
 
-    Category log() {
+    ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -158,7 +157,7 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @see org.opennms.netmgt.poller.pollables.PollContext#createEvent(java.lang.String, int, java.net.InetAddress, java.lang.String, java.util.Date)
      */
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         
         if (log.isDebugEnabled())
             log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
@@ -299,7 +298,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         InetAddress addr = null;
         boolean result = true;
     
-        Category log = log();
+        ThreadCategory log = log();
         log.debug("Test critical path IP " + criticalPath[0]);
         try {
             addr = InetAddress.getByName(criticalPath[0]);

@@ -118,7 +118,7 @@ public class DefaultAdminApplicationService implements
         
         OnmsApplication application = findApplication(applicationIdString); 
        
-        if (editAction.equals("Add")) {
+        if (editAction.contains("Add")) { // @i18n
             if (toAdd == null) {
                 return;
                 //throw new IllegalArgumentException("toAdd cannot be null if editAction is 'Add'");
@@ -150,7 +150,7 @@ public class DefaultAdminApplicationService implements
                 service.addApplication(application);
                 m_monitoredServiceDao.save(service);
             }
-       } else if (editAction.equals("Remove")) {
+       } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
                 //throw new IllegalArgumentException("toDelete cannot be null if editAction is 'Remove'");
@@ -238,7 +238,7 @@ public class DefaultAdminApplicationService implements
         
         OnmsMonitoredService service = findService(ifServiceIdString);
 
-        if (editAction.equals("Add")) {
+        if (editAction.contains("Add")) { // @i18n
             if (toAdd == null) {
                 return;
                 //throw new IllegalArgumentException("toAdd cannot be null if editAction is 'Add'");
@@ -270,7 +270,7 @@ public class DefaultAdminApplicationService implements
             }
             
             m_monitoredServiceDao.save(service);
-       } else if (editAction.equals("Remove")) {
+       } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
                 //throw new IllegalArgumentException("toDelete cannot be null if editAction is 'Remove'");

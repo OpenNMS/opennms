@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -233,7 +231,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             RrdUtils.updateRRD(addr.getHostAddress(), path, rrdBaseName, value.toString());
 
         } catch (RrdException e) {
-            if (log().isEnabledFor(Level.ERROR)) {
+            if (log().isEnabledFor(ThreadCategory.Level.ERROR)) {
                 String msg = e.getMessage();
                 log().error(msg);
                 throw new RuntimeException(msg, e);
@@ -286,7 +284,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

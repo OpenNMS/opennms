@@ -40,8 +40,6 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Category;
-import org.apache.log4j.Level;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -159,7 +157,7 @@ public class XMPPNotificationManager {
 			boolean debuggerEnabled = Boolean.parseBoolean(props.getProperty("xmpp.debuggerEnabled"));
 			xmppConfig.setDebuggerEnabled(debuggerEnabled);
 			if (debuggerEnabled) {
-				log().setLevel(Level.DEBUG);
+				log().setLevel(ThreadCategory.Level.DEBUG);
 			}
 
 			xmppConfig.setSASLAuthenticationEnabled(Boolean.parseBoolean(props.getProperty("xmpp.SASLEnabled", "true")));
@@ -326,7 +324,7 @@ public class XMPPNotificationManager {
 
 	}
 	
-	protected Category log() {
+	protected ThreadCategory log() {
 		return ThreadCategory.getInstance(this.getClass());
 	}
 }

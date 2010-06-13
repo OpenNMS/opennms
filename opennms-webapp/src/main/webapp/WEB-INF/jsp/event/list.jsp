@@ -318,8 +318,8 @@
           <td class="divider">
             <nobr><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></nobr>
             <nobr>
-              <a href="<%=this.makeLink( parms, new AfterDateFilter(events[i].getTime()), true)%>"  class="filterLink" title="Only show events occurring after this one">${addAfterDateFilter}</a>            
-              <a href="<%=this.makeLink( parms, new BeforeDateFilter(events[i].getTime()), true)%>" class="filterLink" title="Only show events occurring before this one">${addBeforeDateFilter}</a>
+              <a href="<%=this.makeLink( parms, new AfterDateFilter(events[i].getTime()), true)%>"  class="filterLink" title="Only show events occurring after this one">${addAfterFilter}</a>
+              <a href="<%=this.makeLink( parms, new BeforeDateFilter(events[i].getTime()), true)%>" class="filterLink" title="Only show events occurring before this one">${addBeforeFilter}</a>
             </nobr>
           </td>
           <td class="divider">
@@ -425,7 +425,9 @@
       </table>
         
         <p><%=events.length%> events
-          <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <% 
+          String acknowledgeEvents = System.getProperty("opennms.eventlist.acknowledge");
+          if( !(req.isUserInRole( Authentication.READONLY_ROLE )) && "true".equals(acknowledgeEvents)) { %>
             <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
               <input type="button" value="Acknowledge Events" onClick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
               <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>

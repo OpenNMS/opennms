@@ -133,6 +133,14 @@
                                 <documentation>The match expression</documentation>
                             </annotation>
                         </attribute>
+                        <attribute name="default-parameter-mapping" type="boolean" use="optional" default="true">
+                        	<annotation>
+                        		<documentation>Whether to do the default mappings of matching-groups to
+                        					   event parameters (group 1 -> group1, etc.) if this is a
+                        					   regex match.
+           					   </documentation>
+                        	</annotation>
+                        </attribute>
                     </complexType>
                 </element>
 
@@ -141,6 +149,38 @@
                     <annotation>
                         <documentation>UEI</documentation>
                     </annotation>
+                </element>
+                
+                <element maxOccurs="unbounded" minOccurs="0" name="parameter-assignment">
+                	<annotation>
+                		<documentation>For regex matches, assign the value of a matching group
+                		               to a named event parameter
+                		</documentation>
+                	</annotation>
+                	<complexType>
+                		<attribute name="matching-group" use="required">
+                			<annotation>
+                				<documentation>The number of the matching group from the regex
+                				               whose value will be assigned. Group 0 always refers
+                				               to the entire string matched by the expression. If
+                				               the referenced group does not exist, the empty string
+                				               will be assigned.
+                				</documentation>
+               				</annotation>
+               				<simpleType>
+								<restriction base="int">
+									<minInclusive value="0" />
+								</restriction>
+               				</simpleType>
+                		</attribute>
+                		<attribute name="parameter-name" type="string" use="required">
+                			<annotation>
+                				<documentation>The name of the event parameter to which the named
+                				               matching group's value will be assigned
+                				</documentation>
+                			</annotation>
+                		</attribute>
+                	</complexType>
                 </element>
             </sequence>
         </complexType>

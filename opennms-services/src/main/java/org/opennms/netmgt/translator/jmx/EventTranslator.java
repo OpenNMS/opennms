@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -64,7 +63,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
     public final static String NAME = "OpenNMS.EventTranslator";
 
     protected void onInit() {
-        Category log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         try {
             DataSourceFactory.init();
             EventTranslatorConfigFactory.init();

@@ -17,9 +17,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
   </bean>
 
-  <bean id="trapdConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="trapdConfig-init" lazy-init="true">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.getInstance</value></property>
-  </bean>
+  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
 
 <!-- 
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">
@@ -44,15 +42,9 @@
     <property name="newSuspect" ref="newSuspectOnTrap"/>
   </bean>
   
-  <bean id="newSuspectOnTrap" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="trapdConfig"/>
-    <property name="targetMethod" value="getNewSuspectOnTrap"/>
-  </bean>
+  <bean id="newSuspectOnTrap" factory-bean="trapdConfig" factory-method="getNewSuspectOnTrap"/>
   
-  <bean id="snmpTrapPort" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="trapdConfig"/>
-    <property name="targetMethod" value="getSnmpTrapPort"/>
-  </bean>
+  <bean id="snmpTrapPort" factory-bean="trapdConfig" factory-method="getSnmpTrapPort"/>
   
   <tx:annotation-driven/>
 </beans>

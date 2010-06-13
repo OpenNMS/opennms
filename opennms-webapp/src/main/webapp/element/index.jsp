@@ -115,10 +115,18 @@
             </form>
             
             <form action="element/nodeList.htm" method="get">
-					<p align="right">Mac Address like:          
+					<p align="right">MAC Address like:          
 						<input type="hidden" name="listInterfaces" value="false"/>
 						<input type="text" name="maclike" />
 						<input type="submit" value="Search"/></p>                
+            </form>
+            
+            <form action="element/nodeList.htm" method="get">
+                    <p align="right">Foreign Source like:
+                        <input type="hidden" name="listInterfaces" value="false"/>
+                        <input type="text" name="foreignSource"/>
+                        <input type="submit" value="Search"/>
+                    </p>
             </form>
                         
 			<ul class="plain">
@@ -197,7 +205,7 @@
         like to search for.
       </p>
 
-      <p>Searching by Mac Address allows you to find interfaces with hardware (mac) addresses
+      <p>Searching by MAC Address allows you to find interfaces with hardware (MAC) addresses
          matching the search string. This is a case-insensitive partial string match. For
          example, you can find all interfaces with a specified manufacturer's code by entering
          the first 6 characters of the mac address. Octet separators (dash or colon) are optional.

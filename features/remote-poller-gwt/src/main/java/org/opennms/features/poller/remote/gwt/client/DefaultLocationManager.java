@@ -1,7 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,65 +43,72 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 /**
- * <p>This class implements both {@link LocationManager} (the model portion of the webapp) and
- * {@link RemotePollerPresenter} (the controller portion of the webapp code). It is responsible
- * for maintaining the knowledgebase of {@link Location} objects and responding to events triggered when:</p>
+ * <p>
+ * This class implements both {@link LocationManager} (the model portion of
+ * the webapp) and {@link RemotePollerPresenter} (the controller portion of
+ * the webapp code). It is responsible for maintaining the knowledgebase of
+ * {@link Location} objects and responding to events triggered when:
+ * </p>
  * <ul>
  * <li>{@link Location} instances are added or m_updated</li>
  * <li>the UI elements are clicked on by the user</li>
  * </ul>
- * 
- * <p>If this class ever grows too large, we can split it into separate model and controller classes.</p>
+ * <p>
+ * If this class ever grows too large, we can split it into separate model and
+ * controller classes.
+ * </p>
  */
 public class DefaultLocationManager implements LocationManager, RemotePollerPresenter {
 
-	protected final HandlerManager m_eventBus;
+    protected final HandlerManager m_eventBus;
 
-	private final HandlerManager m_handlerManager = new HandlerManager(this);
+    private final HandlerManager m_handlerManager = new HandlerManager(this);
 
-	private final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
+    private final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 
-	private final Map<String,LocationInfo> m_locations = new HashMap<String,LocationInfo>();
-	private final Set<ApplicationInfo> m_applications = new HashSet<ApplicationInfo>();
+    private final Map<String, LocationInfo> m_locations = new HashMap<String, LocationInfo>();
 
-	private String m_selectedTag = null;
+    private final Map<String,ApplicationInfo> m_applications = new HashMap<String,ApplicationInfo>();
 
-	private final Set<Status> m_selectedStatuses = new HashSet<Status>();
+    private String m_selectedTag = null;
 
-	private final MapPanel m_mapPanel;
+    private final Set<Status> m_selectedStatuses = new HashSet<Status>();
 
-	private LocationPanel m_locationPanel;
+    private final MapPanel m_mapPanel;
 
-	private final SplitLayoutPanel m_panel;
+    private LocationPanel m_locationPanel;
 
-	private boolean m_updated = false;
-	private boolean m_locationViewActive = true;
+    private final SplitLayoutPanel m_panel;
 
-	private Set<ApplicationInfo> m_selectedApplications = new HashSet<ApplicationInfo>();
+    private boolean m_updated = false;
 
-	public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, final LocationPanel locationPanel, MapPanel mapPanel) {
-		m_eventBus = eventBus;
-		m_panel = panel;
-		m_locationPanel = locationPanel;
-		m_mapPanel = mapPanel;
+    private boolean m_locationViewActive = true;
 
-		// Register for all relevant events thrown by the UI components
-		m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this); 
-		m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this); 
-		m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this); 
-		m_eventBus.addHandler(FiltersChangedEvent.TYPE, this); 
-		m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
-		m_eventBus.addHandler(TagClearedEvent.TYPE, this);
-		m_eventBus.addHandler(StatusSelectionChangedEvent.TYPE, this);
-		m_eventBus.addHandler(ApplicationDeselectedEvent.TYPE, this);
-		m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
-		m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
+    private Set<ApplicationInfo> m_selectedApplications = new HashSet<ApplicationInfo>();
 
-		// by default, we select all statuses until the UI says otherwise
-		for (final Status s : Status.values()) {
-			m_selectedStatuses.add(s);
-		}
-	}
+    public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, final LocationPanel locationPanel, MapPanel mapPanel) {
+        m_eventBus = eventBus;
+        m_panel = panel;
+        m_locationPanel = locationPanel;
+        m_mapPanel = mapPanel;
+
+        // Register for all relevant events thrown by the UI components
+        m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this);
+        m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this);
+        m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this);
+        m_eventBus.addHandler(FiltersChangedEvent.TYPE, this);
+        m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
+        m_eventBus.addHandler(TagClearedEvent.TYPE, this);
+        m_eventBus.addHandler(StatusSelectionChangedEvent.TYPE, this);
+        m_eventBus.addHandler(ApplicationDeselectedEvent.TYPE, this);
+        m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
+        m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
+
+        // by default, we select all statuses until the UI says otherwise
+        for (final Status s : Status.values()) {
+            m_selectedStatuses.add(s);
+        }
+    }
 
     public void initialize() {
         DeferredCommand.addCommand(new InitializationCommand(this, createFinisher(), createDataLoaders()));
@@ -117,37 +123,34 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     protected DataLoader[] createDataLoaders() {
-        return new DataLoader[] {
-            new DataLoader() {
-                @Override
-                public void onLoaded() {
-                    // Append the map panel to the main SplitPanel
-                    getPanel().add(m_mapPanel.getWidget());
-                }
-            },
-             new EventServiceInitializer(this)
-        };
+        return new DataLoader[] { new DataLoader() {
+            @Override
+            public void onLoaded() {
+                // Append the map panel to the main SplitPanel
+                getPanel().add(m_mapPanel.getWidget());
+            }
+        }, new EventServiceInitializer(this) };
     }
 
     protected void initializationComplete() {
         m_handlerManager.fireEvent(new LocationManagerInitializationCompleteEvent());
     }
-    
+
     protected LocationStatusServiceAsync getRemoteService() {
         return m_remoteService;
     }
-    
+
     public void addLocationManagerInitializationCompleteEventHandler(LocationManagerInitializationCompleteEventHander handler) {
         m_handlerManager.addHandler(LocationManagerInitializationCompleteEvent.TYPE, handler);
     };
-    
+
     protected void displayDialog(final String title, final String contents) {
-    	final DialogBox db = new DialogBox();
-    	db.setAutoHideEnabled(true);
-    	db.setModal(true);
-    	db.setText(title);
-    	db.setWidget(new Label(contents, true));
-    	db.show();
+        final DialogBox db = new DialogBox();
+        db.setAutoHideEnabled(true);
+        db.setModal(true);
+        db.setText(title);
+        db.setWidget(new Label(contents, true));
+        db.show();
     }
 
     protected SplitLayoutPanel getPanel() {
@@ -160,7 +163,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     protected GWTBounds getLocationBounds() {
         BoundsBuilder bldr = new BoundsBuilder();
-        for (LocationInfo l : m_locations.values()) {
+        for (final LocationInfo l : m_locations.values()) {
             bldr.extend(l.getLatLng());
         }
         return bldr.getBounds();
@@ -168,106 +171,108 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     public void createOrUpdateLocation(final LocationInfo locationInfo) {
         if (locationInfo.getMarkerState() == null) {
-        	locationInfo.setMarkerState(getMarkerForLocation(locationInfo));
+            locationInfo.setMarkerState(getMarkerForLocation(locationInfo));
         }
-    	m_locations.put(locationInfo.getName(), locationInfo);
+        m_locations.put(locationInfo.getName(), locationInfo);
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
     }
 
     public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
-    	if (applicationInfo.getLocations().size() == 0) {
-    		applicationInfo.setPriority(Long.MAX_VALUE);
-    	} else {
-    		applicationInfo.setPriority(0L);
-    	}
-    	for (final String location : applicationInfo.getLocations()) {
-    		final LocationInfo locationInfo = m_locations.get(location);
-    		if (locationInfo != null) {
-    			applicationInfo.setPriority(applicationInfo.getPriority() + locationInfo.getPriority());
-    		}
-    	}
-        m_applications.add(applicationInfo);
+        if (applicationInfo.getLocations().size() == 0) {
+            applicationInfo.setPriority(Long.MAX_VALUE);
+        } else {
+            applicationInfo.setPriority(0L);
+            for (final String location : applicationInfo.getLocations()) {
+                final LocationInfo locationInfo = m_locations.get(location);
+                if (locationInfo != null) {
+                    applicationInfo.setPriority(applicationInfo.getPriority() + locationInfo.getPriority());
+                }
+            }
+        }
+        m_applications.put(applicationInfo.getName(), applicationInfo);
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
     }
 
     public void reportError(final String errorMessage, final Throwable throwable) {
-    	// FIXME: implement error reporting in UI
+        // FIXME: implement error reporting in UI
     }
 
     public void fitMapToLocations() {
-    	m_mapPanel.setBounds(getLocationBounds());
+        if (m_mapPanel instanceof SmartMapFit) {
+            ((SmartMapFit)m_mapPanel).fitToBounds();
+        } else {
+            m_mapPanel.setBounds(getLocationBounds());
+        }
     }
 
     /**
-     * TODO: Figure out if this public function is necessary or if we can get by just responding to
-     * incoming events.
+     * TODO: Figure out if this public function is necessary or if we can get
+     * by just responding to incoming events.
      */
     public ArrayList<LocationInfo> getVisibleLocations() {
         // Use an ArrayList so that it has good random-access efficiency
         // since the pageable lists use get() to fetch based on index.
-    	final ArrayList<LocationInfo> visibleLocations = new ArrayList<LocationInfo>();
-        for(LocationInfo location : m_locations.values()) {
-        	final GWTMarkerState markerState = location.getMarkerState();
-        	if (markerState.isSelected() && markerState.isVisible()) {
-        		visibleLocations.add(location);
-        	}
+        final ArrayList<LocationInfo> visibleLocations = new ArrayList<LocationInfo>();
+        for (final LocationInfo location : m_locations.values()) {
+            final GWTMarkerState markerState = location.getMarkerState();
+            GWTBounds mapBounds = m_mapPanel.getBounds();
+            if (markerState.isSelected() && markerState.isWithinBounds(mapBounds) && markerState.isVisible()) {
+                visibleLocations.add(location);
+            }
         }
 
-        // TODO: this should use the current filter set eventually, for now sort by priority, then name
-        // for now, LocationInfo is Comparable and has a natural sort ordering based on status, priority, and name
+        // TODO: this should use the current filter set eventually, for now
+        // sort by priority, then name
+        // for now, LocationInfo is Comparable and has a natural sort ordering
+        // based on status, priority, and name
         Collections.sort(visibleLocations, new Comparator<LocationInfo>() {
-			public int compare(LocationInfo o1, LocationInfo o2) {
-				return o1.compareTo(o2);
-			}
+            public int compare(LocationInfo o1, LocationInfo o2) {
+                return o1.compareTo(o2);
+            }
         });
 
         return visibleLocations;
     }
 
     private void updateAllMarkerStates() {
-    	for (final LocationInfo location : m_locations.values()) {
-        	final GWTMarkerState markerState = location.getMarkerState();
+        for (final LocationInfo location : m_locations.values()) {
+            final GWTMarkerState markerState = location.getMarkerState();
 
-        	// if it's within the map bounds, it's visible
-        	markerState.setVisible(location.isVisible(m_mapPanel.getBounds()));
-        	// markerState.setVisible(true);
-        	if (markerState.isVisible()) {
-        		// unless it's not in the list of selected statuses
-    			markerState.setVisible(m_selectedStatuses.contains(location.getStatusDetails().getStatus()));
-        	}
+            boolean visible = m_selectedStatuses.contains(location.getStatusDetails().getStatus());
+            markerState.setVisible(visible);
 
-        	boolean selected = false;
-        	if (m_locationViewActive || m_selectedApplications.size() == 0) {
-        		selected = true;
-        	} else {
-	        	for (final ApplicationInfo app : m_selectedApplications) {
-	        		if (app.getLocations().contains(location.getName())) {
-	        			selected = true;
-	        			break;
-	        		}
-	        	}
-        	}
-        	if (selected) {
-	        	if (m_selectedTag != null) {
-	        		selected = location.getTags() != null && location.getTags().contains(m_selectedTag);
-	        	}
-        	}
-        	markerState.setSelected(selected);
-        	m_mapPanel.placeMarker(markerState);
-    	}
+            boolean selected = false;
+            if (m_locationViewActive || m_selectedApplications.size() == 0) {
+                selected = true;
+            } else {
+                for (final ApplicationInfo app : m_selectedApplications) {
+                    if (app.getLocations().contains(location.getName())) {
+                        selected = true;
+                        break;
+                    }
+                }
+            }
+            if (selected) {
+                if (m_selectedTag != null) {
+                    selected = location.getTags() != null && location.getTags().contains(m_selectedTag);
+                }
+            }
+            markerState.setSelected(selected);
+            m_mapPanel.placeMarker(markerState);
+        }
     }
 
     public List<String> getAllTags() {
-    	final List<String> retval = new ArrayList<String>();
-    	for (final LocationInfo location : m_locations.values()) {
-    		retval.addAll(location.getTags());
-    	}
-    	return retval;
+        final List<String> retval = new ArrayList<String>();
+        for (final LocationInfo location : m_locations.values()) {
+            retval.addAll(location.getTags());
+        }
+        return retval;
     }
 
     public List<String> getTagsOnVisibleLocations() {
         List<String> retval = new ArrayList<String>();
-        for (LocationInfo location : getVisibleLocations()) {
+        for (final LocationInfo location : getVisibleLocations()) {
             retval.addAll(location.getTags());
         }
         return retval;
@@ -281,35 +286,33 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     private void showLocationDetails(final String locationName) {
-    	// TODO: this needs a callback to get the location details, and fill in the content
-    	final LocationInfo loc = m_locations.get(locationName);
-    	m_remoteService.getLocationDetails(locationName, new AsyncCallback<LocationDetails>() {
-			public void onFailure(final Throwable t) {
-				m_mapPanel.showLocationDetails(
-					locationName,
-					"Error Getting Location Details",
-					"<p>An error occurred getting the location details.</p>" +
-					"<pre>" + URL.encode(t.getMessage()) + "</pre>"
-				);
-			}
+        // TODO: this needs a callback to get the location details, and fill
+        // in the content
+        final LocationInfo loc = m_locations.get(locationName);
+        m_remoteService.getLocationDetails(locationName, new AsyncCallback<LocationDetails>() {
+            public void onFailure(final Throwable t) {
+                m_mapPanel.showLocationDetails(locationName, "Error Getting Location Details",
+                                               "<p>An error occurred getting the location details.</p>" + "<pre>"
+                                                       + URL.encode(t.getMessage()) + "</pre>");
+            }
 
-			public void onSuccess(final LocationDetails locationDetails) {
-		        m_mapPanel.showLocationDetails(
-		        	locationName,
-		        	locationName + " (" + loc.getArea() + ")",
-		        	getLocationInfoDetails(loc, locationDetails)
-		        );
-			}
-    		
-    	});
+            public void onSuccess(final LocationDetails locationDetails) {
+                m_mapPanel.showLocationDetails(
+                    locationName,
+                    locationName + " (" + loc.getArea() + ")",
+                    getLocationInfoDetails(loc, locationDetails)
+                );
+            }
+
+        });
     }
 
     /**
      * Refresh the list of locations whenever the map panel boundaries change.
      */
     public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
-    	// make sure each location's marker is up-to-date
-    	updateAllMarkerStates();
+        // make sure each location's marker is up-to-date
+        updateAllMarkerStates();
 
         // Update the contents of the tag panel
         m_locationPanel.clearTagPanel();
@@ -319,16 +322,17 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // Update the list of objects in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());
 
-        // TODO: Update the application list based on map boundries?? 
-        // TODO: Update the list of selectable applications based on the visible locations??
+        // TODO: Update the application list based on map boundries??
+        // TODO: Update the list of selectable applications based on the
+        // visible locations??
     }
 
     /**
      * Refresh the list of locations whenever they are m_updated.
      */
     public void onLocationsUpdated(final LocationsUpdatedEvent e) {
-    	// make sure each location's marker is up-to-date
-    	updateAllMarkerStates();
+        // make sure each location's marker is up-to-date
+        updateAllMarkerStates();
 
         // Update the contents of the tag panel
         m_locationPanel.clearTagPanel();
@@ -340,60 +344,78 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /**
-     * Invoked by the {@link LocationUpdatedRemoteEvent} and {@link LocationsUpdatedRemoteEvent}
-     * events.
+     * Invoked by the {@link LocationUpdatedRemoteEvent} and
+     * {@link LocationsUpdatedRemoteEvent} events.
      */
     public void updateLocation(final LocationInfo info) {
-        if (info == null) return;
+        if (info == null)
+            return;
 
         // Update the location information in the model
         createOrUpdateLocation(info);
 
-    	// Update the icon in the map
+        // Update the icon in the map
         GWTMarkerState m = getMarkerForLocation(info);
         m_mapPanel.placeMarker(m);
 
-		if (!m_updated) {
-			return;
-		}
+        if (!m_updated) {
+            return;
+        }
 
-    	updateAllMarkerStates();
+        updateAllMarkerStates();
 
         // Update the icon/caption in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());
     }
 
     /**
-     * Invoked by the {@link ApplicationUpdatedRemoteEvent} and {@link ApplicationsUpdatedRemoteEvent}
-     * events.
+     * Invoked by the {@link ApplicationUpdatedRemoteEvent} and
+     * {@link ApplicationsUpdatedRemoteEvent} events.
      */
     public void updateApplication(final ApplicationInfo applicationInfo) {
-        if (applicationInfo == null) return;
+        if (applicationInfo == null)
+            return;
 
         // Update the application information in the model
         createOrUpdateApplication(applicationInfo);
 
-        /* Update the icon/caption in the LHN
-         * Use an ArrayList so that it has good random-access efficiency
-         * since the pageable lists use get() to fetch based on index.
-    	 * Note, that m_applications is a *HashSet* not a *TreeSet* since
-    	 * TreeSets consider duplicates based on Comparable, not equals
-    	 */
-    	
-        ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
-        applicationList.addAll(m_applications);
-        Collections.sort(applicationList);
-        m_locationPanel.updateApplicationList(applicationList);
+        /*
+         * Update the icon/caption in the LHN Use an ArrayList so that it has
+         * good random-access efficiency since the pageable lists use get() to
+         * fetch based on index. Note, that m_applications is a *HashSet* not
+         * a *TreeSet* since TreeSets consider duplicates based on Comparable,
+         * not equals, and thus duplicates them.
+         */
+
+        updateApplicationList();
 
         if (!m_updated) {
-        	return;
+            return;
         }
 
         updateAllMarkerStates();
 
         for (final String locationName : applicationInfo.getLocations()) {
-        	GWTMarkerState m = getMarkerForLocation(locationName);
-        	m_mapPanel.placeMarker(m);
+            GWTMarkerState m = getMarkerForLocation(locationName);
+            if (m != null) {
+                m_mapPanel.placeMarker(m);
+            }
+        }
+    }
+
+    private void updateApplicationList() {
+        ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
+        applicationList.addAll(m_applications.values());
+        Collections.sort(applicationList);
+        m_locationPanel.updateApplicationList(applicationList);
+    }
+
+    public void removeApplication(final String applicationName) {
+        final ApplicationInfo info = m_applications.get(applicationName);
+        if (info != null) {
+            m_selectedApplications.remove(info);
+            m_applications.remove(applicationName);
+            updateApplicationList();
         }
     }
 
@@ -401,15 +423,16 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Invoked by the {@link UpdateCompleteRemoteEvent} event.
      */
     public void updateComplete() {
-    	if (!m_updated) {
-    		updateAllMarkerStates();
-    		fitMapToLocations();
-    		m_updated = true;
-    	}
+        if (!m_updated) {
+            updateAllMarkerStates();
+            fitMapToLocations();
+            m_updated = true;
+        }
     }
 
     public void onFiltersChanged(Filters filters) {
-        // TODO: Update state inside of this object to track the filter state (if necessary)
+        // TODO: Update state inside of this object to track the filter state
+        // (if necessary)
         // TODO: Update markers on the map panel
         // TODO: Update the list of objects in the LHN
     }
@@ -417,8 +440,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void onTagSelected(String tagName) {
         // Update state inside of this object to track the selected tag
         m_selectedTag = tagName;
-    	// make sure each location's marker is up-to-date
-    	updateAllMarkerStates();
+        // make sure each location's marker is up-to-date
+        updateAllMarkerStates();
 
         m_locationPanel.updateLocationList(getVisibleLocations());
     }
@@ -427,8 +450,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // Update state inside of this object to track the selected tag
         m_selectedTag = null;
 
-    	// make sure each location's marker is up-to-date
-    	updateAllMarkerStates();
+        // make sure each location's marker is up-to-date
+        updateAllMarkerStates();
 
         // TODO: Update markers on the map panel
         // Update the list of objects in the LHN
@@ -439,24 +462,15 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Fetch a list of all application names.
      */
     public Set<String> getAllApplicationNames() {
-        Set<String> retval = new TreeSet<String>();
-        for (ApplicationInfo application : m_applications) {
-            retval.add(application.getName());
-        }
-        return retval;
+        return new TreeSet<String>(m_applications.keySet());
     }
 
-    public ApplicationInfo getApplicationInfo(String name) {
+    public ApplicationInfo getApplicationInfo(final String name) {
         if (name == null) {
             return null;
         }
 
-        for (ApplicationInfo app : m_applications) {
-            if (name.equals(app.getName())) {
-                return app;
-            }
-        }
-        return null;
+        return m_applications.get(name);
     }
 
     public LocationInfo getLocation(String locationName) {
@@ -481,41 +495,45 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     private GWTMarkerState getMarkerForLocation(final String locationName) {
-    	final LocationInfo location = m_locations.get(locationName);
-    	if (location != null) {
-        	return getMarkerForLocation(location);
-    	}
-    	return null;
+        final LocationInfo location = m_locations.get(locationName);
+        if (location != null) {
+            return getMarkerForLocation(location);
+        }
+        return null;
     }
 
     private GWTMarkerState getMarkerForLocation(final LocationInfo location) {
-    	if (location == null) {
-    		return null;
-    	}
-    	GWTMarkerState state = location.getMarkerState();
-    	if (state == null) {
-    		state = new GWTMarkerState(location.getName(), location.getLatLng(), location.getStatusDetails().getStatus());
-    		location.setMarkerState(state);
-    	}
-    	state.setVisible(m_selectedStatuses.contains(location.getStatusDetails().getStatus()));
-    	return state;
-	}
+        if (location == null) {
+            return null;
+        }
+        GWTMarkerState state = location.getMarkerState();
+        if (state == null) {
+            state = new GWTMarkerState(location.getName(), location.getLatLng(), location.getStatusDetails().getStatus());
+            location.setMarkerState(state);
+        }
+        final boolean statusIsVisible = m_selectedStatuses.contains(location.getStatusDetails().getStatus());
+        state.setVisible(statusIsVisible && location.isVisible(m_mapPanel.getBounds()));
+        return state;
+    }
 
-    public void onApplicationSelected(ApplicationSelectedEvent event) {
+    public void onApplicationSelected(final ApplicationSelectedEvent event) {
+        final String applicationName = event.getApplicationname();
+        final ApplicationInfo app = m_applications.get(applicationName);
+
         // Add the application to the selected application list
-        m_selectedApplications.add(event.getAppInfo());
+        m_selectedApplications.add(app);
 
         updateAllMarkerStates();
 
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
-        m_remoteService.getApplicationDetails(event.getAppInfo().getName(), new AsyncCallback<ApplicationDetails>() {
+        m_remoteService.getApplicationDetails(applicationName, new AsyncCallback<ApplicationDetails>() {
 
-            public void onFailure(Throwable arg0) {
-                //TODO: Do something on failure.
+            public void onFailure(final Throwable t) {
+                // TODO: Do something on failure.
             }
 
-            public void onSuccess(ApplicationDetails applicationDetails) {
+            public void onSuccess(final ApplicationDetails applicationDetails) {
                 m_eventBus.fireEvent(new ApplicationDetailsRetrievedEvent(applicationDetails));
             }
         });
@@ -532,65 +550,56 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void locationClicked() {
-    	m_locationViewActive = true;
-    	updateAllMarkerStates();
+        m_locationViewActive = true;
+        updateAllMarkerStates();
     }
 
     public void applicationClicked() {
-    	m_locationViewActive = false;
-    	updateAllMarkerStates();
+        m_locationViewActive = false;
+        updateAllMarkerStates();
     }
 
-	public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {
-		final LocationMonitorState state = locationDetails.getLocationMonitorState();
+    public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {
+        final LocationMonitorState state = locationDetails.getLocationMonitorState();
 
-		int pollersStarted = state.getMonitorsStarted();
-		int pollersStopped = state.getMonitorsStopped();
-		int pollersDisconnected = state.getMonitorsDisconnected();
-		Collection<String> serviceNames = state.getServiceNames();
-		int servicesWithOutages = state.getServicesDown().size();
-		int monitorsWithOutages = state.getMonitorsWithServicesDown().size();
+        int pollersStarted      = state.getMonitorsStarted();
+        int pollersStopped      = state.getMonitorsStopped();
+        int pollersDisconnected = state.getMonitorsDisconnected();
+        int services            = state.getServices().size();
+        int servicesWithOutages = state.getServicesDown().size();
+        int monitorsWithOutages = state.getMonitorsWithServicesDown().size();
 
-		StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-		sb.append("<div id=\"locationStatus\">");
-		sb.append("<dl class=\"statusContents\">\n");
+        sb.append("<div id=\"locationStatus\">");
+        sb.append("<dl class=\"statusContents\">\n");
 
-		sb	.append("<dt class=\"").append(state.getStatusDetails().getStatus().getStyle()).append(" statusDt\">")
-			.append("Monitors:")
-			.append("</dt>\n");
-		sb	.append("<dd class=\"").append(state.getStatusDetails().getStatus().getStyle()).append(" statusDd\">");
-		sb	.append(pollersStarted + " started")
-			.append("<br>\n");
-		sb	.append(pollersStopped + " stopped")
-			.append("<br>\n");
-		sb	.append(pollersDisconnected + " disconnected")
-			.append("\n");
-		sb	.append("</dd>\n");
+        sb.append("<dt class=\"").append(state.getStatusDetails().getStatus().getStyle()).append(" statusDt\">").append("Monitors:").append("</dt>\n");
+        sb.append("<dd class=\"").append(state.getStatusDetails().getStatus().getStyle()).append(" statusDd\">");
+        sb.append(pollersStarted + " started").append("<br>\n");
+        sb.append(pollersStopped + " stopped").append("<br>\n");
+        sb.append(pollersDisconnected + " disconnected").append("\n");
+        sb.append("</dd>\n");
 
-		if (pollersStarted > 0) {
-			// If pollers are started, add on service information
+        if (pollersStarted > 0) {
+            // If pollers are started, add on service information
+            String styleName = Status.UP.getStyle();
+            if (servicesWithOutages > 0) {
+                if (monitorsWithOutages == pollersStarted) {
+                    styleName = Status.DOWN.getStyle();
+                } else {
+                    styleName = Status.MARGINAL.getStyle();
+                }
+            }
+            sb.append("<dt class=\"").append(styleName).append(" statusDt\">").append("Services:").append("</dt>\n");
+            sb.append("<dd class=\"").append(styleName).append(" statusDd\">");
+            sb.append(servicesWithOutages).append(" outage").append(servicesWithOutages == 1? "" : "s");
+            sb.append(" (of ").append(services).append(" service").append(services == 1? "" : "s").append(")").append("<br>\n");
+            sb.append(monitorsWithOutages).append(" poller").append(monitorsWithOutages == 1? "" : "s").append(" reporting errors").append("\n");
+            sb.append("</dd>\n");
+        }
 
-			String styleName = Status.UP.getStyle();
-			if (servicesWithOutages > 0) {
-				if (monitorsWithOutages == pollersStarted) {
-					styleName = Status.DOWN.getStyle();
-				} else {
-					styleName = Status.MARGINAL.getStyle();
-				}
-			}
-			sb	.append("<dt class=\"").append(styleName).append(" statusDt\">")
-				.append("Services:")
-				.append("</dt>\n");
-			sb	.append("<dd class=\"").append(styleName).append(" statusDd\">");
-			sb	.append(servicesWithOutages + " outages (of " + serviceNames.size() + " services)")
-				.append("<br>\n");
-			sb	.append(monitorsWithOutages + " pollers reporting errors")
-				.append("\n");
-			sb	.append("</dd>\n");
-		}
-
-		sb.append("</div>");
-		return sb.toString();
-	}
+        sb.append("</div>");
+        return sb.toString();
+    }
 }

@@ -40,7 +40,6 @@ import java.util.Map;
 
 import jcifs.netbios.NbtAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
@@ -72,7 +71,7 @@ public final class SmbPlugin extends AbstractPlugin {
      *         name. False otherwise.
      */
     private boolean isSmb(InetAddress host) {
-        Category log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         boolean isAServer = false;
         try {
             log.debug("host.getHostAddress(): " + host.getHostAddress());

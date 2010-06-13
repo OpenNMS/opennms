@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <bean id="pollerBackEnd" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
-    <property name="service" ref="daemon" />
+    <property name="service" ref="backend" />
     <property name="serviceInterface" value="org.opennms.netmgt.poller.remote.PollerBackEnd" />
   </bean>
 </beans>

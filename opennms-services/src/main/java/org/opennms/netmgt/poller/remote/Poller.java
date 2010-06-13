@@ -40,7 +40,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.quartz.Scheduler;
@@ -143,7 +142,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 		
 	}
 
-	private Category log() {
+	private ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 

@@ -147,7 +147,7 @@ public class DefaultAdminCategoryService implements
         
         OnmsCategory category = findCategory(categoryIdString);
        
-        if (editAction.equals("Add")) {
+        if (editAction.contains("Add")) { // @i18n
             if (toAdd == null) {
                 return;
                 //throw new IllegalArgumentException("toAdd cannot be null if editAction is 'Add'");
@@ -178,7 +178,7 @@ public class DefaultAdminCategoryService implements
                 node.addCategory(category);
                 m_nodeDao.save(node);
             }
-       } else if (editAction.equals("Remove")) {
+       } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
                 //throw new IllegalArgumentException("toDelete cannot be null if editAction is 'Remove'");
@@ -280,7 +280,7 @@ public class DefaultAdminCategoryService implements
         
         OnmsNode node = findNode(nodeIdString);
        
-        if (editAction.equals("Add")) {
+        if (editAction.contains("Add")) { // @i18n
             if (toAdd == null) {
                 return;
                 //throw new IllegalArgumentException("toAdd cannot be null if editAction is 'Add'");
@@ -312,7 +312,7 @@ public class DefaultAdminCategoryService implements
             
             m_nodeDao.save(node);
             notifyCategoryChange(WebSecurityUtils.safeParseInt(nodeIdString));
-       } else if (editAction.equals("Remove")) {
+       } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
                 //throw new IllegalArgumentException("toDelete cannot be null if editAction is 'Remove'");

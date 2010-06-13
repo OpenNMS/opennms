@@ -42,7 +42,6 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 
 import org.opennms.core.utils.ThreadCategory;
 
@@ -61,7 +60,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class LoadDefaultMapController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	

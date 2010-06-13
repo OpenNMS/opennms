@@ -48,7 +48,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
@@ -65,7 +64,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * 
  */
 public class DeleteElementsController implements Controller {
-	Category log;
+	ThreadCategory log;
 
 	private Manager manager;
 	

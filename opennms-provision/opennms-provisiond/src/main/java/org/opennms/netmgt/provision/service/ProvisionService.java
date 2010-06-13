@@ -54,7 +54,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @author brozow
  */
 public interface ProvisionService {
+    
 
+    public abstract boolean isDiscoveryEnabled();
+    
     /**
      * Clear the Hibernate object cache. This is used to clear the object
      * cache created by Hibernate. This is needed so large imports don't end
@@ -117,6 +120,13 @@ public interface ProvisionService {
      */
     @Transactional
     public abstract void deleteNode(Integer nodeId);
+
+    @Transactional
+    public abstract void deleteInterface(Integer nodeId, String ipAddr);
+
+    @Transactional
+    public abstract void deleteService(Integer nodeId, String ipAddr, String service);
+
 
     /**
      * Insert the provided node into the database
@@ -209,6 +219,20 @@ public interface ProvisionService {
 
     @Transactional
     public abstract void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp);
+
+    @Transactional
+    public abstract OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress);
+
+    @Transactional
+    public abstract OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node);
+
+    @Transactional
+    public abstract OnmsNode createUndiscoveredNode(String ipAddress);
+
+    @Transactional
+    public abstract OnmsNode getNode(Integer nodeId);
+
+
 
 
 }

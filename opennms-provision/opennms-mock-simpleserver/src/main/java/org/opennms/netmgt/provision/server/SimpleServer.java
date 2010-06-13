@@ -113,7 +113,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     public void onInit() {} 
     
     public void startServer() throws Exception {
-        setServerThread((new Thread(getRunnable())));
+        setServerThread(new Thread(getRunnable(), this.getClass().getSimpleName()));
         getServerThread().start();
     }
     
@@ -239,7 +239,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     }
     
     private void info(Throwable t, String format, Object... args) {
-        Logger log = ThreadCategory.getInstance(getClass());
+        ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args), t);
         }

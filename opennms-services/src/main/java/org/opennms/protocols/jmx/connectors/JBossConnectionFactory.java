@@ -30,16 +30,19 @@
 
 package org.opennms.protocols.jmx.connectors;
 
-import java.lang.reflect.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.File;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.jmx.MBeanServerProxy;
@@ -59,25 +62,25 @@ import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextC
  */
 public class JBossConnectionFactory {
     
-    static Category log = ThreadCategory.getInstance(JBossConnectionFactory.class);
+    static ThreadCategory log = ThreadCategory.getInstance(JBossConnectionFactory.class);
     static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.utils.jmx.connectors.ConnectionFactory#getMBeanServer()
      */
+    @SuppressWarnings("unchecked")
     public static JBossConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {
         
         JBossConnectionWrapper wrapper = null;
         //IsolatingClassLoader   icl     = null;
         ClassLoader icl = null;
-        ClassLoader originalLoader = Thread.currentThread().getContextClassLoader();
-                
+        final ClassLoader originalLoader = Thread.currentThread().getContextClassLoader();
+
         String connectionType = ParameterMap.getKeyedString(propertiesMap, "factory", "RMI");
         String timeout        = ParameterMap.getKeyedString(propertiesMap, "timeout", "3000");
         String jbossVersion   = ParameterMap.getKeyedString(propertiesMap, "version", "4");
         String port           = ParameterMap.getKeyedString(propertiesMap, "port",    "1099");
 
-        
         if (connectionType == null) {
             log.error("factory property is not set, check the configuration files.");
             return null;
@@ -86,7 +89,7 @@ public class JBossConnectionFactory {
         if (jbossVersion == null || jbossVersion.startsWith("4")) {
             try {
                 icl = new IsolatingClassLoader("jboss", 
-                        new URL[] {new File(System.getProperty("opennms.home") + "/lib/jboss/jbossall-client.jar").toURL()},
+                        new URL[] {new File(System.getProperty("opennms.home") + "/lib/jboss/jbossall-client.jar").toURI().toURL()},
                         originalLoader,
                         packages,
                         true);
@@ -97,17 +100,27 @@ public class JBossConnectionFactory {
                 log.error("JBossConnectionWrapper InvalidContextClassLoaderException" ,e);
             }
         } else if (jbossVersion.startsWith("3")){
-            try {
-                icl = new IsolatingClassLoader("jboss", 
-                        new URL[] {new File(System.getProperty("opennms.home") + "/lib/jboss/jbossall-client32.jar").toURL()},
-                        originalLoader,
-                        packages,
-                        true);
-            } catch (MalformedURLException e) {
-                log.error("JBossConnectionWrapper MalformedURLException" ,e);
-            } catch (InvalidContextClassLoaderException e) {
-                log.error("JBossConnectionWrapper InvalidContextClassLoaderException" ,e);
-            }
+                PrivilegedAction<IsolatingClassLoader> action = new PrivilegedAction<IsolatingClassLoader>() {
+
+                    public IsolatingClassLoader run() {
+                        try {
+                            return new IsolatingClassLoader(
+                                "jboss", 
+                                new URL[] {new File(System.getProperty("opennms.home") + "/lib/jboss/jbossall-client32.jar").toURI().toURL()},
+                                originalLoader,
+                                packages,
+                                true
+                            );
+                        } catch (MalformedURLException e) {
+                            log.error("JBossConnectionWrapper MalformedURLException" ,e);
+                        } catch (InvalidContextClassLoaderException e) {
+                            log.error("JBossConnectionWrapper InvalidContextClassLoaderException" ,e);
+                        }
+                        return null;
+                    }
+                    
+                };
+                AccessController.doPrivileged(action);
         }
         
         if (icl == null) {

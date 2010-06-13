@@ -37,6 +37,8 @@
  */
 package org.opennms.netmgt.collectd;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * @author mjamison
  *
@@ -185,6 +187,7 @@ public class Attr {
      * 
      * @return true if the objects are equal, false otherwise.
      */
+    @Override
     public boolean equals(Object object) {
         if (object == null)
             return false;
@@ -204,12 +207,24 @@ public class Attr {
 
     }
 
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(7, 11)
+            .append(this.getName())
+            .append(this.getType())
+            .append(this.getAlias())
+            .append(this.getMinval())
+            .append(this.getMaxval())
+            .toHashCode();
+    }
+
     /**
      * This method is responsible for returning a String object which represents
      * the content of this MibObject. Primarily used for debugging purposes.
      * 
      * @return String which represents the content of this MibObject
      */
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
 

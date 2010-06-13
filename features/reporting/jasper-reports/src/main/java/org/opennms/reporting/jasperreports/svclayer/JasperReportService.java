@@ -53,7 +53,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
 
-import org.apache.log4j.Category;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
@@ -68,7 +67,7 @@ public class JasperReportService implements ReportService {
 
     private JasperReportConfigDao m_jasperReportConfigDao;
 
-    private final Category log;
+    private final ThreadCategory log;
 
     public JasperReportService() {
         String oldPrefix = ThreadCategory.getPrefix();

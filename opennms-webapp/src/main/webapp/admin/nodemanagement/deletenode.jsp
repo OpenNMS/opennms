@@ -101,21 +101,15 @@
                 
         if (hasCheckedItems)
         {
-                if (confirm("Are you sure you want to proceed? This action will permanently delete the checked items and cannot be undone."))
-                {
-                        document.deleteNode.submit();
-                }
+                // Return true if we want the form to submit, false otherwise
+                return confirm("Are you sure you want to proceed? This action will permanently delete the checked items and cannot be undone.");
         }
         else
         {
                 alert("No node or data item is selected!");
+                // Return false so that the form is not submitted
+                return false;
         }
-  }
-  
-  function cancel()
-  {
-      document.deleteNode.action="admin/nodemanagement/index.jsp?node=<%=nodeId%>";
-      document.deleteNode.submit();
   }
 </script>
 
@@ -146,28 +140,21 @@
 
 <hr/> 
   
-<form method="post" name="deleteNode" action="admin/deleteSelNodes">
+<form method="post" name="deleteNode" action="admin/deleteSelNodes" onSubmit="return applyChanges();">
 
-<br/>
+<h2>Node: <%=node_db.getLabel()%></h2>
 
-<input type="checkbox" name="nodeCheck" value='<%= nodeId %>'>Node
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<p>
+<input type="checkbox" name="nodeCheck" id="nodeCheck" value='<%= nodeId %>'><label for="nodeCheck">Node</label>
+</p>
 
-<input type="checkbox" name="nodeData" value='<%= nodeId %>'>Data
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<p>
+<input type="checkbox" name="nodeData" id="nodeData" value='<%= nodeId %>'><label for="nodeData">Data</label>
+</p>
 
-Node: <%=node_db.getLabel()%>
+<input type="submit" value="Delete">
+<a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>" style="font-size: 11px;">Cancel</a>
 
-<br/>
-<br/>
-
-<input type="submit" value="Delete" onClick="applyChanges()">
-<input type="button" value="Cancel" onClick="cancel()">
-
-<br/>
 </form>
 
 <jsp:include page="/includes/footer.jsp" flush="true"/>
-

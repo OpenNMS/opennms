@@ -56,7 +56,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -1091,7 +1090,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                     log().debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
                 }
                 int nodeId = rs.getInt(1);
-                nodeIdList.add(new Integer(nodeId));
+                nodeIdList.add(nodeId);
             }
             nodeIds = new int[nodeIdList.size()];
             int i = 0;
@@ -1128,7 +1127,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             d.watch(rs);
             List<Long> nodeIdList = new LinkedList<Long>();
             while (rs.next()) {
-                nodeIdList.add(new Long(rs.getLong(1)));
+                nodeIdList.add(rs.getLong(1));
             }
 
             long[] nodeIds = new long[nodeIdList.size()];
@@ -2271,7 +2270,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         Assert.state(m_localServer != null, "The localServer must be set");
     }
 
-    private Category log() {
+    private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 

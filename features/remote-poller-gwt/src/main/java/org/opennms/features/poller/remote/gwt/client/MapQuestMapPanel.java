@@ -39,14 +39,14 @@ import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
 public class MapQuestMapPanel extends Composite implements MapPanel {
 
     private class DefaultMarkerClickHandler implements ClickHandler {
-        
+
         private GWTMarkerState m_markerState;
-        
-        public DefaultMarkerClickHandler(GWTMarkerState markerState) {
+
+        public DefaultMarkerClickHandler(final GWTMarkerState markerState) {
             setMarkerState(markerState);
         }
 
-        public void onClick(ClickEvent event) {
+        public void onClick(final ClickEvent event) {
             m_eventBus.fireEvent(new GWTMarkerClickedEvent(getMarkerState()));
         }
 
@@ -61,21 +61,24 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
     }
 
     private static MapQuestMapPanelUiBinder uiBinder = GWT.create(MapQuestMapPanelUiBinder.class);
-    
+
     @UiField
     SimplePanel m_mapHolder;
-    
+
     private MQATileMap m_map;
+
     private Map<String, MQAPoi> m_markers = new HashMap<String, MQAPoi>();
+
     private HandlerManager m_eventBus;
-    
-    interface MapQuestMapPanelUiBinder extends UiBinder<Widget, MapQuestMapPanel> {}
+
+    interface MapQuestMapPanelUiBinder extends UiBinder<Widget, MapQuestMapPanel> {
+    }
 
     public MapQuestMapPanel(final HandlerManager eventBus) {
         m_eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
         m_map = MQATileMap.newInstance(getMapHolder().getElement());
-        
+
         initializeMap();
 
         m_map.addMoveEndHandler(new MoveEndHandler() {
@@ -96,13 +99,12 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         syncMapSizeWithParent();
     }
 
-
-
     public void initializeMap() {
         getMapHolder().setSize("100%", "100%");
         m_map.addControl(MQALargeZoomControl.newInstance());
-        m_map.setZoomLevel(2);
-        
+        m_map.setZoomLevel(1);
+        m_map.setCenter(MQALatLng.newInstance("0,0"));
+
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
                 syncMapSizeWithParent();
@@ -110,76 +112,67 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         });
     }
 
-    public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
+    public void showLocationDetails(final String name, final String htmlTitle, final String htmlContent) {
         final MQAPoi point = getMarker(name);
-    	if (point != null) {
-    		final MQALatLng latLng = point.getLatLng();
-    		m_map.setCenter(latLng);
-    		m_map.getInfoWindow().hide();
+        if (point != null) {
+            final MQALatLng latLng = point.getLatLng();
+            m_map.setCenter(latLng);
+            m_map.getInfoWindow().hide();
 
-    		point.setInfoTitleHTML(htmlTitle);
-    		point.setInfoContentHTML(htmlContent);
-    		point.showInfoWindow();
-    		NodeList<Element> elements = Document.get().getElementsByTagName("div");
-    		for (int i = 0; i < elements.getLength(); i++) {
-    			final Element e = elements.getItem(i);
-    			if (e.getClassName().equals("mqpoicontenttext")) {
-    				final Style s = e.getStyle();
-    				s.setOverflow(Overflow.HIDDEN);
-    				break;
-    			}
-    		}
-    	}
+            point.setInfoTitleHTML(htmlTitle);
+            point.setInfoContentHTML(htmlContent);
+            point.showInfoWindow();
+            final NodeList<Element> elements = Document.get().getElementsByTagName("div");
+            for (int i = 0; i < elements.getLength(); i++) {
+                final Element e = elements.getItem(i);
+                if (e.getClassName().equals("mqpoicontenttext")) {
+                    final Style s = e.getStyle();
+                    s.setOverflow(Overflow.HIDDEN);
+                    break;
+                }
+            }
+        }
     }
 
-
-
-    private MQAPoi createMarker(GWTMarkerState marker) {
-        
+    private MQAPoi createMarker(final GWTMarkerState marker) {
         final MQALatLng latLng = toMQALatLng(marker.getLatLng());
         final MQAIcon icon = createIcon(marker);
         final MQAPoi point = MQAPoi.newInstance(latLng, icon);
         point.setIconOffset(MQAPoint.newInstance(-16, -32));
         point.addClickHandler(new DefaultMarkerClickHandler(marker));
-        
+        point.setMaxZoomLevel(16);
+        point.setMinZoomLevel(1);
+
         return point;
     }
 
-    private MQAIcon createIcon(GWTMarkerState marker) {
+    private MQAIcon createIcon(final GWTMarkerState marker) {
         return MQAIcon.newInstance(marker.getImageURL(), 32, 32);
     }
 
     public GWTBounds getBounds() {
         return toGWTBounds(m_map.getBounds());
     }
-    
-    public void setBounds(GWTBounds b) {
+
+    public void setBounds(final GWTBounds b) {
         m_map.zoomToRect(toMQARectLL(b));
     }
-    
-    @SuppressWarnings("unused")
-    private static GWTLatLng toGWTLatLng(MQALatLng latLng) {
-        return new GWTLatLng(latLng.getLatitude(), latLng.getLongitude());
-    }
-    
-    private static MQALatLng toMQALatLng(GWTLatLng latLng) {
+
+    private static MQALatLng toMQALatLng(final GWTLatLng latLng) {
         return MQALatLng.newInstance(latLng.getLatitude(), latLng.getLongitude());
     }
-    
-    private static GWTBounds toGWTBounds(MQARectLL bounds) {
-        BoundsBuilder bldr = new BoundsBuilder();
+
+    private static GWTBounds toGWTBounds(final MQARectLL bounds) {
+        final BoundsBuilder bldr = new BoundsBuilder();
         bldr.extend(bounds.getUpperLeft().getLatitude(), bounds.getUpperLeft().getLongitude());
         bldr.extend(bounds.getLowerRight().getLatitude(), bounds.getLowerRight().getLongitude());
-        
         return bldr.getBounds();
     }
-    
-    private static MQARectLL toMQARectLL(GWTBounds bounds) {
-        MQALatLng latLng = toMQALatLng(bounds.getNorthEastCorner());
-        
-        MQARectLL mqBounds = MQARectLL.newInstance(latLng, latLng);
-        mqBounds.extend(toMQALatLng(bounds.getSouthWestCorner()));
-        
+
+    private static MQARectLL toMQARectLL(final GWTBounds bounds) {
+        final MQALatLng ne = toMQALatLng(bounds.getNorthEastCorner());
+        final MQALatLng sw = toMQALatLng(bounds.getSouthWestCorner());
+        final MQARectLL mqBounds = MQARectLL.newInstance(ne, sw);
         return mqBounds;
     }
 
@@ -189,28 +182,27 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
 
     private void syncMapSizeWithParent() {
         m_map.setSize();
-        //getMapWidget().setSize(MQASize.newInstance(getMapHolder().getOffsetWidth(), getMapHolder().getOffsetHeight()));
     }
 
-    public void placeMarker(GWTMarkerState marker) {
+    public void placeMarker(final GWTMarkerState marker) {
         MQAPoi m = getMarker(marker.getName());
-        
-        if(m == null) {
-        	m = createMarker(marker);
-        	m_markers.put(marker.getName(), m);
-        	m_map.addShape(m);
-        }else {
+
+        if (m == null) {
+            m = createMarker(marker);
+            m_markers.put(marker.getName(), m);
+            m_map.addShape(m);
+        } else {
             updateMarker(m, marker);
         }
-        
+
     }
 
-    private void updateMarker(MQAPoi m, GWTMarkerState marker) {
+    private void updateMarker(final MQAPoi m, final GWTMarkerState marker) {
         m.setIcon(createIcon(marker));
         m.setVisible(marker.isVisible());
     }
 
-    private MQAPoi getMarker(String name) {
+    private MQAPoi getMarker(final String name) {
         return m_markers.get(name);
     }
 

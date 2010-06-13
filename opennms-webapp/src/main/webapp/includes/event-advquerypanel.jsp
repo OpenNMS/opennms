@@ -221,7 +221,6 @@
                 <option value="50">50 events</option>
                 <option value="100">100 events</option>
                 <option value="1000">1000 events</option>
-                <option value="-1">all events</option>
               </select>
             </td>
           </tr>

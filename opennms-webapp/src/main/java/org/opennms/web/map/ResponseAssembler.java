@@ -63,7 +63,7 @@ public class ResponseAssembler {
     protected static String getRefreshResponse(VMap map){		
 		Map refreshResponseMap = new HashMap();
 		refreshResponseMap.put("elems",map.getElements().values());
-		refreshResponseMap.put("links", map.getLinks().values());
+		refreshResponseMap.put("links", map.getLinks());
 		return JSONSerializer.toJSON(refreshResponseMap).toString();
 	}
 

@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -56,16 +55,16 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
  */
-public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
+public class CorrelationEngineFactoryBean implements FactoryBean<List<CorrelationEngine>>, InitializingBean, ApplicationContextAware {
     
     private List<CorrelationEngine> m_correlationEngines = new ArrayList<CorrelationEngine>(0);
     private ApplicationContext m_applicationContext;
 
-    public Object getObject() throws Exception {
+    public List<CorrelationEngine> getObject() throws Exception {
         return m_correlationEngines;
     }
 
-    public Class<?> getObjectType() {
+    public Class<? extends List> getObjectType() {
         return m_correlationEngines.getClass();
     }
 
@@ -95,7 +94,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         m_applicationContext = applicationContext;
     }
 
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

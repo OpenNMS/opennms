@@ -32,14 +32,17 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public final class ByNameComparator implements Comparator<AttributeDefinition> {
-    public int compare(AttributeDefinition type0, AttributeDefinition type1) {
+public final class ByNameComparator implements Comparator<AttributeDefinition>, Serializable {
+    private static final long serialVersionUID = 1L;
+
+    public int compare(final AttributeDefinition type0, final AttributeDefinition type1) {
         return type0.getName().compareTo(type1.getName());
     }
     
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return o instanceof ByNameComparator;
     }
     

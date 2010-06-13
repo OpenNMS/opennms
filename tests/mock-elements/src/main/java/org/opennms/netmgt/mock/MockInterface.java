@@ -45,7 +45,7 @@ import org.opennms.netmgt.xml.event.Event;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class MockInterface extends MockContainer {
+public class MockInterface extends MockContainer<MockNode,MockService> {
 
     private String m_ipAddr;
 	private String m_ifAlias;
@@ -130,7 +130,7 @@ public class MockInterface extends MockContainer {
     }
 
     // model
-    public List getServices() {
+    public List<MockService> getServices() {
         return getMembers();
     }
 

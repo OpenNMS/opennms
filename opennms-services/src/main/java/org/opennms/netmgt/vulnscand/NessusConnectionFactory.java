@@ -37,27 +37,26 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 class NessusConnectionFactory {
     static public Socket getConnection(InetAddress hostname, int hostport) {
-        Category log = ThreadCategory.getInstance(NessusConnectionFactory.class);
+        ThreadCategory log = ThreadCategory.getInstance(NessusConnectionFactory.class);
 
         try {
             Socket retval = new Socket(hostname, hostport);
             return retval;
         } catch (UnknownHostException ex) {
-            log.warn(ex);
+            log.warn(ex.getMessage());
             return null;
         } catch (IOException ex) {
-            log.warn(ex);
+            log.warn(ex.getMessage());
             return null;
         }
     }
 
     static public void releaseConnection(Socket socket) {
-        Category log = ThreadCategory.getInstance(NessusConnectionFactory.class);
+        ThreadCategory log = ThreadCategory.getInstance(NessusConnectionFactory.class);
 
         try {
             socket.close();

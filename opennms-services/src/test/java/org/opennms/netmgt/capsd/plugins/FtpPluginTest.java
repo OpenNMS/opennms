@@ -143,7 +143,7 @@ public class FtpPluginTest extends TestCase {
                     throw new UndeclaredThrowableException(e);
                 }
             }
-        });
+        }, this.getClass().getSimpleName() + "-serverThread");
         
         m_serverThread.start();
         
@@ -161,7 +161,7 @@ public class FtpPluginTest extends TestCase {
                     throw new UndeclaredThrowableException(e);
                 }
             }
-        });
+        }, this.getClass().getSimpleName() + "-serverThread");
         
         m_serverThread.start();
         
