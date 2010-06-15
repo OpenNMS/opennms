@@ -96,6 +96,10 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         m_monitoredServices = services;
     }
 
+    public void addMonitoredService(OnmsMonitoredService service) {
+        getMonitoredServices().add(service);
+    }
+
     public int compareTo(OnmsApplication o) {
         return getName().compareToIgnoreCase(o.getName());
     }
