@@ -103,7 +103,7 @@ Comparable<OnmsMonitoredService> {
      */
     private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<OnmsOutage>();
 
-    private Set<OnmsApplication> m_applications;
+    private Set<OnmsApplication> m_applications = new LinkedHashSet<OnmsApplication>();
 
     public OnmsMonitoredService() {
     }
@@ -116,7 +116,7 @@ Comparable<OnmsMonitoredService> {
     }
 
     /**
-     * Unique identifier for ifServivce.
+     * Unique identifier for ifService.
      */
     @Id
     @XmlAttribute(name="id")
@@ -279,7 +279,6 @@ Comparable<OnmsMonitoredService> {
         m_currentOutages = currentOutages;
     }
 
-//  @ManyToMany(mappedBy="memberServices")
     @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
                name="application_service_map",

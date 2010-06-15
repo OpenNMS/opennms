@@ -40,10 +40,15 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -57,8 +62,8 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     private String m_name;
 
-    //private Set<OnmsMonitoredService> m_memberServices;
-    
+    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<OnmsMonitoredService>();
+
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
@@ -79,21 +84,17 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         m_name = name;
     }
 
-    /*
-    @ManyToMany
-    @JoinTable(
-    		name="application_service_map",
-    		joinColumns={@JoinColumn(name="appId")},
-    		inverseJoinColumns={@JoinColumn(name="ifserviceId")}
+    @ManyToMany(
+                mappedBy="applications",
+                cascade={CascadeType.PERSIST, CascadeType.MERGE}
     )
-    public Set<OnmsMonitoredService> getMemberServices() {
-        return m_memberServices;
+    public Set<OnmsMonitoredService> getMonitoredServices() {
+        return m_monitoredServices;
     }
 
-    public void setMemberServices(Set<OnmsMonitoredService> memberServices) {
-        m_memberServices = memberServices;
+    public void setMonitoredServices(Set<OnmsMonitoredService> services) {
+        m_monitoredServices = services;
     }
-    */
 
     public int compareTo(OnmsApplication o) {
         return getName().compareToIgnoreCase(o.getName());
