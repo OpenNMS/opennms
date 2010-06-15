@@ -68,6 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/locationDataServiceTest.xml"
 })
 @JUnitTemporaryDatabase()
+@Transactional
 public class LocationDataServiceTest {
     @Autowired
     private LocationDataService m_locationDataService;
@@ -162,9 +163,15 @@ public class LocationDataServiceTest {
         m_monitoredServiceDao.flush();
         m_locationMonitorDao.flush();
 
+        OnmsApplication onmsApp = m_applicationDao.findByName("TestApp1");
+        assertTrue(onmsApp.equals(app));
+
+        assertEquals("Count of applications associated with services is wrong", 1, m_localhostHttpService.getApplications().size());
+        assertEquals("Count of applications associated with services is wrong", 1, m_googleHttpService.getApplications().size());
+        //assertEquals("Count of services associated with application is wrong", 2, app.getMonitoredServices().size());
         m_pollingEnd = new Date();
         m_pollingStart = new Date(m_pollingEnd.getTime() - (1000 * 60 * 60 * 24));
-}
+    }
 
     private long days(int numDays) {
         return 86400000 * numDays;
@@ -197,7 +204,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testLocationInfo() throws Exception {
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - days(20) - hours(3))));
         
@@ -213,7 +219,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testLocationDetails() throws Exception {
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - days(20) - hours(3))));
         
@@ -252,7 +257,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testApplicationInfo() throws Exception {
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(new Date(now() - hours(3))));
         
@@ -268,7 +272,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testApplicationDetailsFullyAvailableOneMonitor() throws Exception {
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(m_pollingStart));
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_googleHttpService.getId(), getAvailable(m_pollingStart));
@@ -279,7 +282,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testApplicationDetailsHalfAvailableOneMonitor() throws Exception {
         // first, everything's up
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(m_pollingStart));
@@ -298,7 +300,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testApplicationDetailsDownOneMonitor() throws Exception {
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getDown(m_pollingStart));
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_googleHttpService.getId(), getDown(m_pollingStart));
@@ -309,7 +310,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testApplicationDetailsTwoMonitorsMarginal() throws Exception {
         // first, everything's up
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(m_pollingStart));
@@ -329,7 +329,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testApplicationDetailsTwoMonitorsOutageContainedInOther() throws Exception {
         // first, everything's up
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(m_pollingStart));
@@ -354,7 +353,6 @@ public class LocationDataServiceTest {
     }
 
     @Test
-    @Transactional
     public void testApplicationDetailsTwoMonitorsOutagesOverlap() throws Exception {
         // first, everything's up
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_localhostHttpService.getId(), getAvailable(m_pollingStart));

@@ -276,7 +276,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         }
 
         final Set<ApplicationInfo> applications = new HashSet<ApplicationInfo>();
-        final Map<String, Set<OnmsMonitoredService>> services = new HashMap<String, Set<OnmsMonitoredService>>();
+//        final Map<String, Set<OnmsMonitoredService>> services = new HashMap<String, Set<OnmsMonitoredService>>();
 
         for (final OnmsApplication application : m_applicationDao.findAll()) {
             applications.add(transformApplication(m_monitoredServiceDao.findByApplication(application), application));
