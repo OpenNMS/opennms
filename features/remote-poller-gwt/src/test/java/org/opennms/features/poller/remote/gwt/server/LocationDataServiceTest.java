@@ -168,7 +168,7 @@ public class LocationDataServiceTest {
 
         assertEquals("Count of applications associated with services is wrong", 1, m_localhostHttpService.getApplications().size());
         assertEquals("Count of applications associated with services is wrong", 1, m_googleHttpService.getApplications().size());
-        //assertEquals("Count of services associated with application is wrong", 2, app.getMonitoredServices().size());
+        assertEquals("Count of services associated with application is wrong", 2, app.getMonitoredServices().size());
         m_pollingEnd = new Date();
         m_pollingStart = new Date(m_pollingEnd.getTime() - (1000 * 60 * 60 * 24));
     }
@@ -191,7 +191,8 @@ public class LocationDataServiceTest {
     
     private OnmsMonitoredService createService(OnmsApplication app, OnmsIpInterface localhostIpInterface, OnmsServiceType httpServiceType) {
         OnmsMonitoredService service = new OnmsMonitoredService();
-        service.setApplications(Collections.singleton(app));
+        service.addApplication(app);
+        app.addMonitoredService(service);
         service.setIpInterface(localhostIpInterface);
         service.setLastFail(m_pollingEnd);
         service.setLastGood(m_pollingEnd);
@@ -200,6 +201,7 @@ public class LocationDataServiceTest {
         service.setStatus("A");
         service.setSource("P");
         m_monitoredServiceDao.saveOrUpdate(service);
+        m_applicationDao.saveOrUpdate(app);
         return service;
     }
 
