@@ -68,6 +68,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testEvaluateEvaluateSingleItemWithDivision() throws Exception {
         expression.setExpression("dsname/10");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(1, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "dsname" }) {
+            assertTrue(wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname",1000.0);
@@ -78,6 +82,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testEvaluateEvaluateSingleItemWithMultiply() throws Exception {
         expression.setExpression("dsname*10");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(1, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "dsname" }) {
+            assertTrue(wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname",100.0);
@@ -88,6 +96,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testEvaluateEvaluateSingleItemWithSubtraction() throws Exception {
         expression.setExpression("dsname-10");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(1, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "dsname" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname",100.0);
@@ -98,6 +110,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testEvaluateEvaluateSingleItemWithAddition() throws Exception {
         expression.setExpression("dsname+10");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(1, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "dsname" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname",100.0);
@@ -108,6 +124,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testEvaluateEvaluateMultipleItemsDivided() throws Exception {
         expression.setExpression("dsname1/dsname2");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(2, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "dsname1", "dsname2" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname1",100.0);
@@ -119,6 +139,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testEvaluateEvaluateMultipleItemsMultiplied() throws Exception {
         expression.setExpression("dsname1*dsname2");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(2, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "dsname1", "dsname2" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname1",20.0);
@@ -130,6 +154,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testEvaluateEvaluateMultipleItemsAdded() throws Exception {
         expression.setExpression("dsname1+dsname2");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(2, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "dsname1", "dsname2" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname1",20.0);
@@ -141,6 +169,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testEvaluateEvaluateMultipleItemsSubtracted() throws Exception {
         expression.setExpression("dsname1-dsname2");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(2, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "dsname1", "dsname2" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname1",20.0);
@@ -157,6 +189,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testSemiComplexExpression() throws Exception {
         expression.setExpression("(hrStorageSize-hrStorageUsed)*hrStorageAllocationUnits");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(3, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "hrStorageSize", "hrStorageUsed", "hrStorageAllocationUnits" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("hrStorageAllocationUnits",1024.0); //1K units
@@ -172,6 +208,10 @@ public class ThresholdExpressionTestCase extends TestCase {
         ThresholdEntity entity=new ThresholdEntity();
         expression.setExpression("(hrStorageSize-hrStorageUsed)*hrStorageAllocationUnits");
         BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(expression);
+        assertEquals(3, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "hrStorageSize", "hrStorageUsed", "hrStorageAllocationUnits" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
 
         entity.addThreshold(wrapper);
         Collection<String> dataSources=entity.getRequiredDatasources();
@@ -187,8 +227,18 @@ public class ThresholdExpressionTestCase extends TestCase {
     }
 
     public void testEvaluateConditionalFalse() throws Exception {
-        expression.setExpression("a < b ? trueval : falseval");
+        // Doesn't work because the expression is actually being evaluated to sniff 
+        // the variable names and trueval is never visited by the parser
+        // expression.setExpression("a < b ? trueval : falseval");
+        
+        // Force trueval to be visited by the parser
+        expression.setExpression("(trueval == trueval && a < b) ? trueval : falseval");
+        
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(4, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "a", "b", "trueval", "falseval" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("a",20.0);
@@ -201,8 +251,18 @@ public class ThresholdExpressionTestCase extends TestCase {
     }
     
     public void testEvaluateConditionalTrue() throws Exception {
-        expression.setExpression("a < b ? trueval : falseval");
+        // Doesn't work because the expression is actually being evaluated to sniff 
+        // the variable names and trueval is never visited by the parser
+        // expression.setExpression("a < b ? trueval : falseval");
+        
+        // Force trueval to be visited by the parser
+        expression.setExpression("(trueval == trueval && a < b) ? trueval : falseval");
+        
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(4, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "a", "b", "trueval", "falseval" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("a",2.0);
@@ -217,6 +277,10 @@ public class ThresholdExpressionTestCase extends TestCase {
     public void testAbsoluteValues() throws Exception {
         expression.setExpression("math.abs(variable + 5)");
         ExpressionConfigWrapper wrapper=new ExpressionConfigWrapper(expression);
+        assertEquals(1, wrapper.getRequiredDatasources().size());
+        for (String ds : new String[] { "variable" }) {
+            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
+        }
         
         Map<String,Double> values=new HashMap<String,Double>();
         values.put("variable", -25.0);
