@@ -613,7 +613,7 @@
       failed.&lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>
-      %service% data collection on interface %interface% failed with '%reason%'.
+      %service% data collection on interface %interface% failed with '%parm[reason]%'.
     </logmsg>
     <severity>Minor</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true" />
