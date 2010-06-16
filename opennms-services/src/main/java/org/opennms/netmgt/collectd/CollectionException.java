@@ -44,20 +44,12 @@ public class CollectionException extends Exception {
 
     private int m_errorCode = ServiceCollector.COLLECTION_FAILED;
 
-    public CollectionException() {
-        super();
-    }
-
     public CollectionException(String message) {
         super(message);
     }
 
     public CollectionException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public CollectionException(Throwable cause) {
-        super(cause);
     }
 
     void setErrorCode(int errorCode) {
