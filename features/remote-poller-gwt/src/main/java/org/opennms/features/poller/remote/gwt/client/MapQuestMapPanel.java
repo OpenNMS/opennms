@@ -15,6 +15,8 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
@@ -86,6 +88,16 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
         });
+        
+
+        addDomHandler(new DoubleClickHandler() {
+            
+            public void onDoubleClick(DoubleClickEvent event) {
+                m_map.zoomIn();
+                
+            }
+        }, DoubleClickEvent.getType());
+        
         m_map.addZoomEndHandler(new ZoomEndHandler() {
             public void onZoomEnd(ZoomEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
