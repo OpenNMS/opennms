@@ -41,19 +41,8 @@ public class CollectionWarning extends CollectionException {
 	 */
 	private static final long serialVersionUID = -3828799913299413271L;
 
-    public CollectionWarning() {
-        super();
-    }
-
-    public CollectionWarning(String message) {
-        super(message);
-    }
-
     public CollectionWarning(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public CollectionWarning(Throwable cause) {
-        super(cause);
-    }
 }

@@ -299,11 +299,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         String message = "collection failed for "
             + getCollectionAgent().getHostAddress() 
             + " due to: " + walker.getErrorMessage();
-        if (walker.getErrorThrowable() != null) {
-            throw new CollectionWarning(message, walker.getErrorThrowable());
-        } else {
-            throw new CollectionWarning(message, null);
-        }
+        // Note: getErrorThrowable() return value can be null
+        throw new CollectionWarning(message, walker.getErrorThrowable());
     }
 
     void collect() throws CollectionException {
