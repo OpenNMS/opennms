@@ -143,7 +143,7 @@
 	<g:VerticalPanel addStyleNames="{style.outerTagPanel}">
 		<g:Label text="Tags" addStyleNames="{style.panelHeader}"/>
 		<g:FlowPanel addStyleNames="{style.tagPanel}" ui:field="tagPanel"/>
-		<g:Hyperlink ui:field="clearTags" addStyleNames="{style.clear}" text="clear tags"/>
+		<g:Hyperlink ui:field="clearTags" addStyleNames="{style.clear}" text="clear selected tags"/>
 	</g:VerticalPanel>
 
 </ui:UiBinder>

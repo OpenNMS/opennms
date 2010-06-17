@@ -15,9 +15,14 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
@@ -36,7 +41,7 @@ import com.googlecode.gwtmapquest.transaction.event.MoveEndHandler;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndEvent;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
 
-public class MapQuestMapPanel extends Composite implements MapPanel {
+public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleClickHandlers, HasClickHandlers {
 
     private class DefaultMarkerClickHandler implements ClickHandler {
 
@@ -86,13 +91,34 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
         });
+        
+        addDoubleClickHandler(new DoubleClickHandler() {
+
+            public void onDoubleClick(DoubleClickEvent arg0) {
+                m_map.zoomIn();
+            }
+        });
+        
+//        addClickHandler(new ClickHandler() {
+//
+//            public void onClick(ClickEvent event) {
+//                MQAPoint point = MQAPoint.newInstance(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
+//                MQALatLng latLng = m_map.pixToLL(point);
+//                m_map.panToLatLng(latLng);
+//                
+//            }
+//            
+//        });
+        
+                
         m_map.addZoomEndHandler(new ZoomEndHandler() {
             public void onZoomEnd(ZoomEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
         });
     }
-
+    
+    
     @Override
     protected void onLoad() {
         super.onLoad();
@@ -208,6 +234,14 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
 
     public Widget getWidget() {
         return this;
+    }
+
+    public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
+        return addDomHandler(handler, DoubleClickEvent.getType());
+    }
+
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addDomHandler(handler, ClickEvent.getType());
     }
 
 }
