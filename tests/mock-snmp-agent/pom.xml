@@ -28,6 +28,12 @@
       <artifactId>snmp-dependencies</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.snmp4j</groupId>
+      <artifactId>snmp4j-agent</artifactId>
+      <version>1.2d</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
