@@ -45,7 +45,7 @@ public class AlarmRestService extends OnmsRestService {
     @Produces("text/xml")
     @Path("{alarmId}")
     @Transactional
-    public OnmsAlarm getNotification(@PathParam("alarmId") String alarmId) {
+    public OnmsAlarm getAlarm(@PathParam("alarmId") String alarmId) {
     	OnmsAlarm result= m_alarmDao.get(new Integer(alarmId));
     	return result;
     }
@@ -61,7 +61,7 @@ public class AlarmRestService extends OnmsRestService {
     @GET
     @Produces("text/xml")
     @Transactional
-    public OnmsAlarmCollection getNotifications() {
+    public OnmsAlarmCollection getAlarms() {
     	MultivaluedMap<java.lang.String,java.lang.String> params=m_uriInfo.getQueryParameters();
 		OnmsCriteria criteria=new OnmsCriteria(OnmsAlarm.class);
 
