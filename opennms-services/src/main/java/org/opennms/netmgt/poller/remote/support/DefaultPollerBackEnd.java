@@ -337,6 +337,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
         m_locMonDao.save(mon);
 
+        sendMonitorRegisteredEvent(mon);
         return mon.getId();
     }
 
@@ -386,6 +387,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 		} catch (final Exception e) {
 			LogUtils.errorf(this, e, "Unable to save result for location monitor ID %d, monitored service ID %d.", locationMonitorId, serviceId);
 		}
+    }
+
+    private void sendMonitorRegisteredEvent(final OnmsLocationMonitor mon) {
+        sendEvent(mon, EventConstants.LOCATION_MONITOR_REGISTERED_UEI);
     }
 
     private void sendDisconnectedEvent(final OnmsLocationMonitor mon) {
