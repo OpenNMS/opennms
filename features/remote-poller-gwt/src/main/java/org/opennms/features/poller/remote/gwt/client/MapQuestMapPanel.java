@@ -25,6 +25,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -36,6 +37,8 @@ import com.googlecode.gwtmapquest.transaction.MQAPoi;
 import com.googlecode.gwtmapquest.transaction.MQAPoint;
 import com.googlecode.gwtmapquest.transaction.MQARectLL;
 import com.googlecode.gwtmapquest.transaction.MQATileMap;
+import com.googlecode.gwtmapquest.transaction.event.DblClickEvent;
+import com.googlecode.gwtmapquest.transaction.event.DblClickHandler;
 import com.googlecode.gwtmapquest.transaction.event.MoveEndEvent;
 import com.googlecode.gwtmapquest.transaction.event.MoveEndHandler;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndEvent;
@@ -64,6 +67,35 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         }
 
     }
+    
+    private class ClickCounter{
+        
+        private int m_incr = 0;
+        private MQALatLng m_latlng = null;
+        private Timer m_timer = new Timer() {
+
+            @Override
+            public void run() {
+                if(m_incr == 1) {
+                    m_map.panToLatLng(m_latlng);
+                }else if(m_incr == 3) {
+                    m_map.setCenter(m_latlng);
+                    m_map.zoomIn();
+                }
+                
+                m_incr = 0;
+            }
+            
+        };
+        
+        public void incrementCounter(MQALatLng latLng) {
+            m_incr++;
+            m_latlng = latLng;
+            m_timer.cancel();
+            m_timer.schedule(300);
+        }
+        
+    }
 
     private static MapQuestMapPanelUiBinder uiBinder = GWT.create(MapQuestMapPanelUiBinder.class);
 
@@ -75,6 +107,8 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     private Map<String, MQAPoi> m_markers = new HashMap<String, MQAPoi>();
 
     private HandlerManager m_eventBus;
+    
+    private ClickCounter m_clickCounter = new ClickCounter();
 
     interface MapQuestMapPanelUiBinder extends UiBinder<Widget, MapQuestMapPanel> {
     }
@@ -92,25 +126,20 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
             }
         });
         
-        addDoubleClickHandler(new DoubleClickHandler() {
-
-            public void onDoubleClick(DoubleClickEvent arg0) {
-                m_map.zoomIn();
+        m_map.addClickHandler(new com.googlecode.gwtmapquest.transaction.event.ClickHandler() {
+            
+            public void onClicked(final com.googlecode.gwtmapquest.transaction.event.ClickEvent event) {
+                m_clickCounter.incrementCounter(event.getLL());
             }
         });
         
-//        addClickHandler(new ClickHandler() {
-//
-//            public void onClick(ClickEvent event) {
-//                MQAPoint point = MQAPoint.newInstance(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
-//                MQALatLng latLng = m_map.pixToLL(point);
-//                m_map.panToLatLng(latLng);
-//                
-//            }
-//            
-//        });
+        m_map.addDblClickHandler(new DblClickHandler() {
+            
+            public void onDblClicked(DblClickEvent event) {
+                m_clickCounter.incrementCounter(event.getLL());
+            }
+        });
         
-                
         m_map.addZoomEndHandler(new ZoomEndHandler() {
             public void onZoomEnd(ZoomEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
