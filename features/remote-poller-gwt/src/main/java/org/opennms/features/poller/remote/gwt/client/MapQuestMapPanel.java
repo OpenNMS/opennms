@@ -119,7 +119,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         m_map = MQATileMap.newInstance(getMapHolder().getElement());
 
         initializeMap();
-
+        
         m_map.addMoveEndHandler(new MoveEndHandler() {
             public void onMoveEnd(final MoveEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
@@ -197,6 +197,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         point.addClickHandler(new DefaultMarkerClickHandler(marker));
         point.setMaxZoomLevel(16);
         point.setMinZoomLevel(1);
+        point.setRolloverEnabled(true);
 
         return point;
     }
