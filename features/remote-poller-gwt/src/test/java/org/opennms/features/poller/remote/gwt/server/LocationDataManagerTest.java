@@ -1,12 +1,21 @@
 package org.opennms.features.poller.remote.gwt.server;
 
+import static org.easymock.EasyMock.*;
+
+import java.util.Properties;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.test.mock.EasyMockUtils;
+import org.opennms.test.mock.MockLogAppender;
+import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -34,7 +43,7 @@ import de.novanic.eventservice.service.EventExecutorService;
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
         "classpath:/locationDataManagerTest.xml"
 })
-@JUnitTemporaryDatabase()
+@JUnitTemporaryDatabase(useExistingDatabase="opennmspj")
 @Transactional
 public class LocationDataManagerTest {
     @Autowired
@@ -44,14 +53,24 @@ public class LocationDataManagerTest {
     
     @Before
     public void setUp() {
+        Properties p = new Properties();
+        p.setProperty("log4j.logger.org.hibernate", "INFO");
+        p.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
+        MockLogAppender.setupLogging(p);
     }
     
     @Test
     public void testStart() {
         EventExecutorService service = m_easyMockUtils.createMock(EventExecutorService.class);
+        service.addEventUserSpecific(isA(LocationUpdatedRemoteEvent.class));
+        expectLastCall().times(2866);
+        service.addEventUserSpecific(isA(ApplicationUpdatedRemoteEvent.class));
+        expectLastCall().times(14);
+        service.addEventUserSpecific(isA(UpdateCompleteRemoteEvent.class));
         m_easyMockUtils.replayAll();
         m_locationDataManager.doInitialize(service);
         m_easyMockUtils.verifyAll();
         
     }
+    
 }

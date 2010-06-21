@@ -14,11 +14,13 @@
     <constructor-arg value="1234" />
   </bean>
 
+  <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
+
   <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:///tmp/monitoring-locations.xml" />
   </bean>
 
-  <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
+<!-- 
 
   <bean id="monitoringLocationsConfiguration" class="org.opennms.features.poller.remote.gwt.server.TestMonitoringLocationsConfiguration" />
 
@@ -58,4 +60,7 @@
     <property name="eventIpcManager" ref="eventIpcManager" />
     <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout" />
   </bean>
+  
+  -->
+
 </beans>
