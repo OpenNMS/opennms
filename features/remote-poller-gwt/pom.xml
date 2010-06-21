@@ -160,7 +160,7 @@
     <dependency>
       <groupId>com.google.code</groupId>
       <artifactId>gwt-mapquest</artifactId>
-      <version>1.2-20100507</version>
+      <version>1.2-20100621-onms</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.gwt</groupId>
