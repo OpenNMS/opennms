@@ -65,7 +65,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  *
- * @deprecated Thresholding now done in CollectableService (in colle 
+ * @deprecated Thresholding now done in CollectableService (in collectd) 
  */
 final class ThresholdableService extends IPv4NetworkInterface implements ThresholdNetworkInterface, ReadyRunnable {
 	/**

@@ -481,7 +481,7 @@ public class Collectd extends AbstractServiceDaemon implements
                                               m_schedulingCompletedFlag,
                                               m_transTemplate.getTransactionManager());
 
-                // Add new collectable service to the colleable service list.
+                // Add new collectable service to the collectable service list.
                 m_collectableServices.add(cSvc);
 
                 // Schedule the collectable service for immediate collection
@@ -1129,7 +1129,7 @@ public class Collectd extends AbstractServiceDaemon implements
         if (!event.getService().equals("SNMP"))
             return;
 
-        // Extract the old and new primary SNMP interface adddresses from the
+        // Extract the old and new primary SNMP interface addresses from the
         // event parms.
         //
         String oldPrimaryIfAddr = null;
@@ -1318,7 +1318,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 // and service
                 InetAddress addr = (InetAddress) cSvc.getAddress();
                 
-                //WATCH the brackets; there userd to be an extra close bracket after the ipAddr comparision which borked this whole expression
+                //WATCH the brackets; there used to be an extra close bracket after the ipAddr comparison which borked this whole expression
                 if (!(cSvc.getNodeId() == nodeId && 
                         addr.getHostName().equals(ipAddr) && 
                         cSvc.getServiceName().equals(svcName))) 
@@ -1408,7 +1408,7 @@ public class Collectd extends AbstractServiceDaemon implements
         /*
          * Load up an instance of each collector from the config
          * so that the event processor will have them for
-         * new incomming events to create collectable service objects.
+         * new incoming events to create collectable service objects.
          */
         Collection<Collector> collectors = getCollectorConfigDao().getCollectors();
         for (Collector collector : collectors) {

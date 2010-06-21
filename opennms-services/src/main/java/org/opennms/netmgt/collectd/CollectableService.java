@@ -273,7 +273,7 @@ final class CollectableService implements ReadyRunnable {
      * 
      */
     public void run() {
-        // Process any oustanding updates.
+        // Process any outstanding updates.
         if (processUpdates() == ABORT_COLLECTION) {
             log().debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for "+this);
             return;
@@ -297,6 +297,9 @@ final class CollectableService implements ReadyRunnable {
                     log().error(e.getMessage(), e);
                 }
                 updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+            } catch (Throwable e) {
+                log().error(e.getMessage(), e);
+                updateStatus(ServiceCollector.COLLECTION_FAILED, new CollectionException("Collection failed unexpectedly: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e));
             }
         }
         
