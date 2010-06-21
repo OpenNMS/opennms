@@ -110,19 +110,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         }
 
         public void run() {
-            LogUtils.infof(this, "geolocating monitoring location definitions");
-            final Collection<OnmsMonitoringLocationDefinition> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
-            for (final OnmsMonitoringLocationDefinition def : definitions) {
-                final GWTLatLng latLng = getLatLng(def, true);
-                if (latLng != null) {
-                    def.setCoordinates(latLng.getCoordinates());
-                }
-            }
-            if (m_save) {
-                m_locationDao.saveMonitoringLocationDefinitions(definitions);
-            }
-            LogUtils.infof(this, "finished geolocating monitoring location definitions");
-            m_initializationLatch.countDown();
+            updateGeolocations();
         }
     }
 
@@ -471,6 +459,27 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    public void updateGeolocations() {
+        LogUtils.infof(this, "geolocating monitoring location definitions");
+        final Collection<OnmsMonitoringLocationDefinition> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
+        for (final OnmsMonitoringLocationDefinition def : definitions) {
+            final GWTLatLng latLng = getLatLng(def, true);
+            if (latLng != null) {
+                def.setCoordinates(latLng.getCoordinates());
+            }
+        }
+        if (m_save) {
+            m_locationDao.saveMonitoringLocationDefinitions(definitions);
+        }
+        LogUtils.infof(this, "finished geolocating monitoring location definitions");
+
+        updateGeolocationsComplete();
+    }
+
+    public void updateGeolocationsComplete() {
+        m_initializationLatch.countDown();
     }
 
     private static GWTPollResult transformPollResult(final PollStatus pollStatus) {
