@@ -224,7 +224,7 @@ public class DefaultProvisionService implements ProvisionService {
     
     
     public OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface scannedIface) {
-        if (scannedIface.getSnmpInterface() != null) {
+        if (scannedIface.getSnmpInterface() != null && scannedIface.getSnmpInterface().getIfIndex() != null) {
             scannedIface.setSnmpInterface(updateSnmpInterfaceAttributes(nodeId, scannedIface.getSnmpInterface()));
         }
         
