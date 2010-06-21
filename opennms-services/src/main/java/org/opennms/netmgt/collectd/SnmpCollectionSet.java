@@ -64,8 +64,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     }
 
-    private CollectionAgent m_agent;
-    private OnmsSnmpCollection m_snmpCollection;
+    private final CollectionAgent m_agent;
+    private final OnmsSnmpCollection m_snmpCollection;
     private SnmpIfCollector m_ifCollector;
     private IfNumberTracker m_ifNumber;
     private SysUpTimeTracker m_sysUpTime;
@@ -266,7 +266,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return SnmpUtils.createWalker(getAgentConfig(), "SnmpCollectors for " + agent.getHostAddress(), getTracker());
     }
 
-    void logStartedWalker() {
+    private void logStartedWalker() {
         if (log().isDebugEnabled()) {
         	log().debug(
         			"collect: successfully instantiated "
@@ -275,7 +275,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         }
     }
 
-    void logFinishedWalker() {
+    private void logFinishedWalker() {
         log().info(
         		"collect: node SNMP query for address "
         				+ getCollectionAgent().getHostAddress() + " complete.");
@@ -386,19 +386,23 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     private void logIfCounts() {
-        CollectionAgent agent = getCollectionAgent();
-        log().debug("collect: nodeId: " + agent.getNodeId()
-                + " interface: " + agent.getHostAddress()
-                + " ifCount: " + getIfNumber().getIntValue()
-                + " savedIfCount: " + agent.getSavedIfCount());
+        if (log().isDebugEnabled()) {
+            CollectionAgent agent = getCollectionAgent();
+            log().debug("collect: nodeId: " + agent.getNodeId()
+                    + " interface: " + agent.getHostAddress()
+                    + " ifCount: " + getIfNumber().getIntValue()
+                    + " savedIfCount: " + agent.getSavedIfCount());
+        }
     }
 
     private void logSysUpTime() {
-        CollectionAgent agent = getCollectionAgent();
-        log().debug("collect: nodeId: " + agent.getNodeId()
-                + " interface: " + agent.getHostAddress()
-                + " sysUpTime: " + getSysUpTime().getLongValue()
-                + " savedSysUpTime: " + agent.getSavedSysUpTime());
+        if (log().isDebugEnabled()) {
+            CollectionAgent agent = getCollectionAgent();
+            log().debug("collect: nodeId: " + agent.getNodeId()
+                    + " interface: " + agent.getHostAddress()
+                    + " sysUpTime: " + getSysUpTime().getLongValue()
+                    + " savedSysUpTime: " + agent.getSavedSysUpTime());
+        }
     }
 
     public boolean rescanNeeded() {
