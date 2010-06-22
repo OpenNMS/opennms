@@ -329,7 +329,7 @@ public class SnmpCollector implements ServiceCollector {
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         agent.validateAgent();
         
-        // XXX: Expermintal code that creates an OnmsSnmpCollection only once
+        // XXX: Experimental code that creates an OnmsSnmpCollection only once
 //        ServiceParameters params = new ServiceParameters(parameters);
 //        agent.setAttribute("SNMP_COLLECTION", new OnmsSnmpCollection(agent, params));
 //        
@@ -364,7 +364,7 @@ public class SnmpCollector implements ServiceCollector {
             // OnmsSnmpCollection snmpCollection = (OnmsSnmpCollection)agent.getAttribute("SNMP_COLLECTION");
             // ServiceParameters params = snmpCollection.getServiceParameters();
             
-            // XXX: This code would be commented out in light if the expermintal code above was enabled
+            // XXX: This code would be commented out in light if the experimental code above was enabled
             final ServiceParameters params = new ServiceParameters(parameters);
             params.logIfAliasConfig();
             OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
@@ -393,7 +393,11 @@ public class SnmpCollector implements ServiceCollector {
                      */
                     forceRescanState.rescanIndicated();
                 }
-                //Not done here anymore - see CollectableService
+                /**
+                 * Persistence is now done by the BasePersister visitor
+                 * @see CollectableService#doCollection()
+                 * @see CollectionSet#visit(BasePersister visitor)
+                 */
                 //persistData(params, collectionSet);
                 return collectionSet;
             } finally {

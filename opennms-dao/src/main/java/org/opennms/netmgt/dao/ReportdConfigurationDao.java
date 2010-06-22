@@ -20,5 +20,7 @@ public interface ReportdConfigurationDao {
     
     String getStorageDirectory();
     
-
+    boolean deleteReport(String reportName);
+    
+    
 }

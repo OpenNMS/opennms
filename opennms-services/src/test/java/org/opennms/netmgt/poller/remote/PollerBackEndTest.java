@@ -207,12 +207,24 @@ public class PollerBackEndTest extends TestCase {
         anticipateEvent(createMonitorStartedEvent());
     }
 
+    private void anticipateMonitorRegisteredEvent() {
+        anticipateEvent(createMonitorRegisteredEvent());
+    }
+
     private void anticipateMonitorStoppedEvent() {
         anticipateEvent(createMonitorStoppedEvent());
     }
 
     private Event createDisconnectedEvent() {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI, "PollerBackEnd")
+        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
+
+        Event e = eventBuilder.getEvent();
+        return e;
+    }
+
+    private Event createMonitorRegisteredEvent() {
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.LOCATION_MONITOR_REGISTERED_UEI, "PollerBackEnd")
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, 1);
 
         Event e = eventBuilder.getEvent();
@@ -530,6 +542,7 @@ public class PollerBackEndTest extends TestCase {
             }
 
         });
+        anticipateMonitorRegisteredEvent();
 
         replayMocks();
 
