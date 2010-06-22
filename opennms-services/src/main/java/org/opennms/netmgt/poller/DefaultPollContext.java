@@ -195,13 +195,13 @@ public class DefaultPollContext implements PollContext, EventListener {
             }
         }
         
-        if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
+        else if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
             bldr.addParam(EventConstants.PARM_LOSTSERVICE_REASON, (reason == null ? "Unknown" : reason));
         }
         
         // For node level events (nodeUp/nodeDown) retrieve the
         // node's nodeLabel value and add it as a parm
-        if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)
+        else if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)
                 || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
         
             String nodeLabel = this.getNodeLabel(nodeId);

@@ -393,7 +393,11 @@ public class SnmpCollector implements ServiceCollector {
                      */
                     forceRescanState.rescanIndicated();
                 }
-                //Not done here anymore - see CollectableService
+                /**
+                 * Persistence is now done by the BasePersister visitor
+                 * @see CollectableService#doCollection()
+                 * @see CollectionSet#visit(BasePersister visitor)
+                 */
                 //persistData(params, collectionSet);
                 return collectionSet;
             } finally {

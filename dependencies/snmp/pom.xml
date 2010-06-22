@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
-      <version>1.9.2a</version>
+      <version>1.11.1</version>
     </dependency>
   </dependencies>
   <repositories>
@@ -53,6 +53,13 @@
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>snmp4j-repo</id>
+      <name>SNMP4J Maven Repository</name>
+      <url>https://server.oosnmp.net/dist/release</url>
     </repository>
   </repositories>
 </project>

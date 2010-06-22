@@ -477,6 +477,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
     }
 
+    @Override
     protected void initTransportMappings() throws IOException {
         transportMappings = new TransportMapping[1];
         transportMappings[0] =
