@@ -170,13 +170,13 @@ final public class DnsMonitor extends IPv4Monitor {
             request.setFatalResponseCodes(codeList);
         }
         
-        PollStatus serviceStatus = PollStatus.unavailable();
+        PollStatus serviceStatus = null;
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeoutTracker.getSoTimeout()); // will force the InterruptedIOException
 
-            for (timeoutTracker.reset(); timeoutTracker.shouldRetry() && !serviceStatus.isAvailable(); timeoutTracker.nextAttempt()) {
+            for (timeoutTracker.reset(); timeoutTracker.shouldRetry() && (serviceStatus == null || !serviceStatus.isAvailable()); timeoutTracker.nextAttempt()) {
                 try {
                     // Send DNS request
                     //
@@ -202,7 +202,8 @@ final public class DnsMonitor extends IPv4Monitor {
                     serviceStatus = logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
 
                 } catch (InterruptedIOException ex) {
-                    // Ignore, no response received.
+                    // No response received, retry without marking the poll failed. If we get this condition over and over until 
+                    // the retries are exhausted, it will leave serviceStatus null and we'll get the log message at the bottom 
                 } catch (NoRouteToHostException e) {
                     serviceStatus = logDown(Level.DEBUG, "No route to host exception for address: " + ipv4Addr, e);
                 } catch (ConnectException e) {
@@ -218,6 +219,10 @@ final public class DnsMonitor extends IPv4Monitor {
                 socket.close();
         }
 
+        if (serviceStatus == null) {
+            serviceStatus = logDown(Level.DEBUG, "Never received valid DNS response for address: " + ipv4Addr);
+        }
+        
         // 
         //
         // return the status of the service
