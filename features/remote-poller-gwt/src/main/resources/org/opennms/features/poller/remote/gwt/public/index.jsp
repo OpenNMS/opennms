@@ -1,11 +1,11 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" %>
 <%
-	final String mapImplementation = System.getProperty("gwt.maptype");
-	String apiKey = System.getProperty("gwt.apikey");
-	
-	if (apiKey == null) {
-		apiKey = "";
-	} else {
+  String mapImplementation = System.getProperty("gwt.maptype", "");
+  String openlayersUrl = System.getProperty("gwt.openlayers.wms.url", "http://www.opennms.org:8080/geowebcache/service/wms");
+  String openlayersLayer = System.getProperty("gwt.openlayers.wms.layer", "openstreetmap");
+  String apiKey = System.getProperty("gwt.apikey", "");
+
+	if (!apiKey.equals("")) {
 		apiKey = "&key=" + apiKey;
 	}
 %>
@@ -26,7 +26,11 @@
 
 	<jsp:param name="script">
 		<jsp:attribute name="value">
-			<script type="text/javascript" language="javascript">window.mapImplementation = "<%= mapImplementation %>";</script>
+			<script type="text/javascript" language="javascript">
+			  window.mapImplementation = "<%= mapImplementation %>";
+			  window.openlayersUrl = "<%= openlayersUrl %>";
+			  window.openlayersLayer = "<%= openlayersLayer %>";
+			</script>
 			<% if (mapImplementation.equalsIgnoreCase("googlemaps")) { %>
 				<script src="<%= URLEncoder.encode("http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x" + apiKey, "UTF-8") %>"></script>
 			<% } else if (mapImplementation.equalsIgnoreCase("mapquest")) { %>

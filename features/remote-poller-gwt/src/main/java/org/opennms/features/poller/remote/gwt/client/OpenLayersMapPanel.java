@@ -19,6 +19,7 @@ import org.gwtopenmaps.openlayers.client.event.MarkerBrowserEventListener;
 import org.gwtopenmaps.openlayers.client.layer.Layer;
 import org.gwtopenmaps.openlayers.client.layer.Markers;
 import org.gwtopenmaps.openlayers.client.layer.WMS;
+import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
 import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 import org.gwtopenmaps.openlayers.client.popup.Popup;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
@@ -116,11 +117,46 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         m_map.addControl(new MousePosition());
         m_map.zoomTo(2);
 
-        final WMSParams layerParams = new WMSParams();
+        WMSParams layerParams = null;
+        WMSOptions layerOptions = null;
+
+        layerOptions = new WMSOptions();
+        layerOptions.setWrapDateLine(true);
+        layerParams = new WMSParams();
+        layerParams.setLayers(getLayerName());
+        Layer layer = new WMS("BaseLayer", getLayerUrl(), layerParams, layerOptions);
+        layer.setIsBaseLayer(true);
+        m_map.addLayer(layer);
+
+        /*
+        layerOptions = new WMSOptions();
+        layerOptions.setWrapDateLine(true);
+        layerParams = new WMSParams();
+        layerParams.setLayers("satellite");
+        Layer layer = new WMS("Satellite", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
+        layer.setIsBaseLayer(true);
+        m_map.addLayer(layer);
+        */
+
+        /*
+        layerOptions = new WMSOptions();
+        layerOptions.setWrapDateLine(true);
+        layerParams = new WMSParams();
         layerParams.setLayers("basic");
-        final Layer wms = new WMS("OpenLayers WMS", "http://labs.metacarta.com/wms/vmap0", layerParams);
-        wms.setIsBaseLayer(true);
-        m_map.addLayer(wms);
+        layer = new WMS("VMap", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
+        m_map.addLayer(layer);
+        */
+
+        /*
+        layerOptions = new WMSOptions();
+        layerOptions.setWrapDateLine(true);
+        layerParams = new WMSParams();
+        layerParams.setLayers("States_Generalized");
+        layerParams.setFormat("image/png");
+        layerParams.setIsTransparent(true);
+        layer = new WMS("USGS Political Boundaries", "http://toposervices.cr.usgs.gov/wmsconnector/com.esri.wms.Esrimap/USGS_EDNA_geo?", layerParams, layerOptions);
+        layer.setIsBaseLayer(false);
+        */
 
         m_markersLayer = new Markers("default");
         m_map.addLayer(m_markersLayer);
@@ -221,6 +257,14 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     private Marker getMarker(final String name) {
         return m_markers.get(name);
     }
+
+    private native String getLayerUrl() /*-{
+        return $wnd.openlayersUrl;
+    }-*/;
+
+    private native String getLayerName() /*-{
+        return $wnd.openlayersLayer;
+    }-*/;
 
     public Widget getWidget() {
         return this;
