@@ -310,6 +310,8 @@ public class MockSnmpAgentTest extends TestCase {
         
         TransportMapping transport = null;
         try {
+            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+            SecurityModels.getInstance().addSecurityModel(usm);
             transport = new DefaultUdpTransportMapping();
             Snmp snmp = new Snmp(transport);
 
