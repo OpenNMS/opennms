@@ -299,6 +299,24 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      *
      * @throws java.lang.InterruptedException if any.
      */
+    @Override
+    protected void initMessageDispatcher() {
+        dispatcher = new MessageDispatcherImpl();
+        
+        usm = new USM(SecurityProtocols.getInstance(),
+                agent.getContextEngineID(),
+                updateEngineBoots());
+        
+        mpv3 = new MPv3(usm);
+        
+        SecurityProtocols.getInstance().addDefaultProtocols();
+        dispatcher.addMessageProcessingModel(new MPv1());
+        dispatcher.addMessageProcessingModel(new MPv2c());
+        dispatcher.addMessageProcessingModel(mpv3);
+        initSnmpSession();
+    }
+
+
     public void shutDownAndWait() throws InterruptedException {
         if (!isRunning()) {
             return;
