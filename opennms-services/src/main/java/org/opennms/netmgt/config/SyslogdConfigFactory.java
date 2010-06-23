@@ -177,6 +177,10 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_config.getConfiguration().getSyslogPort();
     }
 
+    public synchronized String getListenAddress() {
+        return m_config.getConfiguration().getListenAddress();
+    }
+    
     /**
      * Return whether or not a newSuspect event should be sent when a trap is
      * received from an unknown IP address.

@@ -186,7 +186,7 @@ TODO: XYDataSets
     <element name="hex-color" >
     		<simpleType>
     			<restriction base="string">
-    				<pattern value="^#([0-9a-f]{1,2}){3}$" />
+    				<pattern value="#([0-9a-f]{1,2}){3}" />
     			</restriction>
     		</simpleType>
     </element>

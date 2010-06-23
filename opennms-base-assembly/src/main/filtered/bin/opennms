@@ -484,7 +484,7 @@ MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=false"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=false"
 #MANAGER_OPTIONS="$MANAGER_OPTIONS -Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties"
-MANAGER_OPTIONS="$MANAGER_OPTIONS -Xmx${JAVA_HEAP_SIZE}m"
+MANAGER_OPTIONS="$MANAGER_OPTIONS -Xmx${JAVA_HEAP_SIZE}m -Djava.net.preferIPv4Stack=true"
 
 if [ -n "$USE_INCGC" -a "$USE_INCGC" = true ] ; then
 	MANAGER_OPTIONS="$MANAGER_OPTIONS -Xincgc"

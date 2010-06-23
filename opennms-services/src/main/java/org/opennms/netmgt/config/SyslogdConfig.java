@@ -38,6 +38,8 @@ import org.opennms.netmgt.config.syslogd.UeiList;
 public interface SyslogdConfig {
     public abstract int getSyslogPort();
 
+    public abstract String getListenAddress();
+    
     public abstract boolean getNewSuspectOnMessage();
 
     public abstract String getForwardingRegexp();

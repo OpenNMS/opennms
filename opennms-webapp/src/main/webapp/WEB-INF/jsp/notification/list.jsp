@@ -231,7 +231,7 @@
         %>
         <tr class="<%=eventSeverity%>">
           <td class="divider noWrap" rowspan="2"><% if((parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) && 
-		!(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+		(request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
           <% } %> 
 						<a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
@@ -299,7 +299,7 @@
       </table>
       <p><%=notices.length%> notices &nbsp;
 
-        <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED && (request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input TYPE="reset" />
             <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
             <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>

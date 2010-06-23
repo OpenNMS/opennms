@@ -73,7 +73,7 @@ public class FormProcMainController extends AbstractController implements Initia
             modelAndView.addObject("type", "custom");
             return modelAndView;
           
-        } else if (!request.isUserInRole(Authentication.READONLY_ROLE) && (request.getRemoteUser() != null)) {
+        } else if (( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole(Authentication.READONLY_ROLE) ) && (request.getRemoteUser() != null)) {
             if (action.equals("Customize")) {
                 editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
                 return new ModelAndView("redirect:/KSC/customReport.htm");
