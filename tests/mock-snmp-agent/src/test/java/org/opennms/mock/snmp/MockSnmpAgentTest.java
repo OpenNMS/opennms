@@ -53,10 +53,14 @@ import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
@@ -244,6 +248,8 @@ public class MockSnmpAgentTest extends TestCase {
         
         TransportMapping transport = null;
         try {
+            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+            SecurityModels.getInstance().addSecurityModel(usm);
             transport = new DefaultUdpTransportMapping();
             Snmp snmp = new Snmp(transport);
 

@@ -34,6 +34,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.snmp4j</groupId>
+      <artifactId>snmp4j</artifactId>
+      <version>1.11.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
