@@ -251,7 +251,7 @@
         </tr>
       </table>
 
-<% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) {     %>
+<% if( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ) ) {     %>
       <table>
       <tbody>
       <tr class="<%=alarm.getSeverity().getLabel()%>">
