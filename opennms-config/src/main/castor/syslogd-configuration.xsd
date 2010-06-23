@@ -32,6 +32,13 @@
             </documentation>
         </annotation>
         <complexType>
+            <attribute name="listen-address" type="string" use="optional">
+                <annotation>
+                    <documentation>The address on which Syslogd listens for SYSLOG Messages. The
+                        default is to listen on all addresses.
+                    </documentation>
+                </annotation>
+            </attribute>
             <attribute name="syslog-port" use="required">
                 <annotation>
                     <documentation>The port on which Syslogd listens for SYSLOG Messages. The
