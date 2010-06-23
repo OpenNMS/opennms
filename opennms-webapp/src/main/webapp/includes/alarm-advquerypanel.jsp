@@ -273,18 +273,18 @@
           <tr>
             <td>
               <select name="sortby" size="1">
-                <option value="id"           >Alarm ID  (Descending)</option>
-                <option value="rev_id"       >Alarm ID  (Ascending) </option>
-                <option value="severity"     >Severity  (Descending)</option>
-                <option value="rev_severity" >Severity  (Ascending) </option>
-                <option value="time"         >Time      (Descending)</option>
-                <option value="rev_time"     >Time      (Ascending) </option>
-                <option value="node"         >Node      (Ascending) </option>
-                <option value="rev_node"     >Node      (Descending)</option>
-                <option value="interface"    >Interface (Ascending) </option>
-                <option value="rev_interface">Interface (Descending)</option>
-                <option value="service"      >Service   (Ascending) </option>
-                <option value="rev_service"  >Service   (Descending)</option>
+                <option value="id"               >Alarm ID  (Descending)</option>
+                <option value="rev_id"           >Alarm ID  (Ascending) </option>
+                <option value="severity"         >Severity  (Descending)</option>
+                <option value="rev_severity"     >Severity  (Ascending) </option>
+                <option value="lasteventtime"    >Time      (Descending)</option>
+                <option value="rev_lasteventtime">Time      (Ascending) </option>
+                <option value="node"             >Node      (Ascending) </option>
+                <option value="rev_node"         >Node      (Descending)</option>
+                <option value="interface"        >Interface (Ascending) </option>
+                <option value="rev_interface"    >Interface (Descending)</option>
+                <option value="service"          >Service   (Ascending) </option>
+                <option value="rev_service"      >Service   (Descending)</option>
               </select>
             </td>
             <td>
