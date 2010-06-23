@@ -119,7 +119,7 @@
 			<attribute name="type" use="required">
 				<simpleType>
 					<restriction base="string">
-						<pattern value="^([Cc](ounter|OUNTER)|[Gg](auge|AUGE)|[Ss](tring|TRING))$"/>
+						<pattern value="([Cc](ounter|OUNTER)|[Gg](auge|AUGE)|[Ss](tring|TRING))"/>
 					</restriction>
 				</simpleType>
 			</attribute>
