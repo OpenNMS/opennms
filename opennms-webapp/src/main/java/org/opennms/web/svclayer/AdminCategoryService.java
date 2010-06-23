@@ -61,6 +61,8 @@ public interface AdminCategoryService {
     @Transactional(readOnly = false)
     public OnmsCategory addNewCategory(String name);
 
+    public OnmsCategory getCategoryWithName(String newCategoryName);
+
     public List<OnmsCategory> findAllCategories();
 
     @Transactional(readOnly = false)
