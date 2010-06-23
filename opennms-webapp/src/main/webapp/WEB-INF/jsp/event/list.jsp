@@ -207,7 +207,7 @@
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
         <li><a href="<%=org.opennms.web.Util.calculateUrlBase(req)%>/event/severity.jsp">Severity Legend</a></li>
       
-      <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
         <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
         <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
         <% } else { %>
@@ -261,7 +261,7 @@
               </p>
             <% } %>
 
-    <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+    <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">
         <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
         <input type="hidden" name="actionCode" value="<%=action%>" />
@@ -271,7 +271,7 @@
       <table>
         <thead>
         <tr>
-          <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
             <% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
             <th width="1%">Ack</th>
             <% } else { %>
@@ -295,7 +295,7 @@
       %>
       
         <tr valign="top" class="<%=events[i].getSeverity().getLabel()%>">
-          <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <% if( request.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
           <td valign="top" rowspan="3" class="divider">
                 <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
             </td>
@@ -427,7 +427,7 @@
         <p><%=events.length%> events
           <% 
           String acknowledgeEvents = System.getProperty("opennms.eventlist.acknowledge");
-          if( !(req.isUserInRole( Authentication.READONLY_ROLE )) && "true".equals(acknowledgeEvents)) { %>
+          if( (req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE )) && "true".equals(acknowledgeEvents)) { %>
             <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
               <input type="button" value="Acknowledge Events" onClick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
               <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
