@@ -413,7 +413,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void removeApplication(final String applicationName) {
         final ApplicationInfo info = m_applications.get(applicationName);
         if (info != null) {
-            m_selectedApplications.remove(info);
+            removeSelectedApplication(info);
+            //m_selectedApplications.remove(info);
             m_applications.remove(applicationName);
             updateApplicationList();
         }
@@ -541,12 +542,16 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     public void onApplicationDeselected(ApplicationDeselectedEvent event) {
         // Remove the application from the selected application list
-        m_selectedApplications.remove(event.getAppInfo());
+        removeSelectedApplication(event.getAppInfo());
 
         updateAllMarkerStates();
 
         // Update the list of selected applications in the panel
         m_locationPanel.updateSelectedApplications(m_selectedApplications);
+    }
+
+    private void removeSelectedApplication(ApplicationInfo appInfo) {
+        m_selectedApplications.remove(appInfo);
     }
 
     public void locationClicked() {
