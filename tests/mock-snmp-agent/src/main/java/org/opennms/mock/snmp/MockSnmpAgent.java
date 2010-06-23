@@ -52,6 +52,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
@@ -68,6 +69,8 @@ import org.snmp4j.agent.mo.snmp.TransportDomains;
 import org.snmp4j.agent.mo.snmp.VacmMIB;
 import org.snmp4j.log.Log4jLogFactory;
 import org.snmp4j.log.LogFactory;
+import org.snmp4j.mp.MPv1;
+import org.snmp4j.mp.MPv2c;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.security.AuthMD5;
@@ -75,6 +78,8 @@ import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Counter32;
@@ -236,6 +241,25 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         System.exit(1);
     }
     
+    
+    
+    @Override
+    protected void initMessageDispatcher() {
+        dispatcher = new MessageDispatcherImpl();
+        
+        usm = new USM(SecurityProtocols.getInstance(),
+                agent.getContextEngineID(),
+                updateEngineBoots());
+        
+        mpv3 = new MPv3(usm);
+        
+        SecurityProtocols.getInstance().addDefaultProtocols();
+        dispatcher.addMessageProcessingModel(new MPv1());
+        dispatcher.addMessageProcessingModel(new MPv2c());
+        dispatcher.addMessageProcessingModel(mpv3);
+        initSnmpSession();
+    }
+
     public void shutDownAndWait() throws InterruptedException {
         if (!isRunning()) {
             return;
