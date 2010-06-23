@@ -187,7 +187,7 @@ public class FilterPanel extends Composite {
             noApplicationsCaption.setVisible(true);
         }
     }
-
+    
     public void showApplicationFilters(boolean showMe) {
         applicationTray.setVisible(showMe);
     }
