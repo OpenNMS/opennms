@@ -175,7 +175,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Documenta
 
 Package: opennms-contrib
 Architecture: all
-Depends: opennms-common (=${binary:Version}), ${perl:Depends}, libwww-perl
+Depends: opennms-common (=${binary:Version}), ${perl:Depends}, libwww-perl, libxml-twig-perl
 Description: Enterprise-grade Open-source Network Management Platform (Contrib)
  OpenNMS is an enterprise-grade network management system written in Java.
  .

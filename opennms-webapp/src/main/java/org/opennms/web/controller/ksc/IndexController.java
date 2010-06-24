@@ -57,7 +57,7 @@ public class IndexController extends AbstractController implements InitializingB
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView = new ModelAndView("KSC/index");
 
-        modelAndView.addObject("kscReadOnly", (request.isUserInRole(Authentication.READONLY_ROLE)) || (request.getRemoteUser() == null));
+        modelAndView.addObject("kscReadOnly", ( (!request.isUserInRole( Authentication.ADMIN_ROLE )) || request.isUserInRole(Authentication.READONLY_ROLE)) || (request.getRemoteUser() == null));
         modelAndView.addObject("reports", getKscReportService().getReportList());
         modelAndView.addObject("nodeResources", getResourceService().findNodeResources());
         modelAndView.addObject("domainResources", getResourceService().findDomainResources());

@@ -228,6 +228,7 @@ public class OnmsResource implements Comparable<OnmsResource> {
     }
     
     private static String encode(String string) {
+        if (string == null) return null;
         try {
             return URLEncoder.encode(string, "UTF-8");
         } catch (UnsupportedEncodingException e) {

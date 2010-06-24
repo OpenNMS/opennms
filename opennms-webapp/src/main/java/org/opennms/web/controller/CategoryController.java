@@ -67,7 +67,10 @@ public class CategoryController extends AbstractController {
         }
         
         if (newCategoryName != null) {
-            m_adminCategoryService.addNewCategory(newCategoryName);
+            OnmsCategory cat = m_adminCategoryService.getCategoryWithName(newCategoryName);
+            if (cat == null) {
+                m_adminCategoryService.addNewCategory(newCategoryName);
+            }
             
             /*
              * We could be smart and take the user straight to the edit page

@@ -216,11 +216,15 @@ public class DefaultAdminCategoryService implements
        }
     }
 
-    public OnmsCategory addNewCategory(String name) {
+    public OnmsCategory addNewCategory(final String name) {
         OnmsCategory category = new OnmsCategory();
         category.setName(name);
         m_categoryDao.save(category);
         return category;
+    }
+
+    public OnmsCategory getCategoryWithName(final String name) {
+        return m_categoryDao.findByName(name);
     }
 
     public List<OnmsCategory> findAllCategories() {

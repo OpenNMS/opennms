@@ -92,6 +92,10 @@ public class ActionDiscoveryServlet extends HttpServlet {
 	    log.info("Loading Discovery configuration.");
         HttpSession sess = request.getSession(true);
         DiscoveryConfiguration config = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
+        if (config == null) {
+            config = ModifyDiscoveryConfigurationServlet.getDiscoveryConfig();
+            sess.setAttribute("discoveryConfiguration", config);
+        }
         //load current general settings
         config = GeneralSettingsLoader.load(request,config);
         

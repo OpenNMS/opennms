@@ -36,15 +36,15 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
-
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.SQLException;
 
 /**
  * The received messages are converted into XML and sent to eventd
@@ -128,7 +128,7 @@ import java.sql.SQLException;
         // trapd and see New suspects.
 
         try {
-            BroadcastEventProcessor m_eventReader = new BroadcastEventProcessor();
+            new BroadcastEventProcessor();
         } catch (Exception ex) {
             log().error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
