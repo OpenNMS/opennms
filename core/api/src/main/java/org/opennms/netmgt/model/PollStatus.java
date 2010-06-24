@@ -257,7 +257,13 @@ public class PollStatus implements Serializable {
     }
 
     public void setReason(final String reason) {
-        m_reason = (reason == null? null : reason.substring(0, 255));
+        if (reason == null) {
+            m_reason = null;
+        } else if (reason.length() <= 255) {
+            m_reason = reason;
+        } else {
+            m_reason = reason.substring(0, 255);
+        }
     }
 
     @Column(name="responseTime", nullable=true)
