@@ -88,6 +88,7 @@
 
     //useful constant strings
     String addPositiveFilterString = "[+]";    
+    String addNegativeFilterString = "[-]";    
 
 %>
 
@@ -262,6 +263,7 @@
               <a href="element/node.jsp?node=<%=notices[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node"><%=addPositiveFilterString%></a>
+                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notices[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node"><%=addNegativeFilterString%></a>
               <% } %>
             <% } %>
           </td>
