@@ -90,6 +90,16 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         }
     }
     
+    
+    
+    @Override
+    protected void initDao() throws Exception {
+        assertPropertiesSet();
+        initializeConfigurations();
+    }
+
+
+
     public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
         assertPropertiesSet();
 
@@ -252,7 +262,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     
     public Collection<OnmsMonitoringLocationDefinition> findAllLocationDefinitions() {
-        assertPropertiesSet();
         final List<OnmsMonitoringLocationDefinition> eDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
         for (final LocationDef def : m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection()) {
             eDefs.add(createEntityDef(def));
@@ -361,6 +370,10 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         //(select max(id) from location_specific_status_changes group by locationmonitorid, ifserviceid) order by statustime;
         return findObjects(OnmsLocationSpecificStatus.class,
                 "from OnmsLocationSpecificStatus as status " +
+                "left join fetch status.locationMonitor as l " +
+                "left join fetch status.monitoredService as m " +
+                "left join fetch m.serviceType " +
+                "left join fetch m.ipInterface " +
                 "where status.id in (" +
                     "select max(s.id) from OnmsLocationSpecificStatus as s " +
                     "where s.pollResult.timestamp <? " +
@@ -422,6 +435,10 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     private Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForDateAndLocation(final Date date, final String locationName) {
         return findObjects(OnmsLocationSpecificStatus.class,
                            "from OnmsLocationSpecificStatus as status " +
+                           "left join fetch status.locationMonitor as l " +
+                           "left join fetch status.monitoredService as m " +
+                           "left join fetch m.serviceType " +
+                           "left join fetch m.ipInterface " +
                            "where status.pollResult.timestamp = ( " +
                            "    select max(recentStatus.pollResult.timestamp) " +
                            "    from OnmsLocationSpecificStatus as recentStatus " +
@@ -429,7 +446,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                            "    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
                            "    having recentStatus.locationMonitor = status.locationMonitor " +
                            "    and recentStatus.monitoredService = status.monitoredService " +
-                           ") and status.locationMonitor.definitionName = ?",
+                           ") and l.definitionName = ?",
                            date, locationName); 
     }
 

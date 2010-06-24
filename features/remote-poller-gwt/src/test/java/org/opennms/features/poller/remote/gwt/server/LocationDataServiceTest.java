@@ -3,7 +3,6 @@ package org.opennms.features.poller.remote.gwt.server;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
@@ -24,6 +23,7 @@ import org.opennms.netmgt.config.monitoringLocations.Locations;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.DistPollerDao;
+import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -31,12 +31,17 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabase;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseAware;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PollStatus;
@@ -69,12 +74,12 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitTemporaryDatabase()
 @Transactional
-public class LocationDataServiceTest {
+public class LocationDataServiceTest implements TemporaryDatabaseAware<TemporaryDatabase>{
     @Autowired
     private LocationDataService m_locationDataService;
 
     @Autowired
-    private LocationMonitorDao m_locationMonitorDao;
+    private LocationMonitorDaoHibernate m_locationMonitorDao;
 
     @Autowired
     private ApplicationDao m_applicationDao;
@@ -95,10 +100,9 @@ public class LocationDataServiceTest {
     private ServiceTypeDao m_serviceTypeDao;
 
     @Autowired
-    private MonitoringLocationsConfiguration m_monitoringLocationsConfiguration;
-
-    @Autowired
     private PollerBackEnd m_pollerBackEnd;
+
+    private MonitoringLocationsConfiguration m_monitoringLocationsConfiguration;
 
     private OnmsLocationMonitor m_rduMonitor1;
     private OnmsLocationMonitor m_rduMonitor2;
@@ -110,6 +114,8 @@ public class LocationDataServiceTest {
 
     @Before
     public void setUp() throws Exception {
+        
+        m_monitoringLocationsConfiguration = m_locationMonitorDao.getMonitoringLocationsConfiguration();
         Locations locations = new Locations();
         LocationDef locationDef = new LocationDef();
         locationDef.setLocationName("RDU");
@@ -380,7 +386,7 @@ public class LocationDataServiceTest {
         System.err.println(detailString);
         assertTrue(detailString.contains(""));
     }
-
+    
     @Test
     public void testIntervalManipulation() {
         Set<Interval> intervals = IntervalUtils.getIntervalSet();
@@ -434,5 +440,9 @@ public class LocationDataServiceTest {
         final PollStatus ps = PollStatus.available();
         ps.setTimestamp(date);
         return ps;
+    }
+
+    public void setTemporaryDatabase(TemporaryDatabase database) {
+        FilterDaoFactory.setInstance(null);
     }
 }

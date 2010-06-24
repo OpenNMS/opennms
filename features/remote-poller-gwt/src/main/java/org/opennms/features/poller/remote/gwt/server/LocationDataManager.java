@@ -2,8 +2,8 @@ package org.opennms.features.poller.remote.gwt.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 
@@ -13,6 +13,7 @@ import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 
@@ -68,16 +69,30 @@ public class LocationDataManager { //implements LocationStatusService {
     }
 
     void pushInitialData(final EventExecutorService service) {
-        LogUtils.debugf(this, "pushing initialized locations");
-        final LocationDefHandler locationHandler = new DefaultLocationDefHandler(getLocationDataService(), service, true);
-        getLocationDataService().handleAllMonitoringLocationDefinitions(Collections.singleton(locationHandler));
-        LogUtils.debugf(this, "finished pushing initialized locations");
+        pushLocationData(service);
     
+        pushApplicationData(service);
+    }
+
+    private void pushApplicationData(final EventExecutorService service) {
         LogUtils.debugf(this, "pushing initialized applications");
         final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
         appHandlers.add(new UserSpecificApplicationHandler(getLocationDataService(), service, true));
         getLocationDataService().handleAllApplications(appHandlers);
         LogUtils.debugf(this, "finished pushing initialized applications");
+    }
+
+    private void pushLocationData(final EventExecutorService service) {
+        LogUtils.debugf(this, "pushing initialized locations");
+        
+        List<LocationInfo> locations = getLocationDataService().getInfoForAllLocations();
+        
+        for (final LocationInfo locationInfo : locations ) {
+            final LocationUpdatedRemoteEvent event = new LocationUpdatedRemoteEvent(locationInfo);
+            service.addEventUserSpecific(event);
+        }
+        
+        LogUtils.debugf(this, "finished pushing initialized locations");
     }
 
     void doInitialize(EventExecutorService service) {

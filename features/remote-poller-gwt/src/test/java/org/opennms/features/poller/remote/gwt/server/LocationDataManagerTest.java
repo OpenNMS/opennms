@@ -1,18 +1,25 @@
 package org.opennms.features.poller.remote.gwt.server;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
+import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
@@ -46,8 +53,15 @@ import de.novanic.eventservice.service.EventExecutorService;
 @JUnitTemporaryDatabase(useExistingDatabase="opennmspj")
 @Transactional
 public class LocationDataManagerTest {
+    
+    @Autowired
+    private LocationMonitorDao m_locationMonitorDao;
+    
     @Autowired
     private LocationDataManager m_locationDataManager;
+    
+    @Autowired
+    private LocationDataService m_locationDataService;
 
     private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
     
@@ -60,10 +74,41 @@ public class LocationDataManagerTest {
     }
     
     @Test
+    public void testHandleAllMonitoringLocationDefinitions() {
+        LocationDefHandler handler = m_easyMockUtils.createMock(LocationDefHandler.class);
+        handler.start(2864);
+        handler.handle(isA(OnmsMonitoringLocationDefinition.class));
+        expectLastCall().times(2864);
+        handler.finish();
+        
+        m_easyMockUtils.replayAll();
+        
+        m_locationDataService.handleAllMonitoringLocationDefinitions(Collections.singleton(handler));
+        
+        m_easyMockUtils.verifyAll();
+    }
+
+
+    @Test
+    public void testGetInfoForAllLocations() {
+        List<LocationInfo> locations = m_locationDataService.getInfoForAllLocations();
+        
+        assertEquals(2864, locations.size());
+    }
+    
+    @Test
+    public void testGetSatusDetails() {
+        
+        OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition("00002");
+        
+        m_locationDataService.getStatusDetails(def);
+    }
+  
+    @Test
     public void testStart() {
         EventExecutorService service = m_easyMockUtils.createMock(EventExecutorService.class);
         service.addEventUserSpecific(isA(LocationUpdatedRemoteEvent.class));
-        expectLastCall().times(2866);
+        expectLastCall().times(2864);
         service.addEventUserSpecific(isA(ApplicationUpdatedRemoteEvent.class));
         expectLastCall().times(14);
         service.addEventUserSpecific(isA(UpdateCompleteRemoteEvent.class));
@@ -72,5 +117,6 @@ public class LocationDataManagerTest {
         m_easyMockUtils.verifyAll();
         
     }
+    
     
 }

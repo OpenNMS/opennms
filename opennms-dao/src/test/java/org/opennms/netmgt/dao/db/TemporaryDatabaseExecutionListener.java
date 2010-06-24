@@ -53,6 +53,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
     private TemporaryDatabase m_database;
 
     public void afterTestMethod(TestContext testContext) throws Exception {
+        try {
         System.err.printf("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext);
         
         DataSource dataSource = DataSourceFactory.getInstance();
@@ -60,9 +61,10 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         if (tempDb != null) {
             tempDb.drop();
         }
-        
+        } finally {
         testContext.markApplicationContextDirty();
         testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
+        }
 
     }
     
@@ -113,10 +115,12 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         } catch (Exception e) {
             System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance: error while creating database: %s\n", e.getMessage());
         }
+        
 
         LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(m_database);
         
         DataSourceFactory.setInstance(proxy);
+        System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s\n", testContext, dbName);
     }
 
     private String getDatabaseName(TestContext testContext) {
