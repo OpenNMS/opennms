@@ -586,6 +586,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
             m_clientParams.setSoTimeout(getTimeout());
             m_clientParams.setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(getRetries(), false));
             m_clientParams.setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            m_clientParams.setParameter("http.protocol.single-cookie-header", true);
         }
 
         public int getRetries() {
