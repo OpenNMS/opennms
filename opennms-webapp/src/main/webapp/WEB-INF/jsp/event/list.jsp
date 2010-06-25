@@ -441,6 +441,16 @@
         </p>
       </form>
 
+      <% if( events.length > 0 ) { %>
+        <% String baseUrl = this.makeLink(parms); %>
+        <jsp:include page="/includes/resultsIndexNoCount.jsp" flush="false" >
+          <jsp:param name="itemCount"    value="<%=events.length%>" />
+          <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+          <jsp:param name="limit"    value="<%=parms.limit%>"      />
+          <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+        </jsp:include>
+      <% } %>  
+
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
