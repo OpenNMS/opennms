@@ -3,6 +3,7 @@ package org.opennms.features.poller.remote.gwt.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -21,7 +22,7 @@ import de.novanic.eventservice.service.EventExecutorService;
 
 public class LocationDataManager { //implements LocationStatusService {
     private LocationDataService m_locationDataService;
-    private Set<String> m_activeApplications;
+    private Set<String> m_activeApplications = new HashSet<String>();
     private Timer m_timer = new Timer();
     public static final int PADDING_TIME = 2000;
     
@@ -87,7 +88,7 @@ public class LocationDataManager { //implements LocationStatusService {
         
         List<LocationInfo> locations = getLocationDataService().getInfoForAllLocations();
         
-        for (final LocationInfo locationInfo : locations ) {
+        for (final LocationInfo locationInfo : locations) {
             final LocationUpdatedRemoteEvent event = new LocationUpdatedRemoteEvent(locationInfo);
             service.addEventUserSpecific(event);
         }
