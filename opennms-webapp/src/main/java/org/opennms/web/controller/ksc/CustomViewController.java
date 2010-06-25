@@ -260,7 +260,7 @@ public class CustomViewController extends AbstractController implements Initiali
             modelAndView.addObject("graphType", null);
         }
         
-        modelAndView.addObject("showCustomizeButton", !request.isUserInRole(Authentication.READONLY_ROLE) && (request.getRemoteUser() != null));
+        modelAndView.addObject("showCustomizeButton", ( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole(Authentication.READONLY_ROLE) ) && (request.getRemoteUser() != null));
 
         if (report.getGraphs_per_line() > 0) {
             modelAndView.addObject("graphsPerLine", report.getGraphs_per_line());

@@ -41,15 +41,16 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.IOException;
+import java.net.DatagramSocket;
+
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
+import org.opennms.netmgt.model.discovery.IPAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
-
-import java.io.IOException;
-import java.net.DatagramSocket;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event receiver. When
@@ -107,6 +108,11 @@ public final class SyslogHandler {
     private int m_dgPort;
 
     /**
+     * The IP address to bind to.
+     */
+    private String m_dgIp;
+
+    /**
      * The log prefix
      */
     private String m_logPrefix;
@@ -123,6 +129,7 @@ public final class SyslogHandler {
     public SyslogHandler() {
         m_dgSock = null;
         m_dgPort = m_syslogdConfig.getSyslogPort();
+        m_dgIp = m_syslogdConfig.getListenAddress();
 
         m_NewSuspectOnMessage = m_syslogdConfig.getNewSuspectOnMessage();
 
@@ -159,7 +166,11 @@ public final class SyslogHandler {
         m_status = STARTING;
 
         try {
-            m_dgSock = new DatagramSocket(m_dgPort);
+            if (m_dgIp != null && m_dgIp.length() != 0) {
+                m_dgSock = new DatagramSocket(m_dgPort, (new IPAddress(m_dgIp)).toInetAddress());
+            } else {
+                m_dgSock = new DatagramSocket(m_dgPort);
+            }
 
             m_receiver = new SyslogReceiver(m_dgSock, m_ForwardingRegexp,
                     m_MatchingGroupHost,
@@ -184,9 +195,9 @@ public final class SyslogHandler {
         }
 
         Thread rThread = new Thread(m_receiver, "Syslog Event Receiver["
-                + m_dgPort + "]");
+                + getIpAddress() + ":" + m_dgPort + "]");
         Thread pThread = new Thread(m_processor, "Syslog Event Processor["
-                + m_dgPort + "]");
+                + getIpAddress() + ":" + m_dgPort + "]");
 
         try {
             rThread.start();
@@ -230,7 +241,7 @@ public final class SyslogHandler {
     }
 
     public String getName() {
-        return "SyslogdHandler[" + m_dgPort + "]";
+        return "SyslogdHandler[" + getIpAddress() + ":" + m_dgPort + "]";
     }
 
     public int getStatus() {
@@ -243,7 +254,7 @@ public final class SyslogHandler {
     public void destroy() {
     }
 
-    public void setPort(Integer port) {
+    public void setPort(final Integer port) {
         if (m_status == STARTING || m_status == RUNNING
                 || m_status == STOP_PENDING)
             throw new IllegalStateException("The process is already running");
@@ -255,6 +266,17 @@ public final class SyslogHandler {
         return m_dgPort;
     }
 
+    public void setIpAddress(final String ipAddress) {
+        m_dgIp = ipAddress;
+    }
+    
+    public String getIpAddress() {
+        if (m_dgIp == null || m_dgIp.length() == 0) {
+            return "0.0.0.0";
+        }
+        return m_dgIp;
+    }
+    
     /**
      * Adds a new event handler to receiver. When new events are received the
      * decoded event is passed to the handler.

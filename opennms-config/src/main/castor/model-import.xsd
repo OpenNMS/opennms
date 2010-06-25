@@ -28,7 +28,7 @@
       <attribute name="node-label" use="required">
         <simpleType>
           <restriction base="string">
-<!--             <pattern value="^[0-9A-Za-z][-0-9A-Za-z._]+$"></pattern> -->
+<!--             <pattern value="[0-9A-Za-z][-0-9A-Za-z._]+"></pattern> -->
             <pattern value=".*$"></pattern>
           </restriction>
         </simpleType>

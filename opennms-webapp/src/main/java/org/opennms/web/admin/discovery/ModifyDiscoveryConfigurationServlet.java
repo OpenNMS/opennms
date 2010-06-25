@@ -54,24 +54,18 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
  */
 public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = -6445179110488848137L;
+    private static final long serialVersionUID = -3782436743630940629L;
 
     protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	    log.info("Loading Discovery configuration.");
-	    DiscoveryConfiguration config=null;
-		try {
-             DiscoveryConfigFactory.reload();
-             config = DiscoveryConfigFactory.getInstance().getConfiguration();
-        } catch (Exception e) {
-            new ServletException("Could not load configuration: " + e.getMessage(), e);
-        }
-        HttpSession sess = request.getSession();
+	    DiscoveryConfiguration config=getDiscoveryConfig();
+	    HttpSession sess = request.getSession();
         //sess.removeAttribute("discoveryConfiguration");
         sess.setAttribute("discoveryConfiguration",config);
         response.sendRedirect("edit-config.jsp");
@@ -81,5 +75,16 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
+	}
+	
+	public static DiscoveryConfiguration getDiscoveryConfig() {
+        DiscoveryConfiguration config = null;
+        try {
+             DiscoveryConfigFactory.reload();
+             config = DiscoveryConfigFactory.getInstance().getConfiguration();
+        } catch (final Exception e) {
+            new ServletException("Could not load configuration: " + e.getMessage(), e);
+        }
+        return config;
 	}
 }

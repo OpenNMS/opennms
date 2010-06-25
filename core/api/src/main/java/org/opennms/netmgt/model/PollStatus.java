@@ -102,8 +102,7 @@ public class PollStatus implements Serializable {
         "Unresponsive"
     };
 
-    private static int decodeStatusName(String statusName) {
-
+    private static int decodeStatusName(final String statusName) {
         for (int statusCode = 0; statusCode < s_statusNames.length; statusCode++) {
             if (s_statusNames[statusCode].equalsIgnoreCase(statusName)) {
                 return statusCode;
@@ -112,31 +111,31 @@ public class PollStatus implements Serializable {
         return SERVICE_UNKNOWN;
     }
 
-    public static PollStatus decode(String statusName) {
+    public static PollStatus decode(final String statusName) {
         return decode(statusName, null, null);
     }
 
-    public static PollStatus decode(String statusName, String reason) {
+    public static PollStatus decode(final String statusName, final String reason) {
         return decode(statusName, reason, null);
     }
 
-    public static PollStatus decode(String statusName, Double responseTime) {
+    public static PollStatus decode(final String statusName, final Double responseTime) {
         return decode(statusName, null, responseTime);
     }
 
-    public static PollStatus decode(String statusName, String reason, Double responseTime) {
+    public static PollStatus decode(final String statusName, final String reason, final Double responseTime) {
         return new PollStatus(decodeStatusName(statusName), reason, responseTime);
     }
 
-    public static PollStatus get(int status, String reason) {
+    public static PollStatus get(final int status, final String reason) {
         return get(status, reason, null);
     }
 
-    public static PollStatus get(int status, Double responseTime) {
+    public static PollStatus get(final int status, final Double responseTime) {
         return get(status, null, responseTime);
     }
 
-    public static PollStatus get(int status, String reason, Double responseTime) {
+    public static PollStatus get(final int status, final String reason, final Double responseTime) {
         return new PollStatus(status, reason, responseTime);
     }
 
@@ -144,9 +143,9 @@ public class PollStatus implements Serializable {
         this(SERVICE_UNKNOWN, null, null);
     }
 
-    private PollStatus(int statusCode, String reason, Double responseTime) {
-        m_statusCode = statusCode;
-        m_reason = reason;
+    private PollStatus(final int statusCode, final String reason, final Double responseTime) {
+        setStatusCode(statusCode);
+        setReason(reason);
         setResponseTime(responseTime);
     }
 
@@ -154,7 +153,7 @@ public class PollStatus implements Serializable {
         return up(null);
     }
 
-    public static PollStatus up(Double responseTime) {
+    public static PollStatus up(final Double responseTime) {
         return available(responseTime);
     }
 
@@ -162,7 +161,7 @@ public class PollStatus implements Serializable {
         return available(null);
     }
 
-    public static PollStatus available(Double responseTime) {
+    public static PollStatus available(final Double responseTime) {
         return new PollStatus(SERVICE_AVAILABLE, null, responseTime);
     }
 
@@ -170,7 +169,7 @@ public class PollStatus implements Serializable {
         return unknown(null);
     }
 
-    public static PollStatus unknown(String reason) {
+    public static PollStatus unknown(final String reason) {
         return new PollStatus(SERVICE_UNKNOWN, reason, null);
     }
 
@@ -178,7 +177,7 @@ public class PollStatus implements Serializable {
         return unresponsive(null);
     }
 
-    public static PollStatus unresponsive(String reason) {
+    public static PollStatus unresponsive(final String reason) {
         return new PollStatus(SERVICE_UNRESPONSIVE, reason, null);
     }
 
@@ -190,15 +189,15 @@ public class PollStatus implements Serializable {
         return unavailable(null);
     }
 
-    public static PollStatus down(String reason) {
+    public static PollStatus down(final String reason) {
         return unavailable(reason);
     }
 
-    public static PollStatus unavailable(String reason) {
+    public static PollStatus unavailable(final String reason) {
         return new PollStatus(SERVICE_UNAVAILABLE, reason, null);
     }
 
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o instanceof PollStatus) {
             return m_statusCode == ((PollStatus)o).m_statusCode;
         }
@@ -248,7 +247,7 @@ public class PollStatus implements Serializable {
         return m_timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(final Date timestamp) {
         m_timestamp = timestamp;
     }
 
@@ -257,8 +256,14 @@ public class PollStatus implements Serializable {
         return m_reason;
     }
 
-    public void setReason(String reason) {
-        m_reason = reason;
+    public void setReason(final String reason) {
+        if (reason == null) {
+            m_reason = null;
+        } else if (reason.length() <= 255) {
+            m_reason = reason;
+        } else {
+            m_reason = reason.substring(0, 255);
+        }
     }
 
     @Column(name="responseTime", nullable=true)
@@ -269,7 +274,7 @@ public class PollStatus implements Serializable {
     }
 
     /* stores the individual item for compatibility with database schema, as well as the new property map */
-    public void setResponseTime(Double responseTime) {
+    public void setResponseTime(final Double responseTime) {
         if (responseTime == null) {
             m_properties.remove("response-time");
         } else {
@@ -290,7 +295,7 @@ public class PollStatus implements Serializable {
     }
     
     @Transient
-    public Number getProperty(String key) {
+    public Number getProperty(final String key) {
     	if (m_properties != null) {
     		return m_properties.get(key);
     	} else {
@@ -298,7 +303,7 @@ public class PollStatus implements Serializable {
     	}
     }
 
-    public void setProperty(String key, Number value) {
+    public void setProperty(final String key, final Number value) {
     	Map<String, Number> m = getProperties();
     	m.put(key, value);
     	setProperties(m);
@@ -309,8 +314,7 @@ public class PollStatus implements Serializable {
         return m_statusCode;
     }
 
-    @SuppressWarnings("unused")
-    private void setStatusCode(int statusCode) {
+    private void setStatusCode(final int statusCode) {
         m_statusCode = statusCode;
     }
 

@@ -135,9 +135,6 @@ $year += 1900;
 my $month = $mon;
 $min   = sprintf("%02d", $min);
 $sec   = sprintf("%02d", $sec);
-my $ap = "AM";
-$ap    = "PM" if ($hour >= 12);
-$hour  = $hour % 12;
 my @week = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
 my @month = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 
@@ -160,7 +157,7 @@ END
 $event .= "   <nodeid>$NODEID</nodeid>\n"          if (defined $NODEID);
 
 $event .= <<END;
-   <time>$week[$wday], $month[$month] $mday, $year $hour:$min:$sec $ap $ZONE</time>
+   <time>$week[$wday], $mday $month[$month] $year $hour:$min:$sec o'clock $ZONE</time>
    <host>$HOSTNAME</host>
 END
 

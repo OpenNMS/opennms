@@ -476,7 +476,7 @@
 
           <simpleType>
             <restriction base="string">
-              <pattern value="^RRA:(AVERAGE|MIN|MAX|LAST):.*$"/>
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
             </restriction>
           </simpleType>
         </element>

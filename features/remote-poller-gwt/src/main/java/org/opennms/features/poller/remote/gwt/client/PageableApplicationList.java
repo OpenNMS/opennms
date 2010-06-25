@@ -1,6 +1,9 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationDetailsRetrievedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationDetailsRetrievedEventHandler;
@@ -18,12 +21,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
-public class PageableApplicationList extends PageableList implements
-        ApplicationDetailsRetrievedEventHandler {
+public class PageableApplicationList extends PageableList implements ApplicationDetailsRetrievedEventHandler {
 
     private ArrayList<ApplicationInfo> m_applications;
     private HandlerManager m_eventBus;
-    private ApplicationDetails m_selected = null;
+    private Set<ApplicationInfo> m_selected = null;
+    private Map<String, ApplicationDetails> m_selectedAppDetails = new HashMap<String, ApplicationDetails>();
 
     interface ApplicationDetailStyle extends LocationDetailStyle {
         String detailContainerStyle();
@@ -38,7 +41,6 @@ public class PageableApplicationList extends PageableList implements
         final Image m_icon = new Image();
         final Label m_nameLabel = new Label();
         final HTML m_statusLabel = new HTML();
-//        final HTML m_statusDetails = new HTML();
 
         @Override
         protected void doAttachChildren() {
@@ -46,7 +48,6 @@ public class PageableApplicationList extends PageableList implements
             DOM.appendChild(this.getElement(), m_icon.getElement());
             DOM.appendChild(this.getElement(), m_nameLabel.getElement());
             DOM.appendChild(this.getElement(), m_statusLabel.getElement());
-//            DOM.appendChild(this.getElement(), m_statusDetails.getElement());
         }
 
         @Override
@@ -68,12 +69,11 @@ public class PageableApplicationList extends PageableList implements
             m_icon.setUrl(applicationInfo.getMarkerState().getImageURL());
             m_nameLabel.setText(applicationInfo.getName());
             m_statusLabel.setHTML(getApplicationStatusHTML(applicationInfo));
-//            m_statusDetails.setHTML(getApplicationStatusHTML(applicationInfo));
         }
 
         private String getApplicationStatusHTML(final ApplicationInfo applicationInfo) {
-            if (m_selected != null && m_selected.getApplicationName().equals(applicationInfo.getName())) {
-                return m_selected.getDetailsAsString();
+            if (m_selected != null && checkIfApplicationIsSelected(applicationInfo.getName())) {
+                return getSelectedApplicationDetailsAsString(applicationInfo.getName());
             } else {
                 return applicationInfo.getStatusDetails().getReason();
             }
@@ -85,19 +85,37 @@ public class PageableApplicationList extends PageableList implements
             m_icon.addStyleName(iconStyle);
             m_nameLabel.addStyleName(locationDetailStyle.nameStyle());
             m_statusLabel.addStyleName(locationDetailStyle.statusStyle());
-//            m_statusDetails.addStyleName(locationDetailStyle.detailsStyle());
         }
     }
 
+    
+    public PageableApplicationList() {
+        super();
+    }
+    
+    public String getSelectedApplicationDetailsAsString(String name) {
+        ApplicationDetails appDetails = m_selectedAppDetails.get(name);
+        return appDetails.getDetailsAsString();
+    }
+    
+    public boolean checkIfApplicationIsSelected(String name) {
+        return findSelectedApplication(name) != null ? true : false;
+    }
+    
+    private ApplicationInfo findSelectedApplication(String name) {
+        for(ApplicationInfo appInfo : m_selected) {
+            if(appInfo.getName().equals(name)) {
+                return appInfo;
+            }
+        }
+        return null;
+    }
     /**
      * TODO: Maybe enhance this so that it only adds/updates/deletes individual
      * items TODO: Don't skip to the front page on every update
      */
     public void updateList(final ArrayList<ApplicationInfo> applications) {
         setApplications(applications);
-        if (m_selected != null) {
-            m_eventBus.fireEvent(new ApplicationSelectedEvent(m_selected.getApplicationName()));
-        }
         refresh();
     }
 
@@ -144,7 +162,11 @@ public class PageableApplicationList extends PageableList implements
     }
 
     public void onApplicationDetailsRetrieved(final ApplicationDetailsRetrievedEvent event) {
-        m_selected = event.getApplicationDetails();
+        if(checkIfApplicationIsSelected(event.getApplicationDetails().getApplicationName())) {
+            m_selectedAppDetails.put(event.getApplicationDetails().getApplicationName(), event.getApplicationDetails());
+        }else {
+            m_selectedAppDetails.remove(event.getApplicationDetails().getApplicationName());
+        }
         refreshApplicationListResize();
     }
 
@@ -153,6 +175,11 @@ public class PageableApplicationList extends PageableList implements
             ApplicationDetailView view = (ApplicationDetailView) getDataList().getWidget(i, 0);
             view.resizeToFit();
         }
+        refresh();
+    }
+
+    public void updateSelectedApplications(Set<ApplicationInfo> selectedApplications) {
+        m_selected = selectedApplications;
         refresh();
     }
 }
