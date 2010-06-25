@@ -143,11 +143,8 @@ public class Linkd extends AbstractServiceDaemon {
 
 	private void scheduleCollection() {
 	    synchronized (m_nodes) {
-	        Iterator<LinkableNode> ite = m_nodes.iterator();
-	        while (ite.hasNext()) {
-	            //Schedule snmp collection for node and also 
-	            //schedule discovery link on package where is not active 
-	            scheduleCollectionForNode(ite.next());
+	        for (final LinkableNode node : m_nodes) {
+	            scheduleCollectionForNode(node);
 	        }
         }
 	}
@@ -161,10 +158,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 */
 	private void scheduleCollectionForNode(LinkableNode node) {
 
-		List<SnmpCollection> snmpcollOnNode = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid());
-		Iterator<SnmpCollection>  coll_ite = snmpcollOnNode.iterator();
-		while (coll_ite.hasNext()) {
-			SnmpCollection snmpcoll = coll_ite.next();
+		for (final SnmpCollection snmpcoll : m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid())) {
 			if (m_activepackages.contains(snmpcoll.getPackageName())) {
 				if (log().isDebugEnabled())
 					log().debug("ScheduleCollectionForNode: package active: " +snmpcoll.getPackageName());
@@ -231,9 +225,7 @@ public class Linkd extends AbstractServiceDaemon {
 	public Collection<LinkableNode> getLinkableNodesOnPackage(String pkg) {
 		Collection<LinkableNode> nodesOnPkg = new ArrayList<LinkableNode>();
 		synchronized (m_nodes) {
-			Iterator<LinkableNode> ite = m_nodes.iterator();
-			while (ite.hasNext()) {
-				LinkableNode node = ite.next();
+		    for (final LinkableNode node : m_nodes) {
 				if (isInterfaceInPackage(node.getSnmpPrimaryIpAddr(), pkg))
 					nodesOnPkg.add(node);
 			}

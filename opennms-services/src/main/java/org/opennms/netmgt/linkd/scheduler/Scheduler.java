@@ -275,16 +275,15 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 			log().debug("schedule: Adding ready runnable at interval " + interval);
 		}
 
-		Long key = new Long(interval);
-		if (!m_queues.containsKey(key)) {
+		if (!m_queues.containsKey(interval)) {
 			if (log().isDebugEnabled())
 				log()
 						.debug("schedule: interval queue did not exist, a new one has been created");
-			m_queues.put(key, new PeekableFifoQueue<ReadyRunnable>());
+			m_queues.put(interval, new PeekableFifoQueue<ReadyRunnable>());
 		}
 
 		try {
-			(m_queues.get(key)).add(runnable);
+			(m_queues.get(interval)).add(runnable);
 			if (m_scheduled++ == 0) {
 				if (log().isDebugEnabled())
 					log()
@@ -420,15 +419,14 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		if (log().isDebugEnabled()) {
 			log().debug("unschedule: Removing " + runnable.getInfo() + " at interval " + interval);
 		}
-		Long key = new Long(interval);
 		synchronized(m_queues) {
-			if (!m_queues.containsKey(key)) {
+			if (!m_queues.containsKey(interval)) {
 				if (log().isDebugEnabled())
 					log().debug("unschedule: interval queue did not exist, exit");
 				return;
 			}
 			
-			PeekableFifoQueue<ReadyRunnable> in = m_queues.get(key);
+			PeekableFifoQueue<ReadyRunnable> in = m_queues.get(interval);
 			if (in.isEmpty()) {
 				if (log().isDebugEnabled())
 					log().debug("unschedule: interval queue is empty, exit");
@@ -524,16 +522,14 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 					+ runnable.getInfo() + " at interval " + interval);
 		}
 
-		Long key = new Long(interval);
-		
-		if (!m_queues.containsKey(key)) {
+		if (!m_queues.containsKey(interval)) {
 				log().warn("getReadyRunnable: interval queue did not exist, exit");
 			return null;
 		}
 
 		ReadyRunnable rr = null;
 		synchronized (m_queues) {
-			PeekableFifoQueue<ReadyRunnable> in = m_queues.get(key);
+			PeekableFifoQueue<ReadyRunnable> in = m_queues.get(interval);
 			if (in.isEmpty()) {
 					log()
 							.warn("getReadyRunnable: queue is Empty");
