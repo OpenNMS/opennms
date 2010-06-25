@@ -156,7 +156,7 @@ public class RouterInterface {
 		byte[] netWork = new byte[4];
 
 		for (int i=0;i< 4; i++) {
-			netWork[i] = new Integer(ipAddress[i] & netMask[i]).byteValue();
+			netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
 			
 		}
 		try {
@@ -172,7 +172,7 @@ public class RouterInterface {
 		byte[] netWork = new byte[4];
 
 		for (int i=0;i< 4; i++) {
-			netWork[i] = new Integer(ipAddress[i] & netMask[i]).byteValue();
+			netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
 			
 		}
 		try {

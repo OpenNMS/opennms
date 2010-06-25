@@ -486,7 +486,7 @@ final class DbAtInterfaceEntry {
 	}
 
 	boolean updateAtPhysAddr(final String macaddr) {
-		if (!m_physaddr.equals(macaddr)) {
+		if (m_physaddr == null || !m_physaddr.equals(macaddr)) {
 			set_physaddr(macaddr);
 			return true;
 		} else
