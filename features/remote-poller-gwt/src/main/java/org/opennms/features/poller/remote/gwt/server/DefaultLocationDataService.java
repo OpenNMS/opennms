@@ -29,6 +29,8 @@ import org.opennms.features.poller.remote.gwt.client.Status;
 import org.opennms.features.poller.remote.gwt.client.StatusDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationRemovedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder;
 import org.opennms.features.poller.remote.gwt.server.geocoding.GeocoderException;
@@ -205,7 +207,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         state.setStatus(monitorStatus.getStatus());
         locationInfo.setStatusDetails(monitorStatus);
         
-        LogUtils.debugf(this, "getLocationInfo(%s) returning %s", def.getName(), locationInfo.toString());
+        //LogUtils.debugf(this, "getLocationInfo(%s) returning %s", def.getName(), locationInfo.toString());
         return locationInfo;
     }
 
@@ -289,8 +291,9 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         final ApplicationInfo applicationInfo = new ApplicationInfo(app.getId(), app.getName(), services, locationNames, status);
 
         if (status == null) {
-            final ApplicationDetails details = getApplicationDetails(app);
-            applicationInfo.setStatusDetails(details.getStatusDetails());
+//            final ApplicationDetails details = getApplicationDetails(app);
+//            applicationInfo.setStatusDetails(details.getStatusDetails());
+            applicationInfo.setStatusDetails(new StatusDetails(Status.UNINITIALIZED, "hey"));
         }
         LogUtils.debugf(this, "getApplicationInfo(%s) returning %s", app.getName(), applicationInfo.toString());
         return applicationInfo;
@@ -762,6 +765,21 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             statusDetails.put(def.getName(), monitorStatus);
         }
         return statusDetails;
+    }
+
+    @Transactional
+    public List<ApplicationInfo> getInfoForAllApplications() {
+        waitForGeocoding("handleAllApplications");
+
+        final Collection<OnmsApplication> apps = m_applicationDao.findAll();
+        
+        final List<ApplicationInfo> appInfos = new ArrayList<ApplicationInfo>();
+
+        for (final OnmsApplication app : apps) {
+            final ApplicationInfo appInfo = getApplicationInfo(app, null);
+            appInfos.add(appInfo);
+        }
+        return appInfos;
     }
 
 }

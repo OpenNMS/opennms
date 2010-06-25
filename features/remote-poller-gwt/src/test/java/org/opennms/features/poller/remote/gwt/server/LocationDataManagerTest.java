@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
@@ -97,13 +98,20 @@ public class LocationDataManagerTest {
     }
     
     @Test
+    public void testGetInfoForAllApplications() {
+        List<ApplicationInfo> locations = m_locationDataService.getInfoForAllApplications();
+        
+        assertEquals(14, locations.size());
+    }
+    
+    @Test
     public void testGetSatusDetails() {
         
         OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition("00002");
         
         m_locationDataService.getStatusDetails(def);
     }
-  
+    
     @Test
     public void testStart() {
         EventExecutorService service = m_easyMockUtils.createMock(EventExecutorService.class);

@@ -13,6 +13,7 @@ import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
@@ -68,17 +69,15 @@ public class LocationDataManager { //implements LocationStatusService {
         return m_activeApplications;
     }
 
-    void pushInitialData(final EventExecutorService service) {
-        pushLocationData(service);
-    
-        pushApplicationData(service);
-    }
-
     private void pushApplicationData(final EventExecutorService service) {
         LogUtils.debugf(this, "pushing initialized applications");
-        final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
-        appHandlers.add(new UserSpecificApplicationHandler(getLocationDataService(), service, true));
-        getLocationDataService().handleAllApplications(appHandlers);
+        
+        final List<ApplicationInfo> appInfos = getLocationDataService().getInfoForAllApplications();
+        
+        for (final ApplicationInfo appInfo : appInfos) {
+            service.addEventUserSpecific(new ApplicationUpdatedRemoteEvent(appInfo));
+        }
+        
         LogUtils.debugf(this, "finished pushing initialized applications");
     }
 
@@ -96,7 +95,8 @@ public class LocationDataManager { //implements LocationStatusService {
     }
 
     void doInitialize(EventExecutorService service) {
-        pushInitialData(service);
+        pushLocationData(service);
+        pushApplicationData(service);
         service.addEventUserSpecific(new UpdateCompleteRemoteEvent());
     }
 

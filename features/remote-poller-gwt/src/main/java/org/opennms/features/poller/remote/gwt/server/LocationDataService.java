@@ -30,6 +30,7 @@ public interface LocationDataService {
     public Collection<ApplicationInfo> getApplicationsForLocation(final LocationInfo info);
     
     public List<LocationInfo> getInfoForAllLocations();
+    public List<ApplicationInfo> getInfoForAllApplications();
     public StatusDetails getStatusDetails(OnmsMonitoringLocationDefinition def);
     
 
