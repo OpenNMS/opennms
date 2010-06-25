@@ -69,7 +69,6 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ackd.Parameter;
