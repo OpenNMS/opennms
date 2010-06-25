@@ -136,7 +136,7 @@ public class Migrator {
             st = c.createStatement();
             rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
             if (!rs.next()) {
-                st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c'");
+                st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql' LANGUAGE 'c'");
             }
 
             rs = st.executeQuery("SELECT pg_language.oid "
