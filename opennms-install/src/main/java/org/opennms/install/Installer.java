@@ -911,7 +911,8 @@ public class Installer {
             final InputStream is = new FileInputStream(confFile);
             p.load(is);
             is.close();
-            for (final String key : p.stringPropertyNames()) {
+            for (final Object k : p.keySet()) {
+                String key = (String)k;
                 if (key.startsWith("opennms.library")) {
                     final String value = p.getProperty(key);
                     value.replaceAll(File.separator + "[^" + File.separator + "]*$", "");
