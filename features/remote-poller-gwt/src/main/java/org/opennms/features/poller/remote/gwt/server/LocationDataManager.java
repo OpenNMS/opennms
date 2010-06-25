@@ -109,7 +109,7 @@ public class LocationDataManager { //implements LocationStatusService {
         // Every 5 minutes, update the application list too
         LogUtils.debugf(this, "pushing application updates");
         final Collection<ApplicationHandler> appHandlers = new ArrayList<ApplicationHandler>();
-        final DefaultApplicationHandler applicationHandler = new DefaultApplicationHandler(getLocationDataService(), service, true, getActiveApplications());
+        final DefaultApplicationHandler applicationHandler = new DefaultApplicationHandler(getLocationDataService(), service, getActiveApplications());
         appHandlers.add(applicationHandler);
         getLocationDataService().handleAllApplications(appHandlers);
         setActiveApplications(applicationHandler.getApplicationNames());

@@ -19,21 +19,18 @@ public class DefaultApplicationHandler implements ApplicationHandler {
 
     private EventExecutorService m_eventService;
 
-    private boolean m_includeStatus = false;
-
     private Set<String> m_oldApplicationNames = null;
     private Set<String> m_foundApplicationNames = new HashSet<String>();
 
     public DefaultApplicationHandler() {}
 
-    public DefaultApplicationHandler(final LocationDataService locationDataService, final EventExecutorService eventService, final boolean includeStatus) {
+    public DefaultApplicationHandler(final LocationDataService locationDataService, final EventExecutorService eventService) {
         setLocationDataService(locationDataService);
         m_eventService = eventService;
-        m_includeStatus = includeStatus;
     }
 
-    public DefaultApplicationHandler(final LocationDataService locationDataService, final EventExecutorService eventService, final boolean includeStatus, final Collection<String> currentApplications) {
-        this(locationDataService, eventService, includeStatus);
+    public DefaultApplicationHandler(final LocationDataService locationDataService, final EventExecutorService eventService, final Collection<String> currentApplications) {
+        this(locationDataService, eventService);
         if (currentApplications != null) {
             m_oldApplicationNames = new HashSet<String>(currentApplications);
         }
@@ -43,7 +40,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
     }
 
     public void handle(final OnmsApplication application) {
-        final ApplicationInfo applicationInfo = getLocationDataService().getApplicationInfo(application, m_includeStatus);
+        final ApplicationInfo applicationInfo = getLocationDataService().getApplicationInfo(application);
         final ApplicationUpdatedRemoteEvent event = new ApplicationUpdatedRemoteEvent(applicationInfo);
         sendEvent(event);
         if (m_oldApplicationNames != null) {

@@ -17,7 +17,8 @@ public interface LocationDataService {
     public LocationInfo getLocationInfo(final String locationName);
     public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def);
     public ApplicationInfo getApplicationInfo(final String applicationName);
-    public ApplicationInfo getApplicationInfo(final OnmsApplication app, boolean includeStatus);
+    public ApplicationInfo getApplicationInfo(final OnmsApplication app);
+    public ApplicationInfo getApplicationInfo(final OnmsApplication app, final StatusDetails status);
     public LocationDetails getLocationDetails(final String locationName);
     public LocationDetails getLocationDetails(final OnmsMonitoringLocationDefinition def);
     public ApplicationDetails getApplicationDetails(final String applicationName);
@@ -31,7 +32,8 @@ public interface LocationDataService {
     
     public List<LocationInfo> getInfoForAllLocations();
     public List<ApplicationInfo> getInfoForAllApplications();
-    public StatusDetails getStatusDetails(OnmsMonitoringLocationDefinition def);
+    public StatusDetails getStatusDetailsForLocation(OnmsMonitoringLocationDefinition def);
+    public StatusDetails getStatusDetailsForApplication(OnmsApplication app);
     
 
 }

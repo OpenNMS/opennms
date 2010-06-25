@@ -3,6 +3,8 @@ package org.opennms.features.poller.remote.gwt.server;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import java.util.Date;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -12,14 +14,19 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
+import org.opennms.features.poller.remote.gwt.client.StatusDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
+import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
@@ -63,6 +70,9 @@ public class LocationDataManagerTest {
     
     @Autowired
     private LocationDataService m_locationDataService;
+    
+    @Autowired
+    private ApplicationDao m_applicationDao;
 
     private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
     
@@ -92,26 +102,79 @@ public class LocationDataManagerTest {
 
     @Test
     public void testGetInfoForAllLocations() {
-        List<LocationInfo> locations = m_locationDataService.getInfoForAllLocations();
+        long count = 10;
+        long start = System.currentTimeMillis();
         
-        assertEquals(2864, locations.size());
+        for(int i = 0; i < count; i++ ) {
+            List<LocationInfo> locations = m_locationDataService.getInfoForAllLocations();
+            assertEquals(2864, locations.size());
+        }
+        
+        System.err.printf("Avg getInfoForAllLocations: %d\n", (System.currentTimeMillis() - start)/count);
     }
     
     @Test
     public void testGetInfoForAllApplications() {
-        List<ApplicationInfo> locations = m_locationDataService.getInfoForAllApplications();
+        long count = 1;
+        long start = System.currentTimeMillis();
         
-        assertEquals(14, locations.size());
+        for(int i = 0; i < count; i++ ) {
+            List<ApplicationInfo> locations = m_locationDataService.getInfoForAllApplications();
+            assertEquals(14, locations.size());
+        }
+
+        System.err.printf("Avg getInfoForAllApplications: %d\n", (System.currentTimeMillis() - start)/count);
     }
     
     @Test
-    public void testGetSatusDetails() {
+    public void testGetSatusDetailsForLocation() {
         
         OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition("00002");
         
-        m_locationDataService.getStatusDetails(def);
+        m_locationDataService.getStatusDetailsForLocation(def);
     }
     
+    @Test
+    public void testGetSatusDetailsForApplication() {
+        
+        OnmsApplication app = m_applicationDao.findByName("Domain Controllers");
+        
+        System.err.println("TEST testGetSatusDetailsForApplication: calling getStatusDetailsForApplication");
+
+        m_locationDataService.getStatusDetailsForApplication(app);
+    }
+    
+    @Test
+    public void testGetApplicationInfo() {
+        
+        OnmsApplication app = m_applicationDao.findByName("Domain Controllers");  
+        
+        System.err.println("TEST testGetApplicationInfo: calling getApplicationInfo");
+        
+        m_locationDataService.getApplicationInfo(app, new StatusDetails());
+    }
+    
+    @Test
+    public void testLocationMonitorDaoFindByApplication() {
+        
+        OnmsApplication app = m_applicationDao.findByName("Domain Controllers");
+        
+        Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByApplication(app);
+        
+        assertEquals(18, monitors.size());
+
+    }
+
+    @Test
+    public void testGetStatusChangesForApplicationBetween() {
+        
+        Collection<OnmsLocationSpecificStatus> changes = m_locationMonitorDao.getStatusChangesForApplicationBetween(new Date(120000000), new Date(), "Domain Controllers");
+        
+
+        assertEquals(18, changes.size());
+
+    }
+
     @Test
     public void testStart() {
         EventExecutorService service = m_easyMockUtils.createMock(EventExecutorService.class);

@@ -166,7 +166,7 @@ public class LocationMonitorDaoHibernateTest extends AbstractTransactionalDaoTes
                    + "should have returned null",
                    getLocationMonitorDao().findMonitoringLocationDefinition("bogus"));
     }
-
+    
     public void testFindStatusChangesForNodeForUniqueMonitorAndInterface() throws InterruptedException {
         OnmsLocationMonitor monitor1 = new OnmsLocationMonitor();
         monitor1.setDefinitionName("Outer Space");

@@ -345,15 +345,29 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         getHibernateTemplate().save(statusChange);
     }
 
+    /**
+     * Returns the location monitors which have reported on services belonging to the provided application
+     */
     public Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application) {
-    	final Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
-    	for (final OnmsLocationSpecificStatus status : getAllMostRecentStatusChanges()) {
-    		if (status.getMonitoredService().getApplications() != null
-    				&& status.getMonitoredService().getApplications().contains(application)) {
-    			monitors.add(status.getLocationMonitor());
-    		}
-    	}
-    	return monitors;
+        
+        return findObjects(OnmsLocationMonitor.class, "select distinct l from OnmsLocationSpecificStatus as status " +
+        		"join status.monitoredService as m " +
+        		"join m.applications a " +
+        		"join status.locationMonitor as l " +
+        		"where a = ? and status.id in ( " +
+                    "select max(s.id) from OnmsLocationSpecificStatus as s " +
+                    "group by s.locationMonitor, s.monitoredService " +
+                ")", application);
+
+        
+//    	final Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+//    	for (final OnmsLocationSpecificStatus status : getAllMostRecentStatusChanges()) {
+//    		if (status.getMonitoredService().getApplications() != null
+//    				&& status.getMonitoredService().getApplications().contains(application)) {
+//    			monitors.add(status.getLocationMonitor());
+//    		}
+//    	}
+//    	return monitors;
     }
     
     public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocationDefinition locationDefinition) {
@@ -427,6 +441,27 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         ));
         return statuses;
     }
+    
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName) {
+        return findObjects(OnmsLocationSpecificStatus.class, 
+                "from OnmsLocationSpecificStatus as status " +
+                "left join fetch status.monitoredService as m " +
+                "left join fetch m.applications as a " +
+                "where " +
+                "( " +
+                "  select max(recentStatus.pollResult.timestamp) " +
+                "  from OnmsLocationSpecificStatus as recentStatus " +
+                "  where recentStatus.pollResult.timestamp < ? " +
+                "  group by recentStatus.locationMonitor, recentStatus.monitoredService " +
+                "  having recentStatus.locationMonitor = status.locationMonitor " +
+                "  and recentStatus.monitoredService = status.monitoredService " +
+                ") <= status.pollResult.timestamp " +
+                "and status.pollResult.timestamp < ? " +
+                "and a.name = ?",
+                startDate, endDate, applicationName);
+        
+    }
+
 
     public Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(final String locationName) {
         return getMostRecentStatusChangesForDateAndLocation(new Date(), locationName);
