@@ -406,10 +406,8 @@ public class Installer {
         String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 
         if (pg_lib_dir != null) {
-            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir
-                    + File.separator + "plpgsql." + soext);
-            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir
-                    + File.separator + "iplike." + soext);
+            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir + File.separator + "plpgsql");
+            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir + File.separator + "iplike");
         }
 
         m_installerDb.setStoredProcedureDirectory(m_etc_dir);
@@ -859,10 +857,8 @@ public class Installer {
 
     public String checkServerVersion() throws IOException {
         File catalinaHome = new File(m_webappdir).getParentFile();
-        String readmeVersion = getTomcatVersion(new File(catalinaHome,
-                                                         "README.txt"));
-        String runningVersion = getTomcatVersion(new File(catalinaHome,
-                                                          "RUNNING.txt"));
+        String readmeVersion = getTomcatVersion(new File(catalinaHome, "README.txt"));
+        String runningVersion = getTomcatVersion(new File(catalinaHome, "RUNNING.txt"));
 
         if (readmeVersion == null && runningVersion == null) {
             return null;

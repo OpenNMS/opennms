@@ -90,9 +90,9 @@ public class InstallerDb {
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
-    public static final float POSTGRES_MIN_VERSION = 7.3f;
+    public static final float POSTGRES_MIN_VERSION = 7.4f;
     
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.5f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.1f;
 
     private static final int s_fetch_size = 1024;
     
@@ -967,11 +967,9 @@ public class InstallerDb {
                 + "WHERE "
                 + "        attrelid = (SELECT oid FROM pg_class WHERE relname = '" + tableName.toLowerCase() + "') "
                 + "    AND "
-                + "        attnum > 0";
-
-        if (m_pg_version >= 7.3) {
-            query = query + " AND attisdropped = false";
-        }
+                + "        attnum > 0"
+                + "    AND "
+                + "        attisdropped = false";
 
         query = query + " ORDER BY attnum";
 
@@ -1014,12 +1012,9 @@ public class InstallerDb {
                 + "    AND "
                 + "        attr.attrelid = def.adrelid"
                 + "    AND "
-                + "        attr.attnum = def.adnum";
-
-
-        if (m_pg_version >= 7.3) {
-            query = query + " AND attr.attisdropped = false";
-        }
+                + "        attr.attnum = def.adnum"
+                + "    AND "
+                + "        attr.attisdropped = false";
 
         rs = st.executeQuery(query);
 
