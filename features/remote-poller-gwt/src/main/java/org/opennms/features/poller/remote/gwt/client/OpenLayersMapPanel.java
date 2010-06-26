@@ -1,6 +1,8 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.gwtopenmaps.openlayers.client.Bounds;
@@ -11,6 +13,8 @@ import org.gwtopenmaps.openlayers.client.MapWidget;
 import org.gwtopenmaps.openlayers.client.Marker;
 import org.gwtopenmaps.openlayers.client.Pixel;
 import org.gwtopenmaps.openlayers.client.Size;
+import org.gwtopenmaps.openlayers.client.control.LayerSwitcher;
+import org.gwtopenmaps.openlayers.client.control.LayerSwitcherOptions;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.PanZoomBar;
 import org.gwtopenmaps.openlayers.client.event.MapMoveListener;
@@ -117,6 +121,8 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         m_map.addControl(new MousePosition());
         m_map.zoomTo(2);
 
+        initializeImageError();
+
         WMSParams layerParams = null;
         WMSOptions layerOptions = null;
 
@@ -124,45 +130,38 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         layerOptions.setWrapDateLine(true);
         layerParams = new WMSParams();
         layerParams.setLayers(getLayerName());
-        Layer layer = new WMS("BaseLayer", getLayerUrl(), layerParams, layerOptions);
+        Layer layer = new WMS("Base", getLayerUrl(), layerParams, layerOptions);
         layer.setIsBaseLayer(true);
+        layer.setIsVisible(true);
         m_map.addLayer(layer);
 
-        /*
         layerOptions = new WMSOptions();
         layerOptions.setWrapDateLine(true);
         layerParams = new WMSParams();
         layerParams.setLayers("satellite");
-        Layer layer = new WMS("Satellite", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
+        layer = new WMS("Satellite", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
         layer.setIsBaseLayer(true);
+        layer.setIsVisible(false);
         m_map.addLayer(layer);
-        */
 
-        /*
         layerOptions = new WMSOptions();
         layerOptions.setWrapDateLine(true);
         layerParams = new WMSParams();
         layerParams.setLayers("basic");
         layer = new WMS("VMap", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
+        layer.setIsBaseLayer(true);
+        layer.setIsVisible(false);
         m_map.addLayer(layer);
-        */
-
-        /*
-        layerOptions = new WMSOptions();
-        layerOptions.setWrapDateLine(true);
-        layerParams = new WMSParams();
-        layerParams.setLayers("States_Generalized");
-        layerParams.setFormat("image/png");
-        layerParams.setIsTransparent(true);
-        layer = new WMS("USGS Political Boundaries", "http://toposervices.cr.usgs.gov/wmsconnector/com.esri.wms.Esrimap/USGS_EDNA_geo?", layerParams, layerOptions);
-        layer.setIsBaseLayer(false);
-        */
 
         m_markersLayer = new Markers("default");
+        m_markersLayer.setIsVisible(true);
+        m_markersLayer.setIsBaseLayer(false);
         m_map.addLayer(m_markersLayer);
-        m_map.zoomToMaxExtent();
 
-//        getMapHolder().setSize("100%", "100%");
+        final LayerSwitcher switcher = new LayerSwitcher();
+        m_map.addControl(switcher);
+
+        m_map.zoomToMaxExtent();
 
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
@@ -170,6 +169,13 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
             }
         });
     }
+
+    private static native void initializeImageError() /*-{
+        $wnd.OpenLayers.Util.onImageLoadError = function() {
+            this.style.display = "";
+            this.src = "images/nodata.png";
+        };
+    }-*/;
 
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
     	final Marker marker = getMarker(name);
@@ -181,7 +187,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
             panel.add(new HTML(htmlContent));
             Popup p = new Popup(name, marker.getLonLat(), new Size(300, 300), panel.toString(), true);
             p.setAutoSize(true);
-            m_map.addPopup(p);
+            m_map.addPopupExclusive(p);
     	}
     }
 
