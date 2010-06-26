@@ -312,9 +312,7 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	public String getVlanName(int m_vlan) {
 		if (this.hasVlanTable()) {
-			java.util.Iterator<SnmpTableEntry> itr = this.getVlanTable().getEntries().iterator();
-			while (itr.hasNext()) {
-				SnmpTableEntry ent = itr.next();
+		    for (final SnmpTableEntry ent : this.getVlanTable().getEntries()) {
 				int vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 				if (vlanIndex == m_vlan) {
 					return ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
@@ -330,9 +328,7 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	public int getVlanIndex(String m_vlanname) {
 		if (this.hasVlanTable()) {
-			java.util.Iterator<SnmpTableEntry> itr = this.getVlanTable().getEntries().iterator();
-			while (itr.hasNext()) {
-				SnmpTableEntry ent = itr.next();
+		    for (final SnmpTableEntry ent : this.getVlanTable().getEntries()) {
 				String vlanName = ent
 						.getDisplayString(VlanCollectorEntry.VLAN_NAME);
 				if (vlanName.equals(m_vlanname)) {
@@ -485,9 +481,7 @@ public final class SnmpCollection implements ReadyRunnable {
 					if (log().isDebugEnabled())
 						log().debug("SnmpCollection.run: start collection for " + getVlanTable().getEntries().size() + " VLAN entries ");
 
-					java.util.Iterator itr = m_vlanTable.getEntries().iterator();
-					while (itr.hasNext()) {
-						SnmpTableEntry ent = (SnmpTableEntry) itr.next();
+					for (final SnmpTableEntry ent : m_vlanTable.getEntries()) {
 		 				int vlanindex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 						if (vlanindex == -1) {
 							if (log().isDebugEnabled()) {

@@ -61,9 +61,8 @@ import java.net.DatagramPacket;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -221,9 +220,8 @@ public class Installer {
             // OLDINSTALL m_installerDb.readTables();
         }
 
+        m_installerDb.disconnect();
         if (doDatabase) {
-            m_installerDb.databaseCheckLanguage();
-            m_installerDb.disconnect();
             m_migrator.validateDatabaseVersion();
 
             m_out.println(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migration.getAdminUser()));
@@ -408,10 +406,8 @@ public class Installer {
         String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 
         if (pg_lib_dir != null) {
-            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir
-                    + File.separator + "plpgsql." + soext);
-            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir
-                    + File.separator + "iplike." + soext);
+            m_installerDb.setPostgresPlPgsqlLocation(pg_lib_dir + File.separator + "plpgsql");
+            m_installerDb.setPostgresIpLikeLocation(pg_lib_dir + File.separator + "iplike");
         }
 
         m_installerDb.setStoredProcedureDirectory(m_etc_dir);
@@ -861,10 +857,8 @@ public class Installer {
 
     public String checkServerVersion() throws IOException {
         File catalinaHome = new File(m_webappdir).getParentFile();
-        String readmeVersion = getTomcatVersion(new File(catalinaHome,
-                                                         "README.txt"));
-        String runningVersion = getTomcatVersion(new File(catalinaHome,
-                                                          "RUNNING.txt"));
+        String readmeVersion = getTomcatVersion(new File(catalinaHome, "README.txt"));
+        String runningVersion = getTomcatVersion(new File(catalinaHome, "RUNNING.txt"));
 
         if (readmeVersion == null && runningVersion == null) {
             return null;
@@ -900,7 +894,6 @@ public class Installer {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public String findLibrary(String libname, String path, boolean isRequired) throws Exception {
         String fullname = System.mapLibraryName(libname);
 
@@ -913,18 +906,16 @@ public class Installer {
         }
 
         try {
-            File confFile = new File(m_opennms_home + File.separator + "etc"
-                    + File.separator + LIBRARY_PROPERTY_FILE);
-            Properties p = new Properties();
-            InputStream is = new FileInputStream(confFile);
+            File confFile = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
+            final Properties p = new Properties();
+            final InputStream is = new FileInputStream(confFile);
             p.load(is);
             is.close();
-            for (Enumeration e = p.keys(); e.hasMoreElements();) {
-                String key = (String) e.nextElement();
+            for (final Object k : p.keySet()) {
+                String key = (String)k;
                 if (key.startsWith("opennms.library")) {
-                    String value = p.getProperty(key);
-                    value.replaceAll(File.separator + "[^" + File.separator
-                            + "]*$", "");
+                    final String value = p.getProperty(key);
+                    value.replaceAll(File.separator + "[^" + File.separator + "]*$", "");
                     searchPaths.add(value);
                 }
             }
@@ -933,16 +924,20 @@ public class Installer {
         }
 
         if (System.getProperty("java.library.path") != null) {
-            for (String entry : System.getProperty("java.library.path").split(File.pathSeparator)) {
+            for (final String entry : System.getProperty("java.library.path").split(File.pathSeparator)) {
                 searchPaths.add(entry);
             }
         }
 
         if (!System.getProperty("os.name").contains("Windows")) {
-            String[] defaults = { "/usr/lib/jni", "/usr/lib",
-                    "/usr/local/lib", "/opt/NMSjicmp/lib/32",
-                    "/opt/NMSjicmp/lib/64" };
-            for (String entry : defaults) {
+            String[] defaults = {
+                    "/usr/lib/jni",
+                    "/usr/lib",
+                    "/usr/local/lib",
+                    "/opt/NMSjicmp/lib/32",
+                    "/opt/NMSjicmp/lib/64"
+            };
+            for (final String entry : defaults) {
                 searchPaths.add(entry);
             }
         }
@@ -964,7 +959,7 @@ public class Installer {
 
         if (isRequired) {
             StringBuffer buf = new StringBuffer();
-            for (String pathEntry : System.getProperty("java.library.path").split(File.pathSeparator)) {
+            for (final String pathEntry : System.getProperty("java.library.path").split(File.pathSeparator)) {
                 buf.append(" ");
                 buf.append(pathEntry);
             }
@@ -979,19 +974,19 @@ public class Installer {
         return null;
     }
 
-    public boolean loadLibrary(String path) {
+    public boolean loadLibrary(final String path) {
         try {
             m_out.print("  - trying to load " + path + ": ");
             System.load(path);
             m_out.println("OK");
             return true;
-        } catch (UnsatisfiedLinkError ule) {
+        } catch (final UnsatisfiedLinkError ule) {
             m_out.println("NO");
         }
         return false;
     }
 
-    public void writeLibraryConfig(String jicmp_path, String jrrd_path)
+    public void writeLibraryConfig(final String jicmp_path, final String jrrd_path)
             throws IOException {
         Properties libraryProps = new Properties();
 
@@ -1005,8 +1000,7 @@ public class Installer {
 
         File f = null;
         try {
-            f = new File(m_opennms_home + File.separator + "etc"
-                    + File.separator + LIBRARY_PROPERTY_FILE);
+            f = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
             f.createNewFile();
             FileOutputStream os = new FileOutputStream(f);
             libraryProps.store(os, null);

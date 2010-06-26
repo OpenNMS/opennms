@@ -38,7 +38,6 @@ package org.opennms.netmgt.ackd.readers;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ackd.AckReader;
 import org.opennms.netmgt.dao.AckdConfigurationDao;

@@ -218,7 +218,7 @@ public class LinkableNode extends Object {
 	 * @return
 	 */
 	boolean isBackBoneBridgePort(int bridgeport) {
-		return backBoneBridgePorts.contains(new Integer(bridgeport));
+		return backBoneBridgePorts.contains(bridgeport);
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class LinkableNode extends Object {
 	 * @param bridgeport
 	 */
 	void addBackBoneBridgePorts(final int bridgeport) {
-		if (backBoneBridgePorts.contains(new Integer(bridgeport)))
+		if (backBoneBridgePorts.contains(bridgeport))
 			return;
 		backBoneBridgePorts.add(bridgeport);
 	}
@@ -274,8 +274,8 @@ public class LinkableNode extends Object {
 	void addMacAddress(int bridgeport, String macAddress, String vlan) {
 
 		Set<String> macs = new HashSet<String>();
-		if (portMacs.containsKey(new Integer(bridgeport))) {
-			macs = portMacs.get(new Integer(bridgeport));
+		if (portMacs.containsKey(bridgeport)) {
+			macs = portMacs.get(bridgeport);
 		}
 		macs.add(macAddress);
 
@@ -284,13 +284,11 @@ public class LinkableNode extends Object {
 	}
 
 	boolean hasMacAddress(String macAddress) {
-		Set<String> macs = new HashSet<String>();
-		Iterator<Set<String>> ite = portMacs.values().iterator();
-		while (ite.hasNext()) {
-			macs = ite.next();
-			if (macs.contains(macAddress))
-				return true;
-		}
+	    for (final Set<String> macs : portMacs.values()) {
+	        if (macs.contains(macAddress)) {
+	            return true;
+	        }
+	    }
 		return false;
 	}
 
@@ -302,11 +300,11 @@ public class LinkableNode extends Object {
 	}
 
 	Set<String> getMacAddressesOnBridgePort(int bridgeport) {
-		return  portMacs.get(new Integer(bridgeport));
+		return portMacs.get(bridgeport);
 	}
 
 	boolean hasMacAddressesOnBridgePort(int bridgeport) {
-		return (portMacs.containsKey(new Integer(bridgeport)) && portMacs.get(new Integer(bridgeport)) != null );
+		return (portMacs.containsKey(bridgeport) && portMacs.get(bridgeport) != null );
 	}
 
 	List<Integer> getBridgePortsFromMac(String macAddress) {
@@ -323,7 +321,7 @@ public class LinkableNode extends Object {
 	}
 
 	int getIfindex(int bridgeport) {
-		if (bridgePortIfindex.containsKey(new Integer(bridgeport))) {
+		if (bridgePortIfindex.containsKey(bridgeport)) {
 		    final Integer ifindex = bridgePortIfindex.get(bridgeport);
 			return ifindex.intValue();
 		}

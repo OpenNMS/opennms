@@ -491,7 +491,7 @@ public class DbVlanEntry
 		}
 
 		boolean updateVlanName(final String vlanname) {
-			if (!m_vlanname.equals(vlanname)) {
+			if (m_vlanname == null || !m_vlanname.equals(vlanname)) {
 				setVlanName(vlanname);
 				return true;
 			} else

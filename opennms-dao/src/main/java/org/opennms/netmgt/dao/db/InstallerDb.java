@@ -90,9 +90,9 @@ public class InstallerDb {
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
-    public static final float POSTGRES_MIN_VERSION = 7.3f;
+    public static final float POSTGRES_MIN_VERSION = 7.4f;
     
-    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 8.5f;
+    public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.1f;
 
     private static final int s_fetch_size = 1024;
     
@@ -967,11 +967,9 @@ public class InstallerDb {
                 + "WHERE "
                 + "        attrelid = (SELECT oid FROM pg_class WHERE relname = '" + tableName.toLowerCase() + "') "
                 + "    AND "
-                + "        attnum > 0";
-
-        if (m_pg_version >= 7.3) {
-            query = query + " AND attisdropped = false";
-        }
+                + "        attnum > 0"
+                + "    AND "
+                + "        attisdropped = false";
 
         query = query + " ORDER BY attnum";
 
@@ -1014,12 +1012,9 @@ public class InstallerDb {
                 + "    AND "
                 + "        attr.attrelid = def.adrelid"
                 + "    AND "
-                + "        attr.attnum = def.adnum";
-
-
-        if (m_pg_version >= 7.3) {
-            query = query + " AND attr.attisdropped = false";
-        }
+                + "        attr.attnum = def.adnum"
+                + "    AND "
+                + "        attr.attisdropped = false";
 
         rs = st.executeQuery(query);
 
@@ -1528,113 +1523,6 @@ public class InstallerDb {
 
         m_out.println("    - transforming data into the new table... "
                 + "DONE           ");
-    }
-
-
-    @Deprecated
-    public void databaseCheckVersion() throws Exception {
-        m_out.print("- checking database version... ");
-
-        Statement st = getAdminConnection().createStatement();
-        ResultSet rs = st.executeQuery("SELECT version()");
-        if (!rs.next()) {
-            throw new Exception("Database didn't return any rows for 'SELECT version()'");
-        }
-
-        String versionString = rs.getString(1);
-
-        rs.close();
-        st.close();
-
-        Matcher m = Pattern.compile("^PostgreSQL (\\d+\\.\\d+\\.\\d+)").matcher(versionString);
-        if (m.find()) {
-            String pgFullVersion = m.group(1);
-            if (pgFullVersion.equals("8.4.0")) {
-                throw new Exception(String.format("Unsupported database version 8.4.0.  PostgreSQL 8.4.0 has a bug" +
-                		" in left join subselects which causes issues with OpenNMS."));
-            }
-        }
-
-        m = Pattern.compile("^PostgreSQL (\\d+\\.\\d+)").matcher(versionString);
-
-        if (!m.find()) {
-            throw new Exception("Could not parse version number out of version string: " + versionString);
-        }
-        m_pg_version = Float.parseFloat(m.group(1));
-
-        String message = "Unsupported database version \""
-                            + m_pg_version + "\" -- you need at least "
-                            + POSTGRES_MIN_VERSION + " and less than "
-                            + POSTGRES_MAX_VERSION_PLUS_ONE
-                            + ".  Use the \"-Q\" option to disable this check "
-                            + "if you feel brave and are willing to find and "
-                            + "fix bugs found yourself.";
-        if (m_pg_version < POSTGRES_MIN_VERSION) {
-            throw new Exception(message);
-        } else if (m_pg_version >= POSTGRES_MAX_VERSION_PLUS_ONE) {
-            throw new Exception(message);
-        }
-
-        m_out.println(Float.toString(m_pg_version));
-        m_out.println("  - Full version string: " + versionString);
-    }
-
-    public void databaseCheckLanguage() throws Exception {
-        /*
-         * Don't bother checking if the database version is 7.4 or greater and
-         * just return without throwing an exception. We can (and do) use SQL
-         * state checks instead of matching on the exception text, so the
-         * language of server error messages does not matter.
-         */
-        if (m_pg_version >= 7.4) {
-            return;
-        }
-
-        /*
-         * Use column names that should never exist and also encode the
-         * current time, in hopes that this should never actually succeed.
-         */
-        String timestamp = Long.toString(System.currentTimeMillis());
-        String bogus_query = "SELECT bogus_column_" + timestamp + " "
-                + "FROM bogus_table_" + timestamp + " "
-                + "WHERE another_bogus_column_" + timestamp + " IS NULL";
-
-        // Expected error: "ERROR: relation "bogus_table" does not exist"
-        try {
-            Statement st = getAdminConnection().createStatement();
-            st.executeQuery(bogus_query);
-        } catch (SQLException e) {
-            if (e.toString().indexOf("does not exist") != -1) {
-                /*
-                 * Everything is fine, since we matched the error. We should
-                 * be safe to assume that all of the other error messages we
-                 * need to check for are in English.
-                 */
-                return;
-            }
-            throw new Exception("The database server's error messages "
-                    + "are not in English, however the installer "
-                    + "requires them to be in English when using "
-                    + "PostgreSQL earlier than 7.4.  You either "
-                    + "need to set \"lc_messages = 'C'\" in your "
-                    + "postgresql.conf file and restart "
-                    + "PostgreSQL or upgrade to PostgreSQL 7.4 or "
-                    + "later.  The installer executed the query " + "\""
-                    + bogus_query + "\" and expected "
-                    + "\"does not exist\" in the error message, "
-                    + "but this exception was received instead: " + e, e);
-        }
-
-        /*
-         * We should not get here, as the above command should always throw an
-         * exception, so complain and throw an exception about not getting the
-         * exception we were expecting. Are you lost yet? Good!
-         */
-        throw new Exception("Expected an SQLException when executing a "
-                + "bogus query to test for the server's error "
-                + "message language, however the query succeeded "
-                + "unexpectedly.  SQL query: \"" + bogus_query + "\".");
-
     }
 
     public void checkOldTables() throws SQLException,
@@ -2245,7 +2133,7 @@ public class InstallerDb {
     }
 
     private void rethrowDatabaseConnectionException(DataSource ds, SQLException e, String msg) throws SQLException {
-        SQLException newE = new SQLException(msg + "  Is the database running, listening for TCP connections, and allowing us to connect and authenticate from localhost?  Tried connecting to database specified by data source " + ds.toString() + ".  Original error: " + e);
+        SQLException newE = new DatabaseConnectionException(msg + "  Is the database running, listening for TCP connections, and allowing us to connect and authenticate from localhost?  Tried connecting to database specified by data source " + ds.toString() + ".  Original error: " + e);
         newE.initCause(e);
         throw newE;
     }

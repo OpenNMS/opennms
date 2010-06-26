@@ -435,7 +435,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
-					if (designatedRoot.equals("0000000000000000")) {
+					if (designatedRoot == null || designatedRoot.equals("0000000000000000")) {
 						log().warn("run: designated root is invalid. Skipping");
 						continue;
 					}
@@ -484,7 +484,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 									+ " and with stp designated port "
 									+ stpPortDesignatedPort);
 
-						if (stpPortDesignatedBridge.equals("0000000000000000")
+						if (stpPortDesignatedBridge == null || stpPortDesignatedBridge.equals("0000000000000000")
 						        || stpPortDesignatedBridge.equals("")) {
 							log().warn("run: designated bridge is invalid "
 									+ stpPortDesignatedBridge);
@@ -499,7 +499,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 							continue;
 						}
 
-						if (stpPortDesignatedPort.equals("0000")) {
+						if (stpPortDesignatedPort == null || stpPortDesignatedPort.equals("0000")) {
 							log().warn("run: designated port is invalid "
 									+ stpPortDesignatedPort);
 							continue;
@@ -725,7 +725,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 										+ curBridgePort + " to bridge");
 
 							curNode.addBackBoneBridgePorts(curBridgePort);
-							bridgeNodes.put(new Integer(curNodeId), curNode);
+							bridgeNodes.put(curNodeId, curNode);
 
 							if (log().isDebugEnabled())
 								log().debug("run: backbone port found for node "
@@ -967,10 +967,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 */
 
 	boolean isBridgeNode(int nodeid) {
-
-		Iterator<LinkableNode> ite = bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+	    for (final LinkableNode curNode : bridgeNodes.values()) {
 			if (nodeid == curNode.getNodeId())
 				return true;
 		}
@@ -984,10 +981,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 */
 
 	boolean isRouterNode(int nodeid) {
-
-		Iterator<LinkableNode> ite = routerNodes.iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+	    for (final LinkableNode curNode : routerNodes) {
 			if (nodeid == curNode.getNodeId())
 				return true;
 		}
@@ -1018,10 +1012,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		if (macsOnBridge == null || macsOnBridge.isEmpty())
 			return true;
 
-		Iterator<String> macsonbridge_ite = macsOnBridge.iterator();
-
-		while (macsonbridge_ite.hasNext()) {
-			String macaddr = macsonbridge_ite.next();
+		for (final String macaddr : macsOnBridge) {
 			if (isMacIdentifierOfBridgeNode(macaddr)) return false;
 		}
 
@@ -1042,10 +1033,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		if (macsOnBridge2.isEmpty() || macsOnBridge1.isEmpty())
 			return false;
 
-		Iterator<String> macsonbridge1_ite = macsOnBridge1.iterator();
-
-		while (macsonbridge1_ite.hasNext()) {
-			String curMacOnBridge1 = macsonbridge1_ite.next();
+		for (final String curMacOnBridge1 : macsOnBridge1) {
 			// if mac address is bridge identifier of bridge 2 continue
 			
 			if (bridge2.isBridgeIdentifier(curMacOnBridge1)) {
@@ -1080,10 +1068,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		if (macsOnBridge2.isEmpty() || macsOnBridge1.isEmpty())
 			return null;
 
-		Iterator<String> macsonbridge1_ite = macsOnBridge1.iterator();
-
-		while (macsonbridge1_ite.hasNext()) {
-			String curMacOnBridge1 = macsonbridge1_ite.next();
+		for (final String curMacOnBridge1 : macsOnBridge1) {
 			if (bridge2.isBridgeIdentifier(curMacOnBridge1))
 				continue;
 			if (macsOnBridge2.contains(curMacOnBridge1))
@@ -1093,9 +1078,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	}
 
 	private boolean isMacIdentifierOfBridgeNode(String macAddress) {
-		Iterator<LinkableNode> ite = bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+	    for (final LinkableNode curNode : bridgeNodes.values()) {
 			if (curNode.isBridgeIdentifier(macAddress))
 				return true;
 		}
@@ -1108,26 +1091,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 * @return Bridge Bridge Node if found else null
 	 */
 
-	private LinkableNode getNodeFromMacIdentifierOfBridgeNode(String macAddress) {
-		Iterator<LinkableNode> ite = bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
-
+	private LinkableNode getNodeFromMacIdentifierOfBridgeNode(final String macAddress) {
+	    for (final LinkableNode curNode : bridgeNodes.values()) {
 			if (curNode.isBridgeIdentifier(macAddress))
 				return curNode;
 		}
 		return null;
 	}
 
-	private List<LinkableNode> getBridgesFromMacs(Set<String> macs) {
+	private List<LinkableNode> getBridgesFromMacs(final Set<String> macs) {
 		List<LinkableNode> bridges = new ArrayList<LinkableNode>();
-		Iterator<LinkableNode> ite = bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
-
-			Iterator<String> sub_ite = curNode.getBridgeIdentifiers().iterator();
-			while (sub_ite.hasNext()) {
-				String curBridgeIdentifier = sub_ite.next();
+		for (final LinkableNode curNode : bridgeNodes.values()) {
+		    for (final String curBridgeIdentifier : curNode.getBridgeIdentifiers()) {
 				if (macs.contains((curBridgeIdentifier)))
 					bridges.add(curNode);
 			}
@@ -1135,24 +1110,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 		return bridges;
 	}
 
-	private int getBridgePortOnEndBridge(LinkableNode startBridge,
-			LinkableNode endBridge) {
+	private int getBridgePortOnEndBridge(final LinkableNode startBridge, final LinkableNode endBridge) {
 
 		int port = -1;
-		Iterator<String> bridge_ident_ite = startBridge.getBridgeIdentifiers()
-				.iterator();
-		while (bridge_ident_ite.hasNext()) {
-			String curBridgeIdentifier = bridge_ident_ite.next();
+		for (final String curBridgeIdentifier : startBridge.getBridgeIdentifiers()) {
 			if (log().isDebugEnabled())
 				log()
 						.debug("getBridgePortOnEndBridge: parsing bridge identifier "
 								+ curBridgeIdentifier);
 			
 			if (endBridge.hasMacAddress(curBridgeIdentifier)) {
-				List<Integer> ports = endBridge.getBridgePortsFromMac(curBridgeIdentifier);
-				Iterator<Integer> ports_ite = ports.iterator();
-				while (ports_ite.hasNext()) {
-					port = ports_ite.next();
+			    for (final Integer p : endBridge.getBridgePortsFromMac(curBridgeIdentifier)) {
+			        port = p;
 					if (endBridge.isBackBoneBridgePort(port)) {
 						if (log().isDebugEnabled())
 							log()
@@ -1393,7 +1362,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 				node2, bridgeport2)) {
 
 			node1.addBackBoneBridgePorts(bridgeport1);
-			bridgeNodes.put(new Integer(node1.getNodeId()), node1);
+			bridgeNodes.put(node1.getNodeId(), node1);
 
 			node2.addBackBoneBridgePorts(bridgeport2);
 			bridgeNodes.put(node2.getNodeId(),node2);

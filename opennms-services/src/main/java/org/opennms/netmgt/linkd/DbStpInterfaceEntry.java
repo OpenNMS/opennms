@@ -718,7 +718,7 @@ public class DbStpInterfaceEntry {
 	}
 
 	boolean updateStpportDesignatedRoot(final String stpportdesignatedroot) {
-		if (!m_stpportdesignatedroot.equals(stpportdesignatedroot)) {
+		if (m_stpportdesignatedroot == null || !m_stpportdesignatedroot.equals(stpportdesignatedroot)) {
 			set_stpportdesignatedroot(stpportdesignatedroot);
 			return true;
 		} else
@@ -772,7 +772,7 @@ public class DbStpInterfaceEntry {
 	}
 
 	boolean updateStpportDesignatedBridge(final String stpportdesignatedbridge) {
-		if (!m_stpportdesignatedbridge.equals(stpportdesignatedbridge)) {
+		if (m_stpportdesignatedbridge == null || !m_stpportdesignatedbridge.equals(stpportdesignatedbridge)) {
 			set_stpportdesignatedbridge(stpportdesignatedbridge);
 			return true;
 		} else
@@ -799,7 +799,7 @@ public class DbStpInterfaceEntry {
 	}
 
 	boolean updateStpportDesignatedPort(final String stpportdesignatedport) {
-		if (!m_stpportdesignatedport.equals(stpportdesignatedport)) {
+		if (m_stpportdesignatedport == null || !m_stpportdesignatedport.equals(stpportdesignatedport)) {
 			set_stpportdesignatedport(stpportdesignatedport);
 			return true;
 		} else
