@@ -228,15 +228,6 @@ public class ThresholdingVisitorTest {
         createVisitor();
     }
 
-    @Test
-    public void testCreateVisitorWithoutProperEnabledIt() {
-        Map<String,String> params = new HashMap<String,String>();
-        // The time interval is usually taken from the configuration parameters of the service on collectd-configuration.xml
-        // The interval from threshd-configuration.xml is ignored.
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
-        assertNull(visitor);
-    }
-    
     /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
