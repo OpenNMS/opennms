@@ -1,8 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.gwtopenmaps.openlayers.client.Bounds;
@@ -14,7 +12,6 @@ import org.gwtopenmaps.openlayers.client.Marker;
 import org.gwtopenmaps.openlayers.client.Pixel;
 import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.control.LayerSwitcher;
-import org.gwtopenmaps.openlayers.client.control.LayerSwitcherOptions;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.PanZoomBar;
 import org.gwtopenmaps.openlayers.client.event.MapMoveListener;
@@ -130,7 +127,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         layerOptions.setWrapDateLine(true);
         layerParams = new WMSParams();
         layerParams.setLayers(getLayerName());
-        Layer layer = new WMS("Base", getLayerUrl(), layerParams, layerOptions);
+        Layer layer = new WMS("OpenStreetMaps", getLayerUrl(), layerParams, layerOptions);
         layer.setIsBaseLayer(true);
         layer.setIsVisible(true);
         m_map.addLayer(layer);
@@ -138,8 +135,8 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         layerOptions = new WMSOptions();
         layerOptions.setWrapDateLine(true);
         layerParams = new WMSParams();
-        layerParams.setLayers("satellite");
-        layer = new WMS("Satellite", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
+        layerParams.setLayers("basic");
+        layer = new WMS("MetaCarta (Basic)", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
         layer.setIsBaseLayer(true);
         layer.setIsVisible(false);
         m_map.addLayer(layer);
@@ -147,13 +144,13 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         layerOptions = new WMSOptions();
         layerOptions.setWrapDateLine(true);
         layerParams = new WMSParams();
-        layerParams.setLayers("basic");
-        layer = new WMS("VMap", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
+        layerParams.setLayers("satellite");
+        layer = new WMS("MetaCarta (Satellite)", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
         layer.setIsBaseLayer(true);
         layer.setIsVisible(false);
         m_map.addLayer(layer);
 
-        m_markersLayer = new Markers("default");
+        m_markersLayer = new Markers("Remote Pollers");
         m_markersLayer.setIsVisible(true);
         m_markersLayer.setIsBaseLayer(false);
         m_map.addLayer(m_markersLayer);
