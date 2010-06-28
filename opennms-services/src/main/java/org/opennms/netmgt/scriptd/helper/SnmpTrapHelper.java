@@ -171,13 +171,13 @@ public class SnmpTrapHelper {
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpOctetString. The value is assumed to
          * have been encoded with the specified encoding (i.e.
-         * XML_ENCODING_TEXT, or XML_ENCODING_BASE64).
+         * XML_ENCODING_TEXT, XML_ENCODING_BASE64, or XML_ENCODING_MAC_ADDRESS).
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
          * @param encoding
          *            Describes the way in which the value content has been
-         *            encoded (i.e. XML_ENCODING_TEXT, or XML_ENCODING_BASE64)
+         *            encoded (i.e. XML_ENCODING_TEXT, XML_ENCODING_BASE64, or XML_ENCODING_MAC_ADDRESS)
          * @param value
          *            The variable binding value
          * 
@@ -194,6 +194,17 @@ public class SnmpTrapHelper {
                 contents = value.getBytes();
             } else if (EventConstants.XML_ENCODING_BASE64.equals(encoding)) {
                 contents = Base64.decodeBase64(value.toCharArray());
+            } else if (EventConstants.XML_ENCODING_MAC_ADDRESS.equals(encoding)) {
+                String[] digits = value.split(":");
+                if (digits.length != 6) {
+                    throw new SnmpTrapHelperException("Cannot decode MAC address: " + value);
+                }
+                contents = new byte[6];
+                // Decode each MAC address digit into a hexadecimal byte value
+                for (int i = 0; i < 6; i++) {
+                    // Prefix the value with "0x" so that Byte.decode() knows which base to use
+                    contents[i] = Byte.decode("0x" + digits[i]);
+                }
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpOctetString");
             }
@@ -619,7 +630,7 @@ public class SnmpTrapHelper {
     }
 
     /**
-     * Crate a new variable binding and add it to the specified SNMP V1 trap.
+     * Create a new variable binding and add it to the specified SNMP V1 trap.
      * The value encoding is assumed to be XML_ENCODING_TEXT.
      * 
      * @param trap
@@ -640,7 +651,7 @@ public class SnmpTrapHelper {
     }
 
     /**
-     * Crate a new variable binding and add it to the specified SNMP V1 trap.
+     * Create a new variable binding and add it to the specified SNMP V1 trap.
      * 
      * @param trap
      *            The trap to which the variable binding should be added.

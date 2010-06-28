@@ -39,8 +39,10 @@ package org.opennms.netmgt.trapd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,7 +50,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.Base64;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -127,7 +129,7 @@ public class TrapHandlerTestCase {
         m_doStop = true;
     }
 
-    public void finishUp() {
+    public Collection<Event> finishUp() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -135,6 +137,7 @@ public class TrapHandlerTestCase {
         }
         m_eventMgr.finishProcessingEvents();
         m_anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
+        return m_anticipator.getAnticipatedEventsRecieved();
     }
 
     @After
@@ -228,26 +231,36 @@ public class TrapHandlerTestCase {
     }
 
 
-    // FIXME: these exist to provide testing for the new Textual Convention feature
+    // These exist to provide testing for the new Textual Convention feature
     // See EventConfDataTest for the other part of this testing
     @Test
     @DirtiesContext
-    @Ignore("The Textual Convention feature has not yet been implmenented")
     public void testV1EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
     throws Exception {
         SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
 
         LinkedHashMap<String, SnmpValue> varbinds = new LinkedHashMap <String, SnmpValue>();
         varbinds.put(".1.3.6.1.4.1.14179.2.6.2.20.0", valueFactory.getOctetString(new byte[]{(byte)0x00,(byte)0x14,(byte)0xf1,(byte)0xad,(byte)0xa7,(byte)0x50}));
-        anticipateAndSend(false, true,
+        Collection<Event> events = anticipateAndSend(false, true,
                 "uei.opennms.org/vendor/cisco/bsnAPNoiseProfileUpdatedToPass",
                 "v1", ".1.3.6.1.4.1.14179.2.6.3", 6, 38, varbinds);
+
+        boolean foundMacAddress = false;
+        // Assert that the MAC address varbind has been formatted into a colon-separated octet string
+        for (Event event : events) {
+            for (Parm parm : event.getParms().getParmCollection()) {
+                if (".1.3.6.1.4.1.14179.2.6.2.20.0".equals(parm.getParmName())) {
+                    assertEquals("MAC address does not match", "00:14:F1:AD:A7:50", parm.getValue().getContent());
+                    foundMacAddress = true;
+                }
+            }
+        }
+        assertTrue("Did not find expected MAC address parm", foundMacAddress);
     }
 
     // FIXME: these exist to provide testing for the new Textual Convention feature
     @Test
     @DirtiesContext
-    @Ignore("The Textual Convention feature has not yet been implmenented")
     public void testV2EnterpriseIdAndGenericAndSpecificAndMatchWithVarbindsAndTC()
     throws Exception {
         SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
@@ -259,19 +272,23 @@ public class TrapHandlerTestCase {
 
         assertByteArrayEquals(macAddr, decodeBytes);
 
-        // XXX: this is a problem.. putting the bytes into a string and taking them
-        // back out.. does not produce the same results
-        String decoded = new String(macAddr);
-        byte[] roundTripMacAddr = decoded.getBytes();
-
-        assertByteArrayEquals(macAddr, roundTripMacAddr);
-
-
         LinkedHashMap<String, SnmpValue> varbinds = new LinkedHashMap <String, SnmpValue>();
         varbinds.put(".1.3.6.1.4.1.14179.2.6.2.20.0", valueFactory.getOctetString(macAddr));
-        anticipateAndSend(false, true,
+        Collection<Event> events = anticipateAndSend(false, true,
                 "uei.opennms.org/vendor/cisco/bsnAPNoiseProfileUpdatedToPass",
                 "v2c", ".1.3.6.1.4.1.14179.2.6.3", 6, 38, varbinds);
+
+        boolean foundMacAddress = false;
+        // Assert that the MAC address varbind has been formatted into a colon-separated octet string
+        for (Event event : events) {
+            for (Parm parm : event.getParms().getParmCollection()) {
+                if (".1.3.6.1.4.1.14179.2.6.2.20.0".equals(parm.getParmName())) {
+                    assertEquals("MAC address does not match", "00:14:F1:AD:A7:50", parm.getValue().getContent());
+                    foundMacAddress = true;
+                }
+            }
+        }
+        assertTrue("Did not find expected MAC address parm", foundMacAddress);
     }
 
     private void assertByteArrayEquals(byte[] macAddr, byte[] bytes) {
@@ -444,39 +461,25 @@ public class TrapHandlerTestCase {
         return event;
     }
 
-    public void anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
+    public Collection<Event> anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
             String event,
             String version, String enterprise,
             int generic, int specific) throws Exception {
-        m_processor.setNewSuspect(newSuspectOnTrap);
-
-        if (newSuspectOnTrap) {
-            // Note: the nodeId will be zero because the node is not known
-            anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
-                    m_ip, 0);
-        }
-
-        if (event != null) {
-            if (nodeKnown) {
-                anticipateEvent(event);
-            } else {
-                /*
-                 * If the node is unknown, the nodeId on the trap event
-                 * will be zero.
-                 */
-                anticipateEvent(event, m_ip, 0);
-            }
-        }
-
-        sendTrap(version, enterprise, generic, specific);
-
-        finishUp();
+        return anticipateAndSend(newSuspectOnTrap, nodeKnown, event, version, enterprise, generic, specific, null);
     }
 
 
-    public void anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
+    /**
+     * @param newSuspectOnTrap Will a new suspect event be triggered by the trap?
+     * @param nodeKnown Is the node in the database?
+     * @param event Event that is anticipated to result when the trap is processed
+     * @param snmpTrapVersion SNMP version of trap, valid values: <code>v1</code>, <code>v2c</code>
+     * @param enterprise Enterprise ID of the trap
+     * @param varbinds Varbinds attached to the trap
+     */
+    public Collection<Event> anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
             String event,
-            String version, String enterprise,
+            String snmpTrapVersion, String enterprise,
             int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
         m_processor.setNewSuspect(newSuspectOnTrap);
 
@@ -498,9 +501,13 @@ public class TrapHandlerTestCase {
             }
         }
 
-        sendTrap(version, enterprise, generic, specific, varbinds);
+        if (varbinds == null) {
+            sendTrap(snmpTrapVersion, enterprise, generic, specific);
+        } else {
+            sendTrap(snmpTrapVersion, enterprise, generic, specific, varbinds);
+        }
 
-        finishUp();
+        return finishUp();
     }
 
     public void sendTrap(String version, String enterprise, int generic,
@@ -555,10 +562,10 @@ public class TrapHandlerTestCase {
         pdu.setSpecific(specific);
         pdu.setTimeStamp(0);
         pdu.setAgentAddress(m_localhost);
-        Iterator it = varbinds.entrySet().iterator();
+        Iterator<Map.Entry<String,SnmpValue>> it = varbinds.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            pdu.addVarBind(SnmpObjId.get((String) pairs.getKey()), (SnmpValue) pairs.getValue());
+            Map.Entry<String,SnmpValue> pairs = it.next();
+            pdu.addVarBind(SnmpObjId.get(pairs.getKey()), pairs.getValue());
         }
         pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
     }
