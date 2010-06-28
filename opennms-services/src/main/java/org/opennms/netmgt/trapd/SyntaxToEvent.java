@@ -82,7 +82,20 @@ public class SyntaxToEvent {
         for (int i = 0; i < m_syntaxToEvents.length; i++) {
             if (m_syntaxToEvents[i].getTypeId() == -1 || m_syntaxToEvents[i].getTypeId()== value.getType()) {
                 val.setType(m_syntaxToEvents[i].getType());
-                String encoding = value.isDisplayable() ? EventConstants.XML_ENCODING_TEXT : EventConstants.XML_ENCODING_BASE64;
+                String encoding = null;
+                if (value.isDisplayable()) {
+                    if (name.matches(".*[Mm][Aa][Cc].*")) {
+                        encoding = EventConstants.XML_ENCODING_MAC_ADDRESS;
+                    } else {
+                        encoding = EventConstants.XML_ENCODING_TEXT;
+                    }
+                } else {
+                    if (value.getBytes().length == 6) {
+                        encoding = EventConstants.XML_ENCODING_MAC_ADDRESS;
+                    } else {
+                        encoding = EventConstants.XML_ENCODING_BASE64;
+                    }
+                }
                 val.setEncoding(encoding);
                 val.setContent(EventConstants.toString(encoding, value));
                 found = true;
