@@ -11,6 +11,7 @@
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
+// Jun 28 2010: Give categories, SNMP, and CLI controls empty defaults (bug 3443) - jeffg@opennms.org
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -53,7 +54,7 @@
 <br />
 
 <c:if test="${success}">
-	<div style="border: 1px solid black; background-color: #bbffcc; margin: 5px;">
+	<div style="border: 1px solid black; background-color: #bbffcc; margin: 2px; padding: 3px;">
 		<h2>Success</h2>
 		<p>Your node has been provisioned in the ${foreignSource} foreign source.</p>
 	</div>
@@ -67,8 +68,17 @@
 </c:when>
 <c:otherwise>
 <form action="admin/node/add.htm">
+	<script type="text/javascript">
+	function addCategoryRow() {
+		var categoryMembershipTable = document.getElementById("categoryMembershipTable");
+		var initialCategoryRow = document.getElementById("initialCategoryRow");
+		var newCategoryRow = initialCategoryRow.cloneNode(true);
+		newCategoryRow.id = "";
+		categoryMembershipTable.appendChild(newCategoryRow);
+	}
+	</script>
 	<input type="hidden" name="actionCode" value="add" />
-	<h3>Basic Attributes</h3>
+	<h3>Basic Attributes (required)</h3>
 	<div class="boxWrapper">
 		<table class="normal">
 			<tr>
@@ -91,13 +101,15 @@
 		</table>
 	</div>
 
-	<h3>Surveillance Category Memberships</h3>
+	<h3>Surveillance Category Memberships (optional)</h3>
 	<div class="boxWrapper">
 		<table class="normal">
-			<tr>
+		<tbody id="categoryMembershipTable">
+			<tr id="initialCategoryRow">
 				<td>Category:</td>
 				<td>
 					<select name="category">
+							<option value="">--</option>
 						<c:forEach var="cat" items="${categories}">
 							<option><c:out value="${cat}" /></option>
 						</c:forEach>
@@ -107,16 +119,19 @@
 				<td>Category:</td>
 				<td>
 					<select name="category">
+							<option value="">--</option>
 						<c:forEach var="cat" items="${categories}">
 							<option><c:out value="${cat}" /></option>
 						</c:forEach>
 					</select>
 				</td>
+				<td><a href="javascript:addCategoryRow()">More...</a></td>
 			</tr>
+		</tbody>
 		</table>
 	</div>
 
-	<h3>SNMP Parameters</h3>
+	<h3>SNMP Parameters (optional)</h3>
 	<div class="boxWrapper">
 		<table class="normal">
 			<tr>
@@ -131,7 +146,7 @@
 		</table>
 	</div>
 
-	<h3>CLI Authentication Parameters</h3>
+	<h3>CLI Authentication Parameters (optional)</h3>
 	<div class="boxWrapper">
 		<table class="normal">
 			<tr>
@@ -149,17 +164,15 @@
 				<td>Access Method:</td>
 				<td>
 					<select name="accessMethod" >
+					<option value="" selected="true">--</option>
 					<option value="rsh">RSH</option>
 					<option value="ssh">SSH</option>
-					<option value="telnet" selected="true">Telnet</option>
+					<option value="telnet">Telnet</option>
 					</select>  
 				</td>
-				<td>Auto Enable:</td>
+				<td><label for="autoEnableControl">Auto Enable:</label></td>
 				<td>
-					<select name="autoEnable" >
-						<option selected="true"></option>
-						<option value="A">Yes</option>
-					</select>
+					<input id="autoEnableControl" type="checkbox" name="autoEnable" selected="false" />
 				</td>
 			</tr>
 		</table>
