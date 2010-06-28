@@ -96,7 +96,6 @@ public class SerializationTest {
 	private LocationInfo getLocationInfo() {
 		LocationInfo location = new LocationInfo();
 		location.setName("Bob");
-		location.setPollingPackageName("Harry");
 		location.setArea("East Coast");
 		location.setGeolocation("RDU");
 		location.setCoordinates("0.0,0.0");

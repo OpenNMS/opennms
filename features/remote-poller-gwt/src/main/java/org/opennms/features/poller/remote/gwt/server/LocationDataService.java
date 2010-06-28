@@ -2,10 +2,12 @@ package org.opennms.features.poller.remote.gwt.server;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
+import org.opennms.features.poller.remote.gwt.client.StatusDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -13,9 +15,10 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 
 public interface LocationDataService {
     public LocationInfo getLocationInfo(final String locationName);
-    public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def, boolean includeStatus);
+    public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def);
     public ApplicationInfo getApplicationInfo(final String applicationName);
-    public ApplicationInfo getApplicationInfo(final OnmsApplication app, boolean includeStatus);
+    public ApplicationInfo getApplicationInfo(final OnmsApplication app);
+    public ApplicationInfo getApplicationInfo(final OnmsApplication app, final StatusDetails status);
     public LocationDetails getLocationDetails(final String locationName);
     public LocationDetails getLocationDetails(final OnmsMonitoringLocationDefinition def);
     public ApplicationDetails getApplicationDetails(final String applicationName);
@@ -26,4 +29,11 @@ public interface LocationDataService {
     public void handleAllApplications(final Collection<ApplicationHandler> appHandlers);
     public LocationInfo getLocationInfoForMonitor(final Integer monitorId);
     public Collection<ApplicationInfo> getApplicationsForLocation(final LocationInfo info);
+    
+    public List<LocationInfo> getInfoForAllLocations();
+    public List<ApplicationInfo> getInfoForAllApplications();
+    public StatusDetails getStatusDetailsForLocation(OnmsMonitoringLocationDefinition def);
+    public StatusDetails getStatusDetailsForApplication(OnmsApplication app);
+    
+
 }

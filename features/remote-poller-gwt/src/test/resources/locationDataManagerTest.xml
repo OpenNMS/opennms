@@ -15,11 +15,20 @@
   </bean>
 
   <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
-  
+
   <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="classpath:pj-monitoring-locations.xml" />
   </bean>
-  
+
+<!-- 
+
+  <bean id="monitoringLocationsConfiguration" class="org.opennms.features.poller.remote.gwt.server.TestMonitoringLocationsConfiguration" />
+
+  <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="monitoringLocationsConfiguration" ref="monitoringLocationsConfiguration" />
+  </bean>
+
   <bean id="locationDataService" class="org.opennms.features.poller.remote.gwt.server.DefaultLocationDataService">
     <property name="save" value="false" />
   </bean>
@@ -51,4 +60,7 @@
     <property name="eventIpcManager" ref="eventIpcManager" />
     <property name="disconnectedTimeout" ref="monitorDisconnectedTimeout" />
   </bean>
+  
+  -->
+
 </beans>

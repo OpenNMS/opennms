@@ -101,10 +101,12 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
     }
 
     public Collection<OnmsMonitoredService> findByApplication(OnmsApplication application) {
-        return find("select distinct svc from OnmsMonitoredService as svc "
-                    + "join svc.applications a "
-                    + "where a.name = ?",
-                    application.getName());
+        return find("select distinct svc from OnmsMonitoredService as svc " +
+        		"left join fetch svc.serviceType " +
+        		"left join fetch svc.ipInterface " +
+        		"join svc.applications a " +
+        		"where a.name = ?",
+        		application.getName());
     }
 
 }
