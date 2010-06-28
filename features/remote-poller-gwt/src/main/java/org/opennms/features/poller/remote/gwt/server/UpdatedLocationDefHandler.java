@@ -8,7 +8,7 @@ import de.novanic.eventservice.service.EventExecutorService;
 public class UpdatedLocationDefHandler extends DefaultLocationDefHandler {
 
 	public UpdatedLocationDefHandler(final LocationDataService locationDataService, final EventExecutorService eventService) {
-		super(locationDataService, eventService, true);
+		super(locationDataService, eventService);
 	}
 
 	@Override

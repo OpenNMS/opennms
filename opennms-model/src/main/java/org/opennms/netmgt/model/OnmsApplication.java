@@ -112,4 +112,20 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         return creator.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OnmsApplication) {
+            OnmsApplication app = (OnmsApplication)obj;
+            return getName().equals(app.getName());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+    
+
+
 }
