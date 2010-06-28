@@ -3,9 +3,14 @@ package org.opennms.features.poller.remote.gwt.server;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,6 +19,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
+import org.opennms.features.poller.remote.gwt.client.Status;
 import org.opennms.features.poller.remote.gwt.client.StatusDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
@@ -61,6 +67,8 @@ import de.novanic.eventservice.service.EventExecutorService;
 @JUnitTemporaryDatabase(useExistingDatabase="opennmspj")
 @Transactional
 public class LocationDataManagerTest {
+    
+    private static final DateFormat s_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
     
     @Autowired
     private LocationMonitorDao m_locationMonitorDao;
@@ -115,7 +123,7 @@ public class LocationDataManagerTest {
     
     @Test
     public void testGetInfoForAllApplications() {
-        long count = 1;
+        long count = 10;
         long start = System.currentTimeMillis();
         
         for(int i = 0; i < count; i++ ) {
@@ -136,18 +144,32 @@ public class LocationDataManagerTest {
     
     @Test
     public void testGetSatusDetailsForApplication() {
-        
-        OnmsApplication app = m_applicationDao.findByName("Domain Controllers");
-        
-        System.err.println("TEST testGetSatusDetailsForApplication: calling getStatusDetailsForApplication");
+        String appName = "Domain Controllers";
 
-        m_locationDataService.getStatusDetailsForApplication(app);
+        int count = 100;
+        long start = System.currentTimeMillis();
+
+        for(int i = 0; i < count; i++) {
+
+            OnmsApplication app = m_applicationDao.findByName(appName);
+
+            //System.err.println("TEST testGetSatusDetailsForApplication: calling getStatusDetailsForApplication");
+
+            StatusDetails details = m_locationDataService.getStatusDetailsForApplication(app);
+            assertEquals(Status.UP, details.getStatus());
+
+        }
+
+        System.err.println(String.format("Avg getStatusDetailsForApplication: %d\n", (System.currentTimeMillis() - start)/count));
     }
     
     @Test
     public void testGetApplicationInfo() {
+        String appName = "Domain Controllers";
         
-        OnmsApplication app = m_applicationDao.findByName("Domain Controllers");  
+        
+        
+        OnmsApplication app = m_applicationDao.findByName(appName);  
         
         System.err.println("TEST testGetApplicationInfo: calling getApplicationInfo");
         
@@ -166,12 +188,20 @@ public class LocationDataManagerTest {
     }
 
     @Test
-    public void testGetStatusChangesForApplicationBetween() {
+    public void testGetAllStatusChangesAt() {
         
-        Collection<OnmsLocationSpecificStatus> changes = m_locationMonitorDao.getStatusChangesForApplicationBetween(new Date(120000000), new Date(), "Domain Controllers");
+        Collection<OnmsLocationSpecificStatus> changes = m_locationMonitorDao.getAllStatusChangesAt(new Date());
         
 
-        assertEquals(18, changes.size());
+        assertEquals(450, changes.size());
+
+    }
+
+    @Test
+    public void testGetStatusChangesForApplicationBetween() throws ParseException {
+        
+        Collection<OnmsLocationSpecificStatus> changes = m_locationMonitorDao.getStatusChangesForApplicationBetween(june(7, 2010), june(8, 2010), "Domain Controllers");
+       assertEquals(54, changes.size());
 
     }
 
@@ -187,6 +217,19 @@ public class LocationDataManagerTest {
         m_locationDataManager.doInitialize(service);
         m_easyMockUtils.verifyAll();
         
+    }
+    
+    @Test
+    public void testJune() throws ParseException {
+        Date d= june(1, 2009);
+        
+        assertEquals("2009-06-01 00:00:00,000", s_format.format(d));
+        
+    }
+    
+    Date june(int day, int year) {
+        Calendar cal = new GregorianCalendar(year, Calendar.JUNE, day);
+        return cal.getTime();
     }
     
     

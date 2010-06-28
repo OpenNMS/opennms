@@ -443,22 +443,25 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     
     public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName) {
+
         return findObjects(OnmsLocationSpecificStatus.class, 
                 "from OnmsLocationSpecificStatus as status " +
                 "left join fetch status.monitoredService as m " +
                 "left join fetch m.applications as a " +
+                "left join fetch status.locationMonitor as lm " +
                 "where " +
-                "( " +
-                "  select max(recentStatus.pollResult.timestamp) " +
-                "  from OnmsLocationSpecificStatus as recentStatus " +
-                "  where recentStatus.pollResult.timestamp < ? " +
-                "  group by recentStatus.locationMonitor, recentStatus.monitoredService " +
-                "  having recentStatus.locationMonitor = status.locationMonitor " +
-                "  and recentStatus.monitoredService = status.monitoredService " +
-                ") <= status.pollResult.timestamp " +
-                "and status.pollResult.timestamp < ? " +
-                "and a.name = ?",
-                startDate, endDate, applicationName);
+                "a.name = ? " +
+                "and " +
+                "( status.pollResult.timestamp between ? and ?" +
+                "  or" +
+                "  status.id in " +
+                "   (" +
+                "       select max(s.id) from OnmsLocationSpecificStatus as s " +
+                "       where s.pollResult.timestamp < ? " +
+                "       group by s.locationMonitor, s.monitoredService " +
+                "   )" +
+                ")",
+                applicationName, startDate, endDate, startDate);
         
     }
 

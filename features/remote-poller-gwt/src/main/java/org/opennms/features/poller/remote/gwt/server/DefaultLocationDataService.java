@@ -288,6 +288,34 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         final Date from = new Date(to.getTime() - AVAILABILITY_MS);
         
         final Collection<OnmsMonitoredService> services = m_monitoredServiceDao.findByApplication(app);
+        final Set<GWTLocationMonitor> monitors = new LinkedHashSet<GWTLocationMonitor>();
+        final Set<GWTMonitoredService> gwtServices = new LinkedHashSet<GWTMonitoredService>(services.size());
+        
+        for (final OnmsMonitoredService service : services) {
+            gwtServices.add(transformMonitoredService(service));
+        }
+        
+        for (OnmsLocationSpecificStatus status : m_locationDao.getStatusChangesForApplicationBetween(to, from, app.getName())) {
+            monitors.add(transformLocationMonitor(status.getLocationMonitor()));
+            statuses.add(transformLocationSpecificStatus(status));
+        }
+        
+        StatusDetails statusDetails = new AppStatusDetailsComputer(from, to, monitors, gwtServices, statuses).compute();
+        LogUtils.warnf(this, "getStatusDetailsForApplication(%s) returning %s", app.getName(), statusDetails);
+        return statusDetails;
+    }
+
+
+    @Transactional
+    public StatusDetails getStatusDetailsForApplicationOld(final OnmsApplication app) {
+        waitForGeocoding("getStatusDetailsForApplication");
+        
+        List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+        
+        final Date to = new Date();
+        final Date from = new Date(to.getTime() - AVAILABILITY_MS);
+        
+        final Collection<OnmsMonitoredService> services = m_monitoredServiceDao.findByApplication(app);
         final List <GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
         final Set<GWTMonitoredService> gwtServices = new LinkedHashSet<GWTMonitoredService>(services.size());
         

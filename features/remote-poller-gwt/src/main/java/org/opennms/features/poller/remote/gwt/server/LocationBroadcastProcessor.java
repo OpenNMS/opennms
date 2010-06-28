@@ -20,11 +20,12 @@ import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @EventListener(name="LocationStatusService")
-public class LocationBroadcastProcessor implements InitializingBean {
+public class LocationBroadcastProcessor implements InitializingBean, DisposableBean {
     @Autowired
     private LocationDataService m_locationDataService;
 
@@ -47,12 +48,14 @@ public class LocationBroadcastProcessor implements InitializingBean {
 
     public LocationEventHandler m_eventHandler;
 
+    private TimerTask m_task;
+
     public LocationBroadcastProcessor() {
         m_timer = new Timer();
     }
 
     public void afterPropertiesSet() throws Exception {
-        m_timer.schedule(new TimerTask() {
+        m_task = new TimerTask() {
             private Date m_lastRun = new Date();
 
             @Override
@@ -66,7 +69,15 @@ public class LocationBroadcastProcessor implements InitializingBean {
                 }
                 m_lastRun = now;
             }
-        }, UPDATE_PERIOD, UPDATE_PERIOD);
+        };
+        m_timer.schedule(m_task, UPDATE_PERIOD, UPDATE_PERIOD);
+    }
+    
+    public void destroy() {
+        if (m_task != null) {
+            m_task.cancel();
+        }
+        
     }
 
     @EventHandler(uei = EventConstants.LOCATION_MONITOR_STARTED_UEI)
