@@ -585,6 +585,10 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                         
                         for (OnmsMap onmsMap : m_onmsMapDao.findAutoAndSaveMaps()) {  
                             if ( mapNames.containsKey(onmsMap.getName()) || onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) {
+                                //Testing to move a map from Static to User 
+                                if(onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP) && !mapNames.containsKey(onmsMap.getName())) {
+                                    onmsMap.setType(OnmsMap.USER_GENERATED_MAP);
+                                }
                                 log().debug("syncMaps: fetching map from db: " +onmsMap.getName() + " type: " + onmsMap.getType());
                                 mapNames.put(onmsMap.getName(), onmsMap);
                             } else {
