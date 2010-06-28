@@ -1545,7 +1545,7 @@
     <event-label>OpenNMS defined remote poller event: A remote location monitor detected a node lost service</event-label>
     <descr>
       &lt;p&gt;A %service% outage was identified on interface
-    %interface% from remote location monitor %parm[locationMonitorId]%.
+    %interface% from remote location monitor %parm[locationMonitorId]% from location: %parm[location]%.
     &lt;/p&gt;
     </descr>
     <logmsg dest='logndisplay'>

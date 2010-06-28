@@ -895,6 +895,7 @@ public class EventConstants {
     public static final String PARM_PORT = "port";
 
     public final static String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
+    public final static String PARM_LOCATION = "location";
     
     /**
      * Parm use for promoteEnqueuedData event
