@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009-2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -9,8 +9,9 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ * 28 Jun 2010: Make categories optional (bug 3443) - jeffg@opennms.org
  * 
- * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2009-2010 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +80,7 @@ public class NodeProvisioningController extends AbstractController implements
             modelAndView.setViewName(m_successView);
             return modelAndView;
         } else {
-            String[] required = new String[] { "foreignSource", "nodeLabel", "ipAddress", "category" };
+            String[] required = new String[] { "foreignSource", "nodeLabel", "ipAddress" };
 
             for (String key : required) {
                 String[] value = request.getParameterValues(key);

@@ -307,7 +307,6 @@
           <th width="25%"><%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
           <th width="16%"><%=this.makeSortLink( parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
           <th width="15%"><%=this.makeSortLink( parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
-          <th width="10%">Ackd</th>
         </tr>
         </thead>     
       <% for( int i=0; i < events.length; i++ ) {
@@ -395,20 +394,7 @@
               &nbsp;
             <% } %>
           </td>
-          <td class="divider">
-            <% if (events[i].isAcknowledged()) { %>
-              <% Filter acknByFilter = new AcknowledgedByFilter(events[i].getAcknowledgeUser()); %>      
-              <%=events[i].getAcknowledgeUser()%>
-              <% if( !parms.filters.contains( acknByFilter )) { %>
-                <nobr>
-                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only events with this acknowledged by user">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(events[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show events acknowledgd by this user">${addNegativeFilter}</a>
-                </nobr>
-              <% } %>              
-            <% } else { %>
-              &nbsp;
-            <% } %>
-          </td>
+          
         </tr>
         
         <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
@@ -425,13 +411,6 @@
               <% if (req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
                	  <a href="javascript: void submitNewNotificationForm('<%=events[i].getUei()%>');" title="Edit notifications for this Event UEI">Edit notifications for event</a>
               <% } %>
-            <% } else { %>
-              &nbsp;
-            <% } %>
-          </td>
-          <td valign="top">
-            <% if (events[i].isAcknowledged()) { %>
-	      <fmt:formatDate value="${event.acknowledgeTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.acknowledgeTime}" type="time" pattern="HH:mm:ss"/>
             <% } else { %>
               &nbsp;
             <% } %>
