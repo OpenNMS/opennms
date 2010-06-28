@@ -677,7 +677,7 @@ public class DbStpNodeEntry
 		}
 
 		boolean updateBaseVlanName(final String basevlanname) {
-			if (!m_basevlanname.equals(basevlanname)) {
+			if (m_basevlanname == null || !m_basevlanname.equals(basevlanname)) {
 				set_basevlanname(basevlanname);
 				return true;
 			} else
@@ -704,7 +704,7 @@ public class DbStpNodeEntry
 		}
 
 		boolean updateBaseBridgeAddress(final String basebridgeaddress) {
-			if (!m_basebridgeaddress.equals(basebridgeaddress)) {
+			if (m_basebridgeaddress == null || !m_basebridgeaddress.equals(basebridgeaddress)) {
 				set_basebridgeaddress(basebridgeaddress);
 				return true;
 			} else
@@ -788,7 +788,7 @@ public class DbStpNodeEntry
 		}
 
 		boolean updateStpDesignatedRoot(final String stpdesignatedroot) {
-			if (!m_stpdesignatedroot.equals(stpdesignatedroot)) {
+			if (m_stpdesignatedroot == null || !m_stpdesignatedroot.equals(stpdesignatedroot)) {
 				set_stpdesignatedroot(stpdesignatedroot);
 				return true;
 			} else

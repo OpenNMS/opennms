@@ -85,13 +85,8 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      */
     public LocationMonitorDaoHibernate() {
         super(OnmsLocationMonitor.class);
-        if (m_monitoringLocationConfigResource != null) {
-            initializeConfigurations();
-        }
     }
-    
-    
-    
+
     @Override
     protected void initDao() throws Exception {
         assertPropertiesSet();
@@ -101,8 +96,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
 
 
     public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
-        assertPropertiesSet();
-
         final Locations locations = m_monitoringLocationsConfiguration.getLocations();
         if (locations != null) {
             final List<LocationDef> locationDefCollection = locations.getLocationDefCollection();
@@ -318,7 +311,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         if (monitoringLocationDefinitionName == null) {
             throw new IllegalArgumentException("monitoringLocationDefinitionName must not be null");
         }
-        assertPropertiesSet();
         final LocationDef locationDef = getLocationDef(monitoringLocationDefinitionName);
         if (locationDef == null) {
             return null;
@@ -488,9 +480,9 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                            date, locationName); 
     }
 
-    @SuppressWarnings("unchecked")
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
-    	final List l = getHibernateTemplate().find(
+    	@SuppressWarnings("rawtypes")
+		final List l = getHibernateTemplate().find(
                         "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
                         "where status.monitoredService.ipInterface.node.id = ?",
                         nodeId

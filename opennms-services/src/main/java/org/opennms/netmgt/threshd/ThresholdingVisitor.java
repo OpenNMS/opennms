@@ -77,7 +77,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         ThreadCategory log = ThreadCategory.getInstance(ThresholdingVisitor.class);
 
         String enabled = params.get("thresholding-enabled");
-        if (enabled == null || !enabled.equals("true")) {
+        if (enabled != null && !"true".equals(enabled)) {
             log.info("create: Thresholds processing is not enabled. Check thresholding-enabled param on collectd package");
             return null;
         }
