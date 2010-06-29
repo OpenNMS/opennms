@@ -66,6 +66,7 @@ import de.novanic.eventservice.service.EventExecutorService;
 })
 @JUnitTemporaryDatabase(useExistingDatabase="opennmspj")
 @Transactional
+@Ignore("requires custom database")
 public class LocationDataManagerTest {
     
     private static final DateFormat s_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
