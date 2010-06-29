@@ -109,8 +109,10 @@ public class Migrator {
     
     public void validateDatabaseVersion() throws MigrationException {
         if (!m_validateDatabaseVersion) {
+            log().info("skipping database version validation");
             return;
         }
+        log().info("validating database version");
 
         Float dbv = getDatabaseVersion();
         if (dbv == null) {
@@ -128,6 +130,7 @@ public class Migrator {
     }
 
     public void createLangPlPgsql() throws MigrationException {
+        log().info("adding PL/PgSQL support to the database, if necessary");
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -185,6 +188,7 @@ public class Migrator {
             return;
         }
 
+        log().info("creating OpenNMS user, if necessary");
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -227,6 +231,7 @@ public class Migrator {
         if (!m_createDatabase || databaseExists(migration)) {
             return;
         }
+        log().info("creating OpenNMS database, if necessary");
         if (!databaseUserExists(migration)) {
             throw new MigrationException(String.format("database will not be created: unable to grant access (user %s does not exist)", migration.getDatabaseUser()));
         }
@@ -247,13 +252,9 @@ public class Migrator {
     }
 
     public void prepareDatabase(Migration migration) throws MigrationException {
-        log().info("validating database version");
         validateDatabaseVersion();
-        log().info("adding PL/PgSQL support to the database, if necessary");
         createLangPlPgsql();
-        log().info("creating OpenNMS user, if necessary");
         createUser(migration);
-        log().info("creating OpenNMS database, if necessary");
         createDatabase(migration);
     }
 
