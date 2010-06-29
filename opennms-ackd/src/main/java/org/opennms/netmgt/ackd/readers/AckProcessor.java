@@ -35,7 +35,6 @@
  */
 package org.opennms.netmgt.ackd.readers;
 
-import org.opennms.core.utils.LogUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 /**

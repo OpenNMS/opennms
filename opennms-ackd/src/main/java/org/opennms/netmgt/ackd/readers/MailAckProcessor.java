@@ -51,7 +51,6 @@ import javax.mail.MessagingException;
 import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.javamail.JavaMailerException;
@@ -64,7 +63,6 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.acknowledgments.AckService;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * This class uses the JavaMail API to connect to a mail store and retrieve messages, using
@@ -247,9 +245,7 @@ class MailAckProcessor implements AckProcessor {
     protected List<Message> retrieveAckMessages() throws JavaMailerException {
         log().debug("retrieveAckMessages: Retrieving messages...");
         
-        
         ReadmailConfig readMailConfig = determineMailReaderConfig();
-        
         
         log().debug("retrieveAckMessages: creating JavaReadMailer with config: " +
         		"host: " + readMailConfig.getReadmailHost().getHost() + 
@@ -327,7 +323,7 @@ class MailAckProcessor implements AckProcessor {
             findAndProcessAcks();
             log().info("run: Finished processing mail acknowledgments." );
         } catch (Exception e) {
-            log().debug("run: threw exception: "+e);
+            log().debug("run: threw exception: "+e, e);
         } finally {
             log().debug("run: method completed.");
         }
@@ -335,6 +331,9 @@ class MailAckProcessor implements AckProcessor {
     }
     
     public ReadmailConfig determineMailReaderConfig() {
+    	
+    	log().info("determineMailReaderConfig: determining mail reader configuration...");
+    	
         List<Parameter> parms = m_ackdDao.getParametersForReader("JavaMailReader");
         ReadmailConfig config = m_jmConfigDao.getDefaultReadmailConfig();
         
@@ -344,6 +343,7 @@ class MailAckProcessor implements AckProcessor {
             }
         }
         
+    	log().info("determinedMailReaderConfig: "+config);
         return config;
     }
     

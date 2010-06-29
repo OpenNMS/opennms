@@ -168,7 +168,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private EventBuilder createEventBuilder(final OnmsLocationMonitor mon, final String uei) {
         final EventBuilder eventBuilder = new EventBuilder(uei, "PollerBackEnd")
-            .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, mon.getId());
+            .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, mon.getId())
+            .addParam(EventConstants.PARM_LOCATION, mon.getDefinitionName());
         return eventBuilder;
     }
 

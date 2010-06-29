@@ -85,14 +85,17 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      */
     public LocationMonitorDaoHibernate() {
         super(OnmsLocationMonitor.class);
-        if (m_monitoringLocationConfigResource != null) {
-            initializeConfigurations();
-        }
     }
-    
-    public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
-        assertPropertiesSet();
 
+    @Override
+    protected void initDao() throws Exception {
+        assertPropertiesSet();
+        initializeConfigurations();
+    }
+
+
+
+    public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
         final Locations locations = m_monitoringLocationsConfiguration.getLocations();
         if (locations != null) {
             final List<LocationDef> locationDefCollection = locations.getLocationDefCollection();
@@ -252,7 +255,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     
     public Collection<OnmsMonitoringLocationDefinition> findAllLocationDefinitions() {
-        assertPropertiesSet();
         final List<OnmsMonitoringLocationDefinition> eDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
         for (final LocationDef def : m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection()) {
             eDefs.add(createEntityDef(def));
@@ -309,7 +311,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         if (monitoringLocationDefinitionName == null) {
             throw new IllegalArgumentException("monitoringLocationDefinitionName must not be null");
         }
-        assertPropertiesSet();
         final LocationDef locationDef = getLocationDef(monitoringLocationDefinitionName);
         if (locationDef == null) {
             return null;
@@ -336,15 +337,29 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         getHibernateTemplate().save(statusChange);
     }
 
+    /**
+     * Returns the location monitors which have reported on services belonging to the provided application
+     */
     public Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application) {
-    	final Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
-    	for (final OnmsLocationSpecificStatus status : getAllMostRecentStatusChanges()) {
-    		if (status.getMonitoredService().getApplications() != null
-    				&& status.getMonitoredService().getApplications().contains(application)) {
-    			monitors.add(status.getLocationMonitor());
-    		}
-    	}
-    	return monitors;
+        
+        return findObjects(OnmsLocationMonitor.class, "select distinct l from OnmsLocationSpecificStatus as status " +
+        		"join status.monitoredService as m " +
+        		"join m.applications a " +
+        		"join status.locationMonitor as l " +
+        		"where a = ? and status.id in ( " +
+                    "select max(s.id) from OnmsLocationSpecificStatus as s " +
+                    "group by s.locationMonitor, s.monitoredService " +
+                ")", application);
+
+        
+//    	final Collection<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+//    	for (final OnmsLocationSpecificStatus status : getAllMostRecentStatusChanges()) {
+//    		if (status.getMonitoredService().getApplications() != null
+//    				&& status.getMonitoredService().getApplications().contains(application)) {
+//    			monitors.add(status.getLocationMonitor());
+//    		}
+//    	}
+//    	return monitors;
     }
     
     public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocationDefinition locationDefinition) {
@@ -361,6 +376,10 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         //(select max(id) from location_specific_status_changes group by locationmonitorid, ifserviceid) order by statustime;
         return findObjects(OnmsLocationSpecificStatus.class,
                 "from OnmsLocationSpecificStatus as status " +
+                "left join fetch status.locationMonitor as l " +
+                "left join fetch status.monitoredService as m " +
+                "left join fetch m.serviceType " +
+                "left join fetch m.ipInterface " +
                 "where status.id in (" +
                     "select max(s.id) from OnmsLocationSpecificStatus as s " +
                     "where s.pollResult.timestamp <? " +
@@ -414,6 +433,30 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         ));
         return statuses;
     }
+    
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName) {
+
+        return findObjects(OnmsLocationSpecificStatus.class, 
+                "from OnmsLocationSpecificStatus as status " +
+                "left join fetch status.monitoredService as m " +
+                "left join fetch m.applications as a " +
+                "left join fetch status.locationMonitor as lm " +
+                "where " +
+                "a.name = ? " +
+                "and " +
+                "( status.pollResult.timestamp between ? and ?" +
+                "  or" +
+                "  status.id in " +
+                "   (" +
+                "       select max(s.id) from OnmsLocationSpecificStatus as s " +
+                "       where s.pollResult.timestamp < ? " +
+                "       group by s.locationMonitor, s.monitoredService " +
+                "   )" +
+                ")",
+                applicationName, startDate, endDate, startDate);
+        
+    }
+
 
     public Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(final String locationName) {
         return getMostRecentStatusChangesForDateAndLocation(new Date(), locationName);
@@ -422,6 +465,10 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     private Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForDateAndLocation(final Date date, final String locationName) {
         return findObjects(OnmsLocationSpecificStatus.class,
                            "from OnmsLocationSpecificStatus as status " +
+                           "left join fetch status.locationMonitor as l " +
+                           "left join fetch status.monitoredService as m " +
+                           "left join fetch m.serviceType " +
+                           "left join fetch m.ipInterface " +
                            "where status.pollResult.timestamp = ( " +
                            "    select max(recentStatus.pollResult.timestamp) " +
                            "    from OnmsLocationSpecificStatus as recentStatus " +
@@ -429,13 +476,13 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                            "    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
                            "    having recentStatus.locationMonitor = status.locationMonitor " +
                            "    and recentStatus.monitoredService = status.monitoredService " +
-                           ") and status.locationMonitor.definitionName = ?",
+                           ") and l.definitionName = ?",
                            date, locationName); 
     }
 
-    @SuppressWarnings("unchecked")
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
-    	final List l = getHibernateTemplate().find(
+    	@SuppressWarnings("rawtypes")
+		final List l = getHibernateTemplate().find(
                         "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
                         "where status.monitoredService.ipInterface.node.id = ?",
                         nodeId

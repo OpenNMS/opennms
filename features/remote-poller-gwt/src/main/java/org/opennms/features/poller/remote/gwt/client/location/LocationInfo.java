@@ -18,7 +18,6 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	private static final long serialVersionUID = 1L;
 
 	private String m_name;
-	private String m_pollingPackage;
 	private String m_area;
 	private String m_geolocation;
 	private String m_coordinates;
@@ -30,19 +29,18 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	public LocationInfo() {}
 
 	public LocationInfo(final LocationInfo info) {
-		this(info.getName(), info.getPollingPackageName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getPriority(), info.getMarkerState(), info.getStatusDetails(), info.getTags());
+		this(info.getName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getPriority(), info.getMarkerState(), info.getStatusDetails(), info.getTags());
 	}
 
-	public LocationInfo(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates, final Long priority, final GWTMarkerState marker, final StatusDetails statusDetails, final Set<String> tags) {
+	public LocationInfo(final String name, final String area, final String geolocation, final String coordinates, final Long priority, final GWTMarkerState marker, final StatusDetails statusDetails, final Set<String> tags) {
 		setName(name);
-		setPollingPackageName(pollingPackageName);
 		setArea(area);
 		setGeolocation(geolocation);
 		setCoordinates(coordinates);
 		setPriority(priority);
-		setTags(tags);
 		setMarkerState(marker);
 		setStatusDetails(statusDetails);
+        setTags(tags);
 	}
 
 	public String getName() {
@@ -51,14 +49,6 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 
 	public void setName(final String name) {
 		m_name = name;
-	}
-
-	public String getPollingPackageName() {
-		return m_pollingPackage;
-	}
-
-	public void setPollingPackageName(final String pollingPackageName) {
-		m_pollingPackage = pollingPackageName;
 	}
 
 	public String getArea() {
@@ -154,7 +144,6 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 
 	public String toString() {
 		return "LocationInfo[name=" + m_name
-			+ ",polling package=" + m_pollingPackage
 			+ ",area=" + m_area
 			+ ",geolocation=" + m_geolocation
 			+ ",coordinates=" + m_coordinates

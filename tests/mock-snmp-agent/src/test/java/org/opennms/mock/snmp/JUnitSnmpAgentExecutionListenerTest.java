@@ -109,7 +109,7 @@ public class JUnitSnmpAgentExecutionListenerTest implements MockSnmpAgentAware {
      * @return
      * @throws IOException 
      */
-    private Variable get(InetAddress localhost, int port, OID oid) throws Exception {
+    private Variable get(InetAddress localhost, int port, OID oid) throws Exception, IOException, TimeoutException {
 
         TransportMapping transport = new DefaultUdpTransportMapping();
         Snmp session = new Snmp(transport);
@@ -131,7 +131,7 @@ public class JUnitSnmpAgentExecutionListenerTest implements MockSnmpAgentAware {
             if (e.getError() != null) { 
                 throw e.getError();
             } else {
-                throw new TimeoutException("Snmp Timed out to "+target);
+                throw new TimeoutException("SNMP timed out to "+target);
             }
 
         }

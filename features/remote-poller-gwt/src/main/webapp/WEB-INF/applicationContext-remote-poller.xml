@@ -37,6 +37,10 @@
 
   <bean id="locationDataService" class="org.opennms.features.poller.remote.gwt.server.DefaultLocationDataService" />
 
+  <bean id="locationDataManager" class="org.opennms.features.poller.remote.gwt.server.LocationDataManager">
+    <property name="locationDataService" ref="locationDataService" />
+  </bean>
+
   <bean id="locationBroadcastProcessor" class="org.opennms.features.poller.remote.gwt.server.LocationBroadcastProcessor" />
 
   <!--

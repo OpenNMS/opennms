@@ -65,6 +65,7 @@
 
 		<service name="WMI" interval="300000" user-defined="false" status="off">
 			<parameter key="collection" value="default"/>
+			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 
 		<service name="XMP" interval="300000" user-defined="false" status="on">
@@ -82,6 +83,7 @@
 			<parameter key="ds-name" value="opennms-jvm"/>
 			<parameter key="friendly-name" value="opennms-jvm"/>
 			<parameter key="collection" value="jsr160"/>
+			<parameter key="thresholding-enabled" value="true"/>
 		</service>
 		
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>

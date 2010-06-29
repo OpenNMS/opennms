@@ -95,11 +95,15 @@
 
     //required attributes
     Event[] events = (Event[])req.getAttribute( "events" );
+    Integer eventCount = (Integer)req.getAttribute( "eventCount" );
     EventQueryParms parms = (EventQueryParms)req.getAttribute( "parms" );
 
     if( events == null || parms == null ) {
         throw new ServletException( "Missing either the events or parms request attribute." );
     }
+    if (eventCount == null) {
+	    eventCount = Integer.valueOf(-1);
+	}
 
     String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
     if (parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
@@ -209,9 +213,17 @@
       
       <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
         <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
-        <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
+          <% if ( eventCount == -1 ) { %>
+            <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
+          <% } else { %>
+            <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
+          <% } %>
         <% } else { %>
-        <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a></li>
+          <% if ( eventCount == -1 ) { %>
+            <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a></li>
+          <% } else { %>
+            <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a></li>
+          <% } %>
         <% } %>
       <% } %>
       </ul>
@@ -236,12 +248,21 @@
           
             <% if( events.length > 0 ) { %>
               <% String baseUrl = this.makeLink(parms); %>
-              <jsp:include page="/includes/resultsIndexNoCount.jsp" flush="false" >
-                <jsp:param name="itemCount"    value="<%=events.length%>" />
-                <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
-                <jsp:param name="limit"    value="<%=parms.limit%>"      />
-                <jsp:param name="multiple" value="<%=parms.multiple%>"   />
-              </jsp:include>
+              <% if ( eventCount == -1 ) { %>
+                <jsp:include page="/includes/resultsIndexNoCount.jsp" flush="false" >
+                  <jsp:param name="itemCount"    value="<%=events.length%>" />
+                  <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+                  <jsp:param name="limit"    value="<%=parms.limit%>"      />
+                  <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+                </jsp:include>
+              <% } else { %>
+                <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+                  <jsp:param name="count"    value="<%=eventCount%>" />
+                  <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+                  <jsp:param name="limit"    value="<%=parms.limit%>"      />
+                  <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+                </jsp:include>
+              <% } %>
             <% } %>          
 
 
@@ -286,7 +307,6 @@
           <th width="25%"><%=this.makeSortLink( parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
           <th width="16%"><%=this.makeSortLink( parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
           <th width="15%"><%=this.makeSortLink( parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
-          <th width="10%">Ackd</th>
         </tr>
         </thead>     
       <% for( int i=0; i < events.length; i++ ) {
@@ -374,20 +394,7 @@
               &nbsp;
             <% } %>
           </td>
-          <td class="divider">
-            <% if (events[i].isAcknowledged()) { %>
-              <% Filter acknByFilter = new AcknowledgedByFilter(events[i].getAcknowledgeUser()); %>      
-              <%=events[i].getAcknowledgeUser()%>
-              <% if( !parms.filters.contains( acknByFilter )) { %>
-                <nobr>
-                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only events with this acknowledged by user">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(events[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show events acknowledgd by this user">${addNegativeFilter}</a>
-                </nobr>
-              <% } %>              
-            <% } else { %>
-              &nbsp;
-            <% } %>
-          </td>
+          
         </tr>
         
         <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
@@ -404,13 +411,6 @@
               <% if (req.isUserInRole(Authentication.ADMIN_ROLE)) { %>
                	  <a href="javascript: void submitNewNotificationForm('<%=events[i].getUei()%>');" title="Edit notifications for this Event UEI">Edit notifications for event</a>
               <% } %>
-            <% } else { %>
-              &nbsp;
-            <% } %>
-          </td>
-          <td valign="top">
-            <% if (events[i].isAcknowledged()) { %>
-	      <fmt:formatDate value="${event.acknowledgeTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.acknowledgeTime}" type="time" pattern="HH:mm:ss"/>
             <% } else { %>
               &nbsp;
             <% } %>
@@ -440,6 +440,25 @@
           <% } %>
         </p>
       </form>
+
+            <% if( events.length > 0 ) { %>
+              <% String baseUrl = this.makeLink(parms); %>
+              <% if ( eventCount == -1 ) { %>
+                <jsp:include page="/includes/resultsIndexNoCount.jsp" flush="false" >
+                  <jsp:param name="itemCount"    value="<%=events.length%>" />
+                  <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+                  <jsp:param name="limit"    value="<%=parms.limit%>"      />
+                  <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+                </jsp:include>
+              <% } else { %>
+                <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+                  <jsp:param name="count"    value="<%=eventCount%>" />
+                  <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+                  <jsp:param name="limit"    value="<%=parms.limit%>"      />
+                  <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+                </jsp:include>
+              <% } %>
+            <% } %>          
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 

@@ -158,9 +158,9 @@
         <mename>specific</mename>
         <mevalue>38</mevalue>
       </maskelement>
-      <varbind textual-convention="MacAddress">
+      <varbind>
         <vbnumber>1</vbnumber>
-        <vbvalue>00:14:f1:ad:a7:50</vbvalue>
+        <vbvalue>00:14:F1:AD:A7:50</vbvalue>
       </varbind>
     </mask>
     <uei>

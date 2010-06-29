@@ -83,6 +83,7 @@ public class TemporaryDatabase implements DataSource {
     private final String m_url;
     private final String m_adminUser;
     private final String m_adminPassword;
+    private final boolean m_useExisting;
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
@@ -104,20 +105,29 @@ public class TemporaryDatabase implements DataSource {
     }
 
     public TemporaryDatabase(String testDatabase) throws Exception {
-        this(testDatabase, System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
-                System.getProperty(URL_PROPERTY, DEFAULT_URL),
-                System.getProperty(ADMIN_USER_PROPERTY, DEFAULT_ADMIN_USER),
-                System.getProperty(ADMIN_PASSWORD_PROPERTY, DEFAULT_ADMIN_PASSWORD));
+        this(testDatabase, false);
     }
 
+    public TemporaryDatabase(String testDatabase, boolean useExisting) throws Exception {
+        this(testDatabase, System.getProperty(DRIVER_PROPERTY, DEFAULT_DRIVER),
+             System.getProperty(URL_PROPERTY, DEFAULT_URL),
+             System.getProperty(ADMIN_USER_PROPERTY, DEFAULT_ADMIN_USER),
+             System.getProperty(ADMIN_PASSWORD_PROPERTY, DEFAULT_ADMIN_PASSWORD), useExisting);
+    }
+    
     public TemporaryDatabase(String testDatabase, String driver, String url,
-                             String adminUser, String adminPassword) throws Exception {
+            String adminUser, String adminPassword) throws Exception {
+        this(testDatabase, driver, url, adminUser, adminPassword, false);
+    }
+
+        public TemporaryDatabase(String testDatabase, String driver, String url,
+                             String adminUser, String adminPassword, boolean useExisting) throws Exception {
         m_testDatabase = testDatabase;
         m_driver = driver;
         m_url = url;
         m_adminUser = adminUser;
         m_adminPassword = adminPassword;
-
+        m_useExisting = useExisting;
     }
 
     public void setPopulateSchema(boolean populateSchema) {
@@ -273,7 +283,9 @@ public class TemporaryDatabase implements DataSource {
         setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1",
                 m_adminUser, m_adminPassword));
 
-        createTestDatabase();
+        if (!m_useExisting) {
+            createTestDatabase();
+        }
 
         // Test connecting to test database.
         Connection connection = getConnection();
@@ -313,10 +325,15 @@ public class TemporaryDatabase implements DataSource {
     }
 
     public void drop() throws Exception {
-        destroyTestDatabase();
+        if (!m_useExisting) {
+            destroyTestDatabase();
+        }
     }
 
     private void destroyTestDatabase() throws Exception {
+        if (m_useExisting) {
+            return;
+        }
 
         if (m_destroyed) {
             System.err.println("Database '" + getTestDatabase() + "' already destroyed");

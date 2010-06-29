@@ -26,7 +26,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
 public class Migrator {
-    public static final float POSTGRES_MIN_VERSION = 7.3f;
+    public static final float POSTGRES_MIN_VERSION = 7.4f;
     public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.1f;
 
     private DataSource m_dataSource;
@@ -136,7 +136,7 @@ public class Migrator {
             st = c.createStatement();
             rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
             if (!rs.next()) {
-                st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c'");
+                st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql' LANGUAGE 'c'");
             }
 
             rs = st.executeQuery("SELECT pg_language.oid "

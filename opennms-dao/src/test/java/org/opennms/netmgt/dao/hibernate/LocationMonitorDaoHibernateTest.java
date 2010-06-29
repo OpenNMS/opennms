@@ -55,14 +55,20 @@ import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class LocationMonitorDaoHibernateTest extends AbstractTransactionalDaoTestCase {
 
     public void testInitialize() {
         // do nothing, just test that setUp() / tearDown() works
     }
+
+    @SuppressWarnings("deprecation")
+    public JdbcTemplate _getJdbcTemplate() {
+    	return getJdbcTemplate();
+    }
     
-    public void testSaveLocationMonitor() {
+	public void testSaveLocationMonitor() {
     	Map <String, String> pollerDetails = new HashMap<String, String>();
     	pollerDetails.put("os.name", "BogOS");
     	pollerDetails.put("os.version", "sqrt(-1)");
@@ -79,7 +85,7 @@ public class LocationMonitorDaoHibernateTest extends AbstractTransactionalDaoTes
     	getLocationMonitorDao().clear();
 
         Object[] args = { mon.getId() };
-    	assertEquals(2, getJdbcTemplate().queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", args));
+    	assertEquals(2, _getJdbcTemplate().queryForInt("select count(*) from location_monitor_details where locationMonitorId = ?", args));
     	
     	OnmsLocationMonitor mon2 = getLocationMonitorDao().get(mon.getId());
     	assertNotSame(mon, mon2);
@@ -114,40 +120,7 @@ public class LocationMonitorDaoHibernateTest extends AbstractTransactionalDaoTes
         }
         ta.verifyAnticipated();
     }
-    
-    public void testFindAllLocationDefinitionsPropsNotSet() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException(ThrowableAnticipator.IGNORE_MESSAGE));
-        try {
-        	new LocationMonitorDaoHibernate().findAllLocationDefinitions();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
-    
-    public void testFindAllMonitoringLocationDefinitionsPropsNotSet() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException(ThrowableAnticipator.IGNORE_MESSAGE));
-        try {
-        	new LocationMonitorDaoHibernate().findAllMonitoringLocationDefinitions();
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
-    
-    public void testFindMonitoringLocationDefinitionPropsNotSet() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException(ThrowableAnticipator.IGNORE_MESSAGE));
-        try {
-        	new LocationMonitorDaoHibernate().findMonitoringLocationDefinition("test");
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
-    
+
     public void testFindMonitoringLocationDefinitionNull() throws FileNotFoundException {
         getLocationMonitorDao().setMonitoringLocationConfigResource(new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile("monitoring-locations.xml")));
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -166,7 +139,7 @@ public class LocationMonitorDaoHibernateTest extends AbstractTransactionalDaoTes
                    + "should have returned null",
                    getLocationMonitorDao().findMonitoringLocationDefinition("bogus"));
     }
-
+    
     public void testFindStatusChangesForNodeForUniqueMonitorAndInterface() throws InterruptedException {
         OnmsLocationMonitor monitor1 = new OnmsLocationMonitor();
         monitor1.setDefinitionName("Outer Space");

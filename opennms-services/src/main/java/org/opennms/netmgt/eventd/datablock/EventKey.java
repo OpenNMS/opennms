@@ -303,7 +303,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      *  this uses both the names and their values in calculating the hashcode
      * 
      */
-    public void evaluateHashCode() {
+    private void evaluateHashCode() {
         m_hashCode = 0;
 
         if (isEmpty()) {

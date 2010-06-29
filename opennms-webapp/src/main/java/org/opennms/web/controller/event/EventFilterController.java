@@ -79,7 +79,12 @@ public class EventFilterController extends AbstractController implements Initial
 
     private WebEventRepository m_webEventRepository;
     
+    private boolean m_showEventCount = false;
 
+    public EventFilterController() {
+        super();
+        m_showEventCount = Boolean.getBoolean("opennms.eventlist.showCount");
+    }
 
     /**
      * Parses the query string to determine what types of event filters to use
@@ -175,6 +180,14 @@ public class EventFilterController extends AbstractController implements Initial
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("events", events);
         modelAndView.addObject("parms", parms);
+        
+        if (m_showEventCount) {
+            EventCriteria countCriteria = new EventCriteria(ackType, filters);
+            modelAndView.addObject("eventCount", m_webEventRepository.countMatchingEvents(countCriteria));
+        } else {
+            modelAndView.addObject("eventCount", Integer.valueOf(-1));
+        }
+
         return modelAndView;
 
     }
