@@ -142,7 +142,7 @@ public class BroadcastEventProcessor implements EventListener {
                 }
             }
         
-        //Depreciating this one...
+        // Deprecating this one...
         } else if (EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI.equals(event.getUei())) {
             isTarget = true;
         }

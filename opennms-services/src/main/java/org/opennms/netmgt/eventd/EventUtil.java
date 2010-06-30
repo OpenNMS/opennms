@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -322,11 +322,17 @@ public final class EventUtil {
 
 		String result = "";
 		String encoding = pvalue.getEncoding();
-		if (encoding.equals("text")) {
+		if (encoding.equals(EventConstants.XML_ENCODING_TEXT)) {
 			result = pvalue.getContent();
-		} else if (encoding.equals("base64")) {
+		} else if (encoding.equals(EventConstants.XML_ENCODING_BASE64)) {
+			// This probably doesn't work; not all binary data will be convertible into
+			// a valid String value.
 			result = new String(Base64.decodeBase64(pvalue.getContent().toCharArray()));
-        }
+		} else if (encoding.equals(EventConstants.XML_ENCODING_MAC_ADDRESS)) {
+			result = pvalue.getContent();
+		} else {
+			throw new IllegalStateException("Unknown encoding for parm value: " + encoding);
+		}
 		
 		return result.trim();
 	}
@@ -422,7 +428,7 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_TIME)) {
 			String eventTime = event.getTime(); //This will be in GMT
 			try {
-				Date actualDate = EventConstants.parseToDate(eventTime);
+				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL,
 						DateFormat.FULL);
 				retParmVal = df.format(actualDate);

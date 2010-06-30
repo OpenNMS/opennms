@@ -73,8 +73,11 @@ public class EventConstants extends Object {
     public final static String XML_ENCODING_TEXT = "text";
 
     public final static String XML_ENCODING_BASE64 = "base64";
-    
+
+    public static final String XML_ENCODING_MAC_ADDRESS = "macAddress";
+
     public final static SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
+
 
     /** Empty, private constructor so this object cannot be instantiated. */
     private EventConstants() {
@@ -115,6 +118,17 @@ public class EventConstants extends Object {
             else if (value instanceof SnmpValue) {
                 SnmpValue snmpValue = (SnmpValue)value;
                 result = new String(Base64.encodeBase64(snmpValue.getBytes()));
+            }
+        } else if (XML_ENCODING_MAC_ADDRESS.equals(encoding)) {
+            if (value instanceof SnmpValue) {
+                SnmpValue snmpValue = (SnmpValue)value;
+                StringBuffer macAddress = new StringBuffer();
+                byte[] bytes = snmpValue.getBytes();
+                for (int i = 0; i < bytes.length; i++) {
+                    if (i > 0) macAddress.append(":");
+                    macAddress.append(String.format("%02X", bytes[i]));
+                }
+                result = macAddress.toString();
             }
         }
         
