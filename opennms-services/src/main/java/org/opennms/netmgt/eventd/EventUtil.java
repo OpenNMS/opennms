@@ -57,8 +57,8 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -106,6 +106,13 @@ public final class EventUtil {
 	 * The event time xml tag
 	 */
 	static final String TAG_TIME = "time";
+	
+	/**
+	 * The event time xml tag, short format
+	 */
+	static final String TAG_SHORT_TIME = "shorttime";
+
+	/**
 
 	/**
 	 * The event dpname xml tag
@@ -432,8 +439,24 @@ public final class EventUtil {
 
 				//Give up and just use the original string - don't bother with
 				// messing around
+				retParmVal = eventTime;	
+			} 
+		} else if (parm.equals(TAG_SHORT_TIME)) {
+			String eventTime = event.getTime(); //This will be in GMT
+			try {
+				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
+								DateFormat.SHORT);
+				retParmVal = df.format(actualDate);
+			} catch (java.text.ParseException e) {
+				ThreadCategory log = ThreadCategory.getInstance();
+				log.error("could not parse event date \"" + eventTime + "\": ",
+				        e);
+				
+				//Give up and just use the original string - don't bother with
+				// messing around
 				retParmVal = eventTime;
-			}
+				}
 		} else if (parm.equals(TAG_HOST)) {
 			retParmVal = event.getHost();
 		} else if (parm.equals(TAG_INTERFACE)) {

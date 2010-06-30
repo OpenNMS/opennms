@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DhcpdConfigFactory;
@@ -193,6 +195,12 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
             }
             m_server = new ServerSocket(dFactory.getPort(), 0, InetAddress.getByName("127.0.0.1"));
         } catch (IOException ex) {
+            if (ex instanceof java.net.BindException) {
+                managerLog().error("Failed to listen on DHCP port, perhaps something else is already listening?", ex);
+                log().error("Failed to listen on DHCP port, perhaps something else is already listening?", ex);
+            } else {
+                log().error("Failed to initialize DHCP socket", ex);
+            }
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -408,4 +416,9 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     protected void onInit() {
     	
     }
+
+    private Category managerLog() {
+        return Logger.getLogger("OpenNMS.Manager");
+    }
+
 }
