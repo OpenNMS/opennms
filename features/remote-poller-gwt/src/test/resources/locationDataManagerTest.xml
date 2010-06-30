@@ -17,7 +17,7 @@
   <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
 
   <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="classpath:pj-monitoring-locations.xml" />
+    <constructor-arg value="classpath:monitoring-locations.xml" />
   </bean>
 
 <!-- 
