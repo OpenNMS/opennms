@@ -35,36 +35,111 @@
 //
 package org.opennms.netmgt.trapd;
 
-import junit.framework.TestSuite;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Parm;
 
-public class SyntaxToEventTest extends OpenNMSTestCase {
-    public static TestSuite suite() {
-        return SnmpTestSuiteUtils.createSnmpStrategyTestSuite(SyntaxToEventTest.class);
-    }
-    
+public class SyntaxToEventTest {
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-    
-	public void testProcessSyntax() {
-        SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
-        assertNotNull(valueFactory);
-        byte [] macAddr = {000, 000, 000, 000, 000, 000};
+	@Before
+	public void setUp() throws Exception {
+	}
 
-        SnmpValue octetString = valueFactory.getOctetString(macAddr);
-        
+	@Test
+	public void testProcessSyntaxZeros() {
+		SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+		assertNotNull(valueFactory);
+		byte [] macAddr = {000, 000, 000, 000, 000, 000};
+
+		SnmpValue octetString = valueFactory.getOctetString(macAddr);
+
 		Parm parm = SyntaxToEvent.processSyntax("Test",octetString);
 
 		assertEquals("Test", parm.getParmName());
-		assertEquals("......", parm.getValue().getContent());	
+		assertEquals("00:00:00:00:00:00", parm.getValue().getContent());	
 	}
-	
+
+	@Test
+	public void testProcessSyntaxWithNull() {
+		SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+		assertNotNull(valueFactory);
+		byte [] macAddr = {0x00, 0x55, 0x55, 0x55, 0x55, 0x55};
+
+		SnmpValue octetString = valueFactory.getOctetString(macAddr);
+
+		Parm parm = SyntaxToEvent.processSyntax("Test",octetString);
+
+		assertEquals("Test", parm.getParmName());
+		assertEquals(EventConstants.XML_ENCODING_MAC_ADDRESS, parm.getValue().getEncoding());
+		assertEquals("00:55:55:55:55:55", parm.getValue().getContent());	
+	}
+
+	/**
+	 * We are allowing NULL in the last position of the string in case there
+	 * are any SNMP agents sending OctetString values in this format.
+	 * 
+	 * @see SnmpUtils#allBytesDisplayable()
+	 */
+	@Test
+	public void testProcessSyntaxWithTerminatingNull() {
+		SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+		assertNotNull(valueFactory);
+		byte [] macAddr = {0x55, 0x55, 0x55, 0x55, 0x55, 0x00};
+
+		SnmpValue octetString = valueFactory.getOctetString(macAddr);
+
+		Parm parm = SyntaxToEvent.processSyntax("Test",octetString);
+
+		assertEquals("Test", parm.getParmName());
+		assertEquals(EventConstants.XML_ENCODING_TEXT, parm.getValue().getEncoding());
+		// I'm not sure what is converting the NULL char to a "."...
+		assertEquals("UUUUU.", parm.getValue().getContent());	
+	}
+
+	@Test
+	public void testProcessSyntaxForMacAddresses() {
+		SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+		assertNotNull(valueFactory);
+		byte [] macAddr = {001, 002, 003, 004, 005, 006};
+
+		SnmpValue octetString = valueFactory.getOctetString(macAddr);
+
+		Parm parm = SyntaxToEvent.processSyntax("testMacAddress",octetString);
+
+		assertEquals("testMacAddress", parm.getParmName());
+		assertEquals(EventConstants.XML_ENCODING_MAC_ADDRESS, parm.getValue().getEncoding());
+		assertEquals("01:02:03:04:05:06", parm.getValue().getContent());
+
+		macAddr = new byte[] { (byte) 0x80, (byte) 0x81, (byte) 0x8C, (byte) 0x8F, (byte) 0xFF, (byte) 0x05 };
+
+		octetString = valueFactory.getOctetString(macAddr);
+
+		parm = SyntaxToEvent.processSyntax("testMacAddress",octetString);
+
+		assertEquals("testMacAddress", parm.getParmName());
+		assertEquals(EventConstants.XML_ENCODING_MAC_ADDRESS, parm.getValue().getEncoding());
+		assertEquals("80:81:8C:8F:FF:05", parm.getValue().getContent());
+
+		macAddr = new byte[] { 0101, 0101, 0101, 0101, 0101, 0101 };
+
+		octetString = valueFactory.getOctetString(macAddr);
+
+		parm = SyntaxToEvent.processSyntax("otherDataType",octetString);
+
+		assertEquals("otherDataType", parm.getParmName());
+		assertEquals(EventConstants.XML_ENCODING_TEXT, parm.getValue().getEncoding());
+		assertEquals("AAAAAA", parm.getValue().getContent());
+
+		parm = SyntaxToEvent.processSyntax("testMacAddress",octetString);
+
+		assertEquals("testMacAddress", parm.getParmName());
+		assertEquals(EventConstants.XML_ENCODING_MAC_ADDRESS, parm.getValue().getEncoding());
+		assertEquals("41:41:41:41:41:41", parm.getValue().getContent());
+	}
 }
