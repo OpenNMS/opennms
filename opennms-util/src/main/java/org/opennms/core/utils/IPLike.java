@@ -1,10 +1,23 @@
 package org.opennms.core.utils;
 
+/**
+ * <p>IPLike class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class IPLike {
 
    private IPLike() {
    }
 
+   /**
+    * <p>matches</p>
+    *
+    * @param address a {@link java.lang.String} object.
+    * @param pattern a {@link java.lang.String} object.
+    * @return a boolean.
+    */
    public static boolean matches(String address, String pattern) {
        String hostOctets[] = address.split("\\.", 0);
        String matchOctets[] = pattern.split("\\.", 0);
@@ -16,17 +29,17 @@ public class IPLike {
        return true;
    }
    
-   /**
-    * Use this method to match ranges, lists, and specific number strings
-    * such as:
-    * "200-300" or "200,300,501-700"
-    * "*" matches any
-    * This method is commonly used for matching IP octets or ports
-    * 
-    * @param value
-    * @param patterns
-    * @return
-    */
+    /**
+     * Use this method to match ranges, lists, and specific number strings
+     * such as:
+     * "200-300" or "200,300,501-700"
+     * "*" matches any
+     * This method is commonly used for matching IP octets or ports
+     *
+     * @param value a {@link java.lang.String} object.
+     * @param patterns a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public static boolean matchNumericListOrRange(String value, String patterns) {
         
         String patternList[] = patterns.split(",", 0);
@@ -38,12 +51,13 @@ public class IPLike {
         return false;
     }
 
-    /**
-     * Helper method in support of matchNumericListOrRange
-     * @param value
-     * @param pattern
-     * @return
-     */
+     /**
+      * Helper method in support of matchNumericListOrRange
+      *
+      * @param value a {@link java.lang.String} object.
+      * @param pattern a {@link java.lang.String} object.
+      * @return a boolean.
+      */
      public static boolean matchRange(String value, String pattern) {
          int dashCount = countChar('-', pattern);
          
@@ -63,6 +77,13 @@ public class IPLike {
          return false;
      }
 
+     /**
+      * <p>countChar</p>
+      *
+      * @param charIn a char.
+      * @param stingIn a {@link java.lang.String} object.
+      * @return a int.
+      */
      public static int countChar(char charIn, String stingIn) {
          
          int charCount = 0;

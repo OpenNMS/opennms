@@ -71,14 +71,16 @@ import org.opennms.protocols.ip.IPv4Address;
  * {@link org.opennms.protocols.ami.AmiAgentConfig AmiAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public class AmiPeerFactory extends PeerFactory {
     /**
@@ -118,13 +120,16 @@ public class AmiPeerFactory extends PeerFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -148,13 +153,16 @@ public class AmiPeerFactory extends PeerFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -166,7 +174,7 @@ public class AmiPeerFactory extends PeerFactory {
     /**
      * Saves the current settings to disk
      *
-     * @throws Exception if saving settings to disk fails.
+     * @throws java.lang.Exception if saving settings to disk fails.
      */
     public static synchronized void saveCurrent() throws Exception {
         optimize();
@@ -337,9 +345,8 @@ public class AmiPeerFactory extends PeerFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -350,6 +357,11 @@ public class AmiPeerFactory extends PeerFactory {
         return m_singleton;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param singleton a {@link org.opennms.netmgt.config.AmiPeerFactory} object.
+     */
     public static synchronized void setInstance(AmiPeerFactory singleton) {
         m_singleton = singleton;
         m_loaded = true;
@@ -359,9 +371,11 @@ public class AmiPeerFactory extends PeerFactory {
      * Puts a specific IP address with associated password into
      * the currently loaded ami-config.xml.
      *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
+     *
      * @param ip the IP address of a definition
      * @param password the password for a definition
-     * @throws UnknownHostException
+     * @throws java.net.UnknownHostException if any.
+     * @param username a {@link java.lang.String} object.
      */
     public void define(InetAddress ip, String username, String password) throws UnknownHostException {
         ThreadCategory log = log();
@@ -462,6 +476,12 @@ public class AmiPeerFactory extends PeerFactory {
         m_config.setDefinition(definitions.toArray(new Definition[0]));
     }
     
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @param agentInetAddress a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.protocols.ami.AmiAgentConfig} object.
+     */
     public synchronized AmiAgentConfig getAgentConfig(InetAddress agentInetAddress) {
 
         if (m_config == null) {
@@ -583,10 +603,20 @@ public class AmiPeerFactory extends PeerFactory {
         return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
     }
 
+    /**
+     * <p>getAmiConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.ami.AmiConfig} object.
+     */
     public static AmiConfig getAmiConfig() {
         return m_config;
     }
 
+    /**
+     * <p>setAmiConfig</p>
+     *
+     * @param m_config a {@link org.opennms.netmgt.config.ami.AmiConfig} object.
+     */
     public static synchronized void setAmiConfig(AmiConfig m_config) {
         AmiPeerFactory.m_config = m_config;
     }

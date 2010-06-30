@@ -38,12 +38,19 @@ package org.opennms.netmgt.correlation.drools;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>Impact class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class Impact extends Cause {
 
+    /**
+     * <p>Constructor for Impact.</p>
+     *
+     * @param cause a {@link java.lang.Long} object.
+     * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Impact(Long cause, Event symptom) {
         super(Type.IMPACT, cause, symptom);
     }

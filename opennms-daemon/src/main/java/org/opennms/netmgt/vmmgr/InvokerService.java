@@ -92,6 +92,11 @@ class InvokerService {
         m_service = service;
     }
 
+    /**
+     * <p>isBadService</p>
+     *
+     * @return a boolean.
+     */
     public boolean isBadService() {
         return (m_badThrowable != null);
     }

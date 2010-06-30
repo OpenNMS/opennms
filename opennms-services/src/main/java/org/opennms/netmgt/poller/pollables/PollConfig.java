@@ -40,21 +40,35 @@ import org.opennms.netmgt.scheduler.Timer;
 
 
 /**
- * Represents a PollConfig 
+ * Represents a PollConfig
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface PollConfig extends Timer {
     
+    /**
+     * <p>poll</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus poll();
 
     /**
-     * @return
+     * <p>getCurrentTime</p>
+     *
+     * @return a long.
      */
     public long getCurrentTime(); 
     
+    /**
+     * <p>refresh</p>
+     */
     public void refresh();
     
+    /**
+     * <p>refreshThresholds</p>
+     */
     public void refreshThresholds();
 
 }

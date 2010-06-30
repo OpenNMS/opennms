@@ -42,29 +42,55 @@ import org.opennms.netmgt.xml.event.EventReceipt;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+/**
+ * <p>EventIpcManagerEventHandlerProxy class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class EventIpcManagerEventHandlerProxy implements EventHandler, InitializingBean {
     private EventIpcManager m_eventIpcManager;
 
+    /**
+     * <p>Constructor for EventIpcManagerEventHandlerProxy.</p>
+     */
     public EventIpcManagerEventHandlerProxy() {
     }
 
+    /** {@inheritDoc} */
     public boolean processEvent(Event event) {
         m_eventIpcManager.sendNow(event);
         return true;
     }
 
+    /** {@inheritDoc} */
     public void receiptSent(EventReceipt event) {
         // do nothing
     }
 
+    /**
+     * <p>getEventIpcManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
     }
 
+    /**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.IllegalStateException if any.
+     */
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_eventIpcManager != null, "property eventIpcManager must be set");
     }

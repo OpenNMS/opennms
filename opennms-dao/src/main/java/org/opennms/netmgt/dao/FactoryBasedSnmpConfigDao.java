@@ -48,6 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
  * DefaultSnmpConfigDao
  *
  * @author brozow
+ * @version $Id: $
  */
 public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBean {
     
@@ -57,14 +58,25 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
         return SnmpPeerFactory.getInstance();
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         SnmpPeerFactory.init();
     }
 
+    /** {@inheritDoc} */
     public SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
         return getSnmpPeerFactory().getAgentConfig(agentAddress);
     }
     
+    /**
+     * <p>getDefaults</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpConfiguration} object.
+     */
     public SnmpConfiguration getDefaults() {
         SnmpConfig config = getSnmpConfig();
 
@@ -133,6 +145,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
     }
 
 
+    /** {@inheritDoc} */
     public void saveAsDefaults(SnmpConfiguration newDefaults) {
         SnmpConfig config = getSnmpConfig();
         
@@ -187,6 +200,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
         saveCurrent();
     }
     
+    /** {@inheritDoc} */
     public void saveOrUpdate(SnmpAgentConfig newConfig) {
         
         SnmpAgentConfig oldConfig = getAgentConfig(newConfig.getAddress());

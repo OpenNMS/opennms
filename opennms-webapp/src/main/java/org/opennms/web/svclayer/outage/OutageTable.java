@@ -82,8 +82,11 @@ import org.extremecomponents.table.limit.TableLimitFactory;
 import org.opennms.netmgt.model.OnmsOutage;
 
 /**
- * 
+ * <p>OutageTable class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class OutageTable {
 
@@ -95,6 +98,14 @@ public class OutageTable {
 
     private static final int ROW_LIMIT = 25;
 
+    /**
+     * <p>getResolvedOutageTable</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param reply a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param m_outageService a {@link org.opennms.web.svclayer.outage.OutageService} object.
+     * @return a {@link java.util.Map} object.
+     */
     public Map getResolvedOutageTable(HttpServletRequest request,
             HttpServletResponse reply, OutageService m_outageService) {
 

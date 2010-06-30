@@ -45,6 +45,12 @@ import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
 
+/**
+ * <p>Abstract AbstractSimpleServer class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 abstract public class AbstractSimpleServer {
     
     public static interface RequestMatcher{
@@ -104,26 +110,47 @@ abstract public class AbstractSimpleServer {
     private int m_timeout;
     private List<Exchange> m_conversation = new ArrayList<Exchange>();
     
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a int.
+     */
     public int getTimeout() {
         return m_timeout;
     }
     
+    /**
+     * <p>setTimeout</p>
+     *
+     * @param timeout a int.
+     */
     public void setTimeout(int timeout) {
         m_timeout = timeout;
     }
     
     /**
-     * 
+     * <p>getInetAddress</p>
+     *
      * @return InetAddress returns the inetaddress from the serversocket.
      */
     public InetAddress getInetAddress(){
         return m_serverSocket.getInetAddress();
     }
     
+    /**
+     * <p>getLocalPort</p>
+     *
+     * @return a int.
+     */
     public int getLocalPort(){
         return m_serverSocket.getLocalPort();
     }
     
+    /**
+     * <p>init</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void init() throws Exception{
         m_serverSocket = new ServerSocket();
         m_serverSocket.bind(null);
@@ -131,13 +158,27 @@ abstract public class AbstractSimpleServer {
         startServer();
     }
 
+    /**
+     * <p>onInit</p>
+     */
     public void onInit() {} 
     
+    /**
+     * <p>startServer</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void startServer() throws Exception{
         m_serverThread = new Thread(getRunnable(), this.getClass().getSimpleName());
         m_serverThread.start();
     }
     
+    /**
+     * <p>getRunnable</p>
+     *
+     * @return a {@link java.lang.Runnable} object.
+     * @throws java.lang.Exception if any.
+     */
     public Runnable getRunnable() throws Exception{
         return new Runnable(){
             
@@ -160,6 +201,14 @@ abstract public class AbstractSimpleServer {
         };
     }
     
+    /**
+     * <p>attemptConversation</p>
+     *
+     * @param in a {@link java.io.BufferedReader} object.
+     * @param out a {@link java.io.OutputStream} object.
+     * @return a boolean.
+     * @throws java.io.IOException if any.
+     */
     protected boolean attemptConversation(BufferedReader in, OutputStream out) throws IOException{
         for(Exchange ex : m_conversation){
             if(!ex.processRequest(in)){
@@ -174,14 +223,31 @@ abstract public class AbstractSimpleServer {
         return true;
     }
     
+    /**
+     * <p>setExpectedBanner</p>
+     *
+     * @param banner a {@link java.lang.String} object.
+     */
     protected void setExpectedBanner(String banner){
         m_conversation.add(new BannerExchange(banner));
     }
     
+    /**
+     * <p>addRequestResponse</p>
+     *
+     * @param request a {@link java.lang.String} object.
+     * @param response a {@link java.lang.String} object.
+     */
     protected void addRequestResponse(String request, String response){
         m_conversation.add(new SimpleServerExchange(regexpMatches(request), response));
     }
     
+    /**
+     * <p>regexpMatches</p>
+     *
+     * @param regex a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.server.AbstractSimpleServer.RequestMatcher} object.
+     */
     protected RequestMatcher regexpMatches(final String regex) {
         return new RequestMatcher() {
 

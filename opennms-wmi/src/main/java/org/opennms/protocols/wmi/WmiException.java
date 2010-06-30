@@ -34,8 +34,9 @@ package org.opennms.protocols.wmi;
 /**
  * This object implements the internal exceptions used by the
  * <code>WmiManager</code> system.
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @version $Id: $
  */
 public class WmiException extends Exception {
 	/**
@@ -52,7 +53,7 @@ public class WmiException extends Exception {
 
 	/**
 	 * Constructor, sets the message pertaining to the exception problem.
-	 * 
+	 *
 	 * @param message
 	 *            the message pertaining to the exception problem.
 	 */
@@ -63,7 +64,7 @@ public class WmiException extends Exception {
 	/**
 	 * Constructor, sets the message pertaining to the exception problem and
 	 * the root cause exception (if applicable.)
-	 * 
+	 *
 	 * @param message
 	 *            the message pertaining to the exception problem.
 	 * @param cause
@@ -76,7 +77,7 @@ public class WmiException extends Exception {
 	/**
 	 * Constructor, sets the exception that caused this exception to be
 	 * generated.
-	 * 
+	 *
 	 * @param cause
 	 *            the exception that caused this exception to be generated.
 	 */

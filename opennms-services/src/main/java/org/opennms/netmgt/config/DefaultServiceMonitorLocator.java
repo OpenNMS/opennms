@@ -30,7 +30,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>DefaultServiceMonitorLocator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.config;
 
@@ -40,7 +43,6 @@ import java.util.Map;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -48,6 +50,12 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     String m_serviceName;
     Class<? extends ServiceMonitor> m_serviceClass;
     
+    /**
+     * <p>Constructor for DefaultServiceMonitorLocator.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param serviceClass a {@link java.lang.Class} object.
+     */
     public DefaultServiceMonitorLocator(String serviceName, Class<? extends ServiceMonitor> serviceClass) {
         m_serviceName = serviceName;
         m_serviceClass = serviceClass;
@@ -56,6 +64,11 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     /*
      * FIXME The use of CastorObjectRetrievalFailureException doesn't seem
      * appropriate below, as I don't see Castor being used at all. - dj@opennms.org
+     */
+    /**
+     * <p>getServiceMonitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
      */
     @SuppressWarnings("unchecked")
     public ServiceMonitor getServiceMonitor() {
@@ -72,10 +85,20 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
         }
     }
 
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_serviceName;
     }
 
+    /**
+     * <p>getServiceLocatorKey</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceLocatorKey() {
         return m_serviceClass.getName();
     }

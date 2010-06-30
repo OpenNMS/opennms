@@ -42,7 +42,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * information for one entry in the .iso.org.dod.internet.mgmt.mib-2.dot1dBridge.dot1dBase.dot1dBasePortTable
  * The table effectively contains a list of these entries, each entry having information
  * about bridge info. The entry dot1dBasePortTable.dot1dBasePortEntry contains:
- * 	  
+ *
  *							dot1dBasePort
  *							dot1dBasePortIfIndex
  *							dot1dBasePortCircuit
@@ -58,22 +58,42 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see Dot1dBasePortTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class Dot1dBasePortTableEntry extends SnmpTableEntry {
 	// Lookup strings for specific table entries
 	//
+	/** Constant <code>BASE_PORT="dot1dBasePort"</code> */
 	public final static String BASE_PORT = "dot1dBasePort";
 
+	/** Constant <code>BASE_IFINDEX="dot1dBasePortIfIndex"</code> */
 	public final static String BASE_IFINDEX = "dot1dBasePortIfIndex";
 
+	/** Constant <code>BASE_PORT_CIRCUIT="dot1dBasePortCircuit"</code> */
 	public final static String BASE_PORT_CIRCUIT = "dot1dBasePortCircuit";
 
+	/** Constant <code>BASE_DELAY_EX_DIS="dot1dBasePortDelayExceededDiscards"</code> */
 	public final static String BASE_DELAY_EX_DIS = "dot1dBasePortDelayExceededDiscards";
 
+	/** Constant <code>BASE_MTU_EX_DIS="dot1dBasePortMtuExceededDiscards"</code> */
 	public final static String BASE_MTU_EX_DIS = "dot1dBasePortMtuExceededDiscards";
 
 	/**
@@ -158,38 +178,61 @@ public final class Dot1dBasePortTableEntry extends SnmpTableEntry {
 	 * variable from the passed array of SNMP varbinds.</P>
 	 *
 	 * <P>If the information in the object should not be
-	 * modified then a <EM>final</EM> modifier can be 
+	 * modified then a <EM>final</EM> modifier can be
 	 * applied to the created object.</P>
-	 *
-	 * @param vars	The array of variable bindings.
 	 */
 	public Dot1dBasePortTableEntry() {
 		super(bridgePort_elemList);
 	}
 	
+	/**
+	 * <p>getBaseBridgePort</p>
+	 *
+	 * @return a int.
+	 */
 	public int getBaseBridgePort() {
 		Integer basePort = getInt32(Dot1dBasePortTableEntry.BASE_PORT);
 		if (basePort == null) return -1;
 		return basePort;
 	}
 
+	/**
+	 * <p>getBaseBridgePortIfindex</p>
+	 *
+	 * @return a int.
+	 */
 	public int getBaseBridgePortIfindex() {
 		Integer basePort = getInt32(Dot1dBasePortTableEntry.BASE_IFINDEX);
 		if (basePort == null) return -1;
 		return basePort;
 	}
 	
+	/**
+	 * <p>getBasePortCircuit</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getBasePortCircuit() {
 		return getObjectID(Dot1dBasePortTableEntry.BASE_PORT_CIRCUIT);
 	}
 	
 
+	/**
+	 * <p>getBasePortDelayExceededDiscards</p>
+	 *
+	 * @return a int.
+	 */
 	public int getBasePortDelayExceededDiscards() {
 		Integer  delayExceededDiscards =getInt32(Dot1dBasePortTableEntry.BASE_DELAY_EX_DIS);
 		if (delayExceededDiscards == null) return -1;
 		return delayExceededDiscards;
 	}
 
+	/**
+	 * <p>getBasePortMtuExceededDiscards</p>
+	 *
+	 * @return a int.
+	 */
 	public int getBasePortMtuExceededDiscards() {
 		Integer mtuExceededDiscards = getInt32(Dot1dBasePortTableEntry.BASE_MTU_EX_DIS);
 		if (mtuExceededDiscards == null) return -1;

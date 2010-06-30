@@ -42,6 +42,12 @@ import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventForwarder;
 
+/**
+ * <p>NewSuspectScan class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NewSuspectScan implements RunInBatch {
     private InetAddress m_ipAddress;
     private ProvisionService m_provisionService;
@@ -49,6 +55,15 @@ public class NewSuspectScan implements RunInBatch {
     private SnmpAgentConfigFactory m_agentConfigFactory;
     private DefaultTaskCoordinator m_taskCoordinator;
 
+    /**
+     * <p>Constructor for NewSuspectScan.</p>
+     *
+     * @param ipAddress a {@link java.net.InetAddress} object.
+     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param agentConfigFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     */
     public NewSuspectScan(InetAddress ipAddress, ProvisionService provisionService, EventForwarder eventForwarder, SnmpAgentConfigFactory agentConfigFactory, DefaultTaskCoordinator taskCoordinator) {
         m_ipAddress = ipAddress;
         m_provisionService = provisionService;
@@ -57,14 +72,25 @@ public class NewSuspectScan implements RunInBatch {
         m_taskCoordinator = taskCoordinator;
     }
     
+    /**
+     * <p>createTask</p>
+     *
+     * @return a {@link org.opennms.core.tasks.Task} object.
+     */
     public Task createTask() {
         return m_taskCoordinator.createBatch().add(this).get();
     }
     
+    /** {@inheritDoc} */
     public void run(BatchTask phase) {
         scanUndiscoveredNode(phase);
     }
 
+    /**
+     * <p>scanUndiscoveredNode</p>
+     *
+     * @param phase a {@link org.opennms.core.tasks.BatchTask} object.
+     */
     protected void scanUndiscoveredNode(BatchTask phase) {
         
         final OnmsNode node = m_provisionService.createUndiscoveredNode(m_ipAddress.getHostAddress());
@@ -93,6 +119,12 @@ public class NewSuspectScan implements RunInBatch {
             }};
     }
 
+    /**
+     * <p>reparentNodes</p>
+     *
+     * @param batch a {@link org.opennms.core.tasks.BatchTask} object.
+     * @param nodeId a {@link java.lang.Integer} object.
+     */
     protected void reparentNodes(BatchTask batch, Integer nodeId) {
         
     }

@@ -39,34 +39,71 @@ import java.util.LinkedHashMap;
 
 /**
  * Represents a configured report that can be applied to packages.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see PackageReport
  * @see StatsdPackage
+ * @version $Id: $
  */
 public class Report {
     private String m_name;
     private String m_className;
     private LinkedHashMap<String, String> m_parameters = new LinkedHashMap<String, String>();
     
+    /**
+     * <p>getClassName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getClassName() {
         return m_className;
     }
+    /**
+     * <p>setClassName</p>
+     *
+     * @param className a {@link java.lang.String} object.
+     */
     public void setClassName(String className) {
         m_className = className;
     }
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
+    /**
+     * <p>getParameters</p>
+     *
+     * @return a {@link java.util.LinkedHashMap} object.
+     */
     public LinkedHashMap<String, String> getParameters() {
         return m_parameters;
     }
+    /**
+     * <p>setParameters</p>
+     *
+     * @param parameters a {@link java.util.LinkedHashMap} object.
+     */
     public void setParameters(LinkedHashMap<String, String> parameters) {
         m_parameters = parameters;
     }
+    /**
+     * <p>addParameter</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public void addParameter(String key, String value) {
         m_parameters.put(key, value);
     }

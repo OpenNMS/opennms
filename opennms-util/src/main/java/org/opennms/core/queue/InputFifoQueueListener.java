@@ -43,23 +43,25 @@ package org.opennms.core.queue;
  * element is added to the queue, the exact semantics of which are defined by
  * the queue.
  * </p>
- * 
+ *
  * <p>
  * This is most often used to notify a class that an empty queue has new
  * elements that need to be processed. This allows the object to perform other
  * potentially useful work while waiting on new queue elements.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public interface InputFifoQueueListener {
     /**
      * This method is invoked by a queue implementation when a new element is
      * added its queue. The exact instance when the method is invoked is
      * dependent upon the implementation.
-     * 
+     *
      * @param queue
      *            The queue where the element was added.
      */

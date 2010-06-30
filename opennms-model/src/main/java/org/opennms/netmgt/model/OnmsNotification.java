@@ -59,6 +59,12 @@ import org.hibernate.annotations.Filter;
 import org.springframework.core.style.ToStringCreator;
 
 
+/**
+ * <p>OnmsNotification class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlRootElement(name="notification")
 @Entity
 @Table(name="notifications")
@@ -111,7 +117,24 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      */
     private String m_notifConfigName;
 
-    /** full constructor */
+    /**
+     * full constructor
+     *
+     * @param notifyId a {@link java.lang.Integer} object.
+     * @param textMsg a {@link java.lang.String} object.
+     * @param subject a {@link java.lang.String} object.
+     * @param numericMsg a {@link java.lang.String} object.
+     * @param pageTime a {@link java.util.Date} object.
+     * @param respondTime a {@link java.util.Date} object.
+     * @param answeredBy a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceType a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+     * @param queueId a {@link java.lang.String} object.
+     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param usersNotified a {@link java.util.Set} object.
+     * @param notifConfigName a {@link java.lang.String} object.
+     */
     public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, String ipAddress, OnmsServiceType serviceType, String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified, String notifConfigName) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
@@ -129,11 +152,21 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_notifConfigName = notifConfigName;
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsNotification() {
     }
 
-    /** minimal constructor */
+    /**
+     * minimal constructor
+     *
+     * @param notifyId a {@link java.lang.Integer} object.
+     * @param textMsg a {@link java.lang.String} object.
+     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param usersNotified a {@link java.util.Set} object.
+     */
     public OnmsNotification(Integer notifyId, String textMsg, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
@@ -143,6 +176,11 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     }
 
     
+    /**
+     * <p>getNotifyId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @XmlAttribute(name="id")
     @SequenceGenerator(name="notifySequence", sequenceName="notifyNxtId")
@@ -151,41 +189,81 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_notifyId;
     }
 
+    /**
+     * <p>setNotifyId</p>
+     *
+     * @param notifyid a {@link java.lang.Integer} object.
+     */
     public void setNotifyId(Integer notifyid) {
         m_notifyId = notifyid;
     }
 
 
+    /**
+     * <p>getTextMsg</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="textMessage")
     @Column(name="textMsg", length=4000, nullable=false)
     public String getTextMsg() {
         return m_textMsg;
     }
 
+    /**
+     * <p>setTextMsg</p>
+     *
+     * @param textmsg a {@link java.lang.String} object.
+     */
     public void setTextMsg(String textmsg) {
         m_textMsg = textmsg;
     }
     
+    /**
+     * <p>getSubject</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="subject")
     @Column(name="subject", length=256)
     public String getSubject() {
         return m_subject;
     }
 
+    /**
+     * <p>setSubject</p>
+     *
+     * @param subject a {@link java.lang.String} object.
+     */
     public void setSubject(String subject) {
         m_subject = subject;
     }
     
+    /**
+     * <p>getNumericMsg</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="numericMessage")
     @Column(name="numericMsg", length=256)
     public String getNumericMsg() {
         return m_numericMsg;
     }
 
+    /**
+     * <p>setNumericMsg</p>
+     *
+     * @param numericmsg a {@link java.lang.String} object.
+     */
     public void setNumericMsg(String numericmsg) {
         m_numericMsg = numericmsg;
     }
 
+    /**
+     * <p>getPageTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @XmlElement(name="pageTime")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="pageTime")
@@ -193,10 +271,20 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_pageTime;
     }
 
+    /**
+     * <p>setPageTime</p>
+     *
+     * @param pagetime a {@link java.util.Date} object.
+     */
     public void setPageTime(Date pagetime) {
         m_pageTime = pagetime;
     }
 
+    /**
+     * <p>getRespondTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @XmlElement(name="respondTime")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="respondTime")
@@ -204,30 +292,60 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_respondTime;
     }
 
+    /**
+     * <p>setRespondTime</p>
+     *
+     * @param respondtime a {@link java.util.Date} object.
+     */
     public void setRespondTime(Date respondtime) {
         m_respondTime = respondtime;
     }
 
+    /**
+     * <p>getAnsweredBy</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="answeredBy")
     @Column(name="answeredBy", length=256)
     public String getAnsweredBy() {
         return m_answeredBy;
     }
 
+    /**
+     * <p>setAnsweredBy</p>
+     *
+     * @param answeredby a {@link java.lang.String} object.
+     */
     public void setAnsweredBy(String answeredby) {
         m_answeredBy = answeredby;
     }
     
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="ipAddress")
     @Column(name="interfaceId", length=16)
     public String getIpAddress() {
     	return m_ipAddress;
     }
     
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipAddress) {
     	m_ipAddress = ipAddress;
     }
 
+    /**
+     * <p>getServiceType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+     */
     @XmlTransient
     @ManyToOne
     @JoinColumn(name="serviceId")
@@ -235,19 +353,39 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_serviceType;
     }
 
+    /**
+     * <p>setServiceType</p>
+     *
+     * @param serviceType a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+     */
     public void setServiceType(OnmsServiceType serviceType) {
         m_serviceType = serviceType;
     }
 
+    /**
+     * <p>getQueueId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="queueId", length=256)
     public String getQueueId() {
         return m_queueId;
     }
 
+    /**
+     * <p>setQueueId</p>
+     *
+     * @param queueid a {@link java.lang.String} object.
+     */
     public void setQueueId(String queueid) {
         m_queueId = queueid;
     }
 
+    /**
+     * <p>getEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     */
     @XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="eventId", nullable=false)
@@ -255,6 +393,11 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_event;
     }
 
+    /**
+     * <p>setEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     */
     public void setEvent(OnmsEvent event) {
         m_event = event;
     }
@@ -263,16 +406,31 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      * FIXME: HACK for some reason we put the eventUEI in the notifications table along with the eventId
      * so we have to HACK this so we can properly write the table
      */
+    /**
+     * <p>getEventUei</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="uei")
     @Column(name="eventUEI")
     public String getEventUei() {
         return m_event.getEventUei();
     }
     
+    /**
+     * <p>setEventUei</p>
+     *
+     * @param eventUei a {@link java.lang.String} object.
+     */
     public void setEventUei(String eventUei) {
         // do nothing as this is a HACK
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     @XmlTransient
     @ManyToOne
     @JoinColumn(name="nodeId")
@@ -280,36 +438,67 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_node;
     }
 
+    /**
+     * <p>setNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void setNode(OnmsNode node) {
         m_node = node;
     }
 
+    /**
+     * <p>getUsersNotified</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     @XmlTransient
     @OneToMany(mappedBy="notification", fetch=FetchType.LAZY)
     public Set<OnmsUserNotification> getUsersNotified() {
         return m_usersNotified;
     }
 
+    /**
+     * <p>setUsersNotified</p>
+     *
+     * @param usersnotifieds a {@link java.util.Set} object.
+     */
     public void setUsersNotified(Set<OnmsUserNotification> usersnotifieds) {
         m_usersNotified = usersnotifieds;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("notifyid", getNotifyId())
             .toString();
     }
 
+    /**
+     * <p>getNotifConfigName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNotifConfigName() {
         return m_notifConfigName;
     }
 
+    /**
+     * <p>setNotifConfigName</p>
+     *
+     * @param notifConfigName a {@link java.lang.String} object.
+     */
     @XmlElement(name="notificationCommand")
     @Column(name="notifConfigName", length=63 )
     public void setNotifConfigName(String notifConfigName) {
         m_notifConfigName = notifConfigName;
     }
 
+    /** {@inheritDoc} */
     public void acknowledge(String ackUser) {
         if(m_answeredBy == null || m_respondTime == null) {
             m_answeredBy = ackUser;
@@ -317,26 +506,47 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         }
     }
     
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.AckType} object.
+     */
     @Transient
     public AckType getType() {
         return AckType.NOTIFICATION;
     }
     
+    /**
+     * <p>getAckId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Transient
     public Integer getAckId() {
         return m_notifyId;
     }
     
+    /**
+     * <p>getAckUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Transient
     public String getAckUser() {
         return m_answeredBy;
     }
     
+    /**
+     * <p>getAckTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Transient
     public Date getAckTime() {
         return m_respondTime;
     }
 
+    /** {@inheritDoc} */
     public void clear(String ackUser) {
         /* Note: this currently works based on the way Notifd currently processes queued notifications.
          * Outstanding notifications are not removed from the queue when a response is received, instead,
@@ -346,11 +556,13 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         m_answeredBy = ackUser;
     }
 
+    /** {@inheritDoc} */
     public void escalate(String ackUser) {
         //does nothing for there is no severity state in a notification object
         //escalation of a notification is handled in the notification path
     }
 
+    /** {@inheritDoc} */
     public void unacknowledge(String ackUser) {
         m_respondTime = null;
         m_answeredBy = null;

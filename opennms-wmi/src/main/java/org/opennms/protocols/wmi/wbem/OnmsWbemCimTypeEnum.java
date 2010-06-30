@@ -41,6 +41,9 @@ import java.util.EnumSet;
  * Date: Oct 20, 2008
  * Time: 2:33:48 PM
  * To change this template use File | Settings | File Templates.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public enum OnmsWbemCimTypeEnum {
     wbemCimtypeSint16(2, "wbemCimtypeSint16"),
@@ -60,6 +63,7 @@ public enum OnmsWbemCimTypeEnum {
     wbemCimtypeReference(102, "wbemCimtypeReference"),
     wbemCimtypeChar16(103, "wbemCimtypeChar16");
 
+    /** Constant <code>lookup</code> */
     private static final Map<Integer, OnmsWbemCimTypeEnum> lookup = new HashMap<Integer, OnmsWbemCimTypeEnum>();
     private int cimValue;
     private String cimName;
@@ -74,9 +78,25 @@ public enum OnmsWbemCimTypeEnum {
         this.cimName = cimName;
     }
 
+    /**
+     * <p>Getter for the field <code>cimValue</code>.</p>
+     *
+     * @return a int.
+     */
     public int getCimValue() { return cimValue; }
+    /**
+     * <p>Getter for the field <code>cimName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCimName() { return cimName; }
 
+    /**
+     * <p>get</p>
+     *
+     * @param cimValue a int.
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemCimTypeEnum} object.
+     */
     public static OnmsWbemCimTypeEnum get(int cimValue) {
           return lookup.get(cimValue);
      }

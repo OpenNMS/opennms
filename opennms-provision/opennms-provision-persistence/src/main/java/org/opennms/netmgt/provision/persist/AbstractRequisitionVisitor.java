@@ -38,48 +38,63 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
  * AbstactImportVisitor
  *
  * @author brozow
+ * @version $Id: $
  */
 public class AbstractRequisitionVisitor implements RequisitionVisitor {
 
+    /** {@inheritDoc} */
     public void completeAsset(OnmsAssetRequisition assetReq) {
     }
 
+    /** {@inheritDoc} */
     public void completeInterface(OnmsIpInterfaceRequisition ifaceReq) {
     }
 
+    /** {@inheritDoc} */
     public void completeModelImport(Requisition req) {
     }
 
+    /** {@inheritDoc} */
     public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
     }
 
+    /** {@inheritDoc} */
     public void completeNode(OnmsNodeRequisition nodeReq) {
     }
 
+    /** {@inheritDoc} */
     public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
     }
 
+    /** {@inheritDoc} */
     public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
     }
 
+    /** {@inheritDoc} */
     public void visitAsset(OnmsAssetRequisition assetReq) {
     }
 
+    /** {@inheritDoc} */
     public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
     }
 
+    /** {@inheritDoc} */
     public void visitModelImport(Requisition req) {
     }
 
+    /** {@inheritDoc} */
     public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
     }
 
+    /** {@inheritDoc} */
     public void visitNode(OnmsNodeRequisition nodeReq) {
     }
 
+    /** {@inheritDoc} */
     public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
     }
 
+    /** {@inheritDoc} */
     public void visitServiceCategory(OnmsServiceCategoryRequisition catReq) {
     }
 }

@@ -66,6 +66,16 @@ import java.util.Set;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.RrdRepository;
 
+
+package org.opennms.netmgt.collectd;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.RrdRepository;
 class XmpCollectionResource extends AbstractCollectionResource 
 {
     /* class variables and methods *********************** */
@@ -127,6 +137,7 @@ class XmpCollectionResource extends AbstractCollectionResource
     /* public methods ************************************ */
 
     // get the location where we are supposed to write our data to
+    /** {@inheritDoc} */
     public File getResourceDir(RrdRepository repository)
     {
 
@@ -164,36 +175,88 @@ class XmpCollectionResource extends AbstractCollectionResource
         return instDir;
     }
 
+    /**
+     * <p>addAttributeGroup</p>
+     *
+     * @param aGroup a {@link org.opennms.netmgt.collectd.AttributeGroup} object.
+     */
     public void addAttributeGroup(AttributeGroup aGroup)  
     {  
         listOfGroups.add(aGroup);
     }
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInstance()
     {
         // for node level resources, no instance
         return instance;
     }
 
+    /**
+     * <p>Setter for the field <code>instance</code>.</p>
+     *
+     * @param instance a {@link java.lang.String} object.
+     */
     public void setInstance(String instance) { this.instance = instance; }
 
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeName() { return nodeTypeName; };
 
+    /**
+     * <p>setResourceTypeName</p>
+     *
+     * @param nodeTypeName a {@link java.lang.String} object.
+     */
     public void setResourceTypeName(String nodeTypeName) { this.nodeTypeName = nodeTypeName; }
 
     // return -1 for non-tabular; what do we return for 
     // for interface or tabular data?
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() { return nodeType; }
+    /**
+     * <p>setType</p>
+     *
+     * @param nodeType a int.
+     */
     public void setType(int nodeType) { this.nodeType = nodeType; }
 
+    /**
+     * <p>rescanNeeded</p>
+     *
+     * @return a boolean.
+     */
     public boolean rescanNeeded() { return false; }
+    /** {@inheritDoc} */
     public boolean shouldPersist(ServiceParameters params) { return true; }
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<AttributeGroup>getGroups() { return listOfGroups; }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() { return "XmpCollectionResource for "+agent+" resType="+resourceType+" instance="+instance+" nodeType="+nodeTypeName+" nodeType="+nodeType; }
 
+    /** {@inheritDoc} */
     public void visit(CollectionSetVisitor visitor) 
     { 
         log().debug("XmpCollectionResource: visit starting with "+ getGroups().size()+" attribute groups");

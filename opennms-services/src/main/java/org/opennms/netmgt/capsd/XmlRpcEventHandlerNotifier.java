@@ -47,20 +47,37 @@ import org.opennms.netmgt.xml.event.Event;
  * XmlRpcEventHandlerNotifier
  *
  * @author brozow
+ * @version $Id: $
  */
 
 @Aspect
 public class XmlRpcEventHandlerNotifier {
 
+    /**
+     * <p>capsdMethod</p>
+     */
     @Pointcut("execution(* org.opennms.netmgt.capsd.BroadcastEventProcessor.*(..))")
     public void capsdMethod() {}
     
+    /**
+     * <p>eventHandler</p>
+     */
     @Pointcut("@annotation(org.opennms.netmgt.model.events.annotations.EventHandler)")
     public void eventHandler() {}
     
+    /**
+     * <p>capsdEventHandler</p>
+     */
     @Pointcut("capsdMethod() && eventHandler()")
     public void capsdEventHandler() {}
     
+    /**
+     * <p>onEvent</p>
+     *
+     * @param pjp a {@link org.aspectj.lang.ProceedingJoinPoint} object.
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws java.lang.Throwable if any.
+     */
     @Around("capsdEventHandler() && args(event)")
     public void onEvent(ProceedingJoinPoint pjp, Event event) throws Throwable {
         notifyEventReceived(event);
@@ -79,6 +96,9 @@ public class XmlRpcEventHandlerNotifier {
     private Set<String> m_notifySet;
     private boolean m_xmlRpcEnabled;
     
+    /**
+     * <p>Constructor for XmlRpcEventHandlerNotifier.</p>
+     */
     public XmlRpcEventHandlerNotifier() {
         m_notifySet = new HashSet<String>();
         
@@ -92,10 +112,20 @@ public class XmlRpcEventHandlerNotifier {
 
     }
     
+    /**
+     * <p>isXmlRpcEnabled</p>
+     *
+     * @return a boolean.
+     */
     public boolean isXmlRpcEnabled() {
         return m_xmlRpcEnabled;
     }
     
+    /**
+     * <p>setXmlRpcEnabled</p>
+     *
+     * @param xmlRpcEnabled a boolean.
+     */
     public void setXmlRpcEnabled(boolean xmlRpcEnabled) {
         m_xmlRpcEnabled = xmlRpcEnabled;
     }

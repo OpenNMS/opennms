@@ -50,6 +50,12 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 
+/**
+ * <p>Transaction class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Transaction {
 	
 	private static ThreadLocal<Transaction> s_threadTX = new ThreadLocal<Transaction>();
@@ -66,6 +72,9 @@ public class Transaction {
         s_threadTX.set(null);
     }
 	
+	/**
+	 * <p>begin</p>
+	 */
 	public static void begin() {
         
         log().debug("About to begin Transaction for "+Thread.currentThread());
@@ -82,22 +91,49 @@ public class Transaction {
         return ThreadCategory.getInstance(Transaction.class);
     }
 
+    /**
+     * <p>getConnection</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @return a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Connection getConnection(String dsName) throws SQLException {
         return getTX().doGetConnection(dsName);
     }
 
+    /**
+     * <p>register</p>
+     *
+     * @param stmt a {@link java.sql.Statement} object.
+     */
     public static void register(Statement stmt) {
         getTX().doRegister(stmt);
     }
 
+    /**
+     * <p>register</p>
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     */
     public static void register(ResultSet rs) {
         getTX().doRegister(rs);
     }
 
+    /**
+     * <p>rollbackOnly</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public static void rollbackOnly() throws SQLException {
         getTX().doRollbackOnly();
     }
 
+    /**
+     * <p>end</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public static void end() throws SQLException {
         log().debug("Ending transaction for "+Thread.currentThread());
         try {
@@ -162,6 +198,9 @@ public class Transaction {
         return m_connections.get(dsName);
     }
 
+    /**
+     * <p>finalize</p>
+     */
     public void finalize() {
         m_dbUtils.cleanUp();
     }

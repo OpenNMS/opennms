@@ -77,6 +77,9 @@ import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class WmiCollector implements ServiceCollector {
 
@@ -90,6 +93,7 @@ public class WmiCollector implements ServiceCollector {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /** {@inheritDoc} */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
 
         String collectionName = parameters.get("collection");
@@ -239,6 +243,7 @@ public class WmiCollector implements ServiceCollector {
         return true;
     }
 
+    /** {@inheritDoc} */
     public void initialize(Map parameters) {
         log().debug("initialize: Initializing WmiCollector.");
         m_scheduledNodes.clear();
@@ -325,6 +330,7 @@ public class WmiCollector implements ServiceCollector {
         }
     }
 
+    /** {@inheritDoc} */
     public void initialize(CollectionAgent agent, Map parameters) {
         log().debug("initialize: Initializing WMI collection for agent: " + agent);
         Integer scheduledNodeKey = new Integer(agent.getNodeId());
@@ -348,10 +354,14 @@ public class WmiCollector implements ServiceCollector {
         }
     }
 
+    /**
+     * <p>release</p>
+     */
     public void release() {
         m_scheduledNodes.clear();
     }
 
+    /** {@inheritDoc} */
     public void release(CollectionAgent agent) {
         Integer scheduledNodeKey = new Integer(agent.getNodeId());
         WmiAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
@@ -360,6 +370,7 @@ public class WmiCollector implements ServiceCollector {
         }
     }
 
+    /** {@inheritDoc} */
     public RrdRepository getRrdRepository(String collectionName) {
         return WmiDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

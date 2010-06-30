@@ -40,29 +40,37 @@ import org.opennms.core.fiber.PausableFiber;
  * This interface defines a handler for a Notifd queue. As notifications are
  * parsed from events they will be put on a process queue and will be handled by
  * a class implementing this interface.
- * 
+ *
  * @author <a href="mailto:jason@opennms.org">Jason Johns </a>
  * @author <a href="http://www.opennms.org/>OpenNMS </a>
- * 
+ * @author <a href="mailto:jason@opennms.org">Jason Johns </a>
+ * @author <a href="http://www.opennms.org/>OpenNMS </a>
+ * @version $Id: $
  */
 public interface NotifdQueueHandler extends Runnable, PausableFiber {
     /**
-     * 
+     * <p>setQueueID</p>
+     *
+     * @param queueID a {@link java.lang.String} object.
      */
     public void setQueueID(String queueID);
 
     /**
-     * 
+     * <p>setNoticeQueue</p>
+     *
+     * @param queue a {@link org.opennms.netmgt.notifd.NoticeQueue} object.
      */
     public void setNoticeQueue(NoticeQueue queue);
 
     /**
-     * 
+     * <p>setInterval</p>
+     *
+     * @param interval a {@link java.lang.String} object.
      */
     public void setInterval(String interval);
 
     /**
-     * 
+     * <p>processQueue</p>
      */
     public void processQueue();
 }

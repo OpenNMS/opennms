@@ -49,6 +49,7 @@ import org.opennms.sms.reflector.smsservice.MobileMsgResponse;
  * MobileSequenceExecution
  *
  * @author brozow
+ * @version $Id: $
  */
 public class MobileSequenceExecution {
     
@@ -59,6 +60,11 @@ public class MobileSequenceExecution {
     private MobileSequenceConfig m_sequenceConfig;
     private List<MobileTransactionExecution> m_transactionExecutions = new ArrayList<MobileTransactionExecution>();
 
+    /**
+     * <p>Constructor for MobileSequenceExecution.</p>
+     *
+     * @param sequenceConfig a {@link org.opennms.sms.monitor.internal.config.MobileSequenceConfig} object.
+     */
     public MobileSequenceExecution(MobileSequenceConfig sequenceConfig) {
         m_sequenceConfig = sequenceConfig;
         
@@ -68,31 +74,65 @@ public class MobileSequenceExecution {
         
     }
     
+    /**
+     * <p>getSequenceConfig</p>
+     *
+     * @return a {@link org.opennms.sms.monitor.internal.config.MobileSequenceConfig} object.
+     */
     public MobileSequenceConfig getSequenceConfig() {
         return m_sequenceConfig;
     }
     
+    /**
+     * <p>getTransactionExecutions</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<MobileTransactionExecution> getTransactionExecutions() {
         return m_transactionExecutions;
     }
 
+    /**
+     * <p>getStartTime</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getStartTime() {
         return m_startTime;
     }
     
+    /**
+     * <p>setStartTime</p>
+     *
+     * @param startTime a {@link java.lang.Long} object.
+     */
     public void setStartTime(Long startTime) {
         m_startTime = startTime;
     }
     
+    /**
+     * <p>getResponseTimes</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Number> getResponseTimes() {
         return m_responseTimes;
     }
 
+    /**
+     * <p>end</p>
+     */
     public void end() {
         long end = System.currentTimeMillis();
     	getResponseTimes().put("response-time", Long.valueOf(end - (long) getStartTime()));
     }
 
+    /**
+     * <p>waitFor</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.util.concurrent.ExecutionException if any.
+     */
     public void waitFor() throws InterruptedException, ExecutionException {
 
         Task task = getTask();
@@ -104,14 +144,30 @@ public class MobileSequenceExecution {
         end();
     }
 
+    /**
+     * <p>getTask</p>
+     *
+     * @return a {@link org.opennms.core.tasks.SequenceTask} object.
+     */
     public SequenceTask getTask() {
         return m_task;
     }
 
+    /**
+     * <p>setTask</p>
+     *
+     * @param task a {@link org.opennms.core.tasks.SequenceTask} object.
+     */
     public void setTask(SequenceTask task) {
         m_task = task;
     }
 
+    /**
+     * <p>updateResults</p>
+     *
+     * @param session a {@link org.opennms.sms.monitor.MobileSequenceSession} object.
+     * @throws java.lang.Throwable if any.
+     */
     public void updateResults(MobileSequenceSession session) throws Throwable {
         for(MobileTransactionExecution execution : getTransactionExecutions()) {
             MobileSequenceTransaction transaction = execution.getTransaction();
@@ -122,6 +178,12 @@ public class MobileSequenceExecution {
         }
     }
 
+    /**
+     * <p>start</p>
+     *
+     * @param session a {@link org.opennms.sms.monitor.MobileSequenceSession} object.
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     */
     public void start(MobileSequenceSession session, DefaultTaskCoordinator coordinator) {
         
         setTask(coordinator.createSequence().get());

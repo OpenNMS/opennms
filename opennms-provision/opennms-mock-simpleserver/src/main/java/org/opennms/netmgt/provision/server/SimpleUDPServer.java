@@ -40,6 +40,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <p>SimpleUDPServer class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SimpleUDPServer {
     
     public static interface RequestMatcher{
@@ -107,13 +113,26 @@ public class SimpleUDPServer {
     private int m_port = DEFAULT_TEST_PORT;
     private InetAddress m_testInetAddress;
     
+    /**
+     * <p>onInit</p>
+     */
     public void onInit() {} 
     
+    /**
+     * <p>startServer</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void startServer() throws Exception{
         m_serverThread = new Thread(getRunnable(), this.getClass().getSimpleName());
         m_serverThread.start();
     }
     
+    /**
+     * <p>stopServer</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void stopServer() throws IOException {
         if(getServerSocket() != null ){
             getServerSocket().close();
@@ -131,6 +150,12 @@ public class SimpleUDPServer {
         return m_socket;
     }
 
+    /**
+     * <p>getRunnable</p>
+     *
+     * @return a {@link java.lang.Runnable} object.
+     * @throws java.lang.Exception if any.
+     */
     public Runnable getRunnable() throws Exception{
         return new Runnable(){
             
@@ -150,21 +175,48 @@ public class SimpleUDPServer {
         };
     }
     
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a int.
+     */
     public void setPort(int port) {
         m_port = port;
     }  
     
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
+     */
     public int getPort(){
         return m_port;
     }
     
+    /**
+     * <p>setTimeout</p>
+     *
+     * @param timeout a int.
+     */
     public void setTimeout(int timeout) {
         m_timeout = timeout;
     }
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a int.
+     */
     public int getTimeout() {
         return m_timeout;
     }
     
+    /**
+     * <p>attemptConversation</p>
+     *
+     * @param socket a {@link java.net.DatagramSocket} object.
+     * @return a boolean.
+     * @throws java.io.IOException if any.
+     */
     protected boolean attemptConversation(DatagramSocket socket) throws IOException{
         for(Exchange ex : m_conversation){
             if(!ex.processRequest(socket)){
@@ -179,10 +231,22 @@ public class SimpleUDPServer {
         return true;
     }
     
+    /**
+     * <p>addRequestResponse</p>
+     *
+     * @param request a {@link java.net.DatagramPacket} object.
+     * @param response an array of byte.
+     */
     protected void addRequestResponse(DatagramPacket request, byte[] response){
         m_conversation.add(new SimpleServerExchange(recievedPacket(request), response));
     }
     
+    /**
+     * <p>recievedPacket</p>
+     *
+     * @param request a {@link java.net.DatagramPacket} object.
+     * @return a {@link org.opennms.netmgt.provision.server.SimpleUDPServer.RequestMatcher} object.
+     */
     protected RequestMatcher recievedPacket(final DatagramPacket request) {
         return new RequestMatcher() {
 
@@ -193,10 +257,20 @@ public class SimpleUDPServer {
         };
     }
 
+    /**
+     * <p>setInetAddress</p>
+     *
+     * @param testInetAddress a {@link java.net.InetAddress} object.
+     */
     public void setInetAddress(InetAddress testInetAddress) {
         m_testInetAddress = testInetAddress;
     }
 
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getInetAddress() {
         if(m_testInetAddress == null){
             try {

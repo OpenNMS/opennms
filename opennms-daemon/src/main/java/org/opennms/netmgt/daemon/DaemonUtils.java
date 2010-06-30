@@ -40,6 +40,12 @@ import java.net.UnknownHostException;
 
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>DaemonUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DaemonUtils {
     /**
      * No public constructor.  This has static methods only.
@@ -47,6 +53,11 @@ public class DaemonUtils {
     private DaemonUtils() {
     }
 
+    /**
+     * <p>getLocalHostAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public static String getLocalHostAddress() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
@@ -56,6 +67,11 @@ public class DaemonUtils {
         }
     }
     
+    /**
+     * <p>getLocalHostName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public static String getLocalHostName() {
         String localhost;
         try {

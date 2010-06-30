@@ -52,9 +52,9 @@ import org.springframework.util.Assert;
 /**
  * This adapter automatically creates links between nodes based on an expression applied
  * to the node label (hostname)
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 @EventListener(name="LinkProvisioningAdapter")
 public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
@@ -67,10 +67,14 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     @Autowired
     private NodeLinkService m_nodeLinkService;
     
+    /**
+     * <p>Constructor for LinkProvisioningAdapter.</p>
+     */
     public LinkProvisioningAdapter() {
         super(ADAPTER_NAME);
     }
     
+    /** {@inheritDoc} */
     @Override
     public void init() {
         super.init();
@@ -78,6 +82,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         Assert.notNull(m_linkMatchResolver, "linkMatchResolver must not be null");
     }
 
+    /** {@inheritDoc} */
     public void doAddNode(int endPointId) {
         String endPoint1 = m_nodeLinkService.getNodeLabel(endPointId);
         String endPoint2 = m_linkMatchResolver.getAssociatedEndPoint(endPoint1);
@@ -97,6 +102,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         
     }
     
+    /** {@inheritDoc} */
     public void doUpdateNode(int nodeid) {
         createLinkForNodeIfNecessary(nodeid);
     }
@@ -105,14 +111,21 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         doAddNode(nodeid);
     }
 
+    /** {@inheritDoc} */
     public void doDeleteNode(int nodeid) {
         //This is handle using cascading deletes from the node table to the datalink table
     }
     
+    /** {@inheritDoc} */
     public void doNotifyConfigChange(int nodeid) {
         
     }
     
+    /**
+     * <p>dataLinkFailed</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DATA_LINK_FAILED_EVENT_UEI)
     public void dataLinkFailed(Event event){
         try{
@@ -145,6 +158,11 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         }
     }
     
+    /**
+     * <p>dataLinkRestored</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DATA_LINK_RESTORED_EVENT_UEI)
     public void dataLinkRestored(Event event){
         try{
@@ -156,6 +174,11 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         }
     }
     
+    /**
+     * <p>dataLinkUnmanaged</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DATA_LINK_UNMANAGED_EVENT_UEI)
     public void dataLinkUnmanaged(Event e) {
         try{
@@ -167,6 +190,13 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         }
     }
     
+    /**
+     * <p>max</p>
+     *
+     * @param string1 a {@link java.lang.String} object.
+     * @param string2 a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String max(String string1, String string2) {
         if(string1.compareTo(string2) < 0) {
             return string2;
@@ -175,6 +205,13 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         }
     }
     
+    /**
+     * <p>min</p>
+     *
+     * @param string1 a {@link java.lang.String} object.
+     * @param string2 a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String min(String string1, String string2) {
         if(string1.compareTo(string2) < 0) {
             return string1;
@@ -187,14 +224,29 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         return ThreadCategory.getInstance(LinkProvisioningAdapter.class);
     }
 
+    /**
+     * <p>setLinkMatchResolver</p>
+     *
+     * @param linkMatchResolver a {@link org.opennms.netmgt.provision.adapters.link.LinkMatchResolver} object.
+     */
     public void setLinkMatchResolver(LinkMatchResolver linkMatchResolver) {
         m_linkMatchResolver = linkMatchResolver;
     }
 
+    /**
+     * <p>getLinkMatchResolver</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.adapters.link.LinkMatchResolver} object.
+     */
     public LinkMatchResolver getLinkMatchResolver() {
         return m_linkMatchResolver;
     }
 
+    /**
+     * <p>setNodeLinkService</p>
+     *
+     * @param nodeLinkService a {@link org.opennms.netmgt.provision.adapters.link.NodeLinkService} object.
+     */
     public void setNodeLinkService(NodeLinkService nodeLinkService) {
         m_nodeLinkService = nodeLinkService;
     }

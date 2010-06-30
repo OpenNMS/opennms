@@ -73,6 +73,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+/**
+ * <p>BaseImporter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class BaseImporter implements ImportOperationFactory {
 
     protected TransactionTemplate m_transTemplate;
@@ -89,66 +95,142 @@ public class BaseImporter implements ImportOperationFactory {
 	private int m_writeThreads = 4;
 
     //FIXME: We have a setTransactionTemplate and a setTransTemplate for the same field.
+    /**
+     * <p>setTransactionTemplate</p>
+     *
+     * @param transTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public void setTransactionTemplate(TransactionTemplate transTemplate) {
         m_transTemplate = transTemplate;
     }
 
+    /**
+     * <p>getDistPollerDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     */
     public DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
     }
 
+    /**
+     * <p>setDistPollerDao</p>
+     *
+     * @param distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     */
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
     }
 
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    /**
+     * <p>getIpInterfaceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     */
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }
 
+    /**
+     * <p>setIpInterfaceDao</p>
+     *
+     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     */
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
+    /**
+     * <p>getMonitoredServiceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public MonitoredServiceDao getMonitoredServiceDao() {
         return m_monitoredServiceDao;
     }
 
+    /**
+     * <p>setMonitoredServiceDao</p>
+     *
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
     }
 
+    /**
+     * <p>getServiceTypeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     */
     public ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
     }
 
+    /**
+     * <p>setServiceTypeDao</p>
+     *
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
 
+    /**
+     * <p>getAssetRecordDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+     */
     public AssetRecordDao getAssetRecordDao() {
         return m_assetRecordDao;
     }
 
+    /**
+     * <p>setAssetRecordDao</p>
+     *
+     * @param assetRecordDao a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
+     */
     public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
         m_assetRecordDao = assetRecordDao;
     }
 
+    /**
+     * <p>getTransTemplate</p>
+     *
+     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public TransactionTemplate getTransTemplate() {
         return m_transTemplate;
     }
 
+    /**
+     * <p>setTransTemplate</p>
+     *
+     * @param transTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public void setTransTemplate(TransactionTemplate transTemplate) {
         m_transTemplate = transTemplate;
     }
 
+    /** {@inheritDoc} */
     public InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         InsertOperation insertOperation = new InsertOperation(foreignSource, foreignId, nodeLabel, building, city);
         insertOperation.setNodeDao(m_nodeDao);
@@ -161,6 +243,7 @@ public class BaseImporter implements ImportOperationFactory {
         
     }
 
+    /** {@inheritDoc} */
     public UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         UpdateOperation updateOperation = new UpdateOperation(nodeId, foreignSource, foreignId, nodeLabel, building, city);
         updateOperation.setNodeDao(m_nodeDao);
@@ -172,14 +255,31 @@ public class BaseImporter implements ImportOperationFactory {
         return updateOperation;
     }
 
+    /** {@inheritDoc} */
     public DeleteOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId) {
         return new DeleteOperation(nodeId, foreignSource, foreignId, m_nodeDao);
     }
     
+    /**
+     * <p>importModelFromResource</p>
+     *
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @throws java.io.IOException if any.
+     * @throws org.opennms.netmgt.importer.ModelImportException if any.
+     */
     protected void importModelFromResource(Resource resource) throws IOException, ModelImportException {
     	importModelFromResource(resource, new DefaultImportStatistics(), null);
     }
 
+    /**
+     * <p>importModelFromResource</p>
+     *
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @param stats a {@link org.opennms.netmgt.importer.operations.ImportStatistics} object.
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws java.io.IOException if any.
+     * @throws org.opennms.netmgt.importer.ModelImportException if any.
+     */
     protected void importModelFromResource(Resource resource, ImportStatistics stats, Event event) throws IOException, ModelImportException {
         
     	stats.beginImporting();
@@ -224,6 +324,13 @@ public class BaseImporter implements ImportOperationFactory {
         return EventUtil.getNamedParmValue("parm[foreignSource]", event);
     }
 
+	/**
+	 * <p>createImportOperationsManager</p>
+	 *
+	 * @param foreignIdsToNodes a {@link java.util.Map} object.
+	 * @param stats a {@link org.opennms.netmgt.importer.operations.ImportStatistics} object.
+	 * @return a {@link org.opennms.netmgt.importer.operations.ImportOperationsManager} object.
+	 */
 	protected ImportOperationsManager createImportOperationsManager(Map<String, Integer> foreignIdsToNodes, ImportStatistics stats) {
 		ImportOperationsManager opsMgr = new ImportOperationsManager(foreignIdsToNodes, this);
         opsMgr.setStats(stats);
@@ -316,6 +423,11 @@ public class BaseImporter implements ImportOperationFactory {
 		specFile.visitImport(new NodeRelator(specFile.getForeignSource()));
 	}
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
 	}
@@ -345,26 +457,56 @@ public class BaseImporter implements ImportOperationFactory {
     
     }
 
+    /**
+     * <p>getCategoryDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
 
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
 
+	/**
+	 * <p>getScanThreads</p>
+	 *
+	 * @return a int.
+	 */
 	public int getScanThreads() {
 		return m_scanThreads;
 	}
 
+	/**
+	 * <p>setScanThreads</p>
+	 *
+	 * @param poolSize a int.
+	 */
 	public void setScanThreads(int poolSize) {
 		m_scanThreads = poolSize;
 	}
 
+	/**
+	 * <p>getWriteThreads</p>
+	 *
+	 * @return a int.
+	 */
 	public int getWriteThreads() {
 		return m_writeThreads;
 	}
 
+	/**
+	 * <p>setWriteThreads</p>
+	 *
+	 * @param writeThreads a int.
+	 */
 	public void setWriteThreads(int writeThreads) {
 		m_writeThreads = writeThreads;
 	}

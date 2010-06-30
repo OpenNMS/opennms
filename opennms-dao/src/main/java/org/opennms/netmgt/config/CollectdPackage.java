@@ -30,7 +30,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>CollectdPackage class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.config;
 
@@ -46,13 +49,19 @@ import org.opennms.netmgt.config.collectd.IncludeRange;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-
 public class CollectdPackage {
 	private Package m_pkg;
 	private List<String> m_ipList;
 	private List<IncludeURL> m_includeURLs;
 	
 	
+	/**
+	 * <p>Constructor for CollectdPackage.</p>
+	 *
+	 * @param pkg a {@link org.opennms.netmgt.config.collectd.Package} object.
+	 * @param localServer a {@link java.lang.String} object.
+	 * @param verifyServer a boolean.
+	 */
 	public CollectdPackage(Package pkg, String localServer, boolean verifyServer) {
 		m_pkg = pkg;
 		
@@ -71,6 +80,11 @@ public class CollectdPackage {
 		}
 	}
 	
+	/**
+	 * <p>getPackage</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.config.collectd.Package} object.
+	 */
 	public Package getPackage() {
 		return m_pkg;
 	}
@@ -79,11 +93,10 @@ public class CollectdPackage {
 	 * Returns true if the service is part of the package and the status of the
 	 * service is set to "on". Returns false if the service is not in the
 	 * package or it is but the status of the service is set to "off".
-	 * 
-	 * @param pkg
-	 *            The package to lookup up service.
+	 *
 	 * @param svcName
 	 *            The service name to lookup.
+	 * @return a boolean.
 	 */
 	public boolean serviceInPackageAndEnabled(String svcName) {
 		Package pkg = getPackage();
@@ -115,6 +128,12 @@ public class CollectdPackage {
 		return has_specific;
 	}
 
+	/**
+	 * <p>hasIncludeRange</p>
+	 *
+	 * @param addr a long.
+	 * @return a boolean.
+	 */
 	public boolean hasIncludeRange(long addr) {
 		Package pkg = getPackage();
 		boolean has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
@@ -135,6 +154,11 @@ public class CollectdPackage {
 		return has_range_include;
 	}
 
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_pkg.getName();
 	}
@@ -158,10 +182,20 @@ public class CollectdPackage {
 		return has_range_exclude;
 	}
 
+	/**
+	 * <p>putIpList</p>
+	 *
+	 * @param ipList a {@link java.util.List} object.
+	 */
 	public void putIpList(List<String> ipList) {
 		m_ipList = ipList;
 	}
 
+	/**
+	 * <p>getIpList</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<String> getIpList() {
 		return m_ipList;
 	}
@@ -188,6 +222,11 @@ public class CollectdPackage {
 		return ThreadCategory.getInstance(getClass());
 	}
 
+	/**
+	 * <p>getIncludeURLs</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<IncludeURL> getIncludeURLs() {
 		return m_includeURLs;
 	}
@@ -205,15 +244,12 @@ public class CollectdPackage {
 	 * the passed package definition. If the interface belongs to the package
 	 * then a value of true is returned. If the interface does not belong to the
 	 * package a false value is returned.
-	 * 
+	 *
 	 * <strong>Note: </strong>Evaluation of the interface against a package
 	 * filter will only work if the IP is already in the database.
+	 *
 	 * @param iface
 	 *            The interface to test against the package.
-	 * @param pkg
-	 *            The package to check for the inclusion of the interface.
-	 * @param factory TODO
-	 * 
 	 * @return True if the interface is included in the package, false
 	 *         otherwise.
 	 */
@@ -287,6 +323,12 @@ public class CollectdPackage {
 		}
 	}
 
+	/**
+	 * <p>getService</p>
+	 *
+	 * @param svcName a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.config.collectd.Service} object.
+	 */
 	public Service getService(final String svcName) {
         final List<Service> pkgSvcs = m_pkg.getServiceCollection();
         
@@ -297,22 +339,47 @@ public class CollectdPackage {
 		throw new RuntimeException("Service name not part of package!");
 	}
 
+	/**
+	 * <p>storeByIfAlias</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String storeByIfAlias() {
 		return getPackage().getStoreByIfAlias();
 	}
 
+	/**
+	 * <p>ifAliasComment</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String ifAliasComment() {
 		return getPackage().getIfAliasComment();
 	}
 
+	/**
+	 * <p>getStorFlagOverride</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getStorFlagOverride() {
 		return getPackage().getStorFlagOverride();
 	}
 
+	/**
+	 * <p>ifAliasDomain</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String ifAliasDomain() {
 		return getPackage().getIfAliasDomain();
 	}
 
+	/**
+	 * <p>storeByNodeId</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String storeByNodeId() {
 		return getPackage().getStoreByNodeID();
 	}

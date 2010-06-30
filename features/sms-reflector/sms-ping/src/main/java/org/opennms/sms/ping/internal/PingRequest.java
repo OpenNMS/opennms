@@ -48,9 +48,12 @@ import org.smslib.OutboundMessage;
 /**
  * This class is used to encapsulate a ping request. A request consist of
  * the pingable address and a signaled state.
- * 
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 final public class PingRequest implements Request<PingRequestId, PingRequest, PingReply> {
 
@@ -115,31 +118,69 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_request.setValidityPeriod(1);
     }
     
+    /**
+     * <p>Constructor for PingRequest.</p>
+     *
+     * @param id a {@link org.opennms.sms.ping.PingRequestId} object.
+     * @param timeout a long.
+     * @param retries a int.
+     * @param cb a {@link org.opennms.sms.ping.PingResponseCallback} object.
+     */
     public PingRequest(PingRequestId id, long timeout, int retries, PingResponseCallback cb) {
         this(id, timeout, retries, Logger.getLogger(PingRequest.class), cb);
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link org.opennms.sms.ping.PingRequestId} object.
+     */
     public PingRequestId getId() {
         return m_id;
     }
 
+    /**
+     * <p>getRetries</p>
+     *
+     * @return a int.
+     */
     public int getRetries() {
         return m_retries;
     }
 
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a long.
+     */
     public long getTimeout() {
         return m_timeout;
     }
     
+    /**
+     * <p>getRequest</p>
+     *
+     * @return a {@link org.smslib.OutboundMessage} object.
+     */
     public OutboundMessage getRequest() {
         return m_request;
     }
 
+    /**
+     * <p>getResponse</p>
+     *
+     * @return a {@link org.smslib.InboundMessage} object.
+     */
     public InboundMessage getResponse() {
         return m_response;
     }
 
 
+    /**
+     * <p>getExpiration</p>
+     *
+     * @return a long.
+     */
     public long getExpiration() {
         return m_expiration;
     }
@@ -148,6 +189,12 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         return m_log;
     }
 
+    /**
+     * <p>processResponse</p>
+     *
+     * @param reply a {@link org.opennms.sms.ping.internal.PingReply} object.
+     * @return a boolean.
+     */
     public boolean processResponse(PingReply reply) {
         try {
             setResponseTimestamp(reply.getReceiveTimestamp());
@@ -164,6 +211,11 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_callback.handleResponse(this, packet);
     }
 
+    /**
+     * <p>processTimeout</p>
+     *
+     * @return a {@link org.opennms.sms.ping.internal.PingRequest} object.
+     */
     public PingRequest processTimeout() {
         try {
             PingRequest returnval = null;
@@ -182,10 +234,20 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         }
     }
     
+    /**
+     * <p>isExpired</p>
+     *
+     * @return a boolean.
+     */
     public boolean isExpired() {
         return (System.currentTimeMillis() >= getExpiration());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
@@ -199,10 +261,17 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         return sb.toString();
     }
 
+    /** {@inheritDoc} */
     public long getDelay(TimeUnit unit) {
         return unit.convert(getExpiration() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param request a {@link java.util.concurrent.Delayed} object.
+     * @return a int.
+     */
     public int compareTo(Delayed request) {
         long myDelay = getDelay(TimeUnit.MILLISECONDS);
         long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
@@ -211,6 +280,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         return 1;
     }
 
+    /** {@inheritDoc} */
     public void processError(Throwable t) {
         try {
             m_callback.handleError(this, getRequest(), t);
@@ -219,18 +289,38 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         }
     }
     
+    /**
+     * <p>setSentTimestamp</p>
+     *
+     * @param millis a {@link java.lang.Long} object.
+     */
     public void setSentTimestamp(Long millis){
     	m_sentTimestamp = millis;
     }
     
+    /**
+     * <p>setResponseTimestamp</p>
+     *
+     * @param millis a {@link java.lang.Long} object.
+     */
     public void setResponseTimestamp(Long millis){
     	m_responseTimestamp = millis;
     }
     
+    /**
+     * <p>getRoundTripTime</p>
+     *
+     * @return a long.
+     */
     public long getRoundTripTime(){
     	return m_responseTimestamp - m_sentTimestamp;
     }
 
+    /**
+     * <p>isProcessed</p>
+     *
+     * @return a boolean.
+     */
     public boolean isProcessed() {
         return m_processed;
     }

@@ -57,10 +57,19 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>CriteriaAddingVisitor class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class CriteriaAddingVisitor implements Visitor, InitializingBean {
     
@@ -69,10 +78,18 @@ public class CriteriaAddingVisitor implements Visitor, InitializingBean {
     private View m_view;
     private SurveillanceView m_survView;
     
+    /**
+     * <p>Constructor for CriteriaAddingVisitor.</p>
+     *
+     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public CriteriaAddingVisitor(OnmsCriteria criteria) {
         m_criteria = criteria;
     }
 
+    /**
+     * <p>visitAll</p>
+     */
     public void visitAll() {
         
         addCriteriaForCategories(m_criteria, m_survView.getColumnCategories());
@@ -80,6 +97,7 @@ public class CriteriaAddingVisitor implements Visitor, InitializingBean {
         
     }
 
+    /** {@inheritDoc} */
     public void visitGroup(SurveillanceGroup group) {
 
         if (group.isColumn()) {
@@ -92,6 +110,7 @@ public class CriteriaAddingVisitor implements Visitor, InitializingBean {
             
     }
     
+    /** {@inheritDoc} */
     public void visitIntersection(SurveillanceGroup row, SurveillanceGroup column) {
         
         addCriteriaForCategories(m_criteria, m_survView.getCategoriesForRow(row.getId()));
@@ -99,29 +118,59 @@ public class CriteriaAddingVisitor implements Visitor, InitializingBean {
         
     }
     
+    /**
+     * <p>addCriteriaForCategories</p>
+     *
+     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     * @param categories a {@link java.util.Set} object.
+     */
     public void addCriteriaForCategories(OnmsCriteria criteria, Set<String> categories) {
         String[] categoryNames = categories.toArray(new String[categories.size()]);
         addCriteriaForCategories(criteria, categoryNames);
     }
     
+    /**
+     * <p>addCriteriaForCategories</p>
+     *
+     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     * @param categories a {@link java.lang.String} object.
+     */
     public void addCriteriaForCategories(OnmsCriteria criteria, String... categories) {
         String sql = "{alias}.nodeId in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (" + commaDelimitedQuestionMarks(categories.length) + "))";
         criteria.add(Restrictions.sqlRestriction(sql, categories, arrayOfType(categories.length, new StringType())));
     }
     
+    /**
+     * <p>getView</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.surveillanceViews.View} object.
+     */
     public View getView() {
         return m_view;
     }
     
+    /**
+     * <p>setView</p>
+     *
+     * @param view a {@link org.opennms.netmgt.config.surveillanceViews.View} object.
+     */
     public void setView(View view) {
         m_view = view;
     }
 
     
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_view != null, "view property must be set");
         Assert.state(m_categoryDao != null, "categoryDao property must be set");
@@ -155,6 +204,12 @@ public class CriteriaAddingVisitor implements Visitor, InitializingBean {
         return array;
     }
     
+    /**
+     * <p>commaDelimitedQuestionMarks</p>
+     *
+     * @param count a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String commaDelimitedQuestionMarks(int count) {
         StringBuilder buf = new StringBuilder();
         for(int i = 0; i < count; i++)  {

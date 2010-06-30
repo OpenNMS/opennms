@@ -37,13 +37,30 @@ import org.jinterop.dcom.common.JIException;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath;
 
+/**
+ * <p>OnmsWbemObjectPathImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
     private IJIDispatch wbemObjectPathDispatch;
 
+    /**
+     * <p>Constructor for OnmsWbemObjectPathImpl.</p>
+     *
+     * @param wbemObjectPathDispatch a {@link org.jinterop.dcom.impls.automation.IJIDispatch} object.
+     */
     public OnmsWbemObjectPathImpl(IJIDispatch wbemObjectPathDispatch) {
         this.wbemObjectPathDispatch = wbemObjectPathDispatch;
     }
 
+    /**
+     * <p>getWmiAuthority</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiAuthority() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("Authority");
@@ -54,6 +71,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiClass</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiClass() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("Class");
@@ -64,6 +87,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiDisplayName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiDisplayName() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("DisplayName");
@@ -74,6 +103,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiLocale</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiLocale() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("Locale");
@@ -84,6 +119,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiNamespace</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiNamespace() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("Namespace");
@@ -94,6 +135,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiParentNamespace</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiParentNamespace() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("ParentNamespace");
@@ -104,6 +151,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiPath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiPath() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("Path");
@@ -114,6 +167,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiRelPath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiRelPath() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("RelPath");
@@ -124,6 +183,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiServer</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiServer() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("Server");
@@ -134,6 +199,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiIsClass</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Boolean getWmiIsClass() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("IsClass");
@@ -144,6 +215,12 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
         }
     }
 
+    /**
+     * <p>getWmiIsSingleton</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Boolean getWmiIsSingleton() throws WmiException {
         try {
             JIVariant variant = wbemObjectPathDispatch.get("IsSingleton");

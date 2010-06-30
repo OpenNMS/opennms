@@ -35,8 +35,11 @@
 package org.opennms.web.map.config;
 
 /**
- * 
+ * <p>Link class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class Link {
 	String speed; 
@@ -50,6 +53,18 @@ public class Link {
 	
 	
 	
+	/**
+	 * <p>Constructor for Link.</p>
+	 *
+	 * @param id a int.
+	 * @param speed a {@link java.lang.String} object.
+	 * @param text a {@link java.lang.String} object.
+	 * @param width a {@link java.lang.String} object.
+	 * @param dasharray a int.
+	 * @param snmptype a int.
+	 * @param multilinkwidth a {@link java.lang.String} object.
+	 * @param multilinkdasharray a int.
+	 */
 	public Link(int id,String speed, String text, String width, int dasharray,int snmptype, String multilinkwidth, int multilinkdasharray) {
 		super();
 		this.id=id;
@@ -64,65 +79,145 @@ public class Link {
 	
 	
 	
+	/**
+	 * <p>Getter for the field <code>multilinkwidth</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getMultilinkwidth() {
         return multilinkwidth;
     }
 
 
 
+    /**
+     * <p>Setter for the field <code>multilinkwidth</code>.</p>
+     *
+     * @param multilinkwidth a {@link java.lang.String} object.
+     */
     public void setMultilinkwidth(String multilinkwidth) {
         this.multilinkwidth = multilinkwidth;
     }
 
 
 
+    /**
+     * <p>Getter for the field <code>multilinkdasharray</code>.</p>
+     *
+     * @return a int.
+     */
     public int getMultilinkdasharray() {
         return multilinkdasharray;
     }
 
 
 
+    /**
+     * <p>Setter for the field <code>multilinkdasharray</code>.</p>
+     *
+     * @param multilinkdasharray a int.
+     */
     public void setMultilinkdasharray(int multilinkdasharray) {
         this.multilinkdasharray = multilinkdasharray;
     }
 
 
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a int.
+     */
     public int getId() {
 		return id;
 	}
 
+	/**
+	 * <p>Setter for the field <code>id</code>.</p>
+	 *
+	 * @param id a int.
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	/**
+	 * <p>Getter for the field <code>dasharray</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDasharray() {
 		return dasharray;
 	}
+	/**
+	 * <p>Setter for the field <code>dasharray</code>.</p>
+	 *
+	 * @param dasharray a int.
+	 */
 	public void setDasharray(int dasharray) {
 		this.dasharray = dasharray;
 	}
+	/**
+	 * <p>Getter for the field <code>speed</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getSpeed() {
 		return speed;
 	}
+	/**
+	 * <p>Setter for the field <code>speed</code>.</p>
+	 *
+	 * @param speed a {@link java.lang.String} object.
+	 */
 	public void setSpeed(String speed) {
 		this.speed = speed;
 	}
+	/**
+	 * <p>Getter for the field <code>text</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getText() {
 		return text;
 	}
+	/**
+	 * <p>Setter for the field <code>text</code>.</p>
+	 *
+	 * @param text a {@link java.lang.String} object.
+	 */
 	public void setText(String text) {
 		this.text = text;
 	}
+	/**
+	 * <p>Getter for the field <code>width</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getWidth() {
 		return width;
 	}
+	/**
+	 * <p>Setter for the field <code>width</code>.</p>
+	 *
+	 * @param width a {@link java.lang.String} object.
+	 */
 	public void setWidth(String width) {
 		this.width = width;
 	}
+	/**
+	 * <p>Getter for the field <code>snmptype</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getSnmptype() {
 		return snmptype;
 	}
+	/**
+	 * <p>Setter for the field <code>snmptype</code>.</p>
+	 *
+	 * @param snmptype a int.
+	 */
 	public void setSnmptype(int snmptype) {
 		this.snmptype = snmptype;
 	}

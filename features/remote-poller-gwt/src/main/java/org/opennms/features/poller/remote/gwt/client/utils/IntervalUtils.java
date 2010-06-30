@@ -7,8 +7,23 @@ import java.util.TreeSet;
 
 import org.opennms.features.poller.remote.gwt.client.utils.Interval;
 
+/**
+ * <p>IntervalUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class IntervalUtils {
 
+    /**
+     * <p>invert</p>
+     *
+     * @param beginning a {@link java.util.Date} object.
+     * @param end a {@link java.util.Date} object.
+     * @param intervals a {@link java.util.Set} object.
+     * @return a {@link java.util.Set} object.
+     */
     public static Set<Interval> invert(final Date beginning, final Date end, final Set<Interval> intervals) {
         if (intervals.size() == 0) {
             final Set<Interval> newIntervals = getIntervalSet();
@@ -50,6 +65,12 @@ public class IntervalUtils {
         return invertedIntervals;
     }
 
+    /**
+     * <p>normalize</p>
+     *
+     * @param intervals a {@link java.util.Set} object.
+     * @return a {@link java.util.Set} object.
+     */
     public static Set<Interval> normalize(final Set<Interval> intervals) {
         Interval lastInterval = null;
 
@@ -77,6 +98,11 @@ public class IntervalUtils {
         return combinedIntervals;
     }
 
+    /**
+     * <p>getIntervalSet</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public static Set<Interval> getIntervalSet() {
         return new TreeSet<Interval>(new Comparator<Interval>() {
             public int compare(Interval o1, Interval o2) {

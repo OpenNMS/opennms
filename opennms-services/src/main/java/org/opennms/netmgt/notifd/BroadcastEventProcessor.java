@@ -95,9 +95,13 @@ import org.opennms.netmgt.xml.event.Value;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>BroadcastEventProcessor class.</p>
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class BroadcastEventProcessor implements EventListener {
     /**
@@ -121,6 +125,9 @@ public final class BroadcastEventProcessor implements EventListener {
     private static RE m_expandRE;
     
     
+    /**
+     * <p>Constructor for BroadcastEventProcessor.</p>
+     */
     public BroadcastEventProcessor() {
     }
 
@@ -198,11 +205,10 @@ public final class BroadcastEventProcessor implements EventListener {
 
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing.
-     * 
-     * @param event
-     *            The event .
      */
     public void onEvent(Event event) {
         
@@ -261,6 +267,8 @@ public final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
+     * <p>computeNullSafeStatus</p>
+     *
      * @return false if status is not defined in configuration as "on".
      */
     public boolean computeNullSafeStatus() {
@@ -414,6 +422,15 @@ public final class BroadcastEventProcessor implements EventListener {
         }
     }
 
+    /**
+     * <p>sendResolvedNotificationsToUser</p>
+     *
+     * @param queueID a {@link java.lang.String} object.
+     * @param targetName a {@link java.lang.String} object.
+     * @param commands an array of {@link java.lang.String} objects.
+     * @param params a {@link java.util.Map} object.
+     * @throws java.lang.Exception if any.
+     */
     protected void sendResolvedNotificationsToUser(String queueID, String targetName, String[] commands, Map<String, String> params) throws Exception {
         int noticeId = -1;
         NoticeQueue noticeQueue = null;
@@ -777,14 +794,15 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * A parameter expansion algorithm, designed to replace strings delimited by
      * percent signs '%' with a value supplied by a Map object.
-     * 
-     * <p>NOTE: This function only replaces one particular parameter, the 
-     * <code>%noticeid%</code> parameter.</p> 
-     * 
+     *
+     * <p>NOTE: This function only replaces one particular parameter, the
+     * <code>%noticeid%</code> parameter.</p>
+     *
      * @param input
      *            the input string
      * @param paramMap
      *            a map that will supply the substitution values
+     * @return a {@link java.lang.String} object.
      */
     public static String expandNotifParms(final String input, final Map<String, String> paramMap) {
         String expanded = input;
@@ -993,14 +1011,21 @@ public final class BroadcastEventProcessor implements EventListener {
 
     /**
      * Return an id for this event listener
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "Notifd:BroadcastEventProcessor";
     }
 
     /**
-     * @param i
-     * @return
+     * <p>rebuildParameterMap</p>
+     *
+     * @param notifId a int.
+     * @param resolutionPrefix a {@link java.lang.String} object.
+     * @param skipNumericPrefix a boolean.
+     * @return a {@link java.util.Map} object.
+     * @throws java.lang.Exception if any.
      */
     public Map<String, String> rebuildParameterMap(final int notifId, final String resolutionPrefix, final boolean skipNumericPrefix) throws Exception {
         return getNotificationManager().rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
@@ -1012,13 +1037,15 @@ public final class BroadcastEventProcessor implements EventListener {
      * any of the calendar outages associated with the package apply to the
      * current time and the service's interface. If an outage applies it's name
      * is returned...otherwise null is returned.
-     * 
+     *
      * @return null if no outage found (indicating a notification may be sent)
      *         or the outage name, if an applicable outage is found (indicating
      *         notification should not be sent).
-     * @throws IOException
-     * @throws ValidationException
-     * @throws MarshalException
+     * @throws IOException if any.
+     * @throws ValidationException if any.
+     * @throws MarshalException if any.
+     * @param nodeId a long.
+     * @param theInterface a {@link java.lang.String} object.
      */
     public String scheduledOutage(long nodeId, String theInterface) {
         try {
@@ -1130,77 +1157,167 @@ public final class BroadcastEventProcessor implements EventListener {
         }
     }
 
+    /**
+     * <p>getDestinationPathManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.DestinationPathManager} object.
+     */
     public DestinationPathManager getDestinationPathManager() {
         return m_destinationPathManager;
     }
 
+    /**
+     * <p>setDestinationPathManager</p>
+     *
+     * @param destinationPathManager a {@link org.opennms.netmgt.config.DestinationPathManager} object.
+     */
     public void setDestinationPathManager(
             DestinationPathManager destinationPathManager) {
         m_destinationPathManager = destinationPathManager;
     }
 
+    /**
+     * <p>getEventManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventManager() {
         return m_eventManager;
     }
 
+    /**
+     * <p>setEventManager</p>
+     *
+     * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
     }
 
+    /**
+     * <p>getGroupManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.GroupManager} object.
+     */
     public GroupManager getGroupManager() {
         return m_groupManager;
     }
 
+    /**
+     * <p>setGroupManager</p>
+     *
+     * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
+     */
     public void setGroupManager(GroupManager groupManager) {
         m_groupManager = groupManager;
     }
 
+    /**
+     * <p>getNotifdConfigManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.NotifdConfigManager} object.
+     */
     public NotifdConfigManager getNotifdConfigManager() {
         return m_notifdConfigManager;
     }
 
+    /**
+     * <p>setNotifdConfigManager</p>
+     *
+     * @param notifdConfigManager a {@link org.opennms.netmgt.config.NotifdConfigManager} object.
+     */
     public void setNotifdConfigManager(NotifdConfigManager notifdConfigManager) {
         m_notifdConfigManager = notifdConfigManager;
     }
 
+    /**
+     * <p>getNotificationCommandManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.NotificationCommandManager} object.
+     */
     public NotificationCommandManager getNotificationCommandManager() {
         return m_notificationCommandManager;
     }
 
+    /**
+     * <p>setNotificationCommandManager</p>
+     *
+     * @param notificationCommandManager a {@link org.opennms.netmgt.config.NotificationCommandManager} object.
+     */
     public void setNotificationCommandManager(
             NotificationCommandManager notificationCommandManager) {
         m_notificationCommandManager = notificationCommandManager;
     }
 
+    /**
+     * <p>getNotificationManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.NotificationManager} object.
+     */
     public NotificationManager getNotificationManager() {
         return m_notificationManager;
     }
 
+    /**
+     * <p>setNotificationManager</p>
+     *
+     * @param notificationManager a {@link org.opennms.netmgt.config.NotificationManager} object.
+     */
     public void setNotificationManager(NotificationManager notificationManager) {
         m_notificationManager = notificationManager;
     }
 
+    /**
+     * <p>getPollOutagesConfigManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.PollOutagesConfigManager} object.
+     */
     public PollOutagesConfigManager getPollOutagesConfigManager() {
         return m_pollOutagesConfigManager;
     }
 
+    /**
+     * <p>setPollOutagesConfigManager</p>
+     *
+     * @param pollOutagesConfigManager a {@link org.opennms.netmgt.config.PollOutagesConfigManager} object.
+     */
     public void setPollOutagesConfigManager(
             PollOutagesConfigManager pollOutagesConfigManager) {
         m_pollOutagesConfigManager = pollOutagesConfigManager;
     }
 
+    /**
+     * <p>getUserManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.UserManager} object.
+     */
     public UserManager getUserManager() {
         return m_userManager;
     }
 
+    /**
+     * <p>setUserManager</p>
+     *
+     * @param userManager a {@link org.opennms.netmgt.config.UserManager} object.
+     */
     public void setUserManager(UserManager userManager) {
         m_userManager = userManager;
     }
 
+    /**
+     * <p>getNoticeQueues</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public synchronized Map<String, NoticeQueue> getNoticeQueues() {
         return m_noticeQueues;
     }
 
+    /**
+     * <p>setNoticeQueues</p>
+     *
+     * @param noticeQueues a {@link java.util.Map} object.
+     */
     public void setNoticeQueues(Map<String, NoticeQueue> noticeQueues) {
         m_noticeQueues = noticeQueues;
     }

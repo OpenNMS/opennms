@@ -60,9 +60,13 @@ import org.opennms.netmgt.config.DataSourceFactory;
 /**
  * A servlet that handles querying the database for node, interface, service
  * combinations for use in setting up SNMP data collection per interface
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SnmpGetNodesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -71,6 +75,11 @@ public class SnmpGetNodesServlet extends HttpServlet {
 
     private static final String NODE_QUERY = "SELECT nodeid, nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ifservices WHERE serviceid = ? ) AND nodeid IN (SELECT nodeid FROM ipinterface Where ismanaged != 'D') ORDER BY nodelabel, nodeid";
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
@@ -78,6 +87,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(true);
 

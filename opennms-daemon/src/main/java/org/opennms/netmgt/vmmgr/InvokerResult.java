@@ -49,6 +49,14 @@ class InvokerResult {
     private Object m_result;
     private Throwable m_throwable;
     
+    /**
+     * <p>Constructor for InvokerResult.</p>
+     *
+     * @param service a {@link org.opennms.netmgt.config.service.Service} object.
+     * @param mbean a {@link javax.management.ObjectInstance} object.
+     * @param result a {@link java.lang.Object} object.
+     * @param throwable a {@link java.lang.Throwable} object.
+     */
     public InvokerResult(Service service, ObjectInstance mbean, Object result, Throwable throwable) {
         m_service = service;
         m_mbean = mbean;
@@ -56,18 +64,38 @@ class InvokerResult {
         m_throwable = throwable;
     }
     
+    /**
+     * <p>getMbean</p>
+     *
+     * @return a {@link javax.management.ObjectInstance} object.
+     */
     public ObjectInstance getMbean() {
         return m_mbean;
     }
     
+    /**
+     * <p>getResult</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     */
     public Object getResult() {
         return m_result;
     }
     
+    /**
+     * <p>getThrowable</p>
+     *
+     * @return a {@link java.lang.Throwable} object.
+     */
     public Throwable getThrowable() {
         return m_throwable;
     }
 
+    /**
+     * <p>getService</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.service.Service} object.
+     */
     public Service getService() {
         return m_service;
     }

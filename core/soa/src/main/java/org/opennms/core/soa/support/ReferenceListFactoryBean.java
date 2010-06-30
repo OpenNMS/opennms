@@ -43,6 +43,7 @@ import org.springframework.util.Assert;
  * ReferenceFactoryBean
  *
  * @author brozow
+ * @version $Id: $
  */
 public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, RegistrationListener {
     
@@ -52,26 +53,57 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
     
     private List<Object> m_providerRegistrations = new CopyOnWriteArrayList<Object>();
 
+    /**
+     * <p>setServiceRegistry</p>
+     *
+     * @param serviceRegistry a {@link org.opennms.core.soa.ServiceRegistry} object.
+     */
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         m_serviceRegistry = serviceRegistry;
     }
     
+    /**
+     * <p>setServiceInterface</p>
+     *
+     * @param serviceInterface a {@link java.lang.Class} object.
+     */
     public void setServiceInterface(Class<?> serviceInterface) {
         m_serviceInterface = serviceInterface;
     }
     
+    /**
+     * <p>getObject</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     * @throws java.lang.Exception if any.
+     */
     public Object getObject() throws Exception {
         return m_providerRegistrations;
     }
     
+    /**
+     * <p>getObjectType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<?> getObjectType() {
         return List.class;
     }
 
+    /**
+     * <p>isSingleton</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSingleton() {
         return true;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @SuppressWarnings("unchecked")
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_serviceRegistry, "The serviceRegistry must be set");
@@ -80,6 +112,7 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
         m_serviceRegistry.addListener(m_serviceInterface, this, true);
     }
 
+    /** {@inheritDoc} */
     public void providerRegistered(Registration registration, Object provider) {
         m_providerRegistrations.add(provider);
         
@@ -88,6 +121,7 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
         }
     }
 
+    /** {@inheritDoc} */
     public void providerUnregistered(Registration registration, Object provider) {
         m_providerRegistrations.remove(provider);
         
@@ -97,15 +131,30 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
         
     }
     
+    /**
+     * <p>setListener</p>
+     *
+     * @param listener a {@link org.opennms.core.soa.RegistrationListener} object.
+     */
     public void setListener(RegistrationListener<?> listener) {
     	addListener(listener);
     }
     
+    /**
+     * <p>addListener</p>
+     *
+     * @param listener a {@link org.opennms.core.soa.RegistrationListener} object.
+     */
     @SuppressWarnings("unchecked")
     public void addListener(RegistrationListener<?> listener) {
         m_listeners.add((RegistrationListener<Object>) listener);
     }
     
+    /**
+     * <p>removeListener</p>
+     *
+     * @param listener a {@link org.opennms.core.soa.RegistrationListener} object.
+     */
     public void removeListener(RegistrationListener<?> listener) {
         m_listeners.remove(listener);
     }

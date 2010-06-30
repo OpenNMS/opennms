@@ -11,6 +11,15 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import de.novanic.eventservice.client.event.RemoteEventService;
 import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 
+package org.opennms.features.poller.remote.gwt.client;
+
+
+// import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import de.novanic.eventservice.client.event.RemoteEventService;
+import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 final class EventServiceInitializer extends InitializationCommand.DataLoader {
     /**
      * 
@@ -24,6 +33,7 @@ final class EventServiceInitializer extends InitializationCommand.DataLoader {
         m_locationManager = locationManager;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void load() {
         LocationListener locationListener = new DefaultLocationListener(m_locationManager);

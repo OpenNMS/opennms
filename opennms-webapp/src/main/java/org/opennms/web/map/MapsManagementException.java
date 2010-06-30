@@ -37,9 +37,13 @@ package org.opennms.web.map;
 
 /**
  * Signals that an attempt to obtain the map denoted by a specified identifier has failed.
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class MapsManagementException extends MapsException {
     private static final long serialVersionUID = 1L;
@@ -53,6 +57,7 @@ public class MapsManagementException extends MapsException {
 
     /**
      * Create a new MapNotFoundException with the String specified as an error message.
+     *
      * @param msg   The error message for the exception.
      */
     public MapsManagementException(String msg) {

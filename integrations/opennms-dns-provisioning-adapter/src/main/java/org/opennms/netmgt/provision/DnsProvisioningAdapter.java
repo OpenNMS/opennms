@@ -63,9 +63,9 @@ import org.xbill.DNS.Update;
 
 /**
  * A Dynamic DNS provisioning adapter for integration with OpenNMS Provisioning daemon API.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
     
@@ -84,6 +84,11 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     
     private volatile static ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nodeDao, "DnsProvisioner requires a NodeDao which is not null.");
         
@@ -122,30 +127,57 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         
     }
 
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao dao) {
         m_nodeDao = dao;
     }
     
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return ADAPTER_NAME;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isNodeReady(AdapterOperation op) {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         if (m_resolver == null) {
@@ -228,10 +260,20 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         return ThreadCategory.getInstance(DnsProvisioningAdapter.class);
     }
 
+    /**
+     * <p>setTemplate</p>
+     *
+     * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public void setTemplate(TransactionTemplate template) {
         m_template = template;
     }
 
+    /**
+     * <p>getTemplate</p>
+     *
+     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public TransactionTemplate getTemplate() {
         return m_template;
     }

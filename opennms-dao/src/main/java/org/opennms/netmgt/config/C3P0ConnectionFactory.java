@@ -63,6 +63,12 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+/**
+ * <p>C3P0ConnectionFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class C3P0ConnectionFactory implements ClosableDataSource {
 
     /*    private static final int DEFAULT_AQUIRE_INCREMENT = 5;
@@ -94,18 +100,49 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
      */    
     private ComboPooledDataSource m_pool;
 
+    /**
+     * <p>Constructor for C3P0ConnectionFactory.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @param dsName a {@link java.lang.String} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.beans.PropertyVetoException if any.
+     * @throws java.sql.SQLException if any.
+     */
     protected C3P0ConnectionFactory(InputStream stream, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         log().info("C3P0ConnectionFactory: setting up data sources from input stream.");
         JdbcDataSource ds = marshalDataSourceFromConfig(stream, dsName);
         initializePool(ds);
     }
 
+    /**
+     * <p>Constructor for C3P0ConnectionFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @param dsName a {@link java.lang.String} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.beans.PropertyVetoException if any.
+     * @throws java.sql.SQLException if any.
+     */
     protected C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         log().info("C3P0ConnectionFactory: setting up data sources from reader argument.");
         JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
         initializePool(ds);
     }
 
+    /**
+     * <p>Constructor for C3P0ConnectionFactory.</p>
+     *
+     * @param configFile a {@link java.lang.String} object.
+     * @param dsName a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.beans.PropertyVetoException if any.
+     * @throws java.sql.SQLException if any.
+     */
     protected C3P0ConnectionFactory(String configFile, String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
         /*
          * Set the system identifier for the source of the input stream.
@@ -122,11 +159,31 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         }
     }
 
+    /**
+     * <p>marshalDataSourceFromConfig</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @param dsName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public static JdbcDataSource marshalDataSourceFromConfig(final InputStream stream, String dsName) throws MarshalException, ValidationException {
         DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, stream);
         return validateDataSourceConfiguration(dsName, dsc);
     }
 
+    /**
+     * <p>marshalDataSourceFromConfig</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @param dsName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.beans.PropertyVetoException if any.
+     * @throws java.sql.SQLException if any.
+     */
     @SuppressWarnings("deprecation")
     public static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
@@ -163,67 +220,143 @@ public class C3P0ConnectionFactory implements ClosableDataSource {
         }
     }
 
+    /**
+     * <p>getConnection</p>
+     *
+     * @return a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public Connection getConnection() throws SQLException {
         return m_pool.getConnection();
     }
 
+    /**
+     * <p>getPool</p>
+     *
+     * @return a {@link com.mchange.v2.c3p0.ComboPooledDataSource} object.
+     */
     public ComboPooledDataSource getPool() {
         return m_pool;
     }
 
+    /**
+     * <p>setPool</p>
+     *
+     * @param pool a {@link com.mchange.v2.c3p0.ComboPooledDataSource} object.
+     */
     public void setPool(ComboPooledDataSource pool) {
         m_pool = pool;
     }
 
+    /**
+     * <p>getUrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrl() {
         return m_pool.getJdbcUrl();
     }
 
+    /**
+     * <p>setUrl</p>
+     *
+     * @param url a {@link java.lang.String} object.
+     */
     public void setUrl(String url) {
         m_pool.setJdbcUrl(url);
     }
 
+    /**
+     * <p>getUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUser() {
         return m_pool.getUser();
     }
 
+    /**
+     * <p>setUser</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public void setUser(String user) {
         m_pool.setUser(user);
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_pool;
     }
 
+    /** {@inheritDoc} */
     public Connection getConnection(String username, String password) throws SQLException {
         return m_pool.getConnection(username, password);
     }
 
+    /**
+     * <p>getLogWriter</p>
+     *
+     * @return a {@link java.io.PrintWriter} object.
+     * @throws java.sql.SQLException if any.
+     */
     public PrintWriter getLogWriter() throws SQLException {
         return m_pool.getLogWriter();
     }
 
+    /** {@inheritDoc} */
     public void setLogWriter(PrintWriter out) throws SQLException {
         m_pool.setLogWriter(out);
     }
 
+    /** {@inheritDoc} */
     public void setLoginTimeout(int seconds) throws SQLException {
         m_pool.setLoginTimeout(seconds);
     }
 
+    /**
+     * <p>getLoginTimeout</p>
+     *
+     * @return a int.
+     * @throws java.sql.SQLException if any.
+     */
     public int getLoginTimeout() throws SQLException {
         return m_pool.getLoginTimeout();
     }
 
+    /**
+     * <p>close</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void close() throws SQLException {
         log().info("Closing c3p0 pool");
         m_pool.close();
     }
 
+    /**
+     * <p>unwrap</p>
+     *
+     * @param iface a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws java.sql.SQLException if any.
+     */
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null;  //TODO
     }
 
+    /**
+     * <p>isWrapperFor</p>
+     *
+     * @param iface a {@link java.lang.Class} object.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;  //TODO
     }

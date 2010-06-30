@@ -6,9 +6,18 @@ import java.util.Map;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.protocols.jmx.connectors.JMXSecureConnectionFactory;
 
+/**
+ * <p>JMXSecureCollector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JMXSecureCollector extends JMXCollector
 {
 
+	/**
+	 * <p>Constructor for JMXSecureCollector.</p>
+	 */
 	public JMXSecureCollector()
 	{
 		//The value of serviceName will be assumed as a collection name
@@ -24,6 +33,7 @@ public class JMXSecureCollector extends JMXCollector
 		setUseFriendlyName(true);
 	}
 
+    /** {@inheritDoc} */
     public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address)
 	{
 		return JMXSecureConnectionFactory.getMBeanServerConnection(parameterMap, address);

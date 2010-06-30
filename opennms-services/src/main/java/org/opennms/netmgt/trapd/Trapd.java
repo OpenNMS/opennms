@@ -67,24 +67,54 @@ import org.springframework.util.Assert;
  * SnmpTrapSession and implements the SnmpTrapHandler to get callbacks when
  * traps are received
  * </p>
- * 
+ *
  * <p>
  * The received traps are converted into XML and sent to eventd
  * </p>
- * 
+ *
  * <p>
  * <strong>Note: </strong>Trapd is a PausableFiber so as to receive control
  * events. However, a 'pause' on Trapd has no impact on the receiving and
  * processing of traps
  * </p>
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapProcessorFactory,
                                     TrapNotificationListener,
@@ -126,17 +156,23 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
      * OpenNMS.trapd</EM>. The trap session is started on the default port, as
      * defined by the SNMP libarary.
      * </P>
-     * 
+     *
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      */
     public Trapd() {
         super("OpenNMS.Trapd");
     }
     
+    /**
+     * <p>createTrapProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
+     */
     public TrapProcessor createTrapProcessor() {
         return new EventCreator(m_trapdIpMgr);
     }
 
+    /** {@inheritDoc} */
     public void trapReceived(TrapNotification trapNotification) {
         addTrap(trapNotification);
     }
@@ -152,6 +188,9 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         }
     }
 
+    /**
+     * <p>onInit</p>
+     */
     public synchronized void onInit() {
         Assert.state(m_trapdIpMgr != null, "trapdIpMgr must be set");
         Assert.state(m_eventReader != null, "eventReader must be set");
@@ -196,10 +235,9 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     /**
      * Create the SNMP trap session and create the communication channel
      * to communicate with eventd.
-     * 
+     *
      * @exception java.lang.reflect.UndeclaredThrowableException
      *                if an unexpected database, or IO exception occurs.
-     * 
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      * @see org.opennms.protocols.snmp.SnmpTrapHandler
      */
@@ -296,54 +334,105 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
     /**
      * Returns the current status of the service.
-     * 
+     *
      * @return The service's status.
      */
     public synchronized int getStatus() {
         return m_status;
     }
 
+    /** {@inheritDoc} */
     public void trapError(int error, String msg) {
         log().warn("Error Processing Received Trap: error = " + error
                  + (msg != null ? ", ref = " + msg : ""));
     }
 
+    /**
+     * <p>getTrapdIpMgr</p>
+     *
+     * @return a {@link org.opennms.netmgt.trapd.TrapdIpMgr} object.
+     */
     public TrapdIpMgr getTrapdIpMgr() {
         return m_trapdIpMgr;
     }
 
+    /**
+     * <p>setTrapdIpMgr</p>
+     *
+     * @param trapdIpMgr a {@link org.opennms.netmgt.trapd.TrapdIpMgr} object.
+     */
     public void setTrapdIpMgr(TrapdIpMgr trapdIpMgr) {
         m_trapdIpMgr = trapdIpMgr;
     }
 
+    /**
+     * <p>getEventReader</p>
+     *
+     * @return a {@link org.opennms.netmgt.trapd.BroadcastEventProcessor} object.
+     */
     public BroadcastEventProcessor getEventReader() {
         return m_eventReader;
     }
 
+    /**
+     * <p>setEventReader</p>
+     *
+     * @param eventReader a {@link org.opennms.netmgt.trapd.BroadcastEventProcessor} object.
+     */
     public void setEventReader(BroadcastEventProcessor eventReader) {
         m_eventReader = eventReader;
     }
 
+    /**
+     * <p>getBacklogQ</p>
+     *
+     * @return a {@link org.opennms.core.queue.FifoQueue} object.
+     */
     public FifoQueue<TrapNotification> getBacklogQ() {
         return m_backlogQ;
     }
 
+    /**
+     * <p>setBacklogQ</p>
+     *
+     * @param backlogQ a {@link org.opennms.core.queue.FifoQueue} object.
+     */
     public void setBacklogQ(FifoQueue<TrapNotification> backlogQ) {
         m_backlogQ = backlogQ;
     }
 
+    /**
+     * <p>getProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.trapd.TrapQueueProcessor} object.
+     */
     public TrapQueueProcessor getProcessor() {
         return m_processor;
     }
 
+    /**
+     * <p>setProcessor</p>
+     *
+     * @param processor a {@link org.opennms.netmgt.trapd.TrapQueueProcessor} object.
+     */
     public void setProcessor(TrapQueueProcessor processor) {
         m_processor = processor;
     }
 
+    /**
+     * <p>getSnmpTrapPort</p>
+     *
+     * @return a int.
+     */
     public int getSnmpTrapPort() {
         return m_snmpTrapPort;
     }
     
+    /**
+     * <p>setSnmpTrapPort</p>
+     *
+     * @param snmpTrapPort a int.
+     */
     public void setSnmpTrapPort(int snmpTrapPort) {
         m_snmpTrapPort = snmpTrapPort;
     }

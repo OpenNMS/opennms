@@ -71,14 +71,29 @@ class DnsRecord {
 
     }
 
+    /**
+     * <p>getIp</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getIp() {
         return m_ip;
     }
 
+    /**
+     * <p>getZone</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getZone() {
         return m_zone;
     }
 
+    /**
+     * <p>getHostname</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHostname() {
         return m_hostname;
     }

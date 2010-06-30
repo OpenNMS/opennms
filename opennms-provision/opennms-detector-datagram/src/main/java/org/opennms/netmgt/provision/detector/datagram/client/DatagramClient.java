@@ -45,8 +45,10 @@ import org.opennms.netmgt.provision.support.Client;
 
 
 /**
- * @author brozow
+ * <p>DatagramClient class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     
@@ -55,6 +57,9 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.Client#close()
      */
+    /**
+     * <p>close</p>
+     */
     public void close() {
         m_socket.close();
     }
@@ -62,6 +67,7 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.Client#connect(java.net.InetAddress, int, int)
      */
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException {
         if (log().isDebugEnabled()) {
             log().debug("Addres: " + address + " port: " + port + " timeout: " + timeout);
@@ -75,6 +81,12 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.Client#receiveBanner()
      */
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link java.net.DatagramPacket} object.
+     * @throws java.io.IOException if any.
+     */
     public DatagramPacket receiveBanner() throws IOException {
         throw new UnsupportedOperationException("Client<DatagramPacket,DatagramPacket>.receiveBanner is not yet implemented");
         
@@ -82,6 +94,13 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.Client#sendRequest(java.lang.Object)
+     */
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link java.net.DatagramPacket} object.
+     * @return a {@link java.net.DatagramPacket} object.
+     * @throws java.io.IOException if any.
      */
     public DatagramPacket sendRequest(DatagramPacket request) throws IOException {
 

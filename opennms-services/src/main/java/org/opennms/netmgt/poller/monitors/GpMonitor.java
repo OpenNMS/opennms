@@ -61,13 +61,25 @@ import org.opennms.netmgt.utils.ExecRunner;
  * The external script or program will be passed two options: --hostname, the IP
  * address of the host to be polled, and --timeout, the timeout in seconds.
  * Additional options or arguments can be specified in the poller configuration.
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mike@opennms.org">Mike </A>
- * @author Weave
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
+ * @author Weave
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
+ * @version $Id: $
  */
 
 // this is marked not distributable because it relieds on the dhcpd deamon of opennms
@@ -86,27 +98,19 @@ final public class GpMonitor extends IPv4Monitor {
                                                         // read()
 
     /**
+     * {@inheritDoc}
+     *
      * Poll the specified address for service availability.
-     * 
+     *
      * During the poll an attempt is made to call the specified external script
      * or program. If the connection request is successful, the banner line
      * returned as standard output by the script or program is parsed for a
      * partial match with the banner string specified in the poller
      * configuration. Provided that the script's response is valid we set the
      * service status to SERVICE_AVAILABLE and return.
-     * 
+     *
      * The timeout is handled by ExecRunner and is also passed as a parameter to
      * the script or program being called.
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
-     * 
-     * @throws java.lang.RuntimeException
-     *             Thrown if the interface experiences error during the poll.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();

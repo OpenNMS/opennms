@@ -61,6 +61,7 @@ import org.springframework.util.ClassUtils;
  * AnnotationBasedEventListenerAdapter
  *
  * @author brozow
+ * @version $Id: $
  */
 public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, InitializingBean, DisposableBean {
     
@@ -74,6 +75,13 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     private final List<Method> m_eventPostProcessors = new LinkedList<Method>();
     private final SortedSet<Method> m_exceptionHandlers = new TreeSet<Method>(createExceptionHandlerComparator());
     
+    /**
+     * <p>Constructor for AnnotationBasedEventListenerAdapter.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param annotatedListener a {@link java.lang.Object} object.
+     * @param subscriptionService a {@link org.opennms.netmgt.model.events.EventSubscriptionService} object.
+     */
     public  AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventSubscriptionService subscriptionService) {
         m_name = name;
         m_annotatedListener = annotatedListener;
@@ -81,10 +89,19 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         afterPropertiesSet();
     }
     
+    /**
+     * <p>Constructor for AnnotationBasedEventListenerAdapter.</p>
+     *
+     * @param annotatedListener a {@link java.lang.Object} object.
+     * @param subscriptionService a {@link org.opennms.netmgt.model.events.EventSubscriptionService} object.
+     */
     public AnnotationBasedEventListenerAdapter(Object annotatedListener, EventSubscriptionService subscriptionService) {
         this(null, annotatedListener, subscriptionService);
     }
     
+    /**
+     * <p>Constructor for AnnotationBasedEventListenerAdapter.</p>
+     */
     public AnnotationBasedEventListenerAdapter() {
         // this is here to support dependency injection style 
     }
@@ -92,15 +109,27 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#getName()
      */
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
     
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
     
     /**
+     * <p>getLogPrefix</p>
+     *
      * @return the logPrefix
      */
     public String getLogPrefix() {
@@ -108,6 +137,8 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
 
     /**
+     * <p>setLogPrefix</p>
+     *
      * @param logPrefix the logPrefix to set
      */
     public void setLogPrefix(String logPrefix) {
@@ -117,6 +148,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
+    /** {@inheritDoc} */
     public void onEvent(Event event) {
         if (event.getUei() == null) {
             return;
@@ -156,6 +188,13 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
     }
 
+    /**
+     * <p>postprocessEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws java.lang.IllegalAccessException if any.
+     * @throws java.lang.reflect.InvocationTargetException if any.
+     */
     protected void postprocessEvent(Event event) throws IllegalAccessException,
             InvocationTargetException {
         for(Method m : m_eventPostProcessors) {
@@ -163,11 +202,26 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         }
     }
 
+    /**
+     * <p>processEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param method a {@link java.lang.reflect.Method} object.
+     * @throws java.lang.IllegalAccessException if any.
+     * @throws java.lang.reflect.InvocationTargetException if any.
+     */
     protected void processEvent(Event event, Method method)
             throws IllegalAccessException, InvocationTargetException {
         method.invoke(m_annotatedListener, event);
     }
 
+    /**
+     * <p>preprocessEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws java.lang.IllegalAccessException if any.
+     * @throws java.lang.reflect.InvocationTargetException if any.
+     */
     protected void preprocessEvent(Event event) throws IllegalAccessException,
             InvocationTargetException {
         for(Method m : m_eventPreProcessors) {
@@ -177,6 +231,12 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     
     
 
+    /**
+     * <p>handleException</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     protected void handleException(Event event, Throwable cause) {
         
         for(Method method : m_exceptionHandlers) {
@@ -195,10 +255,18 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         LogUtils.debugf(this, cause, "Caught an unhandled exception while processing event %s, for listener %s. Add EventExceptionHandler annotation to the listener", event.getUei(), m_annotatedListener);
     }
 
+    /**
+     * <p>setAnnotatedListener</p>
+     *
+     * @param annotatedListener a {@link java.lang.Object} object.
+     */
     public void setAnnotatedListener(Object annotatedListener) {
         m_annotatedListener = annotatedListener;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_subscriptionService != null, "subscriptionService must be set");        
         Assert.state(m_annotatedListener != null, "must set the annotatedListener property");
@@ -328,14 +396,27 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         Assert.state(method.getParameterTypes()[0].isAssignableFrom(Event.class), "Parameter of incorrent type for method "+method+". EventHandler methods must take a single event argument");
     }
     
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         m_subscriptionService.removeEventListener(this);
     }
 
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void destroy() throws Exception {
         stop();
     }
 
+    /**
+     * <p>setEventSubscriptionService</p>
+     *
+     * @param subscriptionService a {@link org.opennms.netmgt.model.events.EventSubscriptionService} object.
+     */
     public void setEventSubscriptionService(EventSubscriptionService subscriptionService) {
         m_subscriptionService = subscriptionService;
     }

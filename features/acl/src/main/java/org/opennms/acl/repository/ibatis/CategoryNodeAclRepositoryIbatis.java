@@ -45,27 +45,38 @@ import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
-/** 
+/**
+ * <p>CategoryNodeAclRepositoryIbatis class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Repository("categoryNodeRepository")
 public class CategoryNodeAclRepositoryIbatis extends SqlMapClientTemplate implements ItemAclRepository {
 
+    /** {@inheritDoc} */
     @Autowired
     @Override
     public void setSqlMapClient(@Qualifier("onmsSqlMapClient") SqlMapClient sqlMapClient) {
         super.setSqlMapClient(sqlMapClient);
     }
 
+    /**
+     * <p>getItems</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<?> getItems() {
         return queryForList("selectCategoryNodes");
     }
 
+    /** {@inheritDoc} */
     public List<?> getAuthorityItems(List<Integer> items) {
         return items.size() > 0 ? queryForList("selectAuthorityCategories", items) : new ArrayList<NodeONMSDTO>(0);
     }
 
+    /** {@inheritDoc} */
     public List<?> getFreeItems(List<Integer> items) {
         return items.size() > 0 ? queryForList("selectFreeCategoryNodes", items) : queryForList("selectCategoryNodes");
     }

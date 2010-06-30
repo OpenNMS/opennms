@@ -5,12 +5,24 @@ import org.opennms.web.filter.SQLType;
 
 
 
-/** Encapsulates all responder filtering functionality. */
+/**
+ * Encapsulates all responder filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ResponderFilter extends EqualsFilter<String> {
+    /** Constant <code>TYPE="responder"</code> */
     public static final String TYPE = "responder";
 
     //protected String responder;
 
+    /**
+     * <p>Constructor for ResponderFilter.</p>
+     *
+     * @param responder a {@link java.lang.String} object.
+     */
     public ResponderFilter(String responder) {
         super(TYPE, SQLType.STRING, "ANSWEREDBY", "answeredBy", responder);
         //this.responder = responder;

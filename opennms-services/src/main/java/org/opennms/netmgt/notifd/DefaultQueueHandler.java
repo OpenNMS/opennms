@@ -51,10 +51,12 @@ import org.opennms.core.utils.TimeConverter;
  * garbage collection list that is periodically polled and culled based upon the
  * status of the process or how long the process is run. If the process has run
  * long than allocated it is terminated during collection.
- * 
+ *
  * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
  * @author <a href="http://www.opennms.org/>OpenNMS</a>
- * 
+ * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
+ * @author <a href="http://www.opennms.org/>OpenNMS</a>
+ * @version $Id: $
  */
 public class DefaultQueueHandler implements NotifdQueueHandler {
     /**
@@ -78,29 +80,23 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     private int m_status;
 
     /**
-     * 
+     * <p>Constructor for DefaultQueueHandler.</p>
      */
     public DefaultQueueHandler() {
         m_status = START_PENDING;
     }
 
-    /**
-     * 
-     */
+    /** {@inheritDoc} */
     public void setQueueID(String queueID) {
         m_queueID = queueID;
     }
 
-    /**
-     * 
-     */
+    /** {@inheritDoc} */
     public synchronized void setNoticeQueue(NoticeQueue noticeQueue) {
         m_noticeQueue = noticeQueue;
     }
 
-    /**
-     * 
-     */
+    /** {@inheritDoc} */
     public void setInterval(String interval) {
         m_interval = TimeConverter.convertToMillis(interval);
     }
@@ -111,7 +107,6 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * commands. If the thread is interrupted or the status changes to
      * <code>STOP_PENDING</code> then the method will return as quickly as
      * possible.
-     * 
      */
     public void run() {
         synchronized (this) {
@@ -163,7 +158,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     } // end run
 
     /**
-     * 
+     * <p>processQueue</p>
      */
     public void processQueue() {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
@@ -203,10 +198,9 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * RUNNING</code>
      * when the fiber finishes initializing and begins processing the
      * encapsulated queue.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
-     * 
      */
     public synchronized void start() {
         m_status = STARTING;
@@ -219,10 +213,9 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * Stops a currently running fiber. If the fiber has already been stopped
      * then the command is silently ignored. If the fiber was never started then
      * an exception is generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber was never started.
-     * 
      */
     public synchronized void stop() {
         if (m_status != STOPPED)
@@ -235,10 +228,9 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * Pauses a currently running fiber. If the fiber was not in a running or
      * resuming state then the command is silently discarded. If the fiber is
      * not running or has terminated then an exception is generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
-     * 
      */
     public synchronized void pause() {
         if (m_status == RUNNING || m_status == RESUME_PENDING) {
@@ -251,10 +243,9 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * Resumes the fiber if it is paused. If the fiber was not in a paused or
      * pause pending state then the request is discarded. If the fiber has not
      * been started or has already stopped then an exception is generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
-     * 
      */
     public synchronized void resume() {
         if (m_status == PAUSED || m_status == PAUSE_PENDING) {
@@ -265,7 +256,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
 
     /**
      * Returns the name of this fiber.
-     * 
+     *
      * @return The name of the fiber.
      */
     public String getName() {
@@ -274,9 +265,8 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
 
     /**
      * Returns the current status of the pausable fiber.
-     * 
+     *
      * @return The current status of the fiber.
-     * 
      * @see org.opennms.core.fiber.PausableFiber
      * @see org.opennms.core.fiber.Fiber
      */

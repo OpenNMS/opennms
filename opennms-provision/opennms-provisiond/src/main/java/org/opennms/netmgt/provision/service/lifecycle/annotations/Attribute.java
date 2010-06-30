@@ -40,6 +40,7 @@ import java.lang.annotation.Target;
  * Attribute
  *
  * @author brozow
+ * @version $Id: $
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})

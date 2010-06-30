@@ -36,32 +36,105 @@ import java.util.List;
 
 import org.opennms.netmgt.model.OnmsCriteria;
 
+/**
+ * <p>OnmsDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsDao<T, K extends Serializable> {
     
+    /**
+     * <p>initialize</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param <T> a T object.
+     * @param <K> a K object.
+     */
     void initialize(Object obj);
 
+    /**
+     * <p>flush</p>
+     */
     void flush();
 
+    /**
+     * <p>clear</p>
+     */
     void clear();
 
+    /**
+     * <p>countAll</p>
+     *
+     * @return a int.
+     */
     int countAll();
 
+    /**
+     * <p>delete</p>
+     *
+     * @param entity a T object.
+     */
     void delete(T entity);
 
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     List<T> findAll();
     
+    /**
+     * <p>findMatching</p>
+     *
+     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     * @return a {@link java.util.List} object.
+     */
     List<T> findMatching(OnmsCriteria criteria);
 
+    /**
+     * <p>countMatching</p>
+     *
+     * @param onmsCrit a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     * @return a int.
+     */
     int countMatching(final OnmsCriteria onmsCrit);
     
+    /**
+     * <p>get</p>
+     *
+     * @param id a K object.
+     * @return a T object.
+     */
     T get(K id);
 
+    /**
+     * <p>load</p>
+     *
+     * @param id a K object.
+     * @return a T object.
+     */
     T load(K id);
 
+    /**
+     * <p>save</p>
+     *
+     * @param entity a T object.
+     */
     void save(T entity);
 
+    /**
+     * <p>saveOrUpdate</p>
+     *
+     * @param entity a T object.
+     */
     void saveOrUpdate(T entity);
 
+    /**
+     * <p>update</p>
+     *
+     * @param entity a T object.
+     */
     void update(T entity);
 
 }

@@ -33,23 +33,56 @@
 package org.opennms.netmgt.mock;
 
 /**
+ * <p>MockVisitor interface.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public interface MockVisitor {
 
+    /**
+     * <p>visitContainer</p>
+     *
+     * @param c a {@link org.opennms.netmgt.mock.MockContainer} object.
+     */
     public void visitContainer(MockContainer c);
 
+    /**
+     * <p>visitElement</p>
+     *
+     * @param e a {@link org.opennms.netmgt.mock.MockElement} object.
+     */
     public void visitElement(MockElement e);
 
+    /**
+     * <p>visitInterface</p>
+     *
+     * @param i a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public void visitInterface(MockInterface i);
 
+    /**
+     * <p>visitNetwork</p>
+     *
+     * @param n a {@link org.opennms.netmgt.mock.MockNetwork} object.
+     */
     public void visitNetwork(MockNetwork n);
 
+    /**
+     * <p>visitNode</p>
+     *
+     * @param n a {@link org.opennms.netmgt.mock.MockNode} object.
+     */
     public void visitNode(MockNode n);
 
+    /**
+     * <p>visitService</p>
+     *
+     * @param s a {@link org.opennms.netmgt.mock.MockService} object.
+     */
     public void visitService(MockService s);
 
 }

@@ -24,6 +24,13 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * <p>LocationPanel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class LocationPanel extends Composite implements LocationPanelSelectEventHandler, TagResizeEventHandler, RequiresResize {
     
 	interface Binder extends UiBinder<Widget, LocationPanel> { }
@@ -39,6 +46,9 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	@UiField HTMLPanel filterOptionsPanel;
 	@UiField FlowPanel listsPanel;
 	
+	/**
+	 * <p>Constructor for LocationPanel.</p>
+	 */
 	public LocationPanel() {
 		super();
 		initWidget(BINDER.createAndBindUi(this));
@@ -49,6 +59,11 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		
 	}
 
+    /**
+     * <p>setEventBus</p>
+     *
+     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     */
     public void setEventBus(final HandlerManager eventBus) {
 	    // Remove any existing handler registrations
 	    for (HandlerRegistration registration : eventRegistrations) {
@@ -64,6 +79,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	    // eventRegistrations.add(m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this));
 	}
 
+    /** {@inheritDoc} */
     public void onLocationSelected(final LocationPanelSelectEvent event) {
         m_eventBus.fireEvent(event);
       
@@ -86,6 +102,11 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         applicationList.refreshApplicationListResize();
     }
 
+    /**
+     * <p>updateSelectedApplications</p>
+     *
+     * @param selectedApplications a {@link java.util.Set} object.
+     */
     public void updateSelectedApplications(final Set<ApplicationInfo> selectedApplications) {
         filterPanel.updateSelectedApplications(selectedApplications);
         applicationList.updateSelectedApplications(selectedApplications);
@@ -93,34 +114,71 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         resizeDockPanel();
     }
     
+    /**
+     * <p>updateApplicationNames</p>
+     *
+     * @param allApplicationNames a {@link java.util.Set} object.
+     */
     public void updateApplicationNames(final Set<String> allApplicationNames) {
         filterPanel.updateApplicationNames(allApplicationNames);
     }
 
+    /**
+     * <p>updateApplicationList</p>
+     *
+     * @param appList a {@link java.util.ArrayList} object.
+     */
     public void updateApplicationList(final ArrayList<ApplicationInfo> appList) {
         applicationList.updateList(appList);
     }
 
+    /**
+     * <p>updateLocationList</p>
+     *
+     * @param visibleLocations a {@link java.util.ArrayList} object.
+     */
     public void updateLocationList(final ArrayList<LocationInfo> visibleLocations) {
         locationList.updateList(visibleLocations);
     }
 
+    /**
+     * <p>selectTag</p>
+     *
+     * @param tag a {@link java.lang.String} object.
+     */
     public void selectTag(String tag) {
         tagPanel.selectTag(tag);
     }
 
+    /**
+     * <p>clearTagPanel</p>
+     */
     public void clearTagPanel() {
         tagPanel.clear();
     }
 
+    /**
+     * <p>addAllTags</p>
+     *
+     * @param tags a {@link java.util.Collection} object.
+     * @return a boolean.
+     */
     public boolean addAllTags(final Collection<String> tags) {
         return tagPanel.addAll(tags);
     }
 
+    /**
+     * <p>showApplicationFilters</p>
+     *
+     * @param isApplicationView a boolean.
+     */
     public void showApplicationFilters(boolean isApplicationView) {
         filterPanel.showApplicationFilters(isApplicationView);
     }
 
+    /**
+     * <p>resizeDockPanel</p>
+     */
     public void resizeDockPanel() {
 
         int verticalSpacer = 3;
@@ -130,10 +188,16 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         element.setAttribute("style", "position: absolute; top: " + newSize + "px; left: 0px; right: 0px; bottom: 0px;");
     }
 
+    /**
+     * <p>onTagPanelResize</p>
+     */
     public void onTagPanelResize() {
         resizeDockPanel();
     }
 
+    /**
+     * <p>onResize</p>
+     */
     public void onResize() {
         if(applicationList.isVisible()) {
             applicationList.refreshApplicationListResize();

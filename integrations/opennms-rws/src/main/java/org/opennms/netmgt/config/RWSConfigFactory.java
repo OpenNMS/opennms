@@ -58,18 +58,31 @@ import org.opennms.netmgt.ConfigFileConstants;
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
  * Poller service from the poller-configuration xml file.
- * 
+ *
  * A mapping of the configured URLs to the iplist they contain is built at
  * init() time so as to avoid numerous file reads.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class RWSConfigFactory extends RWSConfigManager {
     /**
@@ -89,21 +102,34 @@ public final class RWSConfigFactory extends RWSConfigManager {
 
     /**
      * Private constructor
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @param currentVersion a long.
+     * @param reader a {@link java.io.FileReader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
-
     @Deprecated
     public RWSConfigFactory(long currentVersion, FileReader reader) throws MarshalException, ValidationException, IOException {
         super(reader);
         m_currentVersion = currentVersion;
     }
 
+    /**
+     * <p>Constructor for RWSConfigFactory.</p>
+     *
+     * @param currentVersion a long.
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public RWSConfigFactory(long currentVersion, InputStream stream) throws MarshalException, ValidationException, IOException {
         super(stream);
         m_currentVersion = currentVersion;
@@ -112,13 +138,16 @@ public final class RWSConfigFactory extends RWSConfigManager {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -150,19 +179,20 @@ public final class RWSConfigFactory extends RWSConfigManager {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
      */
 //    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
 //        init();
 //        getInstance().update();
 //    }
-
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
@@ -178,9 +208,8 @@ public final class RWSConfigFactory extends RWSConfigManager {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -191,11 +220,23 @@ public final class RWSConfigFactory extends RWSConfigManager {
         return m_singleton;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.RWSConfig} object.
+     */
     public static synchronized void setInstance(RWSConfig instance) {
         m_singleton = instance;
         m_loaded = true;
     }
 
+    /**
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public synchronized void update() throws IOException, MarshalException, ValidationException {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RWS_CONFIG_FILE_NAME);

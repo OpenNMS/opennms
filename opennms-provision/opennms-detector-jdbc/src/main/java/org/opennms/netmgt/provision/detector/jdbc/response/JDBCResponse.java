@@ -38,14 +38,22 @@ import java.sql.SQLException;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * @author thedesloge
+ * <p>JDBCResponse class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class JDBCResponse {
     
     private ResultSet m_result;
     private boolean m_isValidProcedureCall = false;
     
+    /**
+     * <p>receive</p>
+     *
+     * @param conn a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void receive(Connection conn) throws SQLException {
         
         DatabaseMetaData metadata = conn.getMetaData();
@@ -55,6 +63,11 @@ public class JDBCResponse {
         
     }
     
+    /**
+     * <p>resultSetNotNull</p>
+     *
+     * @return a boolean.
+     */
     public boolean resultSetNotNull() {
         try {
             while (m_result.next())
@@ -74,19 +87,39 @@ public class JDBCResponse {
         return false;
     }
     
+    /**
+     * <p>validProcedureCall</p>
+     *
+     * @return a boolean.
+     */
     public boolean validProcedureCall(){
         return isValidProcedureCall();
     }
 
+    /**
+     * <p>setValidProcedureCall</p>
+     *
+     * @param isValidProcedureCall a boolean.
+     */
     public void setValidProcedureCall(boolean isValidProcedureCall) {
         m_isValidProcedureCall = isValidProcedureCall;
     }
 
+    /**
+     * <p>isValidProcedureCall</p>
+     *
+     * @return a boolean.
+     */
     public boolean isValidProcedureCall() {
         return m_isValidProcedureCall;
     }
 
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

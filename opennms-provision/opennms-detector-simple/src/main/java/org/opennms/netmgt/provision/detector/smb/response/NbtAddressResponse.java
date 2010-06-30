@@ -33,19 +33,32 @@ package org.opennms.netmgt.provision.detector.smb.response;
 import jcifs.netbios.NbtAddress;
 
 /**
- * @author thedesloge
+ * <p>NbtAddressResponse class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class NbtAddressResponse {
     
     private String m_address;
     private NbtAddress m_nbtAddress;
     
+    /**
+     * <p>receive</p>
+     *
+     * @param address a {@link java.lang.String} object.
+     * @param nbtAddress a {@link jcifs.netbios.NbtAddress} object.
+     */
     public void receive(String address, NbtAddress nbtAddress) {
         m_address = address;
         m_nbtAddress = nbtAddress;
     }
     
+    /**
+     * <p>validateAddressIsNotSame</p>
+     *
+     * @return a boolean.
+     */
     public boolean validateAddressIsNotSame() {
         if(m_nbtAddress.getHostName().equals(m_address)) {
            return false; 

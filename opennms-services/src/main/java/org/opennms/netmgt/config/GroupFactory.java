@@ -52,6 +52,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 
+/**
+ * <p>GroupFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GroupFactory extends GroupManager {
     /**
      * The static singleton instance object
@@ -75,16 +81,25 @@ public class GroupFactory extends GroupManager {
 
     /**
      * Constructor which parses the file
-     * @throws IOException 
-     * @throws FileNotFoundException 
-     * @throws ValidationException 
-     * @throws MarshalException 
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
      */
     public GroupFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         super();
         reload();
     }
 
+    /**
+     * <p>init</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
 
         if (s_instance == null || !s_initialized) {
@@ -97,13 +112,18 @@ public class GroupFactory extends GroupManager {
     /**
      * Singleton static call to get the only instance that should exist for the
      * GroupFactory
-     * 
+     *
      * @return the single group factory instance
      */
     public static synchronized GroupManager getInstance() {
         return s_instance;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param mgr a {@link org.opennms.netmgt.config.GroupManager} object.
+     */
     public static synchronized void setInstance(GroupManager mgr) {
         s_initialized = true;
         s_instance = mgr;
@@ -111,6 +131,11 @@ public class GroupFactory extends GroupManager {
 
     /**
      * Parses the groups.xml via the Castor classes
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         File confFile = ConfigFileConstants.getFile(ConfigFileConstants.GROUPS_CONF_FILE_NAME);
@@ -138,10 +163,7 @@ public class GroupFactory extends GroupManager {
         }
     }
 
-    /**
-     * @param data
-     * @throws IOException
-     */
+    /** {@inheritDoc} */
     protected void saveXml(String data) throws IOException {
         if (data != null) {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), "UTF-8");
@@ -152,7 +174,11 @@ public class GroupFactory extends GroupManager {
     }
 
     /**
-     * 
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_groupsConfFile.lastModified()) {

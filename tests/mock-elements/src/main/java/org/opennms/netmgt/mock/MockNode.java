@@ -36,10 +36,13 @@ package org.opennms.netmgt.mock;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
+ * <p>MockNode class.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public class MockNode extends MockContainer {
 
@@ -48,6 +51,13 @@ public class MockNode extends MockContainer {
     int m_nodeid;
     int m_nextIfIndex = 1;
 
+    /**
+     * <p>Constructor for MockNode.</p>
+     *
+     * @param network a {@link org.opennms.netmgt.mock.MockNetwork} object.
+     * @param nodeid a int.
+     * @param label a {@link java.lang.String} object.
+     */
     public MockNode(MockNetwork network, int nodeid, String label) {
         super(network);
         m_nodeid = nodeid;
@@ -55,11 +65,23 @@ public class MockNode extends MockContainer {
     }
 
     // model
+    /**
+     * <p>addInterface</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public MockInterface addInterface(String ipAddr) {
         return (MockInterface) addMember(new MockInterface(this, ipAddr));
     }
 
     // model
+    /**
+     * <p>getInterface</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public MockInterface getInterface(String ipAddr) {
         return (MockInterface) getMember(ipAddr);
     }
@@ -70,58 +92,115 @@ public class MockNode extends MockContainer {
     }
 
     // model
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_label;
     }
 
     // model
+    /**
+     * <p>getNetwork</p>
+     *
+     * @return a {@link org.opennms.netmgt.mock.MockNetwork} object.
+     */
     public MockNetwork getNetwork() {
         return (MockNetwork) getParent();
     }
 
     // model
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeid;
     }
     
+    /**
+     * <p>getNextIfIndex</p>
+     *
+     * @return a int.
+     */
     public int getNextIfIndex() {
         return m_nextIfIndex++;
     }
 
     // model
+    /**
+     * <p>removeInterface</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public void removeInterface(MockInterface iface) {
         removeMember(iface);
     }
 
     // impl
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "Node[" + m_nodeid + "," + m_label + "]";
 
     }
 
     // impl
+    /** {@inheritDoc} */
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitNode(this);
         visitMembers(v);
     }
 
+    /**
+     * <p>createUpEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createUpEvent() {
         return MockEventUtil.createNodeUpEvent("Test", this);
     }
 
+    /**
+     * <p>createDownEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createDownEvent() {
         return MockEventUtil.createNodeDownEvent("Test", this);
     }
     
+    /**
+     * <p>createDownEventWithReason</p>
+     *
+     * @param reason a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createDownEventWithReason(String reason) {
         return MockEventUtil.createNodeDownEventWithReason("Test", this, reason);
     }
     
+    /**
+     * <p>createNewEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createNewEvent() {
         return MockEventUtil.createNodeAddedEvent("Test", this);
     }
 
+    /**
+     * <p>createDeleteEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createDeleteEvent() {
         return MockEventUtil.createNodeDeletedEvent("Test", this);
     }

@@ -44,16 +44,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 /**
+ * <p>AuthorityFactoryImpl class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Service("authorityFactory")
 public class AuthorityFactoryImpl implements AutorityFactory, InitializingBean {
 
+    /** {@inheritDoc} */
     public Authority getAuthority(Integer id) {
         return new Authority(authorityService.getAuthority(id), authorityService, aclItemService);
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(authorityService != null, "authorityService property must be set and cannot be null");
         Assert.state(aclItemService != null, "aclItemService property must be set and cannot be null");

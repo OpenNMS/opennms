@@ -32,29 +32,43 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>AbstractCollectionSetVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AbstractCollectionSetVisitor implements CollectionSetVisitor {
 
+    /** {@inheritDoc} */
     public void visitAttribute(CollectionAttribute attribute) {
     }
 
+    /** {@inheritDoc} */
     public void visitCollectionSet(CollectionSet set) {
     }
 
+    /** {@inheritDoc} */
     public void visitGroup(AttributeGroup group) {
     }
 
+    /** {@inheritDoc} */
     public void visitResource(CollectionResource resource) {
     }
 
+    /** {@inheritDoc} */
     public void completeAttribute(CollectionAttribute attribute) {
     }
 
+    /** {@inheritDoc} */
     public void completeCollectionSet(CollectionSet set) {
     }
 
+    /** {@inheritDoc} */
     public void completeGroup(AttributeGroup group) {
     }
 
+    /** {@inheritDoc} */
     public void completeResource(CollectionResource resource) {
     }
 

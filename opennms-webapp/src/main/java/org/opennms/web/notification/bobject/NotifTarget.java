@@ -35,11 +35,13 @@ package org.opennms.web.notification.bobject;
 /**
  * A NotificationTarget representing another notifcation group parsed from the
  * notifications.xml.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
+ * @since 1.8.1
  */
 public class NotifTarget extends NotificationTarget {
     /**
@@ -65,7 +67,7 @@ public class NotifTarget extends NotificationTarget {
 
     /**
      * Sets the name of the notification target
-     * 
+     *
      * @param name
      *            the name of the notification target to be set.
      */
@@ -75,7 +77,7 @@ public class NotifTarget extends NotificationTarget {
 
     /**
      * Returns the name of the notification
-     * 
+     *
      * @return the name of the notification target.
      */
     public String getNotifName() {
@@ -84,7 +86,7 @@ public class NotifTarget extends NotificationTarget {
 
     /**
      * Sets the Notification object for this target
-     * 
+     *
      * @param notification
      *            the notification object to be set.
      */
@@ -94,7 +96,7 @@ public class NotifTarget extends NotificationTarget {
 
     /**
      * Returns the notification for this target
-     * 
+     *
      * @return the notification object.
      */
     public Notification getNotification() {
@@ -103,7 +105,7 @@ public class NotifTarget extends NotificationTarget {
 
     /**
      * Sets the overriding interval for this target
-     * 
+     *
      * @param interval
      *            the overriding interval to be set.
      */
@@ -115,7 +117,7 @@ public class NotifTarget extends NotificationTarget {
      * Returns the interval to use for this target. If an overriding interval
      * was set that will be returned, otherwise the interval from the
      * Notification will be returned.
-     * 
+     *
      * @return the interval for this object.
      */
     public String getInterval() {
@@ -132,7 +134,7 @@ public class NotifTarget extends NotificationTarget {
 
     /**
      * Returns the type of the target
-     * 
+     *
      * @return the target type, compare to NotificationTask.TARGET_TYPE_NOTIF.
      */
     public int getType() {

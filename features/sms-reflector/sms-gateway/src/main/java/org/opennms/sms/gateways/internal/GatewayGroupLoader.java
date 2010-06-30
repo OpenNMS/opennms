@@ -13,6 +13,12 @@ import org.smslib.AGateway.Protocols;
 import org.smslib.modem.SerialModemGateway;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * <p>GatewayGroupLoader class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GatewayGroupLoader implements InitializingBean {
     
     private static Logger log = LoggerFactory.getLogger(GatewayGroupLoader.class); 
@@ -22,19 +28,39 @@ public class GatewayGroupLoader implements InitializingBean {
     private GatewayGroupRegistrar m_gatewayGroupRegistrar;
     
     
+    /**
+     * <p>Constructor for GatewayGroupLoader.</p>
+     *
+     * @param gatewayGroupRegistrar a {@link org.opennms.sms.gateways.internal.GatewayGroupRegistrar} object.
+     * @param configURL a {@link java.net.URL} object.
+     */
     public GatewayGroupLoader(GatewayGroupRegistrar gatewayGroupRegistrar, URL configURL) {
         this(gatewayGroupRegistrar, loadProperties(configURL));
     }
     
+    /**
+     * <p>Constructor for GatewayGroupLoader.</p>
+     *
+     * @param gatewayGroupRegistrar a {@link org.opennms.sms.gateways.internal.GatewayGroupRegistrar} object.
+     * @param configProperties a {@link java.util.Properties} object.
+     */
     public GatewayGroupLoader(GatewayGroupRegistrar gatewayGroupRegistrar, Properties configProperties) {
         m_gatewayGroupRegistrar = gatewayGroupRegistrar;
         m_configProperties = configProperties;
     }
     
+    /**
+     * <p>getGatewayGroups</p>
+     *
+     * @return an array of {@link org.opennms.sms.reflector.smsservice.GatewayGroup} objects.
+     */
     public GatewayGroup[] getGatewayGroups() {
         return m_gatewayGroups;
     }
 	
+    /**
+     * <p>load</p>
+     */
     public void load() {
 
         Properties modemProperties = m_configProperties;
@@ -117,6 +143,11 @@ public class GatewayGroupLoader implements InitializingBean {
 	    }
 	}
 
+	/**
+	 * <p>afterPropertiesSet</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void afterPropertiesSet() throws Exception {
 		load();
 		for(GatewayGroup group : getGatewayGroups()){

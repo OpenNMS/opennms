@@ -39,5 +39,11 @@ package org.opennms.netmgt.xmlrpcd.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>XmlrpcdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface XmlrpcdMBean extends BaseOnmsMBean {
 }

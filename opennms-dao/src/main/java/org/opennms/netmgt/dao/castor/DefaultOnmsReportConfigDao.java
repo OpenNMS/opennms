@@ -46,13 +46,23 @@ import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
 import org.opennms.netmgt.config.reporting.opennms.Report;
 import org.opennms.netmgt.dao.OnmsReportConfigDao;
 
+/**
+ * <p>DefaultOnmsReportConfigDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultOnmsReportConfigDao extends AbstractCastorConfigDao<OpennmsReports, List<Report>>
 implements OnmsReportConfigDao {
     
+    /**
+     * <p>Constructor for DefaultOnmsReportConfigDao.</p>
+     */
     public DefaultOnmsReportConfigDao() {
         super(OpennmsReports.class, "OpenNMS Report Configuration");
     }
 
+    /** {@inheritDoc} */
     public String getHtmlStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -61,6 +71,7 @@ implements OnmsReportConfigDao {
         return null;
     }
 
+    /** {@inheritDoc} */
     public String getPdfStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -69,6 +80,7 @@ implements OnmsReportConfigDao {
         return null;
     }
 
+    /** {@inheritDoc} */
     public String getSvgStylesheetLocation(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -77,6 +89,7 @@ implements OnmsReportConfigDao {
         return null;
     }
     
+    /** {@inheritDoc} */
     public String getLogo(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -85,6 +98,7 @@ implements OnmsReportConfigDao {
         return null;
     }
 
+    /** {@inheritDoc} */
     public String getType(String id) {
         Report report = getReport(id);
         if (report != null) {
@@ -104,6 +118,7 @@ implements OnmsReportConfigDao {
         
     }
     
+    /** {@inheritDoc} */
     public Parameters getParameters(String id) {
         
         Parameters parameters = null;
@@ -116,6 +131,7 @@ implements OnmsReportConfigDao {
         
     }
     
+    /** {@inheritDoc} */
     public DateParm[] getDateParms(String id) {
         
         DateParm[] dateParms = null;
@@ -128,6 +144,7 @@ implements OnmsReportConfigDao {
         
     }
     
+    /** {@inheritDoc} */
     public StringParm[] getStringParms(String id) {
         
         StringParm[] stringParms = null;
@@ -140,6 +157,7 @@ implements OnmsReportConfigDao {
         
     }
     
+    /** {@inheritDoc} */
     public IntParm[] getIntParms(String id) {
         
         IntParm[] intParms = null;
@@ -152,6 +170,7 @@ implements OnmsReportConfigDao {
         
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Report> translateConfig(OpennmsReports castorConfig) {
         return Collections.unmodifiableList(castorConfig.getReportCollection());

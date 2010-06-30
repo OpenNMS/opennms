@@ -54,14 +54,23 @@ import org.springframework.web.bind.support.SessionStatus;
 
 /**
  * User Form Controller to insert or update a managed user
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Controller
 @RequestMapping("/user.edit.page")
 public class UserFormController {
 
+    /**
+     * <p>processSubmit</p>
+     *
+     * @param user a {@link org.opennms.acl.model.UserDTO} object.
+     * @param result a {@link org.springframework.validation.BindingResult} object.
+     * @param status a {@link org.springframework.web.bind.support.SessionStatus} object.
+     * @return a {@link java.lang.String} object.
+     */
     @RequestMapping(method = RequestMethod.POST)
     protected String processSubmit(@ModelAttribute("user") UserDTO user, BindingResult result, SessionStatus status) {
         String mav = userForm;
@@ -74,11 +83,24 @@ public class UserFormController {
         return mav;
     }
 
+    /**
+     * <p>initBinder</p>
+     *
+     * @param binder a {@link org.springframework.web.bind.WebDataBinder} object.
+     * @throws java.lang.Exception if any.
+     */
     @InitBinder()
     public void initBinder(WebDataBinder binder) throws Exception {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
     }
 
+    /**
+     * <p>setupForm</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @param model a {@link org.springframework.ui.ModelMap} object.
+     * @return a {@link java.lang.String} object.
+     */
     @RequestMapping(method = RequestMethod.GET)
     public String setupForm(@RequestParam(required = false, value = "sid") Integer id, ModelMap model) {
         UserDTO user;

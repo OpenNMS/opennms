@@ -44,15 +44,53 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
+ * <p>KscReportService interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Transactional(readOnly = true)
 public interface KscReportService {
+    /**
+     * <p>buildNodeReport</p>
+     *
+     * @param nodeId a int.
+     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     */
     public Report buildNodeReport(int nodeId);
+    /**
+     * <p>buildDomainReport</p>
+     *
+     * @param domain a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     */
     public Report buildDomainReport(String domain);
+    /**
+     * <p>getResourceFromGraph</p>
+     *
+     * @param graph a {@link org.opennms.netmgt.config.kscReports.Graph} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResourceFromGraph(Graph graph);
+    /**
+     * <p>getResourcesFromGraphs</p>
+     *
+     * @param graphs a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsResource>getResourcesFromGraphs(List<Graph> graphs);
+    /**
+     * <p>getTimeSpans</p>
+     *
+     * @param includeNone a boolean.
+     * @return a java$util$Map object.
+     */
     public Map<String, String> getTimeSpans(boolean includeNone);
+    /**
+     * <p>getReportList</p>
+     *
+     * @return a java$util$Map object.
+     */
     public Map<Integer, String> getReportList();
 }

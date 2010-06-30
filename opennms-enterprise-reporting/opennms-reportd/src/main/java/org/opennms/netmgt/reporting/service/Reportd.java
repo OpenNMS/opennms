@@ -16,9 +16,16 @@ import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 
+/**
+ * <p>Reportd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @EventListener(name="Reportd:EventListener")
 public class Reportd implements SpringServiceDaemon {
 
+    /** Constant <code>NAME="Reportd"</code> */
     public static final String NAME = "Reportd";
     
     private volatile EventForwarder m_eventForwarder;
@@ -30,12 +37,22 @@ public class Reportd implements SpringServiceDaemon {
     private String reportDirectory;
     private boolean reportPersist;
 
+    /**
+     * <p>start</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void start() throws Exception {
           reportDirectory = m_reportConfigurationDao.getStorageDirectory();
           reportPersist = m_reportConfigurationDao.getPersistFlag();
           m_reportScheduler.start();
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {    
         Assert.notNull(m_eventForwarder, "No Event Forwarder Set");
         Assert.notNull(m_reportScheduler, "No Report Scheduler Set");
@@ -45,11 +62,21 @@ public class Reportd implements SpringServiceDaemon {
     }
    
     
+    /**
+     * <p>runReport</p>
+     *
+     * @param reportName a {@link java.lang.String} object.
+     */
     public void runReport(String reportName){
         LogUtils.infof(this, "Running report by name: (%s).", reportName);
         runReport(m_reportConfigurationDao.getReport(reportName));
     }
       
+    /**
+     * <p>runReport</p>
+     *
+     * @param report a {@link org.opennms.netmgt.config.reportd.Report} object.
+     */
     public void runReport(Report report) {
         String originalName = ThreadCategory.getPrefix();
         try {
@@ -65,6 +92,11 @@ public class Reportd implements SpringServiceDaemon {
     }
  
     
+    /**
+     * <p>handleRunReportEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.REPORTD_RUN_REPORT)
     public void handleRunReportEvent(Event e){
        List <Parm> parmCollection = e.getParms().getParmCollection();
@@ -91,6 +123,11 @@ public class Reportd implements SpringServiceDaemon {
        }
  
     
+    /**
+     * <p>handleReloadConfigEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event e) {
 
@@ -145,41 +182,91 @@ public class Reportd implements SpringServiceDaemon {
         return isTarget;
     }
   
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
+    /**
+     * <p>setReportScheduler</p>
+     *
+     * @param reportScheduler a {@link org.opennms.netmgt.reporting.service.ReportScheduler} object.
+     */
     public void setReportScheduler(ReportScheduler reportScheduler) {
         m_reportScheduler = reportScheduler;
     }
+    /**
+     * <p>getReportScheduler</p>
+     *
+     * @return a {@link org.opennms.netmgt.reporting.service.ReportScheduler} object.
+     */
     public ReportScheduler getReportScheduler() {
         return m_reportScheduler;
     }
 
+    /**
+     * <p>getReportService</p>
+     *
+     * @return a {@link org.opennms.netmgt.reporting.service.ReportService} object.
+     */
     public ReportService getReportService() {
         return m_reportService;
     }
 
+    /**
+     * <p>setReportService</p>
+     *
+     * @param reportService a {@link org.opennms.netmgt.reporting.service.ReportService} object.
+     */
     public void setReportService(ReportService reportService) {
         m_reportService = reportService;
     }
 
+    /**
+     * <p>getReportDeliveryService</p>
+     *
+     * @return a {@link org.opennms.netmgt.reporting.service.ReportDeliveryService} object.
+     */
     public ReportDeliveryService getReportDeliveryService() {
         return m_reportDeliveryService;
     }
 
+    /**
+     * <p>setReportDeliveryService</p>
+     *
+     * @param reportDeliveryService a {@link org.opennms.netmgt.reporting.service.ReportDeliveryService} object.
+     */
     public void setReportDeliveryService(
             ReportDeliveryService reportDeliveryService) {
         m_reportDeliveryService = reportDeliveryService;
     }
 
+    /**
+     * <p>getReportdConfigurationDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ReportdConfigurationDao} object.
+     */
     public ReportdConfigurationDao getReportdConfigurationDao() {
         return m_reportConfigurationDao;
     }
 
+    /**
+     * <p>setReportdConfigurationDao</p>
+     *
+     * @param reportConfigurationDao a {@link org.opennms.netmgt.dao.ReportdConfigurationDao} object.
+     */
     public void setReportdConfigurationDao(
             ReportdConfigurationDao reportConfigurationDao) {
         m_reportConfigurationDao = reportConfigurationDao;

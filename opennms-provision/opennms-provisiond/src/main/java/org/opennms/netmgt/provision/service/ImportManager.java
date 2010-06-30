@@ -35,6 +35,7 @@ package org.opennms.netmgt.provision.service;
  * ImportManager
  *
  * @author brozow
+ * @version $Id: $
  */
 public class ImportManager {
 

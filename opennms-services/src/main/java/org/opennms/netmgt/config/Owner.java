@@ -35,6 +35,12 @@
 //
 package org.opennms.netmgt.config;
 
+/**
+ * <p>Owner class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Owner implements Comparable<Owner> {
     
     private String m_roleid;
@@ -42,18 +48,45 @@ public class Owner implements Comparable<Owner> {
     private int m_schedIndex;
     private int m_timeIndex;
 
+    /**
+     * <p>Constructor for Owner.</p>
+     *
+     * @param roleid a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param schedIndex a int.
+     */
     public Owner(String roleid, String user, int schedIndex) {
         this(roleid, user, schedIndex, -1);
     }        
     
+    /**
+     * <p>Constructor for Owner.</p>
+     *
+     * @param roleid a {@link java.lang.String} object.
+     * @param supervisor a {@link java.lang.String} object.
+     */
     public Owner(String roleid, String supervisor) {
         this(roleid, supervisor, -1, -1);
     }
 
+    /**
+     * <p>Constructor for Owner.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.config.Owner} object.
+     * @param timeIndex a int.
+     */
     public Owner(Owner base, int timeIndex) {
         this(base.getRoleid(), base.getUser(), base.getSchedIndex(), timeIndex);
     }
     
+    /**
+     * <p>Constructor for Owner.</p>
+     *
+     * @param roleid a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param schedIndex a int.
+     * @param timeIndex a int.
+     */
     public Owner(String roleid, String user, int schedIndex, int timeIndex) {
         m_roleid = roleid;
         m_user = user;
@@ -61,22 +94,47 @@ public class Owner implements Comparable<Owner> {
         m_timeIndex = timeIndex;
     }
     
+    /**
+     * <p>isSupervisor</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSupervisor() {
         return m_schedIndex == -1 && m_timeIndex == -1;
     }
 
+    /**
+     * <p>getRoleid</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRoleid() {
         return m_roleid;
     }
 
+    /**
+     * <p>getSchedIndex</p>
+     *
+     * @return a int.
+     */
     public int getSchedIndex() {
         return m_schedIndex;
     }
 
+    /**
+     * <p>getTimeIndex</p>
+     *
+     * @return a int.
+     */
     public int getTimeIndex() {
         return m_timeIndex;
     }
 
+    /**
+     * <p>getUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUser() {
         return m_user;
     }
@@ -85,6 +143,7 @@ public class Owner implements Comparable<Owner> {
         return new Owner(this, timeIndex);
     }
     
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof Owner) {
             Owner o = (Owner) obj;
@@ -93,14 +152,30 @@ public class Owner implements Comparable<Owner> {
         return false;
     }
     
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return m_user.hashCode();
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.config.Owner} object.
+     * @return a int.
+     */
     public int compareTo(Owner o) {
         return m_user.compareTo(o.m_user);
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return m_user;
     }

@@ -44,6 +44,12 @@ import java.util.List;
 import org.opennms.api.reporting.ReportFormat;
 
 
+/**
+ * <p>ReportParameters class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReportParameters implements Serializable {
 
     private static final long serialVersionUID = -3848794546173077375L;
@@ -54,58 +60,126 @@ public class ReportParameters implements Serializable {
     protected List <ReportStringParm> m_stringParms;
     protected List <ReportIntParm> m_intParms;
 
+    /**
+     * <p>Constructor for ReportParameters.</p>
+     */
     public ReportParameters() {
         super();
     }
 
+    /**
+     * <p>getDateParms</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<ReportDateParm> getDateParms() {
         return m_dateParms;
     }
 
+    /**
+     * <p>setDateParms</p>
+     *
+     * @param dateParms a {@link java.util.List} object.
+     */
     public void setDateParms(List<ReportDateParm> dateParms) {
         m_dateParms = dateParms;
     }
     
+    /**
+     * <p>getStringParms</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<ReportStringParm> getStringParms() {
         return m_stringParms;
     }
 
+    /**
+     * <p>setStringParms</p>
+     *
+     * @param strings a {@link java.util.List} object.
+     */
     public void setStringParms(List<ReportStringParm> strings) {
         m_stringParms = strings;
     }
     
+    /**
+     * <p>getIntParms</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<ReportIntParm> getIntParms() {
         return m_intParms;
     }
 
+    /**
+     * <p>setIntParms</p>
+     *
+     * @param ints a {@link java.util.List} object.
+     */
     public void setIntParms(List<ReportIntParm> ints) {
         m_intParms = ints;
     }
 
+    /**
+     * <p>setReportId</p>
+     *
+     * @param reportId a {@link java.lang.String} object.
+     */
     public void setReportId(String reportId) {
         m_reportId = reportId;
     }
 
+    /**
+     * <p>getReportId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getReportId() {
         return m_reportId;
     }
 
+    /**
+     * <p>setDisplayName</p>
+     *
+     * @param displayName a {@link java.lang.String} object.
+     */
     public void setDisplayName(String displayName) {
         m_displayName = displayName;
     }
 
+    /**
+     * <p>getDisplayName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayName() {
         return m_displayName;
     }
     
+    /**
+     * <p>setFormat</p>
+     *
+     * @param format a {@link org.opennms.api.reporting.ReportFormat} object.
+     */
     public void setFormat(ReportFormat format) {
         m_format = format;
     }
 
+    /**
+     * <p>getFormat</p>
+     *
+     * @return a {@link org.opennms.api.reporting.ReportFormat} object.
+     */
     public ReportFormat getFormat() {
         return m_format;
     }
 
+    /**
+     * <p>getReportParms</p>
+     *
+     * @return a {@link java.util.HashMap} object.
+     */
     public HashMap<String, Object> getReportParms() {
         
         HashMap <String,Object>parmMap = new HashMap<String, Object>();

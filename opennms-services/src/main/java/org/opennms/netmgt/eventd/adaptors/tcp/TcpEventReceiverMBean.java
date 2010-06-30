@@ -39,6 +39,12 @@ import javax.management.MalformedObjectNameException;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>TcpEventReceiverMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TcpEventReceiverMBean extends BaseOnmsMBean{
     /**
      * Invoked prior to garbage collection.
@@ -49,7 +55,7 @@ public interface TcpEventReceiverMBean extends BaseOnmsMBean{
      * Sets the port where new requests will be handled. This can only be done
      * prior to starting the managed bean. If the managed bean is already
      * running then an exception is thrown.
-     * 
+     *
      * @param port
      *            The port to listen on.
      */
@@ -57,17 +63,16 @@ public interface TcpEventReceiverMBean extends BaseOnmsMBean{
 
     /**
      * Returns the where a listener is waiting to process new request.
-     * 
+     *
      * @return The listening port.
      */
     Integer getPort();
 
     /**
      * Adds a new event handler by its managed name.
-     * 
+     *
      * @param name
      *            The name of the handler to add.
-     * 
      * @throws javax.management.MalformedObjectNameException
      *             Thrown if the passed name is not a valid ObjectName.
      * @throws javax.management.InstanceNotFoundException
@@ -78,10 +83,9 @@ public interface TcpEventReceiverMBean extends BaseOnmsMBean{
     /**
      * Removes an event handler. The passed name must be a valid JMX object
      * name.
-     * 
+     *
      * @param name
      *            The name of the handler to remove.
-     * 
      * @throws javax.management.MalformedObjectNameException
      *             Thrown if the passed name is not a valid ObjectName.
      * @throws javax.management.InstanceNotFoundException
@@ -91,6 +95,8 @@ public interface TcpEventReceiverMBean extends BaseOnmsMBean{
 
     /**
      * The logging prefix to use
+     *
+     * @param prefix a {@link java.lang.String} object.
      */
     void setLogPrefix(String prefix);
 
@@ -98,7 +104,7 @@ public interface TcpEventReceiverMBean extends BaseOnmsMBean{
      * The number of event records a new connection is allowed to send before
      * the connection is terminated by the server. The connection is always
      * terminated after an event receipt is generated, if one is required.
-     * 
+     *
      * @param number
      *            The number of event records.
      */

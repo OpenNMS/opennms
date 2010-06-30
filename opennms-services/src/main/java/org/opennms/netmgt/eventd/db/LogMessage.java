@@ -40,17 +40,19 @@ import org.opennms.netmgt.xml.event.Logmsg;
 /**
  * This is an utility class used to format the event log message info - to be
  * inserted into the 'events' table
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class LogMessage {
     /**
      * Format the logmsg entry
-     * 
+     *
      * @param msg
      *            the logmsg
-     * 
      * @return the formatted logmsg
      */
     public static String format(Logmsg msg) {

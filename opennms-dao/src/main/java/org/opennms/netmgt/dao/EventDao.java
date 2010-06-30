@@ -31,8 +31,21 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.OnmsEvent;
 
+/**
+ * <p>EventDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface EventDao extends OnmsDao<OnmsEvent, Integer> {
 
+    /**
+     * <p>deletePreviousEventsForAlarm</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @param e a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     * @return a int.
+     */
     int deletePreviousEventsForAlarm(Integer id, OnmsEvent e);
 	
 }

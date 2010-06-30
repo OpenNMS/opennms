@@ -37,8 +37,9 @@ import org.springframework.stereotype.Component;
 /**
  * Detects the presence of the Citrix service on an IP address using
  * a line oriented protocol.
- * 
+ *
  * @author <a href="mailto:thedesloge@opennms.org">Donald Desloge</a>
+ * @version $Id: $
  */
 
 @Component
@@ -58,14 +59,15 @@ public class CitrixDetector extends AsyncLineOrientedDetector {
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public CitrixDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         expectBanner(startsWith("ICA"));       

@@ -42,55 +42,64 @@ import org.opennms.acl.model.AuthorityView;
 
 /**
  * Contract to manage acl items
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface AclItemService {
 
 	/**
+	 * <p>getItems</p>
+	 *
 	 * @return all items
 	 */
 	public List<?> getItems();
 
 	/**
 	 * delete an item
-	 * 
-	 * @param id
+	 *
+	 * @param id a {@link java.lang.Integer} object.
+	 * @return a {@link java.lang.Boolean} object.
 	 */
 	public Boolean deleteItem(Integer id);
 
 	/**
 	 * delete an item
-	 * 
-	 * @param id
+	 *
+	 * @param authority a {@link java.lang.String} object.
+	 * @return a {@link java.lang.Boolean} object.
 	 */
 	public Boolean deleteAuthority(String authority);
 
 	/**
 	 * the set of items permitted
-	 * 
-	 * @param role
-	 * @return
+	 *
+	 * @param authorities a {@link java.util.Set} object.
+	 * @return a {@link java.util.Set} object.
 	 */
 	public Set<Integer> getAclItems(Set<AuthorityView> authorities);
 
 	/**
-	 * @param authorityItemsID
-	 * @return
+	 * <p>getAuthorityItems</p>
+	 *
+	 * @param authorityItemsId a {@link java.util.List} object.
+	 * @return a {@link java.util.List} object.
 	 */
 	public List<?> getAuthorityItems(List<Integer> authorityItemsId);
 
 	/**
-	 * @param authorityItemsID
-	 * @return
+	 * <p>getFreeItems</p>
+	 *
+	 * @param authorityItemsID a {@link java.util.List} object.
+	 * @return a {@link java.util.List} object.
 	 */
 	public List<?> getFreeItems(List<Integer> authorityItemsID);
 
 	/**
 	 * add an authority with its items
-	 * 
-	 * @param authority
+	 *
+	 * @param authority a {@link org.opennms.acl.model.AuthorityDTO} object.
 	 */
 	public void addAuthority(AuthorityDTO authority);
 }

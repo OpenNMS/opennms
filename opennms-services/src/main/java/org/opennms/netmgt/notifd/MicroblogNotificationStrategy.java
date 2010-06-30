@@ -56,19 +56,32 @@ import twitter4j.TwitterException;
 
 /**
  * Send notifications to a TwitterAPI-compatible microblog service.
- * 
+ *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:http://www.opennms.org">OpenNMS</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:http://www.opennms.org">OpenNMS</a>
+ * @version $Id: $
  */
 public class MicroblogNotificationStrategy implements NotificationStrategy {
     private static final String UBLOG_PROFILE_NAME = "notifd";
     protected MicroblogConfigurationDao m_microblogConfigurationDao;
     protected MicroblogConfigurationDao m_configDao;
     
+    /**
+     * <p>Constructor for MicroblogNotificationStrategy.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public MicroblogNotificationStrategy() throws IOException {
         this(findDefaultConfigResource());
     }
     
+    /**
+     * <p>Constructor for MicroblogNotificationStrategy.</p>
+     *
+     * @param configResource a {@link org.springframework.core.io.Resource} object.
+     */
     public MicroblogNotificationStrategy(Resource configResource) {
         m_configDao = new DefaultMicroblogConfigurationDao();
         ((DefaultMicroblogConfigurationDao)m_configDao).setConfigResource(configResource);
@@ -76,6 +89,7 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         setMicroblogConfigurationDao(m_configDao);
     }
 
+    /** {@inheritDoc} */
     public int send(List<Argument> arguments) {
         Twitter svc = buildUblogService(arguments);
         String messageBody = buildMessageBody(arguments);
@@ -96,6 +110,12 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         return 0;
     }
     
+    /**
+     * <p>buildUblogService</p>
+     *
+     * @param arguments a {@link java.util.List} object.
+     * @return a {@link twitter4j.Twitter} object.
+     */
     protected Twitter buildUblogService(List<Argument> arguments) {
         MicroblogProfile profile = null;
         String serviceUrl = "";
@@ -133,6 +153,12 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         return svc;
     }
     
+    /**
+     * <p>buildMessageBody</p>
+     *
+     * @param arguments a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String buildMessageBody(List<Argument> arguments) {
         String messageBody = "";
         
@@ -156,10 +182,21 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         return messageBody;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     
+    /**
+     * <p>findDestName</p>
+     *
+     * @param arguments a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String findDestName(List<Argument> arguments) {
         for (Argument arg : arguments) {
             if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(arg.getSwitch())) {
@@ -171,15 +208,31 @@ public class MicroblogNotificationStrategy implements NotificationStrategy {
         return null;
     }
     
+    /**
+     * <p>findDefaultConfigResource</p>
+     *
+     * @return a {@link org.springframework.core.io.Resource} object.
+     * @throws java.io.IOException if any.
+     */
     protected static Resource findDefaultConfigResource() throws IOException {
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.MICROBLOG_CONFIG_FILE_NAME);
         return new FileSystemResource(configFile);        
     }
 
+    /**
+     * <p>setMicroblogConfigurationDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.MicroblogConfigurationDao} object.
+     */
     public void setMicroblogConfigurationDao(MicroblogConfigurationDao dao) {
         m_microblogConfigurationDao = dao;
     }
     
+    /**
+     * <p>getMicroblogConfigurationDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.MicroblogConfigurationDao} object.
+     */
     public MicroblogConfigurationDao getMicroblogConfigurationDao() {
         return m_microblogConfigurationDao;
     }

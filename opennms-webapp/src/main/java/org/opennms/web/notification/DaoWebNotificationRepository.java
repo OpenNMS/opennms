@@ -49,6 +49,13 @@ import org.opennms.web.notification.filter.NotificationCriteria.NotificationCrit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * <p>DaoWebNotificationRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DaoWebNotificationRepository implements WebNotificationRepository {
     
     @Autowired
@@ -167,6 +174,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         }
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void acknowledgeMatchingNotification(String user, Date timestamp, NotificationCriteria criteria) {
         List<OnmsNotification> notifs = m_notificationDao.findMatching(getOnmsCriteria(criteria));
@@ -180,11 +188,13 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         }
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public int countMatchingNotifications(NotificationCriteria criteria) {
         return queryForInt(getOnmsCriteria(criteria));
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
         List<Notification> notifications = new ArrayList<Notification>();
@@ -197,6 +207,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         return notifications.toArray(new Notification[0]);
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public Notification getNotification(int noticeId) {
         return mapOnmsNotificationToNotification(m_notificationDao.get(noticeId));

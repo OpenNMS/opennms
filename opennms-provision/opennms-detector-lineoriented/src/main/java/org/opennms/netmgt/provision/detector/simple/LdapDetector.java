@@ -40,8 +40,10 @@ import org.springframework.stereotype.Component;
 import com.novell.ldap.LDAPConnection;
 
 /**
- * @author thedesloge
+ * <p>LdapDetector class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 
 @Component
@@ -66,19 +68,21 @@ public class LdapDetector extends LineOrientedDetector {
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     protected LdapDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         //expectClose();
     }
     
+    /** {@inheritDoc} */
     @Override
     protected Client<LineOrientedRequest, LineOrientedResponse> getClient(){
         return new LdapDetectorClient();

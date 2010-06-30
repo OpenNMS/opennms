@@ -59,8 +59,9 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
  * SnmpPoller daemon class
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 
 @EventListener(name="snmpPoller")
@@ -77,44 +78,92 @@ public class SnmpPoller extends AbstractServiceDaemon {
     
     private PollableNetwork m_network;
         
+    /**
+     * <p>getNetwork</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork} object.
+     */
     public PollableNetwork getNetwork() {
         return m_network;
     }
 
+    /**
+     * <p>setNetwork</p>
+     *
+     * @param pollableNetwork a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork} object.
+     */
     public void setNetwork(
             PollableNetwork pollableNetwork) {
         m_network = pollableNetwork;
     }
 
+    /**
+     * <p>isInitialized</p>
+     *
+     * @return a boolean.
+     */
     public boolean isInitialized() {
         return m_initialized;
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
 
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
 
+    /**
+     * <p>getScheduler</p>
+     *
+     * @return a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     */
     public Scheduler getScheduler() {
         return m_scheduler;
     }
 
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link org.opennms.netmgt.scheduler.LegacyScheduler} object.
+     */
     public void setScheduler(LegacyScheduler scheduler) {
         m_scheduler = scheduler;
     }
 
+    /**
+     * <p>getPollerConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.SnmpInterfacePollerConfig} object.
+     */
     public SnmpInterfacePollerConfig getPollerConfig() {
         return m_pollerConfig;
     }
 
+    /**
+     * <p>setPollerConfig</p>
+     *
+     * @param snmpinterfacepollerConfig a {@link org.opennms.netmgt.config.SnmpInterfacePollerConfig} object.
+     */
     public void setPollerConfig(
             SnmpInterfacePollerConfig snmpinterfacepollerConfig) {
         m_pollerConfig = snmpinterfacepollerConfig;
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         // get the category logger
         // start the scheduler
@@ -130,6 +179,9 @@ public class SnmpPoller extends AbstractServiceDaemon {
 
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         log().debug("onStop: updating snmp interfaces poll status to 'N'");
 
@@ -143,22 +195,37 @@ public class SnmpPoller extends AbstractServiceDaemon {
         setScheduler(null);
     }
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {
         getScheduler().pause();
     }
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
         getScheduler().resume();
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmpinterfacepoller.SnmpPoller} object.
+     */
     public static SnmpPoller getInstance() {
         return m_singleton;
     }
     
+    /**
+     * <p>Constructor for SnmpPoller.</p>
+     */
     public SnmpPoller() {
         super("OpenNMS.SnmpPoller");
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         
@@ -185,6 +252,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
         updater.execute();  
     }
     
+    /**
+     * <p>scheduleNewSnmpInterface</p>
+     *
+     * @param ipaddr a {@link java.lang.String} object.
+     */
     protected void scheduleNewSnmpInterface(String ipaddr) {
  
         String sql = "SELECT nodeid, ipaddr from ipinterface where issnmpprimary = 'P' and ismanaged = 'M' and ipaddr = '" + ipaddr + "'";
@@ -200,6 +272,9 @@ public class SnmpPoller extends AbstractServiceDaemon {
        querier.execute();  
     }
     
+    /**
+     * <p>scheduleExistingSnmpInterface</p>
+     */
     protected void scheduleExistingSnmpInterface() {
         
         String sql = "SELECT nodeid, ipaddr from ipinterface where issnmpprimary = 'P' and ismanaged='M'";
@@ -215,6 +290,12 @@ public class SnmpPoller extends AbstractServiceDaemon {
        querier.execute();  
     }   
 
+    /**
+     * <p>schedulePollableInterface</p>
+     *
+     * @param nodeid a int.
+     * @param ipaddress a {@link java.lang.String} object.
+     */
     protected void schedulePollableInterface(int nodeid, String ipaddress) {
         
         if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
@@ -279,6 +360,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
         }
     }
     
+    /**
+     * <p>reloadSnmpConfig</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.CONFIGURE_SNMP_EVENT_UEI)
     public void reloadSnmpConfig(Event event) {
         log().debug("reloadSnmpConfig: managing event: " + event.getUei());
@@ -320,6 +406,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
 
     }
     
+    /**
+     * <p>reloadConfig</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI)
     public void reloadConfig(Event event) {
         log().debug("reloadConfig: managing event: " + event.getUei());
@@ -332,6 +423,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>primarychangeHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)
     public void primarychangeHandler(Event event) {
         log().debug("primarychangeHandler: managing event: " + event.getUei());
@@ -346,26 +442,51 @@ public class SnmpPoller extends AbstractServiceDaemon {
         }
     }
     
+    /**
+     * <p>deleteInterfaceHaldler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.DELETE_INTERFACE_EVENT_UEI)
     public void deleteInterfaceHaldler(Event event){
         getNetwork().delete(event.getInterface());
     }
 
+    /**
+     * <p>scanCompletedHaldler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.PROVISION_SCAN_COMPLETE_UEI)
     public void scanCompletedHaldler(Event event){
         getNetwork().refresh(new Long(event.getNodeid()).intValue());
     }
 
+    /**
+     * <p>rescanCompletedHaldler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.RESCAN_COMPLETED_EVENT_UEI)
     public void rescanCompletedHaldler(Event event){
         getNetwork().refresh(new Long(event.getNodeid()).intValue());
     }
 
+    /**
+     * <p>nodeDeletedHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void nodeDeletedHandler(Event event) {
         getNetwork().delete(new Long(event.getNodeid()).intValue());
     }
 
+    /**
+     * <p>serviceGainedHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
     public void serviceGainedHandler(Event event) {
         if (event.getService().equals(getPollerConfig().getService())) {
@@ -374,6 +495,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>serviceDownHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
     public void serviceDownHandler(Event event) {
         String service = event.getService();
@@ -385,6 +511,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>serviceUpHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
     public void serviceUpHandler(Event event) {
         String service = event.getService();
@@ -397,22 +528,42 @@ public class SnmpPoller extends AbstractServiceDaemon {
         
     }
 
+    /**
+     * <p>interfaceUpHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.INTERFACE_UP_EVENT_UEI)
     public void interfaceUpHandler(Event event) {
         getNetwork().activate(event.getInterface());
     }
 
+    /**
+     * <p>interfaceDownHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.INTERFACE_DOWN_EVENT_UEI)
     public void interfaceDownHandler(Event event) {
         getNetwork().suspend(event.getInterface());
     }
 
+    /**
+     * <p>nodeUpHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_UP_EVENT_UEI)
     public void nodeUpHandler(Event event) {
         getNetwork().activate(new Long(event.getNodeid()).intValue());
 
     }
 
+    /**
+     * <p>nodeDownHandler</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_DOWN_EVENT_UEI)
     public void nodeDownHandler(Event event) {
         getNetwork().suspend(new Long(event.getNodeid()).intValue());

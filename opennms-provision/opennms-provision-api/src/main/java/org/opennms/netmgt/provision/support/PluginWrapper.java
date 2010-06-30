@@ -13,16 +13,34 @@ import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+/**
+ * <p>PluginWrapper class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PluginWrapper {
     private Map<String,Set<String>> m_required = new TreeMap<String,Set<String>>();
     private Map<String,Set<String>> m_optional = new TreeMap<String,Set<String>>();
     
     private final String m_className;
 
+    /**
+     * <p>Constructor for PluginWrapper.</p>
+     *
+     * @param className a {@link java.lang.String} object.
+     * @throws java.lang.ClassNotFoundException if any.
+     */
     public PluginWrapper(String className) throws ClassNotFoundException {
         this(Class.forName(className));
     }
     
+    /**
+     * <p>Constructor for PluginWrapper.</p>
+     *
+     * @param clazz a {@link java.lang.Class} object.
+     * @throws java.lang.ClassNotFoundException if any.
+     */
     public PluginWrapper(Class<?> clazz) throws ClassNotFoundException {
         m_className = clazz.getName();
         BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(m_className));
@@ -45,10 +63,20 @@ public class PluginWrapper {
         }
     }
 
+    /**
+     * <p>getClassName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getClassName() {
         return m_className;
     }
 
+    /**
+     * <p>getRequired</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,Boolean> getRequired() {
         Map<String,Boolean> ret = new HashMap<String,Boolean>();
         for (String key : m_required.keySet()) {
@@ -60,16 +88,36 @@ public class PluginWrapper {
         return ret;
     }
 
+    /**
+     * <p>getRequiredKeys</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> getRequiredKeys() {
         return m_required.keySet();
     }
+    /**
+     * <p>getOptionalKeys</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> getOptionalKeys() {
         return m_optional.keySet();
     }
 
+    /**
+     * <p>getRequiredItems</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,Set<String>> getRequiredItems() {
         return m_required;
     }
+    /**
+     * <p>getOptionalItems</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,Set<String>> getOptionalItems() {
         return m_optional;
     }

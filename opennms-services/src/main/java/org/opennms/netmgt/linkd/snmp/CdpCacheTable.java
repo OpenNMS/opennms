@@ -45,41 +45,62 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * is received/error occurs in the SnmpSession used to send requests /recieve
  * replies.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
  * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public class CdpCacheTable extends SnmpTable<CdpCacheTableEntry> {
 
-	/**
-	 * <P>
-	 * Constructs an CdpCacheTable object that is used to collect the Cisco Discovery Protocol
-	 * elements from the remote agent. Once all the elements are collected, or
-	 * there is an error in the collection the signaler object is <EM>notified
-	 * </EM> to inform other threads.
-	 * </P>
-	 * 
-	 * @param session
-	 *            The session with the remote agent.
-	 * @param signaler
-	 *            The object to notify waiters.
-	 * 
-	 * @see CdpCacheTableEntry
-	 */
-
+    /**
+     * <P>
+     * Constructs an CdpCacheTable object that is used to collect the Cisco Discovery Protocol
+     * elements from the remote agent. Once all the elements are collected, or
+     * there is an error in the collection the signaler object is <EM>notified
+     * </EM> to inform other threads.
+     * </P>
+     *
+     * @see CdpCacheTableEntry
+     * @param address a {@link java.net.InetAddress} object.
+     */
     public CdpCacheTable(InetAddress address)
 	{
         super(address, "cdpCacheTable", CdpCacheTableEntry.cdpCache_elemList);
 	}
+    /** {@inheritDoc} */
     protected CdpCacheTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new CdpCacheTableEntry();
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected final ThreadCategory log() {
         return ThreadCategory.getInstance(CdpCacheTable.class);
     }

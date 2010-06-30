@@ -43,33 +43,94 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
- * 
+ * <p>CollectionAgent interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface CollectionAgent extends NetworkInterface,StorageStrategyService {
 
+    /**
+     * <p>getHostAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getHostAddress();
 
+    /**
+     * <p>setSavedIfCount</p>
+     *
+     * @param ifCount a int.
+     */
     public abstract void setSavedIfCount(int ifCount);
 
+    /**
+     * <p>getSavedIfCount</p>
+     *
+     * @return a int.
+     */
     public abstract int getSavedIfCount();
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public abstract int getNodeId();
 
+    /**
+     * <p>getSysObjectId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getSysObjectId();
 
+    /**
+     * <p>validateAgent</p>
+     */
     public abstract void validateAgent();
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String toString();
 
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     public abstract SnmpAgentConfig getAgentConfig();
 
+    /**
+     * <p>getSnmpInterfaceInfo</p>
+     *
+     * @param type a {@link org.opennms.netmgt.collectd.IfResourceType} object.
+     * @return a {@link java.util.Set} object.
+     */
     public abstract Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type);
 
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public abstract InetAddress getInetAddress();
 
+    /**
+     * <p>getSavedSysUpTime</p>
+     *
+     * @return a long.
+     */
     public abstract long getSavedSysUpTime();
 
+    /**
+     * <p>setSavedSysUpTime</p>
+     *
+     * @param sysUpTime a long.
+     */
     public abstract void setSavedSysUpTime(long sysUpTime);
 
 }

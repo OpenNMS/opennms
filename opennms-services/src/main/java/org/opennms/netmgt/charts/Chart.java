@@ -34,7 +34,10 @@
 package org.opennms.netmgt.charts;
 
 /**
+ * <p>Chart class.</p>
+ *
  * @author <a href="david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class Chart {
 

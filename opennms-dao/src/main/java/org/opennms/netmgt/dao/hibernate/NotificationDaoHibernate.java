@@ -34,10 +34,19 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
 
+/**
+ * <p>NotificationDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NotificationDaoHibernate extends
 		AbstractDaoHibernate<OnmsNotification, Integer> implements
 		NotificationDao {
 
+	/**
+	 * <p>Constructor for NotificationDaoHibernate.</p>
+	 */
 	public NotificationDaoHibernate() {
 		super(OnmsNotification.class);
 	}

@@ -40,6 +40,7 @@ import java.util.List;
  * LifeCycle
  *
  * @author brozow
+ * @version $Id: $
  */
 public class LifeCycle {
    
@@ -48,29 +49,62 @@ public class LifeCycle {
     private final String m_lifeCycleName;
     private final List<String> m_phases;
     
+    /**
+     * <p>Constructor for LifeCycle.</p>
+     *
+     * @param lifeCycleName a {@link java.lang.String} object.
+     */
     public LifeCycle(String lifeCycleName) {
         this(lifeCycleName, new ArrayList<String>());
     }
 
+    /**
+     * <p>Constructor for LifeCycle.</p>
+     *
+     * @param lifeCycleName a {@link java.lang.String} object.
+     * @param phaseNames a {@link java.util.List} object.
+     */
     public LifeCycle(String lifeCycleName, List<String> phaseNames) {
         m_lifeCycleName = lifeCycleName;
         m_phases = phaseNames;
     }
 
+    /**
+     * <p>getLifeCycleName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLifeCycleName() {
         return m_lifeCycleName;
     }
 
+    /**
+     * <p>addPhase</p>
+     *
+     * @param phaseName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycle} object.
+     */
     public LifeCycle addPhase(String phaseName) {
         m_phases.add(phaseName);
         return this;
     }
 
+    /**
+     * <p>addPhases</p>
+     *
+     * @param phases a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycle} object.
+     */
     public LifeCycle addPhases(String... phases) {
         m_phases.addAll(Arrays.asList(phases));
         return this;
     }
 
+    /**
+     * <p>getPhaseNames</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getPhaseNames() {
         return m_phases.toArray(OF_STRINGS);
     }

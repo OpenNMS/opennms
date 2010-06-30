@@ -41,12 +41,16 @@ import org.opennms.web.Util;
 import org.springframework.validation.Errors;
 
 /**
- * 
+ *
  * The idea of this class is to represent a simple table that has column headers
- * and rows.  
- * 
+ * and rows.
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SimpleWebTable {
 
@@ -135,22 +139,49 @@ public class SimpleWebTable {
 	private String m_title = "";
 	private Errors m_errors = null;
 
+	/**
+	 * <p>getColumnHeaders</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<Cell> getColumnHeaders() {
 		return m_columnHeaders;
 	}
 
+	/**
+	 * <p>getRows</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<List<Cell>> getRows() {
 		return m_rows;
 	}
 
+	/**
+	 * <p>getTitle</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getTitle() {
 		return m_title;
 	}
 
+	/**
+	 * <p>setTitle</p>
+	 *
+	 * @param title a {@link java.lang.String} object.
+	 */
 	public void setTitle(String title) {
 		m_title  = title;
 	}
 
+	/**
+	 * <p>addColumn</p>
+	 *
+	 * @param headerContent a {@link java.lang.Object} object.
+	 * @param headerStyle a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 */
 	public Cell addColumn(Object headerContent, String headerStyle) {
 		Cell headerCell = new Cell(headerContent, headerStyle);
 		m_columnHeaders.add(headerCell);
@@ -158,16 +189,33 @@ public class SimpleWebTable {
 	}
 	
 
+	/**
+	 * <p>addColumn</p>
+	 *
+	 * @param headerContent a {@link java.lang.Object} object.
+	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 */
 	public Cell addColumn(Object headerContent) {
 		return addColumn(headerContent, "");
 	}
 
+	/**
+	 * <p>newRow</p>
+	 */
 	public void newRow() {
 		List<Cell> row = new ArrayList<Cell>();
 		m_rows.add(row);
 		m_currentRow = row;
 	}
 
+	/**
+	 * <p>addCell</p>
+	 *
+	 * @param cellContent a {@link java.lang.Object} object.
+	 * @param cellStyle a {@link java.lang.String} object.
+	 * @param link a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 */
 	public Cell addCell(Object cellContent, String cellStyle, String link) {
 		if (m_currentRow == null) {
 			throw new IllegalStateException("make sure you call newRow before trying to add any cells to the table!");
@@ -178,15 +226,33 @@ public class SimpleWebTable {
 		return cell;
 	}
 
+	/**
+	 * <p>addCell</p>
+	 *
+	 * @param cellContent a {@link java.lang.Object} object.
+	 * @param cellStyle a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 */
 	public Cell addCell(Object cellContent, String cellStyle) {
 		return addCell(cellContent, cellStyle, null);
 	}
 
 
+	/**
+	 * <p>addCell</p>
+	 *
+	 * @param cellContent a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 */
 	public Cell addCell(String cellContent) {
 		return addCell(cellContent, "", null);
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 
@@ -231,10 +297,20 @@ public class SimpleWebTable {
 		return buf.toString();
 	}
 
+	/**
+	 * <p>getErrors</p>
+	 *
+	 * @return a {@link org.springframework.validation.Errors} object.
+	 */
 	public Errors getErrors() {
 		return m_errors;
 	}
 
+	/**
+	 * <p>setErrors</p>
+	 *
+	 * @param errors a {@link org.springframework.validation.Errors} object.
+	 */
 	public void setErrors(Errors errors) {
 		m_errors = errors;
 	}

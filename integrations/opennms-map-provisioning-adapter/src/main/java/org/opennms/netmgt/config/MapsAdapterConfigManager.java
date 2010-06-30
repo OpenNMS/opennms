@@ -61,22 +61,32 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**
- * 
+ * <p>Abstract MapsAdapterConfigManager class.</p>
+ *
  * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      
-    /**
-     * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
-     * @param reader
-     * @param localServer
-     * @param verifyServer
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     */
+   /**
+    * <p>Constructor for MapsAdapterConfigManager.</p>
+    *
+    * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
+    * @param reader a {@link java.io.InputStream} object.
+    * @param verifyServer a boolean.
+    * @throws org.exolab.castor.xml.MarshalException if any.
+    * @throws org.exolab.castor.xml.ValidationException if any.
+    * @throws java.io.IOException if any.
+    * @param serverName a {@link java.lang.String} object.
+    */
    public MapsAdapterConfigManager(InputStream reader,String serverName, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = serverName;
         m_verifyServer = verifyServer;
@@ -123,10 +133,21 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     private Map<String,Cmap> m_mapNameCmapMap;
     
 
+     /**
+      * <p>Constructor for MapsAdapterConfigManager.</p>
+      */
      public MapsAdapterConfigManager() {
      }
     
 
+    /**
+     * <p>reloadXML</p>
+     *
+     * @param reader a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     protected synchronized void reloadXML(InputStream reader) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(MapsAdapterConfiguration.class, reader);
         createUrlIpMap();
@@ -435,13 +456,12 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     
     /**
      * Returns a list of package names that the ip belongs to, null if none.
-     *                
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
      *
      * @param ipaddr
      *            the interface to check
-     *
      * @return a list of package names that the ip belongs to, null if none
      */
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
@@ -462,16 +482,29 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
 
 
 
+    /**
+     * <p>packages</p>
+     *
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<Package> packages() {
         return getConfiguration().getPackageCollection();
     }
 
+    /**
+     * <p>includeURLs</p>
+     *
+     * @param pkg a {@link org.opennms.netmgt.config.map.adapter.Package} object.
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<String> includeURLs(Package pkg) {
         return pkg.getIncludeUrlCollection();
     }
 
     /**
      * Return the poller configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration} object.
      */
     public synchronized MapsAdapterConfiguration getConfiguration() {
         return m_config;
@@ -485,6 +518,11 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
 
 // methods from interface
     
+    /**
+     * <p>getAllMaps</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Cmap> getAllMaps() {
         if (hasCmaps()) {
             return getConfiguration().getCmaps().getCmapCollection();
@@ -492,6 +530,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         return new ArrayList<Cmap>();
     }
 
+    /** {@inheritDoc} */
     public Map<String, Celement> getElementByAddress(String ipaddr) {
         Map<String,Celement> mapAndElements = new HashMap<String, Celement>();
         if (hasCmaps()) {
@@ -518,6 +557,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         return mapAndElements;
     }
 
+    /** {@inheritDoc} */
     public List<Csubmap> getSubMaps(String mapName) {
         if (hasCmaps()) {
             Iterator<Cmap> ite = getConfiguration().getCmaps().getCmapCollection().iterator();
@@ -530,10 +570,16 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         return new ArrayList<Csubmap>();
     }
 
+    /**
+     * <p>getMapElementDimension</p>
+     *
+     * @return a int.
+     */
     public int getMapElementDimension() {
         return getConfiguration().getElementDimension();
     }
 
+    /** {@inheritDoc} */
     public Map<String,Csubmap> getContainerMaps(String submapName) {
         Map<String,Csubmap> cmaps = new HashMap<String, Csubmap>();
         if (m_submapNameMapNameMap.containsKey(submapName)) {
@@ -554,6 +600,11 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         return cmaps;
     }
 
+    /**
+     * <p>getsubMaps</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, List<Csubmap>> getsubMaps() {
         Map<String,List<Csubmap>> csubmaps = new HashMap<String, List<Csubmap>>();
         if (hasCmaps()) {
@@ -568,6 +619,11 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         return csubmaps;
     }
     
+    /**
+     * <p>getCelements</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,List<Celement>> getCelements() {
         Map<String,List<Celement>> celements = new HashMap<String, List<Celement>>();
         if (hasCmaps()) {

@@ -34,8 +34,15 @@ package org.opennms.netmgt.provision.detector.jmx;
 import org.opennms.netmgt.provision.detector.jmx.client.JMXClient;
 import org.opennms.netmgt.provision.detector.jmx.client.Jsr160Client;
 
+/**
+ * <p>Abstract AbstractJsr160Detector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class AbstractJsr160Detector extends JMXDetector {
    
+    /** Constant <code>DEFAULT_PORT=9003</code> */
     protected static int DEFAULT_PORT = 9003;
     
     private String m_factory = "STANDARD";
@@ -46,11 +53,18 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
     private String m_username = "opennms";
     private String m_password = "OPENNMS";
     
+    /**
+     * <p>Constructor for AbstractJsr160Detector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     protected AbstractJsr160Detector(String serviceName, int port) {
         super(serviceName, port);
         // TODO Auto-generated constructor stub
     }
 
+    /** {@inheritDoc} */
     @Override
     protected JMXClient getClient() {
         Jsr160Client client = new Jsr160Client();
@@ -65,58 +79,128 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
         return client;
     }
 
+    /**
+     * <p>setFactory</p>
+     *
+     * @param factory a {@link java.lang.String} object.
+     */
     public void setFactory(String factory) {
         m_factory = factory;
     }
 
+    /**
+     * <p>getFactory</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFactory() {
         return m_factory;
     }
 
+    /**
+     * <p>setFriendlyName</p>
+     *
+     * @param friendlyName a {@link java.lang.String} object.
+     */
     public void setFriendlyName(String friendlyName) {
         m_friendlyName = friendlyName;
     }
 
+    /**
+     * <p>getFriendlyName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFriendlyName() {
         return m_friendlyName;
     }
 
+    /**
+     * <p>setProtocol</p>
+     *
+     * @param protocol a {@link java.lang.String} object.
+     */
     public void setProtocol(String protocol) {
         m_protocol = protocol;
     }
 
+    /**
+     * <p>getProtocol</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getProtocol() {
         return m_protocol;
     }
 
+    /**
+     * <p>setType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     */
     public void setType(String type) {
         m_type = type;
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getType() {
         return m_type;
     }
 
+    /**
+     * <p>setUrlPath</p>
+     *
+     * @param urlPath a {@link java.lang.String} object.
+     */
     public void setUrlPath(String urlPath) {
         m_urlPath = urlPath;
     }
 
+    /**
+     * <p>getUrlPath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrlPath() {
         return m_urlPath;
     }
 
+    /**
+     * <p>setUsername</p>
+     *
+     * @param username a {@link java.lang.String} object.
+     */
     public void setUsername(String username) {
         m_username = username;
     }
 
+    /**
+     * <p>getUsername</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUsername() {
         return m_username;
     }
 
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPassword(String password) {
         m_password = password;
     }
 
+    /**
+     * <p>getPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPassword() {
         return m_password;
     }

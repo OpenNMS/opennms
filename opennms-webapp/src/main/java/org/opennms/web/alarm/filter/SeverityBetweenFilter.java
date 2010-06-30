@@ -35,13 +35,32 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.filter.BetweenFilter;
 import org.opennms.web.filter.SQLType;
 
+/**
+ * <p>SeverityBetweenFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class SeverityBetweenFilter extends BetweenFilter<Integer> {
+    /** Constant <code>TYPE="severityBetween"</code> */
     public static final String TYPE = "severityBetween";
     
+    /**
+     * <p>Constructor for SeverityBetweenFilter.</p>
+     *
+     * @param rangeBegin a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     * @param rangeEnd a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
     public SeverityBetweenFilter(OnmsSeverity rangeBegin, OnmsSeverity rangeEnd){
         super(TYPE, SQLType.INT, "SEVERITY", "severityId", rangeBegin.getId(), rangeEnd.getId());
     }
     
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return "alarm severity between " + getSeverityLabel(getFirst()) + " and " + getSeverityLabel(getLast());
     }
@@ -50,6 +69,11 @@ public class SeverityBetweenFilter extends BetweenFilter<Integer> {
         return OnmsSeverity.get(severityId).getLabel();
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmCriteria.SeverityBetweenFilter: " + this.getDescription() + ">");
     }

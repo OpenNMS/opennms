@@ -50,18 +50,26 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
- * 
+ * <p>DaemonStatusController class.</p>
+ *
  * @author SriKumar Kareti
  * @author Tiffani Heeren
- *
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DaemonStatusController extends SimpleFormController {
 	 private DaemonStatusService daemonStatusService;
 
+     /**
+      * <p>Setter for the field <code>daemonStatusService</code>.</p>
+      *
+      * @param daemonStatusService a {@link org.opennms.web.svclayer.daemonstatus.DaemonStatusService} object.
+      */
      public void setDaemonStatusService(DaemonStatusService daemonStatusService) {
     	 this.daemonStatusService = daemonStatusService;
      }
 
+	/** {@inheritDoc} */
 	@Override
 	protected Map<String, Collection<ServiceInfo>> referenceData(HttpServletRequest arg0) throws Exception {
 		// TODO Auto-generated method stub
@@ -72,6 +80,7 @@ public class DaemonStatusController extends SimpleFormController {
 		return referenceData;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse arg1, Object arg2, BindException arg3) throws Exception {
 		// TODO Auto-generated method stub
@@ -84,6 +93,7 @@ public class DaemonStatusController extends SimpleFormController {
 		return modelAndView;
 	}
       
+	/** {@inheritDoc} */
 	@Override
 	protected Object formBackingObject(HttpServletRequest arg0) throws Exception {
 		// TODO Auto-generated method stub

@@ -57,18 +57,20 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * collection for a node over a specified network interface. The SnmpIfCollector
  * implements the SnmpHandler class in order to receive notifications when an
  * SNMP reply is received or error occurs.
- * 
+ *
  * The SnmpIfCollector is provided a list of MIB objects to collect and an
  * interface over which to collect the data. Data collection can be via SNMPv1
  * GetNext requests or SNMPv2 GetBulk requests depending upon the parms used to
  * construct the collector.
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A>Jon Whetzel </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
  */
 public class SnmpIfCollector extends AggregateTracker {
     private Map<SnmpInstId, SNMPCollectorEntry> m_results = new TreeMap<SnmpInstId, SNMPCollectorEntry>();
@@ -82,6 +84,11 @@ public class SnmpIfCollector extends AggregateTracker {
 
     private SnmpCollectionSet m_collectionSet;
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
     	StringBuffer buffer = new StringBuffer();
     	
@@ -103,16 +110,15 @@ public class SnmpIfCollector extends AggregateTracker {
     	return buffer.toString();
     }
 
-	/**
+    /**
      * The class constructor is used to initialize the collector and send out
      * the initial SNMP packet requesting data. The data is then received and
      * store by the object. When all the data has been collected the passed
      * signaler object is <EM>notified</EM> using the notifyAll() method.
-     * @param address 
-	 * @param objList TODO
-	 * @param collectionSet TODO
-	 * @param ifMap
-     *            Map of org.opennms.netmgt.poller.collectd.IfInfo objects.
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param objList TODO
+     * @param collectionSet TODO
      */
     public SnmpIfCollector(InetAddress address, List<SnmpAttributeType> objList, SnmpCollectionSet collectionSet) {
         super(SnmpAttributeType.getCollectionTrackers(objList));
@@ -126,6 +132,11 @@ public class SnmpIfCollector extends AggregateTracker {
         m_collectionSet = collectionSet;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected static ThreadCategory log() {
         return ThreadCategory.getInstance(SnmpIfCollector.class);
     }
@@ -133,24 +144,29 @@ public class SnmpIfCollector extends AggregateTracker {
     /**
      * Returns the list of all entry maps that can be used to access all the
      * information from the service polling.
+     *
+     * @return a {@link java.util.List} object.
      */
-
     public List<SNMPCollectorEntry> getEntries() {
         return new ArrayList<SNMPCollectorEntry>(m_results.values());
     }
     
+	/** {@inheritDoc} */
 	protected void reportGenErr(String msg) {
         log().warn(m_primaryIf+": genErr collecting ifData. "+msg);
     }
 
+    /** {@inheritDoc} */
     protected void reportNoSuchNameErr(String msg) {
         log().info(m_primaryIf+": noSuchName collecting ifData. "+msg);
     }
 
+    /** {@inheritDoc} */
     protected void reportTooBigErr(String msg) {
         log().info(m_primaryIf+": request tooBig. "+msg);
     }
 
+    /** {@inheritDoc} */
     protected void storeResult(SnmpResult res) {
         if(res.getBase().toString().equals(SnmpCollector.IFALIAS_OID) && (res.getValue().isNull() || res.getValue().toDisplayString() == null || res.getValue().toDisplayString().equals(""))) {
             log().debug("Skipping storeResult. Null or zero length ifAlias");
@@ -166,10 +182,20 @@ public class SnmpIfCollector extends AggregateTracker {
 
     }
     
+    /**
+     * <p>hasData</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasData() {
         return !m_results.isEmpty();
     }
     
+    /**
+     * <p>getCollectionSet</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionSet} object.
+     */
     public CollectionSet getCollectionSet() {
         return m_collectionSet;
     }

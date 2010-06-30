@@ -45,35 +45,55 @@ import org.opennms.web.filter.OneArgFilter;
 import org.opennms.web.filter.SQLType;
 
 /**
- * @author brozow
+ * <p>RecentOutagesFilter class.</p>
  *
+ * @author brozow
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class RecentOutagesFilter extends OneArgFilter<Date> {
+    /** Constant <code>TYPE="recent"</code> */
     public static final String TYPE = "recent";
     
+    /**
+     * <p>Constructor for RecentOutagesFilter.</p>
+     */
     public RecentOutagesFilter() {
         this(yesterday());
     }
     
+    /**
+     * <p>Constructor for RecentOutagesFilter.</p>
+     *
+     * @param since a {@link java.util.Date} object.
+     */
     public RecentOutagesFilter(Date since) {
         super(TYPE, SQLType.DATE, "OUTAGES.IFREGAINEDSERVICE", "ifRegainedService", since);
     }
     
+    /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
         return " (" + getSQLFieldName() + " > %s OR " + getSQLFieldName() + " IS NULL) ";
     }
 
+    /** {@inheritDoc} */
     @Override
     public Criterion getCriterion() {
         return Restrictions.or(Restrictions.gt(getPropertyName(), getValue()), Restrictions.isNull(getPropertyName()));
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getTextDescription() {
         return "outage since " + getValueAsString(getValue());
     }
     
+    /**
+     * <p>yesterday</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public static Date yesterday() {
         Calendar cal = new GregorianCalendar();
         cal.add( Calendar.DATE, -1 );

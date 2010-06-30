@@ -36,7 +36,24 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>CollectionAttributeType interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface CollectionAttributeType extends AttributeDefinition {
+    /**
+     * <p>getGroupType</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     */
     public AttributeGroupType getGroupType();
+    /**
+     * <p>storeAttribute</p>
+     *
+     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @param persister a {@link org.opennms.netmgt.collectd.Persister} object.
+     */
     public void storeAttribute(CollectionAttribute attribute, Persister persister);
 }

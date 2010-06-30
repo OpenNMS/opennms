@@ -48,18 +48,24 @@ import org.opennms.netmgt.dhcpd.Dhcpd;
  * <P>
  * This class is designed to be used by the capabilities daemon to test if a
  * remote interface is running a functional DHCP server as defined by RFC 2131.
- * 
+ *
  * This class relies on the DHCP API provided by JDHCP v1.1.1. (please refer to
  * http://www.dhcp.org/javadhcp).
- * 
+ *
  * The class implements the Plugin interface that allows it to be used along
  * with other plugins by the daemon.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class DhcpPlugin extends AbstractPlugin {
     /**
@@ -141,7 +147,7 @@ public final class DhcpPlugin extends AbstractPlugin {
 
     /**
      * This method returns the name of the protocol supported by this plugin.
-     * 
+     *
      * @return The name of the protocol for the plugin.
      */
     public String getProtocolName() {
@@ -149,36 +155,26 @@ public final class DhcpPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is used to test the passed host for DHCP server support. The
      * remote host is queried using the DHCP protocol by sending a formatted
      * datagram to the DHCP server port. If a response is received by the DHCP
      * listenter that matches our original request then a value of true is
      * returned to the caller.
-     * 
-     * @param host
-     *            The remote host to test.
-     * 
-     * @return True if the remote interface responds to the DHCP request, false
-     *         otherwise
      */
     public boolean isProtocolSupported(InetAddress host) {
         return isServer(host, DEFAULT_RETRY, DEFAULT_TIMEOUT);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is used to test the passed host for DHCP server support. The
      * remote host is queried using the DHCP protocol by sending a formatted
      * datagram to the DHCP server port. If a response is received by the DHCP
      * listenter that matches our original request then a value of true is
      * returned to the caller.
-     * 
-     * @param host
-     *            The remote host to test.
-     * @param qualifiers
-     *            The location where qualifier parameters are read and written.
-     * 
-     * @return True if the remote interface responds to the DHCP request, false
-     *         otherwise
      */
     public boolean isProtocolSupported(InetAddress host, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;

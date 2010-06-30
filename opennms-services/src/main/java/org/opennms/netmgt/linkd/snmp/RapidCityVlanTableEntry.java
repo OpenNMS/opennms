@@ -39,19 +39,20 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 
 /**
  *<P>The RapidCityVlanTableEntry class is designed to hold all the MIB
- * information for one entry in the: 
- * .1.3.6.1.4.1.2272.1.3.2.1 
- * 
+ * information for one entry in the:
+ * .1.3.6.1.4.1.2272.1.3.2.1
+ *
  * <P>This object is used by the IntelVlanTable  to hold infomation
  * single entries in the table. See the IntelVlanTable documentation
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see IntelVlanTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class RapidCityVlanTableEntry extends SnmpTableEntry
 implements VlanCollectorEntry {
@@ -103,10 +104,8 @@ implements VlanCollectorEntry {
 	 * variable from the passed array of SNMP varbinds.</P>
 	 *
 	 * <P>If the information in the object should not be
-	 * modified then a <EM>final</EM> modifier can be 
+	 * modified then a <EM>final</EM> modifier can be
 	 * applied to the created object.</P>
-	 *
-	 * @param vars	The array of variable bindings.
 	 */
 	public RapidCityVlanTableEntry() {
 		super(rcVlan_elemList);

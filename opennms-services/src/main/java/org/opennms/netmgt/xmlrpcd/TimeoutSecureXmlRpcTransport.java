@@ -29,19 +29,22 @@ import org.apache.xmlrpc.DefaultXmlRpcTransport;
 
 /**
  * TimeoutSecureXmlRpcTransport adds a read timeout to the url connection.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport
 {
     protected int timeout = 0;
 
     /**
-     * Create a new TimeoutSecureXmlRpcTransport with the specified URL and 
+     * Create a new TimeoutSecureXmlRpcTransport with the specified URL and
      * basic authorization string.
      *
      * @deprecated Use setBasicAuthentication instead of passing an encoded authentication String.
-     *
      * @param url the url to POST XML-RPC requests to.
      * @param auth the Base64 encoded HTTP Basic authentication value.
+     * @param timeout a int.
      */
     public TimeoutSecureXmlRpcTransport(URL url, String auth, int timeout)
     {
@@ -53,6 +56,7 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport
      * Create a new DefaultXmlRpcTransport with the specified URL.
      *
      * @param url the url to POST XML-RPC requests to.
+     * @param timeout a int.
      */
     public TimeoutSecureXmlRpcTransport(URL url, int timeout)
     {
@@ -61,10 +65,14 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport
     }
 
     /**
-     * Sends the actual XMLRPC request. 
+     * Sends the actual XMLRPC request.
      *
      * Taken from org.apache.xmlrpc.DefaultXmlRpcTransport with a socket
      * timeout added.
+     *
+     * @param request an array of byte.
+     * @return a {@link java.io.InputStream} object.
+     * @throws java.io.IOException if any.
      */
     public InputStream sendXmlRpc(byte [] request)
     throws IOException

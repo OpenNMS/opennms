@@ -40,12 +40,19 @@ package org.opennms.web.event.filter;
 import org.opennms.web.filter.SubstringFilter;
 
 /**
+ * <p>LogMessageMatchesAnyFilter class.</p>
+ *
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class LogMessageMatchesAnyFilter extends SubstringFilter {
+    /** Constant <code>TYPE="msgmatchany"</code> */
     public static final String TYPE = "msgmatchany";
 
     /**
+     * <p>Constructor for LogMessageMatchesAnyFilter.</p>
+     *
      * @param substring
      *            a space-delimited list of search substrings
      */
@@ -53,6 +60,11 @@ public class LogMessageMatchesAnyFilter extends SubstringFilter {
         super(TYPE, "EVENTLOGMSG", "eventLogMsg", substring);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         StringBuffer buffer = new StringBuffer("message containing \"");
         buffer.append(getValue());
@@ -61,10 +73,16 @@ public class LogMessageMatchesAnyFilter extends SubstringFilter {
         return buffer.toString();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "<LogMessageMatchesAnyFilter: " + this.getDescription() + ">";
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
     }

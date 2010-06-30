@@ -40,70 +40,89 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a PollContext 
- * 
+ * Represents a PollContext
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface PollContext {
     
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName();
     
+    /**
+     * <p>setServiceName</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     */
     public void setServiceName(String serviceName);
     
     /**
+     * <p>sendEvent</p>
+     *
      * @param event the event to send
      */
     public void sendEvent(Event event);
 
     /**
-     * @param uei
-     * @param nodeId
-     * @param address
-     * @param svcName
-     * @param date
+     * <p>createEvent</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     * @param nodeId a int.
+     * @param address a {@link java.lang.String} object.
+     * @param date a {@link java.util.Date} object.
      * @return the event
+     * @param snmpinterface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     public Event createEvent(String uei, int nodeId, String address, Date date, OnmsSnmpInterface snmpinterface);
     
     /**
-     * 
-     * @param nodeId
-     * @param criteria
+     * <p>get</p>
+     *
+     * @param nodeId a int.
+     * @param criteria a {@link java.lang.String} object.
      * @return The List of OnmsSnmpInterfaces to be polled
      */
     public List<OnmsSnmpInterface> get(int nodeId, String criteria);
 
     /**
-     * Update the pollstatus using the specified criteria for 
+     * Update the pollstatus using the specified criteria for
      * OnmsSnmpInterfaces having nodeid nodeId
      *
-     * @param nodeId
-     * @param criteria
-     * @param status
+     * @param nodeId a int.
+     * @param criteria a {@link java.lang.String} object.
+     * @param status a {@link java.lang.String} object.
      */
     public void updatePollStatus(int nodeId, String criteria, String status);
     
     /**
-     * Update the pollstatus for 
+     * Update the pollstatus for
      * OnmsSnmpInterfaces having nodeid nodeId
      *
-     * @param nodeId
-     * @param status
+     * @param nodeId a int.
+     * @param status a {@link java.lang.String} object.
      */
     public void updatePollStatus(int nodeId,String status);
 
     /**
-     * Update the pollstatus for 
-     * OnmsSnmpInterfaces 
+     * Update the pollstatus for
+     * OnmsSnmpInterfaces
      *
-     * @param status
+     * @param status a {@link java.lang.String} object.
      */
     public void updatePollStatus(String status);
 
     /**
      * Update the OnmsSnmpInterface
-     * @param snmpinteface
+     *
+     * @param snmpinteface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     public void update(OnmsSnmpInterface snmpinteface);
 

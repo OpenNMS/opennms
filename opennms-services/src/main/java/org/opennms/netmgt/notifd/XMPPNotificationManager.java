@@ -56,9 +56,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 /**
  * Singleton class used to send messages to an XMPP Server. Used by
  * XMPPNotificationStragetgy and XMPPGroupNotificationStrategy
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
  */
 public class XMPPNotificationManager {
 
@@ -115,6 +118,9 @@ public class XMPPNotificationManager {
         }
 	};
 
+	/**
+	 * <p>Constructor for XMPPNotificationManager.</p>
+	 */
 	protected XMPPNotificationManager() {
 
 		// get the category logger
@@ -232,10 +238,9 @@ public class XMPPNotificationManager {
 
 	/**
 	 * get an instance of the XMPPNotificationManager
-	 * 
+	 *
 	 * @return instance of XMPPNotificationManager
 	 */
-
 	public static synchronized XMPPNotificationManager getInstance() {
 
 		if (instance == null) {
@@ -246,6 +251,11 @@ public class XMPPNotificationManager {
 
 	}
 
+	/**
+	 * <p>isLoggedIn</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isLoggedIn() {
 		return (xmpp.isAuthenticated());
 	}
@@ -264,6 +274,13 @@ public class XMPPNotificationManager {
         public void processMessage(Chat chat, Message message) {
         }
 	}
+	/**
+	 * <p>sendMessage</p>
+	 *
+	 * @param xmppTo a {@link java.lang.String} object.
+	 * @param xmppMessage a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public boolean sendMessage(String xmppTo, String xmppMessage) {
 	    if (!isLoggedIn()) {
 	        connectToServer();
@@ -283,7 +300,7 @@ public class XMPPNotificationManager {
 
 	/**
 	 * send an xmpp message to a specified Chat Room.
-	 * 
+	 *
 	 * @param xmppChatRoom
 	 *            room to send message to.
 	 * @param xmppMessage
@@ -324,6 +341,11 @@ public class XMPPNotificationManager {
 
 	}
 	
+	/**
+	 * <p>log</p>
+	 *
+	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+	 */
 	protected ThreadCategory log() {
 		return ThreadCategory.getInstance(this.getClass());
 	}

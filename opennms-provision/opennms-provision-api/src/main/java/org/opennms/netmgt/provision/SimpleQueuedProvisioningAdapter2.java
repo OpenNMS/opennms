@@ -51,28 +51,36 @@ import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
  * adapter can extend this class for this functionality.  The interface API methods are final so that
  * the child class can not implement them and override the queuing for what would be the point.  (Unless
  * of course we decide that it is worth while to override a subset of the API methods.
- * 
+ *
  * To use the class, have your provisioning adapter extend this abstract class.  You see that you must
  * implement abstract methods to compile.
- * 
+ *
  * To change the schedule, override the createScheduleForNode method and return a schedule suitable for
  * the node.  In this base class, the same schedule is used for all nodes.
- * 
+ *
  * TODO: Add logging
  * TODO: Verify correct Exception handling
  * TODO: Write tests (especially the equals method of the NodeOperation for proper queue handling)
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAdapter {
     
     private volatile PausibleScheduledThreadPoolExecutor m_executorService;
     
+    /**
+     * <p>Constructor for SimpleQueuedProvisioningAdapter2.</p>
+     *
+     * @param executorService a {@link org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor} object.
+     */
     protected SimpleQueuedProvisioningAdapter2(PausibleScheduledThreadPoolExecutor executorService) {
         m_executorService = executorService;
     }
     
+    /**
+     * <p>Constructor for SimpleQueuedProvisioningAdapter2.</p>
+     */
     protected SimpleQueuedProvisioningAdapter2() {
         this(createDefaultSchedulerService());
     }
@@ -87,13 +95,27 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#getName()
      */
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getName();
     
     /**
      * This method is called when the scheduled
      * Adapters extending this class must implement this method
+     *
+     * @param nodeId a int.
+     * @return a boolean.
      */
     public abstract boolean isNodeReady(int nodeId);
+    /**
+     * <p>processPendingOperationForNode</p>
+     *
+     * @param op a {@link org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter2.AdapterOperation} object.
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
+     */
     public abstract void processPendingOperationForNode(AdapterOperation op) throws ProvisioningAdapterException;
     
 
@@ -110,6 +132,7 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#addNode(int)
      */
+    /** {@inheritDoc} */
     public final void addNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.ADD, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.ADD));
@@ -125,6 +148,7 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#updateNode(int)
      */
+    /** {@inheritDoc} */
     public final void updateNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.UPDATE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.UPDATE));
@@ -140,6 +164,7 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#deleteNode(int)
      */
+    /** {@inheritDoc} */
     public final void deleteNode(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.DELETE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.DELETE));
@@ -155,6 +180,7 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
      * (non-Javadoc)
      * @see org.opennms.netmgt.provision.ProvisioningAdapter#nodeConfigChanged(int)
      */
+    /** {@inheritDoc} */
     public final void nodeConfigChanged(int nodeId) {
         AdapterOperation op = new AdapterOperation(Integer.valueOf(nodeId), AdapterOperationType.CONFIG_CHANGE, 
                                                    createScheduleForNode(nodeId, AdapterOperationType.CONFIG_CHANGE));
@@ -332,6 +358,11 @@ public abstract class SimpleQueuedProvisioningAdapter2 implements ProvisioningAd
         }
     }
 
+    /**
+     * <p>getExecutorService</p>
+     *
+     * @return a {@link org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor} object.
+     */
     public PausibleScheduledThreadPoolExecutor getExecutorService() {
         return m_executorService;
     }

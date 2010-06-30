@@ -6,10 +6,23 @@ import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 
+/**
+ * <p>DeliveryOptionsValidator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DeliveryOptionsValidator {
 
     private SchedulerService m_reportSchedulerService;
 
+    /**
+     * <p>validateDeliveryOptions</p>
+     *
+     * @param deliveryOptions a {@link org.opennms.reporting.core.DeliveryOptions} object.
+     * @param context a {@link org.springframework.binding.validation.ValidationContext} object.
+     */
     public void validateDeliveryOptions(DeliveryOptions deliveryOptions, ValidationContext context) {
         MessageContext messages = context.getMessageContext();
         if (!((deliveryOptions.getSendMail() | deliveryOptions.getPersist()))) {
@@ -33,6 +46,11 @@ public class DeliveryOptionsValidator {
         
     }
     
+    /**
+     * <p>setReportSchedulerService</p>
+     *
+     * @param reportSchedulerService a {@link org.opennms.web.svclayer.SchedulerService} object.
+     */
     public void setReportSchedulerService(SchedulerService reportSchedulerService) {
         m_reportSchedulerService = reportSchedulerService;
     }

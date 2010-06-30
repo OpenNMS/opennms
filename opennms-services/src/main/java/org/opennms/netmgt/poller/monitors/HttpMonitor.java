@@ -77,12 +77,24 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * This class is designed to be used by the service poller framework to test the availability
  * of the HTTP service on remote interfaces. The class implements the ServiceMonitor interface
  * that allows it to be used along with other plug-ins by the service poller framework.
- * 
+ *
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *  
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 @Distributable
 public class HttpMonitor extends IPv4Monitor {
@@ -109,17 +121,15 @@ public class HttpMonitor extends IPv4Monitor {
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
     
     /**
+     * {@inheritDoc}
+     *
      * Poll the specified address for HTTP service availability.
-     * 
+     *
      * During the poll an attempt is made to connect on the specified port(s) (by default TCP
      * ports 80, 8080, 8888). If the connection request is successful, an HTTP 'GET' command is
      * sent to the interface. The response is parsed and a return code extracted and verified.
      * Provided that the interface's response is valid we set the service status to
      * SERVICE_AVAILABLE and return.
-     * @param parameters
-     *            The package parameters (timeout, retry, and others) to be used for this poll.
-     * @return The availability of the interface and if a transition event should be suppressed.
-     *  
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
@@ -207,6 +217,13 @@ public class HttpMonitor extends IPv4Monitor {
         }
     }
 
+    /**
+     * <p>wrapSocket</p>
+     *
+     * @param socket a {@link java.net.Socket} object.
+     * @return a {@link java.net.Socket} object.
+     * @throws java.io.IOException if any.
+     */
     protected Socket wrapSocket(final Socket socket) throws IOException {
         return socket;
     }
@@ -276,6 +293,12 @@ public class HttpMonitor extends IPv4Monitor {
         return ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
     }
 
+    /**
+     * <p>determinePorts</p>
+     *
+     * @param parameters a {@link java.util.Map} object.
+     * @return an array of int.
+     */
     protected int[] determinePorts(final Map<String, Object> parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }

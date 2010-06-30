@@ -64,11 +64,11 @@ import org.springframework.core.io.Resource;
 
 /**
  * PDFReportRenderer will transform its input XML into PDF using the supplied
- * XSLT resource. 
- * 
+ * XSLT resource.
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
-
 public class PDFReportRenderer implements ReportRenderer {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
@@ -83,15 +83,24 @@ public class PDFReportRenderer implements ReportRenderer {
 
     private ThreadCategory log;
 
+    /**
+     * <p>Constructor for PDFReportRenderer.</p>
+     */
     public PDFReportRenderer() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(PDFReportRenderer.class);
     }
 
+    /**
+     * <p>render</p>
+     *
+     * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
+     */
     public void render() throws ReportRenderException {
         render(m_inputFileName, m_outputFileName, m_xsltResource);
     }
 
+    /** {@inheritDoc} */
     public byte[] render(String inputFileName, Resource xsltResource) throws ReportRenderException {
 
         if (log.isDebugEnabled())
@@ -103,6 +112,7 @@ public class PDFReportRenderer implements ReportRenderer {
         return outputStream.toByteArray();
     }
 
+    /** {@inheritDoc} */
     public void render(String inputFileName, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
         if (log.isDebugEnabled())
             log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to OutputStream");
@@ -136,6 +146,7 @@ public class PDFReportRenderer implements ReportRenderer {
         }
     }
 
+    /** {@inheritDoc} */
     public void render(InputStream inputStream, OutputStream outputStream, Resource xsltResource) throws ReportRenderException {
         if (log.isDebugEnabled())
             log.debug("Rendering InputStream with XSL File " + xsltResource.getDescription() + " to OutputStream");
@@ -161,6 +172,7 @@ public class PDFReportRenderer implements ReportRenderer {
         }
     }
 
+    /** {@inheritDoc} */
     public void render(String inputFileName, String outputFileName, Resource xsltResource) throws ReportRenderException {
         if (log.isDebugEnabled())
             log.debug("Rendering " + inputFileName + " with XSL File " + xsltResource.getDescription() + " to " + outputFileName + " with base directory of " + m_baseDir);
@@ -206,6 +218,14 @@ public class PDFReportRenderer implements ReportRenderer {
         }
     }
 
+    /**
+     * <p>render</p>
+     *
+     * @param in a {@link java.io.Reader} object.
+     * @param out a {@link java.io.OutputStream} object.
+     * @param xslt a {@link java.io.Reader} object.
+     * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
+     */
     public void render(Reader in, OutputStream out, Reader xslt) throws ReportRenderException {
         try {
 
@@ -230,26 +250,40 @@ public class PDFReportRenderer implements ReportRenderer {
         }
     }
 
+    /** {@inheritDoc} */
     public void setXsltResource(Resource xsltResource) {
         this.m_xsltResource = xsltResource;
     }
 
+    /** {@inheritDoc} */
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
 
+    /**
+     * <p>getOutputFileName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOutputFileName() {
         return m_outputFileName;
     }
 
+    /** {@inheritDoc} */
     public void setInputFileName(String inputFileName) {
         this.m_inputFileName = inputFileName;
     }
 
+    /** {@inheritDoc} */
     public void setBaseDir(String baseDir) {
         this.m_baseDir = baseDir;
     }
 
+    /**
+     * <p>getBaseDir</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBaseDir() {
         return m_baseDir;
     }

@@ -60,6 +60,12 @@ import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextC
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+/**
+ * <p>JBossConnectionFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JBossConnectionFactory {
     
     static ThreadCategory log = ThreadCategory.getInstance(JBossConnectionFactory.class);
@@ -67,6 +73,13 @@ public class JBossConnectionFactory {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.utils.jmx.connectors.ConnectionFactory#getMBeanServer()
+     */
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param propertiesMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.protocols.jmx.connectors.JBossConnectionWrapper} object.
      */
     @SuppressWarnings("unchecked")
     public static JBossConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {

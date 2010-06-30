@@ -46,8 +46,11 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.charts.ChartUtils;
 /**
- * @author david
+ * <p>PurdyChartServlet class.</p>
  *
+ * @author david
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class PurdyChartServlet extends HttpServlet {
 
@@ -57,7 +60,7 @@ public class PurdyChartServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     * <p>Constructor for PurdyChartServlet.</p>
      */
     public PurdyChartServlet() {
         super();
@@ -79,6 +82,7 @@ public class PurdyChartServlet extends HttpServlet {
     }
 */    
 
+    /** {@inheritDoc} */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String chartName = request.getParameter("chart-name");

@@ -71,8 +71,10 @@ import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * ReST service for Acknowledgments of alarms/notifications.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AcknowledgmentRestService extends OnmsRestService {
     @Autowired
@@ -90,6 +92,12 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Context
     SecurityContext m_securityContext;
     
+    /**
+     * <p>getAcknowledgment</p>
+     *
+     * @param alarmId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsAcknowledgment} object.
+     */
     @GET
     @Produces("text/xml")
     @Path("{id}")
@@ -99,6 +107,11 @@ public class AcknowledgmentRestService extends OnmsRestService {
     	return result;
     }
     
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @GET
     @Produces("text/plain")
     @Path("count")
@@ -107,6 +120,11 @@ public class AcknowledgmentRestService extends OnmsRestService {
         return Integer.toString(m_ackDao.countAll());
     }
 
+    /**
+     * <p>getAcks</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsAcknowledgmentCollection} object.
+     */
     @GET
     @Produces("text/xml")
     @Transactional
@@ -122,6 +140,13 @@ public class AcknowledgmentRestService extends OnmsRestService {
     }
 
 //    @PUT
+    /**
+     * <p>acknowledgeAlarm</p>
+     *
+     * @param alarmId a {@link java.lang.String} object.
+     * @param action a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsAcknowledgment} object.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional

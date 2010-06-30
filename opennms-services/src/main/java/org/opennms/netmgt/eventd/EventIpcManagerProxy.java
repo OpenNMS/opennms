@@ -52,65 +52,107 @@ import org.springframework.util.Assert;
  * the share application context.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class EventIpcManagerProxy implements EventIpcManager {
     private EventIpcManager m_delegate = null;
 
+    /** {@inheritDoc} */
     public void addEventListener(EventListener listener) {
         assertState();
         m_delegate.addEventListener(listener);
     }
 
+    /**
+     * <p>addEventListener</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param ueiList a {@link java.util.List} object.
+     */
     public void addEventListener(EventListener listener, List<String> ueiList) {
         assertState();
         m_delegate.addEventListener(listener, ueiList);
     }
 
+    /**
+     * <p>addEventListener</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param uei a {@link java.lang.String} object.
+     */
     public void addEventListener(EventListener listener, String uei) {
         assertState();
         m_delegate.addEventListener(listener, uei);
     }
 
+    /** {@inheritDoc} */
     public void addEventListener(EventListener listener, Collection<String> ueis) {
         assertState();
         m_delegate.addEventListener(listener, ueis);
     }
 
+    /** {@inheritDoc} */
     public void removeEventListener(EventListener listener) {
         assertState();
         m_delegate.removeEventListener(listener);
     }
 
+    /**
+     * <p>removeEventListener</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param ueiList a {@link java.util.List} object.
+     */
     public void removeEventListener(EventListener listener, List<String> ueiList) {
         assertState();
         m_delegate.removeEventListener(listener, ueiList);
     }
 
+    /**
+     * <p>removeEventListener</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param uei a {@link java.lang.String} object.
+     */
     public void removeEventListener(EventListener listener, String uei) {
         assertState();
         m_delegate.removeEventListener(listener, uei);
     }
 
+    /** {@inheritDoc} */
     public void removeEventListener(EventListener listener, Collection<String> ueis) {
         assertState();
         m_delegate.removeEventListener(listener, ueis);
     }
     
+    /** {@inheritDoc} */
     public void send(Event event) throws EventProxyException {
         assertState();
         m_delegate.send(event);
     }
 
+    /**
+     * <p>send</p>
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public void send(Log eventLog) throws EventProxyException {
         assertState();
         m_delegate.send(eventLog);
     }
 
+    /** {@inheritDoc} */
     public void sendNow(Event event) {
         assertState();
         m_delegate.sendNow(event);
     }
 
+    /**
+     * <p>sendNow</p>
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
+     */
     public void sendNow(Log eventLog) {
         assertState();
         m_delegate.sendNow(eventLog);
@@ -120,10 +162,20 @@ public class EventIpcManagerProxy implements EventIpcManager {
         Assert.state(m_delegate != null, "property delegate not set; has the event daemon successfully started?");
     }
 
+    /**
+     * <p>getDelegate</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getDelegate() {
         return m_delegate;
     }
 
+    /**
+     * <p>setDelegate</p>
+     *
+     * @param delegate a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setDelegate(EventIpcManager delegate) {
         m_delegate = delegate;
     }

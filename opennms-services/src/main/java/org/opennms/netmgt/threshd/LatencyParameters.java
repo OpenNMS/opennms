@@ -35,22 +35,44 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 
+/**
+ * <p>LatencyParameters class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LatencyParameters {
 
 	private Map m_parameters;
 	private String m_svcName;
 
+	/**
+	 * <p>Constructor for LatencyParameters.</p>
+	 *
+	 * @param parameters a {@link java.util.Map} object.
+	 * @param svcName a {@link java.lang.String} object.
+	 */
 	public LatencyParameters(Map parameters, String svcName) {
 
 		m_parameters = parameters;
 		m_svcName = svcName;
 	}
 
+	/**
+	 * <p>getParameters</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map getParameters() {
 		return m_parameters;
 	}
 	
 
+	/**
+	 * <p>getServiceName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getServiceName() {
 		return m_svcName;
 	}

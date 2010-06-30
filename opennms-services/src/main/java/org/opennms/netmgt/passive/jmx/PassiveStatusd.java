@@ -49,19 +49,34 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 
 /**
- * 
+ * <p>PassiveStatusd class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStatusdMBean {
 
+    /**
+     * <p>Constructor for PassiveStatusd.</p>
+     */
     public PassiveStatusd() {
         super(NAME);
     }
 
+    /** Constant <code>NAME="OpenNMS.PassiveStatus"</code> */
     public final static String NAME = "OpenNMS.PassiveStatus";
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         try {
@@ -90,14 +105,25 @@ public class PassiveStatusd extends AbstractServiceDaemon implements PassiveStat
         keeper.init();
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         getPassiveStatusKeeper().start();
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         getPassiveStatusKeeper().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return getPassiveStatusKeeper().getStatus();
     }

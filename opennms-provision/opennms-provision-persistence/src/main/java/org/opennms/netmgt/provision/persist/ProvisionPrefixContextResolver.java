@@ -13,14 +13,26 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 @Provider
+/**
+ * <p>ProvisionPrefixContextResolver class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ProvisionPrefixContextResolver implements ContextResolver<JAXBContext> {
     private final Map<Class<?>, String> m_urls = new HashMap<Class<?>, String>();
     
+    /**
+     * <p>Constructor for ProvisionPrefixContextResolver.</p>
+     *
+     * @throws javax.xml.bind.JAXBException if any.
+     */
     public ProvisionPrefixContextResolver() throws JAXBException {
         m_urls.put(Requisition.class, "http://xmlns.opennms.org/xsd/config/model-import");
         m_urls.put(ForeignSource.class, "http://xmlns.opennms.org/xsd/config/foreign-source");
     }
 
+    /** {@inheritDoc} */
     public JAXBContext getContext(Class<?> objectType) {
         try {
             return new ProvisionJAXBContext(JAXBContext.newInstance(objectType), m_urls.get(objectType));

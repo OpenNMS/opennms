@@ -51,12 +51,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * 
- * @author <a href="mailto:dj@gregor.com">DJ Gregor</a>
+ * <p>Abstract AbstractCastorConfigDao class.</p>
  *
+ * @author <a href="mailto:dj@gregor.com">DJ Gregor</a>
  * @param <K> Castor class
  * @param <V> Configuration object that is stored in memory (might be the same
  *            as the Castor class or could be a different class)
+ * @version $Id: $
  */
 public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean {
     private Class<K> m_castorClass;
@@ -66,6 +67,14 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     private CastorReloadCallback m_callback = new CastorReloadCallback();
     private Long m_reloadCheckInterval = null;
 
+    /**
+     * <p>Constructor for AbstractCastorConfigDao.</p>
+     *
+     * @param entityClass a {@link java.lang.Class} object.
+     * @param description a {@link java.lang.String} object.
+     * @param <K> a K object.
+     * @param <V> a V object.
+     */
     public AbstractCastorConfigDao(Class<K> entityClass, String description) {
         super();
         
@@ -73,12 +82,29 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
         m_description = description;
     }
 
+    /**
+     * <p>translateConfig</p>
+     *
+     * @param castorConfig a K object.
+     * @return a V object.
+     */
     public abstract V translateConfig(K castorConfig);
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>loadConfig</p>
+     *
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @return a V object.
+     */
     protected V loadConfig(Resource resource) {
         long startTime = System.currentTimeMillis();
         
@@ -94,10 +120,20 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
         return config;
     }
 
+    /**
+     * <p>createLoadedLogMessage</p>
+     *
+     * @param translatedConfig a V object.
+     * @param diffTime a long.
+     * @return a {@link java.lang.String} object.
+     */
     protected String createLoadedLogMessage(V translatedConfig, long diffTime) {
         return "Loaded " + getDescription() + " in " + diffTime + "ms";
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_configResource != null, "property configResource must be set and be non-null");
     
@@ -109,14 +145,29 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
         }
     }
 
+    /**
+     * <p>getConfigResource</p>
+     *
+     * @return a {@link org.springframework.core.io.Resource} object.
+     */
     public Resource getConfigResource() {
         return m_configResource;
     }
 
+    /**
+     * <p>setConfigResource</p>
+     *
+     * @param configResource a {@link org.springframework.core.io.Resource} object.
+     */
     public void setConfigResource(Resource configResource) {
         m_configResource = configResource;
     }
     
+    /**
+     * <p>getContainer</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.support.FileReloadContainer} object.
+     */
     protected FileReloadContainer<V> getContainer() {
         return m_container;
     }
@@ -127,10 +178,20 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
         }
     }
 
+    /**
+     * <p>getReloadCheckInterval</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getReloadCheckInterval() {
         return m_reloadCheckInterval;
     }
 
+    /**
+     * <p>setReloadCheckInterval</p>
+     *
+     * @param reloadCheckInterval a {@link java.lang.Long} object.
+     */
     public void setReloadCheckInterval(Long reloadCheckInterval) {
         m_reloadCheckInterval = reloadCheckInterval;
         if (m_reloadCheckInterval != null && m_container != null) {
@@ -138,6 +199,11 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
         }
     }
     
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return m_description;
     }

@@ -49,12 +49,12 @@
 * http://www.krupczak.org/
 */
 
-/** 
+/**
  *
-   OpenNMS Xmp config factory for kicking off parsing of the
-   xmp-config config file for protocol specific options.
-   @author <a href="mailto:rdk@krupczak.org">Bobby Krupczak</a>
-   @version $Id: XmpConfigFactory.java 38 2008-07-24 13:39:32Z rdk $
+ *   OpenNMS Xmp config factory for kicking off parsing of the
+ *   xmp-config config file for protocol specific options.
+ *   @author <a href="mailto:rdk@krupczak.org">Bobby Krupczak</a>
+ *   @version $Id: XmpConfigFactory.java 38 2008-07-24 13:39:32Z rdk $
  */
 
 package org.opennms.netmgt.config;
@@ -72,7 +72,6 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
-
 public class XmpConfigFactory {
 
     /* class variables and methods *********************** */
@@ -82,6 +81,14 @@ public class XmpConfigFactory {
     private XmpConfig config = null;
 
     // initialize our class for the creation of instances
+    /**
+     * <p>init</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public static void init() throws IOException, FileNotFoundException, MarshalException, ValidationException 
     {
 
@@ -95,14 +102,32 @@ public class XmpConfigFactory {
         }
     }
 
+    /**
+     * <p>getXmpConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.xmpConfig.XmpConfig} object.
+     */
     public XmpConfig getXmpConfig() { return config; }
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.XmpConfigFactory} object.
+     */
     public static XmpConfigFactory getInstance() { return instance; }
 
     /* instance variables ******************************** */
 
     /* constructors  ************************************* */
 
+    /**
+     * <p>Constructor for XmpConfigFactory.</p>
+     *
+     * @param configFile a {@link java.lang.String} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public XmpConfigFactory(String configFile) 
     throws MarshalException, ValidationException, IOException 
     { 
@@ -114,6 +139,14 @@ public class XmpConfigFactory {
         return; 
     }
 
+    /**
+     * <p>Constructor for XmpConfigFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public XmpConfigFactory(Reader rdr) 
     throws MarshalException, ValidationException, IOException 
     {

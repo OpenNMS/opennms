@@ -42,11 +42,25 @@ import org.opennms.core.tasks.Task;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 
+/**
+ * <p>Phase class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Phase extends BatchTask {
     private LifeCycleInstance m_lifecycle;
     private String m_name;
     private Object[] m_providers;
         
+    /**
+     * <p>Constructor for Phase.</p>
+     *
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     * @param lifecycle a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
+     * @param name a {@link java.lang.String} object.
+     * @param providers an array of {@link java.lang.Object} objects.
+     */
     public Phase(ContainerTask<?> parent, LifeCycleInstance lifecycle, String name, Object[] providers) {
         super(lifecycle.getCoordinator(), parent);
         m_lifecycle = lifecycle;
@@ -56,24 +70,48 @@ public class Phase extends BatchTask {
         addPhaseMethods();
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
     
+    /**
+     * <p>getLifeCycleInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
+     */
     public LifeCycleInstance getLifeCycleInstance() {
         return m_lifecycle;
     }
     
+    /**
+     * <p>createNestedLifeCycle</p>
+     *
+     * @param lifeCycleName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
+     */
     public LifeCycleInstance createNestedLifeCycle(String lifeCycleName) {
         return m_lifecycle.createNestedLifeCycle(this, lifeCycleName);
     }
     
+    /**
+     * <p>addPhaseMethods</p>
+     */
     public void addPhaseMethods() {
         for(Object provider : m_providers) {
             addPhaseMethods(provider);
         }
     }
     
+    /**
+     * <p>addPhaseMethods</p>
+     *
+     * @param provider a {@link java.lang.Object} object.
+     */
     public void addPhaseMethods(Object provider) {
         for(Method method : provider.getClass().getMethods()) {
             String schedulingHint = isPhaseMethod(method);
@@ -214,6 +252,11 @@ public class Phase extends BatchTask {
     }
     
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return String.format("Phase %s of lifecycle %s", getName(), m_lifecycle.getName());
     }

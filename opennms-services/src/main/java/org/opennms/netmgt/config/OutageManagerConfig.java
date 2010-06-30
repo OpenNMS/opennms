@@ -32,22 +32,25 @@
 package org.opennms.netmgt.config;
 
 /**
+ * <p>OutageManagerConfig interface.</p>
+ *
  * @author brozow
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public interface OutageManagerConfig {
     /**
      * Return the number of writer threads to be started.
-     * 
+     *
      * @return the number of writer threads to be started
      */
     public int getWriters();
 
     /**
      * Return the SQL statemet to get the next outage ID.
-     * 
+     *
      * @return the SQL statemet to get the next outage ID
      */
     public String getGetNextOutageID();
@@ -55,7 +58,7 @@ public interface OutageManagerConfig {
     /**
      * Return a boolean flag to indicate if a deleteService should be propagated
      * to the interface or node level deletion when approciate.
-     * 
+     *
      * @return true for delete propagation otherwise false.
      */
     public boolean deletePropagation();

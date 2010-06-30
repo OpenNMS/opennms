@@ -37,10 +37,26 @@ import org.opennms.core.tasks.BatchTask;
  * LifeCycleRepository
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface LifeCycleRepository {
     
+    /**
+     * <p>createNestedLifeCycleInstance</p>
+     *
+     * @param containingPhase a {@link org.opennms.core.tasks.BatchTask} object.
+     * @param lifeCycleName a {@link java.lang.String} object.
+     * @param providers a {@link java.lang.Object} object.
+     * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
+     */
     LifeCycleInstance createNestedLifeCycleInstance(BatchTask containingPhase, String lifeCycleName, Object... providers);
+    /**
+     * <p>createLifeCycleInstance</p>
+     *
+     * @param lifeCycleName a {@link java.lang.String} object.
+     * @param providers a {@link java.lang.Object} object.
+     * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
+     */
     LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers);
 
 }

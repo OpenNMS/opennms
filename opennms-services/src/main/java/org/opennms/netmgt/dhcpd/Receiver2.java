@@ -79,6 +79,9 @@ final class Receiver2 implements Runnable, Fiber {
         m_clients = clients;
     }
 
+    /**
+     * <p>start</p>
+     */
     public synchronized void start() {
         if (m_worker != null)
             throw new IllegalStateException("The fiber has already been started");
@@ -89,20 +92,36 @@ final class Receiver2 implements Runnable, Fiber {
         m_status = STARTING;
     }
 
+    /**
+     * <p>stop</p>
+     */
     public synchronized void stop() {
         m_status = STOP_PENDING;
         m_receiver.close();
         m_worker.interrupt();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public synchronized int getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 

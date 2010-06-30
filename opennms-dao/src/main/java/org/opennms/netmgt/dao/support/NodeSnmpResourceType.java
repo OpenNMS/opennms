@@ -46,26 +46,55 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
+/**
+ * <p>NodeSnmpResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NodeSnmpResourceType implements OnmsResourceType {
 
     private ResourceDao m_resourceDao;
 
+    /**
+     * <p>Constructor for NodeSnmpResourceType.</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public NodeSnmpResourceType(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "nodeSnmp";
     }
     
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return "SNMP Node Data";
     }
     
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnNode(int nodeId) {
         return getResourceDirectory(nodeId, false).isDirectory();
     }
     
+    /**
+     * <p>getResourceDirectory</p>
+     *
+     * @param nodeId a int.
+     * @param verify a boolean.
+     * @return a {@link java.io.File} object.
+     */
     public File getResourceDirectory(int nodeId, boolean verify) {
         File snmp = new File(m_resourceDao.getRrdDirectory(verify), DefaultResourceDao.SNMP_DIRECTORY);
         
@@ -77,6 +106,7 @@ public class NodeSnmpResourceType implements OnmsResourceType {
         return node;
     }
     
+    /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
@@ -92,6 +122,8 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This resource type is never available for domains.
      * Only the interface resource type is available for domains.
      */
@@ -99,11 +131,13 @@ public class NodeSnmpResourceType implements OnmsResourceType {
         return false;
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<OnmsResource> getResourcesForDomain(String domain) {
         return Collections.EMPTY_LIST;
     }
 
+    /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }

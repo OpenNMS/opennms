@@ -11,36 +11,68 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 
+/**
+ * <p>ThresholdingEventProxy class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ThresholdingEventProxy implements EventProxy {
 
     private List<Event> m_events;
     
+    /**
+     * <p>Constructor for ThresholdingEventProxy.</p>
+     */
     public ThresholdingEventProxy() {
         m_events = new LinkedList<Event>();
     }
     
+    /** {@inheritDoc} */
     public void send(Event event) throws EventProxyException {
         add(event);
     }
 
+    /**
+     * <p>send</p>
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public void send(Log eventLog) throws EventProxyException {
         for (Event e : eventLog.getEvents().getEventCollection()) {
             add(e);
         }
     }
     
+    /**
+     * <p>add</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public void add(Event event) {
         m_events.add(event);
     }
 
+    /**
+     * <p>add</p>
+     *
+     * @param events a {@link java.util.List} object.
+     */
     public void add(List<Event> events) {
         m_events.addAll(events);
     }
 
+    /**
+     * <p>removeAllEvents</p>
+     */
     public void removeAllEvents() {
         m_events.clear();
     }
     
+    /**
+     * <p>sendAllEvents</p>
+     */
     public void sendAllEvents() {
         if (m_events.size() > 0) {
             try {

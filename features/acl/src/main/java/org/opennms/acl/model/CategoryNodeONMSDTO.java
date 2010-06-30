@@ -35,35 +35,69 @@
 package org.opennms.acl.model;
 
 /**
+ * <p>CategoryNodeONMSDTO class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class CategoryNodeONMSDTO {
 
+    /**
+     * <p>Getter for the field <code>categoryId</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getCategoryId() {
         return categoryId;
     }
 
+    /**
+     * <p>Setter for the field <code>categoryId</code>.</p>
+     *
+     * @param categoryId a {@link java.lang.Integer} object.
+     */
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 
+    /**
+     * <p>Getter for the field <code>categoryName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCategoryName() {
         return categoryName;
     }
 
+    /**
+     * <p>Setter for the field <code>categoryName</code>.</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     */
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
 
+    /**
+     * <p>Getter for the field <code>categoryDescription</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCategoryDescription() {
         return categoryDescription;
     }
 
+    /**
+     * <p>Setter for the field <code>categoryDescription</code>.</p>
+     *
+     * @param categoryDescription a {@link java.lang.String} object.
+     */
     public void setCategoryDescription(String categoryDescription) {
         this.categoryDescription = categoryDescription;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
 
@@ -73,6 +107,7 @@ public class CategoryNodeONMSDTO {
         return (categoryName.equalsIgnoreCase(category.getCategoryName()) && categoryDescription.equalsIgnoreCase(category.getCategoryDescription()) && categoryId == category.categoryId);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int result = hashCode;

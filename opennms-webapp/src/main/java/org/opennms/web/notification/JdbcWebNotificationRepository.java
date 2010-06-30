@@ -54,6 +54,13 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+/**
+ * <p>JdbcWebNotificationRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class JdbcWebNotificationRepository implements WebNotificationRepository {
     
     @Autowired
@@ -150,11 +157,13 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
         
     }
     
+    /** {@inheritDoc} */
     public void acknowledgeMatchingNotification(String user, Date timestamp, NotificationCriteria criteria) {
         String sql = getSql("UPDATE NOTIFICATIONS SET RESPONDTIME=?, ANSWEREDBY=?", criteria);
         jdbc().update(sql, paramSetter(criteria, new Timestamp(timestamp.getTime()), user));
     }
 
+    /** {@inheritDoc} */
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
         String sql = getSql("SELECT NOTIFICATIONS.*, SERVICE.SERVICENAME FROM NOTIFICATIONS LEFT OUTER JOIN SERVICE USING (SERVICEID)", criteria);
         return getNotifications(sql, paramSetter(criteria));
@@ -165,6 +174,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
         return notifications.toArray(new Notification[0]);
     }
 
+    /** {@inheritDoc} */
     public Notification getNotification(int noticeId) {
         Notification[] notifications = getMatchingNotifications(new NotificationCriteria(new NotificationIdFilter(noticeId)));
         if (notifications.length < 1) {
@@ -174,6 +184,7 @@ public class JdbcWebNotificationRepository implements WebNotificationRepository 
         }
     }
 
+    /** {@inheritDoc} */
     public int countMatchingNotifications(NotificationCriteria criteria) {
         String sql = getSql("SELECT COUNT(*) AS NOTICECOUNT FROM NOTIFICATIONS", criteria);
         return queryForInt(sql, paramSetter(criteria));

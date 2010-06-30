@@ -35,35 +35,80 @@ package org.opennms.netmgt.linkd.scheduler;
 /**
  * This interface extends the {@link java.lang.Runnable runnable}interface and
  * provides a method to determine if the runnable is ready to start.
- * 
+ *
  * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org">OpenNMS.org </a>
- * 
+ * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org">OpenNMS.org </a>
+ * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org">OpenNMS.org </a>
+ * @version $Id: $
  */
 public interface ReadyRunnable extends Runnable {
     /**
      * Returns true if the runnable is ready to start.
-     * 
+     *
+     * @return a boolean.
      */
     public boolean isReady();
 
+    /**
+     * <p>suspend</p>
+     */
     public void suspend();
     
+    /**
+     * <p>isSuspended</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSuspended();
     
+    /**
+     * <p>wakeUp</p>
+     */
     public void wakeUp();
     
+    /**
+     * <p>unschedule</p>
+     */
     public void unschedule();
     
+    /**
+     * <p>schedule</p>
+     */
     public void schedule();
         
+    /**
+     * <p>equals</p>
+     *
+     * @param runnable a {@link org.opennms.netmgt.linkd.scheduler.ReadyRunnable} object.
+     * @return a boolean.
+     */
     public boolean equals(ReadyRunnable runnable);
 
+    /**
+     * <p>getInfo</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInfo();
     
+    /**
+     * <p>getPackageName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPackageName();
     
+    /**
+     * <p>setPackageName</p>
+     *
+     * @param pkg a {@link java.lang.String} object.
+     */
     public void setPackageName(String pkg);
 
     

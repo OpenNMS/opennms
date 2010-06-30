@@ -31,20 +31,42 @@
 //
 package org.opennms.report.configuration;
 
+/**
+ * <p>ConfigurationCalculationException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ConfigurationCalculationException extends Exception {
 
     private static final long serialVersionUID = -8290071295128513350L;
 
+    /**
+     * <p>Constructor for ConfigurationCalculationException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public ConfigurationCalculationException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * <p>Constructor for ConfigurationCalculationException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 */
 	public ConfigurationCalculationException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * <p>Constructor for ConfigurationCalculationException.</p>
+	 *
+	 * @param cause a {@link java.lang.Throwable} object.
+	 */
 	public ConfigurationCalculationException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub

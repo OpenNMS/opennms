@@ -40,24 +40,47 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>LocationMonitorListController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class LocationMonitorListController extends AbstractController implements InitializingBean {
     private DistributedPollerService m_distributedPollerService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         LocationMonitorListModel model = m_distributedPollerService.getLocationMonitorList();
         return new ModelAndView("distributed/locationMonitorList", "model", model);
     }
 
+    /**
+     * <p>getDistributedPollerService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.DistributedPollerService} object.
+     */
     public DistributedPollerService getDistributedPollerService() {
         return m_distributedPollerService;
     }
 
+    /**
+     * <p>setDistributedPollerService</p>
+     *
+     * @param distributedPollerService a {@link org.opennms.web.svclayer.DistributedPollerService} object.
+     */
     public void setDistributedPollerService(
             DistributedPollerService distributedPollerService) {
         m_distributedPollerService = distributedPollerService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         if (m_distributedPollerService == null) {
             throw new IllegalStateException("distributedPollerService property has not been set");

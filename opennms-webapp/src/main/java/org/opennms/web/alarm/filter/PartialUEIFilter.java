@@ -34,26 +34,54 @@ package org.opennms.web.alarm.filter;
 
 import org.opennms.web.filter.SubstringFilter;
 
-/** Encapsulates filtering on partial unique event identifiers. */
+/**
+ * Encapsulates filtering on partial unique event identifiers.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class PartialUEIFilter extends SubstringFilter {
+    /** Constant <code>TYPE="partialUei"</code> */
     public static final String TYPE = "partialUei";
 
+    /**
+     * <p>Constructor for PartialUEIFilter.</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     */
     public PartialUEIFilter(String uei) {
         super(TYPE, "EVENTUEI", "uei", uei);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return this.getDescription();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.PartialUEIFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getUEI</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUEI() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

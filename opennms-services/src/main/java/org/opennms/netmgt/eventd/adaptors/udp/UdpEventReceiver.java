@@ -62,10 +62,12 @@ import org.springframework.util.Assert;
  * the an agent sends an event via UDP/IP the receiver will process the event
  * and then add the UUIDs to the internal list. If the event is successfully
  * processed then an event-receipt is returned to the caller.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * @version $Id: $
  */
 public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMBean {
     /**
@@ -129,10 +131,19 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
      */
     private String m_logPrefix;
 
+    /**
+     * <p>Constructor for UdpEventReceiver.</p>
+     */
     public UdpEventReceiver() {
         this(UDP_PORT, null);
     }
 
+    /**
+     * <p>Constructor for UdpEventReceiver.</p>
+     *
+     * @param port a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public UdpEventReceiver(int port, String ipAddress) {
         m_dgSock = null;
         m_ipAddress = ipAddress;
@@ -151,6 +162,9 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         m_logPrefix = null;
     }
 
+    /**
+     * <p>start</p>
+     */
     public synchronized void start() {
         assertNotRunning();
 
@@ -193,6 +207,9 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         m_status = RUNNING;
     }
 
+    /**
+     * <p>stop</p>
+     */
     public synchronized void stop() {
         if (m_status == STOPPED) {
             return;
@@ -217,55 +234,95 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         m_status = STOPPED;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "Event UDP Receiver[" + m_dgPort + "]";
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return getStatusText();
     }
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
     }
 
+    /**
+     * <p>destroy</p>
+     */
     public void destroy() {
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return m_ipAddress;
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipAddress) {
         assertNotRunning();
         
         m_ipAddress = ipAddress;
     }
 
+    /** {@inheritDoc} */
     public void setPort(Integer port) {
         assertNotRunning();
 
         m_dgPort = port.intValue();
     }
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getPort() {
         return m_dgPort;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Adds a new event handler to receiver. When new events are received the
      * decoded event is passed to the handler.
-     * 
-     * @param handler
-     *            A reference to an event handler
-     * 
      */
     public void addEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
@@ -276,13 +333,11 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Removes an event handler from the list of handler called when an event is
      * received. The handler is removed based upon the method
      * <code>equals()</code> inherieted from the <code>Object</code> class.
-     * 
-     * @param handler
-     *            A reference to the event handler.
-     * 
      */
     public void removeEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
@@ -290,22 +345,35 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         }
     }
 
+    /**
+     * <p>getEventHandlers</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<EventHandler> getEventHandlers() {
         return m_eventHandlers;
     }
 
+    /**
+     * <p>setEventHandlers</p>
+     *
+     * @param eventHandlers a {@link java.util.List} object.
+     */
     public void setEventHandlers(List<EventHandler> eventHandlers) {
         m_eventHandlers = eventHandlers;
     }
 
+    /** {@inheritDoc} */
     public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         addEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
+    /** {@inheritDoc} */
     public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         removeEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
+    /** {@inheritDoc} */
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }

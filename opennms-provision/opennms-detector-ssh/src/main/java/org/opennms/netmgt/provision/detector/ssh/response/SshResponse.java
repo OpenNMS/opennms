@@ -31,17 +31,29 @@
 package org.opennms.netmgt.provision.detector.ssh.response;
 
 /**
- * @author thedesloge
+ * <p>SshResponse class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class SshResponse {
     
     private boolean m_isAvailable = false;
     
+    /**
+     * <p>receive</p>
+     *
+     * @param isAvail a boolean.
+     */
     public void receive(boolean isAvail) {
         m_isAvailable = isAvail;
     }
     
+    /**
+     * <p>isAvailable</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAvailable() {
         return m_isAvailable;
     }

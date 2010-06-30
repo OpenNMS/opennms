@@ -29,6 +29,13 @@ import org.opennms.netmgt.EventConstants;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
+/**
+ * <p>AssetRecordResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Path("assetRecord")
@@ -41,6 +48,12 @@ public class AssetRecordResource extends OnmsRestService {
     @Autowired
     private EventProxy m_eventProxy;
     
+    /**
+     * <p>getAssetRecord</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsAssetRecord getAssetRecord(@PathParam("nodeCriteria") String nodeCriteria) {
@@ -51,6 +64,13 @@ public class AssetRecordResource extends OnmsRestService {
         return getAssetRecord(node);
     }
     
+    /**
+     * <p>updateAssetRecord</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response updateAssetRecord(@PathParam("nodeCriteria") String nodeCriteria,  MultivaluedMapImpl params) {

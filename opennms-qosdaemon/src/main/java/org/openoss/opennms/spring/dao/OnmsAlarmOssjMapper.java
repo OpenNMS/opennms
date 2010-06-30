@@ -56,6 +56,12 @@ import org.openoss.opennms.spring.qosdrx.QoSDrx;
 import org.openoss.ossj.jvt.fm.monitor.OOSSProbableCause;
 
 
+/**
+ * <p>OnmsAlarmOssjMapper class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsAlarmOssjMapper {
 
 	/**
@@ -84,6 +90,8 @@ public class OnmsAlarmOssjMapper {
 
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
+	 *
+	 * @param _distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
 	 */
 	public void setDistPollerDao(DistPollerDao _distPollerDao) {
 		distPollerDao =  _distPollerDao;
@@ -98,7 +106,8 @@ public class OnmsAlarmOssjMapper {
 
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
-	 * @param ar 
+	 *
+	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
 	 */
 	public void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
@@ -113,7 +122,8 @@ public class OnmsAlarmOssjMapper {
 
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
-	 * @param nodedao 
+	 *
+	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
 	 */
 	public void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
@@ -122,8 +132,9 @@ public class OnmsAlarmOssjMapper {
 	private OssDao ossDao;
 
 	/**
-	 * provides an interface to OpenNMS which provides a unified api 
-	 * @param ossDao the ossDao to set
+	 * provides an interface to OpenNMS which provides a unified api
+	 *
+	 * @param _ossDao the ossDao to set
 	 */
 	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
@@ -191,18 +202,17 @@ public class OnmsAlarmOssjMapper {
 	// ****************
 
 	/**
-	 * This method maps an OSS/J AlarmValue to OpenNMS alarm 
-	 * @param onmsAlarm OnmsAlarm object to be populated 
-	 * 
-	 * @param av OSS/J AlarmValue data to use to populate OnmsAlarm
-	 * 
+	 * This method maps an OSS/J AlarmValue to OpenNMS alarm
+	 *
+	 * @param onmsAlarm OnmsAlarm object to be populated
+	 * @param alarmValue OSS/J AlarmValue data to use to populate OnmsAlarm
 	 * @param almUpdateBehaviour - determines how to treat the node name of the new alarm must be of value;
 	 * <code>USE_TYPE_INSTANCE</code> - populate nodeID with node having same asset type and instance data as alarm
 	 * or <code>SPECIFY_OUTSTATION</code> -  populate nodeID with node having same nodeLabel as defaultUpdateNodeLabel
-	 *
 	 * @param defaultUpdateNodeLabel name of node to be updated if almUpdateBehaviour==SPECIFY_OUTSTATION
-	 * 
 	 * @return the OnmsAlarm populated with OSS/J NotifyNewAlarmEvent data
+	 * @throws java.lang.IllegalArgumentException if any.
+	 * @throws javax.oss.UnsupportedAttributeException if any.
 	 */
 	public OnmsAlarm populateOnmsAlarmFromOssjAlarm(OnmsAlarm onmsAlarm, AlarmValue alarmValue, Integer almUpdateBehaviour, String defaultUpdateNodeLabel  )throws IllegalArgumentException, UnsupportedAttributeException {
 		ThreadCategory log = getLog();
@@ -381,9 +391,12 @@ public class OnmsAlarmOssjMapper {
 
 	/**
 	 * This method maps OpenNMS alarm to an OSS/J alarms and adds additional information
+	 *
 	 * @param _openNMSalarm data to use to populate the OSS/J alarm
 	 * @param alarmValueSpecification AlarmValue object to be populated - Invariant (Specifcation) values should be already populated
-	 * @rerun the _av OSS/J AlarmValue populated with opennms data
+	 * @return the _av OSS/J AlarmValue populated with opennms data
+	 * @throws java.lang.IllegalArgumentException if any.
+	 * @throws javax.oss.UnsupportedAttributeException if any.
 	 */
 	public AlarmValue populateOssjAlarmFromOpenNMSAlarm(AlarmValue alarmValueSpecification, OnmsAlarm _openNMSalarm) throws IllegalArgumentException, UnsupportedAttributeException {
 		ThreadCategory log = getLog();
@@ -663,7 +676,7 @@ public class OnmsAlarmOssjMapper {
 	/**
 	 * convenience method to map OSS/J to OpenNMS severities
 	 * A switch statement converts the OSS/J severity qualifier
-	 * over to one compatible with OpenNMS 
+	 * over to one compatible with OpenNMS
 	 * From OpenNMS code;
 	 * public static final int INDETERMINATE_SEVERITY = 1;
 	 * public static final int CLEARED_SEVERITY = 2;
@@ -672,11 +685,12 @@ public class OnmsAlarmOssjMapper {
 	 * public static final int MINOR_SEVERITY = 5;
 	 * public static final int MAJOR_SEVERITY = 6;
 	 * public static final int CRITICAL_SEVERITY = 7;
-	 * 
+	 *
 	 * NOTE  org.opennms.web.alarm.Alarm.NORMAL_SEVERITY has no equivilent in OSS/J X733
-	 * 
+	 *
 	 * @param ossjseverity the severity value according to ossj / X733
 	 * @return the severity value according to opennms
+	 * @throws java.lang.IllegalArgumentException if any.
 	 */
 	public static OnmsSeverity ossjSeveritytoOnmsSeverity(short ossjseverity) throws IllegalArgumentException{
 
@@ -760,6 +774,7 @@ public class OnmsAlarmOssjMapper {
 
 	/**
 	 * Maps OSS/J alarm types to OpenNMS uei types
+	 *
 	 * @param alarmType String representing OSS/J alarm Type
 	 * @return string representing equivilent OpenNMS uei
 	 */

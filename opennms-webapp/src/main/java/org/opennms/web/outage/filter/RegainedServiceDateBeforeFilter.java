@@ -37,29 +37,63 @@ import java.util.Date;
 import org.opennms.web.filter.LessThanFilter;
 import org.opennms.web.filter.SQLType;
 
+/**
+ * <p>RegainedServiceDateBeforeFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class RegainedServiceDateBeforeFilter extends LessThanFilter<Date> {
+    /** Constant <code>TYPE="regainedbefore"</code> */
     public static final String TYPE = "regainedbefore";
 
+    /**
+     * <p>Constructor for RegainedServiceDateBeforeFilter.</p>
+     *
+     * @param date a java$util$Date object.
+     */
     public RegainedServiceDateBeforeFilter(Date date) {
         super(TYPE, SQLType.DATE, "OUTAGES.IFREGAINEDSERVICE", "ifRegainedService", date);
     }
 
+    /**
+     * <p>Constructor for RegainedServiceDateBeforeFilter.</p>
+     *
+     * @param epochTime a long.
+     */
     public RegainedServiceDateBeforeFilter(long epochTime) {
         this(new Date(epochTime));
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("regained service date before \"" + getValue() + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<Regained Service Date Before Filter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getDate</p>
+     *
+     * @return a java$util$Date object.
+     */
     public Date getDate() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

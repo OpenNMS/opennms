@@ -47,25 +47,28 @@ import java.sql.SQLException;
  * A <code>DbConnectionFactory</code> allocates and deallocates connections
  * from a database. The concrete implementations of this interface specify a
  * particular allocation/deallocation policy.
- * 
+ *
  * <p>
  * For example, an implementation might use and reuse connections from a
  * persistent pool of connections, while another might dynamically allocate and
  * deallocate connections for each request.
  * </p>
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public interface DbConnectionFactory {
     /**
      * Initialize a database factory with the given URL, driver classname, and
      * database credentials. Will guarantee that the JDBC driver is loaded and
      * that connections will be available.
-     * 
+     *
      * <p>
      * Only one <code>init</code> method should be called.
-     * 
+     *
      * @param dbUrl
      *            the JDBC URL used to retrieve connections
      * @param dbDriver
@@ -75,6 +78,8 @@ public interface DbConnectionFactory {
      *            the name to use to authenticate us with the database
      * @param password
      *            the credentials use to authenticate the username
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.sql.SQLException if any.
      */
     public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException;
 
@@ -82,27 +87,32 @@ public interface DbConnectionFactory {
      * Deallocate all the resources that may have been allocated to this
      * database connection factory. Makes this factory unavailable for new
      * connection requests.
+     *
+     * @throws java.sql.SQLException if any.
      */
     public void destroy() throws SQLException;
 
     /**
      * Retrieve a connection from the given database connection pool.
-     * 
-     * @throws IllegalStateException
+     *
+     * @throws java.lang.IllegalStateException
      *             If the factory has not been initialized or has been
      *             destroyed.
+     * @return a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
      */
     public Connection getConnection() throws SQLException;
 
     /**
      * Replace a database connection back in the pool of available connections
      * for its parent pool.
-     * 
+     *
      * @param connection
      *            the connection to release
-     * @throws IllegalStateException
+     * @throws java.lang.IllegalStateException
      *             If the factory has not been initialized or has been
      *             destroyed.
+     * @throws java.sql.SQLException if any.
      */
     public void releaseConnection(Connection connection) throws SQLException;
 

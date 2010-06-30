@@ -36,8 +36,10 @@
 package org.opennms.netmgt.daemon;
 
 /**
- * 
+ * <p>BaseOnmsMBean interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface BaseOnmsMBean {
 
@@ -58,13 +60,25 @@ public interface BaseOnmsMBean {
 
     /**
      * The current status of the managed bean. This is a representation of the
-     * managed bean's run state as defined by the {@link Fiber}
+     * managed bean's run state as defined by the Fiber
      * interface.
+     *
+     * @return a int.
      */
     public abstract int getStatus();
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String status();
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getStatusText();
 
 }

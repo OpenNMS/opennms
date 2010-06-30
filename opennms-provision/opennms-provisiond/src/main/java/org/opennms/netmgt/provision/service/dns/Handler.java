@@ -40,18 +40,27 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+/**
+ * <p>Handler class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Handler extends URLStreamHandler {
 
+    /** {@inheritDoc} */
     @Override
     protected int getDefaultPort() {
         return 53;
     }
     
+    /** {@inheritDoc} */
     @Override
     protected URLConnection openConnection(URL u) throws IOException {
         return new DnsRequisitionUrlConnection(u);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void parseURL(URL u, String spec, int start, int limit) {
         super.parseURL(u, spec, start, limit);

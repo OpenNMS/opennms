@@ -47,10 +47,11 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
+ * <p>QueryManager interface.</p>
+ *
  * @author antonio
- * 
+ * @version $Id: $
  */
-
 public interface QueryManager {
 
 	/**
@@ -100,29 +101,88 @@ public interface QueryManager {
 
 	public static final int CDP_ADDRESS_TYPE_IP_ADDRESS = 1;
 
+	/** Constant <code>ACTION_UPTODATE='N'</code> */
 	static final char ACTION_UPTODATE = 'N';
 
+	/** Constant <code>ACTION_DELETE='D'</code> */
 	static final char ACTION_DELETE = 'D';
 
+    /**
+     * <p>getSnmpNodeList</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws java.sql.SQLException if any.
+     */
     public List<LinkableNode> getSnmpNodeList() throws SQLException;
 
+    /**
+     * <p>getSnmpNode</p>
+     *
+     * @param nodeid a int.
+     * @return a {@link org.opennms.netmgt.linkd.LinkableNode} object.
+     * @throws java.sql.SQLException if any.
+     */
     public LinkableNode getSnmpNode(int nodeid) throws SQLException;
 
+    /**
+     * <p>updateDeletedNodes</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void updateDeletedNodes() throws SQLException;
 
+    /**
+     * <p>getSnmpPrimaryIp</p>
+     *
+     * @param nodeid a int.
+     * @return a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     */
     public String getSnmpPrimaryIp(int nodeid) throws SQLException;
     
+    /**
+     * <p>storeSnmpCollection</p>
+     *
+     * @param node a {@link org.opennms.netmgt.linkd.LinkableNode} object.
+     * @param snmpColl a {@link org.opennms.netmgt.linkd.SnmpCollection} object.
+     * @return a {@link org.opennms.netmgt.linkd.LinkableNode} object.
+     * @throws java.sql.SQLException if any.
+     */
     public LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpColl) throws SQLException;
     
+    /**
+     * <p>storeDiscoveryLink</p>
+     *
+     * @param discoveryLink a {@link org.opennms.netmgt.linkd.DiscoveryLink} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void storeDiscoveryLink(DiscoveryLink discoveryLink) throws SQLException;
     
+    /**
+     * <p>update</p>
+     *
+     * @param nodeid a int.
+     * @param action a char.
+     * @throws java.sql.SQLException if any.
+     */
     public void update(int nodeid, char action) throws SQLException;
     
+    /**
+     * <p>updateForInterface</p>
+     *
+     * @param nodeid a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param ifIndex a int.
+     * @param action a char.
+     * @throws java.sql.SQLException if any.
+     */
     public void updateForInterface(int nodeid, String ipAddr, int ifIndex, char action) throws SQLException;
     
     /**
-     * @param connectionFactory
-     */    
+     * <p>setJdbcTemplate</p>
+     *
+     * @param jdbcTemplate a {@link org.springframework.jdbc.core.JdbcTemplate} object.
+     */
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate);
 
 }

@@ -40,83 +40,100 @@ import org.opennms.acl.model.GroupDTO;
 import org.opennms.acl.model.Pager;
 
 /**
+ * <p>GroupService interface.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface GroupService extends PagerService {
 
     /**
      * Save a GroupDTO
-     * 
-     * @param group
+     *
+     * @param group a {@link org.opennms.acl.model.GroupDTO} object.
      * @return the result of the operation
      */
     public Boolean save(GroupDTO group);
 
     /**
      * Retrieve a group by id
-     * 
-     * @param id
+     *
+     * @param id a {@link java.lang.Integer} object.
      * @return group
      */
     public GroupDTO getGroup(Integer id);
 
     /**
      * Remove a group by id
-     * 
-     * @param id
+     *
+     * @param id a {@link java.lang.Integer} object.
      * @return the result of the operation
      */
     public Boolean removeGroup(Integer id);
 
     /**
      * Check if Group has a users
-     * 
+     *
      * @param id of the group
      * @return the result of the operation
      */
     public Boolean hasUsers(Integer id);
 
     /**
-     * @param pager
+     * <p>getGroups</p>
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
      * @return paginated list of groups
      */
     public List<GroupDTO> getGroups(Pager pager);
 
     /**
+     * <p>getGroups</p>
+     *
      * @return list of all authorities
      */
     public List<GroupDTO> getGroups();
 
     /**
-     * @param username
+     * <p>getUserGroups</p>
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the list of user's authorities by username
      */
     public List<GroupDTO> getUserGroups(String username);
 
     /**
-     * @param username
+     * <p>getFreeGroups</p>
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the list of authorities that user doesn't have
      */
     public List<GroupDTO> getFreeGroups(String username);
 
     /**
      * Save a list of authorities for a given user
-     * 
-     * @param username
-     * @param groups
+     *
+     * @param username a {@link java.lang.String} object.
+     * @param groups a {@link java.util.List} object.
      * @return the result of operation
      */
     public Boolean saveGroups(String username, List<Integer> groups);
 
     /**
      * Delete all user's authorities
-     * 
-     * @param username
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the result of the operation
      */
     public Boolean deleteUserGroups(String username);
 
+    /**
+     * <p>getUserGroupsWithAutorities</p>
+     *
+     * @param username a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<GroupDTO> getUserGroupsWithAutorities(String username);
 
 }

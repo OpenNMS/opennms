@@ -33,6 +33,7 @@ package org.opennms.sms.reflector.smsservice;
  * MobileMsgResponseHandler
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface MobileMsgResponseHandler extends MobileMsgResponseCallback, MobileMsgResponseMatcher {
 

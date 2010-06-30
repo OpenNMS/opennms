@@ -35,10 +35,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Represents a RowProcessor 
+ * Represents a RowProcessor
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface RowProcessor {
+    /**
+     * <p>processRow</p>
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void processRow(ResultSet rs) throws SQLException;
 }

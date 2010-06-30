@@ -41,6 +41,12 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventSubscriptionService;
 
+/**
+ * <p>EventIpcManager interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface EventIpcManager extends EventSubscriptionService, EventProxy, EventForwarder {
 
 }

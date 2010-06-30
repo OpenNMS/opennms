@@ -35,26 +35,54 @@ package org.opennms.web.alarm.filter;
 import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
-/** Encapsulates filtering on exact unique event identifiers. */
+/**
+ * Encapsulates filtering on exact unique event identifiers.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NegativeAcknowledgedByFilter extends NotEqualOrNullFilter<String> {
+    /** Constant <code>TYPE="acknowledgedByNot"</code> */
     public static final String TYPE = "acknowledgedByNot";
 
+    /**
+     * <p>Constructor for NegativeAcknowledgedByFilter.</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public NegativeAcknowledgedByFilter(String user) {
         super(TYPE, SQLType.STRING, "ALARMACKUSER", "alarmAckUser", user);
     }
  
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return "not acknowledged by " + getValue();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.NegativeAcknowledgedByFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getAcknowledgedByFilter</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAcknowledgedByFilter() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

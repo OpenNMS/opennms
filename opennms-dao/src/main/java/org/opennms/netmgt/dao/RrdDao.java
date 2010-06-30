@@ -43,13 +43,16 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.springframework.dao.DataAccessException;
 
 /**
+ * <p>RrdDao interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface RrdDao {
 
     /**
      * Get the value for an attribute over a period of time.
-     * 
+     *
      * @param attribute the attribute
      * @param cf consolidation function (usually "AVERAGE")
      * @param start start time in milliseconds
@@ -60,21 +63,20 @@ public interface RrdDao {
     
     /**
      * Get the value for an attribute over a period of time.
-     * 
+     *
      * @param attribute the attribute
      * @param rraConsolidationFunction consolidation function (usually "AVERAGE")
-     * @param printConsolidationFunction applies this function to the result of the above function of the
-     *             given time period
      * @param startTimeInMillis start time in milliseconds
      * @param endTimeInMillis end time in milliseconds
      * @return value
+     * @param printFunctions a {@link java.lang.String} object.
      */
     public double[] getPrintValues(OnmsAttribute attribute,String rraConsolidationFunction, 
 			long startTimeInMillis, long endTimeInMillis, String... printFunctions);
 
     /**
      * Create an RRD graph with the given command where RRD files are relative to the workDir.
-     * 
+     *
      * @param command RRD graph command
      * @param workDir RRD files are relative to this directory
      * @return PNG graph image
@@ -83,21 +85,21 @@ public interface RrdDao {
 
     /**
      * Gets the offset of the top of the graph box from the top of the image.
-     * 
-     * @return offset in pixels 
+     *
+     * @return offset in pixels
      */
     public int getGraphTopOffsetWithText();
 
     /**
      * Gets the offset of the left side of the graph box from the left side of the image.
-     * 
+     *
      * @return offset in pixels
      */
     public int getGraphLeftOffset();
 
     /**
      * Gets the offset of the right side of the graph box from the right side of the image.
-     * 
+     *
      * @return offset in pixels
      */
     public int getGraphRightOffset();
@@ -107,16 +109,14 @@ public interface RrdDao {
      * value of the data source stored in the specified RRD file.
      * NOTE: This method assumes that each RRD file contains a single
      * data source.
-     * 
+     *
      * @param attribute
      *            The attribute for which fetch the last value.  Must be a
      *            RrdGraphAttribute.
      * @param interval
      *            Fetch interval.  This should equal RRD step size.
-     * 
      * @return Retrived value or null if some errors occur
-     * 
-     * @throws DataAccessException
+     * @throws org.springframework.dao.DataAccessException
      *             if an error occurs retrieving the last value
      */
     public Double getLastFetchValue(OnmsAttribute attribute, int interval) throws DataAccessException;
@@ -126,7 +126,7 @@ public interface RrdDao {
      * value of the data source stored in the specified RRD file.
      * NOTE: This method assumes that each RRD file contains a single
      * data source.
-     * 
+     *
      * @param attribute
      *            The attribute for which fetch the last value.  Must be a
      *            RrdGraphAttribute.
@@ -137,10 +137,8 @@ public interface RrdDao {
      *            Interval in milliseconds for how long we should look back
      *            in time for a non-NaN value.  This should a multiple of
      *            the RRD step size.
-     * 
      * @return Retrived value or null if some errors occur
-     * 
-     * @throws DataAccessException
+     * @throws org.springframework.dao.DataAccessException
      *             if an error occurs retrieving the last value
      */
     public Double getLastFetchValue(OnmsAttribute attribute, int interval, int range)throws DataAccessException;

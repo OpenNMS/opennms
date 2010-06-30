@@ -67,28 +67,55 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see IpRouteTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
-
 public final class IpRouteTableEntry extends SnmpTableEntry
 {
 	// Lookup strings for specific table entries
 	//
+	/** Constant <code>IP_ROUTE_DEST="ipRouteDest"</code> */
 	public final static	String	IP_ROUTE_DEST		= "ipRouteDest";
+	/** Constant <code>IP_ROUTE_IFINDEX="ipRouteIfIndex"</code> */
 	public final static	String	IP_ROUTE_IFINDEX	= "ipRouteIfIndex";
+	/** Constant <code>IP_ROUTE_METRIC1="ipRouteMetric1"</code> */
 	public final static	String	IP_ROUTE_METRIC1	= "ipRouteMetric1";
+	/** Constant <code>IP_ROUTE_METRIC2="ipRouteMetric2"</code> */
 	public final static	String	IP_ROUTE_METRIC2	= "ipRouteMetric2";
+	/** Constant <code>IP_ROUTE_METRIC3="ipRouteMetric3"</code> */
 	public final static	String	IP_ROUTE_METRIC3	= "ipRouteMetric3";
+	/** Constant <code>IP_ROUTE_METRIC4="ipRouteMetric4"</code> */
 	public final static	String	IP_ROUTE_METRIC4	= "ipRouteMetric4";
+	/** Constant <code>IP_ROUTE_NXTHOP="ipRouteNextHop"</code> */
 	public final static	String	IP_ROUTE_NXTHOP 	= "ipRouteNextHop";
+	/** Constant <code>IP_ROUTE_TYPE="ipRouteType"</code> */
 	public final static	String	IP_ROUTE_TYPE   	= "ipRouteType";
+	/** Constant <code>IP_ROUTE_PROTO="ipRouteProto"</code> */
 	public final static	String	IP_ROUTE_PROTO  	= "ipRouteProto";
+	/** Constant <code>IP_ROUTE_AGE="ipRouteAge"</code> */
 	public final static	String	IP_ROUTE_AGE    	= "ipRouteAge";
+	/** Constant <code>IP_ROUTE_MASK="ipRouteMask"</code> */
 	public final static	String	IP_ROUTE_MASK   	= "ipRouteMask";
+	/** Constant <code>IP_ROUTE_METRIC5="ipRouteMetric5"</code> */
 	public final static	String	IP_ROUTE_METRIC5	= "ipRouteMetric5";
+	/** Constant <code>IP_ROUTE_INFO="ipRouteInfo"</code> */
 	public final static	String	IP_ROUTE_INFO   	= "ipRouteInfo";
 	
 	
@@ -281,22 +308,42 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 		super(ms_elemList);
 	}
 	
+	 /**
+	  * <p>getIpRouteDest</p>
+	  *
+	  * @return a {@link java.net.InetAddress} object.
+	  */
 	 public InetAddress getIpRouteDest() {
 		 return getIPAddress(IpRouteTableEntry.IP_ROUTE_DEST); 
 	 }
 
+	/**
+	 * <p>getIpRouteIfIndex</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteIfIndex() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_IFINDEX);
 		if (val == null ) return -1;
 		return val;
 	}
 	
+	/**
+	 * <p>getIpRouteMetric1</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteMetric1() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC1);
 		if (val == null ) return -1;
 		return val;
 	}
 
+	/**
+	 * <p>getIpRouteMetric2</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteMetric2() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC2);
 		if (val == null ) return -1;
@@ -304,6 +351,11 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 		
 	}
 
+	/**
+	 * <p>getIpRouteMetric3</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteMetric3() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC3);
 		if (val == null ) return -1;
@@ -311,6 +363,11 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 
 	}
 
+	/**
+	 * <p>getIpRouteMetric4</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteMetric4() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC4);
 		if (val == null ) return -1;
@@ -318,10 +375,20 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 
 	}
 
+	/**
+	 * <p>getIpRouteNextHop</p>
+	 *
+	 * @return a {@link java.net.InetAddress} object.
+	 */
 	public InetAddress getIpRouteNextHop() {
 		return getIPAddress(IpRouteTableEntry.IP_ROUTE_NXTHOP);
 	}
 
+	/**
+	 * <p>getIpRouteType</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteType() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_TYPE);
 		if (val == null ) return -1;
@@ -329,6 +396,11 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 		
 	}
 
+	/**
+	 * <p>getIpRouteProto</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteProto() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_PROTO);
 		if (val == null ) return -1;
@@ -336,6 +408,11 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 		
 	}
 
+	/**
+	 * <p>getIpRouteAge</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteAge() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_AGE);
 		if (val == null ) return -1;
@@ -343,10 +420,20 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 		
 	}
 
+	/**
+	 * <p>getIpRouteMask</p>
+	 *
+	 * @return a {@link java.net.InetAddress} object.
+	 */
 	public InetAddress getIpRouteMask() {
 		return getIPAddress(IpRouteTableEntry.IP_ROUTE_MASK);
 	}
 
+	/**
+	 * <p>getIpRouteMetric5</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpRouteMetric5() {
 		Integer val = getInt32(IpRouteTableEntry.IP_ROUTE_METRIC5);
 		if (val == null ) return -1;
@@ -354,6 +441,11 @@ public final class IpRouteTableEntry extends SnmpTableEntry
 
 	}
 
+	/**
+	 * <p>getIpRouteInfo</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getIpRouteInfo() {
 		return getObjectID(IpRouteTableEntry.IP_ROUTE_INFO);
 	}

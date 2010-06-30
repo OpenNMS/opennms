@@ -43,15 +43,19 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This class is used to compare Specific object from the config SNMP package.
- * 
- * @author <a href="mailto:david@openmms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@openmms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class SpecificComparator implements Comparator<String> {
     ThreadCategory log = ThreadCategory.getInstance(getClass());
 
     /**
      * returns the difference of spec1 - spec2
+     *
+     * @param spec1 a {@link java.lang.String} object.
+     * @param spec2 a {@link java.lang.String} object.
+     * @return a int.
      */
     public int compare(String spec1, String spec2) {
         long compared = 0;

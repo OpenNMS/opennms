@@ -58,9 +58,10 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>DroolsCorrelationEngine class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
@@ -70,6 +71,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private Map<String, Object> m_globals = new HashMap<String, Object>();
     private String m_name;
     
+    /** {@inheritDoc} */
     @Override
     public synchronized void correlate(Event e) {
         log().info("Begin correlation for Event " + e.getDbid() + " uei: " + e.getUei());
@@ -78,6 +80,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         log().info("End correlation for Event " + e.getDbid() + " uei: " + e.getUei());
     }
 
+    /** {@inheritDoc} */
     @Override
     protected synchronized void timerExpired(Integer timerId) {
         log().info("Begin processing for Timer " + timerId);
@@ -87,23 +90,44 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         log().info("End processing for Timer " + timerId);
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<String> getInterestingEvents() {
         return m_interestingEvents;
     }
     
+    /**
+     * <p>setInterestingEvents</p>
+     *
+     * @param ueis a {@link java.util.List} object.
+     */
     public void setInterestingEvents(List<String> ueis) {
         m_interestingEvents = ueis;
     }
     
+    /**
+     * <p>setRulesResources</p>
+     *
+     * @param rules a {@link java.util.List} object.
+     */
     public void setRulesResources(List<Resource> rules) {
         m_rules = rules;
     }
     
+    /**
+     * <p>setGlobals</p>
+     *
+     * @param globals a {@link java.util.Map} object.
+     */
     public void setGlobals(Map<String, Object> globals) {
         m_globals = globals;
     }
 
+    /**
+     * <p>initialize</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void initialize() throws Exception {
         Properties props = new Properties();
         props.setProperty("drools.dialect.java.compiler.lnglevel", "1.5");
@@ -137,6 +161,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         }
     }
     
+    /**
+     * <p>getMemorySize</p>
+     *
+     * @return a int.
+     */
     public int getMemorySize() {
         int count = 0;
         for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
@@ -145,6 +174,11 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     	return count;
     }
     
+    /**
+     * <p>getMemoryObjects</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<Object> getMemoryObjects() {
         List<Object> objects = new LinkedList<Object>();
@@ -154,18 +188,39 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         return objects;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setGlobal</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Object} object.
+     */
     public void setGlobal(String name, Object value) {
         m_workingMemory.setGlobal(name, value);
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

@@ -43,15 +43,26 @@ import org.opennms.protocols.rt.Messenger;
  * IcmpMessenger
  *
  * @author brozow
+ * @version $Id: $
  */
 public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
     
     IcmpSocket m_socket;
     
+    /**
+     * <p>Constructor for IcmpMessenger.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public IcmpMessenger() throws IOException {
         m_socket = new IcmpSocket();
     }
 
+    /**
+     * <p>getIcmpSocket</p>
+     *
+     * @return a {@link org.opennms.protocols.icmp.IcmpSocket} object.
+     */
     public IcmpSocket getIcmpSocket() {
         return m_socket;
     }
@@ -98,10 +109,16 @@ public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
         }
     }
     
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.ping.PingRequest} object.
+     */
     public void sendRequest(PingRequest request) {
         request.sendRequest(getIcmpSocket());
     }
 
+    /** {@inheritDoc} */
     public void start(final Queue<PingReply> replyQueue) {
         Thread socketReader = new Thread("ICMP-Socket-Reader") {
 

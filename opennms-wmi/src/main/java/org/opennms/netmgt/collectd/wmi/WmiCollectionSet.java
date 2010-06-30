@@ -40,23 +40,45 @@ import org.opennms.netmgt.collectd.CollectionResource;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * <p>WmiCollectionSet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class WmiCollectionSet implements CollectionSet {
     private int m_status;
     private List<WmiCollectionResource> m_collectionResources;
 
+    /**
+     * <p>Constructor for WmiCollectionSet.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public WmiCollectionSet(CollectionAgent agent) {
         m_status = ServiceCollector.COLLECTION_FAILED;
         m_collectionResources = new ArrayList<WmiCollectionResource>();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>setStatus</p>
+     *
+     * @param status a int.
+     */
     public void setStatus(int status) {
         m_status = status;
     }
 
+    /** {@inheritDoc} */
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
 
@@ -66,10 +88,20 @@ public class WmiCollectionSet implements CollectionSet {
         visitor.completeCollectionSet(this);
     }
 
+    /**
+     * <p>getResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<WmiCollectionResource> getResources() {
         return m_collectionResources;
     }
 
+    /**
+     * <p>ignorePersist</p>
+     *
+     * @return a boolean.
+     */
     public boolean ignorePersist() {
         return false;
     }

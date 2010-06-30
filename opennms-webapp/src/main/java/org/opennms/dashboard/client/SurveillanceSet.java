@@ -38,16 +38,32 @@ package org.opennms.dashboard.client;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * 
+ * <p>Abstract SurveillanceSet class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public abstract class SurveillanceSet implements IsSerializable {
 
+    /** Constant <code>DEFAULT</code> */
     public static final SurveillanceSet DEFAULT = new DefaultSurveillanceSet();
 
+    /**
+     * <p>isDefault</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDefault() { return false; }
     
+    /**
+     * <p>visit</p>
+     *
+     * @param v a {@link org.opennms.dashboard.client.Visitor} object.
+     */
     public abstract void visit(Visitor v);
     
     public static class DefaultSurveillanceSet extends SurveillanceSet {

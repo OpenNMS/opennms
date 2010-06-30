@@ -47,9 +47,14 @@ import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
 
 /**
- * 
+ * <p>NodeRescanServlet class.</p>
+ *
  * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class NodeRescanServlet extends HttpServlet {
     /**
@@ -58,6 +63,11 @@ public class NodeRescanServlet extends HttpServlet {
     private static final long serialVersionUID = -3183139374532183137L;
     protected EventProxy proxy;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             this.proxy = Util.createEventProxy();
@@ -66,6 +76,7 @@ public class NodeRescanServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // required parameters
         String nodeIdString = request.getParameter("node");

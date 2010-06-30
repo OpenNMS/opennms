@@ -31,20 +31,42 @@
 //
 package org.opennms.reporting.availability.svclayer;
 
+/**
+ * <p>AvailabilityDataServiceException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AvailabilityDataServiceException extends Exception {
 
     private static final long serialVersionUID = -8290071295128513350L;
 
+    /**
+     * <p>Constructor for AvailabilityDataServiceException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public AvailabilityDataServiceException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * <p>Constructor for AvailabilityDataServiceException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 */
 	public AvailabilityDataServiceException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * <p>Constructor for AvailabilityDataServiceException.</p>
+	 *
+	 * @param cause a {@link java.lang.Throwable} object.
+	 */
 	public AvailabilityDataServiceException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub

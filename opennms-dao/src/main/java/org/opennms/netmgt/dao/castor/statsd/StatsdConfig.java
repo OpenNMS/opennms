@@ -48,16 +48,22 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * Represents the entire configuration for the statistics daemon.
  * Contains configured reports and packages which select nodes to
  * report on and whicn reports to run on those nodes.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see StastdPackage
  * @see Report
+ * @version $Id: $
  */
 public class StatsdConfig {
     private StatisticsDaemonConfiguration m_castorConfig;
     private List<Report> m_reports = new ArrayList<Report>();
     private List<StatsdPackage> m_packages = new ArrayList<StatsdPackage>();
 
+    /**
+     * <p>Constructor for StatsdConfig.</p>
+     *
+     * @param castorConfig a {@link org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration} object.
+     */
     public StatsdConfig(StatisticsDaemonConfiguration castorConfig) {
         m_castorConfig = castorConfig;
 
@@ -96,10 +102,20 @@ public class StatsdConfig {
         }
     }
     
+    /**
+     * <p>getReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Report> getReports() {
         return m_reports;
     }
 
+    /**
+     * <p>getPackages</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<StatsdPackage> getPackages() {
         return m_packages;
     }

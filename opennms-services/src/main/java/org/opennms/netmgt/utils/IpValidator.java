@@ -36,10 +36,19 @@ import java.util.StringTokenizer;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
-* A class containing a method to determine if a string represents
-* a vaild IP address
-*/
+ * A class containing a method to determine if a string represents
+ * a vaild IP address
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class IpValidator extends Object {
+    /**
+     * <p>isIpValid</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public static boolean isIpValid(String ipAddr) {
         ThreadCategory log = ThreadCategory.getInstance(IpValidator.class);
         StringTokenizer token = new StringTokenizer(ipAddr, ".");

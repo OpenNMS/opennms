@@ -43,6 +43,9 @@ import java.util.List;
 /**
  * Convenience class for retrieving the lowest, highest IP address in a given
  * list.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class IPSorter extends Object {
     /**
@@ -72,15 +75,12 @@ public class IPSorter extends Object {
      * array is of sufficent size the first bytes of the array may be shifted
      * out of the returned long.
      * </P>
-     * 
+     *
      * @param addr
      *            The array to convert to a long.
-     * 
      * @return The created long value.
-     * 
      * @exception IllegalArgumentException
      *                Thrown if the addr parameter is null.
-     * 
      */
     public static long convertToLong(byte[] addr) {
         if (addr == null)
@@ -98,12 +98,10 @@ public class IPSorter extends Object {
      * This method is used to convert a dotted decimal IP address composed of
      * four octets into a long value. The long is returned in network byte order
      * so that it can be compared using simple equality operators.
-     * 
+     *
      * @param ipAddressString
      *            The dotted decimal address string to convert
-     * 
      * @return The created long value
-     * 
      * @exception IllegalArgumentException
      *                Thrown if the ipAddressString parameter is null.
      */
@@ -127,6 +125,9 @@ public class IPSorter extends Object {
     /**
      * Given a list of IP addresses, return the lowest as determined by the
      * numeric representation and not the alphanumeric string.
+     *
+     * @param addresses an array of {@link java.net.InetAddress} objects.
+     * @return a {@link java.net.InetAddress} object.
      */
     public static InetAddress getLowestInetAddress(InetAddress[] addresses) {
         if (addresses == null) {
@@ -139,6 +140,9 @@ public class IPSorter extends Object {
     /**
      * Given a list of IP addresses, return the lowest as determined by the
      * numeric representation and not the alphanumeric string.
+     *
+     * @param addresses a {@link java.util.List} object.
+     * @return a {@link java.net.InetAddress} object.
      */
     public static InetAddress getLowestInetAddress(List<InetAddress> addresses) {
         if (addresses == null) {

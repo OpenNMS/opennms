@@ -35,8 +35,9 @@ import java.io.InputStream;
 
 /**
  * Simple RrdGraphDetails implementation.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class DefaultRrdGraphDetails implements RrdGraphDetails {
     private InputStream m_inputStream;
@@ -44,34 +45,74 @@ public class DefaultRrdGraphDetails implements RrdGraphDetails {
     private int m_width;
     private int m_height;
     
+    /**
+     * <p>getHeight</p>
+     *
+     * @return a int.
+     */
     public int getHeight() {
         return m_height;
     }
     
+    /**
+     * <p>setHeight</p>
+     *
+     * @param height a int.
+     */
     public void setHeight(int height) {
         m_height = height;
     }
     
+    /**
+     * <p>getInputStream</p>
+     *
+     * @return a {@link java.io.InputStream} object.
+     */
     public InputStream getInputStream() {
         return m_inputStream;
     }
     
+    /**
+     * <p>setInputStream</p>
+     *
+     * @param inputStream a {@link java.io.InputStream} object.
+     */
     public void setInputStream(InputStream inputStream) {
         m_inputStream = inputStream;
     }
     
+    /**
+     * <p>getPrintLines</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getPrintLines() {
         return m_printLines;
     }
     
+    /**
+     * <p>setPrintLines</p>
+     *
+     * @param printLines an array of {@link java.lang.String} objects.
+     */
     public void setPrintLines(String[] printLines) {
         m_printLines = printLines;
     }
     
+    /**
+     * <p>getWidth</p>
+     *
+     * @return a int.
+     */
     public int getWidth() {
         return m_width;
     }
     
+    /**
+     * <p>setWidth</p>
+     *
+     * @param width a int.
+     */
     public void setWidth(int width) {
         m_width = width;
     }

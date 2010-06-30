@@ -48,9 +48,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>EndPointDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class EndPointDetector extends AbstractDetector {
     
+    /** Constant <code>DEFAULT_SERVICE_NAME="EndPoint"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "EndPoint";
 
     /**
@@ -71,23 +78,28 @@ public class EndPointDetector extends AbstractDetector {
     @Autowired
     private EndPointConfigurationDao m_configDao;
 
+    /**
+     * <p>Constructor for EndPointDetector.</p>
+     */
     public EndPointDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public EndPointDetector(String serviceName, int port) {
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void init() {}
 
+    /** {@inheritDoc} */
     @Override
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
         try {
@@ -107,6 +119,11 @@ public class EndPointDetector extends AbstractDetector {
         }
     }
 
+    /**
+     * <p>configureAgentVersion</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     protected void configureAgentVersion(SnmpAgentConfig agentConfig) {
         if (getForceVersion() != null) {
             String version = getForceVersion();
@@ -121,6 +138,11 @@ public class EndPointDetector extends AbstractDetector {
         }
     }
 
+    /**
+     * <p>configureAgentPTR</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     protected void configureAgentPTR(SnmpAgentConfig agentConfig) {
         if (getPort() > 0) {
             agentConfig.setPort(getPort());
@@ -135,6 +157,13 @@ public class EndPointDetector extends AbstractDetector {
         }
     }
     
+    /**
+     * <p>getValue</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String getValue(SnmpAgentConfig agentConfig, String oid) {
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
         if (val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
@@ -146,34 +175,66 @@ public class EndPointDetector extends AbstractDetector {
         
     }
 
+    /**
+     * <p>setForceVersion</p>
+     *
+     * @param forceVersion a {@link java.lang.String} object.
+     */
     public void setForceVersion(String forceVersion) {
         m_forceVersion = forceVersion;
     }
 
+    /**
+     * <p>getForceVersion</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForceVersion() {
         return m_forceVersion;
     }
 
+    /**
+     * <p>setAgentConfigFactory</p>
+     *
+     * @param agentConfigFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     */
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
         m_agentConfigFactory = agentConfigFactory;
     }
     
+    /**
+     * <p>getAgentConfigFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     */
     public SnmpAgentConfigFactory getAgentConfigFactory() {
         return m_agentConfigFactory;
     }
 
+    /**
+     * <p>setEndPointConfigurationDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao} object.
+     */
     public void setEndPointConfigurationDao(EndPointConfigurationDao dao) {
         m_configDao = dao;
     }
     
+    /**
+     * <p>getEndPointConfigurationDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao} object.
+     */
     public EndPointConfigurationDao getEndPointConfigurationDao() {
         return m_configDao;
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
     }
 
+    /** {@inheritDoc} */
     @Override
     public void dispose() {
     }

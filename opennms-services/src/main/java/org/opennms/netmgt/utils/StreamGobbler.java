@@ -75,7 +75,7 @@ class StreamGobbler extends Thread {
 
     /**
      * A simpler constructor for StreamGobbler - defaults to stdout.
-     * 
+     *
      * @param in
      *            InputStream
      */
@@ -89,7 +89,7 @@ class StreamGobbler extends Thread {
      * A more explicit constructor for StreamGobbler where you can tell it
      * exactly where to relay the output to. Creation date: (9/23/2001 8:48:01
      * PM)
-     * 
+     *
      * @param in
      *            InputStream
      * @param out
@@ -105,7 +105,7 @@ class StreamGobbler extends Thread {
      * A more explicit constructor for StreamGobbler where you can tell it
      * exactly where to relay the output to. Creation date: (9/23/2001 8:48:01
      * PM)
-     * 
+     *
      * @param in
      *            InputStream
      * @param pwOut
@@ -120,8 +120,8 @@ class StreamGobbler extends Thread {
     /**
      * We override the <code>clone</code> method here to prevent cloning of
      * our class.
-     * 
-     * @throws CloneNotSupportedException
+     *
+     * @throws java.lang.CloneNotSupportedException
      *             To indicate cloning is not allowed
      * @return Nothing ever really returned since we throw a
      *         CloneNotSupportedException

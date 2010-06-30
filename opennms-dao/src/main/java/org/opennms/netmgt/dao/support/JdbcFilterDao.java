@@ -66,43 +66,79 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>JdbcFilterDao class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class JdbcFilterDao implements FilterDao, InitializingBean {
     private DataSource m_dataSource;
     private DatabaseSchemaConfigFactory m_databaseSchemaConfigFactory;
     private NodeDao m_nodeDao;
 
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
 
+    /**
+     * <p>setDatabaseSchemaConfigFactory</p>
+     *
+     * @param factory a {@link org.opennms.netmgt.config.DatabaseSchemaConfigFactory} object.
+     */
     public void setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory factory) {
         m_databaseSchemaConfigFactory = factory;
     }
 
+    /**
+     * <p>getDatabaseSchemaConfigFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.DatabaseSchemaConfigFactory} object.
+     */
     public DatabaseSchemaConfigFactory getDatabaseSchemaConfigFactory() {
         return m_databaseSchemaConfigFactory;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_dataSource != null, "property dataSource cannot be null");
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /** {@inheritDoc} */
     public void walkMatchingNodes(String rule, EntityVisitor visitor) {
         Assert.state(m_nodeDao != null, "property nodeDao cannot be null");
 
@@ -123,14 +159,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method returns a map of all nodeids and nodelabels that match
      * the rule that is passed in, sorted by nodeid.
-     *
-     * @param rule
-     *            an expression rule to be parsed and executed.
-     *
-     * @return SortedMap containing all nodeids/nodelabels selected by the rule.
-     *
      * @exception FilterParseException
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement
@@ -184,6 +216,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return resultMap;
     }
 
+    /** {@inheritDoc} */
     public Map<String, Set<String>> getIPServiceMap(String rule) throws FilterParseException {
         Map<String, Set<String>> ipServices = new TreeMap<String, Set<String>>();
         String sqlString;
@@ -242,14 +275,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method returns a list of all ip addresses that match the rule that
      * is passed in.
-     *
-     * @param rule
-     *            an expression rule to be parsed and executed.
-     *
-     * @return interface containing all ip addresses selected by the rule.
-     *
      * @exception FilterParseException
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement
@@ -306,15 +335,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method verifies if an ip address adheres to a given rule.
-     *
-     * @param addr
-     *            an octet string ip to be validated against a rule.
-     * @param rule
-     *            an expression rule to be parsed and executed.
-     *
-     * @return indicating that the ip is included in the rule
-     *
      * @exception FilterParseException
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement.
@@ -331,6 +354,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean isRuleMatching(String rule) throws FilterParseException {
         boolean matches = false;
         String sqlString;
@@ -381,6 +405,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return matches;
     }
 
+    /** {@inheritDoc} */
     public void validateRule(String rule) throws FilterParseException {
         // Since parseRule does not do complete syntax checking,
         // we need to call a function that will actually execute the generated SQL
@@ -391,6 +416,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getNodeMappingStatement</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     */
     protected String getNodeMappingStatement(String rule) throws FilterParseException {
         List<Table> tables = new ArrayList<Table>();
 
@@ -405,6 +437,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return "SELECT DISTINCT " + columns.toString() + " " + from + " " + where;
     }
 
+    /**
+     * <p>getIPServiceMappingStatement</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     */
     protected String getIPServiceMappingStatement(String rule) throws FilterParseException {
         List<Table> tables = new ArrayList<Table>();
 
@@ -419,6 +458,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return "SELECT " + columns.toString() + " " + from + " " + where;
     }
 
+    /**
+     * <p>getInterfaceWithServiceStatement</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     */
     protected String getInterfaceWithServiceStatement(String rule) throws FilterParseException {
         List<Table> tables = new ArrayList<Table>();
 
@@ -439,6 +485,8 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      * of the rule.
      *
      * @return the SQL select statement
+     * @param rule a {@link java.lang.String} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
      */
     protected String getSQLStatement(String rule) throws FilterParseException {
         List<Table> tables = new ArrayList<Table>();
@@ -468,6 +516,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      *            an ipaddress to constrain against
      * @param service
      *            a service name to constrain against
+     * @param rule a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
      */
     protected String getSQLStatement(String rule, long nodeId, String ipaddr, String service) throws FilterParseException {
         List<Table> tables = new ArrayList<Table>();

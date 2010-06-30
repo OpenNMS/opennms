@@ -35,15 +35,33 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>CollectionSet interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface CollectionSet {
     
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus();
     
     /**
      * Provide a way to visit all the values in the CollectionSet, for any appropriate purposes (persisting, thresholding, or others)
      * The expectation is that calling this method will ultimately call visitResource, visitGroup and visitAttribute (as appropriate)
+     *
+     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
      */
     public void visit(CollectionSetVisitor visitor);
     
+    /**
+     * <p>ignorePersist</p>
+     *
+     * @return a boolean.
+     */
     public boolean ignorePersist();
 }

@@ -41,12 +41,18 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
  * OnmsIpInterfaceRequisition
  *
  * @author brozow
+ * @version $Id: $
  */
 public class OnmsIpInterfaceRequisition {
     
     private RequisitionInterface m_iface;
     private final List<OnmsMonitoredServiceRequisition> m_svcReqs;
 
+    /**
+     * <p>Constructor for OnmsIpInterfaceRequisition.</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
+     */
     public OnmsIpInterfaceRequisition(RequisitionInterface iface) {
         m_iface = iface;
         m_svcReqs = constructSvcReqs();
@@ -64,6 +70,11 @@ public class OnmsIpInterfaceRequisition {
         return reqs;
     }
 
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.netmgt.provision.persist.RequisitionVisitor} object.
+     */
     public void visit(RequisitionVisitor visitor) {
         visitor.visitInterface(this);
         for(OnmsMonitoredServiceRequisition svcReq : m_svcReqs) {
@@ -72,22 +83,47 @@ public class OnmsIpInterfaceRequisition {
         visitor.completeInterface(this);
     }
 
+    /**
+     * <p>getDescr</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     */
     public Object getDescr() {
         return m_iface.getDescr();
     }
 
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddr() {
         return m_iface.getIpAddr();
     }
 
+    /**
+     * <p>getManaged</p>
+     *
+     * @return a boolean.
+     */
     public boolean getManaged() {
         return m_iface.isManaged();
     }
 
+    /**
+     * <p>getSnmpPrimary</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpPrimary() {
         return m_iface.getSnmpPrimary();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return m_iface.getStatus();
     }

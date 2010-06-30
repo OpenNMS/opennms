@@ -48,11 +48,23 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
+/**
+ * <p>RTCDebugServlet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class RTCDebugServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     protected CategoryModel model;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             this.model = CategoryModel.getInstance();
@@ -65,6 +77,7 @@ public class RTCDebugServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String categoryName = request.getParameter("category");
 

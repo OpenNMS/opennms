@@ -39,30 +39,63 @@ import org.opennms.web.filter.SQLType;
 
 
 
-/** Encapsulates severity filtering functionality. */
+/**
+ * Encapsulates severity filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class SeverityFilter extends EqualsFilter<Integer> {
+    /** Constant <code>TYPE="severity"</code> */
     public static final String TYPE = "severity";
 
+    /**
+     * <p>Constructor for SeverityFilter.</p>
+     *
+     * @param severity a int.
+     */
     public SeverityFilter(int severity) {
         super(TYPE, SQLType.INT, "EVENTSEVERITY", "eventSeverity", severity);
     }
 
+    /**
+     * <p>Constructor for SeverityFilter.</p>
+     *
+     * @param severity a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
     public SeverityFilter(OnmsSeverity severity) {
         this(severity.getId());
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return (TYPE + "=" + OnmsSeverity.get(getSeverity()).getLabel());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<WebEventRepository.SeverityFilter: " + getDescription() + ">");
     }
 
+    /**
+     * <p>getSeverity</p>
+     *
+     * @return a int.
+     */
     public int getSeverity() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

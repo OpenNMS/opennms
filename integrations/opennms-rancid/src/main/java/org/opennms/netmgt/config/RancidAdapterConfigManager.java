@@ -67,22 +67,32 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**
- * 
+ * <p>Abstract RancidAdapterConfigManager class.</p>
+ *
  * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 abstract public class RancidAdapterConfigManager implements RancidAdapterConfig {
      
-    /**
-     * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
-     * @param reader
-     * @param localServer
-     * @param verifyServer
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     */
+   /**
+    * <p>Constructor for RancidAdapterConfigManager.</p>
+    *
+    * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
+    * @param reader a {@link java.io.InputStream} object.
+    * @param verifyServer a boolean.
+    * @throws org.exolab.castor.xml.MarshalException if any.
+    * @throws org.exolab.castor.xml.ValidationException if any.
+    * @throws java.io.IOException if any.
+    * @param serverName a {@link java.lang.String} object.
+    */
    public RancidAdapterConfigManager(InputStream reader,String serverName, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = serverName;
         m_verifyServer = verifyServer;
@@ -122,10 +132,21 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      */
     private Map<Package, PolicyManage> m_pkgPolicyMap;
     
+     /**
+      * <p>Constructor for RancidAdapterConfigManager.</p>
+      */
      public RancidAdapterConfigManager() {
      }
     
 
+    /**
+     * <p>reloadXML</p>
+     *
+     * @param reader a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     protected synchronized void reloadXML(InputStream reader) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(RancidConfiguration.class, reader);
         createPolicyNamePkgMap();
@@ -377,24 +398,28 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     
     
 
+    /** {@inheritDoc} */
     public long getDelay(String ipaddr) {
         if (hasPolicyManage(ipaddr) && getPolicyManageWithoutTesting(ipaddr).hasDelay())   
             return getPolicyManageWithoutTesting(ipaddr).getDelay();
         return getConfiguration().getDelay();
     }
     
+    /** {@inheritDoc} */
     public int getRetries(String ipaddr) {
         if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasRetries())
             return getPolicyManageWithoutTesting(ipaddr).getRetries();
         return getConfiguration().getRetries();
     }
             
+    /** {@inheritDoc} */
     public boolean useCategories(String ipaddr) {
         if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasUseCategories())
             return getPolicyManageWithoutTesting(ipaddr).getUseCategories();
         return getConfiguration().getUseCategories();
     }
 
+    /** {@inheritDoc} */
     public String getType(String sysoid){
         if (sysoid != null) {
             for (Mapping map: mappings()) {
@@ -406,6 +431,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
     
 
+    /** {@inheritDoc} */
     public boolean isCurTimeInSchedule(String ipaddr){
         if (hasSchedule(ipaddr)) {
             Calendar cal = new GregorianCalendar();
@@ -461,6 +487,12 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
 
+    /**
+     * <p>hasSchedule</p>
+     *
+     * @param ipaddress a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean hasSchedule(String ipaddress) {
         if (hasPolicyManage(ipaddress))   
             return (getPolicyManageWithoutTesting(ipaddress).getScheduleCount() > 0);
@@ -468,6 +500,12 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
 
+    /**
+     * <p>getSchedules</p>
+     *
+     * @param ipaddress a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<Schedule> getSchedules(String ipaddress){
         if (hasPolicyManage(ipaddress))   
                return getPolicyManageWithoutTesting(ipaddress).getScheduleCollection();
@@ -475,6 +513,11 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
     
 
+    /**
+     * <p>packages</p>
+     *
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<Package> packages() {
         List<Package> pkgs = new ArrayList<Package>();
         if (hasPolicies()) {
@@ -485,20 +528,38 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         return pkgs;
     }
 
+    /**
+     * <p>mappings</p>
+     *
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<Mapping> mappings() {
         return getConfiguration().getMappingCollection();
     }
 
+    /**
+     * <p>policies</p>
+     *
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<PolicyManage> policies() {
         return getConfiguration().getPolicies().getPolicyManageCollection();
     }
 
+    /**
+     * <p>includeURLs</p>
+     *
+     * @param pkg a {@link org.opennms.netmgt.config.rancid.adapter.Package} object.
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<String> includeURLs(Package pkg) {
         return pkg.getIncludeUrlCollection();
     }
 
     /**
      * Return the Rancid Adapter configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.rancid.adapter.RancidConfiguration} object.
      */
     public synchronized RancidConfiguration getConfiguration() {
         return m_config;

@@ -53,9 +53,12 @@ import org.opennms.netmgt.poller.nsclient.NsclientPacket;
  * the availability of a generic TCP service on remote interfaces. The class
  * implements the ServiceMonitor interface that allows it to be used along
  * with other plug-ins by the service poller framework.
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 
 @Distributable
@@ -72,6 +75,8 @@ public class NsclientMonitor extends IPv4Monitor {
     private static final int DEFAULT_TIMEOUT = 3000;
 
     /**
+     * {@inheritDoc}
+     *
      * Poll the specified address for service availability. During the poll an
      * attempt is made to connect on the specified port. If the connection
      * request is successful, the parameters are parsed and turned into
@@ -81,16 +86,6 @@ public class NsclientMonitor extends IPv4Monitor {
      * <code>NsclientPacket.RES_STATE_OK</code> then we have determined that
      * we are talking to a valid service and we set the service status to
      * SERVICE_AVAILABLE and return.
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used
-     *            for this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * 
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
-     * @throws java.lang.RuntimeException
-     *             Thrown if the interface experiences errors during the poll.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         // Holds the response reason.

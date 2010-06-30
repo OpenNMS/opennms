@@ -68,6 +68,7 @@ import org.springframework.util.StringUtils;
  * An org.springframework.security.providers.AuthenticationProvider implementation that provides integration with a Radius server.
  *
  * @author Paul Donohue
+ * @version $Id: $
  */
 public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
@@ -80,8 +81,8 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
     /**
      * Create an instance using the supplied server and shared secret.
      *
-     * @param server
-     * @param secret
+     * @param server a {@link java.lang.String} object.
+     * @param secret a {@link java.lang.String} object.
      */
     public RadiusAuthenticationProvider(String server, String secret) {
         Assert.hasLength(server, "A server must be specified");
@@ -90,6 +91,11 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         this.secret = secret;
     }
 
+    /**
+     * <p>doAfterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     protected void doAfterPropertiesSet() throws Exception {
         Assert.notNull(this.port, "A port number must be specified");
         Assert.notNull(this.timeout, "A timeout must be specified");
@@ -153,7 +159,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * If JRadius's built-in attribute dictionary does not contain the desired
      * attribute name, use "Unknown-VSAttribute(<Vendor ID>:<Attribute Number>)"
      *
-     * @param rolesAttribute
+     * @param rolesAttribute a {@link java.lang.String} object.
      */
     public void setRolesAttribute(String rolesAttribute) {
         this.rolesAttribute = rolesAttribute;
@@ -162,6 +168,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
     /* (non-Javadoc)
      * @see org.springframework.security.providers.dao.AbstractUserDetailsAuthenticationProvider#additionalAuthenticationChecks(org.springframework.security.userdetails.UserDetails, org.springframework.security.providers.UsernamePasswordAuthenticationToken)
      */
+    /** {@inheritDoc} */
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
             UsernamePasswordAuthenticationToken token)
@@ -176,6 +183,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
     /* (non-Javadoc)
      * @see org.springframework.security.providers.dao.AbstractUserDetailsAuthenticationProvider#retrieveUser(java.lang.String, org.springframework.security.providers.UsernamePasswordAuthenticationToken)
      */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     protected UserDetails retrieveUser(String username,

@@ -37,13 +37,30 @@ import org.jinterop.dcom.common.JIException;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemMethod;
 
+/**
+ * <p>OnmsWbemMethodImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsWbemMethodImpl implements OnmsWbemMethod {
         private IJIDispatch wbemMethodDispatch;
 
+    /**
+     * <p>Constructor for OnmsWbemMethodImpl.</p>
+     *
+     * @param wbemMethodDispatch a {@link org.jinterop.dcom.impls.automation.IJIDispatch} object.
+     */
     public OnmsWbemMethodImpl(IJIDispatch wbemMethodDispatch) {
         this.wbemMethodDispatch = wbemMethodDispatch;
     }
 
+    /**
+     * <p>getWmiName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiName()throws WmiException {
         try {
             JIVariant variant = wbemMethodDispatch.get("Name");
@@ -54,6 +71,12 @@ public class OnmsWbemMethodImpl implements OnmsWbemMethod {
         }
     }
 
+    /**
+     * <p>getWmiOrigin</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiOrigin()throws WmiException {
         try {
             JIVariant variant = wbemMethodDispatch.get("Origin");
@@ -64,10 +87,16 @@ public class OnmsWbemMethodImpl implements OnmsWbemMethod {
         }
     }
 
+    /**
+     * <p>getWmiOutParameters</p>
+     */
     public void getWmiOutParameters() {
         return; // TODO IMPLEEMNT THIS
     }
 
+    /**
+     * <p>getWmiInParameters</p>
+     */
     public void getWmiInParameters() {
         return; // TODO IMPLEEMNT THIS
     }

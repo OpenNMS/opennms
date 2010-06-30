@@ -36,12 +36,27 @@ package org.opennms.netmgt.threshd;
 /**
  * Class used to provide information to ThresholdEntity about the
  * threshold evaluators that are available and a way to create
- * threshold evaluator state classes. 
+ * threshold evaluator state classes.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public interface ThresholdEvaluator {
 
+    /**
+     * <p>supportsType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean supportsType(String type);
 
+    /**
+     * <p>getThresholdEvaluatorState</p>
+     *
+     * @param threshold a {@link org.opennms.netmgt.threshd.BaseThresholdDefConfigWrapper} object.
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState} object.
+     */
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold);
 
 }

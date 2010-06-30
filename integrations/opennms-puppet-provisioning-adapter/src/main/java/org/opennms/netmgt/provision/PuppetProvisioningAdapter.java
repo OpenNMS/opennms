@@ -42,26 +42,31 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * Integrates Puppet with OpenNMS.  We need create a Puppet Java API for this class.
  * Jason, you know anything about openQRM?
- * 
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class PuppetProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
 
     private static final String ADAPTER_NAME = "PuppetAdapter";
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return ADAPTER_NAME;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isNodeReady(AdapterOperation op) {
         // TODO Auto-generated method stub
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         log().info("processPendingOperationForNode: Handling Operation: "+op);

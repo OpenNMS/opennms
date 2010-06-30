@@ -40,12 +40,16 @@ import org.opennms.netmgt.model.StatisticsReportData;
 
 /**
  * DAO implementation for accessing StatisticsReportData objects.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see StatisticsReportData
+ * @version $Id: $
  */
 public class StatisticsReportDataDaoHibernate extends AbstractDaoHibernate<StatisticsReportData, Integer> implements StatisticsReportDataDao {
 
+	/**
+	 * <p>Constructor for StatisticsReportDataDaoHibernate.</p>
+	 */
 	public StatisticsReportDataDaoHibernate() {
 		super(StatisticsReportData.class);
 	}

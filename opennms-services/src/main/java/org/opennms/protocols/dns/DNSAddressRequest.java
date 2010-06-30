@@ -42,28 +42,30 @@ import java.util.StringTokenizer;
 
 /**
  * <PRE>
- * 
+ *
  * The DNSAddressRequest holds a DNS request to lookup the IP address of a host -
  * provides for transmitting and receiving the response for this lookup.
- * 
+ *
  * NOTES: A DNS request and response has the following fileds header questions
  * answers authorities additional information
- * 
+ *
  * The header has the following format: id - unique id sent by the client and
  * returned by the server in its response 16 bits of flags -
  * Query(0)/response(1) flag opcode - that has type of query AA - set if the
  * response is an authoritative answer TC - set if response is truncated RD -
  * set if recursion is desired RA - set if recursion is available Z - reserved
  * bits RCODE - response code
- * 
+ *
  * This class checks only for the received response to have the answer(which
  * will hold the IP address) - ignores the authorities and additional info
- * 
+ *
  * </PRE>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class DNSAddressRequest {
     /**
@@ -239,7 +241,7 @@ public class DNSAddressRequest {
      * where x, y, and z are strings. This is not suppose to be a dotted decimal
      * address.
      * </P>
-     * 
+     *
      * @param host
      *            hostname for which address is to be constructed
      */
@@ -285,8 +287,9 @@ public class DNSAddressRequest {
      * <P>
      * Builds the address request.
      * </P>
-     * 
+     *
      * @return A byte array containing the request.
+     * @throws java.io.IOException if any.
      */
     public byte[] buildRequest() throws IOException {
         ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
@@ -318,15 +321,15 @@ public class DNSAddressRequest {
      * <P>
      * Extracts the response from the bytearray.
      * </P>
-     * 
+     *
      * @param data
      *            The byte array containing the response.
      * @param length
      *            The length of the byte array.
-     * 
      * @exception IOException
      *                Thrown if there is an error while reading the recieved
      *                packet
+     * @throws java.io.IOException if any.
      */
     public void receiveResponse(byte[] data, int length) throws IOException {
         /*
@@ -383,20 +386,20 @@ public class DNSAddressRequest {
      * This method only goes so far as to decode the flags in the response byte
      * array to verify that a DNS server sent the response.
      * </P>
-     * 
+     *
      * <P>
      * NOTE: This is really a hack to get around the fact that the
      * receiveResponse() method is not robust enough to handle all possible DNS
      * server responses.
-     * 
+     *
      * @param data
      *            The byte array containing the response.
      * @param length
      *            The length of the byte array.
-     * 
      * @exception IOException
      *                Thrown if there is an error while reading the recieved
      *                packet
+     * @throws java.io.IOException if any.
      */
     public void verifyResponse(byte[] data, int length) throws IOException {
         /*
@@ -418,7 +421,7 @@ public class DNSAddressRequest {
      * <P>
      * Return an enumeration of the received answers.
      * </P>
-     * 
+     *
      * @return The list of received answers.
      */
     public List<DNSAddressRR> getAnswers() {
@@ -429,6 +432,8 @@ public class DNSAddressRequest {
      * <P>
      * The request id for this particular instance.
      * </P>
+     *
+     * @return a int.
      */
     public int getRequestID() {
         return m_reqID;
@@ -438,6 +443,8 @@ public class DNSAddressRequest {
      * <P>
      * The hostname that will be request from the DNS box.
      * </P>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getHost() {
         return m_reqHost;
@@ -447,6 +454,8 @@ public class DNSAddressRequest {
      * <P>
      * Returns true if the answer is truncated.
      * </P>
+     *
+     * @return a boolean.
      */
     public boolean isTruncated() {
         return m_truncated;
@@ -456,6 +465,8 @@ public class DNSAddressRequest {
      * <P>
      * Returns true if the answer is recursive.
      * </P>
+     *
+     * @return a boolean.
      */
     public boolean isRecursive() {
         return m_recursive;
@@ -465,6 +476,8 @@ public class DNSAddressRequest {
      * <P>
      * Returns true if the answer is authoritative.
      * </P>
+     *
+     * @return a boolean.
      */
     public boolean isAuthoritative() {
         return m_authoritative;
@@ -474,10 +487,9 @@ public class DNSAddressRequest {
      * <P>
      * Returns the code string for the error code recieved.
      * </P>
-     * 
+     *
      * @param code
      *            The error code.
-     * 
      * @return The error string corresponding to the error code
      */
     public static String codeName(int code) {
@@ -486,10 +498,20 @@ public class DNSAddressRequest {
         return ((code >= 1) && (code <= 5)) ? codeNames[code - 1] : "Unknown error";
     }
     
+    /**
+     * <p>getFatalResponseCodes</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Integer> getFatalResponseCodes() {
         return m_fatalResponseCodes;
     }
     
+    /**
+     * <p>setFatalResponseCodes</p>
+     *
+     * @param codes a {@link java.util.List} object.
+     */
     public void setFatalResponseCodes(List<Integer> codes) {
         m_fatalResponseCodes = codes;
     }

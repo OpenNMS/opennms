@@ -42,8 +42,10 @@ import org.springframework.util.Assert;
 
 
 /**
- * 
+ * <p>Abstract AbstractReportInstance class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public abstract class AbstractReportInstance implements InitializingBean {
 
@@ -51,48 +53,99 @@ public abstract class AbstractReportInstance implements InitializingBean {
     private Date m_jobCompletedDate;
     private Date m_jobStartedDate;
 
+    /**
+     * <p>Constructor for AbstractReportInstance.</p>
+     */
     public AbstractReportInstance() {
         super();
     }
 
+    /**
+     * <p>getJobCompletedDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getJobCompletedDate() {
         return m_jobCompletedDate;
     }
 
+    /**
+     * <p>getJobStartedDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getJobStartedDate() {
         return m_jobStartedDate;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return getReportDefinition().getName();
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return getReportDefinition().getDescription();
     }
 
+    /**
+     * <p>getRetainInterval</p>
+     *
+     * @return a long.
+     */
     public long getRetainInterval() {
         return getReportDefinition().getRetainInterval();
     }
 
+    /**
+     * <p>getReportDefinition</p>
+     *
+     * @return a {@link org.opennms.netmgt.statsd.ReportDefinition} object.
+     */
     public ReportDefinition getReportDefinition() {
         return m_reportDefinition;
     }
 
+    /**
+     * <p>setReportDefinition</p>
+     *
+     * @param reportDefinition a {@link org.opennms.netmgt.statsd.ReportDefinition} object.
+     */
     public void setReportDefinition(ReportDefinition reportDefinition) {
         m_reportDefinition = reportDefinition;
     }
 
+    /**
+     * <p>setJobCompletedDate</p>
+     *
+     * @param jobCompletedDate a {@link java.util.Date} object.
+     */
     public void setJobCompletedDate(Date jobCompletedDate) {
         m_jobCompletedDate = jobCompletedDate;
     }
 
+    /**
+     * <p>setJobStartedDate</p>
+     *
+     * @param jobStartedDate a {@link java.util.Date} object.
+     */
     public void setJobStartedDate(Date jobStartedDate) {
         m_jobStartedDate = jobStartedDate;
     }
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.topn.Report#afterPropertiesSet()
+     */
+    /**
+     * <p>afterPropertiesSet</p>
      */
     public void afterPropertiesSet() {
         Assert.state(m_reportDefinition != null, "property reportDefinition must be set to a non-null value");

@@ -206,6 +206,9 @@ final class Client extends Observable implements Runnable, Fiber {
         m_objsOut.flush();
     }
 
+    /**
+     * <p>start</p>
+     */
     public synchronized void start() {
         if (m_worker != null)
             throw new IllegalStateException("The fiber has already been started");
@@ -220,6 +223,9 @@ final class Client extends Observable implements Runnable, Fiber {
         m_status = STARTING;
     }
 
+    /**
+     * <p>stop</p>
+     */
     public synchronized void stop() {
         m_status = STOP_PENDING;
         try {
@@ -232,14 +238,27 @@ final class Client extends Observable implements Runnable, Fiber {
         m_worker.interrupt();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public synchronized int getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         boolean isOk = true;

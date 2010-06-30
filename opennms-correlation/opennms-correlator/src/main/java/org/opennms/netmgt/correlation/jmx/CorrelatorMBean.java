@@ -34,5 +34,11 @@ package org.opennms.netmgt.correlation.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>CorrelatorMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface CorrelatorMBean extends BaseOnmsMBean {
 }

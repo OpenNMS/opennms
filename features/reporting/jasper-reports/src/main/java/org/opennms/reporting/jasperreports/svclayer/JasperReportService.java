@@ -61,6 +61,12 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.JasperReportConfigDao;
 
+/**
+ * <p>JasperReportService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JasperReportService implements ReportService {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
@@ -69,6 +75,9 @@ public class JasperReportService implements ReportService {
 
     private final ThreadCategory log;
 
+    /**
+     * <p>Constructor for JasperReportService.</p>
+     */
     public JasperReportService() {
         String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -76,16 +85,19 @@ public class JasperReportService implements ReportService {
         ThreadCategory.setPrefix(oldPrefix);
     }
 
+    /** {@inheritDoc} */
     public List<ReportFormat> getFormats(String reportId) {
         List<ReportFormat> formats = new ArrayList<ReportFormat>();
         formats.add(ReportFormat.PDF);
         return formats;
     }
 
+    /** {@inheritDoc} */
     public ReportParameters getParameters(String ReportId) {
         return new ReportParameters();
     }
 
+    /** {@inheritDoc} */
     public void render(String ReportId, String location, ReportFormat format,
             OutputStream outputStream) throws ReportException {
         try {
@@ -108,6 +120,7 @@ public class JasperReportService implements ReportService {
 
     }
 
+    /** {@inheritDoc} */
     public String run(HashMap<String, Object> reportParms, String reportId)
             throws ReportException {
         String baseDir = System.getProperty("opennms.report.dir");
@@ -185,6 +198,7 @@ public class JasperReportService implements ReportService {
         return outputFileName;
     }
 
+    /** {@inheritDoc} */
     public void runAndRender(HashMap<String, Object> reportParms,
             String reportId, ReportFormat format, OutputStream outputStream)
             throws ReportException {
@@ -244,12 +258,18 @@ public class JasperReportService implements ReportService {
 
     }
 
+    /** {@inheritDoc} */
     public boolean validate(HashMap<String, Object> reportParms,
             String reportId) {
         // returns true until we can take parameters
         return true;
     }
 
+    /**
+     * <p>setConfigDao</p>
+     *
+     * @param jasperReportConfigDao a {@link org.opennms.netmgt.dao.JasperReportConfigDao} object.
+     */
     public void setConfigDao(JasperReportConfigDao jasperReportConfigDao) {
         m_jasperReportConfigDao = jasperReportConfigDao;
     }

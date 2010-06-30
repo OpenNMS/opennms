@@ -31,48 +31,106 @@
 //
 package org.opennms.netmgt.model;
 
+/**
+ * <p>SnmpInterfaceBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpInterfaceBuilder {
 
     private final OnmsSnmpInterface m_snmpIf;
 
+    /**
+     * <p>Constructor for SnmpInterfaceBuilder.</p>
+     *
+     * @param snmpIf a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+     */
     public SnmpInterfaceBuilder(OnmsSnmpInterface snmpIf) {
         m_snmpIf = snmpIf;
     }
 
+    /**
+     * <p>setIfSpeed</p>
+     *
+     * @param ifSpeed a long.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
     public SnmpInterfaceBuilder setIfSpeed(long ifSpeed) {
         m_snmpIf.setIfSpeed(new Long(ifSpeed));
         return this;
     }
 
+    /**
+     * <p>setIfDescr</p>
+     *
+     * @param ifDescr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
     public SnmpInterfaceBuilder setIfDescr(String ifDescr) {
         m_snmpIf.setIfDescr(ifDescr);
         return this;
     }
     
+    /**
+     * <p>setIfName</p>
+     *
+     * @param ifName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
     public SnmpInterfaceBuilder setIfName(String ifName) {
         m_snmpIf.setIfName(ifName);
         return this;
     }
     
+    /**
+     * <p>setIfType</p>
+     *
+     * @param ifType a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
     public SnmpInterfaceBuilder setIfType(Integer ifType) {
         m_snmpIf.setIfType(ifType);
         return this;
     }
 
+    /**
+     * <p>getSnmpInterface</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsEntity} object.
+     */
     public OnmsEntity getSnmpInterface() {
         return m_snmpIf;
     }
     
+    /**
+     * <p>setIfOperStatus</p>
+     *
+     * @param ifOperStatus a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
     public SnmpInterfaceBuilder setIfOperStatus(Integer ifOperStatus) {
         m_snmpIf.setIfOperStatus(ifOperStatus);
         return this;
     }
 
+    /**
+     * <p>setCollectionEnabled</p>
+     *
+     * @param collect a boolean.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
     public SnmpInterfaceBuilder setCollectionEnabled(boolean collect) {
         m_snmpIf.setCollectionEnabled(collect);
         return this;
     }
 
+    /**
+     * <p>setPhysAddr</p>
+     *
+     * @param physAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
     public SnmpInterfaceBuilder setPhysAddr(String physAddr) {
         m_snmpIf.setPhysAddr(physAddr);
         return this;

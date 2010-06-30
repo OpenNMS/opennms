@@ -45,8 +45,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 
 /**
- * 
+ * <p>LocationMonitorPauseController class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class LocationMonitorPauseController extends AbstractCommandController implements InitializingBean {
     
@@ -54,6 +57,7 @@ public class LocationMonitorPauseController extends AbstractCommandController im
     private String m_successView;
     private String m_errorView;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         LocationMonitorIdCommand cmd = (LocationMonitorIdCommand) command;
@@ -68,30 +72,65 @@ public class LocationMonitorPauseController extends AbstractCommandController im
         }
     }
     
+    /**
+     * <p>getDistributedPollerService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.DistributedPollerService} object.
+     */
     public DistributedPollerService getDistributedPollerService() {
         return m_distributedPollerService;
     }
 
+    /**
+     * <p>setDistributedPollerService</p>
+     *
+     * @param distributedPollerService a {@link org.opennms.web.svclayer.DistributedPollerService} object.
+     */
     public void setDistributedPollerService(DistributedPollerService distributedPollerService) {
         m_distributedPollerService = distributedPollerService;
     }
 
+    /**
+     * <p>getSuccessView</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSuccessView() {
         return m_successView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
 
+    /**
+     * <p>getErrorView</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getErrorView() {
         return m_errorView;
     }
 
+    /**
+     * <p>setErrorView</p>
+     *
+     * @param errorView a {@link java.lang.String} object.
+     */
     public void setErrorView(String errorView) {
         m_errorView = errorView;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         if (m_distributedPollerService == null) {
             throw new IllegalStateException("distributedPollerService property cannot be null");

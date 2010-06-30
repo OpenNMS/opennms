@@ -39,7 +39,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 
 /**
  *<P>The Dot1dTpFdbTableEntry class is designed to hold all the MIB-II
- * information for one entry in the MIB II dot1dBridge.dot1dTp.dot1dTpFdbTable. 
+ * information for one entry in the MIB II dot1dBridge.dot1dTp.dot1dTpFdbTable.
  * The table effectively contains a list of these entries, each entry having information
  * about bridge forwarding table.</P>
  *
@@ -52,19 +52,37 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
- * @see Dot1dTpFdbTable  
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @see Dot1dTpFdbTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class Dot1dTpFdbTableEntry extends SnmpTableEntry {
 	// Lookup strings for specific table entries
 	//
 
+	/** Constant <code>FDB_ADDRESS="dot1dTpFdbAddress"</code> */
 	public final static String FDB_ADDRESS = "dot1dTpFdbAddress";
 
+	/** Constant <code>FDB_PORT="dot1dTpFdbPort"</code> */
 	public final static String FDB_PORT = "dot1dTpFdbPort";
 
+	/** Constant <code>FDB_STATUS="dot1dTpFdbStatus"</code> */
 	public final static String FDB_STATUS = "dot1dTpFdbStatus";
 
 
@@ -160,25 +178,38 @@ public final class Dot1dTpFdbTableEntry extends SnmpTableEntry {
 	 * variable from the passed array of SNMP varbinds.</P>
 	 *
 	 * <P>If the information in the object should not be
-	 * modified then a <EM>final</EM> modifier can be 
+	 * modified then a <EM>final</EM> modifier can be
 	 * applied to the created object.</P>
-	 *
-	 * @param vars	The array of variable bindings.
 	 */
 	public Dot1dTpFdbTableEntry() {
 		super(ms_elemList);
 	}
 	
+	/**
+	 * <p>getDot1dTpFdbAddress</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getDot1dTpFdbAddress() {
 		return getHexString(Dot1dTpFdbTableEntry.FDB_ADDRESS);
 	}
 
+	/**
+	 * <p>getDot1dTpFdbPort</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dTpFdbPort() {
 		Integer val = getInt32(Dot1dTpFdbTableEntry.FDB_PORT);
 		if (val == null) return -1;
 		return val;
 	}
 
+	/**
+	 * <p>getDot1dTpFdbStatus</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dTpFdbStatus() {
 		Integer val = getInt32(Dot1dTpFdbTableEntry.FDB_STATUS);
 		if (val == null) return -1;

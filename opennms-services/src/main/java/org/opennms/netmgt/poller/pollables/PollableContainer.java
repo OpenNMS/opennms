@@ -47,60 +47,96 @@ import org.opennms.netmgt.model.PollStatus;
 
 
 /**
- * Represents a PollableContainer 
+ * Represents a PollableContainer
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 abstract public class PollableContainer extends PollableElement {
 
     private final Map<Object, PollableElement> m_members = new HashMap<Object, PollableElement>();
 
+    /**
+     * <p>Constructor for PollableContainer.</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.poller.pollables.PollableContainer} object.
+     * @param scope a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     */
     public PollableContainer(PollableContainer parent, Scope scope) {
         super(parent, scope);
     }
 
     /**
-     * @param integer
-     * @return
+     * <p>getMember</p>
+     *
+     * @param key a {@link java.lang.Object} object.
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
     protected synchronized PollableElement getMember(Object key) {
         return m_members.get(key);
     }
 
+    /**
+     * <p>getMemberCount</p>
+     *
+     * @return a int.
+     */
     protected synchronized int getMemberCount() {
         return m_members.size();
     }
     
+    /**
+     * <p>getMembers</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     protected synchronized Collection<PollableElement> getMembers() {
         return new ArrayList<PollableElement>(m_members.values());
     }
     
     /**
-     * @param member
-     * @return
+     * <p>createMemberKey</p>
+     *
+     * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     * @return a {@link java.lang.Object} object.
      */
     abstract protected Object createMemberKey(PollableElement member);
 
     /**
-     * @param node
+     * <p>addMember</p>
+     *
+     * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
     protected synchronized void addMember(PollableElement member) {
         Object key = createMemberKey(member);
         m_members.put(key, member);
     }
     
+    /**
+     * <p>removeMember</p>
+     *
+     * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     */
     public synchronized void removeMember(PollableElement member) {
         Object key = createMemberKey(member);
         m_members.remove(key);
     }
 
     
+    /**
+     * <p>deleteMember</p>
+     *
+     * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     */
     public void deleteMember(PollableElement member) {
         removeMember(member);
         if (m_members.size() == 0)
             this.delete();
     }
     
+    /**
+     * <p>delete</p>
+     */
     public void delete() {
         Runnable r = new Runnable() {
             public void run() {
@@ -116,18 +152,22 @@ abstract public class PollableContainer extends PollableElement {
         
     }
     
+    /** {@inheritDoc} */
     public void visit(PollableVisitor v) {
         visitThis(v);
         visitMembers(v);
     }
     
+    /** {@inheritDoc} */
     protected void visitThis(PollableVisitor v) {
         super.visitThis(v);
         v.visitContainer(this);
     }
 
     /**
-     * @param v
+     * <p>visitMembers</p>
+     *
+     * @param v a {@link org.opennms.netmgt.poller.pollables.PollableVisitor} object.
      */
     protected void visitMembers(PollableVisitor v) {
         for (Iterator<PollableElement> it = getMembers().iterator(); it.hasNext();) {
@@ -160,19 +200,45 @@ abstract public class PollableContainer extends PollableElement {
     
     
     
+    /**
+     * <p>forEachMember</p>
+     *
+     * @param iter a {@link org.opennms.netmgt.poller.pollables.PollableContainer.Iter} object.
+     */
     protected void forEachMember(Iter iter) {
         forEachMember(false, iter);
     }
     
+    /**
+     * <p>deriveValueFromMembers</p>
+     *
+     * @param iter a {@link org.opennms.netmgt.poller.pollables.PollableContainer.SimpleIter} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     protected <T> T deriveValueFromMembers(SimpleIter<T> iter) {
         return deriveValueFromMembers(false, iter);
     }
     
+    /**
+     * <p>deriveValueFromMembers</p>
+     *
+     * @param withTreeLock a boolean.
+     * @param iter a {@link org.opennms.netmgt.poller.pollables.PollableContainer.SimpleIter} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     protected <T> T deriveValueFromMembers(boolean withTreeLock, SimpleIter<T> iter) {
         forEachMember(withTreeLock, iter);
         return iter.getResult();
     }
     
+    /**
+     * <p>forEachMember</p>
+     *
+     * @param withTreeLock a boolean.
+     * @param iter a {@link org.opennms.netmgt.poller.pollables.PollableContainer.Iter} object.
+     */
     protected void forEachMember(boolean withTreeLock, final Iter iter) {
         Runnable r = new Runnable() {
             public void run() {
@@ -190,6 +256,9 @@ abstract public class PollableContainer extends PollableElement {
         }
     }
     
+    /**
+     * <p>recalculateStatus</p>
+     */
     public void recalculateStatus() {
         Runnable r = new Runnable() {
             public void run() {
@@ -207,6 +276,9 @@ abstract public class PollableContainer extends PollableElement {
         withTreeLock(r);
     }
     
+    /**
+     * <p>resetStatusChanged</p>
+     */
     public void resetStatusChanged() {
         Runnable r = new Runnable() {
             public void run() {
@@ -231,6 +303,7 @@ abstract public class PollableContainer extends PollableElement {
     }
 
 
+    /** {@inheritDoc} */
     protected PollStatus poll(final PollableElement elem) {
         final PollStatus retVal[] = new PollStatus[1];
         Runnable r = new Runnable() {
@@ -248,8 +321,10 @@ abstract public class PollableContainer extends PollableElement {
     }
 
     /**
-     * @param member
-     * @return
+     * <p>pollRemainingMembers</p>
+     *
+     * @param member a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
      */
     public PollStatus pollRemainingMembers(final PollableElement member) {
         SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(member.getStatus()) {
@@ -264,6 +339,11 @@ abstract public class PollableContainer extends PollableElement {
         return iter.getResult();
     }
     
+    /**
+     * <p>getMemberStatus</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus getMemberStatus() {
         SimpleIter<PollStatus> iter = new SimpleIter<PollStatus>(PollStatus.down()) {
             public void forEachElement(PollableElement elem) {
@@ -276,6 +356,11 @@ abstract public class PollableContainer extends PollableElement {
         return iter.getResult();
     }
     
+    /**
+     * <p>poll</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus poll() {
         PollableElement leaf = selectPollElement();
         if (leaf == null) return PollStatus.up();
@@ -283,7 +368,9 @@ abstract public class PollableContainer extends PollableElement {
     }
 
     /**
-     * @return
+     * <p>selectPollElement</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
     public PollableElement selectPollElement() {
         if (getMemberCount() == 0) 
@@ -294,6 +381,7 @@ abstract public class PollableContainer extends PollableElement {
             
     }
 
+    /** {@inheritDoc} */
     public void processStatusChange(final Date date) {
         Runnable r = new Runnable() {
             public void run() {
@@ -308,6 +396,11 @@ abstract public class PollableContainer extends PollableElement {
         
     }
 
+    /**
+     * <p>processMemberStatusChanges</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     */
     public void processMemberStatusChanges(final Date date) {
         Iter iter = new Iter() {
             public void forEachElement(PollableElement elem) {
@@ -320,6 +413,7 @@ abstract public class PollableContainer extends PollableElement {
 
     
     
+    /** {@inheritDoc} */
     protected void processResolution(PollEvent resolvedCause, PollEvent resolution) {
         super.processResolution(resolvedCause, resolution);
         processLingeringMemberCauses(resolvedCause, resolution);
@@ -336,6 +430,7 @@ abstract public class PollableContainer extends PollableElement {
     }
     
     
+    /** {@inheritDoc} */
     protected void processCause(final PollEvent cause) {
         super.processCause(cause);
         Iter iter = new Iter() {
@@ -348,6 +443,7 @@ abstract public class PollableContainer extends PollableElement {
     }
     
     
+    /** {@inheritDoc} */
     protected void resolveAllOutages(final PollEvent resolvedCause, final PollEvent resolution) {
         super.resolveAllOutages(resolvedCause, resolution);
         Iter iter = new Iter() {
@@ -360,6 +456,7 @@ abstract public class PollableContainer extends PollableElement {
         forEachMember(iter);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected PollEvent doExtrapolateCause() {
 
@@ -392,6 +489,7 @@ abstract public class PollableContainer extends PollableElement {
         return cause;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void doInheritParentalCause() {
         super.doInheritParentalCause();

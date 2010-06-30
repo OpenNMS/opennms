@@ -39,13 +39,34 @@ import org.opennms.sms.ping.internal.PingRequest;
 import org.smslib.Message;
 
 /**
- * 
+ * <p>PingResponseCallback interface.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @version $Id: $
  */
 public interface PingResponseCallback {
 
+	/**
+	 * <p>handleResponse</p>
+	 *
+	 * @param request a {@link org.opennms.sms.ping.internal.PingRequest} object.
+	 * @param packet a {@link org.smslib.Message} object.
+	 */
 	public void handleResponse(PingRequest request, Message packet);
+	/**
+	 * <p>handleTimeout</p>
+	 *
+	 * @param request a {@link org.opennms.sms.ping.internal.PingRequest} object.
+	 * @param packet a {@link org.smslib.Message} object.
+	 */
 	public void handleTimeout(PingRequest request, Message packet);
+    /**
+     * <p>handleError</p>
+     *
+     * @param request a {@link org.opennms.sms.ping.internal.PingRequest} object.
+     * @param packet a {@link org.smslib.Message} object.
+     * @param t a {@link java.lang.Throwable} object.
+     */
     public void handleError(PingRequest request, Message packet, Throwable t);
 
 }

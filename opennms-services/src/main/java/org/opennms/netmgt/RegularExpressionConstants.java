@@ -34,7 +34,7 @@ package org.opennms.netmgt;
 
 /**
  * This class holds all OpenNMS regular expression related constants.
- * 
+ *
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.2
  */

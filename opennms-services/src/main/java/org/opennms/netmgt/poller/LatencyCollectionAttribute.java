@@ -38,8 +38,10 @@ import org.opennms.netmgt.collectd.Persister;
 import org.opennms.netmgt.collectd.ServiceParameters;
 
 /**
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * <p>LatencyCollectionAttribute class.</p>
  *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
 public class LatencyCollectionAttribute implements CollectionAttribute {
 
@@ -47,6 +49,13 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
     private Double m_value;
     private String m_name;
     
+    /**
+     * <p>Constructor for LatencyCollectionAttribute.</p>
+     *
+     * @param resource a {@link org.opennms.netmgt.poller.LatencyCollectionResource} object.
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Double} object.
+     */
     public LatencyCollectionAttribute(LatencyCollectionResource resource, String name, Double value) {
         super();
         m_resource = resource;
@@ -54,37 +63,70 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
         m_value = value;
     }
 
+    /**
+     * <p>getAttributeType</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     */
     public CollectionAttributeType getAttributeType() {
         return null;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>getNumericValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNumericValue() {
         return m_value.toString();
     }
 
+    /**
+     * <p>getResource</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     */
     public CollectionResource getResource() {
         return m_resource;
     }
 
+    /**
+     * <p>getStringValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStringValue() {
         return null;
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getType() {
         return "gauge";
     }
 
+    /** {@inheritDoc} */
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
 
+    /** {@inheritDoc} */
     public void storeAttribute(Persister persister) {
     }
 
+    /** {@inheritDoc} */
     public void visit(CollectionSetVisitor visitor) {
     }
 

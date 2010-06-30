@@ -37,19 +37,37 @@ import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.Persister;
 import org.opennms.netmgt.config.wmi.Attrib;
 
+/**
+ * <p>WmiCollectionAttributeType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class WmiCollectionAttributeType implements CollectionAttributeType {
         Attrib m_attribute;
         AttributeGroupType m_groupType;
 
+        /**
+         * <p>Constructor for WmiCollectionAttributeType.</p>
+         *
+         * @param attribute a {@link org.opennms.netmgt.config.wmi.Attrib} object.
+         * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+         */
         public WmiCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
             m_groupType=groupType;
             m_attribute=attribute;
         }
 
+        /**
+         * <p>getGroupType</p>
+         *
+         * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+         */
         public AttributeGroupType getGroupType() {
             return m_groupType;
         }
 
+        /** {@inheritDoc} */
         public void storeAttribute(CollectionAttribute attribute, Persister persister) {
             if (m_attribute.getType().equalsIgnoreCase("string")) {
                 persister.persistStringAttribute(attribute);
@@ -58,10 +76,20 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
             }
         }
 
+        /**
+         * <p>getName</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String getName() {
             return m_attribute.getAlias();
         }
 
+        /**
+         * <p>getType</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String getType() {
             return m_attribute.getType();
         }

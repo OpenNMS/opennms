@@ -35,8 +35,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Donald Desloge
+ * <p>DominoIIOPDetector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 
 @Component
@@ -66,14 +68,15 @@ public class DominoIIOPDetector extends LineOrientedDetector {
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public DominoIIOPDetector(String serviceName, int port) {
         super(serviceName, port);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         // Empty on init method, everything for this detector is done in the Client
@@ -82,6 +85,7 @@ public class DominoIIOPDetector extends LineOrientedDetector {
         
     }
     
+    /** {@inheritDoc} */
     @Override
     protected DominoIIOPClient getClient() {
         DominoIIOPClient client = new DominoIIOPClient();
@@ -89,10 +93,20 @@ public class DominoIIOPDetector extends LineOrientedDetector {
         return client;
     }
 
+    /**
+     * <p>setIorPort</p>
+     *
+     * @param iorPort a int.
+     */
     public void setIorPort(int iorPort) {
         m_iorPort = iorPort;
     }
 
+    /**
+     * <p>getIorPort</p>
+     *
+     * @return a int.
+     */
     public int getIorPort() {
         return m_iorPort;
     }

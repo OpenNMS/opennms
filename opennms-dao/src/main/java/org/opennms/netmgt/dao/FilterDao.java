@@ -44,11 +44,19 @@ import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.EntityVisitor;
 
 /**
- * 
+ * <p>FilterDao interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface FilterDao {
 
+    /**
+     * <p>walkMatchingNodes</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @param visitor a {@link org.opennms.netmgt.model.EntityVisitor} object.
+     */
     public void walkMatchingNodes(String rule, EntityVisitor visitor);
 
     /**
@@ -56,18 +64,39 @@ public interface FilterDao {
      * the rule that is passed in, sorted by node ID.
      *
      * @param rule an expression rule to be parsed and executed.
-     *
      * @return SortedMap containing all node IDs and node labels selected by the rule.
-     *
      * @exception FilterParseException if a rule is syntactically incorrect or failed in
      *                executing the SQL statement
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
      */
     public SortedMap<Integer, String> getNodeMap(String rule) throws FilterParseException;
 
+    /**
+     * <p>getIPServiceMap</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     */
     public Map<String, Set<String>> getIPServiceMap(String rule) throws FilterParseException;
 
+    /**
+     * <p>getIPList</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     */
     public List<String> getIPList(String rule) throws FilterParseException;
 
+    /**
+     * <p>isValid</p>
+     *
+     * @param addr a {@link java.lang.String} object.
+     * @param rule a {@link java.lang.String} object.
+     * @return a boolean.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     */
     public boolean isValid(String addr, String rule) throws FilterParseException;
 
     /**
@@ -76,9 +105,16 @@ public interface FilterDao {
      *
      * @param rule rule to match on
      * @return true if there is at least one match, false otherwise
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
      */
     public boolean isRuleMatching(String rule) throws FilterParseException;
 
+    /**
+     * <p>validateRule</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     */
     public void validateRule(String rule) throws FilterParseException;
 
 }

@@ -83,13 +83,12 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each
      * UEI.
-     * 
-     * @param event
-     *            The event
      */
     public void onEvent(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
@@ -134,6 +133,8 @@ final class BroadcastEventProcessor implements EventListener {
 
     /**
      * Return an id for this event listener
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "Syslogd:BroadcastEventProcessor";

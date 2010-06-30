@@ -72,9 +72,13 @@ import org.opennms.netmgt.config.poller.Service;
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
  * node
- * 
+ *
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class PollerConfigServlet extends HttpServlet {
 	/**
@@ -104,6 +108,11 @@ public class PollerConfigServlet extends HttpServlet {
 
     CapsdConfig capsdFactory = null;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
@@ -133,6 +142,11 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>reloadFiles</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void reloadFiles() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
@@ -162,6 +176,9 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>initCapsdProtocols</p>
+     */
     public void initCapsdProtocols() {
         pluginColl = capsdConfig.getProtocolPluginCollection();
         if (pluginColl != null) {
@@ -174,6 +191,9 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>initPollerServices</p>
+     */
     public void initPollerServices() {
         Collection packageColl = pollerConfig.getPackageCollection();
         if (packageColl != null) {
@@ -191,6 +211,7 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         reloadFiles();
 
@@ -246,6 +267,11 @@ public class PollerConfigServlet extends HttpServlet {
         response.sendRedirect(this.redirectSuccess);
     }
 
+    /**
+     * <p>deleteCapsdInfo</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void deleteCapsdInfo(String name) {
         if (capsdProtocols.get(name) != null) {
             ProtocolPlugin tmpproto = capsdProtocols.get(name);
@@ -256,6 +282,11 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>adjustNonChecked</p>
+     *
+     * @param checkedList a {@link java.util.List} object.
+     */
     public void adjustNonChecked(java.util.List<String> checkedList) {
         if (pkg != null) {
             Collection svcColl = pkg.getServiceCollection();
@@ -276,6 +307,12 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>deleteThese</p>
+     *
+     * @param deleteServices a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
+     */
     public void deleteThese(java.util.List<String> deleteServices) throws IOException {
         ListIterator<String> lstIter = deleteServices.listIterator();
         while (lstIter.hasNext()) {
@@ -308,6 +345,11 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>removeMonitor</p>
+     *
+     * @param service a {@link java.lang.String} object.
+     */
     public void removeMonitor(String service) {
         // Add the new monitor with the protocol.
         Collection monitorColl = pollerConfig.getMonitorCollection();
@@ -329,6 +371,12 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>modifyPollerInfo</p>
+     *
+     * @param bPolled a {@link java.lang.String} object.
+     * @param protocol a {@link java.lang.String} object.
+     */
     public void modifyPollerInfo(String bPolled, String protocol) {
         if (pkg != null) {
             Collection svcColl = pkg.getServiceCollection();

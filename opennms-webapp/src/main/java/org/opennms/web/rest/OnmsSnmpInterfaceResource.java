@@ -75,6 +75,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
+/**
+ * <p>OnmsSnmpInterfaceResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Transactional
@@ -92,6 +99,12 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Context 
     UriInfo m_uriInfo;
     
+    /**
+     * <p>getSnmpInterfaces</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterfaceList} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsSnmpInterfaceList getSnmpInterfaces(@PathParam("nodeCriteria") String nodeCriteria) {
@@ -116,6 +129,13 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         return snmpList;
     }
 
+    /**
+     * <p>getSnmpInterface</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ifIndex a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsEntity} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ifIndex}")
@@ -124,6 +144,13 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         return node.getSnmpInterfaceWithIfIndex(ifIndex);
     }
     
+    /**
+     * <p>addSnmpInterface</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param snmpInterface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addSnmpInterface(@PathParam("nodeCriteria") String nodeCriteria, OnmsSnmpInterface snmpInterface) {
@@ -145,6 +172,13 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         return Response.ok().build();
     }
     
+    /**
+     * <p>deleteSnmpInterface</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ifIndex a int.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{ifIndex}")
     public Response deleteSnmpInterface(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ifIndex") int ifIndex) {
@@ -163,6 +197,14 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         return Response.ok().build();
     }
     
+    /**
+     * <p>updateSnmpInterface</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ifIndex a int.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ifIndex}")

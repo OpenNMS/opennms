@@ -40,9 +40,12 @@ import org.opennms.netmgt.xml.event.Snmp;
 /**
  * This class is used to format the Snmp block into an appropiate string for
  * storage in the event data storage.
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class SnmpInfo {
     /**
@@ -51,17 +54,20 @@ public final class SnmpInfo {
      * stored into the database. The information is formatted in by separating
      * the of the textual fields with a delimiter character (a comma ',').
      * </P>
-     * 
+     *
      * <P>
      * If the enterprise id text information is not present then the string will
      * have only two commas. An extra comma is not added to signify the missing
      * field.
      * </P>
-     * 
+     *
      * @see Constants#DB_ATTRIB_DELIM
      * @see Constants#escape
-     * 
+     * @see Constants#DB_ATTRIB_DELIM
+     * @see Constants#escape
      * @return The smnpblock as a string
+     * @param info a {@link org.opennms.netmgt.xml.event.Snmp} object.
+     * @param maxlen a int.
      */
     public static String format(Snmp info, int maxlen) {
         if (info == null) {

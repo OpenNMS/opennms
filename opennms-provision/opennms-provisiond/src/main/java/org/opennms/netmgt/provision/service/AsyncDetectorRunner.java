@@ -43,11 +43,18 @@ class AsyncDetectorRunner implements Async<Boolean> {
     private final IpInterfaceScan m_ifaceScan;
     private final AsyncServiceDetector m_detector;
     
+    /**
+     * <p>Constructor for AsyncDetectorRunner.</p>
+     *
+     * @param ifaceScan a {@link org.opennms.netmgt.provision.service.IpInterfaceScan} object.
+     * @param detector a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
+     */
     public AsyncDetectorRunner(IpInterfaceScan ifaceScan, AsyncServiceDetector detector) {
         m_ifaceScan = ifaceScan;
         m_detector = detector;
     }
 
+    /** {@inheritDoc} */
     public void submit(Callback<Boolean> cb) {
         try {
             infof(this, "Attemping to detect service %s on address %s", m_detector.getServiceName(), m_ifaceScan.getAddress().getHostAddress());
@@ -58,6 +65,7 @@ class AsyncDetectorRunner implements Async<Boolean> {
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return String.format("Run detector %s on address %s", m_detector.getServiceName(), m_ifaceScan.getAddress().getHostAddress());

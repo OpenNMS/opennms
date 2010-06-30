@@ -75,9 +75,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultPollerBackEnd class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 @Transactional
 public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon {
@@ -112,6 +116,11 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private Date m_configurationTimestamp = null;
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_locMonDao, "The LocationMonitorDao must be set");
         Assert.notNull(m_monSvcDao, "The MonitoredServiceDao must be set");
@@ -123,10 +132,18 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_configurationTimestamp = m_timeKeeper.getCurrentDate();
     }
     
+    /**
+     * <p>start</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void start() throws Exception {
         // Nothing to do: job scheduling and RMI export is done externally
     }
 
+    /**
+     * <p>checkForDisconnectedMonitors</p>
+     */
     public void checkForDisconnectedMonitors() {
 
         LogUtils.debugf(this, "Checking for disconnected monitors: disconnectedTimeout = %d", m_disconnectedTimeout);
@@ -162,6 +179,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         }
     }
 
+    /**
+     * <p>configurationUpdated</p>
+     */
     public void configurationUpdated() {
         m_configurationTimestamp = m_timeKeeper.getCurrentDate();
     }
@@ -181,11 +201,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return m_configurationTimestamp;
     }
 
+    /**
+     * <p>getMonitoringLocations</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     @Transactional(readOnly=true)
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         return m_locMonDao.findAllMonitoringLocationDefinitions();
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public String getMonitorName(final int locationMonitorId) {
         final OnmsLocationMonitor locationMonitor = m_locMonDao.load(locationMonitorId);
@@ -208,6 +234,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return paramMap;
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
         try {
@@ -253,6 +280,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return pkg;
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
     	try {
@@ -270,6 +298,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
 
+    /** {@inheritDoc} */
     public MonitorStatus pollerCheckingIn(final int locationMonitorId, final Date currentConfigurationVersion) {
         try {
 			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
@@ -285,6 +314,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 		}
     }
 
+    /** {@inheritDoc} */
     public boolean pollerStarting(final int locationMonitorId, final Map<String, String> pollerDetails) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
@@ -300,6 +330,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return true;
     }
 
+    /** {@inheritDoc} */
     public void pollerStopping(final int locationMonitorId) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
@@ -327,6 +358,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         }
     }
 
+    /** {@inheritDoc} */
     public int registerLocationMonitor(final String monitoringLocationId) {
         final OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
         if (def == null) {
@@ -342,6 +374,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return mon.getId();
     }
 
+    /** {@inheritDoc} */
     public void reportResult(final int locationMonitorId, final int serviceId, final PollStatus pollResult) {
         final OnmsLocationMonitor locationMonitor;
         try {
@@ -427,27 +460,57 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_eventIpcManager.sendNow(builder.getEvent());
     }
 
+    /**
+     * <p>setDisconnectedTimeout</p>
+     *
+     * @param disconnectedTimeout a int.
+     */
     public void setDisconnectedTimeout(final int disconnectedTimeout) {
         m_disconnectedTimeout = disconnectedTimeout;
 
     }
 
+    /**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
 
+    /**
+     * <p>setLocationMonitorDao</p>
+     *
+     * @param locMonDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public void setLocationMonitorDao(final LocationMonitorDao locMonDao) {
         m_locMonDao = locMonDao;
     }
 
+    /**
+     * <p>setMonitoredServiceDao</p>
+     *
+     * @param monSvcDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public void setMonitoredServiceDao(final MonitoredServiceDao monSvcDao) {
         m_monSvcDao = monSvcDao;
     }
 
+    /**
+     * <p>setPollerConfig</p>
+     *
+     * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
+     */
     public void setPollerConfig(final PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
     }
 
+    /**
+     * <p>setTimeKeeper</p>
+     *
+     * @param timeKeeper a {@link org.opennms.core.utils.TimeKeeper} object.
+     */
     public void setTimeKeeper(final TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
     }

@@ -42,12 +42,13 @@ import java.util.List;
 
 /**
  * This class stores notification information for a user
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
+ * @since 1.8.1
  */
 public class NotificationInfo implements Cloneable {
     /**
@@ -106,6 +107,9 @@ public class NotificationInfo implements Cloneable {
     }
 
     /**
+     * <p>clone</p>
+     *
+     * @return a {@link java.lang.Object} object.
      */
     public Object clone() {
         try {
@@ -133,7 +137,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Sets the email address
-     * 
+     *
      * @param anEmail
      *            the email address
      */
@@ -143,7 +147,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Sets the pager email address
-     * 
+     *
      * @param anEmail
      *            the new email address
      */
@@ -153,7 +157,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Sets the XMPP address
-     * 
+     *
      * @param anAddress
      *            the new XMPP address
      */
@@ -163,7 +167,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Sets the numerical service string
-     * 
+     *
      * @param aService
      *            the numerical service
      */
@@ -173,7 +177,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Sets the numerical pin
-     * 
+     *
      * @param aPin
      *            the numerical pin
      */
@@ -183,7 +187,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Sets the text service string
-     * 
+     *
      * @param aService
      *            the text service
      */
@@ -193,7 +197,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Sets the text pin string
-     * 
+     *
      * @param aPin
      *            the text pin
      */
@@ -203,7 +207,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * This method adds a duty schedule
-     * 
+     *
      * @param aSchedule
      *            a new duty schedule to associate with a user
      */
@@ -213,7 +217,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * This method sets a full list of duty schedules for a user
-     * 
+     *
      * @param someSchedules
      *            a list of DutySchedule objects for a user
      */
@@ -223,7 +227,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the email address
-     * 
+     *
      * @return the email address
      */
     public String getEmail() {
@@ -232,7 +236,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the pager email address
-     * 
+     *
      * @return the pager email address
      */
     public String getPagerEmail() {
@@ -241,7 +245,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the XMPP address
-     * 
+     *
      * @return the XMPP address
      */
     public String getXMPPAddress() {
@@ -250,7 +254,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the numerical service string
-     * 
+     *
      * @return the numerical service
      */
     public String getNumericalService() {
@@ -259,7 +263,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the numerical pin string
-     * 
+     *
      * @return the numerical pin
      */
     public String getNumericalPin() {
@@ -268,7 +272,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the text service string
-     * 
+     *
      * @return the text service
      */
     public String getTextService() {
@@ -277,7 +281,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the text pin string
-     * 
+     *
      * @return the text pin
      */
     public String getTextPin() {
@@ -286,7 +290,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the number of DutySchedule object for a user
-     * 
+     *
      * @return the number of DutySchedules
      */
     public int getDutyScheduleCount() {
@@ -295,7 +299,7 @@ public class NotificationInfo implements Cloneable {
 
     /**
      * Returns the full list of DutySchedules
-     * 
+     *
      * @return the full list of DutySchedules
      */
     public List<DutySchedule> getDutySchedules() {
@@ -305,7 +309,7 @@ public class NotificationInfo implements Cloneable {
     /**
      * Returns a boolean indicating if the user is on duty at the specified
      * time.
-     * 
+     *
      * @param aTime
      *            a time to see if the user is on duty
      * @return true if the user is on duty, false otherwise
@@ -333,7 +337,7 @@ public class NotificationInfo implements Cloneable {
     /**
      * A String representation of the notification information, primarily used
      * for debugging.
-     * 
+     *
      * @return String representation of the notification information
      */
     public String toString() {

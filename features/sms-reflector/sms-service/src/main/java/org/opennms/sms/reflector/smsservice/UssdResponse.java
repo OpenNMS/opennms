@@ -39,25 +39,41 @@ import org.smslib.USSDResponse;
 import org.smslib.USSDSessionStatus;
 
 /**
- * @author brozow
+ * <p>UssdResponse class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class UssdResponse extends MobileMsgResponse {
 
     private String m_gatewayId;
     private USSDResponse m_msg;
     
+    /**
+     * <p>Constructor for UssdResponse.</p>
+     *
+     * @param gatewayId a {@link java.lang.String} object.
+     * @param msg a {@link org.smslib.USSDResponse} object.
+     * @param receiveTime a long.
+     */
     public UssdResponse(String gatewayId, USSDResponse msg, long receiveTime) {
     	super(receiveTime);
         m_gatewayId = gatewayId;
         m_msg = msg;
     }
 
+    /**
+     * <p>getGatewayId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGatewayId() {
         return m_gatewayId;
     }
 
     /**
+     * <p>getText</p>
+     *
      * @return the text
      */
     public String getText() {
@@ -66,20 +82,25 @@ public class UssdResponse extends MobileMsgResponse {
     
     
     /**
-     * 
+     * <p>getSessionStatus</p>
+     *
+     * @return a {@link org.smslib.USSDSessionStatus} object.
      */
     public USSDSessionStatus getSessionStatus() {
         return m_msg.getSessionStatus();
     }
 
     /**
-     * @return
+     * <p>getMessage</p>
+     *
+     * @return a {@link org.smslib.USSDResponse} object.
      */
     public USSDResponse getMessage() {
         return m_msg;
         
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "" + m_msg;

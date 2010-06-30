@@ -43,15 +43,25 @@ import org.nfunk.jep.JEP;
 import org.opennms.netmgt.config.threshd.Expression;
 
 /**
- * 
+ * <p>ExpressionConfigWrapper class.</p>
+ *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
+ * @version $Id: $
  */
 public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
 
     private Expression m_expression;
     private Collection<String> m_datasources;
     private JEP m_parser;
+    /**
+     * <p>Constructor for ExpressionConfigWrapper.</p>
+     *
+     * @param expression a {@link org.opennms.netmgt.config.threshd.Expression} object.
+     * @throws org.opennms.netmgt.threshd.ThresholdExpressionException if any.
+     */
     public ExpressionConfigWrapper(Expression expression) throws ThresholdExpressionException {
         super(expression);
         m_expression=expression;
@@ -66,15 +76,18 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         m_datasources.addAll(m_parser.getSymbolTable().keySet());
     }
     
+    /** {@inheritDoc} */
     @Override
     public String getDatasourceExpression() {
         return m_expression.getExpression();
     }
+    /** {@inheritDoc} */
     @Override
     public Collection<String> getRequiredDatasources() {
        return m_datasources;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double evaluate(Map<String, Double> values) throws ThresholdExpressionException {
         for(String valueName : values.keySet()) {

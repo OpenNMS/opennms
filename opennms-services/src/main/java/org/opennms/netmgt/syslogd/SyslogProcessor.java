@@ -84,6 +84,11 @@ final class SyslogProcessor implements Runnable {
 
     private String m_localAddr;
 
+    /**
+     * <p>setSyslogConfig</p>
+     *
+     * @param syslogdConfig a {@link org.opennms.netmgt.config.SyslogdConfig} object.
+     */
     public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
         @SuppressWarnings("unused")
         SyslogdConfig m_syslogdConfig = syslogdConfig;

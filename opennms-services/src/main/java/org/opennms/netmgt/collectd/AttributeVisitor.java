@@ -32,8 +32,15 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>Abstract AttributeVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class AttributeVisitor extends AbstractCollectionSetVisitor {
     
+    /** {@inheritDoc} */
     abstract public void visitAttribute(CollectionAttribute attribute);
 
 

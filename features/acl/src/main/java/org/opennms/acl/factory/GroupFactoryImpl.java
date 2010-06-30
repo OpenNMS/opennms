@@ -42,12 +42,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
+ * <p>GroupFactoryImpl class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Service("groupFactory")
 public class GroupFactoryImpl implements GroupFactory {
 
+    /** {@inheritDoc} */
     public Group getGroup(Integer id) {
         GroupDTO group = groupService.getGroup(id);
         return new Group(group, authorityService, groupService);

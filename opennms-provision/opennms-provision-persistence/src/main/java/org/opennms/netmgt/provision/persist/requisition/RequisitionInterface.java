@@ -21,6 +21,12 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
+/**
+ * <p>RequisitionInterface class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="", propOrder = { "m_monitoredServices", "m_categories" })
 @XmlRootElement(name = "interface")
@@ -49,17 +55,32 @@ public class RequisitionInterface {
     @XmlAttribute(name="status")
     protected Integer m_status;
 
+    /**
+     * <p>getMonitoredServiceCount</p>
+     *
+     * @return a int.
+     */
     @XmlTransient
     public int getMonitoredServiceCount() {
         return (m_monitoredServices == null) ? 0 : m_monitoredServices.size();
     }
 
     /* backwards-compat with ModelImport */
+    /**
+     * <p>getMonitoredService</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} objects.
+     */
     @XmlTransient
     public RequisitionMonitoredService[] getMonitoredService() {
         return getMonitoredServices().toArray(new RequisitionMonitoredService[] {});
     }
 
+    /**
+     * <p>getMonitoredServices</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<RequisitionMonitoredService> getMonitoredServices() {
         if (m_monitoredServices == null) {
             m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
@@ -67,10 +88,21 @@ public class RequisitionInterface {
         return m_monitoredServices;
     }
 
+    /**
+     * <p>setMonitoredServices</p>
+     *
+     * @param services a {@link java.util.List} object.
+     */
     public void setMonitoredServices(List<RequisitionMonitoredService> services) {
         m_monitoredServices = services;
     }
 
+    /**
+     * <p>getMonitoredService</p>
+     *
+     * @param service a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} object.
+     */
     public RequisitionMonitoredService getMonitoredService(String service) {
         if (m_monitoredServices != null) {
             for (RequisitionMonitoredService svc : m_monitoredServices) {
@@ -83,6 +115,11 @@ public class RequisitionInterface {
         return null;
     }
 
+    /**
+     * <p>removeMonitoredService</p>
+     *
+     * @param service a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} object.
+     */
     public void removeMonitoredService(RequisitionMonitoredService service) {
         if (m_monitoredServices != null) {
             Iterator<RequisitionMonitoredService> i = m_monitoredServices.iterator();
@@ -96,6 +133,11 @@ public class RequisitionInterface {
         }
     }
 
+    /**
+     * <p>deleteMonitoredService</p>
+     *
+     * @param service a {@link java.lang.String} object.
+     */
     public void deleteMonitoredService(String service) {
         if (m_monitoredServices != null) {
             Iterator<RequisitionMonitoredService> i = m_monitoredServices.iterator();
@@ -109,6 +151,11 @@ public class RequisitionInterface {
         }
     }
 
+    /**
+     * <p>insertMonitoredService</p>
+     *
+     * @param service a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} object.
+     */
     public void insertMonitoredService(RequisitionMonitoredService service) {
         Iterator<RequisitionMonitoredService> iterator = m_monitoredServices.iterator();
         while (iterator.hasNext()) {
@@ -120,6 +167,11 @@ public class RequisitionInterface {
         m_monitoredServices.add(0, service);
     }
 
+    /**
+     * <p>putMonitoredService</p>
+     *
+     * @param service a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} object.
+     */
     public void putMonitoredService(RequisitionMonitoredService service) {
         Iterator<RequisitionMonitoredService> iterator = m_monitoredServices.iterator();
         while (iterator.hasNext()) {
@@ -131,6 +183,11 @@ public class RequisitionInterface {
         m_monitoredServices.add(service);
     }
 
+    /**
+     * <p>getCategories</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<RequisitionCategory> getCategories() {
         if (m_categories == null) {
             m_categories = new ArrayList<RequisitionCategory>();
@@ -138,10 +195,21 @@ public class RequisitionInterface {
         return m_categories;
     }
     
+    /**
+     * <p>setCategories</p>
+     *
+     * @param categories a {@link java.util.List} object.
+     */
     public void setCategories(List<RequisitionCategory> categories) {
         m_categories = categories;
     }
 
+    /**
+     * <p>getCategory</p>
+     *
+     * @param category a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
+     */
     public RequisitionCategory getCategory(String category) {
         if (m_categories != null) {
             for (RequisitionCategory cat : m_categories) {
@@ -154,6 +222,11 @@ public class RequisitionInterface {
         return null;
     }
 
+    /**
+     * <p>removeCategory</p>
+     *
+     * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
+     */
     public void removeCategory(RequisitionCategory category) {
         if (m_categories != null) {
             Iterator<RequisitionCategory> i = m_categories.iterator();
@@ -167,6 +240,11 @@ public class RequisitionInterface {
         }
     }
     
+    /**
+     * <p>deleteCategory</p>
+     *
+     * @param category a {@link java.lang.String} object.
+     */
     public void deleteCategory(String category) {
         if (m_categories != null) {
             Iterator<RequisitionCategory> i = m_categories.iterator();
@@ -180,22 +258,47 @@ public class RequisitionInterface {
         }
     }
 
+    /**
+     * <p>getDescr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescr() {
         return m_description;
     }
 
+    /**
+     * <p>setDescr</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
     public void setDescr(String value) {
         m_description = value;
     }
 
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddr() {
         return m_ipAddress;
     }
 
+    /**
+     * <p>setIpAddr</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
     public void setIpAddr(String value) {
         m_ipAddress = value;
     }
 
+    /**
+     * <p>isManaged</p>
+     *
+     * @return a boolean.
+     */
     public boolean isManaged() {
         if (m_isManaged == null) {
             return true;
@@ -204,18 +307,38 @@ public class RequisitionInterface {
         }
     }
 
+    /**
+     * <p>setManaged</p>
+     *
+     * @param value a {@link java.lang.Boolean} object.
+     */
     public void setManaged(Boolean value) {
         m_isManaged = value;
     }
 
+    /**
+     * <p>getSnmpPrimary</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpPrimary() {
         return m_snmpPrimary;
     }
 
+    /**
+     * <p>setSnmpPrimary</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
     public void setSnmpPrimary(String value) {
         m_snmpPrimary = value;
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         if (m_status == null) {
             return  1;
@@ -224,6 +347,11 @@ public class RequisitionInterface {
         }
     }
 
+    /**
+     * <p>setStatus</p>
+     *
+     * @param value a {@link java.lang.Integer} object.
+     */
     public void setStatus(Integer value) {
         m_status = value;
     }

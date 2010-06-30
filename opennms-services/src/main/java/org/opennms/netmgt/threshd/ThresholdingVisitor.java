@@ -46,17 +46,20 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Implements CollectionSetVisitor to implement thresholding.  
- * Works by simply recording all the attributes that come in via visitAttribute 
- * into an internal data structure, per resource, and then on "completeResource", does 
- * threshold checking against that in memory structure.  
+ * Implements CollectionSetVisitor to implement thresholding.
+ * Works by simply recording all the attributes that come in via visitAttribute
+ * into an internal data structure, per resource, and then on "completeResource", does
+ * threshold checking against that in memory structure.
  *
  * Suggested usage is one per CollectableService; this object holds the current state of thresholds
- * for this interface/service combination 
+ * for this interface/service combination
  * (so perhaps needs a better name than ThresholdingVisitor)
- * 
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  * @author <a href="mailto:craig@opennms.org">Craig Miskell</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:craig@opennms.org">Craig Miskell</a>
+ * @version $Id: $
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     
@@ -72,6 +75,17 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     
     /*
      * Is static because successful creation depends on thresholding-enabled parameter.
+     */
+    /**
+     * <p>create</p>
+     *
+     * @param nodeId a int.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param repo a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param params a {@link java.util.Map} object.
+     * @param interval a long.
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdingVisitor} object.
      */
     public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, Map<String,String> params, long interval) {
         ThreadCategory log = ThreadCategory.getInstance(ThresholdingVisitor.class);
@@ -94,12 +108,22 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     /*
      * Static method create must be used to create's new ThresholdingVisitor instance
      */
+    /**
+     * <p>Constructor for ThresholdingVisitor.</p>
+     *
+     * @param thresholdingSet a {@link org.opennms.netmgt.threshd.CollectorThresholdingSet} object.
+     */
     protected ThresholdingVisitor(CollectorThresholdingSet thresholdingSet) {
         m_thresholdingSet = thresholdingSet;
     }
     
     /*
      * Get a list of thresholds groups (for junit only at this time)
+     */
+    /**
+     * <p>getThresholdGroups</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<ThresholdGroup> getThresholdGroups() {
         return m_thresholdingSet.m_thresholdGroups;
@@ -108,6 +132,9 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     /*
      * Force reload thresholds configuration, and merge threshold states
      */
+    /**
+     * <p>reload</p>
+     */
     public void reload() {
         m_thresholdingSet.reinitialize();
     }
@@ -115,6 +142,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     /*
      *  Initialize required attributes map (m_attributesMap)
      */
+    /** {@inheritDoc} */
     @Override
     public void visitResource(CollectionResource resource) {
         m_attributesMap = new HashMap<String, CollectionAttribute>();
@@ -126,6 +154,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * (The way to get attribute is against AttributeGroup object contained on CollectioResource
      * implementations).
      */
+    /** {@inheritDoc} */
     @Override    
     public void visitAttribute(CollectionAttribute attribute) {
         if (m_thresholdingSet.hasThresholds(attribute)) {
@@ -144,6 +173,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * Apply threshold for specific resource (and required attributes).
      * Send thresholds events (if exists)
      */
+    /** {@inheritDoc} */
     @Override
     public void completeResource(CollectionResource resource) {
         List<Event> eventList = m_thresholdingSet.applyThresholds(resource, m_attributesMap);
@@ -152,6 +182,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         proxy.sendAllEvents();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "ThresholdingVisitor for " + m_thresholdingSet;

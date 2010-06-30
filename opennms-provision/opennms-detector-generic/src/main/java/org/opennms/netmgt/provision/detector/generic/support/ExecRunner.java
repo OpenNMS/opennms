@@ -49,16 +49,16 @@ import java.util.StringTokenizer;
 /**
  * <P>
  * Runs external executables, optionally under a watched thread.
- * 
+ *
  * In addition, probably the most useful feature of ExecRunner is using it to
  * run a command-line program and obtain its stdout and stderr results in two
  * strings. This is done with exec(String) - see that method for an example.
- * 
+ *
  * With acknowledgements to Michael C. Daconta, author of "Java Pitfalls, Time
  * Saving Solutions, and Workarounds to Improve Programs." and his article in
  * JavaWorld "When Runtime.exec() Won't".
  * </P>
- * 
+ *
  * @author <a href="mailto:smccrory@users.sourceforge.net">Scott McCrory </a>.
  * @version CVS $Id: ExecRunner.java 11606 2008-12-23 18:03:04Z rangerrick $
  */
@@ -96,7 +96,6 @@ public class ExecRunner {
 
     /**
      * Basic ExecRunner constructor.
-     * 
      */
     public ExecRunner() {
         super();
@@ -104,10 +103,10 @@ public class ExecRunner {
 
     /**
      * ExecRunner constructor which also conveniently runs exec(String).
-     * 
+     *
      * @param command
      *            The program or command to run
-     * @throws ExceptionInInitializerError
+     * @throws java.lang.ExceptionInInitializerError
      *             thrown if a problem occurs
      */
     public ExecRunner(String command) throws ExceptionInInitializerError {
@@ -125,8 +124,8 @@ public class ExecRunner {
     /**
      * We override the <code>clone</code> method here to prevent cloning of
      * our class.
-     * 
-     * @throws CloneNotSupportedException
+     *
+     * @throws java.lang.CloneNotSupportedException
      *             To indicate cloning is not allowed
      * @return Nothing ever really returned since we throw a
      *         CloneNotSupportedException
@@ -142,9 +141,9 @@ public class ExecRunner {
      * thread. It returns the client's exit code and feeds its STDOUT and STDERR
      * to ExecRunner's out and err strings, where you then use getOutString()
      * and getErrString() to obtain these values. Example:
-     * 
+     *
      * <pre>
-     * 
+     *
      * // Execute the program and grab the results
      * try {
      *     ExecRunner er = new ExecRunner();
@@ -161,13 +160,13 @@ public class ExecRunner {
      *     continue;
      * }
      * </pre>
-     * 
+     *
      * @return The command's return code
      * @param command
      *            The program or command to run
-     * @throws IOException
+     * @throws java.io.IOException
      *             thrown if a problem occurs
-     * @throws InterruptedException
+     * @throws java.lang.InterruptedException
      *             thrown if a problem occurs
      */
     public int exec(String command) throws IOException, InterruptedException {
@@ -189,7 +188,7 @@ public class ExecRunner {
 
     /**
      * Convenience method for calling exec with OutputStreams.
-     * 
+     *
      * @return The command's return code
      * @param command
      *            The program or command to run
@@ -197,9 +196,9 @@ public class ExecRunner {
      *            java.io.OutputStream
      * @param stderrStream
      *            java.io.OutputStream
-     * @throws IOException
+     * @throws java.io.IOException
      *             thrown if a problem occurs
-     * @throws InterruptedException
+     * @throws java.lang.InterruptedException
      *             thrown if a problem occurs
      */
     public int exec(String command, OutputStream stdoutStream, OutputStream stderrStream) throws IOException, InterruptedException {
@@ -215,7 +214,7 @@ public class ExecRunner {
      * The <code>exec(String, PrintWriter, PrintWriter)</code> method runs a
      * process inside of a watched thread. It returns the client's exit code and
      * feeds its STDOUT and STDERR to the passed-in streams.
-     * 
+     *
      * @return The command's return code
      * @param command
      *            The program or command to run
@@ -223,9 +222,9 @@ public class ExecRunner {
      *            java.io.PrintWriter
      * @param stderrWriter
      *            java.io.PrintWriter
-     * @throws IOException
+     * @throws java.io.IOException
      *             thrown if a problem occurs
-     * @throws InterruptedException
+     * @throws java.lang.InterruptedException
      *             thrown if a problem occurs
      */
     public int exec(String command, PrintWriter stdoutWriter, PrintWriter stderrWriter) throws IOException, InterruptedException {
@@ -333,7 +332,7 @@ public class ExecRunner {
 
     /**
      * Returns the error string if exec(String) was invoked.
-     * 
+     *
      * @return The error string if exec(String) was invoked.
      */
     public String getErrString() {
@@ -342,7 +341,7 @@ public class ExecRunner {
 
     /**
      * Returns whether the maximum runtime was exceeded or not.
-     * 
+     *
      * @return boolean indicating whether the maximum runtime was exceeded or
      *         not.
      */
@@ -352,7 +351,7 @@ public class ExecRunner {
 
     /**
      * Returns the maximum run time in seconds for this object.
-     * 
+     *
      * @return the maximum run time in seconds for this object.
      */
     public int getMaxRunTimeSecs() {
@@ -361,7 +360,7 @@ public class ExecRunner {
 
     /**
      * Returns the output string if exec(String) was invoked.
-     * 
+     *
      * @return The output string if exec(String) was invoked.
      */
     public String getOutString() {
@@ -370,10 +369,10 @@ public class ExecRunner {
 
     /**
      * This is for unit testing of the class.
-     * 
+     *
      * @param args
      *            an array of command-line arguments
-     * @throws IOException
+     * @throws java.io.IOException
      *             thrown if a problem occurs
      */
     public static void main(String[] args) throws IOException {
@@ -432,7 +431,7 @@ public class ExecRunner {
     /**
      * Sets the maximum run time in seconds. If you do not want to limit the
      * executable's run time, simply pass in a 0 (which is also the default).
-     * 
+     *
      * @param max
      *            Maximim number of seconds to let program run
      */

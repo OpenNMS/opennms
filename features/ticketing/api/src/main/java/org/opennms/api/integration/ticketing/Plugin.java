@@ -35,27 +35,31 @@ package org.opennms.api.integration.ticketing;
 
 /**
  * OpenNMS Trouble Ticket Plugin API
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public interface Plugin {
     
     /**
      * DAO like get method to be implemented by HelpDesk specific
      * plugin.
-     * 
-     * @param ticketId
-     * @return
+     *
+     * @param ticketId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.api.integration.ticketing.Ticket} object.
+     * @throws org.opennms.api.integration.ticketing.PluginException if any.
      */
     public Ticket get(String ticketId) throws PluginException;
     
     /**
      * DAO like saveOrUpdate method to be implemented by HelpDesk specific
      * plugin.
-     * 
-     * @param ticket
+     *
+     * @param ticket a {@link org.opennms.api.integration.ticketing.Ticket} object.
+     * @throws org.opennms.api.integration.ticketing.PluginException if any.
      */
     public void saveOrUpdate(Ticket ticket) throws PluginException;
 

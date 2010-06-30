@@ -5,6 +5,13 @@ import java.io.Serializable;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
+/**
+ * <p>GWTMarkerState class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class GWTMarkerState implements IsSerializable, Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -14,14 +21,29 @@ public class GWTMarkerState implements IsSerializable, Serializable {
     private Boolean m_selected = true;
 	private Boolean m_visible = true;
 
+	/**
+	 * <p>Constructor for GWTMarkerState.</p>
+	 */
 	public GWTMarkerState() {}
 
+    /**
+     * <p>Constructor for GWTMarkerState.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param latLng a {@link org.opennms.features.poller.remote.gwt.client.GWTLatLng} object.
+     * @param status a {@link org.opennms.features.poller.remote.gwt.client.Status} object.
+     */
     public GWTMarkerState(final String name, final GWTLatLng latLng, final Status status) {
     	setName(name);
     	setLatLng(latLng);
     	setStatus(status);
 	}
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
@@ -30,6 +52,11 @@ public class GWTMarkerState implements IsSerializable, Serializable {
         m_name = name;
     }
 
+    /**
+     * <p>getLatLng</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTLatLng} object.
+     */
     public GWTLatLng getLatLng() {
         return m_latLng;
     }
@@ -38,30 +65,65 @@ public class GWTMarkerState implements IsSerializable, Serializable {
         m_latLng = latLng;
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.Status} object.
+     */
     public Status getStatus() {
         return m_status;
     }
 
+	/**
+	 * <p>setStatus</p>
+	 *
+	 * @param status a {@link org.opennms.features.poller.remote.gwt.client.Status} object.
+	 */
 	public void setStatus(Status status) {
         m_status = status;
     }
 
+	/**
+	 * <p>isVisible</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isVisible() {
 		return m_visible;
 	}
 
+	/**
+	 * <p>setVisible</p>
+	 *
+	 * @param visible a boolean.
+	 */
 	public void setVisible(final boolean visible) {
 		m_visible  = visible;
 	}
 
+	/**
+	 * <p>isSelected</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isSelected() {
 		return m_selected;
 	}
 
+	/**
+	 * <p>setSelected</p>
+	 *
+	 * @param selected a boolean.
+	 */
 	public void setSelected(final boolean selected) {
 		m_selected = selected;
 	}
 
+	/**
+	 * <p>getImageURL</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getImageURL() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("images/");
@@ -76,6 +138,11 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 		return sb.toString();
     }
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return "GWTMarkerState[name=" + m_name
 			+ ",latLng=" + m_latLng
@@ -85,6 +152,12 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 			+ "]";
 	}
 
+    /**
+     * <p>isWithinBounds</p>
+     *
+     * @param bounds a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
+     * @return a boolean.
+     */
     public boolean isWithinBounds(GWTBounds bounds) {
         return bounds.contains(getLatLng());
     }

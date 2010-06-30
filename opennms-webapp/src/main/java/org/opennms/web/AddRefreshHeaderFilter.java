@@ -45,9 +45,13 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * A filter that adds an HTTP <em>Refresh</em> header to a servlet or JSP's
  * response. The amount of time to wait before refresh is configurable.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AddRefreshHeaderFilter extends Object implements Filter {
     protected FilterConfig filterConfig;
@@ -55,8 +59,10 @@ public class AddRefreshHeaderFilter extends Object implements Filter {
     protected String seconds = "108000"; // default is 30 mins
 
     /**
+     * {@inheritDoc}
+     *
      * Adds a <em>Refresh</em> HTTP header before processing the request.
-     * 
+     *
      * <p>
      * This is a strange implementation, because intuitively, you would add the
      * header after the content has been produced (in other words, after you had
@@ -73,6 +79,7 @@ public class AddRefreshHeaderFilter extends Object implements Filter {
         chain.doFilter(request, response);
     }
 
+    /** {@inheritDoc} */
     public void init(FilterConfig config) {
         this.filterConfig = config;
 
@@ -86,6 +93,9 @@ public class AddRefreshHeaderFilter extends Object implements Filter {
         }
     }
 
+    /**
+     * <p>destroy</p>
+     */
     public void destroy() {
     }
 

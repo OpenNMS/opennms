@@ -49,19 +49,25 @@ import org.opennms.netmgt.model.OnmsNotification;
 
 /**
  * Hibernate implementation of Acknowledgment DAO
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowledgment, Integer> implements AcknowledgmentDao {
 
+    /**
+     * <p>Constructor for AcknowledgmentDaoHibernate.</p>
+     */
     public AcknowledgmentDaoHibernate() {
         super(OnmsAcknowledgment.class);
     }
 
+    /** {@inheritDoc} */
     public void updateAckable(Acknowledgeable ackable) {
         getHibernateTemplate().update(ackable);
     }
 
+    /** {@inheritDoc} */
     public List<Acknowledgeable> findAcknowledgables(final OnmsAcknowledgment ack) {
         List<Acknowledgeable> ackables = new ArrayList<Acknowledgeable>();
         

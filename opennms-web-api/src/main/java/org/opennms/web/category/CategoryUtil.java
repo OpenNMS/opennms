@@ -50,9 +50,12 @@ import org.springframework.core.io.FileSystemResource;
 /**
  * Provides look and feel utilities for the JSPs presenting category (real time
  * console) information.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class CategoryUtil extends Object {
     /**
@@ -76,13 +79,24 @@ public class CategoryUtil extends Object {
     private CategoryUtil() {
     }
 
-    /** Format an RTC value the way we want it. */
+    /**
+     * Format an RTC value the way we want it.
+     *
+     * @param value a double.
+     * @return a {@link java.lang.String} object.
+     */
     public static String formatValue(double value) {
         return valueFormat.format(value);
     }
 
     /**
      * Determine the color to use for a given category value and thresholds.
+     *
+     * @param category a {@link org.opennms.web.category.Category} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static String getCategoryColor(Category category) throws IOException, MarshalException, ValidationException {
         if (category == null) {
@@ -94,6 +108,12 @@ public class CategoryUtil extends Object {
     
     /**
      * Determine the CSS class to use for a given category value and thresholds.
+     *
+     * @param category a {@link org.opennms.web.category.Category} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static String getCategoryClass(Category category) throws IOException, MarshalException, ValidationException {
         if (category == null) {
@@ -106,6 +126,13 @@ public class CategoryUtil extends Object {
     /**
      * Determine the color to use for a given value and the given category's
      * thresholds.
+     *
+     * @param category a {@link org.opennms.web.category.Category} object.
+     * @param value a double.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static String getCategoryColor(Category category, double value) throws IOException, MarshalException, ValidationException {
         if (category == null) {
@@ -118,6 +145,13 @@ public class CategoryUtil extends Object {
     /**
      * Determine the CSS color to use for a given value and the given category's
      * thresholds.
+     *
+     * @param category a {@link org.opennms.web.category.Category} object.
+     * @param value a double.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static String getCategoryClass(Category category, double value) throws IOException, MarshalException, ValidationException {
         if (category == null) {
@@ -129,6 +163,14 @@ public class CategoryUtil extends Object {
 
     /**
      * Determine the color to use for a given value and thresholds.
+     *
+     * @param normal a double.
+     * @param warning a double.
+     * @param value a double.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static String getCategoryColor(double normal, double warning, double value) throws IOException, MarshalException, ValidationException {
         String m_green = null;
@@ -156,6 +198,11 @@ public class CategoryUtil extends Object {
 
     /**
      * Determine the CSS class to use for a given value and thresholds.
+     *
+     * @param normal a double.
+     * @param warning a double.
+     * @param value a double.
+     * @return a {@link java.lang.String} object.
      */
     public static String getCategoryClass(double normal, double warning,
 					  double value) {

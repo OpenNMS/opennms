@@ -38,27 +38,48 @@ import org.opennms.netmgt.scheduler.Timer;
 
 /**
  * Represents a PollableSnmpInterfaceConfig
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
-
 public class PollableSnmpInterfaceConfig implements ScheduleInterval {
 
     private Timer m_timer;
     private long interval;
     
+    /**
+     * <p>Getter for the field <code>interval</code>.</p>
+     *
+     * @return a long.
+     */
     public long getInterval() {
         return interval;
     }
 
+    /**
+     * <p>scheduledSuspension</p>
+     *
+     * @return a boolean.
+     */
     public boolean scheduledSuspension() {
         return false;
     }
 
+    /**
+     * <p>getCurrentTime</p>
+     *
+     * @return a long.
+     */
     public long getCurrentTime() {
         return m_timer.getCurrentTime();
     }
 
+    /**
+     * <p>Constructor for PollableSnmpInterfaceConfig.</p>
+     *
+     * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
+     * @param interval a long.
+     */
     public PollableSnmpInterfaceConfig(Timer timer, long interval) {
         super();
         m_timer = timer;

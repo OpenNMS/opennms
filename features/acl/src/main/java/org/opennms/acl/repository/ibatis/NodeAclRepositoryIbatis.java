@@ -47,28 +47,39 @@ import org.springframework.stereotype.Repository;
 import com.ibatis.sqlmap.client.SqlMapClient;
 
 /**
+ * <p>NodeAclRepositoryIbatis class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Repository("nodeAclRepository")
 public class NodeAclRepositoryIbatis extends SqlMapClientTemplate implements ItemAclRepository {
 
+    /** {@inheritDoc} */
     @Autowired
     @Override
     public void setSqlMapClient(@Qualifier("onmsSqlMapClient") SqlMapClient sqlMapClient) {
         super.setSqlMapClient(sqlMapClient);
     }
 
+    /**
+     * <p>getItems</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<NodeONMSDTO> getItems() {
         return queryForList("selectNodes");
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<NodeONMSDTO> getAuthorityItems(List<Integer> items) {
         return items.size() > 0 ? queryForList("selectNodesAuthority", items) : new ArrayList<NodeONMSDTO>(0);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<NodeONMSDTO> getFreeItems(List<Integer> items) {
         return items.size() > 0 ? queryForList("selectFreeNodesAuthority", items) : queryForList("selectNodes");

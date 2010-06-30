@@ -45,22 +45,41 @@ import org.springframework.util.Assert;
 /**
  * EventProcessor that braodcasts events to other interested
  * daemons with EventIpcBroadcaster.broadcastNow(Event).
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class EventIpcBroadcastProcessor implements EventProcessor, InitializingBean {
     private EventIpcBroadcaster m_eventIpcBroadcaster;
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.IllegalStateException if any.
+     */
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_eventIpcBroadcaster != null, "property eventIpcBroadcaster must be set");
     }
 
+    /** {@inheritDoc} */
     public void process(Header eventHeader, Event event) {
         m_eventIpcBroadcaster.broadcastNow(event);
     }
 
+    /**
+     * <p>getEventIpcBroadcaster</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcBroadcaster} object.
+     */
     public EventIpcBroadcaster getEventIpcBroadcaster() {
         return m_eventIpcBroadcaster;
     }
 
+    /**
+     * <p>setEventIpcBroadcaster</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcBroadcaster} object.
+     */
     public void setEventIpcBroadcaster(EventIpcBroadcaster eventIpcManager) {
         m_eventIpcBroadcaster = eventIpcManager;
     }

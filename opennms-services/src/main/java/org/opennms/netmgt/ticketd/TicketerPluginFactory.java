@@ -39,19 +39,34 @@ import org.springframework.beans.factory.FactoryBean;
 import org.opennms.api.integration.ticketing.*;
 
 /**
- * 
+ * <p>TicketerPluginFactory class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class TicketerPluginFactory implements FactoryBean<Plugin> {
 
     private Class<? extends Plugin> m_pluginClass;
     private Plugin m_ticketerPlugin;
 
+    /**
+     * <p>setPluginClass</p>
+     *
+     * @param pluginClass a {@link java.lang.Class} object.
+     */
     public void setPluginClass(Class<? extends Plugin> pluginClass) {
         m_pluginClass = pluginClass;
     }
     
+    /**
+     * <p>getObject</p>
+     *
+     * @return a {@link org.opennms.api.integration.ticketing.Plugin} object.
+     * @throws java.lang.Exception if any.
+     */
     public Plugin getObject() throws Exception {
         if (m_pluginClass == null) {
             throw new IllegalStateException("pluginClass must be set");
@@ -66,10 +81,20 @@ public class TicketerPluginFactory implements FactoryBean<Plugin> {
         
     }
 
+    /**
+     * <p>getObjectType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<? extends Plugin> getObjectType() {
         return (m_pluginClass == null ? Plugin.class : m_pluginClass);
     }
 
+    /**
+     * <p>isSingleton</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSingleton() {
         return true;
     }

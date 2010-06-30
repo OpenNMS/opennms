@@ -42,9 +42,12 @@ package org.opennms.netmgt.eventd;
 /**
  * This class is a repository for constant, static information concerning
  * Eventd.
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public final class EventdConstants {
     /**

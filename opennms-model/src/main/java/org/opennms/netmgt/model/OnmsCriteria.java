@@ -50,9 +50,17 @@ import org.hibernate.criterion.Projection;
 import org.hibernate.impl.CriteriaImpl;
 import org.hibernate.transform.ResultTransformer;
 
+/**
+ * <p>OnmsCriteria class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsCriteria {
     
+    /** Constant <code>INNER_JOIN=Criteria.INNER_JOIN</code> */
     public static final int INNER_JOIN = Criteria.INNER_JOIN;
+    /** Constant <code>LEFT_JOIN=Criteria.LEFT_JOIN</code> */
     public static final int LEFT_JOIN = Criteria.LEFT_JOIN;
     
     private OnmsDetachedCriteria m_criteria;
@@ -60,82 +68,194 @@ public class OnmsCriteria {
     private Integer m_firstResult = null;
     private Integer m_maxResults = null;
     
+    /**
+     * <p>Constructor for OnmsCriteria.</p>
+     *
+     * @param entityName a {@link java.lang.String} object.
+     */
     public OnmsCriteria(String entityName) {
         this(entityName, OnmsDetachedCriteria.forEntityName(entityName));
     }
     
+    /**
+     * <p>Constructor for OnmsCriteria.</p>
+     *
+     * @param entityName a {@link java.lang.String} object.
+     * @param alias a {@link java.lang.String} object.
+     */
     public OnmsCriteria(String entityName, String alias) {
         this(entityName, OnmsDetachedCriteria.forEntityName(entityName, alias));
     }
     
+    /**
+     * <p>Constructor for OnmsCriteria.</p>
+     *
+     * @param clazz a {@link java.lang.Class} object.
+     */
     public OnmsCriteria(Class<?> clazz) {
         this(clazz.getName(), OnmsDetachedCriteria.forClass(clazz));
     }
     
+    /**
+     * <p>Constructor for OnmsCriteria.</p>
+     *
+     * @param clazz a {@link java.lang.Class} object.
+     * @param alias a {@link java.lang.String} object.
+     */
     public OnmsCriteria(Class<?> clazz, String alias) {
         this(clazz.getName(), OnmsDetachedCriteria.forClass(clazz, alias));
     }
     
+    /**
+     * <p>Constructor for OnmsCriteria.</p>
+     *
+     * @param entityName a {@link java.lang.String} object.
+     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria.OnmsDetachedCriteria} object.
+     */
     protected OnmsCriteria(String entityName, OnmsDetachedCriteria criteria) {
         m_entityName = entityName;
         m_criteria = criteria;
     }
     
+    /**
+     * <p>add</p>
+     *
+     * @param criterion a {@link org.hibernate.criterion.Criterion} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria add(Criterion criterion) {
         m_criteria.add(criterion);
         return this;
     }
 
+    /**
+     * <p>addOrder</p>
+     *
+     * @param order a {@link org.hibernate.criterion.Order} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria addOrder(Order order) {
         m_criteria.addOrder(order);
         return this;
     }
 
+    /**
+     * <p>createAlias</p>
+     *
+     * @param associationPath a {@link java.lang.String} object.
+     * @param alias a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     * @throws org.hibernate.HibernateException if any.
+     */
     public OnmsCriteria createAlias(String associationPath, String alias) throws HibernateException {
         m_criteria.createAlias(associationPath, alias);
         return this;
     }
     
+    /**
+     * <p>createAlias</p>
+     *
+     * @param associationPath a {@link java.lang.String} object.
+     * @param alias a {@link java.lang.String} object.
+     * @param joinType a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria createAlias(String associationPath, String alias, int joinType) {
         m_criteria.createAlias(associationPath, alias, joinType);
         return this;
     }
 
+    /**
+     * <p>createCriteria</p>
+     *
+     * @param associationPath a {@link java.lang.String} object.
+     * @param alias a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria createCriteria(String associationPath, String alias) {
         return new OnmsCriteria(null, m_criteria.createCriteria(associationPath, alias));
     }
 
+    /**
+     * <p>createCriteria</p>
+     *
+     * @param associationPath a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria createCriteria(String associationPath) {
         return new OnmsCriteria(null,  m_criteria.createCriteria(associationPath) );
     }
 
+    /**
+     * <p>createCriteria</p>
+     *
+     * @param associationPath a {@link java.lang.String} object.
+     * @param joinType a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria createCriteria(String associationPath, int joinType) {
         return new OnmsCriteria(null,  m_criteria.createCriteria(associationPath, joinType) );
     }
 
+    /**
+     * <p>getAlias</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAlias() {
         return m_criteria.getAlias();
     }
 
+    /**
+     * <p>setFetchMode</p>
+     *
+     * @param associationPath a {@link java.lang.String} object.
+     * @param mode a {@link org.hibernate.FetchMode} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     * @throws org.hibernate.HibernateException if any.
+     */
     public OnmsCriteria setFetchMode(String associationPath, FetchMode mode) throws HibernateException {
         m_criteria.setFetchMode(associationPath, mode);
         return this;
     }
 
+    /**
+     * <p>setProjection</p>
+     *
+     * @param projection a {@link org.hibernate.criterion.Projection} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria setProjection(Projection projection) {
         m_criteria.setProjection(projection);
         return this;
     }
 
+    /**
+     * <p>setResultTransformer</p>
+     *
+     * @param resultTransformer a {@link org.hibernate.transform.ResultTransformer} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria setResultTransformer(ResultTransformer resultTransformer) {
         m_criteria.setResultTransformer(resultTransformer);
         return this;
     }
     
+    /**
+     * <p>getDetachedCriteria</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria.OnmsDetachedCriteria} object.
+     */
     public OnmsDetachedCriteria getDetachedCriteria() {
         return m_criteria;
     }
 
+    /**
+     * <p>resultsOfType</p>
+     *
+     * @param clazz a {@link java.lang.Class} object.
+     * @return a boolean.
+     */
     public boolean resultsOfType(Class<?> clazz) {
         if (m_entityName == null) {
             return true;
@@ -144,22 +264,43 @@ public class OnmsCriteria {
         }
     }
     
+    /**
+     * <p>getFirstResult</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getFirstResult() {
     	return m_firstResult;
     }
     
+    /**
+     * <p>setFirstResult</p>
+     *
+     * @param offset a {@link java.lang.Integer} object.
+     */
     public void setFirstResult(Integer offset) {
     	m_firstResult = offset;
     }
     
+    /**
+     * <p>getMaxResults</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getMaxResults() {
     	return m_maxResults;
     }
     
+    /**
+     * <p>setMaxResults</p>
+     *
+     * @param limit a {@link java.lang.Integer} object.
+     */
     public void setMaxResults(Integer limit) {
     	m_maxResults = limit;
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "OnmsCriteria( " + m_criteria + ") limit " + m_maxResults + " offset " + m_firstResult;

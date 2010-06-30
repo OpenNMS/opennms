@@ -33,14 +33,41 @@ package org.opennms.web.admin.roles;
 
 import java.util.Date;
 
+/**
+ * <p>Abstract AbstractWebCalendar class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public abstract class AbstractWebCalendar implements WebCalendar {
     
+    /**
+     * <p>getMonthAndYear</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     abstract public String getMonthAndYear(); 
     
+    /**
+     * <p>getPreviousMonth</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     abstract public Date getPreviousMonth();
     
+    /**
+     * <p>getNextMonth</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     abstract public Date getNextMonth();
     
+    /**
+     * <p>getWeeks</p>
+     *
+     * @return an array of {@link org.opennms.web.admin.roles.Week} objects.
+     */
     abstract public Week[] getWeeks();
 
 }

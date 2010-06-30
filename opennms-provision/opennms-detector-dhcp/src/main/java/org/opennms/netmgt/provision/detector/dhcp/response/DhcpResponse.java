@@ -31,14 +31,31 @@
  */
 package org.opennms.netmgt.provision.detector.dhcp.response;
 
+/**
+ * <p>DhcpResponse class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DhcpResponse {
     
     private long m_responseTime;
     
+    /**
+     * <p>Constructor for DhcpResponse.</p>
+     *
+     * @param responseTime a long.
+     */
     public DhcpResponse(long responseTime){
         m_responseTime = responseTime;
     }
     
+    /**
+     * <p>validate</p>
+     *
+     * @param num a long.
+     * @return a boolean.
+     */
     public boolean validate(long num) {
         return m_responseTime > num;
     }

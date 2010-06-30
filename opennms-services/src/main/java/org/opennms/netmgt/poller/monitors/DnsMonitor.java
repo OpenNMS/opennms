@@ -73,10 +73,12 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 @Distributable
 final public class DnsMonitor extends IPv4Monitor {
@@ -104,10 +106,12 @@ final public class DnsMonitor extends IPv4Monitor {
     private static final int[] DEFAULT_FATAL_RESP_CODES = { 2 };
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Poll the specified address for DNS service availability.
      * </P>
-     * 
+     *
      * <P>
      * During the poll an DNS address request query packet is generated for
      * hostname 'localhost'. The query is sent via UDP socket to the interface
@@ -115,14 +119,6 @@ final public class DnsMonitor extends IPv4Monitor {
      * received, it is parsed and validated. If the DNS lookup was successful
      * the service status is set to SERVICE_AVAILABLE and the method returns.
      * </P>
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
-     * 
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();

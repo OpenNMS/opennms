@@ -49,13 +49,18 @@ import org.opennms.web.admin.views.parsers.View;
 
 /**
  * A servlet that handles adding a new view
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AddNewViewServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String viewName = request.getParameter("viewName");
 

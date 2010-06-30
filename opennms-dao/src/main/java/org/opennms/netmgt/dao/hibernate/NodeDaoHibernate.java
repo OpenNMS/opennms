@@ -57,16 +57,23 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.StringUtils;
 
 /**
+ * <p>NodeDaoHibernate class.</p>
+ *
  * @author Ted Kazmark
  * @author David Hustace
+ * @version $Id: $
  */
 public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         implements NodeDao {
 
+    /**
+     * <p>Constructor for NodeDaoHibernate.</p>
+     */
     public NodeDaoHibernate() {
         super(OnmsNode.class);
     }
 
+    /** {@inheritDoc} */
     public OnmsNode get(String lookupCriteria) {
         if (lookupCriteria.contains(":")) {
             String[] criteria = lookupCriteria.split(":");
@@ -75,10 +82,12 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         return get(Integer.parseInt(lookupCriteria));
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
         return find("from OnmsNode where distPoller = ?", distPoller);
     }
 
+    /** {@inheritDoc} */
     public OnmsNode getHierarchy(Integer id) {
         OnmsNode node = findUnique(
                           "select distinct n from OnmsNode as n "
@@ -99,16 +108,19 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
 
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findByLabel(String label) {
         return find("from OnmsNode as n where n.label = ?", label);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findAllByVarCharAssetColumn(
             String columnName, String columnValue) {
         return find("from OnmsNode as n where n.assetRecord." + columnName
                 + " = ?", columnValue);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(
             String columnName, String columnValue,
             Collection<OnmsCategory> categories) {
@@ -124,6 +136,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 + "and c.name in ("+categoryListToNameList(categories)+")", columnValue);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findByCategory(OnmsCategory category) {
         return find("select distinct n from OnmsNode as n "
                     + "join n.categories c "
@@ -146,6 +159,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         
         
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findAllByCategoryList(
             Collection<OnmsCategory> categories) {
         return find("select distinct n from OnmsNode as n "
@@ -159,6 +173,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 + "and n.type != 'D'");
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findAllByCategoryLists( Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
     	
     	HashSet<OnmsNode> rowNodes = new HashSet<OnmsNode>(findAllByCategoryList(rowCatNames));
@@ -170,6 +185,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     	return results;
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
         List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
@@ -180,14 +196,17 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         return foreignIdMap;
     }
 
+    /** {@inheritDoc} */
     public List<OnmsNode> findByForeignSource(String foreignSource) {
         return find("from OnmsNode n where n.foreignSource = ?", foreignSource);
     }
 
+    /** {@inheritDoc} */
     public OnmsNode findByForeignId(String foreignSource, String foreignId) {
         return findUnique("from OnmsNode n where n.foreignSource = ? and n.foreignId = ?", foreignSource, foreignId);
     }
     
+    /** {@inheritDoc} */
     public List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress) {
         if (foreignSource == null) {
             return find("select distinct n from OnmsNode n join n.ipInterfaces as ip where n.foreignSource is NULL and ip.ipAddress = ?", ipAddress);
@@ -196,33 +215,52 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         }
     }
 
+    /** {@inheritDoc} */
     public int getNodeCountForForeignSource(String foreignSource) {
         return queryInt("select count(*) from OnmsNode as n where n.foreignSource = ?", foreignSource);
     }
     
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsNode> findAll() {
         return find("from OnmsNode order by label");
     }
     
+    /**
+     * <p>findAllProvisionedNodes</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsNode> findAllProvisionedNodes() {
         return find("from OnmsNode n where n.foreignSource is not null");
     }
     
+    /** {@inheritDoc} */
     public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
         return findObjects(OnmsIpInterface.class, "from OnmsIpInterface iface where iface.node.id = ? and (iface.ipLastCapsdPoll is null or iface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
     }
 
+    /** {@inheritDoc} */
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
         getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface iface where iface.node.id = ? and (iface.ipLastCapsdPoll is null or iface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
         getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface iface where iface.node.id = ? and (iface.lastCapsdPoll is null or iface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
     }
 
+    /** {@inheritDoc} */
     public void updateNodeScanStamp(Integer nodeId, Date scanStamp) {
         OnmsNode n = get(nodeId);
         n.setLastCapsdPoll(scanStamp);
         update(n);
     }
 
+    /**
+     * <p>getNodeIds</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<Integer> getNodeIds() {
         return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
     }

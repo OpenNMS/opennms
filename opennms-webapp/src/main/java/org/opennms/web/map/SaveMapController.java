@@ -52,10 +52,13 @@ import org.springframework.web.servlet.mvc.Controller;
 import java.util.*;
 
 /**
+ * <p>SaveMapController class.</p>
+ *
  * @author mmigliore
  * @author antonio@opennms.it
+ * @version $Id: $
+ * @since 1.8.1
  */
-
 public class SaveMapController implements Controller {
 
 	ThreadCategory log;
@@ -63,16 +66,27 @@ public class SaveMapController implements Controller {
 	private Manager manager;
 
 
+	/**
+	 * <p>Getter for the field <code>manager</code>.</p>
+	 *
+	 * @return a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public Manager getManager() {
 		return manager;
 	}
 
+	/**
+	 * <p>Setter for the field <code>manager</code>.</p>
+	 *
+	 * @param manager a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public void setManager(Manager manager) {
 		this.manager = manager;
 	}
 
 	private static List<VElement> elems = null;
 
+	/** {@inheritDoc} */
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 

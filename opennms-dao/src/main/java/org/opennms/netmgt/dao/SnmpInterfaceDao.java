@@ -37,13 +37,30 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 
 /**
+ * <p>SnmpInterfaceDao interface.</p>
+ *
  * @author Ted Kazmark
  * @author David Hustace
- *
+ * @version $Id: $
  */
 public interface SnmpInterfaceDao extends OnmsDao<OnmsSnmpInterface, Integer> {
 
+    /**
+     * <p>findByNodeIdAndIfIndex</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param ifIndex a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+     */
     OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex);
+    /**
+     * <p>findByForeignKeyAndIfIndex</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param ifIndex a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+     */
     OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex);
     
 }

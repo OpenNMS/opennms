@@ -35,9 +35,28 @@ import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Parameter;
 
+/**
+ * <p>StorageStrategy interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface StorageStrategy {
+    /**
+     * <p>getRelativePathForAttribute</p>
+     *
+     * @param resourceParent a {@link java.lang.String} object.
+     * @param resource a {@link java.lang.String} object.
+     * @param attribute a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getRelativePathForAttribute(String resourceParent, String resource, String attribute);
 
+    /**
+     * <p>setResourceTypeName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setResourceTypeName(String name);
 
     /*
@@ -47,6 +66,13 @@ public interface StorageStrategy {
      * This method could be expensive because it could require send SNMP queries and make complicated functions to
      * build the name. So you must try to call it only when is necessary.
      */
+    /**
+     * <p>getResourceNameFromIndex</p>
+     *
+     * @param resourceParent a {@link java.lang.String} object.
+     * @param resourceIndex a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceNameFromIndex(String resourceParent, String resourceIndex);
     
     /*
@@ -54,8 +80,18 @@ public interface StorageStrategy {
      * There are complex tables on some MIBs where indexes depends on indexes from other tables (indirect indexing).
      * For this kind of resources we must send some additional SNMP queries to build a unique name.
      */ 
+    /**
+     * <p>setStorageStrategyService</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.config.StorageStrategyService} object.
+     */
     public void setStorageStrategyService(StorageStrategyService agent);
 
+    /**
+     * <p>setParameters</p>
+     *
+     * @param parameterCollection a {@link java.util.List} object.
+     */
     public void setParameters(List<Parameter> parameterCollection);
 
 }

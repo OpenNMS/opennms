@@ -38,13 +38,26 @@ import org.opennms.acl.domain.GenericUser;
 
 /**
  * Contract to retrieve GenericUser by id
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface AclUserFactory {
 
+    /**
+     * <p>getAclUser</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.acl.domain.GenericUser} object.
+     */
     public GenericUser getAclUser(Integer id);
 
+    /**
+     * <p>getAclUserByUsername</p>
+     *
+     * @param username a {@link java.lang.String} object.
+     * @return a {@link org.opennms.acl.domain.GenericUser} object.
+     */
     public GenericUser getAclUserByUsername(String username);
 }

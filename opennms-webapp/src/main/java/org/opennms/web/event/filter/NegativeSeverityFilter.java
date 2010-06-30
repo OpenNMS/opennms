@@ -39,30 +39,61 @@ import org.opennms.web.filter.SQLType;
 /**
  * Encapsulates negative severity filtering functionality, that is filtering OUT
  * this value instead of only filtering IN this value.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class NegativeSeverityFilter extends NotEqualsFilter<Integer> {
+    /** Constant <code>TYPE="severityNot"</code> */
     public static final String TYPE = "severityNot";
 
+    /**
+     * <p>Constructor for NegativeSeverityFilter.</p>
+     *
+     * @param severity a int.
+     */
     public NegativeSeverityFilter(int severity) {
         super(TYPE, SQLType.INT, "EVENTSEVERITY", "eventSeverity", severity);
     }
 
+    /**
+     * <p>Constructor for NegativeSeverityFilter.</p>
+     *
+     * @param severity a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
     public NegativeSeverityFilter(OnmsSeverity severity) {
         this(severity.getId());
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("severity is not " + OnmsSeverity.get(getSeverity()).getLabel());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<WebEventRepository.NegativeSeverityFilter: " + getDescription() + ">");
     }
 
+    /**
+     * <p>getSeverity</p>
+     *
+     * @return a int.
+     */
     public int getSeverity() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

@@ -40,8 +40,12 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
  * This interface represents the methods available for the Vacuumd MBean
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @version $Id: $
  */
 public interface VacuumdMBean extends BaseOnmsMBean {
 }

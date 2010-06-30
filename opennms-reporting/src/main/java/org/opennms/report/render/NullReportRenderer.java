@@ -45,8 +45,9 @@ import org.springframework.core.io.Resource;
 
 /**
  * NullReportRenderer will do nothing.
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class NullReportRenderer implements ReportRenderer {
 
@@ -60,6 +61,11 @@ public class NullReportRenderer implements ReportRenderer {
 
     private Resource m_xsltResource;
 
+    /**
+     * <p>render</p>
+     *
+     * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
+     */
     public void render() throws ReportRenderException {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -68,45 +74,63 @@ public class NullReportRenderer implements ReportRenderer {
         m_outputFileName = m_inputFileName;
     }
 
+    /** {@inheritDoc} */
     public void setXsltResource(Resource xsltResource) {
         this.m_xsltResource = xsltResource;
     }
 
+    /** {@inheritDoc} */
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
     
+    /**
+     * <p>getOutputFileName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOutputFileName() {
         return m_outputFileName;
     }
 
+    /** {@inheritDoc} */
     public void setInputFileName(String intputFileName) {
         this.m_inputFileName = intputFileName;
     }
     
+    /** {@inheritDoc} */
     public void setBaseDir(String baseDir){
         this.m_baseDir = baseDir;
     }
     
+    /**
+     * <p>getBaseDir</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBaseDir(){
        return m_baseDir;
     }
 
+    /** {@inheritDoc} */
     public void render(String inputFileName, String outputFileName,
             Resource xlstResource)
             throws org.opennms.reporting.availability.render.ReportRenderException {
     }
 
+    /** {@inheritDoc} */
     public void render(String inputFileName, OutputStream outputStream,
             Resource xsltResource)
             throws org.opennms.reporting.availability.render.ReportRenderException {
     }
 
+    /** {@inheritDoc} */
     public void render(InputStream inputStream, OutputStream outputStream,
             Resource xsltResource)
             throws org.opennms.reporting.availability.render.ReportRenderException {
     }
 
+    /** {@inheritDoc} */
     public byte[] render(String inputFileName, Resource xsltResource)
             throws org.opennms.reporting.availability.render.ReportRenderException {
         return new byte[0];

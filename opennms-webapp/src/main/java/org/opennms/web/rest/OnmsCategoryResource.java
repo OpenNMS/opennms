@@ -27,6 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
+/**
+ * <p>OnmsCategoryResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Path("categories")
@@ -38,6 +45,12 @@ public class OnmsCategoryResource extends OnmsRestService {
     @Autowired
     private CategoryDao m_categoryDao;
     
+    /**
+     * <p>getCategories</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCategoryCollection} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsCategoryCollection getCategories(@PathParam("nodeCriteria") String nodeCriteria) {
@@ -48,6 +61,13 @@ public class OnmsCategoryResource extends OnmsRestService {
         return new OnmsCategoryCollection(node.getCategories());
     }
 
+    /**
+     * <p>getCategory</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param categoryName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCategory} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{categoryName}")
@@ -59,6 +79,13 @@ public class OnmsCategoryResource extends OnmsRestService {
         return getCategory(node, categoryName);
     }
 
+    /**
+     * <p>addCategory</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param category a {@link org.opennms.netmgt.model.OnmsCategory} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addCategory(@PathParam("nodeCriteria") String nodeCriteria, OnmsCategory category) {
@@ -79,6 +106,14 @@ public class OnmsCategoryResource extends OnmsRestService {
         return Response.ok().build();
     }
     
+    /**
+     * <p>updateCategory</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param categoryName a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{categoryName}")
@@ -105,6 +140,13 @@ public class OnmsCategoryResource extends OnmsRestService {
         return Response.ok().build();
     }
     
+    /**
+     * <p>deleteCaegory</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param categoryName a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{categoryName}")
     public Response deleteCaegory(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {

@@ -45,12 +45,26 @@ import java.util.List;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.groups.Role;
 
+/**
+ * <p>MonthlyCalendar class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class MonthlyCalendar extends AbstractWebCalendar {
     
     private GregorianCalendar m_calendar;
     private Role m_role;
     private GroupManager m_groupManager;
 
+    /**
+     * <p>Constructor for MonthlyCalendar.</p>
+     *
+     * @param date a java$util$Date object.
+     * @param role a {@link org.opennms.netmgt.config.groups.Role} object.
+     * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
+     */
     public MonthlyCalendar(Date date, Role role, GroupManager groupManager) {
         m_role = role;
         m_groupManager = groupManager;
@@ -58,6 +72,11 @@ public class MonthlyCalendar extends AbstractWebCalendar {
         m_calendar.setTime(date);
     }
     
+    /**
+     * <p>getMonth</p>
+     *
+     * @return a int.
+     */
     public int getMonth() {
         return m_calendar.get(Calendar.MONTH);
     }
@@ -66,6 +85,11 @@ public class MonthlyCalendar extends AbstractWebCalendar {
         return m_calendar.get(Calendar.YEAR);
     }
     
+    /**
+     * <p>getMonthAndYear</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMonthAndYear() {
         return new SimpleDateFormat("MMMM yyyy").format(m_calendar.getTime());
     }
@@ -88,6 +112,11 @@ public class MonthlyCalendar extends AbstractWebCalendar {
         return new GregorianCalendar(getYear(), getMonth(), 1);
     }
 
+    /**
+     * <p>getWeeks</p>
+     *
+     * @return an array of {@link org.opennms.web.admin.roles.Week} objects.
+     */
     public Week[] getWeeks() {
         Calendar weekBegin = getDateOfFirstWeek();
         List<Week> weeks = new ArrayList<Week>(6);
@@ -103,10 +132,20 @@ public class MonthlyCalendar extends AbstractWebCalendar {
         return weekBegin.get(Calendar.MONTH) == getMonth();
     }
 
+    /**
+     * <p>getNextMonth</p>
+     *
+     * @return a java$util$Date object.
+     */
     public Date getNextMonth() {
         return new GregorianCalendar(getYear(), getMonth()+1, 1).getTime();
     }
 
+    /**
+     * <p>getPreviousMonth</p>
+     *
+     * @return a java$util$Date object.
+     */
     public Date getPreviousMonth() {
         return new GregorianCalendar(getYear(), getMonth()-1, 1).getTime();
     }

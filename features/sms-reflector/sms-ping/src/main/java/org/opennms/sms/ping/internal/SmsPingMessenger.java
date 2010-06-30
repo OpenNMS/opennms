@@ -55,6 +55,7 @@ import org.springframework.util.Assert;
  * SmsMessenger
  *
  * @author brozow
+ * @version $Id: $
  */
 public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, OnmsInboundMessageNotification, InitializingBean {
     
@@ -64,14 +65,30 @@ public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, Onms
     
     private Queue<PingReply> m_replyQueue;
     
+    /**
+     * <p>setSmsService</p>
+     *
+     * @param smsService a {@link org.opennms.sms.reflector.smsservice.SmsService} object.
+     */
     public void setSmsService(SmsService smsService) {
         m_smsService = smsService;
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_smsService, "the smsService property must be set");
     }
     
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.sms.ping.internal.PingRequest} object.
+     * @throws java.lang.Exception if any.
+     */
     public void sendRequest(PingRequest request) throws Exception {
     	request.setSentTimestamp(System.currentTimeMillis());
         debugf("SmsMessenger.sendRequest %s", request);
@@ -80,11 +97,13 @@ public class SmsPingMessenger implements Messenger<PingRequest, PingReply>, Onms
         }
     }
 
+    /** {@inheritDoc} */
     public void start(Queue<PingReply> replyQueue) {
         debugf("SmsMessenger.start");
         m_replyQueue = replyQueue;
     }
     
+    /** {@inheritDoc} */
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
     	long receiveTime = System.currentTimeMillis();
     	

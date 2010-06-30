@@ -46,6 +46,7 @@ import org.opennms.core.utils.ThreadCategory;
  * BaseTask
  *
  * @author brozow
+ * @version $Id: $
  */
 public abstract class Task {
     
@@ -68,6 +69,12 @@ public abstract class Task {
     
     private final TaskMonitor m_monitor;
     
+    /**
+     * <p>Constructor for Task.</p>
+     *
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     */
     public Task(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         m_coordinator = coordinator;
         m_monitor = parent != null 
@@ -76,10 +83,20 @@ public abstract class Task {
         
     }
     
+    /**
+     * <p>getCoordinator</p>
+     *
+     * @return a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     */
     public DefaultTaskCoordinator getCoordinator() {
         return m_coordinator;
     }
     
+    /**
+     * <p>getMonitor</p>
+     *
+     * @return a {@link org.opennms.core.tasks.TaskMonitor} object.
+     */
     public TaskMonitor getMonitor() {
         return m_monitor;
     }
@@ -255,14 +272,22 @@ public abstract class Task {
         postSchedule();
     }
         
+    /**
+     * <p>preSchedule</p>
+     */
     protected void preSchedule() {
     }
 
+    /**
+     * <p>postSchedule</p>
+     */
     protected void postSchedule() {
     }
 
     /**
      * This task's run method has completed
+     *
+     * @return a boolean.
      */
     public boolean isFinished() {
         return m_state.get() == State.COMPLETED;
@@ -270,6 +295,8 @@ public abstract class Task {
     
     /**
      * This task has be sent to the TaskCoordinator to be run
+     *
+     * @return a boolean.
      */
     public boolean isScheduled() {
         return m_state.get() != State.NEW || m_scheduleCalled.get();
@@ -278,6 +305,8 @@ public abstract class Task {
     /**
      * Add's prereq as a Prerequisite of this task. In other words... this taks cannot run
      * until prereq was been complted.
+     *
+     * @param prereq a {@link org.opennms.core.tasks.Task} object.
      */
     public void addPrerequisite(Task prereq) {
         getCoordinator().addDependency(prereq, this);
@@ -286,6 +315,8 @@ public abstract class Task {
     /**
      * Adds dependent as a dependent of this task.  So dependent will not be able to run
      * until this task has been completed.
+     *
+     * @param dependent a {@link org.opennms.core.tasks.Task} object.
      */
     public void addDependent(Task dependent) {
         getCoordinator().addDependency(this, dependent);
@@ -293,6 +324,9 @@ public abstract class Task {
 
     /**
      * Wait for this task to complete.  The current thread will block until this task has been completed.
+     *
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.util.concurrent.ExecutionException if any.
      */
     public void waitFor() throws InterruptedException, ExecutionException {
         m_latch.await();
@@ -300,33 +334,68 @@ public abstract class Task {
 
     /**
      * Wait for this task to complete or until a timeout occurs
+     *
+     * @param timeout a long.
+     * @param unit a {@link java.util.concurrent.TimeUnit} object.
+     * @throws java.lang.InterruptedException if any.
      */
     public void waitFor(long timeout, TimeUnit unit) throws InterruptedException {
         m_latch.await(timeout, unit);
     }
     
+    /**
+     * <p>markTaskAsCompleted</p>
+     */
     protected void markTaskAsCompleted() {
         getCoordinator().markTaskAsCompleted(this);
     }
 
+    /**
+     * <p>submitRunnable</p>
+     *
+     * @param runnable a {@link java.lang.Runnable} object.
+     * @param preferredExecutor a {@link java.lang.String} object.
+     */
     protected void submitRunnable(Runnable runnable, String preferredExecutor) {
         getCoordinator().submitToExecutor(preferredExecutor, runnable, this);
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return String.format("Task[%s]", super.toString());
     }
 
+    /**
+     * <p>info</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void info(String format, Object... args) {
         log().info(String.format(format, args));
     }
 
+    /**
+     * <p>debug</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void debug(String format, Object... args) {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args));
         }
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

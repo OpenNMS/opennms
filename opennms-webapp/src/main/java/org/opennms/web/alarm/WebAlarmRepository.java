@@ -28,31 +28,113 @@ import org.opennms.web.alarm.filter.AlarmCriteria;
  * WebAlarmRepository
  * @author brozow
  */
+/**
+ * <p>WebAlarmRepository interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public interface WebAlarmRepository {
 
+    /**
+     * <p>countMatchingAlarms</p>
+     *
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @return a int.
+     */
     public abstract int countMatchingAlarms(AlarmCriteria criteria);
 
+    /**
+     * <p>countMatchingAlarmsBySeverity</p>
+     *
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @return an array of int.
+     */
     public abstract int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria);
 
+    /**
+     * <p>getAlarm</p>
+     *
+     * @param alarmId a int.
+     * @return a {@link org.opennms.web.alarm.Alarm} object.
+     */
     public abstract Alarm getAlarm(int alarmId);
 
+    /**
+     * <p>getMatchingAlarms</p>
+     *
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     */
     public abstract Alarm[] getMatchingAlarms(AlarmCriteria criteria);
 
+    /**
+     * <p>acknowledgeMatchingAlarms</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     */
     public abstract void acknowledgeMatchingAlarms(String user,
             Date timestamp, AlarmCriteria criteria);
     
+    /**
+     * <p>acknowledgeAlarms</p>
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     */
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp);
 
+    /**
+     * <p>acknowledgeAll</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     */
     public abstract void acknowledgeAll(String user, Date timestamp);
 
+    /**
+     * <p>unacknowledgeMatchingAlarms</p>
+     *
+     * @param criteria a {@link org.opennms.web.alarm.filter.AlarmCriteria} object.
+     * @param user a {@link java.lang.String} object.
+     */
     public abstract void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user);
 
+    /**
+     * <p>unacknowledgeAlarms</p>
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     */
     public void unacknowledgeAlarms(int[] alarmIds, String user);
 
+    /**
+     * <p>unacknowledgeAll</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public abstract void unacknowledgeAll(String user);
     
+    /**
+     * <p>escalateAlarms</p>
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     */
     public abstract void escalateAlarms(int[] alarmIds, String user, Date timestamp);
     
+    /**
+     * <p>clearAlarms</p>
+     *
+     * @param alamrIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     */
     public abstract void clearAlarms(int[] alamrIds, String user, Date timestamp);
 
 }

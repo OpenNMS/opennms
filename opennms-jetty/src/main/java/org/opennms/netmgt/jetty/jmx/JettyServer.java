@@ -33,13 +33,21 @@ package org.opennms.netmgt.jetty.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>JettyServer class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JettyServer extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.jetty.JettyServer> implements JettyServerMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.JettyServer";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "jettyServerContext";

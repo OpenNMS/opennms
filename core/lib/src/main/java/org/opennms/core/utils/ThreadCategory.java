@@ -49,9 +49,12 @@ import org.apache.log4j.Priority;
  * to the same location. This is particularly useful when messages from share
  * common code should be associated with a higher level <EM>service</EM> or
  * <EM>application</EM>.
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class ThreadCategory {
     public enum Level {
@@ -81,10 +84,9 @@ public class ThreadCategory {
 
     /**
      * This constructor creates a new ThreadCategory instance.
-     * 
+     *
      * @param name
      *            The name of the category
-     * 
      */
     protected ThreadCategory(String name) {
         m_delegate = Logger.getLogger(name);
@@ -95,22 +97,32 @@ public class ThreadCategory {
      * thread. If the category for the thread has not been set then the passed
      * class is used to find the appropriate category. If a category is found
      * for the thread group then it is returned to the caller.
-     * 
+     *
      * @param c
      *            The class used to find the category if it was not set.
-     * 
      * @return The instance for the thread.
-     * 
      * @see java.lang.InheritableThreadLocal
      */
     public static ThreadCategory getInstance(Class<?> c) {
     	return getLog4jInstance(c);
     }
 
+    /**
+     * <p>getLog4jInstance</p>
+     *
+     * @param c a {@link java.lang.Class} object.
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public static ThreadCategory getLog4jInstance(Class<?> c) {
         return getLog4jInstance(c.getName());
     }
     
+    /**
+     * <p>getSlf4jInstance</p>
+     *
+     * @param c a {@link java.lang.Class} object.
+     * @return a {@link org.slf4j.Logger} object.
+     */
     public static org.slf4j.Logger getSlf4jInstance(Class<?> c) {
         return getSlf4jInstance(c.getName());
     }
@@ -120,18 +132,22 @@ public class ThreadCategory {
      * thread. If the category for the thread has not been set then the passed
      * name is used to find the appropriate category. If a category is found for
      * the thread group then it is returned to the caller.
-     * 
+     *
      * @param cname
      *            The name used to find the category if it was not set.
-     * 
      * @return The instance for the thread.
-     * 
      * @see java.lang.InheritableThreadLocal
      */
     public static ThreadCategory getInstance(String cname) {
         return getLog4jInstance(cname);
     }
     
+    /**
+     * <p>getLog4jInstance</p>
+     *
+     * @param cname a {@link java.lang.String} object.
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public static ThreadCategory getLog4jInstance(String cname) {
         String prefix = getPrefix();
 
@@ -142,6 +158,12 @@ public class ThreadCategory {
         }
     }
 
+    /**
+     * <p>getSlf4jInstance</p>
+     *
+     * @param cname a {@link java.lang.String} object.
+     * @return a {@link org.slf4j.Logger} object.
+     */
     public static org.slf4j.Logger getSlf4jInstance(String cname) {
         String prefix = getPrefix();
 
@@ -156,15 +178,19 @@ public class ThreadCategory {
      * This method is used to get the category instance associated with the
      * thread. If the instance has not been set then a default category is
      * returned to the caller.
-     * 
+     *
      * @return The instance for the thread, null if it is not set.
-     * 
      * @see java.lang.InheritableThreadLocal
      */
     public static ThreadCategory getInstance() {
         return getLog4jInstance();
     }
     
+    /**
+     * <p>getLog4jInstance</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public static ThreadCategory getLog4jInstance() {
         String prefix = getPrefix();
         
@@ -180,6 +206,11 @@ public class ThreadCategory {
         }
     }
     
+    /**
+     * <p>getSlf4jInstance</p>
+     *
+     * @return a {@link org.slf4j.Logger} object.
+     */
     public static org.slf4j.Logger getSlf4jInstance() {
         String prefix = getPrefix();
         
@@ -197,6 +228,8 @@ public class ThreadCategory {
      * regardless of the package or class name of the class that generated the
      * log message. Please restrict the usage of this function to only the
      * highest level threads.
+     *
+     * @param prefix a {@link java.lang.String} object.
      */
     public static void setPrefix(String prefix) {
         s_threadCategory.set(prefix);
@@ -207,7 +240,7 @@ public class ThreadCategory {
      * the calling thread. This is needed by many dynamic threading classes like
      * the {@link RunnableConsumerThreadPool} to ensure that all the
      * internal threads run in the same category.
-     * 
+     *
      * @return The prefix string as inherited by the calling thread.
      */
     public static String getPrefix() {
@@ -215,8 +248,10 @@ public class ThreadCategory {
     }
 
 	/**
-	 * @param message
-	 * @param t
+	 * <p>debug</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 * @param t a {@link java.lang.Throwable} object.
 	 * @see org.apache.log4j.Category#debug(java.lang.Object, java.lang.Throwable)
 	 */
 	public void debug(String message, Throwable t) {
@@ -224,7 +259,9 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
+	 * <p>debug</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
 	 * @see org.apache.log4j.Category#debug(java.lang.Object)
 	 */
 	public void debug(String message) {
@@ -232,8 +269,10 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
-	 * @param t
+	 * <p>error</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 * @param t a {@link java.lang.Throwable} object.
 	 * @see org.apache.log4j.Category#error(java.lang.Object, java.lang.Throwable)
 	 */
 	public void error(String message, Throwable t) {
@@ -241,7 +280,9 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
+	 * <p>error</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
 	 * @see org.apache.log4j.Category#error(java.lang.Object)
 	 */
 	public void error(String message) {
@@ -249,8 +290,10 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
-	 * @param t
+	 * <p>fatal</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 * @param t a {@link java.lang.Throwable} object.
 	 * @see org.apache.log4j.Category#fatal(java.lang.Object, java.lang.Throwable)
 	 */
 	public void fatal(String message, Throwable t) {
@@ -258,7 +301,9 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
+	 * <p>fatal</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
 	 * @see org.apache.log4j.Category#fatal(java.lang.Object)
 	 */
 	public void fatal(String message) {
@@ -266,14 +311,21 @@ public class ThreadCategory {
 	}
 
 	/**
+	 * <p>info</p>
+	 *
 	 * @see org.apache.log4j.Category#info(java.lang.Object, java.lang.Throwable)
+	 * @param message a {@link java.lang.String} object.
+	 * @param t a {@link java.lang.Throwable} object.
 	 */
 	public void info(String message, Throwable t) {
 		m_delegate.info(messagePrefix == null ? message : messagePrefix + message, t);
 	}
 
 	/**
+	 * <p>info</p>
+	 *
 	 * @see org.apache.log4j.Category#info(java.lang.Object)
+	 * @param message a {@link java.lang.String} object.
 	 */
 	public void info(String message) {
 		// m_delegate.info(messagePrefix == null ? message : messagePrefix + message);
@@ -281,8 +333,10 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
-	 * @param t
+	 * <p>trace</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 * @param t a {@link java.lang.Throwable} object.
 	 * @see org.apache.log4j.Logger#trace(java.lang.Object, java.lang.Throwable)
 	 */
 	public void trace(String message, Throwable t) {
@@ -290,7 +344,9 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
+	 * <p>trace</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
 	 * @see org.apache.log4j.Logger#trace(java.lang.Object)
 	 */
 	public void trace(String message) {
@@ -298,8 +354,10 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
-	 * @param t
+	 * <p>warn</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 * @param t a {@link java.lang.Throwable} object.
 	 * @see org.apache.log4j.Category#warn(java.lang.Object, java.lang.Throwable)
 	 */
 	public void warn(String message, Throwable t) {
@@ -307,7 +365,9 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param message
+	 * <p>warn</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
 	 * @see org.apache.log4j.Category#warn(java.lang.Object)
 	 */
 	public void warn(String message) {
@@ -315,6 +375,8 @@ public class ThreadCategory {
 	}
 
 	/**
+	 * <p>Getter for the field <code>messagePrefix</code>.</p>
+	 *
 	 * @return the messagePrefix
 	 */
 	public String getMessagePrefix() {
@@ -322,12 +384,15 @@ public class ThreadCategory {
 	}
 
 	/**
+	 * <p>clearMessagePrefix</p>
 	 */
 	public void clearMessagePrefix() {
 		messagePrefix = null;
 	}
 
 	/**
+	 * <p>Setter for the field <code>messagePrefix</code>.</p>
+	 *
 	 * @param messagePrefix the messagePrefix to set
 	 */
 	public void setMessagePrefix(String messagePrefix) {
@@ -335,17 +400,21 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @return
+	 * <p>isDebugEnabled</p>
+	 *
 	 * @see org.apache.log4j.Category#isDebugEnabled()
+	 * @return a boolean.
 	 */
 	public boolean isDebugEnabled() {
 		return m_delegate.isDebugEnabled();
 	}
 
 	/**
-	 * @param level
-	 * @return
+	 * <p>isEnabledFor</p>
+	 *
+	 * @param level a {@link org.opennms.core.utils.ThreadCategory.Level} object.
 	 * @see org.apache.log4j.Category#isEnabledFor(org.apache.log4j.Priority)
+	 * @return a boolean.
 	 */
 	public boolean isEnabledFor(Level level) {
 		switch(level) {
@@ -371,32 +440,40 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @return
+	 * <p>isInfoEnabled</p>
+	 *
 	 * @see org.apache.log4j.Category#isInfoEnabled()
+	 * @return a boolean.
 	 */
 	public boolean isInfoEnabled() {
 		return m_delegate.isInfoEnabled();
 	}
 
 	/**
-	 * @return
+	 * <p>isTraceEnabled</p>
+	 *
 	 * @see org.apache.log4j.Logger#isTraceEnabled()
+	 * @return a boolean.
 	 */
 	public boolean isTraceEnabled() {
 		return m_delegate.isTraceEnabled();
 	}
 
 	/**
-	 * @return
+	 * <p>getName</p>
+	 *
 	 * @see org.apache.log4j.Category#getName()
+	 * @return a {@link java.lang.String} object.
 	 */
 	public final String getName() {
 		return m_delegate.getName();
 	}
 
 	/**
-	 * @return
+	 * <p>getLevel</p>
+	 *
 	 * @see org.apache.log4j.Category#getLevel()
+	 * @return a {@link org.opennms.core.utils.ThreadCategory.Level} object.
 	 */
 	public final Level getLevel() {
 		switch(m_delegate.getLevel().toInt()) {
@@ -422,7 +499,9 @@ public class ThreadCategory {
 	}
 
 	/**
-	 * @param level
+	 * <p>setLevel</p>
+	 *
+	 * @param level a {@link org.opennms.core.utils.ThreadCategory.Level} object.
 	 * @see org.apache.log4j.Category#setLevel(org.apache.log4j.Level)
 	 */
 	public void setLevel(Level level) {

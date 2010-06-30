@@ -37,17 +37,24 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
+/**
+ * <p>StreamUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class StreamUtils {
 
     /**
      * Convenience method for reading data from a <code>Reader</code> and then
      * immediately writing that data to a <code>Writer</code> with a default
      * buffer size of one kilobyte (1,024 chars).
-     * 
+     *
      * @param in
      *            a data source
      * @param out
      *            a data sink
+     * @throws java.io.IOException if any.
      */
     public static void streamToStream(Reader in, Writer out) throws IOException {
         streamToStream(in, out, 1024);
@@ -56,7 +63,7 @@ public class StreamUtils {
     /**
      * Convenience method for reading data from a <code>Reader</code> and then
      * immediately writing that data to a <code>Writer</code>.
-     * 
+     *
      * @param in
      *            a data source
      * @param out
@@ -64,6 +71,7 @@ public class StreamUtils {
      * @param bufferSize
      *            the size of the <code>char</code> buffer to use for each
      *            read/write
+     * @throws java.io.IOException if any.
      */
     public static void streamToStream(Reader in, Writer out, int bufferSize) throws IOException {
         if (in == null || out == null) {
@@ -86,11 +94,12 @@ public class StreamUtils {
      * Convenience method for reading data from an <code>InputStream</code>
      * and then immediately writing that data to an <code>OutputStream</code>
      * with a default buffer size of one kilobyte (1,024 bytes).
-     * 
+     *
      * @param in
      *            a data source
      * @param out
      *            a data sink
+     * @throws java.io.IOException if any.
      */
     public static void streamToStream(InputStream in, OutputStream out) throws IOException {
         streamToStream(in, out, 1024);
@@ -99,7 +108,7 @@ public class StreamUtils {
     /**
      * Convenience method for reading data from an <code>InputStream</code>
      * and then immediately writing that data to an <code>OutputStream</code>.
-     * 
+     *
      * @param in
      *            a data source
      * @param out
@@ -107,6 +116,7 @@ public class StreamUtils {
      * @param bufferSize
      *            the size of the <code>byte</code> buffer to use for each
      *            read/write
+     * @throws java.io.IOException if any.
      */
     public static void streamToStream(InputStream in, OutputStream out, int bufferSize) throws IOException {
         byte[] b = new byte[bufferSize];

@@ -51,8 +51,13 @@ import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.api.Util;
 
 /**
+ * <p>RTCPostSubscriber class.</p>
+ *
  * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class RTCPostSubscriber extends Object {
     protected EventProxy m_proxy;
@@ -61,12 +66,31 @@ public class RTCPostSubscriber extends Object {
     protected String m_username = "rtc";
     protected String m_password = "rtc";
 
+    /** Constant <code>log</code> */
     protected static ThreadCategory log = ThreadCategory.getInstance("RTC");
 
+    /**
+     * <p>Constructor for RTCPostSubscriber.</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
         m_proxy = Util.createEventProxy();
     }
 
+    /**
+     * <p>sendSubscribeEvent</p>
+     *
+     * @param proxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param url a {@link java.lang.String} object.
+     * @param username a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
+     * @param categoryName a {@link java.lang.String} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public static void sendSubscribeEvent(EventProxy proxy, String url, String username, String password, String categoryName) throws IllegalArgumentException, EventProxyException {
         if (proxy == null || url == null || username == null || password == null || categoryName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -119,6 +143,14 @@ public class RTCPostSubscriber extends Object {
         log.info("Subscription requested for " + username + " to " + url);
     }
 
+    /**
+     * <p>sendUnsubscribeEvent</p>
+     *
+     * @param proxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param url a {@link java.lang.String} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public static void sendUnsubscribeEvent(EventProxy proxy, String url) throws IllegalArgumentException, EventProxyException {
         if (proxy == null || url == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -146,6 +178,14 @@ public class RTCPostSubscriber extends Object {
         log.info("Unsubscription sent for " + url);
     }
 
+    /**
+     * <p>subscribe</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public String subscribe(String categoryName) throws IllegalArgumentException, EventProxyException {
         if (categoryName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -157,14 +197,28 @@ public class RTCPostSubscriber extends Object {
         return (m_url);
     }
 
+    /**
+     * <p>unsubscribe</p>
+     *
+     * @throws java.lang.IllegalArgumentException if any.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public void unsubscribe() throws IllegalArgumentException, EventProxyException {
         sendUnsubscribeEvent(m_proxy, m_url);
     }
 
+    /**
+     * <p>close</p>
+     */
     public void close() {
         m_proxy = null;
     }
 
+    /**
+     * <p>initFromRtcPropertyFile</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     */
     protected void initFromRtcPropertyFile(String categoryName) {
         if (categoryName == null) {
             throw new IllegalArgumentException("categoryName can not be null");
@@ -194,6 +248,15 @@ public class RTCPostSubscriber extends Object {
         log.debug("RTCPostSubscriber initialized: url=" + m_url + ", user=" + m_username);
     }
 
+    /**
+     * <p>subscribeAll</p>
+     *
+     * @param viewName a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public static void subscribeAll(String viewName) throws IOException, MarshalException, ValidationException, EventProxyException {
         if (viewName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");

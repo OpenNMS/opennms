@@ -36,11 +36,15 @@ package org.opennms.web.map.view;
 
 
 /**
+ * <p>VMapInfo class.</p>
+ *
  * @author micmas
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
+ * @since 1.8.1
  */
 final public class VMapInfo {
 
@@ -50,9 +54,11 @@ final public class VMapInfo {
 
 
 	/**
-	 * @param id
-	 * @param name
-	 * @param owner
+	 * <p>Constructor for VMapInfo.</p>
+	 *
+	 * @param id a int.
+	 * @param name a {@link java.lang.String} object.
+	 * @param owner a {@link java.lang.String} object.
 	 */
 	public VMapInfo(int id, String name, String owner) {
 		super();
@@ -61,17 +67,33 @@ final public class VMapInfo {
 		this.owner = owner;
 	}
 
+	/**
+	 * <p>Getter for the field <code>id</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getId() {
 		return id;
 	}
+	/**
+	 * <p>Getter for the field <code>name</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * <p>Getter for the field <code>owner</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getOwner() {
 		return owner;
 	}
 	
+	/** {@inheritDoc} */
 	public boolean equals(Object obj){
 		VMapInfo otherMapMenu = (VMapInfo) obj;
 		if(id==otherMapMenu.getId()){

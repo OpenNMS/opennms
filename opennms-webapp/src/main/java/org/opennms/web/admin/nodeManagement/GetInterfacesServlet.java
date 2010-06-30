@@ -62,9 +62,13 @@ import org.opennms.web.WebSecurityUtils;
 /**
  * A servlet that handles querying the database for node, interface, service
  * combinations
- * 
+ *
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class GetInterfacesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -73,6 +77,11 @@ public class GetInterfacesServlet extends HttpServlet {
 
     private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, servicename, status FROM ifservices, service " + "WHERE nodeid=? AND ipaddr=? AND status IN ('A','U','F', 'S', 'R') " + "AND ifservices.serviceid = service.serviceid ORDER BY servicename";
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
@@ -81,6 +90,7 @@ public class GetInterfacesServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int nodeId = -1;
         String nodeIdString = request.getParameter("node");

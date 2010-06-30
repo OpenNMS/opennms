@@ -12,6 +12,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
+/**
+ * <p>MapquestGeocoder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class MapquestGeocoder implements Geocoder {
 
 	public enum Quality {
@@ -34,6 +41,9 @@ public class MapquestGeocoder implements Geocoder {
 	private String m_referer;
 
 
+	/**
+	 * <p>Constructor for MapquestGeocoder.</p>
+	 */
 	public MapquestGeocoder() {
 		m_apiKey = System.getProperty("gwt.apikey");
 		m_referer = System.getProperty("gwt.geocoder.referer");
@@ -43,11 +53,17 @@ public class MapquestGeocoder implements Geocoder {
 		}
 	}
 
+	/**
+	 * <p>Constructor for MapquestGeocoder.</p>
+	 *
+	 * @param apiKey a {@link java.lang.String} object.
+	 */
 	public MapquestGeocoder(String apiKey) {
 		this();
 		m_apiKey = apiKey;
 	}
 
+	/** {@inheritDoc} */
 	public GWTLatLng geocode(final String geolocation) throws GeocoderException {
 		final HttpMethod method = new GetMethod(getUrl(geolocation));
 		method.addRequestHeader("User-Agent", "OpenNMS-MapQuestGeocoder/1.0");

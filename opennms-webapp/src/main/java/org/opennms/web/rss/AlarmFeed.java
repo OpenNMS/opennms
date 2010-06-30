@@ -58,12 +58,22 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 
 /**
- * 
+ * <p>AlarmFeed class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AlarmFeed extends AbstractFeed {
 
+    /**
+     * <p>getFeed</p>
+     *
+     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
+     */
     public SyndFeed getFeed() {
         SyndFeed feed = new SyndFeedImpl();
 

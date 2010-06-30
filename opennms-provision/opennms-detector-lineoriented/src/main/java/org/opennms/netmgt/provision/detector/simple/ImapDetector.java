@@ -34,6 +34,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>ImapDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class ImapDetector extends AsyncLineOrientedDetector {
 
@@ -49,20 +55,26 @@ public class ImapDetector extends AsyncLineOrientedDetector {
     
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public ImapDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
+    /**
+     * <p>onInit</p>
+     */
     public void onInit(){
         expectBanner(startsWith("* OK "));
         send(request("ONMSCAPSD LOGOUT"), startsWith("* BYE"));
         expectClose();
     }
     
+    /**
+     * <p>expectClose</p>
+     */
     public void expectClose() {
         send(LineOrientedRequest.Null, startsWith("ONMSCAPSD OK"));
     }

@@ -36,8 +36,15 @@ import java.beans.PropertyEditorSupport;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+/**
+ * <p>ObjectNameEditor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ObjectNameEditor extends PropertyEditorSupport {
 
+    /** {@inheritDoc} */
     public void setAsText(String text) throws IllegalArgumentException {
         try {
             setValue(new ObjectName(text));

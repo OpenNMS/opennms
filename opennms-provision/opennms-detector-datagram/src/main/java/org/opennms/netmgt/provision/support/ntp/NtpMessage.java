@@ -38,52 +38,53 @@
  *
  * This class does not support the optional authentication protocol, and
  * ignores the key ID and message digest fields.
- * 
+ *
  * For convenience, this class exposes message values as native Java types, not
  * the NTP-specified data formats.  For example, timestamps are
  * stored as doubles (as opposed to the NTP unsigned 64-bit fixed point
  * format).
- * 
+ *
  * However, the contructor NtpMessage(byte[]) and the method toByteArray()
  * allow the import and export of the raw NTP message format.
- * 
- * 
+ *
+ *
  * Usage example
- * 
+ *
  * // Send message
  * DatagramSocket socket = new DatagramSocket();
  * InetAddress address = InetAddress.getByName("ntp.cais.rnp.br");
  * byte[] buf = new NtpMessage().toByteArray();
  * DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 123);
  * socket.send(packet);
- * 
+ *
  * // Get response
  * socket.receive(packet);
  * System.out.println(msg.toString());
- * 
- *  
+ *
+ *
  * This code is copyright (c) Adam Buckley 2004
  *
- * This program is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU General Public License as published by the Free 
- * Software Foundation; either version 2 of the License, or (at your option) 
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.  A HTML version of the GNU General Public License can be
  * seen at http://www.gnu.org/licenses/gpl.html
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
- * 
- * 
+ *
+ *
  * Comments for member variables are taken from RFC2030 by David Mills,
  * University of Delaware.
- * 
+ *
  * Number format conversion code in NtpMessage(byte[] array) and toByteArray()
  * inspired by http://www.pps.jussieu.fr/~jch/enseignement/reseaux/
  * NTPMessage.java which is copyright (c) 2003 by Juliusz Chroboczek
- * 
+ *
  * @author Adam Buckley
+ * @version $Id: $
  */
 
 package org.opennms.netmgt.provision.support.ntp;
@@ -92,7 +93,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
-
 public class NtpMessage {
     
     /**
@@ -222,6 +222,8 @@ public class NtpMessage {
 
     /**
      * Constructs a new NtpMessage from an array of bytes.
+     *
+     * @param array an array of byte.
      */
     public NtpMessage(byte[] array) {
         // See the packet format diagram in RFC 2030 for details
@@ -249,6 +251,20 @@ public class NtpMessage {
 
     /**
      * Constructs a new NtpMessage
+     *
+     * @param leapIndicator a byte.
+     * @param version a byte.
+     * @param mode a byte.
+     * @param stratum a short.
+     * @param pollInterval a byte.
+     * @param precision a byte.
+     * @param rootDelay a double.
+     * @param rootDispersion a double.
+     * @param referenceIdentifier an array of byte.
+     * @param referenceTimestamp a double.
+     * @param originateTimestamp a double.
+     * @param receiveTimestamp a double.
+     * @param transmitTimestamp a double.
      */
     public NtpMessage(byte leapIndicator, byte version, byte mode, short stratum, byte pollInterval, byte precision, double rootDelay, double rootDispersion, byte[] referenceIdentifier, double referenceTimestamp, double originateTimestamp, double receiveTimestamp, double transmitTimestamp) {
         // ToDo: Validity checking
@@ -280,6 +296,8 @@ public class NtpMessage {
 
     /**
      * This method constructs the data bytes of a raw NTP packet.
+     *
+     * @return an array of byte.
      */
     public byte[] toByteArray() {
         // All bytes are automatically set to 0
@@ -320,6 +338,8 @@ public class NtpMessage {
 
     /**
      * Returns a string representation of a NtpMessage
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         String precisionStr = new DecimalFormat("0.#E0").format(Math.pow(2, precision));
@@ -329,6 +349,9 @@ public class NtpMessage {
     /**
      * Converts an unsigned byte to a short. By default, Java assumes that a
      * byte is signed.
+     *
+     * @param b a byte.
+     * @return a short.
      */
     public static short unsignedByteToShort(byte b) {
         if ((b & 0x80) == 0x80)
@@ -340,6 +363,10 @@ public class NtpMessage {
     /**
      * Will read 8 bytes of a message beginning at <code>pointer</code> and
      * return it as a double, according to the NTP 64-bit timestamp format.
+     *
+     * @param array an array of byte.
+     * @param pointer a int.
+     * @return a double.
      */
     public static double decodeTimestamp(byte[] array, int pointer) {
         double r = 0.0;
@@ -353,6 +380,10 @@ public class NtpMessage {
 
     /**
      * Encodes a timestamp in the specified position in the message
+     *
+     * @param array an array of byte.
+     * @param pointer a int.
+     * @param timestamp a double.
      */
     public static void encodeTimestamp(byte[] array, int pointer, double timestamp) {
         // Converts a double into a 64-bit fixed point
@@ -377,6 +408,9 @@ public class NtpMessage {
     /**
      * Returns a timestamp (number of seconds since 00:00 1-Jan-1900) as a
      * formatted date/time string.
+     *
+     * @param timestamp a double.
+     * @return a {@link java.lang.String} object.
      */
     public static String timestampToString(double timestamp) {
         if (timestamp == 0)
@@ -402,6 +436,11 @@ public class NtpMessage {
     /**
      * Returns a string representation of a reference identifier according to
      * the rules set out in RFC 2030.
+     *
+     * @param ref an array of byte.
+     * @param stratum a short.
+     * @param version a byte.
+     * @return a {@link java.lang.String} object.
      */
     public static String referenceIdentifierToString(byte[] ref, short stratum, byte version) {
         // From the RFC 2030:

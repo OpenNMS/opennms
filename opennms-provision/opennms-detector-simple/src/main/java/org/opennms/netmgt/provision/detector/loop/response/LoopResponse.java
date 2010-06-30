@@ -34,20 +34,41 @@ package org.opennms.netmgt.provision.detector.loop.response;
 import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 
+/**
+ * <p>LoopResponse class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LoopResponse extends LineOrientedResponse {
     
     private String m_address;
     private boolean m_isSupported;
     
+    /**
+     * <p>Constructor for LoopResponse.</p>
+     */
     public LoopResponse() {
         super("");
     }
 
+    /**
+     * <p>receive</p>
+     *
+     * @param address a {@link java.lang.String} object.
+     * @param isSupported a boolean.
+     */
     public void receive(String address, boolean isSupported) {
         m_address = address;
         m_isSupported = isSupported;
     }
     
+    /**
+     * <p>validateIPMatch</p>
+     *
+     * @param ip a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean validateIPMatch(String ip){
       if(IPLike.matches(m_address, ip)){
           return m_isSupported;

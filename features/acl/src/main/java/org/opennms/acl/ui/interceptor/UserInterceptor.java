@@ -47,13 +47,15 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * Interceptor to put a User in the request
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Service
 public class UserInterceptor extends HandlerInterceptorAdapter {
 
+    /** {@inheritDoc} */
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
         Integer sid = ServletRequestUtils.getIntParameter(req, Constants.USER_SID, 0);

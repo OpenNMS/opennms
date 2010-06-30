@@ -36,47 +36,48 @@ import java.io.InputStream;
 /**
  * Container for details from an RRD graph.  Stores the graph image (if any)
  * and details relating to the graph.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface RrdGraphDetails {
     /**
      * Gets the PNG image representing the graph.  If a graph wasn't created,
      * an RrdException will be thrown.
-     * 
+     *
      * @return InputStream containg a PNG image representing the graph
-     * @throws RrdException if there is an error getting an input stream for
+     * @throws org.opennms.netmgt.rrd.RrdException if there is an error getting an input stream for
      *      the graph, such as if no graph image was created
      */
     public InputStream getInputStream() throws RrdException;
     
     /**
      * Gets the PRINT lines associated with the graph command.
-     *   
+     *
      * @return PRINT lines associated with the graph command.  If there were
      *      no PRINT lines, an empty array is returned.
-     * @throws RrdException if there is an error getting the PRINT lines
+     * @throws org.opennms.netmgt.rrd.RrdException if there is an error getting the PRINT lines
      */
     public String[] getPrintLines() throws RrdException;
     
     /**
      * Gets the height of the PNG image.
-     * 
+     *
      * @return height of the PNG image in pixels.  This is the height of the
      *      entire PNG image, not just the height of the graph box within
      *      the image.
-     * @throws RrdException if no graph image was produced or if there is an
+     * @throws org.opennms.netmgt.rrd.RrdException if no graph image was produced or if there is an
      *      error getting the height
      */
     public int getHeight() throws RrdException;
 
     /**
      * Gets the width of the PNG image.
-     * 
+     *
      * @return width of the PNG image in pixels.  This is the width of the
      *      entire PNG image, not just the width of the graph box within
      *      the image.
-     * @throws RrdException if no graph image was produced or if there is an
+     * @throws org.opennms.netmgt.rrd.RrdException if no graph image was produced or if there is an
      *      error getting the height
      */
     public int getWidth() throws RrdException;
