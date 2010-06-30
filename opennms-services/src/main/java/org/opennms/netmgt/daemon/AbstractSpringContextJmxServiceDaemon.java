@@ -45,33 +45,56 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * 
+ * <p>Abstract AbstractSpringContextJmxServiceDaemon class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsMBean {
 
+    /** Constant <code>DAEMON_BEAN_NAME="daemon"</code> */
     public static final String DAEMON_BEAN_NAME = "daemon";
 
     private ClassPathXmlApplicationContext m_context;
 
     private int m_status = Fiber.START_PENDING;
 
+    /**
+     * <p>Constructor for AbstractSpringContextJmxServiceDaemon.</p>
+     */
     public AbstractSpringContextJmxServiceDaemon() {
         super();
     }
     
+    /**
+     * <p>getSpringContext</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected abstract String getSpringContext();
 
+    /**
+     * <p>getLoggingPrefix</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected abstract String getLoggingPrefix();
 
     /**
      * This is here for unit tests to use.
+     *
+     * @return a {@link org.springframework.context.ApplicationContext} object.
      */
     protected ApplicationContext getContext() {
         return m_context;
     }
     
+    /**
+     * <p>init</p>
+     */
     public final void init() {
         setLoggingCategory();
   
@@ -82,6 +105,9 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
         log().debug("SPRING: context.classLoader= "+ m_context.getClassLoader());
     }
     
+    /**
+     * <p>start</p>
+     */
     public final void start() {
         setLoggingCategory();
         
@@ -107,6 +133,9 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
         setStatus(Fiber.RUNNING);
     }
 
+    /**
+     * <p>stop</p>
+     */
     public final void stop() {
         setLoggingCategory();
         
@@ -117,6 +146,11 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
         setStatus(Fiber.STOPPED);
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public final int getStatus() {
         return m_status;
     }
@@ -125,12 +159,22 @@ public abstract class AbstractSpringContextJmxServiceDaemon implements BaseOnmsM
         m_status = status;
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public final String status() {
         setLoggingCategory();
         
         return Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public final String getStatusText() {
         return status();
     }

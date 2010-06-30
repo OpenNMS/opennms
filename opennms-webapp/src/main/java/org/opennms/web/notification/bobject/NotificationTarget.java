@@ -34,11 +34,13 @@ package org.opennms.web.notification.bobject;
 
 /**
  * An interface used to encapsulate targets for notifications
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
+ * @since 1.6.12
  */
 public abstract class NotificationTarget {
     /**
@@ -46,12 +48,16 @@ public abstract class NotificationTarget {
      */
     public static final int TARGET_TYPE_USER = 1;
 
+    /** Constant <code>TARGET_TYPE_NOTIF=2</code> */
     public static final int TARGET_TYPE_NOTIF = 2;
 
+    /** Constant <code>TARGET_TYPE_GROUP=3</code> */
     public static final int TARGET_TYPE_GROUP = 3;
 
     /**
      * Returns the type of a specific target
+     *
+     * @return a int.
      */
     public abstract int getType();
 }

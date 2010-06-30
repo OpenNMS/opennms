@@ -51,16 +51,27 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.util.Assert;
 
+/**
+ * <p>ThresholdEvaluatorHighLow class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
 
+    /**
+     * <p>Constructor for ThresholdEvaluatorHighLow.</p>
+     */
     public ThresholdEvaluatorHighLow() {
         
     }
     
+    /** {@inheritDoc} */
     public boolean supportsType(String type) {
         return "low".equals(type) || "high".equals(type);
     }
     
+    /** {@inheritDoc} */
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateHighLow(threshold);
     }

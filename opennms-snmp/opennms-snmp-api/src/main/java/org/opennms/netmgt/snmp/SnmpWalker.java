@@ -39,6 +39,12 @@ import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
 
 
+/**
+ * <p>Abstract SnmpWalker class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class SnmpWalker {
     
     protected static abstract class WalkerPduBuilder extends PduBuilder {
@@ -60,6 +66,15 @@ public abstract class SnmpWalker {
     private ResponseProcessor m_responseProcessor;
     private int m_maxVarsPerPdu;
     
+    /**
+     * <p>Constructor for SnmpWalker.</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param name a {@link java.lang.String} object.
+     * @param maxVarsPerPdu a int.
+     * @param maxRepititions a int.
+     * @param tracker a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, int maxRepititions, CollectionTracker tracker) {
         m_address = address;
         m_signal = new BarrierSignaler(1);
@@ -75,8 +90,17 @@ public abstract class SnmpWalker {
 
     }
 
+    /**
+     * <p>createPduBuilder</p>
+     *
+     * @param maxVarsPerPdu a int.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpWalker.WalkerPduBuilder} object.
+     */
     protected abstract WalkerPduBuilder createPduBuilder(int maxVarsPerPdu);
     
+    /**
+     * <p>start</p>
+     */
     public void start() {
         m_pduBuilder = createPduBuilder(m_maxVarsPerPdu);
         try {
@@ -86,10 +110,20 @@ public abstract class SnmpWalker {
         }
     }
     
+    /**
+     * <p>getMaxVarsPerPdu</p>
+     *
+     * @return a int.
+     */
     public int getMaxVarsPerPdu() {
         return (m_pduBuilder == null ? m_maxVarsPerPdu : m_pduBuilder.getMaxVarsPerPdu());
     }
 
+    /**
+     * <p>buildAndSendNextPdu</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     protected void buildAndSendNextPdu() throws IOException {
         if (m_tracker.isFinished())
             handleDone();
@@ -100,17 +134,30 @@ public abstract class SnmpWalker {
         }
     }
 
+    /**
+     * <p>sendNextPdu</p>
+     *
+     * @param pduBuilder a {@link org.opennms.netmgt.snmp.SnmpWalker.WalkerPduBuilder} object.
+     * @throws java.io.IOException if any.
+     */
     protected abstract void sendNextPdu(WalkerPduBuilder pduBuilder) throws IOException;
 
     /**
      * <P>
      * Returns the success or failure code for collection of the data.
      * </P>
+     *
+     * @return a boolean.
      */
     public boolean failed() {
         return m_error;
     }
 
+    /**
+     * <p>handleAuthError</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     */
     protected void handleAuthError(String msg) {
         m_error = true;
         m_tracker.setFailed(true);
@@ -118,10 +165,18 @@ public abstract class SnmpWalker {
         finish();
     }
 
+    /**
+     * <p>handleDone</p>
+     */
     protected void handleDone() {
         finish();
     }
 
+    /**
+     * <p>handleError</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     */
     protected void handleError(String msg) {
         m_error = true;
         m_tracker.setTimedOut(false);
@@ -129,6 +184,11 @@ public abstract class SnmpWalker {
         finish();
     }
 
+    /**
+     * <p>handleFatalError</p>
+     *
+     * @param e a {@link java.lang.Throwable} object.
+     */
     protected void handleFatalError(Throwable e) {
         m_error = true;
         m_tracker.setFailed(true);
@@ -136,6 +196,11 @@ public abstract class SnmpWalker {
         finish();
     }
     
+    /**
+     * <p>handleTimeout</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     */
     protected void handleTimeout(String msg) {
         m_error = true;
         m_tracker.setTimedOut(true);
@@ -152,8 +217,18 @@ public abstract class SnmpWalker {
         }
     }
 
+    /**
+     * <p>close</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     protected abstract void close() throws IOException;
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
@@ -171,26 +246,60 @@ public abstract class SnmpWalker {
         return ThreadCategory.getInstance(SnmpWalker.class);
     }
 
+    /**
+     * <p>waitFor</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public void waitFor() throws InterruptedException {
         m_signal.waitFor();
     }
     
+    /**
+     * <p>waitFor</p>
+     *
+     * @param timeout a long.
+     * @throws java.lang.InterruptedException if any.
+     */
     public void waitFor(long timeout) throws InterruptedException {
         m_signal.waitFor(timeout);
     }
     
+    /**
+     * <p>processErrors</p>
+     *
+     * @param errorStatus a int.
+     * @param errorIndex a int.
+     * @return a boolean.
+     */
     protected boolean processErrors(int errorStatus, int errorIndex) {
         return m_responseProcessor.processErrors(errorStatus, errorIndex);
     }
     
+    /**
+     * <p>processResponse</p>
+     *
+     * @param receivedOid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     protected void processResponse(SnmpObjId receivedOid, SnmpValue val) {
         m_responseProcessor.processResponse(receivedOid, val);
     }
 
+    /**
+     * <p>setAddress</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     */
     protected void setAddress(InetAddress address) {
         m_address = address;
     }
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     protected InetAddress getAddress() {
         return m_address;
     }

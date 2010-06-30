@@ -46,29 +46,72 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * Convenience class for looking up string and integer values in a parameter
  * map.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class ParameterMap extends Object {
 	
+    /**
+     * <p>getKeyedLong</p>
+     *
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a long.
+     * @return a long.
+     */
     @Deprecated
     public static long getKeyedLong(final Map map, final String key, final long defValue) {
       return org.opennms.core.utils.ParameterMap.getKeyedLong(map, key, defValue);
     }
 	
+    /**
+     * <p>getKeyedInteger</p>
+     *
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a int.
+     * @return a int.
+     */
     @Deprecated
     public static int getKeyedInteger(final Map map, final String key, final int defValue) {
     	return org.opennms.core.utils.ParameterMap.getKeyedInteger(map, key, defValue);
     }
 
+    /**
+     * <p>getKeyedIntegerArray</p>
+     *
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValues an array of int.
+     * @return an array of int.
+     */
     @Deprecated
     public final static int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
       return org.opennms.core.utils.ParameterMap.getKeyedIntegerArray(map, key, defValues);
     }
 
+    /**
+     * <p>getKeyedString</p>
+     *
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     @Deprecated
     public static String getKeyedString(final Map map, final String key, final String defValue) {
       return org.opennms.core.utils.ParameterMap.getKeyedString(map, key, defValue);
     }
 
+    /**
+     * <p>getKeyedBoolean</p>
+     *
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a boolean.
+     * @return a boolean.
+     */
     @Deprecated
     public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
       return org.opennms.core.utils.ParameterMap.getKeyedBoolean(map, key, defValue);

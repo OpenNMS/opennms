@@ -54,15 +54,21 @@ import org.opennms.web.WebSecurityUtils;
  * This servlet receives an HTTP POST with a list of alarms to acknowledge or
  * unacknowledge, and then it redirects the client to a URL for display. The
  * target URL is configurable in the servlet config (web.xml file).
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AcknowledgeAlarmServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** Constant <code>ACKNOWLEDGE_ACTION="1"</code> */
     public final static String ACKNOWLEDGE_ACTION = "1";
 
+    /** Constant <code>UNACKNOWLEDGE_ACTION="2"</code> */
     public final static String UNACKNOWLEDGE_ACTION = "2";
 
     /** The URL to redirect the client to in case of success. */
@@ -72,6 +78,8 @@ public class AcknowledgeAlarmServlet extends HttpServlet {
      * Looks up the <code>dispath.success</code> parameter in the servlet's
      * config. If not present, this servlet will throw an exception so it will
      * be marked unavailable.
+     *
+     * @throws javax.servlet.ServletException if any.
      */
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
@@ -84,6 +92,8 @@ public class AcknowledgeAlarmServlet extends HttpServlet {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Acknowledge the alarms specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
@@ -124,6 +134,9 @@ public class AcknowledgeAlarmServlet extends HttpServlet {
     /**
      * Convenience method for dynamically creating the redirect URL if
      * necessary.
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link java.lang.String} object.
      */
     protected String getRedirectString(HttpServletRequest request) {
         String redirectValue = request.getParameter("redirect");

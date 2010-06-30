@@ -62,13 +62,17 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
+ * <p>ManageSnmpIntfServlet class.</p>
+ *
  * @author micmas
- * 
+ *
  * Per modificare il modello associato al commento di questo tipo generato,
  * aprire Finestra&gt;Preferenze&gt;Java&gt;Generazione codice&gt;Codice e
  * commenti
- * 
+ *
  * La servlet prende i seguenti parametri dal file web.xml
+ * @version $Id: $
+ * @since 1.6.12
  */
 public final class ManageSnmpIntfServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -79,6 +83,11 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
 
     protected String pageToRedirect;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             this.snmpServiceId = NetworkElementFactory
@@ -90,11 +99,13 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
         doPost(request, response);
     }
 
+    /** {@inheritDoc} */
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 

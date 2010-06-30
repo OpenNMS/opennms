@@ -51,16 +51,23 @@ import org.opennms.protocols.icmp.ICMPEchoPacket;
  * {@link ICMPEchoPacket packet}class. The reply must be of type ICMP Echo Reply and be
  * the correct length.
  * </p>
- * 
+ *
  * <p>
  * When constructed by the <code>create</code> method the returned reply
  * encapsulates the sender's address and the received packet as final,
  * non-mutable values for the instance.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public final class Reply {
     /**
@@ -76,12 +83,11 @@ public final class Reply {
     /**
      * Constructs a new reply with the passed address and packet as the contents
      * of the reply.
-     * 
+     *
      * @param addr
      *            The address of the ICMP sender.
      * @param pkt
      *            The received packet.
-     * 
      */
     public Reply(InetAddress addr, ICMPEchoPacket pkt) {
         m_packet = pkt;
@@ -90,6 +96,8 @@ public final class Reply {
 
     /**
      * Returns true if the recovered packet is an echo reply.
+     *
+     * @return a boolean.
      */
     public boolean isEchoReply() {
         return m_packet.isEchoReply();
@@ -97,6 +105,8 @@ public final class Reply {
 
     /**
      * Returns the identity of the packet.
+     *
+     * @return a short.
      */
     public final short getIdentity() {
         return m_packet.getIdentity();
@@ -104,7 +114,8 @@ public final class Reply {
 
     /**
      * Returns the internet address of the host that sent the reply.
-     * 
+     *
+     * @return a {@link java.net.InetAddress} object.
      */
     public final InetAddress getAddress() {
         return m_address;
@@ -112,6 +123,8 @@ public final class Reply {
 
     /**
      * Returns the ICMP packet for the reply.
+     *
+     * @return a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
      */
     public final ICMPEchoPacket getPacket() {
         return m_packet;
@@ -124,20 +137,19 @@ public final class Reply {
      * returned as a new instance of the class. In addition to extracting the
      * packet, the packet's received time is updated to the current time.
      * </p>
-     * 
+     *
      * <p>
      * If the received datagram is not an echo reply or an incorrect length then
      * an exception is generated to alert the caller.
      * </p>
-     * 
+     *
      * @param packet
      *            The packet with the ICMP datagram.
-     * 
      * @throws java.lang.IllegalArgumentException
      *             Throw if the datagram is not the correct length or type.
      * @throws java.lang.IndexOutOfBoundsException
      *             Thrown if the datagram does not contain sufficent data.
-     * 
+     * @return a {@link org.opennms.netmgt.ping.Reply} object.
      */
     public static Reply create(DatagramPacket packet) {
         // Check the packet length

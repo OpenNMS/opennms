@@ -46,11 +46,13 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * is received/error occurs in the SnmpSession used to send requests /recieve
  * replies.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public class CiscoVlanTable extends SnmpTable<CiscoVlanTableEntry> {
 
@@ -61,23 +63,25 @@ public class CiscoVlanTable extends SnmpTable<CiscoVlanTableEntry> {
 	 * there is an error in the collection the signaler object is <EM>notified
 	 * </EM> to inform other threads.
 	 * </P>
-	 * 
-	 * @param session
-	 *            The session with the remote agent.
-	 * @param signaler
-	 *            The object to notify waiters.
-	 * 
+	 *
 	 * @see CiscoVlanTableEntry
+	 * @param address a {@link java.net.InetAddress} object.
 	 */
 	public CiscoVlanTable(InetAddress address) {
         super(address, "ciscoVlanTable", CiscoVlanTableEntry.ciscoVlan_elemList);
     }
     
+    /** {@inheritDoc} */
     protected CiscoVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new CiscoVlanTableEntry();
     }
 
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected final Category log() {
         return ThreadCategory.getInstance(CiscoVlanTable.class);
     }

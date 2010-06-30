@@ -39,14 +39,18 @@ import org.opennms.secret.dao.NodeInterfaceDao;
 import org.opennms.secret.model.Node;
 import org.opennms.secret.model.NodeInterface;
 /**
- * @author david
+ * <p>NodeInterfaceDaoHibernate class.</p>
  *
+ * @author david
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NodeInterfaceDaoHibernate implements NodeInterfaceDao {
 
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#initialize(java.lang.Object)
      */
+    /** {@inheritDoc} */
     public void initialize(Object obj) {
         // TODO Auto-generated method stub
 
@@ -55,6 +59,7 @@ public class NodeInterfaceDaoHibernate implements NodeInterfaceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#getNodeInterface(java.lang.Long)
      */
+    /** {@inheritDoc} */
     public NodeInterface getNodeInterface(Long interfaceId) {
         // TODO Auto-generated method stub
         return null;
@@ -63,6 +68,7 @@ public class NodeInterfaceDaoHibernate implements NodeInterfaceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#getNodeInterfaces(org.opennms.secret.model.Node)
      */
+    /** {@inheritDoc} */
     public Collection getNodeInterfaces(Node node) {
         // TODO Auto-generated method stub
         return null;
@@ -71,6 +77,7 @@ public class NodeInterfaceDaoHibernate implements NodeInterfaceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#createInterface(org.opennms.secret.model.NodeInterface)
      */
+    /** {@inheritDoc} */
     public void createInterface(NodeInterface iface) {
         // TODO Auto-generated method stub
 
@@ -79,6 +86,7 @@ public class NodeInterfaceDaoHibernate implements NodeInterfaceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#getServiceCollection(org.opennms.secret.model.NodeInterface)
      */
+    /** {@inheritDoc} */
     public Collection getServiceCollection(NodeInterface ni) {
         // TODO Auto-generated method stub
         return null;

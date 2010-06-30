@@ -36,16 +36,38 @@
 package org.opennms.dashboard.client;
 
 /**
- * 
+ * <p>SurveillanceListener interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface SurveillanceListener {
     
+    /**
+     * <p>onAllClicked</p>
+     *
+     * @param viewer a {@link org.opennms.dashboard.client.Dashlet} object.
+     */
     public void onAllClicked(Dashlet viewer);
     
+    /**
+     * <p>onSurveillanceGroupClicked</p>
+     *
+     * @param viewer a {@link org.opennms.dashboard.client.Dashlet} object.
+     * @param group a {@link org.opennms.dashboard.client.SurveillanceGroup} object.
+     */
     public void onSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group);
     
+    /**
+     * <p>onIntersectionClicked</p>
+     *
+     * @param viewer a {@link org.opennms.dashboard.client.Dashlet} object.
+     * @param intersection a {@link org.opennms.dashboard.client.SurveillanceIntersection} object.
+     */
     public void onIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection);
 
 }

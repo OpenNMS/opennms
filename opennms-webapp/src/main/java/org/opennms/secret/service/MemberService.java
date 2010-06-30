@@ -35,10 +35,34 @@ import java.util.Set;
 
 import org.opennms.secret.model.OGPMember;
 
+/**
+ * <p>MemberService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public interface MemberService {
     
+    /**
+     * <p>getMemberById</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link org.opennms.secret.model.OGPMember} object.
+     */
     public abstract OGPMember getMemberById(Long id);
+    /**
+     * <p>createMember</p>
+     *
+     * @param member a {@link org.opennms.secret.model.OGPMember} object.
+     */
     public abstract void createMember(OGPMember member);
+    /**
+     * <p>findMatching</p>
+     *
+     * @param searchKey a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
     public abstract Set findMatching(String searchKey);
 
 }

@@ -34,8 +34,17 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 
+/**
+ * <p>AlarmDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> implements AlarmDao {
 	
+	/**
+	 * <p>Constructor for AlarmDaoHibernate.</p>
+	 */
 	public AlarmDaoHibernate() {
 		super(OnmsAlarm.class);
 	}

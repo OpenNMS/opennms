@@ -39,9 +39,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ListBox;
 
 /**
- * 
+ * <p>ListBoxCallback class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ListBoxCallback implements AsyncCallback {
     private DashletLoader m_dashletLoader;
@@ -52,33 +57,71 @@ public class ListBoxCallback implements AsyncCallback {
     private String m_nullListItemName;
     private String m_nullListItemValue;
     
+    /**
+     * <p>Constructor for ListBoxCallback.</p>
+     *
+     * @param dashlet a {@link org.opennms.dashboard.client.DashletLoader} object.
+     * @param listBox a {@link com.google.gwt.user.client.ui.ListBox} object.
+     */
     public ListBoxCallback(DashletLoader dashlet, ListBox listBox) {
         m_dashletLoader = dashlet;
         m_listBox = listBox;
     }
     
+    /**
+     * <p>getListBox</p>
+     *
+     * @return a {@link com.google.gwt.user.client.ui.ListBox} object.
+     */
     public ListBox getListBox() {
         return m_listBox;
     }
 
+    /**
+     * <p>setDirection</p>
+     *
+     * @param direction a int.
+     */
     public void setDirection(int direction) {
         m_direction = direction;
     }
     
+    /**
+     * <p>getDirection</p>
+     *
+     * @return a int.
+     */
     public int getDirection() {
         return m_direction;
     }
     
+    /**
+     * <p>setNullListItem</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public void setNullListItem(String name, String value) {
         m_nullListItemName = name;
         m_nullListItemValue = value;
     }
     
+    /**
+     * <p>setEmptyListItem</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public void setEmptyListItem(String name, String value) {
         m_emptyListItemName = name;
         m_emptyListItemValue = value;
     }
 
+    /**
+     * <p>onDataLoaded</p>
+     *
+     * @param resources an array of {@link java.lang.String} objects.
+     */
     public void onDataLoaded(String[][] resources) {
         m_listBox.clear();
         
@@ -106,10 +149,12 @@ public class ListBoxCallback implements AsyncCallback {
         m_dashletLoader.complete();
     }
     
+    /** {@inheritDoc} */
     public void onFailure(Throwable caught) {
         m_dashletLoader.loadError(caught);
     }
 
+    /** {@inheritDoc} */
     public void onSuccess(Object result) {
         onDataLoaded((String[][]) result);
     }

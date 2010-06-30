@@ -38,15 +38,24 @@ import java.util.Map;
 /**
  * An uninstantiatable class that provides a servlet container-independent
  * interface to the authentication system and a list of useful constants.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public final class Authentication extends Object {
+    /** Constant <code>USER_ROLE="ROLE_USER"</code> */
     public static final String USER_ROLE = "ROLE_USER";
+    /** Constant <code>ADMIN_ROLE="ROLE_ADMIN"</code> */
     public static final String ADMIN_ROLE = "ROLE_ADMIN";
+    /** Constant <code>READONLY_ROLE="ROLE_READONLY"</code> */
     public static final String READONLY_ROLE = "ROLE_READONLY";
+    /** Constant <code>DASHBOARD_ROLE="ROLE_DASHBOARD"</code> */
     public static final String DASHBOARD_ROLE = "ROLE_DASHBOARD";
+    /** Constant <code>RTC_ROLE="ROLE_RTC"</code> */
     public static final String RTC_ROLE = "ROLE_RTC";
     
     private static Map<String, String> s_oldToNewMap = new HashMap<String, String>();
@@ -63,6 +72,12 @@ public final class Authentication extends Object {
     private Authentication() {
     }
     
+    /**
+     * <p>getAcegiRoleFromOldRoleName</p>
+     *
+     * @param oldRole a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getAcegiRoleFromOldRoleName(String oldRole) {
     	return s_oldToNewMap.get(oldRole);
     }

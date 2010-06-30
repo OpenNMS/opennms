@@ -65,34 +65,74 @@ class EventConfiguration {
      */
     private int m_eventCount = 0;
 
+    /**
+     * <p>getEventConfData</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.datablock.EventConfData} object.
+     */
     public EventConfData getEventConfData() {
         return m_eventConfData;
     }
 
+    /**
+     * <p>setEventConfData</p>
+     *
+     * @param eventConfData a {@link org.opennms.netmgt.eventd.datablock.EventConfData} object.
+     */
     public void setEventConfData(EventConfData eventConfData) {
         m_eventConfData = eventConfData;
     }
 
+    /**
+     * <p>getEventFiles</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Resource, Events> getEventFiles() {
         return m_eventFiles;
     }
 
+    /**
+     * <p>setEventFiles</p>
+     *
+     * @param eventFiles a {@link java.util.Map} object.
+     */
     public void setEventFiles(Map<Resource, Events> eventFiles) {
         m_eventFiles = eventFiles;
     }
 
+    /**
+     * <p>getSecureTags</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> getSecureTags() {
         return m_secureTags;
     }
 
+    /**
+     * <p>setSecureTags</p>
+     *
+     * @param secureTags a {@link java.util.Set} object.
+     */
     public void setSecureTags(Set<String> secureTags) {
         m_secureTags = secureTags;
     }
 
+    /**
+     * <p>getEventCount</p>
+     *
+     * @return a int.
+     */
     public int getEventCount() {
         return m_eventCount;
     }
 
+    /**
+     * <p>incrementEventCount</p>
+     *
+     * @param incrementCount a int.
+     */
     public void incrementEventCount(int incrementCount) {
         m_eventCount += incrementCount;
     }

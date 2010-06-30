@@ -53,6 +53,13 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.Util;
 
+/**
+ * <p>RTCPostServlet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class RTCPostServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -60,6 +67,11 @@ public class RTCPostServlet extends HttpServlet {
 
     protected org.apache.log4j.Category log = ThreadCategory.getInstance("RTC");
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             this.model = CategoryModel.getInstance();
@@ -72,6 +84,7 @@ public class RTCPostServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // the path info will be the category name we need
         String pathInfo = request.getPathInfo();

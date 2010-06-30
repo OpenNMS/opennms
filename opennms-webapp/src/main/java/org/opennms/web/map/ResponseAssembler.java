@@ -34,8 +34,11 @@
  */
 
 /**
- * 
+ * <p>ResponseAssembler class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 package org.opennms.web.map;
 
@@ -51,10 +54,16 @@ import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
 import org.opennms.web.map.view.VMapInfo;
-
 public class ResponseAssembler {
 	private static Category log;
 	
+	/**
+	 * <p>getRefreshResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param map a {@link org.opennms.web.map.view.VMap} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getRefreshResponse(String action, VMap map){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -87,6 +96,13 @@ public class ResponseAssembler {
 		return response;
 	}
 	
+	/**
+	 * <p>getLoadInfosResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param infos a java$util$Map object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getLoadInfosResponse(String action, Map<String , String> infos){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -102,6 +118,15 @@ public class ResponseAssembler {
 		return str;
 	}
 	
+	/**
+	 * <p>getAddMapsResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param mapsWithLoopInfo a {@link java.util.List} object.
+	 * @param velems a {@link java.util.List} object.
+	 * @param links a {@link java.util.List} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getAddMapsResponse(String action,  List<Integer> mapsWithLoopInfo, List<VElement> velems, List<VLink> links){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -139,6 +164,13 @@ public class ResponseAssembler {
 		return response;		
 	}
 	
+	/**
+	 * <p>getDeleteElementsResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param velems a {@link java.util.List} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getDeleteElementsResponse(String action, List<VElement> velems){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -152,6 +184,14 @@ public class ResponseAssembler {
 		return response;
 	}
 	
+	/**
+	 * <p>getAddElementResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param velems a {@link java.util.List} object.
+	 * @param links a {@link java.util.List} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getAddElementResponse(String action, List<VElement> velems, List<VLink> links){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -181,6 +221,13 @@ public class ResponseAssembler {
 	}
 
 	
+	/**
+	 * <p>getLoadNodesResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param elemInfos an array of {@link org.opennms.web.map.view.VElementInfo} objects.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getLoadNodesResponse(String action, VElementInfo[] elemInfos){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -200,6 +247,15 @@ public class ResponseAssembler {
 		return strToSend;
 	}
 	
+	/**
+	 * <p>getSaveMapResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param map a {@link org.opennms.web.map.view.VMap} object.
+	 * @param currPacket a {@link java.lang.String} object.
+	 * @param totalPackets a {@link java.lang.String} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getSaveMapResponse(String action,VMap map, String currPacket, String totalPackets){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -225,6 +281,16 @@ public class ResponseAssembler {
 		log.debug("getSaveMapResponse: String assembled: "+strToSend);
 	 return strToSend;
 	}
+	/**
+	 * <p>getMapResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param map a {@link org.opennms.web.map.view.VMap} object.
+	 * @param widthFactor a float.
+	 * @param heightFactor a float.
+	 * @param sendElements a boolean.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getMapResponse(String action, VMap map, float widthFactor, float heightFactor,boolean sendElements) {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -288,6 +354,13 @@ public class ResponseAssembler {
 		return strToSend;
 	}
 	
+	/**
+	 * <p>getMapsResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @param maps a {@link java.util.List} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getMapsResponse(String action, List<VMapInfo> maps) {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -312,6 +385,12 @@ public class ResponseAssembler {
 		return strToSend;
 	}
 	
+	/**
+	 * <p>getCloseMapResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getCloseMapResponse(String action) {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ResponseAssembler.class);
@@ -323,12 +402,24 @@ public class ResponseAssembler {
 		
 	}
 
+	/**
+	 * <p>getActionOKMapResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getActionOKMapResponse(String action) {
 
 		return action+"OK";
 		
 	}
 
+	/**
+	 * <p>getMapErrorResponse</p>
+	 *
+	 * @param action a {@link java.lang.String} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getMapErrorResponse(String action) {
 		return action+"Failed";
 	}

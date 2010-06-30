@@ -33,12 +33,19 @@ package org.opennms.netmgt.linkd.scheduler;
 
 import org.opennms.netmgt.scheduler.Timer;
 /**
- * Represents a ScheduleTimer 
+ * Represents a ScheduleTimer
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface ScheduleTimer extends Timer {
     
+    /**
+     * <p>schedule</p>
+     *
+     * @param interval a long.
+     * @param schedule a {@link org.opennms.netmgt.linkd.scheduler.ReadyRunnable} object.
+     */
     public void schedule(long interval, ReadyRunnable schedule);
 
 }

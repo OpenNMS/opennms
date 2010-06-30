@@ -53,22 +53,24 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
- * 
+ *
  * <p>
  * Once loaded or create, the class tracks any changes and will write those
  * changes to the database whenever the <code>store</code> method is invoked.
  * If a database conneciton is not passed to the store method, then a temporary
  * one is allocated to write the results.
  * </p>
- * 
+ *
  * <p>
  * NOTE: if the connection is passed in and is not in auto commit mode, then the
  * caller must call <code>commit</code> to inform the database that the
  * transaction is complete.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class DbSnmpInterfaceEntry {
     /**
@@ -1060,7 +1062,8 @@ public final class DbSnmpInterfaceEntry {
     /**
      * Creates a string that displays the internal contents of the record. This
      * is mainly just used for debug output since the format is ad-hoc.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         String sep = System.getProperty("line.separator");
@@ -1084,6 +1087,8 @@ public final class DbSnmpInterfaceEntry {
 
     /**
      * For debugging only
+     *
+     * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
         try {

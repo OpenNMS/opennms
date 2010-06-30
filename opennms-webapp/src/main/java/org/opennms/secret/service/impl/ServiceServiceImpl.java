@@ -42,16 +42,25 @@ import org.opennms.secret.model.InterfaceService;
 import org.opennms.secret.model.NodeInterface;
 import org.opennms.secret.service.ServiceService;
 
+/**
+ * <p>ServiceServiceImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ServiceServiceImpl implements ServiceService {
     @SuppressWarnings("unused")
     private ServiceDao m_serviceDao;
     
     private String[] s_serviceNames = new String[] { "ICMP", "HTTP", "DNS", "SSH", "HTTPS" };
     
+    /** {@inheritDoc} */
     public void setServiceDao(ServiceDao serviceDao) {
         m_serviceDao = serviceDao;
     }
     
+    /** {@inheritDoc} */
     public HashSet<InterfaceService> getServices(NodeInterface iface) {
 		HashSet<InterfaceService> services = new HashSet<InterfaceService>();
 		for (int i = 0; i < 5; i++) {

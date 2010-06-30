@@ -60,7 +60,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * {@link org.opennms.core.fiber.PausableFiber PausableFiber}interface as a
  * means to control the operation of the receiver.
  * </p>
- * 
+ *
  * <p>
  * Once the receiver is started it will process all recieved datagrams and
  * filter them based upon their ICMP code and the filter identifier used to
@@ -68,17 +68,23 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * discared by the reciever. In addition, only those echo replies that have
  * their identifier set to the passed filter identifier are also discarded.
  * </p>
- * 
+ *
  * <p>
  * Received datagrams that pass the requirement of the receiver are added to the
  * reply queue for processing by the application. Only instances of the
  * {@link Reply Reply}class are added to the queue for processing.
  * </p>
- * 
+ *
  * @author <A HREF="sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class ReplyReceiver implements PausableFiber, Runnable {
     /**
@@ -140,22 +146,21 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * instance to the reply queue. The recieved packet must pass the following
      * criteria:
      * </p>
-     * 
+     *
      * <ul>
      * <li>ICMP Type == Echo Reply</li>
      * <li>ICMP Identity == Filter ID</li>
      * <li>ICMP Length =={@link ICMPEchoPacket#getNetworkSize Packet.getNetworkSize()}
      * </li>
      * </ul>
-     * 
+     *
      * @param pkt
      *            The datagram to process.
-     * 
      * @throws java.lang.InterruptedException
      *             Thrown if the thread is interrupted.
      * @throws org.opennms.core.fiber.FifoQueueException
      *             Thrown if a queue exception occurs adding a new reply.
-     * 
+     * @throws org.opennms.core.queue.FifoQueueException if any.
      */
     protected void process(DatagramPacket pkt) throws InterruptedException, FifoQueueException {
         boolean doIt = false;
@@ -201,14 +206,13 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * match the filterID, and its length must be equal to the
      * {@link ICMPEchoPacket ping packet's}length.
      * </p>
-     * 
+     *
      * @param portal
      *            The ICMP socket
      * @param replyQ
      *            The reply queue for matching messages.
      * @param filterID
      *            The ICMP Identity for matching.
-     * 
      */
     public ReplyReceiver(IcmpSocket portal, FifoQueue<Reply> replyQ, short filterID) {
         m_portal = portal;
@@ -225,10 +229,9 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * from the ICMP socket and processes them. Packets that match the proper
      * criteria are added to the queue. If the receiver is already started then
      * an exception is thrown.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the receiver has already been started.
-     * 
      */
     public final synchronized void start() {
         if (m_worker != null) {
@@ -244,10 +247,9 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
     /**
      * Stops the current receiver. If the receiver was never started then an
      * exception is thrown.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the receiver was never started.
-     * 
      */
     public final synchronized void stop() {
         if (m_worker == null) {
@@ -269,7 +271,6 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * processes new ICMP datagrams. However, all datagrams are discarded while
      * in a paused state regardless of matching criteria. Messages are still
      * read since the operating system will continue to deliver them.
-     * 
      */
     public final synchronized void pause() {
         if (m_worker == null || !m_worker.isAlive()) {
@@ -280,7 +281,6 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
 
     /**
      * Resumes the recipt and processing of ICMP messages.
-     * 
      */
     public final synchronized void resume() {
         if (m_worker == null || !m_worker.isAlive()) {
@@ -291,7 +291,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
 
     /**
      * Returns the name of this fiber.
-     * 
+     *
      * @return The fiber's name.
      */
     public final String getName() {
@@ -300,7 +300,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
 
     /**
      * Returns the status of the fiber.
-     * 
+     *
      * @return The fiber's status.
      */
     public final synchronized int getStatus() {
@@ -315,7 +315,6 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
      * The run() method does the actual work of reading messages from the daemon
      * and placing those messages in the appropriate queue for use by other
      * threads.
-     * 
      */
     public final void run() {
         synchronized (this) {

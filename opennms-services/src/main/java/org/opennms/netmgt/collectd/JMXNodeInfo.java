@@ -36,9 +36,12 @@ import java.util.*;
  * This class encapsulates all of the node-level data required by the JMX data
  * collector in order to successfully perform data collection for a scheduled
  * primary JMX interface.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Jamison </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Jamison </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public class JMXNodeInfo {
     private int m_nodeId;
@@ -48,6 +51,11 @@ public class JMXNodeInfo {
 
     private HashMap m_dsList;
 
+    /**
+     * <p>Constructor for JMXNodeInfo.</p>
+     *
+     * @param nodeId a int.
+     */
     public JMXNodeInfo(int nodeId) {
         m_nodeId = nodeId;
         m_oidList = null;
@@ -55,34 +63,74 @@ public class JMXNodeInfo {
         m_mbeans = new HashMap();
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
     
+    /**
+     * <p>setMBeans</p>
+     *
+     * @param map a {@link java.util.HashMap} object.
+     */
     public void setMBeans(HashMap map) {
         m_mbeans = map;
     }
     
+    /**
+     * <p>getMBeans</p>
+     *
+     * @return a {@link java.util.HashMap} object.
+     */
     public HashMap getMBeans() {
         return m_mbeans;
     }
 
+    /**
+     * <p>setNodeId</p>
+     *
+     * @param nodeId a int.
+     */
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
     }
 
+    /**
+     * <p>setDsMap</p>
+     *
+     * @param dsList a {@link java.util.HashMap} object.
+     */
     public void setDsMap(HashMap dsList) {
         m_dsList = dsList;
     }
 
+    /**
+     * <p>setAttributeMap</p>
+     *
+     * @param oidList a {@link java.util.Map} object.
+     */
     public void setAttributeMap(Map oidList) {
         m_oidList = oidList;
     }
 
+    /**
+     * <p>getDsMap</p>
+     *
+     * @return a {@link java.util.HashMap} object.
+     */
     public HashMap getDsMap() {
         return m_dsList;
     }
 
+    /**
+     * <p>getAttributeMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map getAttributeMap() {
         return m_oidList;
     }

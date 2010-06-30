@@ -33,20 +33,62 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpValue;
 
+/**
+ * <p>TrapProcessor interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TrapProcessor {
 
+    /**
+     * <p>setCommunity</p>
+     *
+     * @param community a {@link java.lang.String} object.
+     */
     public abstract void setCommunity(String community);
 
+    /**
+     * <p>setTimeStamp</p>
+     *
+     * @param timeStamp a long.
+     */
     public abstract void setTimeStamp(long timeStamp);
 
+    /**
+     * <p>setVersion</p>
+     *
+     * @param version a {@link java.lang.String} object.
+     */
     public abstract void setVersion(String version);
 
+    /**
+     * <p>setAgentAddress</p>
+     *
+     * @param agentAddress a {@link java.net.InetAddress} object.
+     */
     public abstract void setAgentAddress(InetAddress agentAddress);
 
+    /**
+     * <p>processVarBind</p>
+     *
+     * @param name a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param value a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public abstract void processVarBind(SnmpObjId name, SnmpValue value);
 
+    /**
+     * <p>setTrapAddress</p>
+     *
+     * @param trapAddress a {@link java.net.InetAddress} object.
+     */
     public abstract void setTrapAddress(InetAddress trapAddress);
 
+    /**
+     * <p>setTrapIdentity</p>
+     *
+     * @param trapIdentity a {@link org.opennms.netmgt.snmp.TrapIdentity} object.
+     */
     public abstract void setTrapIdentity(TrapIdentity trapIdentity);
 
 }

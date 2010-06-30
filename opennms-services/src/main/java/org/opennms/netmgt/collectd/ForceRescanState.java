@@ -42,6 +42,12 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 
+/**
+ * <p>ForceRescanState class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ForceRescanState {
     
     private CollectionAgent m_agent;
@@ -49,19 +55,40 @@ public class ForceRescanState {
     
     private boolean m_forceRescanSent = false;
 
+    /**
+     * <p>Constructor for ForceRescanState.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     */
     public ForceRescanState(CollectionAgent agent, EventProxy eventProxy) {
         m_agent = agent;
         m_eventProxy = eventProxy;
     }
     
+    /**
+     * <p>getEventProxy</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     */
     public EventProxy getEventProxy() {
         return m_eventProxy;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>createForceResanEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createForceResanEvent() {
         // create the event to be sent
         Event newEvent = new Event();
@@ -92,6 +119,11 @@ public class ForceRescanState {
     	}
     }
 
+    /**
+     * <p>getAgent</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public CollectionAgent getAgent() {
         return m_agent;
     }

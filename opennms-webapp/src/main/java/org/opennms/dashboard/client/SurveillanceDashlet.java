@@ -42,9 +42,14 @@ import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
 
 /**
- * 
+ * <p>SurveillanceDashlet class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class SurveillanceDashlet extends Dashlet {
     
@@ -190,6 +195,11 @@ public class SurveillanceDashlet extends Dashlet {
     }
     
     
+    /**
+     * <p>Constructor for SurveillanceDashlet.</p>
+     *
+     * @param dashboard a {@link org.opennms.dashboard.client.Dashboard} object.
+     */
     public SurveillanceDashlet(Dashboard dashboard) {
         super(dashboard, "Surveillance View");
         m_view = new SurveillanceView(this);
@@ -200,6 +210,11 @@ public class SurveillanceDashlet extends Dashlet {
 
     }
     
+    /**
+     * <p>setData</p>
+     *
+     * @param data a {@link org.opennms.dashboard.client.SurveillanceData} object.
+     */
     public void setData(SurveillanceData data) {
         m_data = data;
         m_view.populate(data);
@@ -222,10 +237,20 @@ public class SurveillanceDashlet extends Dashlet {
         m_listeners.fireAllClicked(this);
     }
     
+    /**
+     * <p>addSurveillanceViewListener</p>
+     *
+     * @param listener a {@link org.opennms.dashboard.client.SurveillanceListener} object.
+     */
     public void addSurveillanceViewListener(SurveillanceListener listener) {
         m_listeners.add(listener);
     }
     
+    /**
+     * <p>removeSurveillanceViewListener</p>
+     *
+     * @param listener a {@link org.opennms.dashboard.client.SurveillanceListener} object.
+     */
     public void removeSurveillanceViewListener(SurveillanceListener listener) {
         m_listeners.remove(listener);
     }
@@ -235,6 +260,11 @@ public class SurveillanceDashlet extends Dashlet {
         m_loader.load();
     }
 
+    /**
+     * <p>setSurveillanceService</p>
+     *
+     * @param svc a {@link org.opennms.dashboard.client.SurveillanceServiceAsync} object.
+     */
     public void setSurveillanceService(SurveillanceServiceAsync svc) {
         m_loader.setSurveillanceService(svc);
     }

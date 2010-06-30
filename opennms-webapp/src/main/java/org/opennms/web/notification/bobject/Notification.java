@@ -43,11 +43,13 @@ import org.opennms.web.WebSecurityUtils;
 
 /**
  * This class holds the information parsed from the notifications.xml
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
+ * @since 1.6.12
  */
 public class Notification {
     /**
@@ -79,7 +81,7 @@ public class Notification {
 
     /**
      * Sets the name of the notification
-     * 
+     *
      * @param name
      *            the name to be set for this notification.
      */
@@ -89,7 +91,7 @@ public class Notification {
 
     /**
      * Returns the name of the notification
-     * 
+     *
      * @return the name of the notification.
      */
     public String getName() {
@@ -98,7 +100,7 @@ public class Notification {
 
     /**
      * Sets the comments for the notification
-     * 
+     *
      * @param comments
      *            comments to be set for this notification.
      */
@@ -108,7 +110,7 @@ public class Notification {
 
     /**
      * Returns the comments for the notification
-     * 
+     *
      * @return comments for this notification.
      */
     public String getComments() {
@@ -117,7 +119,7 @@ public class Notification {
 
     /**
      * Sets the interval for the notification
-     * 
+     *
      * @param interval
      *            the interval to be set for this notification.
      */
@@ -127,7 +129,7 @@ public class Notification {
 
     /**
      * Returns the string version of the interval
-     * 
+     *
      * @return the interval for this notification.
      */
     public String getInterval() {
@@ -136,7 +138,7 @@ public class Notification {
 
     /**
      * Returns the interval converted to milliseconds
-     * 
+     *
      * @return the interval in milliseconds
      */
     public long getIntervalMilliseconds() {
@@ -152,7 +154,7 @@ public class Notification {
 
     /**
      * Returns the interval in seconds
-     * 
+     *
      * @return the interval in seconds
      */
     public long getIntervalSeconds() {
@@ -161,7 +163,7 @@ public class Notification {
 
     /**
      * Adds a target to the notification
-     * 
+     *
      * @param target
      *            a target to be added for this notification.
      */
@@ -171,7 +173,7 @@ public class Notification {
 
     /**
      * Returns the list of targets
-     * 
+     *
      * @return the list of targets.
      */
     public List<NotificationTarget> getTargets() {

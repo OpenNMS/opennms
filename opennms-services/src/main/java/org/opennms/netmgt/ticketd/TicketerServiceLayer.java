@@ -37,38 +37,44 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * OpenNMS Trouble Ticket API
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 @Transactional
 public interface TicketerServiceLayer {
 	
 	/**
 	 * Implement to manage creation of tickets through registered plugin.
-	 * @param alarmId
+	 *
+	 * @param alarmId a int.
 	 */
 	public void createTicketForAlarm(int alarmId);
 	
 	/**
 	 * Implement to manage updating of tickets through registered plugin.
-	 * @param alarmId
-	 * @param ticketId
+	 *
+	 * @param alarmId a int.
+	 * @param ticketId a {@link java.lang.String} object.
 	 */
 	public void updateTicketForAlarm(int alarmId, String ticketId);
 	
 	/**
 	 * Implement to manage closing of tickets through registered plugin.
-	 * @param alarmId
-	 * @param ticketId
+	 *
+	 * @param alarmId a int.
+	 * @param ticketId a {@link java.lang.String} object.
 	 */
 	public void closeTicketForAlarm(int alarmId, String ticketId);
 	
 	/**
 	 * Implement to manage canceling of tickets through registered plugin.
-	 * @param alarmId
-	 * @param ticketId
+	 *
+	 * @param alarmId a int.
+	 * @param ticketId a {@link java.lang.String} object.
 	 */
 	public void cancelTicketForAlarm(int alarmId, String ticketId);
 

@@ -35,15 +35,29 @@ import java.util.Map;
 
 
 /**
+ * <p>NavBarModel class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NavBarModel {
     private Map<NavBarEntry, DisplayStatus> m_entries;
 
+    /**
+     * <p>Constructor for NavBarModel.</p>
+     *
+     * @param entries a java$util$Map object.
+     */
     public NavBarModel(Map<NavBarEntry, DisplayStatus> entries) {
         m_entries = entries;
     }
 
+    /**
+     * <p>getEntries</p>
+     *
+     * @return a java$util$Map object.
+     */
     public Map<NavBarEntry, DisplayStatus> getEntries() {
         return m_entries;
     }

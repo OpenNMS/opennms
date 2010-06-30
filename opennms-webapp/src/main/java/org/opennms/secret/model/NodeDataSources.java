@@ -34,26 +34,63 @@ package org.opennms.secret.model;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * <p>NodeDataSources class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NodeDataSources {
     private Node m_node;
     private List m_dataSources;
     private Set m_interfaces;
     
+    /**
+     * <p>getInterfaces</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set getInterfaces() {
         return m_interfaces;
     }
+    /**
+     * <p>setInterfaces</p>
+     *
+     * @param interfaces a {@link java.util.Set} object.
+     */
     public void setInterfaces(Set interfaces) {
         m_interfaces = interfaces;
     }
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.secret.model.Node} object.
+     */
     public Node getNode() {
         return m_node;
     }
+    /**
+     * <p>setNode</p>
+     *
+     * @param node a {@link org.opennms.secret.model.Node} object.
+     */
     public void setNode(Node node) {
         m_node = node;
     }
+    /**
+     * <p>getDataSources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List getDataSources() {
         return m_dataSources;
     }
+    /**
+     * <p>setDataSources</p>
+     *
+     * @param dataSources a {@link java.util.List} object.
+     */
     public void setDataSources(List dataSources) {
         m_dataSources = dataSources;
     }

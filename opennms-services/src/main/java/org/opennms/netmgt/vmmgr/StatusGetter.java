@@ -45,6 +45,12 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * <p>StatusGetter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class StatusGetter {
     public enum Status {
         UNKNOWN, RUNNING, PARTIALLY_RUNNING, NOT_RUNNING, CONNECTION_REFUSED
@@ -68,29 +74,63 @@ public class StatusGetter {
         }
     }
 
+    /**
+     * <p>Constructor for StatusGetter.</p>
+     */
     public StatusGetter() {
     }
 
+    /**
+     * <p>isVerbose</p>
+     *
+     * @return a boolean.
+     */
     public boolean isVerbose() {
         return m_verbose;
     }
 
+    /**
+     * <p>setVerbose</p>
+     *
+     * @param verbose a boolean.
+     */
     public void setVerbose(boolean verbose) {
         m_verbose = verbose;
     }
 
+    /**
+     * <p>getInvokeURL</p>
+     *
+     * @return a {@link java.net.URL} object.
+     */
     public URL getInvokeURL() {
         return m_invokeURL;
     }
 
+    /**
+     * <p>setInvokeURL</p>
+     *
+     * @param invokeURL a {@link java.net.URL} object.
+     */
     public void setInvokeURL(URL invokeURL) {
         m_invokeURL = invokeURL;
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a {@link org.opennms.netmgt.vmmgr.StatusGetter.Status} object.
+     */
     public Status getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>main</p>
+     *
+     * @param argv an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
+     */
     public static void main(String[] argv) throws Exception {
         StatusGetter statusGetter = new StatusGetter();
         int i;
@@ -140,6 +180,11 @@ public class StatusGetter {
         }
     }
 
+    /**
+     * <p>queryStatus</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void queryStatus() throws Exception {
 
         URLConnection connection = m_invokeURL.openConnection();

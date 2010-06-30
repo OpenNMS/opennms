@@ -35,8 +35,29 @@
 //
 package org.opennms.netmgt.model;
 
+/**
+ * <p>OnmsAttribute interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsAttribute {
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName();
+    /**
+     * <p>getResource</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResource();
+    /**
+     * <p>setResource</p>
+     *
+     * @param resource a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public void setResource(OnmsResource resource);
 }

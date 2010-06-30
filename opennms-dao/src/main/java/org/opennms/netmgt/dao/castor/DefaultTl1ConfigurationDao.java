@@ -42,9 +42,13 @@ import org.opennms.netmgt.dao.Tl1ConfigurationDao;
  * DefaultTl1ConfigurationDao
  *
  * @author brozow
+ * @version $Id: $
  */
 public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConfiguration, List<Tl1Element>>implements Tl1ConfigurationDao {
 
+    /**
+     * <p>Constructor for DefaultTl1ConfigurationDao.</p>
+     */
     public DefaultTl1ConfigurationDao() {
         super(Tl1dConfiguration.class, "TL1d configuration");
     }
@@ -52,11 +56,17 @@ public class DefaultTl1ConfigurationDao extends AbstractCastorConfigDao<Tl1dConf
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.Tl1ConfigurationDao#getElements()
      */
+    /**
+     * <p>getElements</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Tl1Element> getElements() {
         return getContainer().getObject();
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public List<Tl1Element> translateConfig(Tl1dConfiguration castorConfig) {
         return Collections.unmodifiableList(castorConfig.getTl1ElementCollection());

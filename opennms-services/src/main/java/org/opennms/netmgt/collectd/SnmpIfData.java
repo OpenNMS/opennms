@@ -42,8 +42,10 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
 /**
- * 
+ * <p>SnmpIfData class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class SnmpIfData {
 
@@ -55,6 +57,11 @@ public class SnmpIfData {
     private String m_ifAlias;
     private Map<String,String> m_attributes;
 
+    /**
+     * <p>Constructor for SnmpIfData.</p>
+     *
+     * @param snmpIface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+     */
     public SnmpIfData(OnmsSnmpInterface snmpIface) {
         m_nodeId = nullSafeUnbox(snmpIface.getNode().getId(), -1);
         m_collectionType = snmpIface.getCollectionType();
@@ -83,30 +90,65 @@ public class SnmpIfData {
         return (num == null ? dflt : num.intValue());
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
 
+    /**
+     * <p>getCollectionType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface.CollectionType} object.
+     */
     public CollectionType getCollectionType() {
         return m_collectionType;
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a int.
+     */
     public int getIfIndex() {
         return m_ifIndex;
     }
 
+    /**
+     * <p>getIfType</p>
+     *
+     * @return a int.
+     */
     public int getIfType() {
         return m_ifType;
     }
 
+    /**
+     * <p>getLabelForRRD</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabelForRRD() {
         return m_rrdLabel;
     }
 
+    /**
+     * <p>getIfAlias</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfAlias() {
         return m_ifAlias;
     }
 
+    /**
+     * <p>getAttribtuesMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,String> getAttribtuesMap() {
         return m_attributes;
     }

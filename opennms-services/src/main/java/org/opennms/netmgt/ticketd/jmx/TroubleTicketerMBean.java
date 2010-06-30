@@ -38,8 +38,10 @@ package org.opennms.netmgt.ticketd.jmx;
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
- * 
+ * <p>TroubleTicketerMBean interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface TroubleTicketerMBean extends BaseOnmsMBean {
 

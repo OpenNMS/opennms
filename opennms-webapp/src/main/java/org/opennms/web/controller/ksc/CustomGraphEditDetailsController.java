@@ -55,12 +55,20 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>CustomGraphEditDetailsController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class CustomGraphEditDetailsController extends AbstractController implements InitializingBean {
     
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
     private ResourceService m_resourceService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String resourceId = request.getParameter("resourceId");
@@ -120,6 +128,13 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         return modelAndView;
     }
     
+    /**
+     * <p>getPrefabGraphFromList</p>
+     *
+     * @param graphs an array of {@link org.opennms.netmgt.model.PrefabGraph} objects.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.PrefabGraph} object.
+     */
     public PrefabGraph getPrefabGraphFromList(PrefabGraph[] graphs, String name) {
         for (PrefabGraph graph : graphs) {
             if (graph.getName().equals(name)) {
@@ -129,30 +144,65 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
         return null;
     }
 
+    /**
+     * <p>getResourceService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public ResourceService getResourceService() {
         return m_resourceService;
     }
 
+    /**
+     * <p>setResourceService</p>
+     *
+     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;
     }
 
+    /**
+     * <p>getKscReportFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public KSC_PerformanceReportFactory getKscReportFactory() {
         return m_kscReportFactory;
     }
 
+    /**
+     * <p>setKscReportFactory</p>
+     *
+     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
         m_kscReportFactory = kscReportFactory;
     }
 
+    /**
+     * <p>getKscReportService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public KscReportService getKscReportService() {
         return m_kscReportService;
     }
 
+    /**
+     * <p>setKscReportService</p>
+     *
+     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "property resourceService must be set");
         Assert.state(m_kscReportService != null, "property kscReportService must be set");

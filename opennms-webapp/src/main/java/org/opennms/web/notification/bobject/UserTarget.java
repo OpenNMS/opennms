@@ -37,11 +37,13 @@ import org.opennms.web.admin.users.parsers.User;
 /**
  * A NotificationTarget representing a user target parsed from the notifications
  * xml file.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
+ * @since 1.6.12
  */
 public class UserTarget extends NotificationTarget {
     /**
@@ -72,7 +74,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Sets the userId for this target
-     * 
+     *
      * @param name
      *            the username to be set.
      */
@@ -82,7 +84,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Returns the userId for this target
-     * 
+     *
      * @return the username.
      */
     public String getUserName() {
@@ -91,7 +93,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Sets the User object for this target
-     * 
+     *
      * @param user
      *            the user object to be set.
      */
@@ -101,7 +103,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Returns the User object for this target
-     * 
+     *
      * @return the user object.
      */
     public User getUser() {
@@ -110,7 +112,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Sets the command name for this target
-     * 
+     *
      * @param commandName
      *            the command name to be set.
      */
@@ -120,7 +122,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Returns the command name for this target
-     * 
+     *
      * @return the command name.
      */
     public String getCommandName() {
@@ -129,7 +131,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Sets the Command object for this target
-     * 
+     *
      * @param command
      *            the command to be set.
      */
@@ -139,7 +141,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Returns the Command object for this target
-     * 
+     *
      * @return the command.
      */
     public Command getCommand() {
@@ -148,7 +150,7 @@ public class UserTarget extends NotificationTarget {
 
     /**
      * Returns the type of the target
-     * 
+     *
      * @return the type, compare to NotificationTask.TARGET_TYPE_USER.
      */
     public int getType() {

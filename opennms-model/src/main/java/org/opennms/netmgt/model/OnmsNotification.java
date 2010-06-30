@@ -52,6 +52,12 @@ import org.springframework.core.style.ToStringCreator;
 
 
 @Entity
+/**
+ * <p>OnmsNotification class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name="notifications")
 public class OnmsNotification {
 
@@ -101,7 +107,24 @@ public class OnmsNotification {
      */
     private String m_notifConfigName;
 
-    /** full constructor */
+    /**
+     * full constructor
+     *
+     * @param notifyId a {@link java.lang.Integer} object.
+     * @param textMsg a {@link java.lang.String} object.
+     * @param subject a {@link java.lang.String} object.
+     * @param numericMsg a {@link java.lang.String} object.
+     * @param pageTime a {@link java.util.Date} object.
+     * @param respondTime a {@link java.util.Date} object.
+     * @param answeredBy a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceType a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+     * @param queueId a {@link java.lang.String} object.
+     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param usersNotified a {@link java.util.Set} object.
+     * @param notifConfigName a {@link java.lang.String} object.
+     */
     public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, String ipAddress, OnmsServiceType serviceType, String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified, String notifConfigName) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
@@ -119,11 +142,21 @@ public class OnmsNotification {
         m_notifConfigName = notifConfigName;
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsNotification() {
     }
 
-    /** minimal constructor */
+    /**
+     * minimal constructor
+     *
+     * @param notifyId a {@link java.lang.Integer} object.
+     * @param textMsg a {@link java.lang.String} object.
+     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param usersNotified a {@link java.util.Set} object.
+     */
     public OnmsNotification(Integer notifyId, String textMsg, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
@@ -133,6 +166,11 @@ public class OnmsNotification {
     }
 
     
+    /**
+     * <p>getNotifyId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @SequenceGenerator(name="notifySequence", sequenceName="notifyNxtId")
     @GeneratedValue(generator="notifySequence")
@@ -140,107 +178,212 @@ public class OnmsNotification {
         return m_notifyId;
     }
 
+    /**
+     * <p>setNotifyId</p>
+     *
+     * @param notifyid a {@link java.lang.Integer} object.
+     */
     public void setNotifyId(Integer notifyid) {
         m_notifyId = notifyid;
     }
 
     
+    /**
+     * <p>getTextMsg</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="textMsg", length=4000, nullable=false)
     public String getTextMsg() {
         return m_textMsg;
     }
 
+    /**
+     * <p>setTextMsg</p>
+     *
+     * @param textmsg a {@link java.lang.String} object.
+     */
     public void setTextMsg(String textmsg) {
         m_textMsg = textmsg;
     }
     
 
+    /**
+     * <p>getSubject</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="subject", length=256)
     public String getSubject() {
         return m_subject;
     }
 
+    /**
+     * <p>setSubject</p>
+     *
+     * @param subject a {@link java.lang.String} object.
+     */
     public void setSubject(String subject) {
         m_subject = subject;
     }
     
 
+    /**
+     * <p>getNumericMsg</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="numericMsg", length=256)
     public String getNumericMsg() {
         return m_numericMsg;
     }
 
+    /**
+     * <p>setNumericMsg</p>
+     *
+     * @param numericmsg a {@link java.lang.String} object.
+     */
     public void setNumericMsg(String numericmsg) {
         m_numericMsg = numericmsg;
     }
 
+    /**
+     * <p>getPageTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="pageTime")
     public Date getPageTime() {
         return m_pageTime;
     }
 
+    /**
+     * <p>setPageTime</p>
+     *
+     * @param pagetime a {@link java.util.Date} object.
+     */
     public void setPageTime(Date pagetime) {
         m_pageTime = pagetime;
     }
 
     
+    /**
+     * <p>getRespondTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="respondTime")
     public Date getRespondTime() {
         return m_respondTime;
     }
 
+    /**
+     * <p>setRespondTime</p>
+     *
+     * @param respondtime a {@link java.util.Date} object.
+     */
     public void setRespondTime(Date respondtime) {
         m_respondTime = respondtime;
     }
 
     
+    /**
+     * <p>getAnsweredBy</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="answeredBy", length=256)
     public String getAnsweredBy() {
         return m_answeredBy;
     }
 
+    /**
+     * <p>setAnsweredBy</p>
+     *
+     * @param answeredby a {@link java.lang.String} object.
+     */
     public void setAnsweredBy(String answeredby) {
         m_answeredBy = answeredby;
     }
     
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="interfaceId", length=16)
     public String getIpAddress() {
     	return m_ipAddress;
     }
     
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipAddress) {
     	m_ipAddress = ipAddress;
     }
 
+    /**
+     * <p>getServiceType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+     */
     @ManyToOne
     @JoinColumn(name="serviceId")
     public OnmsServiceType getServiceType() {
         return m_serviceType;
     }
 
+    /**
+     * <p>setServiceType</p>
+     *
+     * @param serviceType a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+     */
     public void setServiceType(OnmsServiceType serviceType) {
         m_serviceType = serviceType;
     }
 
 
+    /**
+     * <p>getQueueId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="queueId", length=256)
     public String getQueueId() {
         return m_queueId;
     }
 
+    /**
+     * <p>setQueueId</p>
+     *
+     * @param queueid a {@link java.lang.String} object.
+     */
     public void setQueueId(String queueid) {
         m_queueId = queueid;
     }
 
 
+    /**
+     * <p>getEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     */
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="eventId", nullable=false)
     public OnmsEvent getEvent() {
         return m_event;
     }
 
+    /**
+     * <p>setEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     */
     public void setEvent(OnmsEvent event) {
         m_event = event;
     }
@@ -249,44 +392,89 @@ public class OnmsNotification {
      * FIXME: HACK for some reason we put the eventUEI in the notificatinos table along with the eventId
      * so we have to HACK this so we can properly write the table
      */
+    /**
+     * <p>getEventUei</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="eventUEI")
     public String getEventUei() {
         return m_event.getEventUei();
     }
     
+    /**
+     * <p>setEventUei</p>
+     *
+     * @param eventUei a {@link java.lang.String} object.
+     */
     public void setEventUei(String eventUei) {
         // do nothing as this is a HACK
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     @ManyToOne
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
 
+    /**
+     * <p>setNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void setNode(OnmsNode node) {
         m_node = node;
     }
 
+    /**
+     * <p>getUsersNotified</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     @OneToMany(mappedBy="notification", fetch=FetchType.LAZY)
     public Set<OnmsUserNotification> getUsersNotified() {
         return m_usersNotified;
     }
 
+    /**
+     * <p>setUsersNotified</p>
+     *
+     * @param usersnotifieds a {@link java.util.Set} object.
+     */
     public void setUsersNotified(Set<OnmsUserNotification> usersnotifieds) {
         m_usersNotified = usersnotifieds;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("notifyid", getNotifyId())
             .toString();
     }
 
+    /**
+     * <p>getNotifConfigName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNotifConfigName() {
         return m_notifConfigName;
     }
 
+    /**
+     * <p>setNotifConfigName</p>
+     *
+     * @param notifConfigName a {@link java.lang.String} object.
+     */
     @Column(name="notifConfigName", length=63 )
     public void setNotifConfigName(String notifConfigName) {
         m_notifConfigName = notifConfigName;

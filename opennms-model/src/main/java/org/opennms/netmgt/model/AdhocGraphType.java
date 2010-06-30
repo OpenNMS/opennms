@@ -36,6 +36,12 @@
 package org.opennms.netmgt.model;
 
 
+/**
+ * <p>AdhocGraphType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AdhocGraphType {
     private String m_name;
 
@@ -49,54 +55,117 @@ public class AdhocGraphType {
 
     private String m_graphLineTemplate;
 
+    /**
+     * <p>Constructor for AdhocGraphType.</p>
+     */
     public AdhocGraphType() {
         
     }
     
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setCommandPrefix</p>
+     *
+     * @param commandPrefix a {@link java.lang.String} object.
+     */
     public void setCommandPrefix(String commandPrefix) {
         m_commandPrefix = commandPrefix;
     }
     
+    /**
+     * <p>getCommandPrefix</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCommandPrefix() {
         return m_commandPrefix;
     }
 
+    /**
+     * <p>setOutputMimeType</p>
+     *
+     * @param outputMimeType a {@link java.lang.String} object.
+     */
     public void setOutputMimeType(String outputMimeType) {
         m_outputMimeType = outputMimeType;
     }
     
+    /**
+     * <p>getOutputMimeType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOutputMimeType() {
         return m_outputMimeType;
     }
 
+    /**
+     * <p>setTitleTemplate</p>
+     *
+     * @param template a {@link java.lang.String} object.
+     */
     public void setTitleTemplate(String template) {
         m_titleTemplate = template;
     }
 
+    /**
+     * <p>setDataSourceTemplate</p>
+     *
+     * @param template a {@link java.lang.String} object.
+     */
     public void setDataSourceTemplate(String template) {
         m_dataSourceTemplate = template;
     }
 
+    /**
+     * <p>setGraphLineTemplate</p>
+     *
+     * @param template a {@link java.lang.String} object.
+     */
     public void setGraphLineTemplate(String template) {
         m_graphLineTemplate = template;
     }
 
+    /**
+     * <p>getDataSourceTemplate</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDataSourceTemplate() {
         return m_dataSourceTemplate;
     }
 
+    /**
+     * <p>getGraphLineTemplate</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGraphLineTemplate() {
         return m_graphLineTemplate;
     }
 
+    /**
+     * <p>getTitleTemplate</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitleTemplate() {
         return m_titleTemplate;
     }

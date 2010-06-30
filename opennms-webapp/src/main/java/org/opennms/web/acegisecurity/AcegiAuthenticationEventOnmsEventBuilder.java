@@ -53,12 +53,22 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.Assert;
 
+/**
+ * <p>AcegiAuthenticationEventOnmsEventBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class AcegiAuthenticationEventOnmsEventBuilder implements ApplicationListener, InitializingBean {
+    /** Constant <code>SUCCESS_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
+    /** Constant <code>FAILURE_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String FAILURE_UEI = "uei.opennms.org/internal/authentication/failure";
 
     private EventProxy m_eventProxy;
     
+    /** {@inheritDoc} */
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof AuthenticationSuccessEvent) {
             AuthenticationSuccessEvent authEvent = (AuthenticationSuccessEvent) event;
@@ -101,10 +111,18 @@ public class AcegiAuthenticationEventOnmsEventBuilder implements ApplicationList
         }
     }
     
+    /**
+     * <p>setEventProxy</p>
+     *
+     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.notNull(m_eventProxy, "property eventProxy must be set");
     }

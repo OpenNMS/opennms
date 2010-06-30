@@ -64,12 +64,13 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * This class is designed to discover link among nodes using the collected and
  * the necessary SNMP information. When the class is initially constructed no
  * information is used.
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- *  
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
-
 public final class DiscoveryLink implements ReadyRunnable {
 
 	private static final int SNMP_IF_TYPE_ETHERNET = 6;
@@ -165,9 +166,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 * No synchronization is performed, so if this is used in a separate thread
 	 * context synchronization must be added.
 	 * </p>
-	 *  
 	 */
-
 	public void run() {
 
 		if (suspendCollection) {
@@ -1186,20 +1185,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 	
 	/**
 	 * Return the Scheduler
-	 * 
-	 * @return
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
 	 */
-
 	public Scheduler getScheduler() {
 		return m_scheduler;
 	}
 
 	/**
 	 * Set the Scheduler
-	 * 
-	 * @param scheduler
+	 *
+	 * @param scheduler a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
 	 */
-
 	public void setScheduler(Scheduler scheduler) {
 		m_scheduler = scheduler;
 	}
@@ -1207,7 +1204,6 @@ public final class DiscoveryLink implements ReadyRunnable {
 	/**
 	 * This Method is called when DiscoveryLink is initialized
 	 */
-
 	public void schedule() {
 		if (m_scheduler == null)
 			throw new IllegalStateException(
@@ -1231,14 +1227,17 @@ public final class DiscoveryLink implements ReadyRunnable {
 	}
 
 	/**
+	 * <p>getInitialSleepTime</p>
+	 *
 	 * @return Returns the initial_sleep_time.
 	 */
-
 	public long getInitialSleepTime() {
 		return initial_sleep_time;
 	}
 
 	/**
+	 * <p>setInitialSleepTime</p>
+	 *
 	 * @param initial_sleep_time
 	 *            The initial_sleep_timeto set.
 	 */
@@ -1246,53 +1245,74 @@ public final class DiscoveryLink implements ReadyRunnable {
 		this.initial_sleep_time = initial_sleep_time;
 	}
 
+	/**
+	 * <p>isReady</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isReady() {
 		return true;
 	}
 
 	/**
+	 * <p>getDiscoveryInterval</p>
+	 *
 	 * @return Returns the discovery_link_interval.
 	 */
-
 	public long getDiscoveryInterval() {
 		return discovery_interval;
 	}
 
 	/**
+	 * <p>setSnmpPollInterval</p>
+	 *
 	 * @param interval
 	 *            The discovery_link_interval to set.
 	 */
-
 	public void setSnmpPollInterval(long interval) {
 		this.snmp_poll_interval = interval;
 	}
 
 	/**
+	 * <p>getSnmpPollInterval</p>
+	 *
 	 * @return Returns the discovery_link_interval.
 	 */
-
 	public long getSnmpPollInterval() {
 		return snmp_poll_interval;
 	}
 
 	/**
+	 * <p>setDiscoveryInterval</p>
+	 *
 	 * @param interval
 	 *            The discovery_link_interval to set.
 	 */
-
 	public void setDiscoveryInterval(long interval) {
 		this.discovery_interval = interval;
 	}
 
+	/**
+	 * <p>Getter for the field <code>links</code>.</p>
+	 *
+	 * @return an array of {@link org.opennms.netmgt.linkd.NodeToNodeLink} objects.
+	 */
 	public NodeToNodeLink[] getLinks() {
 		return (NodeToNodeLink[]) links.toArray(new NodeToNodeLink[0]);
 	}
 
+	/**
+	 * <p>getMacLinks</p>
+	 *
+	 * @return an array of {@link org.opennms.netmgt.linkd.MacToNodeLink} objects.
+	 */
 	public MacToNodeLink[] getMacLinks() {
 		return (MacToNodeLink[]) maclinks.toArray(new MacToNodeLink[0]);
 	}
 
 	/**
+	 * <p>isSuspended</p>
+	 *
 	 * @return Returns the suspendCollection.
 	 */
 	public boolean isSuspended() {
@@ -1300,23 +1320,22 @@ public final class DiscoveryLink implements ReadyRunnable {
 	}
 
 	/**
-	 * @param suspendCollection
-	 *            The suspendCollection to set.
+	 * <p>suspend</p>
 	 */
-
 	public void suspend() {
 		this.suspendCollection = true;
 	}
 
 	/**
-	 * @param suspendCollection
-	 *            The suspendCollection to set.
+	 * <p>wakeUp</p>
 	 */
-
 	public void wakeUp() {
 		this.suspendCollection = false;
 	}
 
+	/**
+	 * <p>unschedule</p>
+	 */
 	public void unschedule() {
 		if (m_scheduler == null)
 			throw new IllegalStateException(
@@ -1479,10 +1498,16 @@ public final class DiscoveryLink implements ReadyRunnable {
 		}
 	}
 	
+	/** {@inheritDoc} */
 	public boolean equals(ReadyRunnable r) {
 		return (r instanceof DiscoveryLink && this.getPackageName().equals(r.getPackageName()));
 	}
 	
+	/**
+	 * <p>getInfo</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getInfo() {
 		return " Ready Runnable Discovery Link discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes/package: "
 		+ discoveryUsingBridge() + "/"
@@ -1490,34 +1515,70 @@ public final class DiscoveryLink implements ReadyRunnable {
 		+ discoveryUsingRoutes() + "/"+ getPackageName();
 	}
 
+	/**
+	 * <p>discoveryUsingBridge</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean discoveryUsingBridge() {
 		return discoveryUsingBridge;
 	}
 
+	/**
+	 * <p>Setter for the field <code>discoveryUsingBridge</code>.</p>
+	 *
+	 * @param discoveryUsingBridge a boolean.
+	 */
 	public void setDiscoveryUsingBridge(boolean discoveryUsingBridge) {
 		this.discoveryUsingBridge = discoveryUsingBridge;
 	}
 
+	/**
+	 * <p>discoveryUsingCdp</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean discoveryUsingCdp() {
 		return discoveryUsingCdp;
 	}
 
+	/**
+	 * <p>Setter for the field <code>discoveryUsingCdp</code>.</p>
+	 *
+	 * @param discoveryUsingCdp a boolean.
+	 */
 	public void setDiscoveryUsingCdp(boolean discoveryUsingCdp) {
 		this.discoveryUsingCdp = discoveryUsingCdp;
 	}
 
+	/**
+	 * <p>discoveryUsingRoutes</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean discoveryUsingRoutes() {
 		return discoveryUsingRoutes;
 	}
 
+	/**
+	 * <p>Setter for the field <code>discoveryUsingRoutes</code>.</p>
+	 *
+	 * @param discoveryUsingRoutes a boolean.
+	 */
 	public void setDiscoveryUsingRoutes(boolean discoveryUsingRoutes) {
 		this.discoveryUsingRoutes = discoveryUsingRoutes;
 	}
 
+	/**
+	 * <p>Getter for the field <code>packageName</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getPackageName() {
 		return packageName;
 	}
 
+	/** {@inheritDoc} */
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
@@ -1662,18 +1723,38 @@ public final class DiscoveryLink implements ReadyRunnable {
 		return macs;
 	}
 
+	/**
+	 * <p>isEnableDownloadDiscovery</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isEnableDownloadDiscovery() {
 		return enableDownloadDiscovery;
 	}
 
+	/**
+	 * <p>Setter for the field <code>enableDownloadDiscovery</code>.</p>
+	 *
+	 * @param enableDownloaddiscovery a boolean.
+	 */
 	public void setEnableDownloadDiscovery(boolean enableDownloaddiscovery) {
 		this.enableDownloadDiscovery = enableDownloaddiscovery;
 	}
 
+	/**
+	 * <p>isForceIpRouteDiscoveryOnEtherNet</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isForceIpRouteDiscoveryOnEtherNet() {
 		return forceIpRouteDiscoveryOnEtherNet;
 	}
 
+	/**
+	 * <p>Setter for the field <code>forceIpRouteDiscoveryOnEtherNet</code>.</p>
+	 *
+	 * @param forceIpRouteDiscoveryOnEtherNet a boolean.
+	 */
 	public void setForceIpRouteDiscoveryOnEtherNet(
 			boolean forceIpRouteDiscoveryOnEtherNet) {
 		this.forceIpRouteDiscoveryOnEtherNet = forceIpRouteDiscoveryOnEtherNet;

@@ -53,9 +53,17 @@ import org.opennms.secret.model.GraphDefinition;
 import org.springframework.web.servlet.view.tiles.ComponentControllerSupport;
 
 
+/**
+ * <p>TmpGraphCartTileController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class TmpGraphCartTileController extends ComponentControllerSupport {
     private static final String s_sessionAttribute = "graphDef";
 
+    /** {@inheritDoc} */
     protected void doPerform(ComponentContext componentContext, HttpServletRequest request, HttpServletResponse response) throws Exception {
         GraphDefinition graphDef = getGraphDef(request);
         DataSource ds = new DataSource();

@@ -58,9 +58,10 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * <p>HttpNotificationStrategy class.</p>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class HttpNotificationStrategy implements NotificationStrategy {
 
@@ -69,6 +70,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
+    /** {@inheritDoc} */
     public int send(List<Argument> arguments) {
         
         m_arguments = arguments;

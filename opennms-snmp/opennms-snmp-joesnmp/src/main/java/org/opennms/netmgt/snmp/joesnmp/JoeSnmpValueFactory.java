@@ -48,48 +48,85 @@ import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpOpaque;
 import org.opennms.protocols.snmp.SnmpTimeTicks;
 
+/**
+ * <p>JoeSnmpValueFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JoeSnmpValueFactory implements SnmpValueFactory {
 
+    /**
+     * <p>getOctetString</p>
+     *
+     * @param bytes an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getOctetString(byte[] bytes) {
         return new JoeSnmpValue(new SnmpOctetString(bytes));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getCounter32(long val) {
         return new JoeSnmpValue(new SnmpCounter32(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getCounter64(BigInteger val) {
         return new JoeSnmpValue(new SnmpCounter64(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getGauge32(long val) {;
         return new JoeSnmpValue(new SnmpGauge32(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getInt32(int val) {
         return new JoeSnmpValue(new SnmpInt32(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getIpAddress(InetAddress val) {
         return new JoeSnmpValue(new SnmpIPAddress(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getObjectId(SnmpObjId objId) {
         return new JoeSnmpValue(new SnmpObjectId(objId.getIds()));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getTimeTicks(long val) {
         return new JoeSnmpValue(new SnmpTimeTicks(val));
     }
 
+    /**
+     * <p>getNull</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getNull() {
         return new JoeSnmpValue(new SnmpNull());
     }
 
+    /**
+     * <p>getValue</p>
+     *
+     * @param type a int.
+     * @param bytes an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getValue(int type, byte[] bytes) {
         return new JoeSnmpValue(type, bytes);
     }
 
+    /**
+     * <p>getOpaque</p>
+     *
+     * @param bs an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getOpaque(byte[] bs) {
         return new JoeSnmpValue(new SnmpOpaque(bs));
     }

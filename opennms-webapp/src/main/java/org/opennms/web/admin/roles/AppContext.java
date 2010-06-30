@@ -38,9 +38,21 @@ package org.opennms.web.admin.roles;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.UserFactory;
 
+/**
+ * <p>AppContext class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class AppContext {
     private static Manager s_manager = null;
     
+    /**
+     * <p>init</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public static void init() throws Exception {
         GroupFactory.init();
         UserFactory.init();
@@ -54,14 +66,29 @@ public class AppContext {
         return s_manager;
     }
     
+    /**
+     * <p>getWebRoleManager</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebRoleManager} object.
+     */
     public static WebRoleManager getWebRoleManager() {
         return getManager();
     }
 
+    /**
+     * <p>getWebUserManager</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebUserManager} object.
+     */
     public static WebUserManager getWebUserManager() {
         return getManager();
     }
     
+    /**
+     * <p>getWebGroupManager</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebGroupManager} object.
+     */
     public static WebGroupManager getWebGroupManager() {
         return getManager();
     }

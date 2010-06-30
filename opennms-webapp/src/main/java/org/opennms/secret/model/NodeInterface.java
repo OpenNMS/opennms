@@ -36,11 +36,12 @@ package org.opennms.secret.model;
 import java.util.Date;
 
 /**
-
- * @author David Hustace
- * 
- * @hibernate.class table="Ipinterface"
+ * <p>NodeInterface class.</p>
  *
+ * @author David Hustace
+ * @hibernate.class table="Ipinterface"
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NodeInterface {
     
@@ -57,6 +58,8 @@ public class NodeInterface {
     InterfaceService[] services;
     
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return Returns the id.
      * @hibernate.id generator-class="native"
      */
@@ -64,115 +67,149 @@ public class NodeInterface {
         return id;
     }
     
+    /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     */
     public void setId(Long id) {
         this.id = id;
     }
  
     /**
+     * <p>Getter for the field <code>ifIndex</code>.</p>
+     *
      * @return Returns the ifIndex.
-     * @hibernate.property
      */
     public Long getIfIndex() {
         return ifIndex;
     }
     /**
+     * <p>Setter for the field <code>ifIndex</code>.</p>
+     *
      * @param ifIndex The ifIndex to set.
      */
     public void setIfIndex(Long ifIndex) {
         this.ifIndex = ifIndex;
     }
     /**
+     * <p>Getter for the field <code>ipAddr</code>.</p>
+     *
      * @return Returns the ipAddr.
-     * @hibernate.property
      */
     public String getIpAddr() {
         return ipAddr;
     }
     /**
+     * <p>Setter for the field <code>ipAddr</code>.</p>
+     *
      * @param ipAddr The ipAddr to set.
      */
     public void setIpAddr(String ipAddr) {
         this.ipAddr = ipAddr;
     }
     /**
+     * <p>Getter for the field <code>ipHostName</code>.</p>
+     *
      * @return Returns the ipHostName.
-     * @hibernate.property
      */
     public String getIpHostName() {
         return ipHostName;
     }
     /**
+     * <p>Setter for the field <code>ipHostName</code>.</p>
+     *
      * @param ipHostName The ipHostName to set.
      */
     public void setIpHostName(String ipHostName) {
         this.ipHostName = ipHostName;
     }
     /**
+     * <p>Getter for the field <code>ipLastCapsdPoll</code>.</p>
+     *
      * @return Returns the ipLastCapsdPoll.
-     * @hibernate.property
      */
     public Date getIpLastCapsdPoll() {
         return ipLastCapsdPoll;
     }
     /**
+     * <p>Setter for the field <code>ipLastCapsdPoll</code>.</p>
+     *
      * @param ipLastCapsdPoll The ipLastCapsdPoll to set.
      */
     public void setIpLastCapsdPoll(Date ipLastCapsdPoll) {
         this.ipLastCapsdPoll = ipLastCapsdPoll;
     }
     /**
+     * <p>Getter for the field <code>ipStatus</code>.</p>
+     *
      * @return Returns the ipStatus.
-     * @hibernate.property
      */
     public Long getIpStatus() {
         return ipStatus;
     }
     /**
+     * <p>Setter for the field <code>ipStatus</code>.</p>
+     *
      * @param ipStatus The ipStatus to set.
      */
     public void setIpStatus(Long ipStatus) {
         this.ipStatus = ipStatus;
     }
     /**
+     * <p>Getter for the field <code>isManaged</code>.</p>
+     *
      * @return Returns the isManaged.
-     * @hibernate.property
      */
     public String getIsManaged() {
         return isManaged;
     }
     /**
+     * <p>Setter for the field <code>isManaged</code>.</p>
+     *
      * @param isManaged The isManaged to set.
      */
     public void setIsManaged(String isManaged) {
         this.isManaged = isManaged;
     }
     /**
+     * <p>Getter for the field <code>isSnmpPrimary</code>.</p>
+     *
      * @return Returns the isSnmpPrimary.
-     * @hibernate.property
      */
     public String getIsSnmpPrimary() {
         return isSnmpPrimary;
     }
     /**
+     * <p>Setter for the field <code>isSnmpPrimary</code>.</p>
+     *
      * @param isSnmpPrimary The isSnmpPrimary to set.
      */
     public void setIsSnmpPrimary(String isSnmpPrimary) {
         this.isSnmpPrimary = isSnmpPrimary;
     }
     /**
+     * <p>Getter for the field <code>nodeId</code>.</p>
+     *
      * @return Returns the nodeId.
-     * @hibernate.property
      */
     public Long getNodeId() {
         return nodeId;
     }
     /**
+     * <p>Setter for the field <code>nodeId</code>.</p>
+     *
      * @param nodeId The nodeId to set.
      */
     public void setNodeId(Long nodeId) {
         this.nodeId = nodeId;
     }
 
+    /**
+     * <p>hasPerformanceDataSource</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasPerformanceDataSource() {
         return true;
         

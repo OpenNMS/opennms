@@ -50,6 +50,9 @@ import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * Provides access to the rrd configuration data.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class RrdConfig {
 
@@ -70,6 +73,12 @@ public class RrdConfig {
 
     }
 
+    /**
+     * <p>loadProperties</p>
+     *
+     * @param in a {@link java.io.InputStream} object.
+     * @throws java.io.IOException if any.
+     */
     public static synchronized void loadProperties(InputStream in) throws IOException {
         Properties properties = new Properties(System.getProperties());
         properties.load(in);
@@ -78,13 +87,18 @@ public class RrdConfig {
     }
 
 
+    /**
+     * <p>setProperties</p>
+     *
+     * @param properties a {@link java.util.Properties} object.
+     */
     public static synchronized void setProperties(Properties properties) {
         m_properties = properties;
     }
 
     /**
      * Get a string valued property, returning default value if it is not set.
-     * 
+     *
      * @param name
      *            the property name
      * @param defaultVal
@@ -106,7 +120,7 @@ public class RrdConfig {
     /**
      * Get a boolean valued property, returning default value if it is not set
      * or is set to an invalid value.
-     * 
+     *
      * @param name
      *            the property name
      * @param defaultVal
@@ -120,7 +134,7 @@ public class RrdConfig {
     /**
      * Get a int valued property, returning default value if it is not set or is
      * set to an invalid value.
-     * 
+     *
      * @param name
      *            the property name
      * @param defaultVal
@@ -141,7 +155,7 @@ public class RrdConfig {
     /**
      * Get a long valued property, returning default value if it is not set or
      * is set to an invalid value
-     * 
+     *
      * @param name
      *            the property name
      * @param defaultVal

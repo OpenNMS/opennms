@@ -38,17 +38,35 @@
 package org.opennms.web.element;
 
 /**
+ * <p>Converter class.</p>
+ *
  * @author antonio
  *
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class Converter {
  
+ /**
+  * <p>highToLow</p>
+  *
+  * @param value a double.
+  * @param multiplicator a int.
+  * @return a double.
+  */
  public static double highToLow(double value, int multiplicator){
 	return value*multiplicator;
  }
  
+ /**
+  * <p>lowToHigh</p>
+  *
+  * @param value a double.
+  * @param divisor a int.
+  * @return a double.
+  */
  public static  double lowToHigh(double value, int divisor){
 	
 	return value/divisor;

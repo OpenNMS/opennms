@@ -42,11 +42,13 @@ import java.util.List;
 /**
  * A NotificationTarget representing a user target parsed from the
  * notifications.xml.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
+ * @since 1.6.12
  */
 public class GroupTarget extends NotificationTarget {
     /**
@@ -73,7 +75,7 @@ public class GroupTarget extends NotificationTarget {
 
     /**
      * Sets the userId for this target
-     * 
+     *
      * @param name
      *            the group name.
      */
@@ -83,7 +85,7 @@ public class GroupTarget extends NotificationTarget {
 
     /**
      * Returns the userId for this target
-     * 
+     *
      * @return the group name.
      */
     public String getGroupName() {
@@ -92,7 +94,7 @@ public class GroupTarget extends NotificationTarget {
 
     /**
      * Sets the command name for this target
-     * 
+     *
      * @param commandName
      *            the command name.
      */
@@ -102,7 +104,7 @@ public class GroupTarget extends NotificationTarget {
 
     /**
      * Returns the command name for this target
-     * 
+     *
      * @return the command name.
      */
     public String getCommandName() {
@@ -111,7 +113,7 @@ public class GroupTarget extends NotificationTarget {
 
     /**
      * Adds a user target to this group target
-     * 
+     *
      * @param target
      *            a user target to be added.
      */
@@ -121,7 +123,7 @@ public class GroupTarget extends NotificationTarget {
 
     /**
      * Returns the list of UserTargets in this group target
-     * 
+     *
      * @return the list of user targets.
      */
     public List<UserTarget> getUserTargets() {
@@ -130,7 +132,7 @@ public class GroupTarget extends NotificationTarget {
 
     /**
      * Returns the type of the target
-     * 
+     *
      * @return the target type, compare to NotificationTask.TARGET_TYPE_USER.
      */
     public int getType() {

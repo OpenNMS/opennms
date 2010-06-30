@@ -40,9 +40,14 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * 
+ * <p>Abstract PageableTableView class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public abstract class PageableTableView extends DashletView implements Pageable {
 
@@ -67,15 +72,18 @@ public abstract class PageableTableView extends DashletView implements Pageable 
         
     }
     
+    /**
+     * <p>onDashLoad</p>
+     */
     public void onDashLoad() {
         addToTitleBar(m_pager, DockPanel.CENTER);
     }
 
 
 
-    /**
+	/**
 	 * Override this to set the details of the individual rows
-	 * 
+	 *
 	 * @param table the table to set the data into
 	 * @param row that table row to set the element into
 	 * @param elementIndex the index of the element whose values should be set
@@ -85,9 +93,16 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 
 	/**
 	 * The total number of elements being deplayed in this table
+	 *
+	 * @return a int.
 	 */
 	public abstract int getElementCount();
 
+    /**
+     * <p>initializeTable</p>
+     *
+     * @param headings an array of {@link java.lang.String} objects.
+     */
     protected void initializeTable(String[] headings) {
 	    
 	    setHeadings(headings);
@@ -127,6 +142,9 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 	
 	}
 
+	/**
+	 * <p>refresh</p>
+	 */
 	protected void refresh() {
 	
 	    int rows = Math.min(m_currentIndex+getPageSize(), getElementCount());
@@ -143,24 +161,46 @@ public abstract class PageableTableView extends DashletView implements Pageable 
 	    m_pager.update();
 	}
 
+	/**
+	 * <p>formatCells</p>
+	 *
+	 * @param table a {@link com.google.gwt.user.client.ui.FlexTable} object.
+	 * @param row a int.
+	 */
 	protected void formatCells(FlexTable table, int row) {
 		for(int column = 0; column < getColumnCount(); column++) {
 		    m_table.getCellFormatter().setStyleName(row, column, "divider");
 		}
 	}
 
+	/**
+	 * <p>getCurrentElement</p>
+	 *
+	 * @return a int.
+	 */
 	public int getCurrentElement() {
 	    return m_currentIndex;
 	}
 
+	/**
+	 * <p>getPageSize</p>
+	 *
+	 * @return a int.
+	 */
 	public int getPageSize() {
 	    return m_pageSize;
 	}
 
+	/**
+	 * <p>setPageSize</p>
+	 *
+	 * @param pageSize a int.
+	 */
 	public void setPageSize(int pageSize) {
 		m_pageSize = pageSize;
 	}
 
+	/** {@inheritDoc} */
 	public void setCurrentElement(int element) {
 	    m_currentIndex = element;
 	    refresh();

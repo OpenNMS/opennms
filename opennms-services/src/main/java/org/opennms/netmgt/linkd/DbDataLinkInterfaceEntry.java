@@ -399,21 +399,27 @@ final class DbDataLinkInterfaceEntry
 
 
 		/**
-		 * @return
+		 * <p>get_nodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>get_ifindex</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_ifindex() {
 			return m_ifindex;
 		}
 
 		/**
-		 * @return
+		 * <p>get_nodeparentid</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeparentid() {
 			return m_nodeparentid;
@@ -440,7 +446,9 @@ final class DbDataLinkInterfaceEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_parentifindex</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_parentifindex() {
 			return m_parentifindex;
@@ -467,7 +475,9 @@ final class DbDataLinkInterfaceEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_status</p>
+		 *
+		 * @return a char.
 		 */
 		public char get_status() {
 			return m_status;
@@ -687,6 +697,11 @@ final class DbDataLinkInterfaceEntry
 			return entry;
 		}
 		
+		/**
+		 * <p>toString</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String toString() {
 			String sep = System.getProperty("line.separator");
 			StringBuffer buf = new StringBuffer();

@@ -37,12 +37,13 @@ package org.opennms.protocols.snmp;
 /**
  * Defines a SNMPv1 32-bit gauge object. The object is a 32-bit unsigned value
  * that may increase or decrease but does not wrap as a SnmpCounter32.
- * 
+ *
  * The object inherients and uses most of the methods defined by the SnmpUInt32
  * class. This class does not define any specific data, but is instead used to
  * override the ASN.1 type of the base class.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @version $Id: $
  */
 public class SnmpGauge32 extends SnmpUInt32 {
     /**
@@ -66,7 +67,7 @@ public class SnmpGauge32 extends SnmpUInt32 {
 
     /**
      * Constructs the object with the specified value.
-     * 
+     *
      * @param value
      *            The default value for the object.
      */
@@ -76,10 +77,9 @@ public class SnmpGauge32 extends SnmpUInt32 {
 
     /**
      * Constructs the object with the specified value.
-     * 
+     *
      * @param value
      *            The default value for the object.
-     * 
      */
     public SnmpGauge32(Long value) {
         super(value);
@@ -87,10 +87,9 @@ public class SnmpGauge32 extends SnmpUInt32 {
 
     /**
      * Constructs a new object with the same value as the passed object.
-     * 
+     *
      * @param second
      *            The object to recover values from.
-     * 
      */
     public SnmpGauge32(SnmpGauge32 second) {
         super(second);
@@ -99,10 +98,9 @@ public class SnmpGauge32 extends SnmpUInt32 {
     /**
      * Constructs a new object with the value constained in the SnmpUInt32
      * object.
-     * 
+     *
      * @param uint32
      *            The SnmpUInt32 object to copy.
-     * 
      */
     public SnmpGauge32(SnmpUInt32 uint32) {
         super(uint32);
@@ -115,10 +113,9 @@ public class SnmpGauge32 extends SnmpUInt32 {
      * If the decoded argument is malformed, null, or evaluates to a negative
      * value then an exception is generated.
      * </p>
-     * 
+     *
      * @param value
      *            The string encoded value.
-     * 
      * @throws java.lang.NumberFormatException
      *             Thrown if the passed value is malformed and cannot be parsed.
      * @throws java.lang.IllegalArgumentException
@@ -132,7 +129,7 @@ public class SnmpGauge32 extends SnmpUInt32 {
 
     /**
      * Returns the ASN.1 type specific to this object.
-     * 
+     *
      * @return The ASN.1 value for this object.
      */
     public byte typeId() {
@@ -141,9 +138,8 @@ public class SnmpGauge32 extends SnmpUInt32 {
 
     /**
      * Creates a new object that is a duplicate of the current object.
-     * 
+     *
      * @return The newly created duplicate object.
-     * 
      */
     public SnmpSyntax duplicate() {
         return new SnmpGauge32(this);
@@ -151,9 +147,8 @@ public class SnmpGauge32 extends SnmpUInt32 {
 
     /**
      * Creates a new object that is a duplicate of the current object.
-     * 
+     *
      * @return The newly created duplicate object.
-     * 
      */
     public Object clone() {
         return new SnmpGauge32(this);

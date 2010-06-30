@@ -37,13 +37,31 @@ package org.opennms.web.svclayer;
 import org.opennms.netmgt.model.DemandPoll;
 
 /**
- * 
+ * <p>DemandPollService interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface DemandPollService {
 	
+	 /**
+	  * <p>pollMonitoredService</p>
+	  *
+	  * @param nodeid a int.
+	  * @param ipAddr a {@link java.lang.String} object.
+	  * @param ifIndex a int.
+	  * @param serviceId a int.
+	  * @return a {@link org.opennms.netmgt.model.DemandPoll} object.
+	  */
 	 DemandPoll pollMonitoredService(int nodeid, String ipAddr, int ifIndex, int serviceId);
 	 
+	 /**
+	  * <p>getUpdatedResults</p>
+	  *
+	  * @param resultId a int.
+	  * @return a {@link org.opennms.netmgt.model.DemandPoll} object.
+	  */
 	 DemandPoll getUpdatedResults(int resultId);
 	 
 }

@@ -38,20 +38,48 @@ package org.opennms.netmgt.vacuumd.jmx;
 
 /**
  * This interface represents the methods available for the Vacuumd MBean
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @version $Id: $
  */
 public interface VacuumdMBean {
+    /**
+     * <p>init</p>
+     */
     public void init();
 
+    /**
+     * <p>start</p>
+     */
     public void start();
 
+    /**
+     * <p>stop</p>
+     */
     public void stop();
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus();
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status();
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText();
 
 }

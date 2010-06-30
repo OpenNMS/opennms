@@ -45,7 +45,7 @@ package org.opennms.core.fiber;
  * <code>Thread</code> class is part of the core language and can only be
  * extended since it is a concrete class.
  * </p>
- * 
+ *
  * <p>
  * The <code>Fiber</code> concept is used to represent an implementation
  * defined execution context outside of the core Java language. It provides a
@@ -53,7 +53,7 @@ package org.opennms.core.fiber;
  * This gives a great deal of implementation independence to the implementing
  * classes.
  * </p>
- * 
+ *
  * <p>
  * For example, the <code>Fiber</code> interface could be used to represent a
  * one-to-one mapping of a Java <code>Thread</code>. It could be used to
@@ -63,9 +63,12 @@ package org.opennms.core.fiber;
  * multiplexed over a one or more threads, where the <em>Runnables</em> far
  * exceed the core Java threads.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public interface Fiber {
     /**
@@ -137,7 +140,7 @@ public interface Fiber {
      * This method is used to return the name of the <code>Fiber</code>. The
      * name of the instance is defined by the implementor, but it should be
      * realitively unique when possible.
-     * 
+     *
      * @return The name of the <code>Fiber</code>.
      */
     public String getName();
@@ -146,7 +149,7 @@ public interface Fiber {
      * This method is used to get the current status of the <code>Fiber</code>.
      * The status of the fiber should be one of the predefined constants of the
      * <code>Fiber</code> interface, or from one of the derived interfaces.
-     * 
+     *
      * @return The current status of the <code>Fiber</code>.
      */
     public int getStatus();

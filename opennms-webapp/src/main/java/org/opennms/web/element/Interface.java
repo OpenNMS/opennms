@@ -36,6 +36,13 @@
 
 package org.opennms.web.element;
 
+/**
+ * <p>Interface class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class Interface {
     int m_id;
     
@@ -75,90 +82,200 @@ public class Interface {
 
     String m_isSnmpPrimary;
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a int.
+     */
     public int getId() {
         return m_id;
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a int.
+     */
     public int getIfIndex() {
         return m_ifIndex;
     }
 
+    /**
+     * <p>getIpStatus</p>
+     *
+     * @return a int.
+     */
     public int getIpStatus() {
         return m_ipStatus;
     }
 
+    /**
+     * <p>getHostname</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHostname() {
         return m_ipHostName;
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return m_ipAddr;
     }
 
+    /**
+     * <p>isManagedChar</p>
+     *
+     * @return a char.
+     */
     public char isManagedChar() {
         return m_isManaged;
     }
 
+    /**
+     * <p>getLastCapsdPoll</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLastCapsdPoll() {
         return m_ipLastCapsdPoll;
     }
 
+    /**
+     * <p>getSnmpIfIndex</p>
+     *
+     * @return a int.
+     */
     public int getSnmpIfIndex() {
         return m_snmpIfIndex;
     }
 
+    /**
+     * <p>getSnmpIpAdEntNetMask</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpIpAdEntNetMask() {
         return m_snmpIpAdEntNetMask;
     }
 
+    /**
+     * <p>getPhysicalAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPhysicalAddress() {
         return m_snmpPhysAddr;
     }
 
+    /**
+     * <p>getSnmpIfDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpIfDescription() {
         return m_snmpIfDescr;
     }
 
+    /**
+     * <p>getSnmpIfName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpIfName() {
         return m_snmpIfName;
     }
 
+    /**
+     * <p>getSnmpIfType</p>
+     *
+     * @return a int.
+     */
     public int getSnmpIfType() {
         return m_snmpIfType;
     }
 
+    /**
+     * <p>getSnmpIfOperStatus</p>
+     *
+     * @return a int.
+     */
     public int getSnmpIfOperStatus() {
         return m_snmpIfOperStatus;
     }
 
+    /**
+     * <p>getSnmpIfSpeed</p>
+     *
+     * @return a long.
+     */
     public long getSnmpIfSpeed() {
         return m_snmpIfSpeed;
     }
 
+    /**
+     * <p>getSnmpIfAdminStatus</p>
+     *
+     * @return a int.
+     */
     public int getSnmpIfAdminStatus() {
         return m_snmpIfAdminStatus;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return m_ipHostName;
     }
 
+    /**
+     * <p>isManaged</p>
+     *
+     * @return a boolean.
+     */
     public boolean isManaged() {
         return (m_isManaged == 'M');
     }
 
+    /**
+     * <p>getSnmpIfAlias</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpIfAlias() {
         return m_snmpIfAlias;
     }
 
+    /**
+     * <p>getIsSnmpPrimary</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIsSnmpPrimary() {
         return m_isSnmpPrimary;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_ipHostName == null? m_ipAddr : m_ipHostName;
     }

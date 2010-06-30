@@ -33,9 +33,12 @@
 
 package org.opennms.secret.model;
 /**
+ * <p>DataSource class.</p>
+ *
  * @author Ted Kaczmarek
  * @author DJ Gregor
- *
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DataSource {
 
@@ -49,9 +52,20 @@ public class DataSource {
     String m_source; // file url
     String m_dataSource; //DS Name within the file
     
+    /**
+     * <p>Constructor for DataSource.</p>
+     */
     public DataSource() {
     }
     
+    /**
+     * <p>Constructor for DataSource.</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     * @param source a {@link java.lang.String} object.
+     * @param dataSource a {@link java.lang.String} object.
+     */
     public DataSource(String id, String name, String source, String dataSource) {
         setId(id);
         setName(name);
@@ -59,27 +73,67 @@ public class DataSource {
         setDataSource(dataSource);
     }
     
+	/**
+	 * <p>getDataSource</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getDataSource() {
 		return m_dataSource;
 	}
+	/**
+	 * <p>setDataSource</p>
+	 *
+	 * @param dataSource a {@link java.lang.String} object.
+	 */
 	public void setDataSource(String dataSource) {
 		m_dataSource = dataSource;
 	}
+	/**
+	 * <p>getId</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getId() {
 		return m_id;
 	}
+	/**
+	 * <p>setId</p>
+	 *
+	 * @param id a {@link java.lang.String} object.
+	 */
 	public void setId(String id) {
 		m_id = id;
 	}
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_name;
 	}
+	/**
+	 * <p>setName</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public void setName(String name) {
 		m_name = name;
 	}
+	/**
+	 * <p>getSource</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getSource() {
 		return m_source;
 	}
+	/**
+	 * <p>setSource</p>
+	 *
+	 * @param source a {@link java.lang.String} object.
+	 */
 	public void setSource(String source) {
 		m_source = source;
 	}

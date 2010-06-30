@@ -37,24 +37,40 @@ import org.opennms.secret.dao.MemberDAO;
 import org.opennms.secret.model.OGPMember;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+/**
+ * <p>MemberDAOHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class MemberDAOHibernate extends HibernateDaoSupport implements MemberDAO {
     
+    /** {@inheritDoc} */
     public void initialize(Object obj) {
         getHibernateTemplate().initialize(obj);
     }
 
+    /** {@inheritDoc} */
     public OGPMember getMember(final Long id) {
         return (OGPMember)getHibernateTemplate().load(OGPMember.class, id);
     }
     
+    /** {@inheritDoc} */
     public List findMembersByLastName(String lastName) {
         return getHibernateTemplate().find("from OGPMember member where member.lastName = ?", lastName);
     }
     
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List findAll() {
         return getHibernateTemplate().loadAll(OGPMember.class);
     }
 
+    /** {@inheritDoc} */
     public void createMember(OGPMember member) {
         getHibernateTemplate().save(member);
     }

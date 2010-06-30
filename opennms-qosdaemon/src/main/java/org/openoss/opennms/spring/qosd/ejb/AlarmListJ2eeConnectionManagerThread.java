@@ -40,8 +40,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * The AlarmListJ2eeConnectionManagerThread tries to register with the AlarmMonitorBean and maintains the connection
  * for the QosD. If the connection is lost, it reestablishes the connection.
- * 
  *
+ * @author ranger
+ * @version $Id: $
  */
 public class AlarmListJ2eeConnectionManagerThread extends Thread implements AlarmListConnectionManager 
 {
@@ -62,6 +63,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#reset_list(java.lang.String)
 	 */ 
+	/** {@inheritDoc} */
 	public void reset_list(String _rebuilt_message)
 	{
 		this.rebuilt_message = _rebuilt_message;
@@ -72,6 +74,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#send(java.util.Hashtable)
 	 */
+	/** {@inheritDoc} */
 	public void send(Hashtable alarmList)
 	{
 		this.alarmList = alarmList;
@@ -81,6 +84,11 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#run()
+	 */
+	/**
+	 * <p>run</p>
+	 *
+	 * @throws java.lang.IllegalStateException if any.
 	 */
 	public void run() throws IllegalStateException
 	{
@@ -220,6 +228,7 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#init(org.openoss.opennms.spring.qosd.PropertiesLoader, java.util.Properties)
 	 */
+	/** {@inheritDoc} */
 	public void init(PropertiesLoader props, Properties env)
 	{
 		this.props = props;
@@ -236,6 +245,9 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	 * the status variable that tells the run method to return
 	 * and end execution.
 	 */
+	/**
+	 * <p>kill</p>
+	 */
 	public void kill()
 	{
 		status = STOP;
@@ -244,6 +256,11 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.ejb.ConnectionManager#getStatus()
+	 */
+	/**
+	 * <p>Getter for the field <code>status</code>.</p>
+	 *
+	 * @return a int.
 	 */
 	public int getStatus()
 	{
@@ -330,6 +347,8 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	/**
 	 * Makes a new empty alarm value object
 	 * NOTE THIS IS A PATCH to proxy for JVTAlarmMonitorSession.makeAlarmValue()
+	 *
+	 * @return a {@link javax.oss.fm.monitor.AlarmValue} object.
 	 */
 	public  javax.oss.fm.monitor.AlarmValue makeAlarmValue(){
 		return new OOSSAlarmValue();
@@ -337,8 +356,10 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 
 	/**
 	 * Makes a new alarm value object pre-populated with internal objects
-	 * which have been made from a local invarient specification. 
+	 * which have been made from a local invarient specification.
 	 * NOTE THIS IS A PATCH to proxy for JVTAlarmMonitorSession
+	 *
+	 * @return a {@link javax.oss.fm.monitor.AlarmValue} object.
 	 */
 	public javax.oss.fm.monitor.AlarmValue makeAlarmValueFromSpec() {
 		javax.oss.fm.monitor.AlarmValue alarmValueSpecification = (javax.oss.fm.monitor.AlarmValue)m_context.getBean("alarmValueSpecification");
@@ -353,8 +374,9 @@ public class AlarmListJ2eeConnectionManagerThread extends Thread implements Alar
 	private ClassPathXmlApplicationContext m_context=null; // used to passapplication context to OssBeans
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by jmx mbean QoSD to pass in Spring Application context
-	 * @param m_context - application conext for this bean to use
 	 */
 	public  void setapplicationcontext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;

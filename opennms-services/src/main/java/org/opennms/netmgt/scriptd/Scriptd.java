@@ -52,12 +52,15 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 /**
  * This class implements a script execution service. This service subscribes to
  * all events, and passes received events to the set of configured scripts.
- * 
+ *
  * This services uses the Bean Scripting Framework (BSF) in order to allow
  * scripts to be written in a variety of registered languages.
- * 
+ *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @version $Id: $
  */
 public final class Scriptd extends AbstractServiceDaemon {
 
@@ -124,6 +127,9 @@ public final class Scriptd extends AbstractServiceDaemon {
         m_execution = new Executor(execQ, aFactory);
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
 		if (m_execution == null) {
 		    init();
@@ -133,6 +139,9 @@ public final class Scriptd extends AbstractServiceDaemon {
 		log().info("Scriptd running");
 	}
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
 		try {
             if (m_execution != null) {
@@ -149,10 +158,16 @@ public final class Scriptd extends AbstractServiceDaemon {
         m_execution = null;
 	}
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {
 		m_execution.pause();
 	}
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
 		m_execution.resume();
 	}
@@ -160,7 +175,7 @@ public final class Scriptd extends AbstractServiceDaemon {
     /**
      * Returns the singular instance of the <em>Scriptd</em> daemon. There can
      * be only one instance of this service per virtual machine.
-     * 
+     *
      * @return The singular instance.
      */
     public static Scriptd getInstance() {

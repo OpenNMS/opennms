@@ -39,6 +39,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * <p>AggregateTracker class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AggregateTracker extends CollectionTracker {
 
     private static class ChildTrackerPduBuilder extends PduBuilder {
@@ -222,18 +228,40 @@ public class AggregateTracker extends CollectionTracker {
 
     private CollectionTracker[] m_children;
     
+    /**
+     * <p>Constructor for AggregateTracker.</p>
+     *
+     * @param children a {@link java.util.Collection} object.
+     */
     public AggregateTracker(Collection<Collectable> children) {
         this(children, null);
     }
 
+    /**
+     * <p>Constructor for AggregateTracker.</p>
+     *
+     * @param children a {@link java.util.Collection} object.
+     * @param parent a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public AggregateTracker(Collection<Collectable> children, CollectionTracker parent) {
         this(children.toArray(new Collectable[children.size()]), parent);
     }
 
+    /**
+     * <p>Constructor for AggregateTracker.</p>
+     *
+     * @param children an array of {@link org.opennms.netmgt.snmp.Collectable} objects.
+     */
     public AggregateTracker(Collectable[] children) {
         this(children, null);
     }
 
+    /**
+     * <p>Constructor for AggregateTracker.</p>
+     *
+     * @param children an array of {@link org.opennms.netmgt.snmp.Collectable} objects.
+     * @param parent a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public AggregateTracker(Collectable[] children, CollectionTracker parent) {
         super(parent);
         
@@ -244,6 +272,7 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
     
+    /** {@inheritDoc} */
     public void setFailed(boolean failed) {
         super.setFailed(failed);
         for (CollectionTracker child : m_children) {
@@ -251,6 +280,7 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
+    /** {@inheritDoc} */
     public void setTimedOut(boolean timedOut) {
         super.setTimedOut(timedOut);
         for (CollectionTracker child : m_children) {
@@ -258,6 +288,7 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public void setMaxRepititions(int maxRepititions) {
         for (CollectionTracker child : m_children) {
@@ -265,6 +296,11 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
+    /**
+     * <p>isFinished</p>
+     *
+     * @return a boolean.
+     */
     public boolean isFinished() {
         for (CollectionTracker child : m_children) {
             if (!child.isFinished()) {
@@ -274,6 +310,7 @@ public class AggregateTracker extends CollectionTracker {
         return true;
     }
 
+    /** {@inheritDoc} */
     public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) {
         
         // first process the child trackers that aren't finished up to maxVars 

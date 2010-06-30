@@ -55,6 +55,9 @@ import org.opennms.web.WebSecurityUtils;
 /**
  * Servlet implementation class for Servlet: AdminRoleServlet
  *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AdminRoleServlet extends HttpServlet implements Servlet {
     private static final long serialVersionUID = 1L;
@@ -67,6 +70,9 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     private static final String EDIT_MONTHLY = "/admin/userGroupView/roles/editMonthly.jsp";
     private static final String EDIT_SPECIFIC = "/admin/userGroupView/roles/editSpecific.jsp";
     
+    /**
+     * <p>Constructor for AdminRoleServlet.</p>
+     */
     public AdminRoleServlet() {
 		super();
 	}
@@ -276,6 +282,14 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
         
     }
     
+    /**
+     * <p>doIt</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.io.IOException if any.
+     */
     protected void doIt(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String reqUrl = request.getServletPath();
         request.setAttribute("reqUrl", reqUrl);
@@ -310,6 +324,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
 	/* (non-Java-doc)
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	/** {@inheritDoc} */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
 	}  	
@@ -317,10 +332,16 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
 	/* (non-Java-doc)
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	/** {@inheritDoc} */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
 	}
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         super.init();
 

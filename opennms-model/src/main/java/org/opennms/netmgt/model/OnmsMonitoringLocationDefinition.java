@@ -33,6 +33,12 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+/**
+ * <p>OnmsMonitoringLocationDefinition class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsMonitoringLocationDefinition implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -43,45 +49,92 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
 
     private String m_pollingPackageName;
     
+    /**
+     * <p>Constructor for OnmsMonitoringLocationDefinition.</p>
+     */
     public OnmsMonitoringLocationDefinition() {
         
     }
     
+    /**
+     * <p>Constructor for OnmsMonitoringLocationDefinition.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param pollingPackageName a {@link java.lang.String} object.
+     */
     public OnmsMonitoringLocationDefinition(String name, String pollingPackageName) {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
     }
     
+    /**
+     * <p>Constructor for OnmsMonitoringLocationDefinition.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param pollingPackageName a {@link java.lang.String} object.
+     * @param area a {@link java.lang.String} object.
+     */
     public OnmsMonitoringLocationDefinition(String name, String pollingPackageName, String area) {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
         m_area = area;
     }
 
+    /**
+     * <p>getArea</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getArea() {
         return m_area;
     }
 
+    /**
+     * <p>setArea</p>
+     *
+     * @param area a {@link java.lang.String} object.
+     */
     public void setArea(String area) {
         m_area = area;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getPollingPackageName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPollingPackageName() {
         return m_pollingPackageName;
     }
 
+    /**
+     * <p>setPollingPackageName</p>
+     *
+     * @param pollingPackageName a {@link java.lang.String} object.
+     */
     public void setPollingPackageName(String pollingPackageName) {
         m_pollingPackageName = pollingPackageName;
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "OnmsMonitoringLocationDefinition@" + Integer.toHexString(hashCode()) + ": Name \"" + m_name + "\", polling package name \"" + m_pollingPackageName + "\", area \"" + m_area + "\"";

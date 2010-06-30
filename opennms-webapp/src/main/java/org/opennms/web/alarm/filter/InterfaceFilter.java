@@ -35,12 +35,24 @@ package org.opennms.web.alarm.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-/** Encapsulates all interface filtering functionality. */
+/**
+ * Encapsulates all interface filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class InterfaceFilter extends Object implements Filter {
+    /** Constant <code>TYPE="interface"</code> */
     public static final String TYPE = "interface";
 
     protected String ipAddress;
 
+    /**
+     * <p>Constructor for InterfaceFilter.</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public InterfaceFilter(String ipAddress) {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -49,35 +61,67 @@ public class InterfaceFilter extends Object implements Filter {
         this.ipAddress = ipAddress;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" IPADDR='" + this.ipAddress + "'");
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" IPADDR=?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setString(parameterIndex, this.ipAddress);
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.ipAddress);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return this.getDescription();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.InterfaceFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>Getter for the field <code>ipAddress</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return (this.ipAddress);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

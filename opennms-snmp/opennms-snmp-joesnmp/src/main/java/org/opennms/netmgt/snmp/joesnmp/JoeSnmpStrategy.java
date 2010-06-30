@@ -67,22 +67,31 @@ import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpTrapSession;
 
+/**
+ * <p>JoeSnmpStrategy class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JoeSnmpStrategy implements SnmpStrategy {
     private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
     private static SnmpTrapSession s_trapSession;
     
     private JoeSnmpValueFactory m_valueFactory;
 
+    /** {@inheritDoc} */
     public SnmpWalker createWalker(SnmpAgentConfig snmpAgentConfig, String name, CollectionTracker tracker) {
         return new JoeSnmpWalker(new JoeSnmpAgentConfig(snmpAgentConfig), name, tracker);
     }
 
+    /** {@inheritDoc} */
     public SnmpValue set(SnmpAgentConfig snmpAgentConfig, SnmpObjId oid, SnmpValue value ) {
         SnmpObjId[] oids = { oid };
         SnmpValue[] values = { value };
         return set(snmpAgentConfig, oids,values)[0];
     }
 
+    /** {@inheritDoc} */
     public SnmpValue[] set(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids, SnmpValue[] values) {
         JoeSnmpAgentConfig agentConfig = new JoeSnmpAgentConfig(snmpAgentConfig);
         SnmpSession session = null;
@@ -117,11 +126,13 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     	return values;
     }
     
+    /** {@inheritDoc} */
     public SnmpValue get(SnmpAgentConfig snmpAgentConfig, SnmpObjId oid) {
         SnmpObjId[] oids = { oid };
         return get(snmpAgentConfig, oids)[0];
     }
 
+    /** {@inheritDoc} */
     public SnmpValue[] get(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids) {
         JoeSnmpAgentConfig agentConfig = new JoeSnmpAgentConfig(snmpAgentConfig);
         SnmpSession session = null;
@@ -150,11 +161,25 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         return values;
     }
     
+    /**
+     * <p>getNext</p>
+     *
+     * @param snmpAgentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId oid) {
         SnmpObjId[] oids = { oid };
         return getNext(snmpAgentConfig, oids)[0];
     }
 
+    /**
+     * <p>getNext</p>
+     *
+     * @param snmpAgentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oids an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
+     */
     public SnmpValue[] getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids) {
         JoeSnmpAgentConfig agentConfig = new JoeSnmpAgentConfig(snmpAgentConfig);
         SnmpSession session = null;
@@ -243,6 +268,13 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         return ThreadCategory.getInstance();
     }
 
+    /**
+     * <p>getBulk</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oids an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
+     */
     public SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
     	throw new UnsupportedOperationException("JoeSnmpStrategy.getBulk() not yet implemented.");
     }
@@ -300,6 +332,7 @@ public class JoeSnmpStrategy implements SnmpStrategy {
 
 
 
+    /** {@inheritDoc} */
     public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException {
         RegistrationInfo info = new RegistrationInfo(listener, snmpTrapPort);
         
@@ -311,11 +344,17 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         s_registrations.put(listener, info);
     }
 
+    /** {@inheritDoc} */
     public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) {
         RegistrationInfo info = s_registrations.remove(listener);
         info.getSession().close();
     }
 
+    /**
+     * <p>getValueFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValueFactory} object.
+     */
     public SnmpValueFactory getValueFactory() {
         if (m_valueFactory == null) {
             m_valueFactory = new JoeSnmpValueFactory();
@@ -324,14 +363,33 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         return m_valueFactory;
     }
 
+    /**
+     * <p>getV1TrapBuilder</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpV1TrapBuilder} object.
+     */
     public SnmpV1TrapBuilder getV1TrapBuilder() {
         return new JoeSnmpV1TrapBuilder();
     }
 
+    /**
+     * <p>getV2TrapBuilder</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpTrapBuilder} object.
+     */
     public SnmpTrapBuilder getV2TrapBuilder() {
         return new JoeSnmpV2TrapBuilder();
     }
 
+    /**
+     * <p>send</p>
+     *
+     * @param destAddr a {@link java.lang.String} object.
+     * @param destPort a int.
+     * @param community a {@link java.lang.String} object.
+     * @param trap a {@link org.opennms.protocols.snmp.SnmpPduTrap} object.
+     * @throws java.lang.Exception if any.
+     */
     public static void send(String destAddr, int destPort, String community, SnmpPduTrap trap) throws Exception {
         SnmpTrapSession trapSession = getTrapSession();
         SnmpPeer peer = new SnmpPeer(InetAddress.getByName(destAddr), destPort);
@@ -348,6 +406,15 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         return s_trapSession;
     }
 
+    /**
+     * <p>send</p>
+     *
+     * @param destAddr a {@link java.lang.String} object.
+     * @param destPort a int.
+     * @param community a {@link java.lang.String} object.
+     * @param pdu a {@link org.opennms.protocols.snmp.SnmpPduRequest} object.
+     * @throws java.lang.Exception if any.
+     */
     public static void send(String destAddr, int destPort, String community, SnmpPduRequest pdu) throws Exception {
         SnmpTrapSession trapSession = getTrapSession();
         SnmpPeer peer = new SnmpPeer(InetAddress.getByName(destAddr), destPort);
@@ -357,6 +424,15 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         trapSession.send(peer, pdu);
     }
 
+    /**
+     * <p>sendTest</p>
+     *
+     * @param destAddr a {@link java.lang.String} object.
+     * @param destPort a int.
+     * @param community a {@link java.lang.String} object.
+     * @param pdu a {@link org.opennms.protocols.snmp.SnmpPduRequest} object.
+     * @throws java.net.UnknownHostException if any.
+     */
     public static void sendTest(String destAddr, int destPort, String community, SnmpPduRequest pdu) throws UnknownHostException {
         InetAddress agentAddress = InetAddress.getByName(destAddr);
         for (Iterator<RegistrationInfo> it = s_registrations.values().iterator(); it.hasNext();) {
@@ -367,6 +443,15 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         }
     }
 
+    /**
+     * <p>sendTest</p>
+     *
+     * @param destAddr a {@link java.lang.String} object.
+     * @param destPort a int.
+     * @param community a {@link java.lang.String} object.
+     * @param pdu a {@link org.opennms.protocols.snmp.SnmpPduTrap} object.
+     * @throws java.net.UnknownHostException if any.
+     */
     public static void sendTest(String destAddr, int destPort, String community, SnmpPduTrap pdu) throws UnknownHostException {
         InetAddress agentAddress = InetAddress.getByName(destAddr);
         for (Iterator<RegistrationInfo> it = s_registrations.values().iterator(); it.hasNext();) {

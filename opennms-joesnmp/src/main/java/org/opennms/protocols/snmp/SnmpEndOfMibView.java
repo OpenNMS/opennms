@@ -49,12 +49,10 @@ package org.opennms.protocols.snmp;
  * there is no lexagraphically next object identifier in its tables. The object
  * is an SNMPv2 error condition. This condition can be returned to a manager on
  * a variable by variable basis.
- * 
+ *
  * @see SnmpVarBind
- * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @version 1.1.1.1
- * 
  */
 public class SnmpEndOfMibView extends SnmpV2Error {
     /**
@@ -78,7 +76,7 @@ public class SnmpEndOfMibView extends SnmpV2Error {
 
     /**
      * The class copy constructor.
-     * 
+     *
      * @param second
      *            The object to copy into self.
      */
@@ -88,9 +86,8 @@ public class SnmpEndOfMibView extends SnmpV2Error {
 
     /**
      * Returns the ASN.1 type for this particular object.
-     * 
+     *
      * @return ASN.1 identifier
-     * 
      */
     public byte typeId() {
         return ASNTYPE;
@@ -98,7 +95,7 @@ public class SnmpEndOfMibView extends SnmpV2Error {
 
     /**
      * Returns a duplicate object of self.
-     * 
+     *
      * @return A duplicate of self
      */
     public SnmpSyntax duplicate() {
@@ -107,7 +104,7 @@ public class SnmpEndOfMibView extends SnmpV2Error {
 
     /**
      * Returns a duplicate object of self.
-     * 
+     *
      * @return A duplicate of self
      */
     public Object clone() {
@@ -116,7 +113,8 @@ public class SnmpEndOfMibView extends SnmpV2Error {
 
     /**
      * Returns the string representation of the object.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         return "SNMP End-of-MIB-View";

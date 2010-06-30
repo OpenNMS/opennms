@@ -43,6 +43,13 @@ import java.util.List;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.groups.Schedule;
 
+/**
+ * <p>Abstract WebRole class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public abstract class WebRole {
     
     private String m_name;
@@ -52,60 +59,152 @@ public abstract class WebRole {
     private List<WebSchedEntry> m_newEntries = new ArrayList<WebSchedEntry>();
     
     
+    /**
+     * <p>Constructor for WebRole.</p>
+     */
     public WebRole() {
     }
     
+    /**
+     * <p>Constructor for WebRole.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public WebRole(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getDefaultUser</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebUser} object.
+     */
     public WebUser getDefaultUser() {
         return m_defaultUser;
     }
+    /**
+     * <p>setDefaultUser</p>
+     *
+     * @param defaultUser a {@link org.opennms.web.admin.roles.WebUser} object.
+     */
     public void setDefaultUser(WebUser defaultUser) {
         m_defaultUser = defaultUser;
     }
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return m_description;
     }
+    /**
+     * <p>setDescription</p>
+     *
+     * @param description a {@link java.lang.String} object.
+     */
     public void setDescription(String description) {
         m_description = description;
     }
+    /**
+     * <p>getMembershipGroup</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebGroup} object.
+     */
     public WebGroup getMembershipGroup() {
         return m_membershipGroup;
     }
+    /**
+     * <p>setMembershipGroup</p>
+     *
+     * @param memberShipGroup a {@link org.opennms.web.admin.roles.WebGroup} object.
+     */
     public void setMembershipGroup(WebGroup memberShipGroup) {
         m_membershipGroup = memberShipGroup;
     }
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
     
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
     
+    /**
+     * <p>getSchedule</p>
+     *
+     * @param schedIndex a int.
+     * @return a {@link org.opennms.netmgt.config.groups.Schedule} object.
+     */
     abstract public Schedule getSchedule(int schedIndex);
     
+    /**
+     * <p>getTime</p>
+     *
+     * @param schedIndex a int.
+     * @param timeIndex a int.
+     * @return a {@link org.opennms.netmgt.config.common.Time} object.
+     */
     abstract public Time getTime(int schedIndex, int timeIndex);
 
+    /**
+     * <p>getCurrentUsers</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     abstract public Collection getCurrentUsers();
     
+    /**
+     * <p>getWeeklyCalendar</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebCalendar} object.
+     */
     public WebCalendar getWeeklyCalendar() {
         return null;
     }
     
+    /**
+     * <p>getCalendar</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebCalendar} object.
+     */
     public WebCalendar getCalendar() {
         return getCalendar(new Date());
     }
 
+    /**
+     * <p>getCalendar</p>
+     *
+     * @param month a {@link java.util.Date} object.
+     * @return a {@link org.opennms.web.admin.roles.WebCalendar} object.
+     */
     abstract public WebCalendar getCalendar(Date month);
 
+    /**
+     * <p>addEntry</p>
+     *
+     * @param entry a {@link org.opennms.web.admin.roles.WebSchedEntry} object.
+     */
     public void addEntry(WebSchedEntry entry) {
         
         m_newEntries.add(entry);
     }
     
+    /**
+     * <p>getNewEntries</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<WebSchedEntry> getNewEntries() {
         return m_newEntries;
     }

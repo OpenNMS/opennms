@@ -51,10 +51,14 @@ import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.element.Service;
 
 /**
+ * <p>DeleteServiceServlet class.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DeleteServiceServlet extends HttpServlet {
 
@@ -69,6 +73,7 @@ public class DeleteServiceServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
 
@@ -97,6 +102,11 @@ public class DeleteServiceServlet extends HttpServlet {
 
     }
 
+    /**
+     * <p>checkParameters</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     */
     public void checkParameters(HttpServletRequest request) {
         String nodeIdString = request.getParameter("node");
         String ipAddr = request.getParameter("intf");

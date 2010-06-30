@@ -33,8 +33,11 @@
 
 package org.opennms.secret.model;
 /**
- * @author david
+ * <p>InterfaceService class.</p>
  *
+ * @author david
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class InterfaceService {
     
@@ -44,6 +47,8 @@ public class InterfaceService {
     DataSource dataSource;
     
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return Returns the id.
      * @hibernate.id generator-class="native"
      */
@@ -51,19 +56,27 @@ public class InterfaceService {
         return id;
     }
     
+    /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     */
     public void setId(Long id) {
         this.id = id;
     }
     
     /**
+     * <p>Getter for the field <code>ipAddr</code>.</p>
+     *
      * @return Returns the ipAddr.
-     * @hibernate.property
      */
     public String getIpAddr() {
         return ipAddr;
     }
     
     /**
+     * <p>Setter for the field <code>ipAddr</code>.</p>
+     *
      * @param ipAddr The ipAddr to set.
      */
     public void setIpAddr(String ipAddr) {
@@ -71,29 +84,47 @@ public class InterfaceService {
     }
     
     /**
+     * <p>Getter for the field <code>serviceName</code>.</p>
+     *
      * @return Returns the serviceName.
-     * @hibernate.property
      */
     public String getServiceName() {
         return serviceName;
     }
     
     /**
+     * <p>Setter for the field <code>serviceName</code>.</p>
+     *
      * @param serviceName The serviceName to set.
      */
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
     
+    /**
+     * <p>hasLatencyDataSource</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasLatencyDataSource() {
         return true;
         
     }
     
+    /**
+     * <p>Getter for the field <code>dataSource</code>.</p>
+     *
+     * @return a {@link org.opennms.secret.model.DataSource} object.
+     */
     public DataSource getDataSource() {
         return dataSource;
     }
     
+    /**
+     * <p>Setter for the field <code>dataSource</code>.</p>
+     *
+     * @param dataSource a {@link org.opennms.secret.model.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }

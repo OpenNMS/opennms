@@ -35,12 +35,24 @@ package org.opennms.web.alarm.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-/** Encapsulates filtering on exact unique event identifiers. */
+/**
+ * Encapsulates filtering on exact unique event identifiers.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class AcknowledgedByFilter extends Object implements Filter {
+    /** Constant <code>TYPE="acknowledgedBy"</code> */
     public static final String TYPE = "acknowledgedBy";
 
     protected String user;
 
+    /**
+     * <p>Constructor for AcknowledgedByFilter.</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public AcknowledgedByFilter(String user) {
         if (user == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -49,35 +61,67 @@ public class AcknowledgedByFilter extends Object implements Filter {
         this.user = user;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" ALARMACKUSER='" + this.user + "'");
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" ALARMACKUSER=?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setString(parameterIndex, this.user);
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.user);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return this.getDescription();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.AcknowledgedByFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getAcknowledgedByFilter</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAcknowledgedByFilter() {
         return (this.user);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

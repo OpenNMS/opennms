@@ -59,11 +59,18 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * Spring MVC controller servlet for surveillance-view page.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class SurveillanceViewController extends AbstractController implements InitializingBean {
     private static final String VIEW_NAME_PARAMETER = "viewName";
@@ -72,14 +79,23 @@ public class SurveillanceViewController extends AbstractController implements In
 
     private SurveillanceService m_service;
 
+    /**
+     * <p>setService</p>
+     *
+     * @param svc a {@link org.opennms.web.svclayer.SurveillanceService} object.
+     */
     public void setService(SurveillanceService svc) {
         m_service = svc;
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_service != null, "service property must be set");
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest req,
             HttpServletResponse resp) throws Exception {

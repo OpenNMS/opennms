@@ -49,10 +49,23 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.importer.ModelImportException;
 import org.springframework.core.io.Resource;
 
+/**
+ * <p>SpecFile class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SpecFile {
 
     private ModelImport m_mi;
 
+    /**
+     * <p>loadResource</p>
+     *
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @throws org.opennms.netmgt.importer.ModelImportException if any.
+     * @throws java.io.IOException if any.
+     */
     public void loadResource(Resource resource) throws ModelImportException, IOException {
         try {
             m_mi = CastorUtils.unmarshal(ModelImport.class, resource);
@@ -63,6 +76,11 @@ public class SpecFile {
         }
     }
     
+    /**
+     * <p>visitImport</p>
+     *
+     * @param visitor a {@link org.opennms.netmgt.importer.specification.ImportVisitor} object.
+     */
     public void visitImport(ImportVisitor visitor) {
         doVisitImport(visitor);
     }
@@ -120,26 +138,56 @@ public class SpecFile {
         visitor.completeMonitoredService(svc);
     }
 
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignSource() {
         return m_mi.getForeignSource();
     }
 
+    /**
+     * <p>setForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     */
     public void setForeignSource(String foreignSource) {
         m_mi.setForeignSource(foreignSource);
     }
     
+    /**
+     * <p>getNonIpInterfaces</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean getNonIpInterfaces() {
         return m_mi.getNonIpInterfaces();
     }
     
+    /**
+     * <p>setNonIpInterfaces</p>
+     *
+     * @param nonIpInterfaces a {@link java.lang.Boolean} object.
+     */
     public void setNonIpInterfaces(Boolean nonIpInterfaces) {
         m_mi.setNonIpInterfaces(nonIpInterfaces);
     }
     
+    /**
+     * <p>getNonIpSnmpPrimary</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNonIpSnmpPrimary() {
         return m_mi.getNonIpSnmpPrimary();
     }
     
+    /**
+     * <p>setNonIpSnmpPrimary</p>
+     *
+     * @param nonIpSnmpPrimary a {@link java.lang.String} object.
+     */
     public void setNonIpSnmpPrimary(String nonIpSnmpPrimary) {
         m_mi.setNonIpSnmpPrimary(nonIpSnmpPrimary);
     }

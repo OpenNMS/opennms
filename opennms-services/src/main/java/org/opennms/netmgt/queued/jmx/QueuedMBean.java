@@ -38,8 +38,10 @@ package org.opennms.netmgt.queued.jmx;
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
- * 
+ * <p>QueuedMBean interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface QueuedMBean extends BaseOnmsMBean {
 

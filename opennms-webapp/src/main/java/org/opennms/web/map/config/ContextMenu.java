@@ -39,12 +39,22 @@ import java.util.List;
 
 
 /**
- * 
+ * <p>ContextMenu class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ContextMenu {
 	List<CMEntry> entries = new ArrayList<CMEntry>();
 
+	/**
+	 * <p>addEntry</p>
+	 *
+	 * @param command a {@link java.lang.String} object.
+	 * @param link a {@link java.lang.String} object.
+	 * @param params a {@link java.lang.String} object.
+	 */
 	public void addEntry(String command, String link, String params){
 		CMEntry entry = new CMEntry(command,link,params);
 		entries.add(entry);
@@ -81,6 +91,11 @@ public class ContextMenu {
 		
 	}
 	
+	/**
+	 * <p>Getter for the field <code>entries</code>.</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<CMEntry> getEntries(){
 		return entries;
 	}

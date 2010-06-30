@@ -40,9 +40,12 @@ import java.util.StringTokenizer;
 
 /**
  * This class is used to hold an email address
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class EmailAddress {
     private String address;
@@ -55,9 +58,17 @@ public class EmailAddress {
 
     private String tld;
 
+    /**
+     * <p>Constructor for EmailAddress.</p>
+     */
     public EmailAddress() {
     }
 
+    /**
+     * <p>Constructor for EmailAddress.</p>
+     *
+     * @param newAddress a {@link java.lang.String} object.
+     */
     public EmailAddress(String newAddress) {
         address = newAddress;
         username = address.substring(0, address.indexOf("@"));
@@ -85,38 +96,83 @@ public class EmailAddress {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>address</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAddress() {
         return username + "@" + (server != null ? server + "." : "") + domain + "." + tld;
     }
 
+    /**
+     * <p>Getter for the field <code>username</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * <p>Getter for the field <code>server</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServer() {
         return server;
     }
 
+    /**
+     * <p>Getter for the field <code>domain</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDomain() {
         return domain;
     }
 
+    /**
+     * <p>Getter for the field <code>tld</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTld() {
         return tld;
     }
 
+    /**
+     * <p>Setter for the field <code>username</code>.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setUsername(String name) {
         username = name;
     }
 
+    /**
+     * <p>Setter for the field <code>server</code>.</p>
+     *
+     * @param newServer a {@link java.lang.String} object.
+     */
     public void setServer(String newServer) {
         server = newServer;
     }
 
+    /**
+     * <p>Setter for the field <code>domain</code>.</p>
+     *
+     * @param newDomain a {@link java.lang.String} object.
+     */
     public void setDomain(String newDomain) {
         domain = newDomain;
     }
 
+    /**
+     * <p>Setter for the field <code>tld</code>.</p>
+     *
+     * @param newTld a {@link java.lang.String} object.
+     */
     public void setTld(String newTld) {
         tld = newTld;
     }

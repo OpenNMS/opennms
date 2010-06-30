@@ -59,6 +59,12 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.springframework.core.style.ToStringCreator;
 
 @Entity
+/**
+ * <p>OnmsSnmpInterface class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name = "snmpInterface")
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
@@ -106,10 +112,24 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<OnmsIpInterface>();
 
+    /**
+     * <p>Constructor for OnmsSnmpInterface.</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param ifIndex a int.
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public OnmsSnmpInterface(String ipAddr, int ifIndex, OnmsNode node) {
         this(ipAddr, new Integer(ifIndex), node);
     }
 
+    /**
+     * <p>Constructor for OnmsSnmpInterface.</p>
+     *
+     * @param ipaddr a {@link java.lang.String} object.
+     * @param ifIndex a {@link java.lang.Integer} object.
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public OnmsSnmpInterface(String ipaddr, Integer ifIndex, OnmsNode node) {
         m_ipAddr = ipaddr;
         m_ifIndex = ifIndex;
@@ -117,12 +137,16 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         node.getSnmpInterfaces().add(this);
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsSnmpInterface() {
     }
 
     /**
      * Unique identifier for snmpInterface.
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -131,6 +155,11 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
@@ -138,11 +167,21 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     /*
      * TODO this doesn't belong on SnmpInterface
      */
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "ipAddr", length = 16)
     public String getIpAddress() {
         return m_ipAddr;
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipaddr a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipaddr) {
         m_ipAddr = ipaddr;
     }
@@ -150,106 +189,221 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     /*
      * TODO this doesn't belong on SnmpInterface
      */
+    /**
+     * <p>getNetMask</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "snmpIpAdEntNetMask", length = 16)
     public String getNetMask() {
         return m_netMask;
     }
 
+    /**
+     * <p>setNetMask</p>
+     *
+     * @param snmpipadentnetmask a {@link java.lang.String} object.
+     */
     public void setNetMask(String snmpipadentnetmask) {
         m_netMask = snmpipadentnetmask;
     }
 
+    /**
+     * <p>getPhysAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "snmpPhysAddr", length = 32)
     public String getPhysAddr() {
         return m_physAddr;
     }
 
+    /**
+     * <p>setPhysAddr</p>
+     *
+     * @param snmpphysaddr a {@link java.lang.String} object.
+     */
     public void setPhysAddr(String snmpphysaddr) {
         m_physAddr = snmpphysaddr;
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name = "snmpIfIndex")
     public Integer getIfIndex() {
         return m_ifIndex;
     }
 
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param snmpifindex a {@link java.lang.Integer} object.
+     */
     public void setIfIndex(Integer snmpifindex) {
         m_ifIndex = snmpifindex;
     }
 
+    /**
+     * <p>getIfDescr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "snmpIfDescr", length = 256)
     public String getIfDescr() {
         return m_ifDescr;
     }
 
+    /**
+     * <p>setIfDescr</p>
+     *
+     * @param snmpifdescr a {@link java.lang.String} object.
+     */
     public void setIfDescr(String snmpifdescr) {
         m_ifDescr = snmpifdescr;
     }
 
+    /**
+     * <p>getIfType</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name = "snmpIfType")
     public Integer getIfType() {
         return m_ifType;
     }
 
+    /**
+     * <p>setIfType</p>
+     *
+     * @param snmpiftype a {@link java.lang.Integer} object.
+     */
     public void setIfType(Integer snmpiftype) {
         m_ifType = snmpiftype;
     }
 
+    /**
+     * <p>getIfName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "snmpIfName", length = 32)
     public String getIfName() {
         return m_ifName;
     }
 
+    /**
+     * <p>setIfName</p>
+     *
+     * @param snmpifname a {@link java.lang.String} object.
+     */
     public void setIfName(String snmpifname) {
         m_ifName = snmpifname;
     }
 
+    /**
+     * <p>getIfSpeed</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     @Column(name = "snmpIfSpeed")
     public Long getIfSpeed() {
         return m_ifSpeed;
     }
 
+    /**
+     * <p>setIfSpeed</p>
+     *
+     * @param snmpifspeed a {@link java.lang.Long} object.
+     */
     public void setIfSpeed(Long snmpifspeed) {
         m_ifSpeed = snmpifspeed;
     }
 
+    /**
+     * <p>getIfAdminStatus</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name = "snmpIfAdminStatus")
     public Integer getIfAdminStatus() {
         return m_ifAdminStatus;
     }
 
+    /**
+     * <p>setIfAdminStatus</p>
+     *
+     * @param snmpifadminstatus a {@link java.lang.Integer} object.
+     */
     public void setIfAdminStatus(Integer snmpifadminstatus) {
         m_ifAdminStatus = snmpifadminstatus;
     }
 
+    /**
+     * <p>getIfOperStatus</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name = "snmpIfOperStatus")
     public Integer getIfOperStatus() {
         return m_ifOperStatus;
     }
 
+    /**
+     * <p>setIfOperStatus</p>
+     *
+     * @param snmpifoperstatus a {@link java.lang.Integer} object.
+     */
     public void setIfOperStatus(Integer snmpifoperstatus) {
         m_ifOperStatus = snmpifoperstatus;
     }
 
+    /**
+     * <p>getIfAlias</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "snmpIfAlias", length = 256)
     public String getIfAlias() {
         return m_ifAlias;
     }
 
+    /**
+     * <p>setIfAlias</p>
+     *
+     * @param snmpifalias a {@link java.lang.String} object.
+     */
     public void setIfAlias(String snmpifalias) {
         m_ifAlias = snmpifalias;
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
 
+    /**
+     * <p>setNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void setNode(OnmsNode node) {
         m_node = node;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("ipaddr", getIpAddress())
@@ -266,16 +420,27 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .toString();
     }
 
+    /** {@inheritDoc} */
     public void visit(EntityVisitor visitor) {
         visitor.visitSnmpInterface(this);
         visitor.visitSnmpInterfaceComplete(this);
     }
 
+    /**
+     * <p>getIpInterfaces</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
 
+    /**
+     * <p>setIpInterfaces</p>
+     *
+     * @param ipInterfaces a {@link java.util.Set} object.
+     */
     public void setIpInterfaces(Set<OnmsIpInterface> ipInterfaces) {
         m_ipInterfaces = ipInterfaces;
     }
@@ -293,6 +458,11 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     // return ifsForSnmpIface;
     // }
 
+    /**
+     * <p>getCollectionType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface.CollectionType} object.
+     */
     @Transient
     public CollectionType getCollectionType() {
         CollectionType maxCollType = CollectionType.NO_COLLECT;
@@ -305,10 +475,20 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         return maxCollType;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>computePhysAddrForRRD</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String computePhysAddrForRRD() {
         /*
          * In order to assure the uniqueness of the RRD file names we now
@@ -336,6 +516,11 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         return physAddrForRRD;
     }
 
+    /**
+     * <p>computeNameForRRD</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String computeNameForRRD() {
         /*
          * Determine the label for this interface. The label will be used to
@@ -361,12 +546,22 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         return label;
     }
 
+    /**
+     * <p>computeLabelForRRD</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String computeLabelForRRD() {
         String name = computeNameForRRD();
         String physAddrForRRD = computePhysAddrForRRD();
         return (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
     }
 
+    /**
+     * <p>addIpInterface</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     */
     public void addIpInterface(OnmsIpInterface iface) {
         m_ipInterfaces.add(iface);
     }

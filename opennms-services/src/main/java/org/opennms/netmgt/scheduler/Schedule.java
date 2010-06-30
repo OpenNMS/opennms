@@ -37,12 +37,14 @@ import org.opennms.core.utils.ThreadCategory;
 
 
 /**
- * Represents a Schedule 
+ * Represents a Schedule
  *
  * @author brozow
+ * @version $Id: $
  */
 public class Schedule {
 
+	/** Constant <code>random</code> */
 	public static final Random random = new Random();
 	
     private final ReadyRunnable m_schedulable;
@@ -104,10 +106,11 @@ public class Schedule {
     }
 
     /**
-     * @param interval
-     * @param timer
-     * @param m_schedulable
-     * 
+     * <p>Constructor for Schedule.</p>
+     *
+     * @param interval a {@link org.opennms.netmgt.scheduler.ScheduleInterval} object.
+     * @param timer a {@link org.opennms.netmgt.scheduler.ScheduleTimer} object.
+     * @param schedulable a {@link org.opennms.netmgt.scheduler.ReadyRunnable} object.
      */
     public Schedule(ReadyRunnable schedulable, ScheduleInterval interval, ScheduleTimer timer) {
         m_schedulable = schedulable;
@@ -117,7 +120,7 @@ public class Schedule {
     }
 
     /**
-     * 
+     * <p>schedule</p>
      */
     public void schedule() {
         m_scheduled = true;
@@ -130,21 +133,21 @@ public class Schedule {
     }
 
     /**
-     * 
+     * <p>run</p>
      */
     public void run() {
         m_schedulable.run();
     }
 
     /**
-     * 
+     * <p>adjustSchedule</p>
      */
     public void adjustSchedule() {
         schedule(m_interval.getInterval());
     }
 
     /**
-     * 
+     * <p>unschedule</p>
      */
     public void unschedule() {
         m_scheduled = false;

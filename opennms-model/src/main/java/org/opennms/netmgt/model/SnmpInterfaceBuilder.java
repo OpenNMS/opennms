@@ -31,19 +31,41 @@
 //
 package org.opennms.netmgt.model;
 
+/**
+ * <p>SnmpInterfaceBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpInterfaceBuilder {
 	
 	private OnmsSnmpInterface m_snmpIf;
 
+	/**
+	 * <p>Constructor for SnmpInterfaceBuilder.</p>
+	 *
+	 * @param snmpIf a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+	 */
 	public SnmpInterfaceBuilder(OnmsSnmpInterface snmpIf) {
 		m_snmpIf = snmpIf;
 	}
 
+	/**
+	 * <p>setIfSpeed</p>
+	 *
+	 * @param ifSpeed a long.
+	 * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+	 */
 	public SnmpInterfaceBuilder setIfSpeed(long ifSpeed) {
 		m_snmpIf.setIfSpeed(new Long(ifSpeed));
 		return this;
 	}
         
+        /**
+         * <p>getSnmpInterface</p>
+         *
+         * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+         */
         public OnmsSnmpInterface getSnmpInterface() {
             return m_snmpIf;
         }

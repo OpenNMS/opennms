@@ -44,14 +44,28 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * <p>DaemonManagerDefault class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DaemonManagerDefault implements DaemonManager {
 	
 	private List m_serviceDaemons;
 	
+	/**
+	 * <p>setServiceDaemons</p>
+	 *
+	 * @param serviceDaemons a {@link java.util.List} object.
+	 */
 	public void setServiceDaemons(List serviceDaemons) {
 		m_serviceDaemons = serviceDaemons;
 	}
 
+	/**
+	 * <p>pause</p>
+	 */
 	public void pause() {
 		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
 			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
@@ -59,6 +73,9 @@ public class DaemonManagerDefault implements DaemonManager {
 		}
 	}
 
+	/**
+	 * <p>resume</p>
+	 */
 	public void resume() {
 		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
 			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
@@ -66,6 +83,9 @@ public class DaemonManagerDefault implements DaemonManager {
 		}
 	}
 
+	/**
+	 * <p>start</p>
+	 */
 	public void start() {
 		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
 			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
@@ -73,6 +93,11 @@ public class DaemonManagerDefault implements DaemonManager {
 		}
 	}
 
+	/**
+	 * <p>status</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map status() {
 		Map stati = new HashMap();
 		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
@@ -82,6 +107,9 @@ public class DaemonManagerDefault implements DaemonManager {
 		return stati;
 	}
 
+	/**
+	 * <p>stop</p>
+	 */
 	public void stop() {
 		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
 			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();

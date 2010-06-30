@@ -38,7 +38,25 @@ import org.opennms.secret.model.NodeInterface;
 
 
 
+/**
+ * <p>ServiceService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public interface ServiceService {
+    /**
+     * <p>setServiceDao</p>
+     *
+     * @param serviceDao a {@link org.opennms.secret.dao.ServiceDao} object.
+     */
     public abstract void setServiceDao(ServiceDao serviceDao);
+    /**
+     * <p>getServices</p>
+     *
+     * @param iface a {@link org.opennms.secret.model.NodeInterface} object.
+     * @return a {@link java.util.HashSet} object.
+     */
     public abstract HashSet getServices(NodeInterface iface);
 }

@@ -31,8 +31,19 @@
 //
 package org.opennms.netmgt.snmp;
 
+/**
+ * <p>TrapProcessorFactory interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TrapProcessorFactory {
 
+    /**
+     * <p>createTrapProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
+     */
     public abstract TrapProcessor createTrapProcessor();
 
 }

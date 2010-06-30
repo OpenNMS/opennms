@@ -36,11 +36,18 @@ package org.opennms.report.availability.svclayer;
 
 import org.opennms.report.availability.AvailabilityReportRunner;
 
+/**
+ * <p>DefaultAvailabilityReportService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultAvailabilityReportService implements
         AvailabilityReportService {
 
     AvailabilityReportRunner m_reportRunner;
 
+    /** {@inheritDoc} */
     public void runReport(AvailabilityReportCriteria criteria) {
 
         m_reportRunner.setEmail(criteria.getEmail());
@@ -54,6 +61,11 @@ public class DefaultAvailabilityReportService implements
 
     }
 
+    /**
+     * <p>setReportRunner</p>
+     *
+     * @param reportRunner a {@link org.opennms.report.availability.AvailabilityReportRunner} object.
+     */
     public void setReportRunner(AvailabilityReportRunner reportRunner) {
         m_reportRunner = reportRunner;
     }

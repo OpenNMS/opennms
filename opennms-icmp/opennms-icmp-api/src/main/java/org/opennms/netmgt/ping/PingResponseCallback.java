@@ -40,13 +40,34 @@ import java.net.InetAddress;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 /**
- * 
+ * <p>PingResponseCallback interface.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @version $Id: $
  */
 public interface PingResponseCallback {
 
+	/**
+	 * <p>handleResponse</p>
+	 *
+	 * @param address a {@link java.net.InetAddress} object.
+	 * @param packet a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
+	 */
 	public void handleResponse(InetAddress address, ICMPEchoPacket packet);
+	/**
+	 * <p>handleTimeout</p>
+	 *
+	 * @param address a {@link java.net.InetAddress} object.
+	 * @param packet a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
+	 */
 	public void handleTimeout(InetAddress address, ICMPEchoPacket packet);
+    /**
+     * <p>handleError</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param packet a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
+     * @param t a {@link java.lang.Throwable} object.
+     */
     public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t);
 
 }

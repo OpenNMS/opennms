@@ -41,12 +41,14 @@ import org.opennms.netmgt.config.users.DutySchedule;
 
 /**
  * This is a data class to store the group information from the groups.xml file
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
  * @deprecated Use the Group class instead
+ * @since 1.6.12
  */
 public class GroupInfo {
     /**
@@ -81,7 +83,7 @@ public class GroupInfo {
 
     /**
      * Sets the group name
-     * 
+     *
      * @param aName
      *            the name of the group
      */
@@ -91,7 +93,7 @@ public class GroupInfo {
 
     /**
      * Returns the group name
-     * 
+     *
      * @return the name of the group
      */
     public String getGroupName() {
@@ -100,7 +102,7 @@ public class GroupInfo {
 
     /**
      * Sets the comments for the group
-     * 
+     *
      * @param someComments
      *            the comments for the group
      */
@@ -110,7 +112,7 @@ public class GroupInfo {
 
     /**
      * Returns the comments for the group
-     * 
+     *
      * @return the comments for the group
      */
     public String getGroupComments() {
@@ -119,7 +121,7 @@ public class GroupInfo {
 
     /**
      * Adds a username to the list of users
-     * 
+     *
      * @param aUser
      *            a new username
      */
@@ -129,7 +131,7 @@ public class GroupInfo {
 
     /**
      * Removes a username from the list of users
-     * 
+     *
      * @param aUser
      *            the user to remove
      */
@@ -139,7 +141,7 @@ public class GroupInfo {
 
     /**
      * Returns the list of users
-     * 
+     *
      * @return the list of users
      */
     public List getUsers() {
@@ -148,7 +150,7 @@ public class GroupInfo {
 
     /**
      * Returns a count of the users in the list
-     * 
+     *
      * @return how many users in this group
      */
     public int getUserCount() {
@@ -157,7 +159,7 @@ public class GroupInfo {
 
     /**
      * This method adds a duty schedule
-     * 
+     *
      * @param aSchedule
      *            a new duty schedule to associate with a group
      */
@@ -167,7 +169,7 @@ public class GroupInfo {
 
     /**
      * This method sets a full list of duty schedules for a group
-     * 
+     *
      * @param someSchedules
      *            a list of DutySchedule objects for a group
      */
@@ -177,7 +179,7 @@ public class GroupInfo {
 
     /**
      * Returns the number of DutySchedule object for a group
-     * 
+     *
      * @return the number of DutySchedules
      */
     public int getDutyScheduleCount() {
@@ -186,7 +188,7 @@ public class GroupInfo {
 
     /**
      * Returns the full list of DutySchedules
-     * 
+     *
      * @return the full list of DutySchedules
      */
     public List<DutySchedule> getDutySchedules() {
@@ -196,7 +198,7 @@ public class GroupInfo {
     /**
      * Returns a boolean indicating if the user is on duty at the specified
      * time.
-     * 
+     *
      * @param aTime
      *            a time to see if the user is on duty
      * @return true if the user is on duty, false otherwise
@@ -224,7 +226,7 @@ public class GroupInfo {
     /**
      * Returns a String representation of the group, used primarily for
      * debugging.
-     * 
+     *
      * @return a string representation
      */
     public String toString() {

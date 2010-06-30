@@ -38,8 +38,11 @@ import org.opennms.web.map.MapsConstants;
 
 
 /**
- * 
+ * <p>MapStartUpConfig class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class MapStartUpConfig {
     
@@ -53,31 +56,65 @@ public class MapStartUpConfig {
 
     String user = null;
     
+	/**
+	 * <p>Getter for the field <code>user</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getUser() {
 		return user;
 	}
 
 
+	/**
+	 * <p>Setter for the field <code>user</code>.</p>
+	 *
+	 * @param user a {@link java.lang.String} object.
+	 */
 	public void setUser(String user) {
 		this.user = user;
 	}
 
 
+	/**
+	 * <p>Getter for the field <code>mapToOpenId</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getMapToOpenId() {
 		return mapToOpenId;
 	}
 
 
+	/**
+	 * <p>Setter for the field <code>mapToOpenId</code>.</p>
+	 *
+	 * @param mapToOpenId a int.
+	 */
 	public void setMapToOpenId(int mapToOpenId) {
 		this.mapToOpenId = mapToOpenId;
 	}
 
 
+	/**
+	 * <p>Constructor for MapStartUpConfig.</p>
+	 */
 	public MapStartUpConfig() {
 		super();
 	}
 	
 	
+	/**
+	 * <p>Constructor for MapStartUpConfig.</p>
+	 *
+	 * @param user a {@link java.lang.String} object.
+	 * @param isAdminRole a boolean.
+	 * @param screenWidth a int.
+	 * @param screenHeight a int.
+	 * @param refreshTime a int.
+	 * @param fullScreen a boolean.
+	 * @param mapToOpenId a int.
+	 */
 	public MapStartUpConfig(String user, boolean isAdminRole,int screenWidth, int screenHeight, int refreshTime, boolean fullScreen, int mapToOpenId) {
 		super();
 		this.user = user;
@@ -91,6 +128,15 @@ public class MapStartUpConfig {
 
 	
 	
+	/**
+	 * <p>Constructor for MapStartUpConfig.</p>
+	 *
+	 * @param user a {@link java.lang.String} object.
+	 * @param screenWidth a int.
+	 * @param screenHeight a int.
+	 * @param refreshTime a int.
+	 * @param fullScreen a boolean.
+	 */
 	public MapStartUpConfig(String user, int screenWidth, int screenHeight, int refreshTime, boolean fullScreen) {
 		super();
 		this.user = user;
@@ -102,6 +148,14 @@ public class MapStartUpConfig {
 
 
 	
+	/**
+	 * <p>Constructor for MapStartUpConfig.</p>
+	 *
+	 * @param user a {@link java.lang.String} object.
+	 * @param screenWidth a int.
+	 * @param screenHeight a int.
+	 * @param refreshTime a int.
+	 */
 	public MapStartUpConfig(String user, int screenWidth, int screenHeight, int refreshTime) {
 		super();
 		this.user = user;
@@ -111,37 +165,87 @@ public class MapStartUpConfig {
 	}
 
 
+	/**
+	 * <p>Getter for the field <code>fullScreen</code>.</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getFullScreen() {
 		return fullScreen;
 	}
+	/**
+	 * <p>Setter for the field <code>fullScreen</code>.</p>
+	 *
+	 * @param fullScreen a boolean.
+	 */
 	public void setFullScreen(boolean fullScreen) {
 		this.fullScreen = fullScreen;
 	}
+	/**
+	 * <p>Getter for the field <code>refreshTime</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getRefreshTime() {
 		return refreshTime;
 	}
+	/**
+	 * <p>Setter for the field <code>refreshTime</code>.</p>
+	 *
+	 * @param refreshTime a int.
+	 */
 	public void setRefreshTime(int refreshTime) {
 		this.refreshTime = refreshTime;
 	}
+	/**
+	 * <p>Getter for the field <code>screenHeight</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getScreenHeight() {
 		return screenHeight;
 	}
+	/**
+	 * <p>Setter for the field <code>screenHeight</code>.</p>
+	 *
+	 * @param screenHeight a int.
+	 */
 	public void setScreenHeight(int screenHeight) {
 		this.screenHeight = screenHeight;
 	}
+	/**
+	 * <p>Getter for the field <code>screenWidth</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getScreenWidth() {
 		return screenWidth;
 	}
+	/**
+	 * <p>Setter for the field <code>screenWidth</code>.</p>
+	 *
+	 * @param screenWidth a int.
+	 */
 	public void setScreenWidth(int screenWidth) {
 		this.screenWidth = screenWidth;
 	}
 
 
+	/**
+	 * <p>isAdminRole</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isAdminRole() {
 		return isAdminRole;
 	}
 
 
+	/**
+	 * <p>setAdminRole</p>
+	 *
+	 * @param isAdminRole a boolean.
+	 */
 	public void setAdminRole(boolean isAdminRole) {
 		this.isAdminRole = isAdminRole;
 	}

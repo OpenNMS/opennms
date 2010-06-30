@@ -38,17 +38,23 @@ package org.opennms.netmgt.poller.jmx;
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
 /**
- * 
+ * <p>RemotePollerBackEnd class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class RemotePollerBackEnd extends AbstractSpringContextJmxServiceDaemon implements RemotePollerBackEndMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "PollerBackEnd";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "pollerBackEndContext";

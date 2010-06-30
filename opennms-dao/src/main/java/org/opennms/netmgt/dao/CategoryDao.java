@@ -40,10 +40,28 @@ import java.util.List;
 import org.hibernate.criterion.Criterion;
 import org.opennms.netmgt.model.OnmsCategory;
 
+/**
+ * <p>CategoryDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface CategoryDao extends OnmsDao<OnmsCategory, Integer> {
 	
+    /**
+     * <p>findByName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCategory} object.
+     */
     public abstract OnmsCategory findByName(String name);
     
+    /**
+     * <p>getCriterionForCategorySetsUnion</p>
+     *
+     * @param categories an array of {@link java.lang.String} objects.
+     * @return a {@link java.util.List} object.
+     */
     public abstract List<Criterion> getCriterionForCategorySetsUnion(String[]... categories);
 
 }

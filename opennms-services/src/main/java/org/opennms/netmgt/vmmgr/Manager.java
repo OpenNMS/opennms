@@ -84,10 +84,17 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * stop control event, it will exit - does not check to see if the services
  * its started are all stopped
  * <p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @version $Id: $
  */
 public class Manager implements ManagerMBean {
     /**
@@ -95,6 +102,9 @@ public class Manager implements ManagerMBean {
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Manager";
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         setLogPrefix();
 
@@ -119,6 +129,11 @@ public class Manager implements ManagerMBean {
         log().debug("Shutdown complete");
     }
     
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> status() {
         setLogPrefix();
 
@@ -164,8 +179,6 @@ public class Manager implements ManagerMBean {
      * {@see java.lang.System.exit(int)}, which causes the JVM to
      * exit immediately.  This method is usually invoked via JMX from
      * another process as the last stage of shutting down OpenNMS.
-     * 
-     * @return does not return
      */
     public void doSystemExit() {
         setLogPrefix();
@@ -215,6 +228,9 @@ public class Manager implements ManagerMBean {
         Logger.shutdown();
     }
     
+    /**
+     * <p>doTestLoadLibraries</p>
+     */
     public void doTestLoadLibraries() {
         setLogPrefix();
 

@@ -39,30 +39,85 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
 /**
+ * <p>SyslogHandlerMBean interface.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * @version $Id: $
  */
 public interface SyslogHandlerMBean {
+    /**
+     * <p>init</p>
+     */
     public void init();
 
+    /**
+     * <p>destroy</p>
+     */
     public void destroy();
 
+    /**
+     * <p>start</p>
+     */
     public void start();
 
+    /**
+     * <p>stop</p>
+     */
     public void stop();
 
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a {@link java.lang.Integer} object.
+     */
     public void setPort(Integer port);
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getPort();
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus();
 
+    /**
+     * <p>addEventHandler</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @throws javax.management.MalformedObjectNameException if any.
+     * @throws javax.management.InstanceNotFoundException if any.
+     */
     public void addEventHandler(String name)
             throws MalformedObjectNameException, InstanceNotFoundException;
 
+    /**
+     * <p>removeEventHandler</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @throws javax.management.MalformedObjectNameException if any.
+     * @throws javax.management.InstanceNotFoundException if any.
+     */
     public void removeEventHandler(String name)
             throws MalformedObjectNameException, InstanceNotFoundException;
 
+    /**
+     * <p>setLogPrefix</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
+     */
     public void setLogPrefix(String prefix);
 }

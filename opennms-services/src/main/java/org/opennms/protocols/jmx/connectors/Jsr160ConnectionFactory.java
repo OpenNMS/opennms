@@ -52,10 +52,23 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+/**
+ * <p>Jsr160ConnectionFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Jsr160ConnectionFactory {
     
     static Category log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
 
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param propertiesMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.protocols.jmx.connectors.Jsr160ConnectionWrapper} object.
+     */
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;

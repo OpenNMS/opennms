@@ -36,32 +36,55 @@ package org.opennms.netmgt.snmp;
 import java.net.InetAddress;
 
 /**
+ * <p>SnmpAgentConfig class.</p>
+ *
  * @author (various previous authors not documented)
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @version $Id: $
  */
 public class SnmpAgentConfig {
     
+    /** Constant <code>DEFAULT_TIMEOUT=3000</code> */
     public static final int DEFAULT_TIMEOUT = 3000;
+    /** Constant <code>DEFAULT_PORT=161</code> */
     public static final int DEFAULT_PORT = 161;
+    /** Constant <code>VERSION1=1</code> */
     public static final int VERSION1 = 1;
+    /** Constant <code>VERSION2C=2</code> */
     public static final int VERSION2C = 2;
+    /** Constant <code>VERSION3=3</code> */
     public static final int VERSION3 = 3;
+    /** Constant <code>DEFAULT_VERSION=VERSION1</code> */
     public static final int DEFAULT_VERSION = VERSION1;
+    /** Constant <code>DEFAULT_RETRIES=1</code> */
     public static final int DEFAULT_RETRIES = 1;
+    /** Constant <code>DEFAULT_MAX_REQUEST_SIZE=65535</code> */
     public static final int DEFAULT_MAX_REQUEST_SIZE = 65535;
+    /** Constant <code>NOAUTH_NOPRIV=1</code> */
     public static final int NOAUTH_NOPRIV = 1;
+    /** Constant <code>AUTH_NOPRIV=2</code> */
     public static final int AUTH_NOPRIV = 2;
+    /** Constant <code>AUTH_PRIV=3</code> */
     public static final int AUTH_PRIV = 3;
+    /** Constant <code>DEFAULT_READ_COMMUNITY="public"</code> */
     public static final String DEFAULT_READ_COMMUNITY = "public";
+    /** Constant <code>DEFAULT_MAX_VARS_PER_PDU=10</code> */
     public static final int DEFAULT_MAX_VARS_PER_PDU = 10;
+    /** Constant <code>DEFAULT_MAX_REPETITIONS=2</code> */
     public static final int DEFAULT_MAX_REPETITIONS = 2;
+    /** Constant <code>DEFAULT_WRITE_COMMUNITY="private"</code> */
     public static final String DEFAULT_WRITE_COMMUNITY = "private";
+    /** Constant <code>DEFAULT_SECURITY_LEVEL=NOAUTH_NOPRIV</code> */
     public static final int DEFAULT_SECURITY_LEVEL = NOAUTH_NOPRIV;
+    /** Constant <code>DEFAULT_SECURITY_NAME="opennmsUser"</code> */
     public static final String DEFAULT_SECURITY_NAME = "opennmsUser";
+    /** Constant <code>DEFAULT_AUTH_PASS_PHRASE="0p3nNMSv3"</code> */
     public static final String DEFAULT_AUTH_PASS_PHRASE = "0p3nNMSv3";
+    /** Constant <code>DEFAULT_AUTH_PROTOCOL="MD5"</code> */
     public static final String DEFAULT_AUTH_PROTOCOL = "MD5";
+    /** Constant <code>DEFAULT_PRIV_PROTOCOL="DES"</code> */
     public static final String DEFAULT_PRIV_PROTOCOL = "DES";
+    /** Constant <code>DEFAULT_PRIV_PASS_PHRASE="DEFAULT_AUTH_PASS_PHRASE"</code> */
     public static final String DEFAULT_PRIV_PASS_PHRASE = DEFAULT_AUTH_PASS_PHRASE;
     
     private InetAddress m_address;
@@ -82,10 +105,18 @@ public class SnmpAgentConfig {
     private String m_privPassPhrase;
     private InetAddress m_proxyFor;
     
+    /**
+     * <p>Constructor for SnmpAgentConfig.</p>
+     */
     public SnmpAgentConfig() {
         setDefaults();
     }
     
+    /**
+     * <p>Constructor for SnmpAgentConfig.</p>
+     *
+     * @param agentAddress a {@link java.net.InetAddress} object.
+     */
     public SnmpAgentConfig(InetAddress agentAddress) {
         m_address = agentAddress;
         setDefaults();
@@ -109,6 +140,11 @@ public class SnmpAgentConfig {
         m_writeCommunity = DEFAULT_WRITE_COMMUNITY;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer buff = new StringBuffer("AgentConfig[");
         buff.append("Address: "+m_address);
@@ -134,102 +170,228 @@ public class SnmpAgentConfig {
     }
 
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return m_address;
     }
 
+    /**
+     * <p>setAddress</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     */
     public void setAddress(InetAddress address) {
         m_address = address;
     }
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
+     */
     public int getPort() {
         return m_port;
     }
 
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a int.
+     */
     public void setPort(int port) {
         m_port = port;
     }
 
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a int.
+     */
     public int getTimeout() {
         return m_timeout;
     }
 
+    /**
+     * <p>setTimeout</p>
+     *
+     * @param timeout a int.
+     */
     public void setTimeout(int timeout) {
         m_timeout = timeout;
     }
 
+    /**
+     * <p>getVersion</p>
+     *
+     * @return a int.
+     */
     public int getVersion() {
         return m_version;
     }
 
+    /**
+     * <p>setVersion</p>
+     *
+     * @param version a int.
+     */
     public void setVersion(int version) {
         m_version = version;
     }
 
+    /**
+     * <p>getRetries</p>
+     *
+     * @return a int.
+     */
     public int getRetries() {
         return m_retries;
     }
 
+    /**
+     * <p>setRetries</p>
+     *
+     * @param retries a int.
+     */
     public void setRetries(int retries) {
         m_retries = retries;
     }
 
+    /**
+     * <p>getSecurityLevel</p>
+     *
+     * @return a int.
+     */
     public int getSecurityLevel() {
         return m_securityLevel;
     }
 
+    /**
+     * <p>setSecurityLevel</p>
+     *
+     * @param securityLevel a int.
+     */
     public void setSecurityLevel(int securityLevel) {
         m_securityLevel = securityLevel;
     }
 
+    /**
+     * <p>getSecurityName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSecurityName() {
         return m_securityName;
     }
 
+    /**
+     * <p>setSecurityName</p>
+     *
+     * @param securityName a {@link java.lang.String} object.
+     */
     public void setSecurityName(String securityName) {
         m_securityName = securityName;
     }
 
+    /**
+     * <p>setReadCommunity</p>
+     *
+     * @param community a {@link java.lang.String} object.
+     */
     public void setReadCommunity(String community) {
         m_readCommunity = community;
     }
 
+    /**
+     * <p>getMaxRequestSize</p>
+     *
+     * @return a int.
+     */
     public int getMaxRequestSize() {
         return m_maxRequestSize;
     }
 
+    /**
+     * <p>setMaxRequestSize</p>
+     *
+     * @param maxRequestSize a int.
+     */
     public void setMaxRequestSize(int maxRequestSize) {
         m_maxRequestSize = maxRequestSize;
     }
 
+    /**
+     * <p>getReadCommunity</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getReadCommunity() {
         return m_readCommunity;
     }
 
+    /**
+     * <p>getMaxVarsPerPdu</p>
+     *
+     * @return a int.
+     */
     public int getMaxVarsPerPdu() {
         return m_maxVarsPerPdu;
     }
 
+    /**
+     * <p>setMaxVarsPerPdu</p>
+     *
+     * @param maxVarsPerPdu a int.
+     */
     public void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
     }
     
+    /**
+     * <p>getMaxRepetitions</p>
+     *
+     * @return a int.
+     */
     public int getMaxRepetitions() {
         return m_maxRepetitions;
     }
 
+    /**
+     * <p>setMaxRepetitions</p>
+     *
+     * @param maxRepetitions a int.
+     */
     public void setMaxRepetitions(int maxRepetitions) {
         m_maxRepetitions = maxRepetitions;
     }
 
+    /**
+     * <p>getWriteCommunity</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getWriteCommunity() {
         return m_writeCommunity;
     }
     
+    /**
+     * <p>setWriteCommunity</p>
+     *
+     * @param community a {@link java.lang.String} object.
+     */
     public void setWriteCommunity(String community) {
         m_writeCommunity = community;
     }
     
+    /**
+     * <p>versionToString</p>
+     *
+     * @param version a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String versionToString(int version) {
         switch (version) {
         case VERSION1 :
@@ -243,42 +405,92 @@ public class SnmpAgentConfig {
         }
     }
 
+    /**
+     * <p>getAuthPassPhrase</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAuthPassPhrase() {
         return m_authPassPhrase;
     }
 
+    /**
+     * <p>setAuthPassPhrase</p>
+     *
+     * @param authPassPhrase a {@link java.lang.String} object.
+     */
     public void setAuthPassPhrase(String authPassPhrase) {
         m_authPassPhrase = authPassPhrase;
     }
 
+    /**
+     * <p>getPrivProtocol</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPrivProtocol() {
         return m_PrivProtocol;
     }
 
+    /**
+     * <p>setPrivProtocol</p>
+     *
+     * @param authPrivProtocol a {@link java.lang.String} object.
+     */
     public void setPrivProtocol(String authPrivProtocol) {
         m_PrivProtocol = authPrivProtocol;
     }
 
+    /**
+     * <p>getAuthProtocol</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAuthProtocol() {
         return m_authProtocol;
     }
 
+    /**
+     * <p>setAuthProtocol</p>
+     *
+     * @param authProtocol a {@link java.lang.String} object.
+     */
     public void setAuthProtocol(String authProtocol) {
         m_authProtocol = authProtocol;
     }
     
+    /**
+     * <p>getPrivPassPhrase</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPrivPassPhrase() {
         return m_privPassPhrase;
     }
 
+    /**
+     * <p>setPrivPassPhrase</p>
+     *
+     * @param privPassPhrase a {@link java.lang.String} object.
+     */
     public void setPrivPassPhrase(String privPassPhrase) {
         m_privPassPhrase = privPassPhrase;
     }
 
+    /**
+     * <p>getProxyFor</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getProxyFor() {
         return m_proxyFor;
     }
     
+    /**
+     * <p>setProxyFor</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     */
     public void setProxyFor(InetAddress address) {
         m_proxyFor = address;
     }

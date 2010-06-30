@@ -88,21 +88,24 @@ import org.xml.sax.SAXException;
 
 /**
  * Contains and maintains all the data for the RTC.
- * 
+ *
  * The basic datablock is a 'RTCNode' that gets added to relevant
  * 'RTCCategory's. it also gets added to a map with different keys for easy
  * lookup
- * 
+ *
  * The map('RTCHashMap') is keyed with 'RTCNodeKey's(a nodeid/ip/svc
  * combination), nodeid/ip combinations and nodeid and these keys either lookup
  * a single RTCNode or lists of 'RTCNode's
- * 
+ *
  * Incoming events have a method in the DataManager to alter data - for e.g., a
  * 'nodeGainedService' event would result in the 'nodeGainedService()' method
  * being called by the DataUpdater(s).
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class DataManager extends Object {
     private class RTCNodeProcessor implements RowCallbackHandler {
@@ -378,7 +381,7 @@ public class DataManager extends Object {
      * Constructor. Parses categories from the categories.xml and populates them
      * with 'RTCNode' objects created from data read from the database (services
      * and outage tables)
-     * 
+     *
      * @exception SQLException
      *                if there is an error reading initial data from the
      *                database
@@ -386,6 +389,11 @@ public class DataManager extends Object {
      *                if a rule in the categories.xml was incorrect
      * @exception RTCException
      *                if the initialization/data reading does not go through
+     * @throws org.xml.sax.SAXException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.sql.SQLException if any.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * @throws org.opennms.netmgt.rtc.RTCException if any.
      */
     public DataManager() throws SAXException, IOException, SQLException, FilterParseException, RTCException {
 			
@@ -437,14 +445,13 @@ public class DataManager extends Object {
     /**
      * Handles a node gained service event. Add a new entry to the map and the
      * categories on a 'serviceGained' event
-     * 
+     *
      * @param nodeid
      *            the node id
      * @param ip
      *            the IP address
      * @param svcName
      *            the service name
-     * 
      */
     public synchronized void nodeGainedService(long nodeid, String ip, String svcName) {
         //
@@ -501,7 +508,7 @@ public class DataManager extends Object {
     /**
      * Handles a node lost service event. Add a lost service entry to the right
      * node
-     * 
+     *
      * @param nodeid
      *            the node id
      * @param ip
@@ -527,7 +534,7 @@ public class DataManager extends Object {
 
     /**
      * Add a lost service entry to the right nodes.
-     * 
+     *
      * @param nodeid
      *            the node id
      * @param ip
@@ -548,7 +555,7 @@ public class DataManager extends Object {
 
     /**
      * Add a lost service entry to the right nodes.
-     * 
+     *
      * @param nodeid
      *            the node id
      * @param t
@@ -567,7 +574,7 @@ public class DataManager extends Object {
 
     /**
      * Add a regained service entry to the right nodes.
-     * 
+     *
      * @param nodeid
      *            the node id
      * @param t
@@ -586,7 +593,7 @@ public class DataManager extends Object {
 
     /**
      * Add a regained service entry to the right nodes.
-     * 
+     *
      * @param nodeid
      *            the node id
      * @param ip
@@ -607,7 +614,7 @@ public class DataManager extends Object {
 
     /**
      * Add a regained service entry to the right node.
-     * 
+     *
      * @param nodeid
      *            the node id
      * @param ip
@@ -632,7 +639,7 @@ public class DataManager extends Object {
 
     /**
      * Remove node from the map and the categories on a 'serviceDeleted' event.
-     * 
+     *
      * @param nodeid
      *            the nodeid on which service was deleted
      * @param ip
@@ -687,6 +694,11 @@ public class DataManager extends Object {
 
     }
     
+    /**
+     * <p>assetInfoChanged</p>
+     *
+     * @param nodeid a long.
+     */
     public synchronized void assetInfoChanged(long nodeid) {
         try {
         	rtcNodeRescan(nodeid);
@@ -704,6 +716,11 @@ public class DataManager extends Object {
     	
     }
     
+    /**
+     * <p>nodeCategoryMembershipChanged</p>
+     *
+     * @param nodeid a long.
+     */
     public synchronized void nodeCategoryMembershipChanged(long nodeid) {
         try {
         	rtcNodeRescan(nodeid);
@@ -722,16 +739,15 @@ public class DataManager extends Object {
     /**
      * Update the categories for a node. This method will update the categories
      * for all interfaces on a node.
-     * 
+     *
      * @param nodeid
      *            the nodeid on which SNMP service was added
-     * 
-     * @throws SQLException
+     * @throws java.sql.SQLException
      *             if the database read fails due to an SQL error
-     * @throws FilterParseException
+     * @throws org.opennms.netmgt.filter.FilterParseException
      *             if filtering the data against the category rule fails due to
      *             the rule being incorrect
-     * @throws RTCException
+     * @throws org.opennms.netmgt.rtc.RTCException
      *             if the database read or filtering the data against the
      *             category rule fails for some reason
      */
@@ -751,16 +767,16 @@ public class DataManager extends Object {
     /**
      * Reparent an interface. This effectively means updating the nodelist of
      * the categories and the map
-     * 
+     *
      * Use the ip/oldnodeid combination to get all nodes that will be affected -
      * for each of these nodes, remove the old entry and add a new one with new
      * keys to the map
-     * 
+     *
      * <em>Note:</em> Each of these nodes could belong to more than one
      * category. However, category rule evaluation is done based ONLY on the IP -
      * therefore changing the nodeID on the node should update the categories
      * appropriately
-     * 
+     *
      * @param ip
      *            the interface to reparent
      * @param oldNodeId
@@ -801,14 +817,13 @@ public class DataManager extends Object {
     /**
      * Get the value(uptime) for the category in the last 'rollingWindow'
      * starting at current time
-     * 
+     *
      * @param catLabel
      *            the category to which the node should belong to
      * @param curTime
      *            the current time
      * @param rollingWindow
      *            the window for which value is to be calculated
-     * 
      * @return the value(uptime) for the category in the last 'rollingWindow'
      *         starting at current time
      */
@@ -819,7 +834,7 @@ public class DataManager extends Object {
     /**
      * Get the value(uptime) for the nodeid in the last 'rollingWindow' starting
      * at current time in the context of the passed category
-     * 
+     *
      * @param nodeid
      *            the node for which value is to be calculated
      * @param catLabel
@@ -828,7 +843,6 @@ public class DataManager extends Object {
      *            the current time
      * @param rollingWindow
      *            the window for which value is to be calculated
-     * 
      * @return the value(uptime) for the node in the last 'rollingWindow'
      *         starting at current time in the context of the passed category
      */
@@ -839,12 +853,11 @@ public class DataManager extends Object {
     /**
      * Get the service count for the nodeid in the context of the passed
      * category
-     * 
+     *
      * @param nodeid
      *            the node for which service count is to be calculated
      * @param catLabel
      *            the category to which the node should belong to
-     * 
      * @return the service count for the nodeid in the context of the passed
      *         category
      */
@@ -855,12 +868,11 @@ public class DataManager extends Object {
     /**
      * Get the service down count for the nodeid in the context of the passed
      * category
-     * 
+     *
      * @param nodeid
      *            the node for which service down count is to be calculated
      * @param catLabel
      *            the category to which the node should belong to
-     * 
      * @return the service down count for the nodeid in the context of the
      *         passed category
      */
@@ -869,6 +881,8 @@ public class DataManager extends Object {
     }
 
     /**
+     * <p>getCategories</p>
+     *
      * @return the categories
      */
     public synchronized Map<String, RTCCategory> getCategories() {

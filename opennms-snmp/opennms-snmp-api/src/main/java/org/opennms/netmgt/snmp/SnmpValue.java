@@ -35,60 +35,149 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 
 
+/**
+ * <p>SnmpValue interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface SnmpValue {
     // These values match the ASN.1 constants
+    /** Constant <code>SNMP_INT32=(0x02)</code> */
     public final static int SNMP_INT32 = (0x02);
 
+    /** Constant <code>SNMP_OCTET_STRING=(0x04)</code> */
     public final static int SNMP_OCTET_STRING = (0x04);
 
+    /** Constant <code>SNMP_NULL=(0x05)</code> */
     public final static int SNMP_NULL = (0x05);
 
+    /** Constant <code>SNMP_OBJECT_IDENTIFIER=(0x06)</code> */
     public final static int SNMP_OBJECT_IDENTIFIER = (0x06);
 
+    /** Constant <code>SNMP_IPADDRESS=(0x40)</code> */
     public final static int SNMP_IPADDRESS = (0x40);
 
+    /** Constant <code>SNMP_COUNTER32=(0x41)</code> */
     public final static int SNMP_COUNTER32 = (0x41);
 
+    /** Constant <code>SNMP_GAUGE32=(0x42)</code> */
     public final static int SNMP_GAUGE32 = (0x42);
 
+    /** Constant <code>SNMP_TIMETICKS=(0x43)</code> */
     public final static int SNMP_TIMETICKS = (0x43);
 
+    /** Constant <code>SNMP_OPAQUE=(0x44)</code> */
     public final static int SNMP_OPAQUE = (0x44);
 
+    /** Constant <code>SNMP_COUNTER64=(0x46)</code> */
     public final static int SNMP_COUNTER64 = (0x46);
     
+    /** Constant <code>SNMP_NO_SUCH_OBJECT=(0x80)</code> */
     public final static int SNMP_NO_SUCH_OBJECT = (0x80);
     
+    /** Constant <code>SNMP_NO_SUCH_INSTANCE=(0x81)</code> */
     public final static int SNMP_NO_SUCH_INSTANCE = (0x81);
 
+    /** Constant <code>SNMP_END_OF_MIB=(0x82)</code> */
     public final static int SNMP_END_OF_MIB = (0x82);
     
+    /**
+     * <p>isEndOfMib</p>
+     *
+     * @return a boolean.
+     */
     public abstract boolean isEndOfMib();
     
+    /**
+     * <p>isError</p>
+     *
+     * @return a boolean.
+     */
     public abstract boolean isError();
 
+    /**
+     * <p>isNull</p>
+     *
+     * @return a boolean.
+     */
     public abstract boolean isNull();
 
+    /**
+     * <p>isDisplayable</p>
+     *
+     * @return a boolean.
+     */
     public abstract boolean isDisplayable();
 
+    /**
+     * <p>isNumeric</p>
+     *
+     * @return a boolean.
+     */
     public abstract boolean isNumeric();
 
+    /**
+     * <p>toInt</p>
+     *
+     * @return a int.
+     */
     public abstract int toInt();
 
+    /**
+     * <p>toDisplayString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String toDisplayString();
 
+    /**
+     * <p>toInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public abstract InetAddress toInetAddress();
 
+    /**
+     * <p>toLong</p>
+     *
+     * @return a long.
+     */
     public abstract long toLong();
     
+    /**
+     * <p>toBigInteger</p>
+     *
+     * @return a {@link java.math.BigInteger} object.
+     */
     public abstract BigInteger toBigInteger();
 
+    /**
+     * <p>toHexString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String toHexString();
     
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public abstract int getType();
     
+    /**
+     * <p>getBytes</p>
+     *
+     * @return an array of byte.
+     */
     public abstract byte[] getBytes();
 
+    /**
+     * <p>toSnmpObjId</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public abstract SnmpObjId toSnmpObjId();
 
 

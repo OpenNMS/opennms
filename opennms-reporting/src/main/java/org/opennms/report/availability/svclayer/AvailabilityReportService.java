@@ -30,8 +30,19 @@
 //
 package org.opennms.report.availability.svclayer;
 
+/**
+ * <p>AvailabilityReportService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface AvailabilityReportService {
 
+    /**
+     * <p>runReport</p>
+     *
+     * @param criteria a {@link org.opennms.report.availability.svclayer.AvailabilityReportCriteria} object.
+     */
     public void runReport(AvailabilityReportCriteria criteria);
 
 }

@@ -51,12 +51,10 @@ package org.opennms.protocols.snmp;
  * there is no matching object identifier for the agent. The object is an SNMPv2
  * error condition. This condition can be returned to a manager on a variable by
  * variable basis.
- * 
+ *
  * @see SnmpVarBind
- * 
  * @author Brian Weaver <weave@oculan.com>
  * @version 1.1.1.1
- * 
  */
 public class SnmpNoSuchObject extends SnmpV2Error {
     /**
@@ -80,6 +78,8 @@ public class SnmpNoSuchObject extends SnmpV2Error {
 
     /**
      * The class copy constructor.
+     *
+     * @param second a {@link org.opennms.protocols.snmp.SnmpNoSuchObject} object.
      */
     public SnmpNoSuchObject(SnmpNoSuchObject second) {
         super(second);
@@ -87,9 +87,8 @@ public class SnmpNoSuchObject extends SnmpV2Error {
 
     /**
      * Returns the ASN.1 type for this particular object.
-     * 
+     *
      * @return ASN.1 identifier
-     * 
      */
     public byte typeId() {
         return ASNTYPE;
@@ -97,7 +96,7 @@ public class SnmpNoSuchObject extends SnmpV2Error {
 
     /**
      * Returns a duplicate object of self.
-     * 
+     *
      * @return A duplicate of self
      */
     public SnmpSyntax duplicate() {
@@ -106,7 +105,7 @@ public class SnmpNoSuchObject extends SnmpV2Error {
 
     /**
      * Returns a duplicate object of self.
-     * 
+     *
      * @return A duplicate of self
      */
     public Object clone() {
@@ -115,7 +114,8 @@ public class SnmpNoSuchObject extends SnmpV2Error {
 
     /**
      * Returns the string representation of the object.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         return "SNMP No-Such-Object";

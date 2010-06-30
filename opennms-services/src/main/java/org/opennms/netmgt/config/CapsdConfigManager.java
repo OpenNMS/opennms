@@ -71,6 +71,12 @@ import org.opennms.netmgt.config.capsd.SmbConfig;
 import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
+/**
+ * <p>Abstract CapsdConfigManager class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class CapsdConfigManager implements CapsdConfig {
     /**
      * The string indicating the start of the comments in a line containing the
@@ -113,17 +119,48 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      */
     private Map<String, List<String>> m_urlMap;
 
+    /**
+     * <p>Constructor for CapsdConfigManager.</p>
+     */
     public CapsdConfigManager() {
     }
 
+    /**
+     * <p>Constructor for CapsdConfigManager.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public CapsdConfigManager(Reader rdr) throws MarshalException, ValidationException {
         loadXml(rdr);
     }
 
+    /**
+     * <p>saveXml</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     protected abstract void saveXml(String xml) throws IOException;
 
+    /**
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     protected abstract void update() throws IOException, FileNotFoundException, MarshalException, ValidationException;
 
+    /**
+     * <p>loadXml</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     protected void loadXml(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(CapsdConfiguration.class, rdr);
         loadIncludeUrls();
@@ -146,6 +183,10 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 
     /**
      * Saves the current in-memory configuration to disk and reloads
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void save() throws MarshalException, IOException, ValidationException {
         log().debug("Saving capsd configuration");
@@ -164,11 +205,14 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 
     /**
      * Return the Capsd configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.capsd.CapsdConfiguration} object.
      */
     public CapsdConfiguration getConfiguration() {
         return m_config;
     }
 
+    /** {@inheritDoc} */
     public ProtocolPlugin getProtocolPlugin(String svcName) {
         for (ProtocolPlugin plugin : getProtocolPlugins()) {
             if (plugin.getProtocol().equals(svcName)) {
@@ -178,13 +222,16 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         return null;
     }
     
+    /** {@inheritDoc} */
     public void addProtocolPlugin(ProtocolPlugin plugin) {
         m_config.addProtocolPlugin(plugin);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Finds the SMB authentication object using the netbios name.
-     * 
+     *
      * The target of the search.
      */
     public SmbAuth getSmbAuth(String target) {
@@ -204,11 +251,10 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Checks the configuration to determine if the target is managed or
      * unmanaged.
-     * 
-     * @param target
-     *            The target to check against.
      */
     public boolean isAddressUnmanaged(InetAddress target) {
         String managementPolicy = m_config.getManagementPolicy();
@@ -388,7 +434,9 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     }
 
     /**
-     * 
+     * <p>getRescanFrequency</p>
+     *
+     * @return a long.
      */
     public long getRescanFrequency() {
         long frequency = -1;
@@ -404,7 +452,9 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     }
 
     /**
-     * 
+     * <p>getInitialSleepTime</p>
+     *
+     * @return a long.
      */
     public long getInitialSleepTime() {
         long sleep = -1;
@@ -420,14 +470,18 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     }
 
     /**
-     * 
+     * <p>getMaxSuspectThreadPoolSize</p>
+     *
+     * @return a int.
      */
     public int getMaxSuspectThreadPoolSize() {
         return m_config.getMaxSuspectThreadPoolSize();
     }
 
     /**
-     * 
+     * <p>getMaxRescanThreadPoolSize</p>
+     *
+     * @return a int.
      */
     public int getMaxRescanThreadPoolSize() {
         return m_config.getMaxRescanThreadPoolSize();
@@ -437,6 +491,8 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * Defines Capsd's behavior when, during a protocol scan, it gets a
      * java.net.NoRouteToHostException exception. If abort rescan property is
      * set to "true" then Capsd will not perform any additional protocol scans.
+     *
+     * @return a boolean.
      */
     public boolean getAbortProtocolScansFlag() {
         boolean abortFlag = false;
@@ -449,6 +505,11 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         return abortFlag;
     }
 
+    /**
+     * <p>getDeletePropagationEnabled</p>
+     *
+     * @return a boolean.
+     */
     public boolean getDeletePropagationEnabled() {
         boolean propagationEnabled = true;
         
@@ -463,13 +524,18 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     /**
      * Return the boolean xmlrpc as string to indicate if notification to
      * external xmlrpc server is needed.
-     * 
+     *
      * @return boolean flag as a string value
      */
     public String getXmlrpc() {
         return m_config.getXmlrpc();
     }
     
+    /**
+     * <p>isXmlRpcEnabled</p>
+     *
+     * @return a boolean.
+     */
     public boolean isXmlRpcEnabled() {
         return "true".equalsIgnoreCase(getXmlrpc());
     }
@@ -560,18 +626,10 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * This method is responsbile for determining the node's primary SNMP
 	 * interface from the specified list of InetAddress objects.
-	 * @param addressList
-	 *            List of InetAddress objects representing all the interfaces
-	 *            belonging to a particular node which support the "SNMP"
-	 *            service and have a valid ifIndex.
-	 * @param strict
-	 *            Boolean variable which requires an interface to be part of a
-	 *            Collectd package to be eligible as a primary SNMP interface
-	 * 
-	 * @return InetAddress object of the primary SNMP interface or null if none
-	 *         of the node's interfaces are eligible.
 	 */
 	public InetAddress determinePrimarySnmpInterface(List<InetAddress> addressList, boolean strict) {
 		InetAddress primaryIf = null;
@@ -606,18 +664,14 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 		return primaryIf;
 	}
 
-	/**
+    /**
+     * {@inheritDoc}
+     *
      * This method is used to convert the passed IP address to a
      * <code>long</code> value. The address is converted in network byte order
      * (big endin). This is compatable with the number format of the JVM, and
      * thus the return longs can be compared with other converted IP Addresses
      * to determine inclusion.
-     * 
-     * @param addr
-     *            The IP address to convert.
-     * 
-     * @return The converted IP address.
-     * 
      * @deprecated Use org.opennms.netmgt.utils.IPSorter.convertToLong()
      *             instead.
      */
@@ -629,6 +683,8 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 
     /**
      * Return a list of configured protocols from the loaded configuration.
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getConfiguredProtocols() {
         List<String> protocols = new ArrayList<String>();
@@ -642,6 +698,11 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getProtocolPlugins</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked") 
     public List<ProtocolPlugin> getProtocolPlugins() {
         return m_config.getProtocolPluginCollection();
@@ -667,26 +728,31 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         return mgt.getIncludeUrlCollection();
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<ProtocolConfiguration> getProtocolConfigurations(ProtocolPlugin plugin) {
         return plugin.getProtocolConfigurationCollection();
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<Property> getPluginProperties(ProtocolPlugin plugin) {
         return plugin.getPropertyCollection();
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<Property> getProtocolConfigurationProperties(ProtocolConfiguration pluginConf) {
         return pluginConf.getPropertyCollection();
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<Range> getRanges(ProtocolConfiguration pluginConf) {
         return pluginConf.getRangeCollection();
     }
     
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<String> getSpecifics(ProtocolConfiguration pluginConf) {
         return pluginConf.getSpecificCollection();

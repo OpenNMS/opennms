@@ -34,12 +34,22 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
 
+/**
+ * <p>ServiceTypeDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ServiceTypeDaoHibernate extends AbstractDaoHibernate<OnmsServiceType, Integer> implements ServiceTypeDao {
 
+    /**
+     * <p>Constructor for ServiceTypeDaoHibernate.</p>
+     */
     public ServiceTypeDaoHibernate() {
 		super(OnmsServiceType.class);
 	}
 
+    /** {@inheritDoc} */
     public OnmsServiceType findByName(final String name) {
     	return findUnique("from OnmsServiceType as svcType where svcType.name = ?", name);
     }

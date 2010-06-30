@@ -39,7 +39,7 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 
 /**
  *<P>The Dot1dStpPortTableEntry class is designed to hold all the MIB-II
- * information for one entry in the MIB II dot1dBridge.dot1dStp.dot1dStpPortTable. 
+ * information for one entry in the MIB II dot1dBridge.dot1dStp.dot1dStpPortTable.
  * The table effectively contains a list of these entries, each entry having information
  * about Stp Protocol on sdecific Port.</P>
  *
@@ -52,33 +52,58 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
- * @see Dot1dStpPortTable 
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @see Dot1dStpPortTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class Dot1dStpPortTableEntry extends SnmpTableEntry {
 	// Lookup strings for specific table entries
 	//
 
+	/** Constant <code>STP_PORT="dot1dStpPort"</code> */
 	public final static String STP_PORT = "dot1dStpPort";
 
+	/** Constant <code>STP_PORT_PRIORITY="dot1dStpPortPriority"</code> */
 	public final static String STP_PORT_PRIORITY = "dot1dStpPortPriority";
 
+	/** Constant <code>STP_PORT_STATE="dot1dStpPortState"</code> */
 	public final static String STP_PORT_STATE = "dot1dStpPortState";
 
+	/** Constant <code>STP_PORT_ENABLE="dot1dStpPortEnable"</code> */
 	public final static String STP_PORT_ENABLE = "dot1dStpPortEnable";
 
+	/** Constant <code>STP_PORT_PATH_COST="dot1dStpPortPathCost"</code> */
 	public final static String STP_PORT_PATH_COST = "dot1dStpPortPathCost";
 
+	/** Constant <code>STP_PORT_DESIGNATED_ROOT="dot1dStpPortDesignatedRoot"</code> */
 	public final static String STP_PORT_DESIGNATED_ROOT = "dot1dStpPortDesignatedRoot";
 
+	/** Constant <code>STP_PORT_DESIGNATED_COST="dot1dStpPortDesignatedCost"</code> */
 	public final static String STP_PORT_DESIGNATED_COST = "dot1dStpPortDesignatedCost";
 
+	/** Constant <code>STP_PORT_DESIGNATED_BRIDGE="dot1dStpPortDesignatedBridge"</code> */
 	public final static String STP_PORT_DESIGNATED_BRIDGE = "dot1dStpPortDesignatedBridge";
 
+	/** Constant <code>STP_PORT_DESIGNATED_PORT="dot1dStpPortDesignatedPort"</code> */
 	public final static String STP_PORT_DESIGNATED_PORT = "dot1dStpPortDesignatedPort";
 
+	/** Constant <code>STP_PORT_FORW_TRANS="dot1dStpPortForwardTransitions"</code> */
 	public final static String STP_PORT_FORW_TRANS = "dot1dStpPortForwardTransitions";
 
 	/**
@@ -202,64 +227,112 @@ public final class Dot1dStpPortTableEntry extends SnmpTableEntry {
 	 * variable from the passed array of SNMP varbinds.</P>
 	 *
 	 * <P>If the information in the object should not be
-	 * modified then a <EM>final</EM> modifier can be 
+	 * modified then a <EM>final</EM> modifier can be
 	 * applied to the created object.</P>
-	 *
-	 * @param vars	The array of variable bindings.
 	 */
 	public Dot1dStpPortTableEntry() {
 		super(stpport_elemList);
 	}
 	
+	/**
+	 * <p>getDot1dStpPort</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dStpPort() {
 		Integer dot1dStpPort = getInt32(Dot1dStpPortTableEntry.STP_PORT);
 		if (dot1dStpPort == null) return -1;
 		return dot1dStpPort;
 	}
 
+	/**
+	 * <p>getDot1dStpPortPriority</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dStpPortPriority() {
 		Integer dot1dStpPortPriority = getInt32(Dot1dStpPortTableEntry.STP_PORT_PRIORITY);
 		if (dot1dStpPortPriority == null) return -1;
 		return dot1dStpPortPriority;
 	}
 	
+	/**
+	 * <p>getDot1dStpPortState</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dStpPortState() {
 		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_STATE);
 		if (val == null) return -1;
 		return val;
 	}
 	
+	/**
+	 * <p>getDot1dStpPortEnable</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dStpPortEnable() {
 		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_ENABLE);
 		if (val == null) return -1;
 		return val;
 	}
 
+	/**
+	 * <p>getDot1dStpPortPathCost</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dStpPortPathCost() {
 		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_PATH_COST);
 		if (val == null) return -1;
 		return val;
 	}
 
+	/**
+	 * <p>getDot1dStpPortDesignatedRoot</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getDot1dStpPortDesignatedRoot() {
 		return getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_ROOT);
 	}
 
+	/**
+	 * <p>getDot1dStpPortDesignatedCost</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dStpPortDesignatedCost() {
 		Integer val =  getInt32(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_COST);
 		if (val == null) return -1;
 		return val;
 	}
 
+	/**
+	 * <p>getDot1dStpPortDesignatedBridge</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getDot1dStpPortDesignatedBridge() {
 		return getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_BRIDGE);
 	}
 
+	/**
+	 * <p>getDot1dStpPortDesignatedPort</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getDot1dStpPortDesignatedPort() {
 		return getHexString(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_PORT);
 		
 	}
 
+	/**
+	 * <p>getDot1dStpPortForwardTransitions</p>
+	 *
+	 * @return a int.
+	 */
 	public int getDot1dStpPortForwardTransitions() {
 		Integer val = getInt32(Dot1dStpPortTableEntry.STP_PORT_FORW_TRANS);
 		if (val == null) return -1;

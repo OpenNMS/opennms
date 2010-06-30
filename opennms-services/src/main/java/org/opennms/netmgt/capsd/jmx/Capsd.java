@@ -34,13 +34,21 @@ package org.opennms.netmgt.capsd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>Capsd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Capsd extends AbstractSpringContextJmxServiceDaemon implements CapsdMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Capsd";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "capsdContext";

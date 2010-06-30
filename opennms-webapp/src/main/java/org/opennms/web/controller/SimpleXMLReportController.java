@@ -43,12 +43,20 @@ import org.opennms.web.WebSecurityUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>SimpleXMLReportController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class SimpleXMLReportController extends AbstractController {
 
     private int m_reportId;
 
     private AvailabilityReportViewerService m_viewerService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse res) throws Exception {
@@ -79,10 +87,20 @@ public class SimpleXMLReportController extends AbstractController {
     }
 
 
+    /**
+     * <p>getViewerService</p>
+     *
+     * @return a {@link org.opennms.report.availability.AvailabilityReportViewerService} object.
+     */
     public AvailabilityReportViewerService getViewerService() {
         return m_viewerService;
     }
 
+    /**
+     * <p>setViewerService</p>
+     *
+     * @param service a {@link org.opennms.report.availability.AvailabilityReportViewerService} object.
+     */
     public void setViewerService(AvailabilityReportViewerService service) {
         m_viewerService = service;
     }

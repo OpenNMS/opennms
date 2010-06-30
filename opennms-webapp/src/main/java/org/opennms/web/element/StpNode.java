@@ -39,8 +39,11 @@ import java.util.Map;
 
 
 /**
- * 
+ * <p>StpNode class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class StpNode
 {
@@ -122,6 +125,11 @@ public class StpNode
                 m_stprootnodeid = stprootnodeid;
         }
 
+        /**
+         * <p>toString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String toString()
         {
                 StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n" );
@@ -132,114 +140,162 @@ public class StpNode
         }
 
 		/**
-		 * @return
+		 * <p>get_basebridgeaddress</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_basebridgeaddress() {
 			return m_basebridgeaddress;
 		}
 
 		/**
-		 * @return
+		 * <p>get_basenumports</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_basenumports() {
 			return m_basenumports;
 		}
 
 		/**
-		 * @return
+		 * <p>get_basetype</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_basetype() {
 			return m_basetype;
 		}
 
+		/**
+		 * <p>getBaseType</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String getBaseType() {
 			return BRIDGE_BASE_TYPE[m_basetype];
 		}
 		/**
-		 * @return
+		 * <p>get_basevlan</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_basevlan() {
 			return m_basevlan;
 		}
 
 		/**
-		 * @return
+		 * <p>get_lastPollTime</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_lastPollTime() {
 			return m_lastPollTime;
 		}
 
 		/**
-		 * @return
+		 * <p>get_nodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>get_status</p>
+		 *
+		 * @return a char.
 		 */
 		public char get_status() {
 			return m_status;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpdesignatedroot</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_stpdesignatedroot() {
 			return m_stpdesignatedroot;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stppriority</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stppriority() {
 			return m_stppriority;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpprotocolspecification</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stpprotocolspecification() {
 			return m_stpprotocolspecification;
 		}
 
+		/**
+		 * <p>getStpProtocolSpecification</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String getStpProtocolSpecification() {
 			return STP_PROTO_TYPE[m_stpprotocolspecification];
 		}
 
 		/**
-		 * @return
+		 * <p>get_stprootcost</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stprootcost() {
 			return m_stprootcost;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stprootport</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stprootport() {
 			return m_stprootport;
 		}
 
         /**
+         * <p>get_stprootnodeid</p>
+         *
          * @return Returns the m_stprootnodeid.
          */
         public int get_stprootnodeid() {
             return m_stprootnodeid;
         }
 
-        /**
+		/**
+		 * <p>getBaseVlanName</p>
+		 *
 		 * @return Returns the m_basevlanname.
 		 */
 		public String getBaseVlanName() {
 			return m_basevlanname;
 		}
 		
+	    /**
+	     * <p>getStatusString</p>
+	     *
+	     * @return a {@link java.lang.String} object.
+	     */
 	    public String getStatusString() {
 	        return( (String)statusMap.get( new Character(m_status) ));
 	    }
 
+	    /**
+	     * <p>getVlanColorIdentifier</p>
+	     *
+	     * @return a {@link java.lang.String} object.
+	     */
 	    public String getVlanColorIdentifier() {
 	        int red = 128;
 	        int green = 128;

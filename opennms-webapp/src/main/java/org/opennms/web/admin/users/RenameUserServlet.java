@@ -48,13 +48,18 @@ import org.opennms.netmgt.config.UserManager;
 
 /**
  * A servlet that handles renaming an existing user
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class RenameUserServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userID = request.getParameter("userID");
         String newID = request.getParameter("newID");

@@ -67,55 +67,70 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * existance of an HTTP server on remote interfaces. The class implements the
  * Plugin interface that allows it to be used along with other plugins by the
  * daemon.
- * 
+ *
  * This plugin generates a HTTP GET request and checks the return code returned
  * by the remote host to determine if it supports the protocol.
- * 
+ *
  * The remote host's response will be deemed valid if the return code falls in
  * the 100 to 599 range (inclusive).
- * 
+ *
  * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
  * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
  * Redirection 4xx: Client error 5xx: Server error
  * </P>
- * 
+ *
  * This plugin generates a HTTP GET request and checks the return code returned
  * by the remote host to determine if it supports the protocol.
- * 
+ *
  * The remote host's response will be deemed valid if the return code falls in
  * the 100 to 599 range (inclusive).
- * 
+ *
  * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
  * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
  * Redirection 4xx: Client error 5xx: Server error
  * </P>
- * 
+ *
  * This plugin generates a HTTP GET request and checks the return code returned
  * by the remote host to determine if it supports the protocol.
- * 
+ *
  * The remote host's response will be deemed valid if the return code falls in
  * the 100 to 599 range (inclusive).
- * 
+ *
  * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
  * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
  * Redirection 4xx: Client error 5xx: Server error
  * </P>
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * 
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  * @version 1.1.1.1
- * 
  */
 public class HttpPlugin extends AbstractTcpPlugin {
 
     // Names of properties configured for the protocol-plugin
+    /** Constant <code>PROPERTY_NAME_PORT="port"</code> */
     protected static final String PROPERTY_NAME_PORT = "port";
+    /** Constant <code>PROPERTY_NAME_MAX_RET_CODE="max-ret-code"</code> */
     protected static final String PROPERTY_NAME_MAX_RET_CODE = "max-ret-code";
+    /** Constant <code>PROPERTY_NAME_RETURN_CODE="check-return-code"</code> */
     protected static final String PROPERTY_NAME_RETURN_CODE = "check-return-code";
+    /** Constant <code>PROPERTY_NAME_URL="url"</code> */
     protected static final String PROPERTY_NAME_URL = "url";
+    /** Constant <code>PROPERTY_NAME_RESPONSE_TEXT="response-text"</code> */
     protected static final String PROPERTY_NAME_RESPONSE_TEXT = "response-text";
 
     /**
@@ -141,6 +156,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
      */
     private final static int DEFAULT_TIMEOUT = 5000; // in milliseconds
 
+    /** Constant <code>PROTOCOL_NAME="HTTP"</code> */
     public static final String PROTOCOL_NAME = "HTTP";
 
     /**
@@ -179,19 +195,33 @@ public class HttpPlugin extends AbstractTcpPlugin {
     private String m_responseString = "HTTP/";
 
     /**
-     * @param protocol
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * <p>Constructor for HttpPlugin.</p>
      */
     public HttpPlugin() {
         this(PROTOCOL_NAME, CHECK_RETURN_CODE, QUERY_STRING, RESPONSE_STRING, DEFAULT_PORTS);
     }
 
+    /**
+     * <p>Constructor for HttpPlugin.</p>
+     *
+     * @param protocolName a {@link java.lang.String} object.
+     * @param checkReturnCode a boolean.
+     * @param queryString a {@link java.lang.String} object.
+     * @param responseString a {@link java.lang.String} object.
+     */
     protected HttpPlugin(String protocolName, boolean checkReturnCode, String queryString, String responseString) {
         this(protocolName, checkReturnCode, queryString, responseString, DEFAULT_PORTS);
     }
 
+    /**
+     * <p>Constructor for HttpPlugin.</p>
+     *
+     * @param protocolName a {@link java.lang.String} object.
+     * @param checkReturnCode a boolean.
+     * @param queryString a {@link java.lang.String} object.
+     * @param responseString a {@link java.lang.String} object.
+     * @param defaultPorts an array of int.
+     */
     protected HttpPlugin(String protocolName, boolean checkReturnCode, String queryString, String responseString, int[] defaultPorts) {
         super(protocolName, DEFAULT_TIMEOUT, DEFAULT_RETRY);
         m_checkReturnCode = checkReturnCode;
@@ -200,12 +230,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
         m_defaultPorts = defaultPorts;
     }
 
-    /**
-     * @param sChannel
-     * @param isAServer
-     * @return
-     * @throws IOException
-     */
+    /** {@inheritDoc} */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
 
@@ -280,6 +305,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
      * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#getConnectionConfigList(java.util.Map,
      *      java.net.InetAddress)
      */
+    /** {@inheritDoc} */
     protected List<ConnectionConfig> getConnectionConfigList(Map<String, Object> qualifiers, InetAddress address) {
         int[] ports = getKeyedIntegerArray(qualifiers, PROPERTY_NAME_PORT, m_defaultPorts);
 
@@ -293,7 +319,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
     /**
      * Checks the response body as a substring or regular expression match
      * according to the leading-tilde convention
-     * 
+     *
      * @param config ConnectionConfig object from which response-text property is extracted
      * @param response Body of HTTP response to check
      * @return Whether the response matches the response-text property

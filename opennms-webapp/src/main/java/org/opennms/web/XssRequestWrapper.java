@@ -13,11 +13,23 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>XssRequestWrapper class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class XssRequestWrapper extends HttpServletRequestWrapper
 {
     private Map<String, String[]> sanitized_parameters;
     private Map<String, String[]> original_parameters;
     
+    /**
+     * <p>Constructor for XssRequestWrapper.</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     */
     @SuppressWarnings("unchecked")
     public XssRequestWrapper(HttpServletRequest req) 
     {
@@ -28,6 +40,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
             snzLogger();
     }       
 
+    /** {@inheritDoc} */
     @Override
     public String getParameter(String name) 
     {       
@@ -38,6 +51,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
             return null;        
     }
 
+    /** {@inheritDoc} */
     @Override
     public Map<String, String[]> getParameterMap() 
     {   
@@ -47,32 +61,38 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public String[] getParameterValues(String name)
     {   
         return getParameterMap().get(name);
     }
     
+    /** {@inheritDoc} */
     @Override
     public void removeAttribute(String name) {
         super.getRequest().removeAttribute(name);
     }
     
+    /** {@inheritDoc} */
     @Override
     public void setAttribute(String name, Object o) {
         super.getRequest().setAttribute(name, o);
     }
     
+    /** {@inheritDoc} */
     @Override
     public Object getAttribute(String name) {
         return super.getRequest().getAttribute(name);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setCharacterEncoding(String enc) throws UnsupportedEncodingException {
         super.getRequest().setCharacterEncoding(enc);
     }
     
+    /** {@inheritDoc} */
     @Override
     public String getCharacterEncoding() {
         return super.getRequest().getCharacterEncoding();

@@ -36,10 +36,19 @@ package org.opennms.netmgt.charts;
 import java.awt.Paint;
 
 /**
+ * <p>CustomSeriesColors interface.</p>
+ *
  * @author <a href="david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public interface CustomSeriesColors {
 
+    /**
+     * <p>getPaint</p>
+     *
+     * @param cat a {@link java.lang.Comparable} object.
+     * @return a {@link java.awt.Paint} object.
+     */
     Paint getPaint(Comparable cat);
 
 }

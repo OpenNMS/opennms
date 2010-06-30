@@ -57,6 +57,12 @@ import org.springframework.core.style.ToStringCreator;
 
 
 @Entity
+/**
+ * <p>OnmsIpInterface class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name="ipInterface")
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
@@ -178,10 +184,18 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private OnmsSnmpInterface m_snmpInterface;
 
+    /**
+     * <p>Constructor for OnmsIpInterface.</p>
+     */
     public OnmsIpInterface() {
     }
 
-    /** minimal constructor */
+    /**
+     * minimal constructor
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public OnmsIpInterface(String ipAddr, OnmsNode node) {
         m_ipAddress = ipAddr;
         m_node = node;
@@ -190,6 +204,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     /**
      * Unique identifier for ipInterface.
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
@@ -198,22 +214,42 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
 
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="ipAddr", length=16)
     public String getIpAddress() {
         return m_ipAddress;
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipaddr a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipaddr) {
         m_ipAddress = ipaddr;
     }
 
     //@Column(name="ifIndex")
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Transient
     public Integer getIfIndex() {
         if (m_snmpInterface == null) {
@@ -223,6 +259,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         //return m_ifIndex;
     }
 
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param ifindex a {@link java.lang.Integer} object.
+     */
     public void setIfIndex(Integer ifindex) {
         if (m_snmpInterface == null) {
             throw new IllegalStateException("Cannot set ifIndex if snmpInterface relation isn't setup");
@@ -231,64 +272,126 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         //m_ifIndex = ifindex;
     }
 
+    /**
+     * <p>getIpHostName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="ipHostName", length=256)
     public String getIpHostName() {
         return m_ipHostName;
     }
 
+    /**
+     * <p>setIpHostName</p>
+     *
+     * @param iphostname a {@link java.lang.String} object.
+     */
     public void setIpHostName(String iphostname) {
         m_ipHostName = iphostname;
     }
 
+    /**
+     * <p>getIsManaged</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="isManaged", length=1)
     public String getIsManaged() {
         return m_isManaged;
     }
 
+    /**
+     * <p>setIsManaged</p>
+     *
+     * @param ismanaged a {@link java.lang.String} object.
+     */
     public void setIsManaged(String ismanaged) {
         m_isManaged = ismanaged;
     }
 
+    /**
+     * <p>getIpStatus</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name="ipStatus")
     public Integer getIpStatus() {
         return m_ipStatus;
     }
 
+    /**
+     * <p>setIpStatus</p>
+     *
+     * @param ipstatus a {@link java.lang.Integer} object.
+     */
     public void setIpStatus(Integer ipstatus) {
         m_ipStatus = ipstatus;
     }
 
+    /**
+     * <p>getIpLastCapsdPoll</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ipLastCapsdPoll")
     public Date getIpLastCapsdPoll() {
         return m_ipLastCapsdPoll;
     }
 
+    /**
+     * <p>setIpLastCapsdPoll</p>
+     *
+     * @param iplastcapsdpoll a {@link java.util.Date} object.
+     */
     public void setIpLastCapsdPoll(Date iplastcapsdpoll) {
         m_ipLastCapsdPoll = iplastcapsdpoll;
     }
 
+    /**
+     * <p>getIsSnmpPrimary</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface.CollectionType} object.
+     */
     @Column(name="isSnmpPrimary", length=1)
     public CollectionType getIsSnmpPrimary() {
         return m_isSnmpPrimary;
     }
 
+    /**
+     * <p>setIsSnmpPrimary</p>
+     *
+     * @param issnmpprimary a {@link org.opennms.netmgt.model.OnmsIpInterface.CollectionType} object.
+     */
     public void setIsSnmpPrimary(CollectionType issnmpprimary) {
         m_isSnmpPrimary = issnmpprimary;
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
 
+    /**
+     * <p>setNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void setNode(org.opennms.netmgt.model.OnmsNode node) {
         m_node = node;
     }
 
-    /** 
+    /**
      * The services on this node
+     *
+     * @return a {@link java.util.Set} object.
      */
     @OneToMany(mappedBy="ipInterface")
     @org.hibernate.annotations.Cascade( {
@@ -298,6 +401,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return m_monitoredServices ;
     }
 
+    /**
+     * <p>setMonitoredServices</p>
+     *
+     * @param ifServices a {@link java.util.Set} object.
+     */
     public void setMonitoredServices(Set<OnmsMonitoredService> ifServices) {
         m_monitoredServices = ifServices;
     }
@@ -305,6 +413,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     /**
      * The SnmpInterface associated with this interface if any
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     @ManyToOne(optional=true, fetch=FetchType.LAZY)
     @JoinColumn(name="snmpInterfaceId")
@@ -313,10 +423,20 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
 
+    /**
+     * <p>setSnmpInterface</p>
+     *
+     * @param snmpInterface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+     */
     public void setSnmpInterface(OnmsSnmpInterface snmpInterface) {
         m_snmpInterface = snmpInterface;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
         .append("ipaddr", getIpAddress())
@@ -329,6 +449,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         .toString();
     }
 
+    /** {@inheritDoc} */
     public void visit(EntityVisitor visitor) {
         visitor.visitIpInterface(this);
 
@@ -339,6 +460,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         visitor.visitIpInterfaceComplete(this);
     }
 
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     @Transient
     public InetAddress getInetAddress() {
         String ipAddr = getIpAddress();
@@ -355,6 +481,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return addr;
     }
 
+    /**
+     * <p>isDown</p>
+     *
+     * @return a boolean.
+     */
     @Transient
     public boolean isDown() {
         boolean down = true;
@@ -366,6 +497,12 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return down;
     }
 
+    /**
+     * <p>getMonitoredServiceByServiceType</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
     public OnmsMonitoredService getMonitoredServiceByServiceType(String svcName) {
         for (OnmsMonitoredService monSvc : getMonitoredServices()) {
             if (monSvc.getServiceType().getName().equals(svcName)) {

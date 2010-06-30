@@ -33,31 +33,64 @@ package org.opennms.web.admin.roles;
 
 import java.util.Collection;
 
+/**
+ * <p>WebGroup class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class WebGroup {
 
     private String m_name;
     private Collection m_users;
     
+    /**
+     * <p>Constructor for WebGroup.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public WebGroup(String name) {
         m_name = name;
     }
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ""+getName();
     }
     
+    /**
+     * <p>getUsers</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection getUsers() {
         return m_users;
     }
     
+    /**
+     * <p>setUsers</p>
+     *
+     * @param users a {@link java.util.Collection} object.
+     */
     protected void setUsers(Collection users) {
         m_users = users;
     }
     
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof WebGroup) {
             WebGroup u = (WebGroup)obj;
@@ -66,6 +99,11 @@ public class WebGroup {
         return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return m_name.hashCode();
     }

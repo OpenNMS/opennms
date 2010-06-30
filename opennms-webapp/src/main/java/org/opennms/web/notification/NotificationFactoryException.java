@@ -38,34 +38,61 @@ package org.opennms.web.notification;
 
 /**
  * This exception is used to indicate that the NotificationFactory had a problem
- * 
+ *
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
+ * @since 1.6.12
  */
 public class NotificationFactoryException extends Exception {
     private static final long serialVersionUID = 1L;
     
     private Throwable rootCause;
 
+    /**
+     * <p>Constructor for NotificationFactoryException.</p>
+     */
     public NotificationFactoryException() {
         super();
     }
 
+    /**
+     * <p>Constructor for NotificationFactoryException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public NotificationFactoryException(String message) {
         super(message);
     }
 
+    /**
+     * <p>Constructor for NotificationFactoryException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param rootCause a {@link java.lang.Throwable} object.
+     */
     public NotificationFactoryException(String message, Throwable rootCause) {
         super(message);
         this.rootCause = rootCause;
     }
 
+    /**
+     * <p>Constructor for NotificationFactoryException.</p>
+     *
+     * @param rootCause a {@link java.lang.Throwable} object.
+     */
     public NotificationFactoryException(Throwable rootCause) {
         super(rootCause.getLocalizedMessage());
         this.rootCause = rootCause;
     }
 
+    /**
+     * <p>Getter for the field <code>rootCause</code>.</p>
+     *
+     * @return a {@link java.lang.Throwable} object.
+     */
     public Throwable getRootCause() {
         return rootCause;
     }

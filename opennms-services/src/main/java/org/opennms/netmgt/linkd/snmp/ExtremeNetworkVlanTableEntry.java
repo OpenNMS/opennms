@@ -43,10 +43,10 @@ import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  *<P>The ExtremeNetworkVlanTableEntry class is designed to hold all the MIB-II
- * information for one entry in the 
+ * information for one entry in the
  * iso.org.dod.internet.private.enterprises.cisco.ciscoMgmt.
  * ciscoVtpMIB.vtpMIBObjects.vlanInfo.vtpVlanTable.vtpVlanEntry
- * 
+ *
  * <P>This object is used by the ExtremeNetworkVlanTable to hold infomation
  * single entries in the table. See the ExtremeNetworkVlanTable documentation
  * form more information.</P>
@@ -56,21 +56,41 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see ThreeComVlanTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class ExtremeNetworkVlanTableEntry extends SnmpTableEntry
 implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
 	//
+    /** Constant <code>EXTREME_VLAN_IFINDEX="extremeVlanIfIndex"</code> */
     public final static String EXTREME_VLAN_IFINDEX="extremeVlanIfIndex";
+    /** Constant <code>EXTREME_VLAN_IGNORE_STP_FLAG="extremeVlanIfIgnoreStpFlag"</code> */
     public final static String EXTREME_VLAN_IGNORE_STP_FLAG="extremeVlanIfIgnoreStpFlag";
+    /** Constant <code>EXTREME_VLAN_IGNORE_BPDU_FLAG="extremeVlanIfIgnoreBpduFlag"</code> */
     public final static String EXTREME_VLAN_IGNORE_BPDU_FLAG="extremeVlanIfIgnoreBpduFlag";
+    /** Constant <code>EXTREME_VLAN_IFLOOP_MODE_FLAG="extremeVlanIfLoopbackModeFlag"</code> */
     public final static String EXTREME_VLAN_IFLOOP_MODE_FLAG="extremeVlanIfLoopbackModeFlag";
 
+    /** Constant <code>EXTREME_VLAN_GLOBAL_ID="extremeVlanIfGlobalIdentifier"</code> */
     public final static String EXTREME_VLAN_GLOBAL_ID="extremeVlanIfGlobalIdentifier";
 	
 	private static String VLAN_INDEX_OID=".1.3.6.1.4.1.1916.1.2.1.2.1.10";
@@ -139,15 +159,14 @@ implements VlanCollectorEntry {
 	 * variable from the passed array of SNMP varbinds.</P>
 	 *
 	 * <P>If the information in the object should not be
-	 * modified then a <EM>final</EM> modifier can be 
+	 * modified then a <EM>final</EM> modifier can be
 	 * applied to the created object.</P>
-	 *
-	 * @param vars	The array of variable bindings.
 	 */
 	public ExtremeNetworkVlanTableEntry() {
 		super(enVlan_elemList);
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
 		super.storeResult(base, inst, val);

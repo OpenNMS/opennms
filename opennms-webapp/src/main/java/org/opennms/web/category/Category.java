@@ -44,15 +44,19 @@ import org.exolab.castor.xml.ValidationException;
 /**
  * Adapts the functionality of the category definition and RTC category updates
  * into one simple interface. Also adds many convenience methods.
- * 
+ *
  * <p>
  * The category definition is read from the categories.xml file by the
  * {@link org.opennms.netmgt.config.CategoryFactory CategoryFactory}. The RTC
  * category updates are periodically sent from the RTC to the WebUI.
  * </p>
- * 
+ *
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class Category {
     /** The category definition (from the categories.xml file). */
@@ -93,6 +97,8 @@ public class Category {
     /**
      * Create an empty category with nothing other than a name. This represents
      * a category with no RTC data.
+     *
+     * @param categoryName a {@link java.lang.String} object.
      */
     protected Category(String categoryName) {
         m_categoryDef = new org.opennms.netmgt.config.categories.Category();
@@ -103,6 +109,10 @@ public class Category {
      * Create a new instance to wrapper information from the categories.xml file
      * (that defines a category) and information from the RTC (that gives
      * current service level availability).
+     *
+     * @param categoryDef a {@link org.opennms.netmgt.config.categories.Category} object.
+     * @param rtcCategory a {@link org.opennms.netmgt.xml.rtc.Category} object.
+     * @param lastUpdated a {@link java.util.Date} object.
      */
     protected Category(org.opennms.netmgt.config.categories.Category categoryDef, org.opennms.netmgt.xml.rtc.Category rtcCategory, Date lastUpdated) {
         if (categoryDef == null || rtcCategory == null || lastUpdated == null) {
@@ -121,12 +131,20 @@ public class Category {
         m_serviceDownCount = null;
     }
 
-    /** Return the unique name for this category. */
+    /**
+     * Return the unique name for this category.
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_categoryDef.getLabel();
     }
 
-    /** Return the value considered to be the minimum "normal" value. */
+    /**
+     * Return the value considered to be the minimum "normal" value.
+     *
+     * @return a double.
+     */
     public double getNormalThreshold() {
         return m_categoryDef.getNormal();
     }
@@ -135,22 +153,36 @@ public class Category {
      * Return the value considered to be the minimum value below the "normal"
      * value where only a warning is necessary. Below this value the category's
      * value will be considered unacceptable.
+     *
+     * @return a double.
      */
     public double getWarningThreshold() {
         return m_categoryDef.getWarning();
     }
 
-    /** Return a description explaining this category. */
+    /**
+     * Return a description explaining this category.
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getComment() {
         return m_categoryDef.getComment();
     }
 
-    /** Return the date and time this category was last updated by the RTC. */
+    /**
+     * Return the date and time this category was last updated by the RTC.
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getLastUpdated() {
         return m_lastUpdated;
     }
 
-    /** Return the current service level availability for this category. */
+    /**
+     * Return the current service level availability for this category.
+     *
+     * @return a double.
+     */
     public double getValue() {
         if (m_rtcCategory == null) {
             return 0.0;
@@ -171,7 +203,11 @@ public class Category {
         return m_rtcCategory;
     }
 
-    /** Return the number of services contained within this category. */
+    /**
+     * Return the number of services contained within this category.
+     *
+     * @return a long.
+     */
     public long getServiceCount() {
         if (m_serviceCount == null) {
             if (m_rtcCategory == null) {
@@ -197,6 +233,8 @@ public class Category {
 
     /**
      * Return the number of services that are currently down with this category.
+     *
+     * @return a long.
      */
     public long getServiceDownCount() {
         if (m_serviceDownCount == null) {
@@ -210,6 +248,8 @@ public class Category {
     /**
      * Return a percentage of the ratio of services that are up to all services
      * in this category.
+     *
+     * @return a double.
      */
     public double getServicePercentage() {
         if (m_servicePercentage == null) {
@@ -220,7 +260,14 @@ public class Category {
         return m_servicePercentage.doubleValue();
     }
 
-    /** Returns the outage background color for this category. */
+    /**
+     * Returns the outage background color for this category.
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public String getOutageColor() throws IOException, MarshalException, ValidationException {
         if (m_lastUpdated == null) {
             return "lightblue";
@@ -229,7 +276,14 @@ public class Category {
         }
     }
 
-    /** Returns the availability background color for this category. */
+    /**
+     * Returns the availability background color for this category.
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public String getAvailColor() throws IOException, MarshalException, ValidationException {
         if (m_lastUpdated == null) {
             return "lightblue";
@@ -238,7 +292,14 @@ public class Category {
         }
     }
 
-    /** Returns the outage CSS class for this category. */
+    /**
+     * Returns the outage CSS class for this category.
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public String getOutageClass() throws IOException, MarshalException, ValidationException {
         if (m_lastUpdated == null) {
             return "lightblue";
@@ -247,7 +308,14 @@ public class Category {
         }
     }
 
-    /** Returns the availability CSS class for this category. */
+    /**
+     * Returns the availability CSS class for this category.
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public String getAvailClass() throws IOException, MarshalException, ValidationException {
         if (m_lastUpdated == null) {
             return "lightblue";
@@ -256,7 +324,11 @@ public class Category {
         }
     }
 
-    /** Returns the outage text for this category ("X of Y" nodes down). */
+    /**
+     * Returns the outage text for this category ("X of Y" nodes down).
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOutageText() {
         if (m_lastUpdated == null) {
             return "Calculating...";
@@ -265,7 +337,11 @@ public class Category {
         }
     }
 
-    /** Returns the availability text for this category ("XXX.XX%"). */
+    /**
+     * Returns the availability text for this category ("XXX.XX%").
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAvailText() {
         if (m_lastUpdated == null) {
             return "Calculating...";
@@ -274,7 +350,11 @@ public class Category {
         }
     }
 
-    /** Returns the category comment if there is one, otherwise, its name. */
+    /**
+     * Returns the category comment if there is one, otherwise, its name.
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle() {
         if (getComment() != null) {
             return getComment();
@@ -286,7 +366,7 @@ public class Category {
     /**
      * Returns an enumeration of the Castor-generated Node objects tied to this
      * category.
-     * 
+     *
      * <p>
      * Note, LJK Dec 5,2001: I'm not really happy about exposing the Castor
      * objects this way. We do it all over the place, but I've already started
@@ -294,6 +374,8 @@ public class Category {
      * very pleased with this half approach. I'd rather hide them completely or
      * not at all, but I don't want to introduce a new pass-through object.
      * </p>
+     *
+     * @return a {@link java.util.Enumeration} object.
      */
     public Enumeration enumerateNode() {
         return m_rtcCategory.enumerateNode();
@@ -302,6 +384,9 @@ public class Category {
     /**
      * Convenience method to count the number of services under a category and
      * the number of those services that are currently down.
+     *
+     * @param category a {@link org.opennms.netmgt.xml.rtc.Category} object.
+     * @return an array of long.
      */
     protected static long[] getServiceCounts(org.opennms.netmgt.xml.rtc.Category category) {
         if (category == null) {

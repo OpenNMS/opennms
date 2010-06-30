@@ -45,6 +45,13 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsResource;
 
+/**
+ * <p>GraphResults class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class GraphResults {
     //note these run from 0-11, this is because of java.util.Calendar!
     private static final String[] s_months = new String[] {
@@ -103,75 +110,165 @@ public class GraphResults {
         
     }
 
+    /**
+     * <p>setStart</p>
+     *
+     * @param start a {@link java.util.Date} object.
+     */
     public void setStart(Date start) {
         m_start = start;
     }
 
+    /**
+     * <p>getStart</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getStart() {
         return m_start;
     }
     
+    /**
+     * <p>getStartCalendar</p>
+     *
+     * @return a {@link org.opennms.web.graph.GraphResults.BeanFriendlyCalendar} object.
+     */
     public BeanFriendlyCalendar getStartCalendar() {
         return new BeanFriendlyCalendar(m_start);
     }
 
+    /**
+     * <p>setEnd</p>
+     *
+     * @param end a {@link java.util.Date} object.
+     */
     public void setEnd(Date end) {
         m_end = end;
     }
 
+    /**
+     * <p>getEnd</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getEnd() {
         return m_end;
     }
 
+    /**
+     * <p>getEndCalendar</p>
+     *
+     * @return a {@link org.opennms.web.graph.GraphResults.BeanFriendlyCalendar} object.
+     */
     public BeanFriendlyCalendar getEndCalendar() {
         return new BeanFriendlyCalendar(m_end);
     }
 
+    /**
+     * <p>setRelativeTime</p>
+     *
+     * @param relativeTime a {@link java.lang.String} object.
+     */
     public void setRelativeTime(String relativeTime) {
         m_relativeTime = relativeTime;
     }
 
+    /**
+     * <p>getRelativeTime</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRelativeTime() {
         return m_relativeTime;
     }
 
+    /**
+     * <p>setRelativeTimePeriods</p>
+     *
+     * @param relativeTimePeriods an array of {@link org.opennms.web.graph.RelativeTimePeriod} objects.
+     */
     public void setRelativeTimePeriods(RelativeTimePeriod[]
 				       relativeTimePeriods) {
 	m_relativeTimePeriods = relativeTimePeriods;
     }
 
+    /**
+     * <p>getRelativeTimePeriods</p>
+     *
+     * @return an array of {@link org.opennms.web.graph.RelativeTimePeriod} objects.
+     */
     public RelativeTimePeriod[] getRelativeTimePeriods() {
 	return m_relativeTimePeriods;
     }
     
+    /**
+     * <p>getMonths</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public static String[] getMonths() {
         return s_months;
     }
     
+    /**
+     * <p>getMonthMap</p>
+     *
+     * @return a java$util$Map object.
+     */
     public Map<Integer, String> getMonthMap() {
         return s_monthMap;
     }
     
+    /**
+     * <p>getHours</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public static String[] getHours() {
         return s_hours;
     }
     
+    /**
+     * <p>getHourMap</p>
+     *
+     * @return a java$util$Map object.
+     */
     public Map<Integer, String> getHourMap() {
         return s_hourMap;
     }
     
+    /**
+     * <p>addGraphResultSet</p>
+     *
+     * @param resultSet a {@link org.opennms.web.graph.GraphResults.GraphResultSet} object.
+     */
     public void addGraphResultSet(GraphResultSet resultSet) {
         m_graphResultSets.add(resultSet);
     }
     
+    /**
+     * <p>getGraphResultSets</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<GraphResultSet> getGraphResultSets() {
         return m_graphResultSets;
     }
     
+    /**
+     * <p>getReports</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getReports() {
         return m_reports;
     }
 
+    /**
+     * <p>setReports</p>
+     *
+     * @param reports an array of {@link java.lang.String} objects.
+     */
     public void setReports(String[] reports) {
         m_reports = reports;
     }
@@ -229,27 +326,57 @@ public class GraphResults {
         }
     }
 
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphLeftOffset() {
         return m_graphLeftOffset;
     }
 
+    /**
+     * <p>setGraphLeftOffset</p>
+     *
+     * @param graphLeftOffset a int.
+     */
     public void setGraphLeftOffset(int graphLeftOffset) {
         m_graphLeftOffset = graphLeftOffset;
         
     }
     
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphRightOffset() {
         return m_graphRightOffset;
     }
 
+    /**
+     * <p>setGraphRightOffset</p>
+     *
+     * @param graphRightOffset a int.
+     */
     public void setGraphRightOffset(int graphRightOffset) {
         m_graphRightOffset = graphRightOffset;
     }
 
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
     public int getGraphTopOffsetWithText() {
         return m_graphTopOffsetWithText;
     }
 
+    /**
+     * <p>setGraphTopOffsetWithText</p>
+     *
+     * @param graphTopOffsetWithText a int.
+     */
     public void setGraphTopOffsetWithText(int graphTopOffsetWithText) {
         m_graphTopOffsetWithText = graphTopOffsetWithText;
     }

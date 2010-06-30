@@ -48,22 +48,25 @@ package org.opennms.core.queue;
  * should not be possible to add elements to the queue. It should always be
  * possible to read elements from the queue, so long as it is not empty.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public interface ClosableFifoQueue<T> extends FifoQueue<T> {
     /**
      * Returns true if the queue is currently open.
-     * 
+     *
      * @return True if the queue is open.
+     * @param <T> a T object.
      */
     public boolean isOpen();
 
     /**
      * Returns true if the queue is currently closed.
-     * 
+     *
      * @return True if the queue is closed.
      */
     public boolean isClosed();
@@ -72,18 +75,20 @@ public interface ClosableFifoQueue<T> extends FifoQueue<T> {
      * Closes a currently open queue. When a queue is closed is should still
      * allow elements already in the queue to be removed, but new elements
      * should not be added.
-     * 
+     *
      * @exception org.opennms.core.queue.FifoQueueException
      *                Thrown if an error occurs closing the queue.
+     * @throws org.opennms.core.queue.FifoQueueException if any.
      */
     public void close() throws FifoQueueException;
 
     /**
      * Ensures that the queue is open and new elements can be added to the
      * queue.
-     * 
+     *
      * @exception org.opennms.core.queue.FifoQueueException
      *                Thrown if an error occurs opening the queue.
+     * @throws org.opennms.core.queue.FifoQueueException if any.
      */
     public void open() throws FifoQueueException;
 }

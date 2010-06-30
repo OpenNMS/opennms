@@ -48,11 +48,13 @@ import org.springframework.util.Assert;
 
 /**
  * Manages Events trouble ticket related events and passes them to the service layer
- * implementation. 
- * 
+ * implementation.
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 	
@@ -66,7 +68,9 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     private volatile TicketerServiceLayer m_ticketerServiceLayer;
 
 	/**
-	 * @param eventIpcManager
+	 * <p>setEventIpcManager</p>
+	 *
+	 * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
 	 */
 	public void setEventIpcManager(EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;
@@ -74,7 +78,9 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     
 	
     /**
-     * @param ticketerServiceLayer
+     * <p>setTicketerServiceLayer</p>
+     *
+     * @param ticketerServiceLayer a {@link org.opennms.netmgt.ticketd.TicketerServiceLayer} object.
      */
     public void setTicketerServiceLayer(TicketerServiceLayer ticketerServiceLayer) {
         m_ticketerServiceLayer = ticketerServiceLayer;
@@ -83,7 +89,8 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     /**
      * SpringFramework method from implementation of the Spring Interface
      * <code>org.springframework.beans.factory.InitializingBean</code>
-     * @throws Exception An exception is thrown when detecting an invalid state such 
+     *
+     * @throws java.lang.Exception An exception is thrown when detecting an invalid state such
      *         as data not properly initialized or this method called more then once.
      */
     public void afterPropertiesSet() throws Exception {
@@ -103,21 +110,28 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     }
 
     //FIXME
+    /**
+     * <p>start</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void start() throws Exception {
         // DO NOTHING?
     }
 
-    /**
-     * EventListener Interface required implementation
-     * @return <code>java.lang.String</code> representing the name of this service daemon
-     */
+	/**
+	 * EventListener Interface required implementation
+	 *
+	 * @return <code>java.lang.String</code> representing the name of this service daemon
+	 */
 	public String getName() {
 		return "OpenNMS.TroubleTicketer";
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Eventlistner Interface required implementation
-	 * @param e Event received from Eventd
 	 */
 	public void onEvent(Event e) {
         try {

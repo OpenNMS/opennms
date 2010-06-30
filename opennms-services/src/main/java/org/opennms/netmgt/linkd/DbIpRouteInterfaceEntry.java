@@ -693,7 +693,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_routenexthop</p>
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String get_routenexthop() {
 		return m_routenexthop;
@@ -720,7 +722,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_ifindex</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_ifindex() {
 		return m_routeifindex;
@@ -747,7 +751,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_routemetric1</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_routemetric1() {
 		return m_routemetric1;
@@ -774,7 +780,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_routemetric2</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_routemetric2() {
 		return m_routemetric2;
@@ -801,7 +809,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_routemetric3</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_routemetric3() {
 		return m_routemetric3;
@@ -828,7 +838,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_routemetric4</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_routemetric4() {
 		return m_routemetric4;
@@ -855,7 +867,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_routemetric5</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_routemetric5() {
 		return m_routemetric5;
@@ -882,7 +896,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_routetype</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_routetype() {
 		return m_routetype;
@@ -912,7 +928,9 @@ final class DbIpRouteInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_routeproto</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_routeproto() {
 		return m_routeproto;
@@ -1116,6 +1134,11 @@ final class DbIpRouteInterfaceEntry {
 		return entry;
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		String sep = System.getProperty("line.separator");
 		StringBuffer buf = new StringBuffer();

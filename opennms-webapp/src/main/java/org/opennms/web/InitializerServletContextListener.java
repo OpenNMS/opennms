@@ -60,19 +60,24 @@ import org.opennms.web.category.RTCPostSubscriber;
 /**
  * Initializes our internal servlet systems at servlet container startup, and
  * destroys any pool resources at servlet container shutdown.
- * 
+ *
  * This listener is specified in the web.xml to listen to
  * <code>ServletContext</code> lifecyle events. On startup it calls
  * ServletInitializer.init and initializes the UserFactory, GroupFactory. On
  * shutdown it calls ServletInitializer.destroy.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class InitializerServletContextListener implements ServletContextListener {
 
     private Timer rtcCheckTimer = null;
 
+    /** {@inheritDoc} */
     public void contextInitialized(ServletContextEvent event) {
         try {
             /*
@@ -100,6 +105,7 @@ public class InitializerServletContextListener implements ServletContextListener
         return ThreadCategory.getInstance(getClass());
     }
 
+    /** {@inheritDoc} */
     public void contextDestroyed(ServletContextEvent event) {
         try {
             /*

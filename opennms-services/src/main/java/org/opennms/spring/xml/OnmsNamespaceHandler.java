@@ -45,11 +45,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * 
+ * <p>OnmsNamespaceHandler class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class OnmsNamespaceHandler extends NamespaceHandlerSupport {
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
         registerBeanDefinitionParser("service", new OnmsServiceBeanDefinitionParser());
         registerBeanDefinitionDecorator("annotated-subscription", new AnnotatedSubscriptionBeanDefinitionDecorator());

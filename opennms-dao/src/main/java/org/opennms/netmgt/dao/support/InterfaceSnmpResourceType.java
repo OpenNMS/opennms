@@ -66,26 +66,45 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 /**
  * XXX Note: We should remove any graphs from the list that have external
  * values.  See bug #1703.
+ *
+ * @author ranger
+ * @version $Id: $
  */
-
 public class InterfaceSnmpResourceType implements OnmsResourceType {
 
     private ResourceDao m_resourceDao;
     private NodeDao m_nodeDao;
 
+    /**
+     * <p>Constructor for InterfaceSnmpResourceType.</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public InterfaceSnmpResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
         m_resourceDao = resourceDao;
         m_nodeDao = nodeDao;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "interfaceSnmp";
     }
     
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return "SNMP Interface Data";
     }
     
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnNode(int nodeId) {
         return isResourceTypeOnParentResource(Integer.toString(nodeId));
     }
@@ -110,6 +129,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return parent;
     }
     
+    /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
@@ -278,6 +298,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This resource type is never available for domains.
      * Only the interface resource type is available for domains.
      */
@@ -285,6 +307,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return getQueryableInterfacesForDomain(domain).size() > 0;
     }
     
+    /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForDomain(String domain) {
         ArrayList<OnmsResource> resources =
             new ArrayList<OnmsResource>();
@@ -333,6 +356,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return new OnmsResource(intf, intf, this, set);
     }
 
+    /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }

@@ -38,8 +38,11 @@ package org.opennms.dashboard.client;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * 
+ * <p>NodeRtc class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NodeRtc implements IsSerializable {
 
@@ -50,50 +53,110 @@ public class NodeRtc implements IsSerializable {
     private String m_serviceStyle;
     private String m_availabilityStyle;
 
+    /**
+     * <p>setNodeLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
     public void setNodeLabel(String label) {
         m_nodeLabel = label;
     }
 
+    /**
+     * <p>setAvailability</p>
+     *
+     * @param availability a {@link java.lang.String} object.
+     */
     public void setAvailability(String availability) {
         m_availability = availability;
     }
 
+    /**
+     * <p>setDownServiceCount</p>
+     *
+     * @param downServiceCount a int.
+     */
     public void setDownServiceCount(int downServiceCount) {
         m_downServiceCount = downServiceCount;
     }
 
+    /**
+     * <p>setServiceCount</p>
+     *
+     * @param serviceCount a int.
+     */
     public void setServiceCount(int serviceCount) {
         m_serviceCount = serviceCount;
     }
 
+    /**
+     * <p>getAvailability</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAvailability() {
         return m_availability;
     }
 
+    /**
+     * <p>getDownServiceCount</p>
+     *
+     * @return a int.
+     */
     public int getDownServiceCount() {
         return m_downServiceCount;
     }
 
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return m_nodeLabel;
     }
 
+    /**
+     * <p>getServiceCount</p>
+     *
+     * @return a int.
+     */
     public int getServiceCount() {
         return m_serviceCount;
     }
 
+    /**
+     * <p>getServiceStyle</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceStyle() {
         return m_serviceStyle;
     }
 
+    /**
+     * <p>getAvailabilityStyle</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAvailabilityStyle() {
         return m_availabilityStyle;
     }
 
+    /**
+     * <p>setServiceStyle</p>
+     *
+     * @param serviceStyle a {@link java.lang.String} object.
+     */
     public void setServiceStyle(String serviceStyle) {
         m_serviceStyle = serviceStyle;
     }
 
+    /**
+     * <p>setAvailabilityStyle</p>
+     *
+     * @param availabilityStyle a {@link java.lang.String} object.
+     */
     public void setAvailabilityStyle(String availabilityStyle) {
         m_availabilityStyle = availabilityStyle;
     }

@@ -46,8 +46,9 @@ import org.springframework.util.Assert;
  * applicationContext-dao.xml.
  * In particular, this sets up system properties that are needed by Spring.
  * System properties are not set until afterPropertiesSet() is called.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class DaoTestConfigBean implements InitializingBean {
     private String m_relativeHomeDirectory = null;
@@ -55,9 +56,15 @@ public class DaoTestConfigBean implements InitializingBean {
     private String m_rrdBinary = "/bin/true";
     private String m_relativeRrdBaseDirectory = "target/test/opennms-home/share/rrd";
 
+    /**
+     * <p>Constructor for DaoTestConfigBean.</p>
+     */
     public DaoTestConfigBean() {
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_relativeHomeDirectory == null || m_absoluteHomeDirectory == null, "Only one of the properties relativeHomeDirectory and absoluteHomeDirectory can be set.");
         
@@ -73,26 +80,56 @@ public class DaoTestConfigBean implements InitializingBean {
         ConfigurationTestUtils.setRelativeRrdBaseDirectory(m_relativeRrdBaseDirectory);
     }
 
+    /**
+     * <p>getRelativeHomeDirectory</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRelativeHomeDirectory() {
         return m_relativeHomeDirectory;
     }
 
+    /**
+     * <p>setRelativeHomeDirectory</p>
+     *
+     * @param relativeHomeDirectory a {@link java.lang.String} object.
+     */
     public void setRelativeHomeDirectory(String relativeHomeDirectory) {
         m_relativeHomeDirectory = relativeHomeDirectory;
     }
 
+    /**
+     * <p>getRelativeRrdBaseDirectory</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRelativeRrdBaseDirectory() {
         return m_relativeRrdBaseDirectory;
     }
 
+    /**
+     * <p>setRelativeRrdBaseDirectory</p>
+     *
+     * @param rrdBaseDirectory a {@link java.lang.String} object.
+     */
     public void setRelativeRrdBaseDirectory(String rrdBaseDirectory) {
         m_relativeRrdBaseDirectory = rrdBaseDirectory;
     }
 
+    /**
+     * <p>getRrdBinary</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRrdBinary() {
         return m_rrdBinary;
     }
 
+    /**
+     * <p>setRrdBinary</p>
+     *
+     * @param rrdBinary a {@link java.lang.String} object.
+     */
     public void setRrdBinary(String rrdBinary) {
         m_rrdBinary = rrdBinary;
     }

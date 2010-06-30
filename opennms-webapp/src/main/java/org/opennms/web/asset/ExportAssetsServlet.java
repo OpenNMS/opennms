@@ -57,18 +57,30 @@ import au.com.bytecode.opencsv.CSVWriter;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * 
- **/
-
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ExportAssetsServlet extends HttpServlet {
     private static final long serialVersionUID = 2L;
     
     protected AssetModel model;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         this.model = new AssetModel();
     }
 
+    /** {@inheritDoc} */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Asset[] assets = null;
 

@@ -40,9 +40,13 @@ import java.util.List;
 
 /**
  * Convenience data structure for holding the arguments to an notice query.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NoticeQueryParms extends Object {
     public NoticeFactory.SortStyle sortStyle;
@@ -58,6 +62,8 @@ public class NoticeQueryParms extends Object {
     /**
      * Convert the internal (and useful) ArrayList filters object into an array
      * of EventFactory.Filter instances.
+     *
+     * @return an array of {@link org.opennms.web.notification.NoticeFactory.Filter} objects.
      */
     public NoticeFactory.Filter[] getFilters() {
         return this.filters.toArray(new NoticeFactory.Filter[this.filters.size()]);

@@ -54,23 +54,31 @@ import org.opennms.web.outage.filter.Filter;
 /**
  * A servlet that handles querying the outages table and and then forwards the
  * query's result to a JSP for display.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class OutageFilterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** Constant <code>DEFAULT_LIMIT=25</code> */
     public static final int DEFAULT_LIMIT = 25;
 
+    /** Constant <code>DEFAULT_MULTIPLE=0</code> */
     public static final int DEFAULT_MULTIPLE = 0;
 
     /**
+     * {@inheritDoc}
+     *
      * Parses the query string to determine what type of outage query to perform
      * (for example, what to filter on or sort by), then does the database query
      * (through the OutageFactory) and then forwards the results to a JSP for
      * display.
-     * 
+     *
      * <p>
      * Sets the <em>notices</em> and <em>parms</em> request attributes for
      * the forwardee JSP (or whatever gets called).

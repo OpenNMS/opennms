@@ -42,10 +42,22 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * <p>SpringLoader class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SpringLoader {
 	
 	private ApplicationContext m_appContext;
 	
+	/**
+	 * <p>Constructor for SpringLoader.</p>
+	 *
+	 * @param operation a {@link java.lang.String} object.
+	 * @throws java.lang.Throwable if any.
+	 */
 	public SpringLoader(String operation) throws Throwable {
 		String startupUrl = getStartupResource();
 		
@@ -99,6 +111,11 @@ public class SpringLoader {
 		return null;
 	}
 
+	/**
+	 * <p>start</p>
+	 *
+	 * @throws java.lang.Throwable if any.
+	 */
 	public void start() throws Throwable {
 		getDaemonMgr().start();
 	}
@@ -136,6 +153,11 @@ public class SpringLoader {
 	}
 	
 	
+	/**
+	 * <p>main</p>
+	 *
+	 * @param args an array of {@link java.lang.String} objects.
+	 */
 	public static void main(String[] args) {
 		try {
 			String cmd = args[0];

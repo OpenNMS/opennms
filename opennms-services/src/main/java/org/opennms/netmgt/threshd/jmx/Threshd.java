@@ -44,12 +44,21 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 
 
+/**
+ * <p>Threshd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Threshd implements ThreshdMBean {
     /**
      * Log4j category
      */
     private final static String LOG4J_CATEGORY = "OpenNMS.Threshd";
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -100,6 +109,9 @@ public class Threshd implements ThreshdMBean {
         return org.opennms.netmgt.threshd.Threshd.getInstance();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -107,6 +119,9 @@ public class Threshd implements ThreshdMBean {
         getInstance().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -114,6 +129,11 @@ public class Threshd implements ThreshdMBean {
         getInstance().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -121,6 +141,11 @@ public class Threshd implements ThreshdMBean {
         return getInstance().getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -128,6 +153,11 @@ public class Threshd implements ThreshdMBean {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);

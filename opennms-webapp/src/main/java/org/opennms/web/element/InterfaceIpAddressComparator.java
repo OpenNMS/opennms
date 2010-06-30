@@ -37,10 +37,20 @@ package org.opennms.web.element;
 import java.util.Comparator;
 
 /**
- * 
+ * <p>InterfaceIpAddressComparator class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class InterfaceIpAddressComparator implements Comparator<Interface> {
+    /**
+     * <p>compare</p>
+     *
+     * @param i1 a {@link org.opennms.web.element.Interface} object.
+     * @param i2 a {@link org.opennms.web.element.Interface} object.
+     * @return a int.
+     */
     public int compare(Interface i1, Interface i2) {
         return i1.getIpAddress().compareTo(i2.getIpAddress());
     }

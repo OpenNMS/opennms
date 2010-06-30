@@ -49,13 +49,18 @@ import org.opennms.netmgt.config.users.User;
 
 /**
  * A servlet that retrieves a user's password in preparation for changing the password
- * 
+ *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NewPasswordEntryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	/** {@inheritDoc} */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession userSession = request.getSession(false);
 		

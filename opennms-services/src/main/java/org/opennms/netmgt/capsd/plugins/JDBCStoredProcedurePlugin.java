@@ -54,7 +54,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * href="http://www.opennms.org/users/docs/docs/html/devref.html">OpenNMS
  * developer site </a>
  * </p>
- * 
+ *
  * @author Jose Vicente Nunez Zuleta (josevnz@users.sourceforge.net) - RHCE,
  *         SJCD, SJCP
  * @version 0.1 - 07/22/2002
@@ -75,6 +75,7 @@ public final class JDBCStoredProcedurePlugin extends JDBCPlugin {
 				+ ": JDBCStoredProcedurePlugin class loaded");
 	}
 
+	/** {@inheritDoc} */
 	public boolean checkStatus(Connection con, Map<String, Object> qualifiers) {
 		boolean status = false;
 		CallableStatement cs = null;

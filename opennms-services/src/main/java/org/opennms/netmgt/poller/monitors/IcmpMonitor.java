@@ -65,10 +65,12 @@ import org.opennms.netmgt.utils.ParameterMap;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
  */
 
 // this is marked not distributable because it relies on a shared library
@@ -76,29 +78,25 @@ import org.opennms.netmgt.utils.ParameterMap;
 final public class IcmpMonitor extends IPv4Monitor {
     /**
      * Constructs a new monitor.
+     *
+     * @throws java.io.IOException if any.
      */
     public IcmpMonitor() throws IOException {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Poll the specified address for ICMP service availability.
      * </P>
-     * 
+     *
      * <P>
      * The ICMP service monitor relies on Discovery for the actual generation of
      * IMCP 'ping' requests. A JSDT session with two channels (send/recv) is
      * utilized for passing poll requests and receiving poll replies from
      * discovery. All exchanges are SOAP/XML compliant.
      * </P>
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availability of the interface and if a transition event
-     *         should be suppressed.
-     * 
      */
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();

@@ -31,8 +31,19 @@
 //
 package org.opennms.netmgt.snmp;
 
+/**
+ * <p>TrapNotification interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TrapNotification {
 
+    /**
+     * <p>getTrapProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
+     */
     public abstract TrapProcessor getTrapProcessor();
 
 }

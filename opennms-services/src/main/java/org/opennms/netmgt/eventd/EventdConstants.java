@@ -42,9 +42,12 @@ package org.opennms.netmgt.eventd;
 /**
  * This class is a repository for constant, static information concerning
  * Eventd.
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public final class EventdConstants {
     /**
@@ -66,6 +69,7 @@ public final class EventdConstants {
             "  FROM alarms " +
             " WHERE reductionKey = ?";
 
+    /** Constant <code>SQL_DB_UPDATE_EVENT_WITH_ALARM_ID="UPDATE events    SET alarmid = ?  WHERE"{trunked}</code> */
     public static final String SQL_DB_UPDATE_EVENT_WITH_ALARM_ID =
             "UPDATE events "+
             "   SET alarmid = ? " +

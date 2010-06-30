@@ -46,13 +46,17 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
- * 
+ * <p>GroupListController class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class GroupListController extends AbstractController {
 
 	private GroupManager m_groupManager;
 
+	/** {@inheritDoc} */
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -60,10 +64,20 @@ public class GroupListController extends AbstractController {
 	    return new ModelAndView("admin/groups/list", "groups", groups.values());
 	}
 
+	/**
+	 * <p>getGroupManager</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.config.GroupManager} object.
+	 */
 	public GroupManager getGroupManager() {
 		return m_groupManager;
 	}
 
+	/**
+	 * <p>setGroupManager</p>
+	 *
+	 * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
+	 */
 	public void setGroupManager(GroupManager groupManager) {
 		m_groupManager = groupManager;
 	}

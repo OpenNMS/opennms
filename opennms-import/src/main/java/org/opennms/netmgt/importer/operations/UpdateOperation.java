@@ -57,6 +57,12 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.xml.event.Event;
 
+/**
+ * <p>UpdateOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class UpdateOperation extends AbstractSaveOrUpdateOperation {
     private boolean m_shouldSendSnmpPrimaryEvent = false;
     
@@ -445,11 +451,28 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
     }
 
 
+    /**
+     * <p>Constructor for UpdateOperation.</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     * @param city a {@link java.lang.String} object.
+     * @param nonIpInterfaces a {@link java.lang.Boolean} object.
+     * @param nonIpSnmpPrimary a {@link java.lang.String} object.
+     */
     public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city,
             Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
 		super(nodeId, foreignSource, foreignId, nodeLabel, building, city, nonIpInterfaces, nonIpSnmpPrimary);
 	}
 
+	/**
+	 * <p>doPersist</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<Event> doPersist() {
 		OnmsNode imported = getNode();
 		OnmsNode db = getNodeDao().getHierarchy(imported.getId());
@@ -530,6 +553,11 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         new InterfaceUpdater(db, imported).execute(events);
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
        return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
     }

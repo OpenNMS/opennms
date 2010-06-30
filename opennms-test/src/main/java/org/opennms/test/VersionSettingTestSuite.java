@@ -43,27 +43,57 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
+/**
+ * <p>VersionSettingTestSuite class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class VersionSettingTestSuite extends TestSuite {
     
     int m_version;
 
+    /**
+     * <p>Constructor for VersionSettingTestSuite.</p>
+     *
+     * @param version a int.
+     */
     public VersionSettingTestSuite(int version) {
         super();
         m_version = version;
     }
     
+    /**
+     * <p>Constructor for VersionSettingTestSuite.</p>
+     *
+     * @param theClass a {@link java.lang.Class} object.
+     * @param name a {@link java.lang.String} object.
+     * @param version a int.
+     */
     public VersionSettingTestSuite(Class theClass, String name, int version) {
         super(theClass, name);
         m_version = version;
         checkForVersionMethod(theClass);
     }
 
+    /**
+     * <p>Constructor for VersionSettingTestSuite.</p>
+     *
+     * @param theClass a {@link java.lang.Class} object.
+     * @param version a int.
+     */
     public VersionSettingTestSuite(Class theClass, int version) {
         super(theClass);
         m_version = version;
         checkForVersionMethod(theClass);
     }
 
+    /**
+     * <p>Constructor for VersionSettingTestSuite.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param version a int.
+     */
     public VersionSettingTestSuite(String name, int version) {
         super(name);
         m_version = version;
@@ -82,6 +112,7 @@ public class VersionSettingTestSuite extends TestSuite {
             
     }
 
+    /** {@inheritDoc} */
     public void runTest(Test test, TestResult result) {
         setVersion(test);
         super.runTest(test, result);

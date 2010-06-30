@@ -35,30 +35,56 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 
+/**
+ * <p>SyntaxToEvent class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SyntaxToEvent {
     int m_typeId;
 
     String m_type;
 
+    /** Constant <code>m_syntaxToEvents</code> */
     public static SyntaxToEvent[] m_syntaxToEvents;
 
     static {
         setupSyntax();
     }
 
+    /**
+     * <p>Constructor for SyntaxToEvent.</p>
+     *
+     * @param typeId a int.
+     * @param type a {@link java.lang.String} object.
+     */
     public SyntaxToEvent(int typeId, String type) {
         m_typeId = typeId;
         m_type = type;
     }
 
+    /**
+     * <p>getTypeId</p>
+     *
+     * @return a int.
+     */
     public int getTypeId() {
         return m_typeId;
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getType() {
         return m_type;
     }
 
+    /**
+     * <p>setupSyntax</p>
+     */
     public static void setupSyntax() {
         m_syntaxToEvents = new SyntaxToEvent[] { 
                 new SyntaxToEvent(SnmpValue.SNMP_INT32,             EventConstants.TYPE_SNMP_INT32),
@@ -75,6 +101,13 @@ public class SyntaxToEvent {
         };
     }
 
+    /**
+     * <p>processSyntax</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Parm} object.
+     */
     public static Parm processSyntax(String name, SnmpValue value) {
         Value val = new Value();
 

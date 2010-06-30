@@ -36,13 +36,30 @@
 package org.opennms.web.controller;
 
 
+/**
+ * <p>DaemonStatusBinder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class DaemonStatusBinder {
 	private String[] values = new String[0];
 	
+	/**
+	 * <p>Setter for the field <code>values</code>.</p>
+	 *
+	 * @param values an array of {@link java.lang.String} objects.
+	 */
 	public void setValues(String[] values) {
 		this.values = values;
 	}
 	
+	/**
+	 * <p>Getter for the field <code>values</code>.</p>
+	 *
+	 * @return an array of {@link java.lang.String} objects.
+	 */
 	public String[] getValues() {
 		return values;
 	}

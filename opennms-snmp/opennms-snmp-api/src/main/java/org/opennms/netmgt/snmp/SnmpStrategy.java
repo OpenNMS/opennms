@@ -34,30 +34,125 @@ package org.opennms.netmgt.snmp;
 import java.io.IOException;
 
 
+/**
+ * <p>SnmpStrategy interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface SnmpStrategy {
 
+    /**
+     * <p>createWalker</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param name a {@link java.lang.String} object.
+     * @param tracker a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpWalker} object.
+     */
     SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker);
 
+    /**
+     * <p>set</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param value a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value);
 
+    /**
+     * <p>set</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @param value an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
+     */
     SnmpValue[] set(SnmpAgentConfig agentConfig, SnmpObjId oid[], SnmpValue value[]);
 
+    /**
+     * <p>get</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
+    /**
+     * <p>get</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oids an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
+     */
     SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
 
+    /**
+     * <p>getNext</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid);
+    /**
+     * <p>getNext</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oids an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
+     */
     SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
     
+    /**
+     * <p>getBulk</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oids an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
+     */
     SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
 
+    /**
+     * <p>registerForTraps</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.snmp.TrapNotificationListener} object.
+     * @param processorFactory a {@link org.opennms.netmgt.snmp.TrapProcessorFactory} object.
+     * @param snmpTrapPort a int.
+     * @throws java.io.IOException if any.
+     */
     void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException;
 
+    /**
+     * <p>unregisterForTraps</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.snmp.TrapNotificationListener} object.
+     * @param snmpTrapPort a int.
+     * @throws java.io.IOException if any.
+     */
     void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException;
 
+    /**
+     * <p>getValueFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValueFactory} object.
+     */
     SnmpValueFactory getValueFactory();
 
+    /**
+     * <p>getV1TrapBuilder</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpV1TrapBuilder} object.
+     */
     SnmpV1TrapBuilder getV1TrapBuilder();
     
+    /**
+     * <p>getV2TrapBuilder</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpTrapBuilder} object.
+     */
     SnmpTrapBuilder getV2TrapBuilder();
 
 }

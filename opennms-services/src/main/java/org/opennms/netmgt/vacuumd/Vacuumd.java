@@ -67,13 +67,21 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * Implements a daemon whose job it is to run periodic updates against the
  * database for database maintenance work.
- * 
+ *
  * @author <a href=mailto:brozow@opennms.org>Mathew Brozowski</a>
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
+ * @author <a href=mailto:brozow@opennms.org>Mathew Brozowski</a>
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
+ * @author <a href=mailto:brozow@opennms.org>Mathew Brozowski</a>
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
+ * @version $Id: $
  */
 public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener {
 
+    /** Constant <code>RELOAD_CONFIG_UEI="uei.opennms.org/internal/reloadVacuumdC"{trunked}</code> */
     public static final String RELOAD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
 
     private static volatile Vacuumd m_singleton;
@@ -88,6 +96,11 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
 
     private volatile EventIpcManager m_eventMgr;
 
+    /**
+     * <p>getSingleton</p>
+     *
+     * @return a {@link org.opennms.netmgt.vacuumd.Vacuumd} object.
+     */
     public synchronized static Vacuumd getSingleton() {
         if (m_singleton == null) {
             m_singleton = new Vacuumd();
@@ -95,6 +108,9 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         return m_singleton;
     }
 
+    /**
+     * <p>Constructor for Vacuumd.</p>
+     */
     public Vacuumd() {
         super("OpenNMS.Vacuumd");
     }
@@ -104,6 +120,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#init()
      */
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         try {
@@ -133,6 +150,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onStart() {
         m_startTime = System.currentTimeMillis();
@@ -141,18 +159,21 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         m_scheduler.start();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onStop() {
         m_stopped = true;
         m_scheduler.stop();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onPause() {
         m_scheduler.pause();
         m_stopped = true;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onResume() {
         m_thread = new Thread(this, "Vacuumd-Thread");
@@ -164,6 +185,9 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
      * (non-Javadoc)
      * 
      * @see java.lang.Runnable#run()
+     */
+    /**
+     * <p>run</p>
      */
     public void run() {
         ThreadCategory.setPrefix(getName());
@@ -192,7 +216,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     /**
-     * 
+     * <p>executeStatements</p>
      */
     protected void executeStatements() {
         if (!m_stopped) {
@@ -281,6 +305,11 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
     }
 
+    /**
+     * <p>getScheduler</p>
+     *
+     * @return a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     */
     public Scheduler getScheduler() {
         return m_scheduler;
     }
@@ -300,14 +329,25 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
     }
 
+    /**
+     * <p>getEventManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
 
+    /**
+     * <p>setEventManager</p>
+     *
+     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
 
+    /** {@inheritDoc} */
     public void onEvent(Event event) {
         if (RELOAD_CONFIG_UEI.equals(event.getUei())) {
             try {

@@ -42,8 +42,10 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 /**
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * <p>PassiveServiceMonitor class.</p>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 
 // this retrieves data from the deamon so it is not Distribuable
@@ -53,12 +55,16 @@ public class PassiveServiceMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.config.PollerConfig, java.util.Map)
      */
+    /** {@inheritDoc} */
     public void initialize(Map parameters) {
         return;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#release()
+     */
+    /**
+     * <p>release</p>
      */
     public void release() {
         return;
@@ -67,6 +73,11 @@ public class PassiveServiceMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.poller.MonitoredService)
      */
+    /**
+     * <p>initialize</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
+     */
     public void initialize(MonitoredService svc) {
         return;
     }
@@ -74,6 +85,7 @@ public class PassiveServiceMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#release(org.opennms.netmgt.poller.MonitoredService)
      */
+    /** {@inheritDoc} */
     public void release(MonitoredService svc) {
         return;
     }
@@ -81,6 +93,7 @@ public class PassiveServiceMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
+    /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map parameters) {
         PollStatus status = PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
         return status;

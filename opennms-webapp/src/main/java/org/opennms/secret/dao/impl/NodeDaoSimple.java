@@ -42,14 +42,18 @@ import java.util.List;
 import org.opennms.secret.dao.NodeDao;
 import org.opennms.secret.model.Node;
 /**
- * @author david
+ * <p>NodeDaoSimple class.</p>
  *
+ * @author david
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NodeDaoSimple implements NodeDao {
     
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeDao#initialize(java.lang.Object)
      */
+    /** {@inheritDoc} */
     public void initialize(Object obj) {
         // TODO Auto-generated method stub
 
@@ -58,6 +62,7 @@ public class NodeDaoSimple implements NodeDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeDao#getNode(java.lang.Long)
      */
+    /** {@inheritDoc} */
     public Node getNode(Long id) {
         return createDummyNode(id);
     }
@@ -85,14 +90,21 @@ public class NodeDaoSimple implements NodeDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeDao#createNode(org.opennms.secret.model.Node)
      */
+    /** {@inheritDoc} */
     public void createNode(Node node) {
         
     }
 
+    /** {@inheritDoc} */
     public Collection getInterfaceCollection(Node node) {
         return Collections.EMPTY_SET;
     }
 
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<Node> findAll() {
         List<Node> list = new ArrayList<Node>(10);
         for(int i = 0; i < 10; i++) {

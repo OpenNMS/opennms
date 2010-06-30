@@ -44,10 +44,12 @@ import java.util.Map;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
+ * <p>ConnectionConfig class.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO Need to javadoc this class
- * 
+ * @version $Id: $
  */
 public class ConnectionConfig {
     InetAddress m_inetAddress;
@@ -61,11 +63,13 @@ public class ConnectionConfig {
     int m_retry;
 
     /**
-     * @param address
-     * @param qualifiers
-     * @param default_port
-     * @param default_timeout
-     * @param default_retry
+     * <p>Constructor for ConnectionConfig.</p>
+     *
+     * @param qualifiers a {@link java.util.Map} object.
+     * @param inetAddress a {@link java.net.InetAddress} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @param retry a int.
      */
     public ConnectionConfig(InetAddress inetAddress, Map<String, Object> qualifiers, int port, int timeout, int retry) {
         m_inetAddress = inetAddress;
@@ -75,25 +79,51 @@ public class ConnectionConfig {
         m_retry = retry;
     }
 
+    /**
+     * <p>Constructor for ConnectionConfig.</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param port a int.
+     */
     public ConnectionConfig(InetAddress address, int port) {
         m_inetAddress = address;
         m_port = port;
 
     }
 
+    /**
+     * <p>Constructor for ConnectionConfig.</p>
+     *
+     * @param inetAddress a {@link java.net.InetAddress} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @param retry a int.
+     */
     public ConnectionConfig(InetAddress inetAddress, int port, int timeout, int retry) {
         this(inetAddress, null, port, timeout, retry);
     }
 
+    /**
+     * <p>getSocketAddress</p>
+     *
+     * @return a {@link java.net.InetSocketAddress} object.
+     */
     public InetSocketAddress getSocketAddress() {
         return new InetSocketAddress(getInetAddress(), getPort());
     }
     
+    /**
+     * <p>setQualifiers</p>
+     *
+     * @param qualifiers a {@link java.util.Map} object.
+     */
     public void setQualifiers(Map<String, Object> qualifiers) {
         m_qualifiers = qualifiers;
     }
 
     /**
+     * <p>getInetAddress</p>
+     *
      * @return Returns the address.
      */
     public InetAddress getInetAddress() {
@@ -101,6 +131,8 @@ public class ConnectionConfig {
     }
 
     /**
+     * <p>setInetAddress</p>
+     *
      * @param inetAddress
      *            The inetAddresss to set.
      */
@@ -108,6 +140,13 @@ public class ConnectionConfig {
         m_inetAddress = inetAddress;
     }
 
+    /**
+     * <p>getKeyedInteger</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param defaultVal a int.
+     * @return a int.
+     */
     public int getKeyedInteger(String key, int defaultVal) {
         if (m_qualifiers == null)
             return defaultVal;
@@ -115,6 +154,13 @@ public class ConnectionConfig {
             return ParameterMap.getKeyedInteger(m_qualifiers, key, defaultVal);
     }
 
+    /**
+     * <p>getKeyedBoolean</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param defaultVal a boolean.
+     * @return a boolean.
+     */
     public boolean getKeyedBoolean(String key, boolean defaultVal) {
         if (m_qualifiers == null)
             return defaultVal;
@@ -122,6 +168,13 @@ public class ConnectionConfig {
             return ParameterMap.getKeyedBoolean(m_qualifiers, key, defaultVal);
     }
 
+    /**
+     * <p>getKeyedString</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param defaultVal a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getKeyedString(String key, String defaultVal) {
         if (m_qualifiers == null)
             return defaultVal;
@@ -129,12 +182,20 @@ public class ConnectionConfig {
             return ParameterMap.getKeyedString(m_qualifiers, key, defaultVal);
     }
 
+    /**
+     * <p>saveKeyedInteger</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param value a int.
+     */
     public void saveKeyedInteger(String key, int value) {
         if (m_qualifiers != null && !m_qualifiers.containsKey(key))
             m_qualifiers.put(key, new Integer(value));
     }
 
     /**
+     * <p>getPort</p>
+     *
      * @return Returns the port.
      */
     public int getPort() {
@@ -142,6 +203,8 @@ public class ConnectionConfig {
     }
 
     /**
+     * <p>getRetry</p>
+     *
      * @return Returns the retries.
      */
     public int getRetry() {
@@ -149,6 +212,8 @@ public class ConnectionConfig {
     }
 
     /**
+     * <p>setRetry</p>
+     *
      * @param retry
      *            The retries to set.
      */
@@ -157,6 +222,8 @@ public class ConnectionConfig {
     }
 
     /**
+     * <p>getTimeout</p>
+     *
      * @return Returns the timeout.
      */
     public int getTimeout() {
@@ -164,6 +231,8 @@ public class ConnectionConfig {
     }
 
     /**
+     * <p>setTimeout</p>
+     *
      * @param timeout
      *            The timeout to set.
      */

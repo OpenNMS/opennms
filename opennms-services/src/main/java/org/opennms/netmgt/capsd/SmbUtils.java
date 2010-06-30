@@ -43,85 +43,121 @@ import org.opennms.netmgt.config.capsd.SmbAuth;
 /**
  * This class contains several static convience methods utilized by Capsd while
  * doing data collection via jCIFS and the SMB (Server Message Block) protocol.
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
- * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class SmbUtils {
     // NetBIOS Node Name Suffix Codes
     //
+    /** Constant <code>WORKSTATION_SERVICE=0x00</code> */
     public static final int WORKSTATION_SERVICE = 0x00; // <computername>
 
+    /** Constant <code>MESSENGER_SERVICE_A=0x01</code> */
     public static final int MESSENGER_SERVICE_A = 0x01; // <computername>
 
+    /** Constant <code>MASTER_BROWSER_G=0x01</code> */
     public static final int MASTER_BROWSER_G = 0x01; // \\--__MSBROWSE__
 
+    /** Constant <code>MESSENGER_SERVICE_B=0x03</code> */
     public static final int MESSENGER_SERVICE_B = 0x03; // <computername>
 
+    /** Constant <code>RAS_SERVER_SERVICE=0x06</code> */
     public static final int RAS_SERVER_SERVICE = 0x06; // <computername>
 
+    /** Constant <code>NETDDE_SERVICE=0x1F</code> */
     public static final int NETDDE_SERVICE = 0x1F; // <computername>
 
+    /** Constant <code>FILE_SERVER_SERVICE=0x20</code> */
     public static final int FILE_SERVER_SERVICE = 0x20; // <computername>
 
+    /** Constant <code>RAS_CLIENT_SERVICE=0x21</code> */
     public static final int RAS_CLIENT_SERVICE = 0x21; // <computername>
 
+    /** Constant <code>MS_EXCHANGE_INTERCHANGE=0x22</code> */
     public static final int MS_EXCHANGE_INTERCHANGE = 0x22; // <computername>
 
+    /** Constant <code>MS_EXCHANGE_STORE=0x23</code> */
     public static final int MS_EXCHANGE_STORE = 0x23; // <computername>
 
+    /** Constant <code>MS_EXCHANGE_DIRECTORY=0x24</code> */
     public static final int MS_EXCHANGE_DIRECTORY = 0x24; // <computername>
 
+    /** Constant <code>MODEM_SHARING_SERVER_SERVICE=0x30</code> */
     public static final int MODEM_SHARING_SERVER_SERVICE = 0x30; // <computername>
 
+    /** Constant <code>MODEM_SHARING_CLIENT_SERVICE=0x31</code> */
     public static final int MODEM_SHARING_CLIENT_SERVICE = 0x31; // <computername>
 
+    /** Constant <code>SMS_CLIENT_REMOTE_CONTROL=0x43</code> */
     public static final int SMS_CLIENT_REMOTE_CONTROL = 0x43; // <computername>
 
+    /** Constant <code>SMS_ADMIN_REMOTE_CONTROL_TOOL=0x44</code> */
     public static final int SMS_ADMIN_REMOTE_CONTROL_TOOL = 0x44; // <computername>
 
+    /** Constant <code>SMS_CLIENTS_REMOTE_CHAT=0x45</code> */
     public static final int SMS_CLIENTS_REMOTE_CHAT = 0x45; // <computername>
 
+    /** Constant <code>SMS_CLIENTS_REMOTE_TRANSFER=0x46</code> */
     public static final int SMS_CLIENTS_REMOTE_TRANSFER = 0x46; // <computername>
 
+    /** Constant <code>DEC_PATHWORKS_TCPIP_SERVICE_A=0x4C</code> */
     public static final int DEC_PATHWORKS_TCPIP_SERVICE_A = 0x4C; // <computername>
 
+    /** Constant <code>DEC_PATHWORKS_TCPIP_SERVICE_B=0x52</code> */
     public static final int DEC_PATHWORKS_TCPIP_SERVICE_B = 0x52; // <computername>
 
+    /** Constant <code>MS_EXCHANGE_MTA=0x87</code> */
     public static final int MS_EXCHANGE_MTA = 0x87; // <computername>
 
+    /** Constant <code>MS_EXCHANGE_IMC=0x6A</code> */
     public static final int MS_EXCHANGE_IMC = 0x6A; // <computername>
 
+    /** Constant <code>NETWORK_MONITOR_AGENT=0xBE</code> */
     public static final int NETWORK_MONITOR_AGENT = 0xBE; // <computername>
 
+    /** Constant <code>NETWORK_MONITOR_APPLICATION=0xBF</code> */
     public static final int NETWORK_MONITOR_APPLICATION = 0xBF; // <computername>
 
+    /** Constant <code>MESSENGER_SERVICE=0x03</code> */
     public static final int MESSENGER_SERVICE = 0x03; // <username>
 
+    /** Constant <code>DOMAIN_NAME=0x00</code> */
     public static final int DOMAIN_NAME = 0x00; // <domain>
 
+    /** Constant <code>DOMAIN_MASTER_BROWSER=0x1B</code> */
     public static final int DOMAIN_MASTER_BROWSER = 0x1B; // <domain>
 
+    /** Constant <code>DOMAIN_CONTROLLERS=0x1C</code> */
     public static final int DOMAIN_CONTROLLERS = 0x1C; // <domain>
 
+    /** Constant <code>MASTER_BROWSER_U=0x1D</code> */
     public static final int MASTER_BROWSER_U = 0x1D; // <domain>
 
+    /** Constant <code>BROWSER_SERVICE_ELECTIONS=0x1E</code> */
     public static final int BROWSER_SERVICE_ELECTIONS = 0x1E; // <domain>
 
+    /** Constant <code>INTERNET_INFORMATION_SERVER_G=0x1C</code> */
     public static final int INTERNET_INFORMATION_SERVER_G = 0x1C; // INET~SERVICES
                                                                     // (GROUP)
 
+    /** Constant <code>INTERNET_INFORMATION_SERVER_U=0x00</code> */
     public static final int INTERNET_INFORMATION_SERVER_U = 0x00; // IS~<computername>
                                                                     // (UNIQUE)
 
+    /** Constant <code>LOTUS_NOTES_SERVER_SERVICE=0x2B</code> */
     public static final int LOTUS_NOTES_SERVER_SERVICE = 0x2B; // <computername>
 
+    /** Constant <code>LOTUS_NOTES_IRIS_MULTICAST=0x2F</code> */
     public static final int LOTUS_NOTES_IRIS_MULTICAST = 0x2F; // IRISMULTICAST
 
+    /** Constant <code>LOTUS_NOTES_IRIS_NAME_SERVER=0x33</code> */
     public static final int LOTUS_NOTES_IRIS_NAME_SERVER = 0x33; // IRISNAMESERVER
 
+    /** Constant <code>DCA_IRMALAN_GATEWAY_SERVER_SERVICE=0x20</code> */
     public static final int DCA_IRMALAN_GATEWAY_SERVER_SERVICE = 0x20; // FORTE_$ND800ZA
 
     /**

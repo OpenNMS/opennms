@@ -107,6 +107,11 @@ class JoeSnmpValue implements SnmpValue {
         }    
     }
     
+    /**
+     * <p>getBytes</p>
+     *
+     * @return an array of byte.
+     */
     public byte[] getBytes() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_COUNTER64:
@@ -129,10 +134,20 @@ class JoeSnmpValue implements SnmpValue {
         }
     }        
 
+    /**
+     * <p>isEndOfMib</p>
+     *
+     * @return a boolean.
+     */
     public boolean isEndOfMib() {
         return m_value instanceof SnmpEndOfMibView;
     }
     
+    /**
+     * <p>isError</p>
+     *
+     * @return a boolean.
+     */
     public boolean isError() {
         switch (getType()) {
         case SnmpValue.SNMP_NO_SUCH_INSTANCE:
@@ -144,6 +159,11 @@ class JoeSnmpValue implements SnmpValue {
         
     }
 
+    /**
+     * <p>isNumeric</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNumeric() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_INTEGER:
@@ -157,6 +177,11 @@ class JoeSnmpValue implements SnmpValue {
         }
     }
     
+    /**
+     * <p>toInt</p>
+     *
+     * @return a int.
+     */
     public int toInt() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_COUNTER64:
@@ -172,6 +197,11 @@ class JoeSnmpValue implements SnmpValue {
         }
     }
     
+    /**
+     * <p>toLong</p>
+     *
+     * @return a long.
+     */
     public long toLong() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_COUNTER64:
@@ -196,10 +226,20 @@ class JoeSnmpValue implements SnmpValue {
 
 
     
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() {
         return m_value.typeId();
     }
 
+    /**
+     * <p>toDisplayString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toDisplayString() {
         
         switch (m_value.typeId()) {
@@ -212,6 +252,11 @@ class JoeSnmpValue implements SnmpValue {
         }
     }
 
+    /**
+     * <p>toInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress toInetAddress() {
         switch (m_value.typeId()) {
             case SnmpSMI.SMI_IPADDRESS:
@@ -221,6 +266,11 @@ class JoeSnmpValue implements SnmpValue {
         }
     }
 
+    /**
+     * <p>toHexString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toHexString() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_STRING:
@@ -230,10 +280,20 @@ class JoeSnmpValue implements SnmpValue {
         }
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return toDisplayString();
     }
 
+    /**
+     * <p>toBigInteger</p>
+     *
+     * @return a {@link java.math.BigInteger} object.
+     */
     public BigInteger toBigInteger() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_COUNTER64:
@@ -249,6 +309,11 @@ class JoeSnmpValue implements SnmpValue {
         }
     }
 
+    /**
+     * <p>toSnmpObjId</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public SnmpObjId toSnmpObjId() {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_OBJECTID:
@@ -258,6 +323,11 @@ class JoeSnmpValue implements SnmpValue {
         }
     }
 
+    /**
+     * <p>isDisplayable</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayable() {
         if (isNumeric())
             return true;
@@ -281,10 +351,20 @@ class JoeSnmpValue implements SnmpValue {
 		return true;
 	}
 
+    /**
+     * <p>isNull</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNull() {
         return getType() == SnmpValue.SNMP_NULL;
     }
 
+    /**
+     * <p>getSnmpSyntax</p>
+     *
+     * @return a {@link org.opennms.protocols.snmp.SnmpSyntax} object.
+     */
     public SnmpSyntax getSnmpSyntax() {
         return m_value;
     }

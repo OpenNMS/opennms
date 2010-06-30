@@ -51,17 +51,19 @@ import org.opennms.api.integration.ticketing.*;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for OTRS
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
- * 
+ * @version $Id: $
  */
-
 public class OtrsTicketerPlugin implements Plugin {
     
 	private DefaultOtrsConfigDao m_configDao; 
 	
 	private String m_endpoint; 
 	
+	/**
+	 * <p>Constructor for OtrsTicketerPlugin.</p>
+	 */
 	public OtrsTicketerPlugin() {
 		
 		m_configDao = new DefaultOtrsConfigDao();
@@ -69,6 +71,7 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 	}
 
+	/** {@inheritDoc} */
 	public Ticket get(String ticketId) throws PluginException {
 
 		TicketWithArticles ticketWithArticles = null;
@@ -146,6 +149,7 @@ public class OtrsTicketerPlugin implements Plugin {
 	}
 
 
+	/** {@inheritDoc} */
 	public void saveOrUpdate(Ticket newTicket) throws PluginException {
 		
 		TicketIDAndNumber idAndNumber = null;
@@ -452,10 +456,20 @@ public class OtrsTicketerPlugin implements Plugin {
 		return ThreadCategory.getInstance(getClass());
 	}
 
+    /**
+     * <p>getEndpoint</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getEndpoint() {
         return m_endpoint;
     }
 
+    /**
+     * <p>setEndpoint</p>
+     *
+     * @param endpoint a {@link java.lang.String} object.
+     */
     public void setEndpoint(String endpoint) {
         m_endpoint = endpoint;
     }

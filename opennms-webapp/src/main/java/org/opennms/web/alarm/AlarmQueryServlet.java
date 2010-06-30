@@ -70,9 +70,13 @@ import org.opennms.web.alarm.filter.SeverityFilter;
  * This servlet takes a large and specific request parameter set and maps it to
  * the more robust "filter" parameter set of the
  * {@link EventFilterServlet EventFilterServlet}via a redirect.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AlarmQueryServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -90,6 +94,11 @@ public class AlarmQueryServlet extends HttpServlet {
      */
     protected String redirectUrl = "filter";
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
 
@@ -99,6 +108,8 @@ public class AlarmQueryServlet extends HttpServlet {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Extracts the key parameters from the parameter set, translates them into
      * filter-based parameters, and then passes the modified parameter set to
      * the {@link EventFilterServlet EventFilterServlet}.
@@ -222,26 +233,58 @@ public class AlarmQueryServlet extends HttpServlet {
         response.sendRedirect(this.redirectUrl + "?" + queryString);
     }
 
+    /**
+     * <p>getBeforeFirstEventTimeFilter</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter} object.
+     */
     protected BeforeFirstEventTimeFilter getBeforeFirstEventTimeFilter(HttpServletRequest request) {
         Date beforeFirstEventDate = this.getDateFromRequest(request, "beforefirsteventtime");
         return (new BeforeFirstEventTimeFilter(beforeFirstEventDate));
     }
 
+    /**
+     * <p>getAfterFirstEventTimeFilter</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.alarm.filter.AfterFirstEventTimeFilter} object.
+     */
     protected AfterFirstEventTimeFilter getAfterFirstEventTimeFilter(HttpServletRequest request) {
         Date afterFirstEventDate = this.getDateFromRequest(request, "afterfirsteventtime");
         return (new AfterFirstEventTimeFilter(afterFirstEventDate));
     }
 
+    /**
+     * <p>getBeforeLastEventTimeFilter</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.alarm.filter.BeforeLastEventTimeFilter} object.
+     */
     protected BeforeLastEventTimeFilter getBeforeLastEventTimeFilter(HttpServletRequest request) {
         Date beforeLastEventDate = this.getDateFromRequest(request, "beforelasteventtime");
         return (new BeforeLastEventTimeFilter(beforeLastEventDate));
     }
 
+    /**
+     * <p>getAfterLastEventTimeFilter</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.alarm.filter.AfterLastEventTimeFilter} object.
+     */
     protected AfterLastEventTimeFilter getAfterLastEventTimeFilter(HttpServletRequest request) {
         Date afterLastEventDate = this.getDateFromRequest(request, "afterlasteventtime");
         return (new AfterLastEventTimeFilter(afterLastEventDate));
     }
 
+    /**
+     * <p>getDateFromRequest</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param prefix a {@link java.lang.String} object.
+     * @return a {@link java.util.Date} object.
+     * @throws org.opennms.web.MissingParameterException if any.
+     */
     protected Date getDateFromRequest(HttpServletRequest request, String prefix) throws MissingParameterException {
         if (request == null || prefix == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -310,6 +353,12 @@ public class AlarmQueryServlet extends HttpServlet {
         return cal.getTime();
     }
 
+    /**
+     * <p>getRequiredDateFields</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
+     * @return an array of {@link java.lang.String} objects.
+     */
     protected String[] getRequiredDateFields(String prefix) {
         return new String[] { prefix + "hour", prefix + "minute", prefix + "ampm", prefix + "date", prefix + "month", prefix + "year" };
     }

@@ -43,17 +43,19 @@ import org.opennms.netmgt.xml.event.Autoaction;
 /**
  * This is an utility class used to format the event autoaction info - to be
  * inserted into the 'events' table
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class AutoAction {
     /**
      * Format each autoaction entry
-     * 
+     *
      * @param autoact
      *            the entry
-     * 
      * @return the formatted string
      */
     public static String format(Autoaction autoact) {
@@ -66,13 +68,12 @@ public class AutoAction {
 
     /**
      * Format the list of autoaction entries of the event
-     * 
+     *
      * @param autoacts
      *            the list
      * @param sz
      *            the size to which the formatted string is to be limited
      *            to(usually the size of the column in the database)
-     * 
      * @return the formatted string
      */
     public static String format(Autoaction[] autoacts, int sz) {

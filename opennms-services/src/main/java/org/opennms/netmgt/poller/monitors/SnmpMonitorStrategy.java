@@ -42,8 +42,10 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
- * @author david
+ * <p>Abstract SnmpMonitorStrategy class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 abstract public class SnmpMonitorStrategy extends IPv4Monitor {
 
@@ -51,11 +53,17 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
      * Constant for less-than operand
      */
     protected static final String LESS_THAN = "<";
+    /** Constant <code>GREATER_THAN=">"</code> */
     protected static final String GREATER_THAN = ">";
+    /** Constant <code>LESS_THAN_EQUALS="<="</code> */
     protected static final String LESS_THAN_EQUALS = "<=";
+    /** Constant <code>GREATER_THAN_EQUALS=">="</code> */
     protected static final String GREATER_THAN_EQUALS = ">=";
+    /** Constant <code>EQUALS="="</code> */
     protected static final String EQUALS = "=";
+    /** Constant <code>NOT_EQUAL="!="</code> */
     protected static final String NOT_EQUAL = "!=";
+    /** Constant <code>MATCHES="~"</code> */
     protected static final String MATCHES = "~";
     
     /*
@@ -64,17 +72,18 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
      */
     //private Category log = ThreadCategory.getInstance(getClass());
 
+    /** {@inheritDoc} */
     abstract public PollStatus poll(MonitoredService svc, Map parameters) ;
     
     
     /**
      * Verifies that the result of the SNMP query meets the criteria specified
      * by the operator and the operand from the configuartion file.
-     * 
-     * @param result
-     * @param operator
-     * @param operand
-     * @return
+     *
+     * @param result a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     * @param operator a {@link java.lang.String} object.
+     * @param operand a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean meetsCriteria(SnmpValue result, String operator, String operand) {
 

@@ -80,11 +80,13 @@ import org.springframework.util.Assert;
  * <P>
  * The SnmpThresholder class ...
  * </P>
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @deprecated No longer used - see ThresholdingVisitor
+ * @version $Id: $
  */
 public final class SnmpThresholder implements ServiceThresholder {
 
@@ -100,7 +102,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * <P>
      * Returns the name of the service that the plug-in collects ("SNMP").
      * </P>
-     * 
+     *
      * @return The service that the plug-in collects.
      */
     public String serviceName() {
@@ -108,17 +110,14 @@ public final class SnmpThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Initialize the service thresholder.
      * </P>
-     * 
-     * @param parameters
-     *            Not currently used.
-     * 
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
-     * 
      */
     public void initialize(Map parameters) {
 
@@ -143,6 +142,9 @@ public final class SnmpThresholder implements ServiceThresholder {
         setIfInfoGetter(new JdbcIfInfoGetter());
     }
 
+    /**
+     * <p>reinitialize</p>
+     */
     public void reinitialize() {
         setupThresholdsDao();
     }
@@ -170,15 +172,10 @@ public final class SnmpThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
-     * 
-     * @param iface
-     *            Network interface to be prepped for thresholding.
-     * @param parameters
-     *            Key/value pairs associated with the package to which the
-     *            interface belongs..
-     * 
      */
     public void initialize(ThresholdNetworkInterface netIface, Map parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = new SnmpThresholdNetworkInterface(m_thresholdsDao, netIface, parms);
@@ -223,26 +220,19 @@ public final class SnmpThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for releasing any resources associated with the specified
      * interface.
-     * 
-     * @param iface
-     *            Network interface to be released.
      */
     public void release(ThresholdNetworkInterface iface) {
         m_snmpThresholdNetworkInterfaces.remove(iface);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Perform threshold checking.
-     * 
-     * @param iface
-     *            Network interface to be data collected.
-     * @param eproxy
-     *            Eventy proxy for sending events.
-     * @param parameters
-     *            Key/value pairs from the package to which the interface
-     *            belongs.
      */
     public int check(ThresholdNetworkInterface netIface, EventProxy eproxy, Map parms) {
         SnmpThresholdNetworkInterface snmpThresholdNetworkInterface = m_snmpThresholdNetworkInterfaces.get(netIface);
@@ -363,29 +353,17 @@ public final class SnmpThresholder implements ServiceThresholder {
 
     /**
      * Performs threshold checking on an SNMP RRD node directory.
-     * 
+     *
      * @param directory
      *            RRD repository directory
-     * @param snmpIface TODO
      * @param date
      *            Source for timestamp to be used for all generated events
      * @param events
      *            Castor events object containing any events to be generated as
      *            a result of threshold checking.
-     * @param interval
-     *            Configured thresholding interval
-     * @param range
-     *            Time interval before last possible PDP is considered
-     *            "out of date"
-     * @param thresholdMap
-     *            Map of node level ThresholdEntity objects keyed by datasource
-     *            name.
-     * @param nodeId
-     *            Node identifier
-     * @param primary
-     *            Primary SNMP interface address
-     * @throws IllegalArgumentException
+     * @throws java.lang.IllegalArgumentException
      *             if path parameter is not a directory.
+     * @param thresholdNetworkInterface a {@link org.opennms.netmgt.threshd.SnmpThresholdNetworkInterface} object.
      */
     protected void checkNodeDir(File directory, SnmpThresholdNetworkInterface thresholdNetworkInterface, Date date, Events events) throws IllegalArgumentException {
         Assert.notNull(directory, "directory argument cannot be null");
@@ -476,30 +454,16 @@ public final class SnmpThresholder implements ServiceThresholder {
 
     /**
      * Performs threshold checking on an SNMP RRD interface directory.
-     * 
+     *
      * @param directory
      *            RRD repository directory
      * @param snmpIface TODO
      * @param date
      *            Source for timestamp to be used for all generated events
-     * @param allIfThresholdMap
-     *            Map of threshold maps indexed by ifLabel
      * @param events
      *            Castor events object containing any events to be generated as
      *            a result of threshold checking.
-     * @param nodeId
-     *            Node identifier
-     * @param primary
-     *            Primary SNMP interface address
-     * @param interval
-     *            Configured thresholding interval
-     * @param range
-     *            Time interval before last possible PDP is considered
-     *            "out of date"
-     * @param baseIfThresholdMap
-     *            Map of configured interface level ThresholdEntity objects
-     *            keyed by datasource name.
-     * @throws IllegalArgumentException
+     * @throws java.lang.IllegalArgumentException
      *             if path parameter is not a directory.
      */
     protected void checkIfDir(File directory, SnmpThresholdNetworkInterface snmpIface, Date date, Events events) throws IllegalArgumentException {
@@ -529,6 +493,15 @@ public final class SnmpThresholder implements ServiceThresholder {
         }
     }
 
+    /**
+     * <p>checkResourceDir</p>
+     *
+     * @param directory a {@link java.io.File} object.
+     * @param snmpIface a {@link org.opennms.netmgt.threshd.SnmpThresholdNetworkInterface} object.
+     * @param date a {@link java.util.Date} object.
+     * @param events a {@link org.opennms.netmgt.xml.event.Events} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     */
     protected void checkResourceDir(File directory, SnmpThresholdNetworkInterface snmpIface, Date date, Events events) throws IllegalArgumentException {
         // TODO: do more specific and thorough assertions on arguments
 
@@ -597,6 +570,15 @@ public final class SnmpThresholder implements ServiceThresholder {
     /*
      * If Threshold has Filters defined for selected ThresholdGroup/DataSource/ResourceType then, apply filter rules.
      * TODO: What happend if getAttributeValue returns null ?
+     */
+    /**
+     * <p>passedThresholdFilters</p>
+     *
+     * @param resourceDir a {@link java.io.File} object.
+     * @param thresholdGroup a {@link java.lang.String} object.
+     * @param resourceType a {@link java.lang.String} object.
+     * @param dataSource a {@link java.lang.String} object.
+     * @return a boolean.
      */
     protected boolean passedThresholdFilters(File resourceDir, String thresholdGroup, String resourceType, String dataSource) {
 
@@ -748,6 +730,7 @@ public final class SnmpThresholder implements ServiceThresholder {
      * File name has format: <datsource><extension>
      *
      * @return the fileName with the <extension> portion stripped off the end.
+     * @param fileName a {@link java.lang.String} object.
      */
     protected String stripRrdExtension(String fileName) {
         if (!fileName.endsWith(RrdUtils.getExtension())) {
@@ -827,6 +810,12 @@ public final class SnmpThresholder implements ServiceThresholder {
         ifDataMap.put("iflabel", ifLabel);
     }
 
+    /**
+     * <p>getAttributeMap</p>
+     *
+     * @param resourceType a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+     * @return a {@link java.util.Map} object.
+     */
     protected static Map<String, Set<ThresholdEntity>> getAttributeMap(ThresholdResourceType resourceType) {
         Map<String, Set<ThresholdEntity>> thresholdMap = new HashMap<String, Set<ThresholdEntity>>();
 
@@ -850,18 +839,38 @@ public final class SnmpThresholder implements ServiceThresholder {
         return ThreadCategory.getInstance(getClass());
     }
     
+    /**
+     * <p>getThresholdsDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdsDao} object.
+     */
     public ThresholdsDao getThresholdsDao() {
         return m_thresholdsDao;
     }
 
+    /**
+     * <p>setThresholdsDao</p>
+     *
+     * @param thresholdsDao a {@link org.opennms.netmgt.threshd.ThresholdsDao} object.
+     */
     public void setThresholdsDao(ThresholdsDao thresholdsDao) {
         m_thresholdsDao = thresholdsDao;
     }
 
+    /**
+     * <p>getIfInfoGetter</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.IfInfoGetter} object.
+     */
     public IfInfoGetter getIfInfoGetter() {
         return m_ifInfoGetter;
     }
 
+    /**
+     * <p>setIfInfoGetter</p>
+     *
+     * @param ifInfoGetter a {@link org.opennms.netmgt.threshd.IfInfoGetter} object.
+     */
     public void setIfInfoGetter(IfInfoGetter ifInfoGetter) {
         m_ifInfoGetter = ifInfoGetter;
     }

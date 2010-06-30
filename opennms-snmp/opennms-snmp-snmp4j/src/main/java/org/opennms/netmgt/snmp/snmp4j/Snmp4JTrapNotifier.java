@@ -57,11 +57,23 @@ import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
+/**
+ * <p>Snmp4JTrapNotifier class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Snmp4JTrapNotifier implements CommandResponder {
 
     private TrapProcessorFactory m_trapProcessorFactory;
     private TrapNotificationListener m_listener;
 
+    /**
+     * <p>Constructor for Snmp4JTrapNotifier.</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.snmp.TrapNotificationListener} object.
+     * @param processorFactory a {@link org.opennms.netmgt.snmp.TrapProcessorFactory} object.
+     */
     public Snmp4JTrapNotifier(TrapNotificationListener listener, TrapProcessorFactory processorFactory) {
         m_listener = listener;
         m_trapProcessorFactory = processorFactory;
@@ -260,6 +272,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         
     
 
+    /** {@inheritDoc} */
     public void processPdu(CommandResponderEvent e) {
     	PDU command = new PDU(e.getPDU());
         IpAddress addr = ((IpAddress)e.getPeerAddress());

@@ -42,6 +42,12 @@ import org.opennms.netmgt.poller.nsclient.NsclientPacket;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 
+/**
+ * <p>NSClientCollector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NSClientCollector implements ServiceCollector {
 
     // Don't make this static because each service will have its own
@@ -192,6 +198,7 @@ public class NSClientCollector implements ServiceCollector {
 		}        
     }
     
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
         
@@ -279,6 +286,7 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
 
+    /** {@inheritDoc} */
     public void initialize(Map parameters) {
         log().debug("initialize: Initializing NSClientCollector.");
         m_scheduledNodes.clear();
@@ -375,6 +383,7 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
 
+    /** {@inheritDoc} */
     public void initialize(CollectionAgent agent, Map parameters) {
         log().debug("initialize: Initializing NSClient collection for agent: " + agent);
         Integer scheduledNodeKey = new Integer(agent.getNodeId());
@@ -398,10 +407,14 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
 
+    /**
+     * <p>release</p>
+     */
     public void release() {
         m_scheduledNodes.clear();
     }
 
+    /** {@inheritDoc} */
     public void release(CollectionAgent agent) {
         Integer scheduledNodeKey = new Integer(agent.getNodeId());
         NSClientAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
@@ -506,6 +519,7 @@ public class NSClientCollector implements ServiceCollector {
         }
     }
     
+    /** {@inheritDoc} */
     public RrdRepository getRrdRepository(String collectionName) {
         return NSClientDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

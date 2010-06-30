@@ -36,8 +36,16 @@
 package org.opennms.netmgt.model;
 
 /**
+ * <p>AttributeVisitor interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface AttributeVisitor {
+    /**
+     * <p>visit</p>
+     *
+     * @param attribute a {@link org.opennms.netmgt.model.OnmsAttribute} object.
+     */
     public void visit(OnmsAttribute attribute);
 }

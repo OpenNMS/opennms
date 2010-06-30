@@ -41,10 +41,14 @@ package org.opennms.web.map.view;
 
 
 /**
+ * <p>VLink class.</p>
+ *
  * @author antonio
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
+ * @since 1.6.12
  */
 final public class VLink {
 	VElement elem1;
@@ -60,12 +64,23 @@ final public class VLink {
 	//the link status
 	String linkOperStatusString;
 	
+	/**
+	 * <p>Constructor for VLink.</p>
+	 *
+	 * @param elem1 a {@link org.opennms.web.map.view.VElement} object.
+	 * @param elem2 a {@link org.opennms.web.map.view.VElement} object.
+	 */
 	public VLink(VElement elem1, VElement elem2) {
 		this.elem1 = elem1;
 		this.elem2 = elem2;
 		id = getLinkId();
 	}
 	
+	/**
+	 * <p>Getter for the field <code>linkOperStatusString</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLinkOperStatusString() {
 		if (linkOperStatus == 1 ) return "up";
 		else if (linkOperStatus == 2 ) return "down";
@@ -73,6 +88,8 @@ final public class VLink {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Asserts if the links are linking the same elements without considering their statuses
 	 */
 	public boolean equals(Object otherLink) {
@@ -91,6 +108,12 @@ final public class VLink {
 	}
 	
 	
+	/**
+	 * <p>equalsEndPoints</p>
+	 *
+	 * @param otherLink a {@link java.lang.Object} object.
+	 * @return a boolean.
+	 */
 	public boolean equalsEndPoints(Object otherLink) {
 		if (!(otherLink instanceof VLink)) return false;
 		VLink link = (VLink) otherLink;
@@ -103,6 +126,11 @@ final public class VLink {
 		return false;
 	}
 	
+	/**
+	 * <p>hashCode</p>
+	 *
+	 * @return a int.
+	 */
 	public int hashCode() {
 		int molt1 = 11;
 		if(elem1.getType().equals(VElement.NODE_TYPE))
@@ -127,30 +155,65 @@ final public class VLink {
 	 * elem.isSubmap() && elem2.isSubmap()) )) return true; return false; }
 	 */
 
+	/**
+	 * <p>getFirst</p>
+	 *
+	 * @return a {@link org.opennms.web.map.view.VElement} object.
+	 */
 	public VElement getFirst() {
 		return elem1;
 	}
 
+	/**
+	 * <p>getSecond</p>
+	 *
+	 * @return a {@link org.opennms.web.map.view.VElement} object.
+	 */
 	public VElement getSecond() {
 		return elem2;
 	}
 	
+	/**
+	 * <p>Getter for the field <code>linkTypeId</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getLinkTypeId() {
 		return linkTypeId;
 	}
 	
+	/**
+	 * <p>Setter for the field <code>linkTypeId</code>.</p>
+	 *
+	 * @param typeId a int.
+	 */
 	public void setLinkTypeId(int typeId) {
 		linkTypeId = typeId;
 	}
 
+	/**
+	 * <p>Getter for the field <code>linkOperStatus</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getLinkOperStatus() {
 		return linkOperStatus;
 	}
 	
+	/**
+	 * <p>Setter for the field <code>linkOperStatus</code>.</p>
+	 *
+	 * @param operStatus a int.
+	 */
 	public void setLinkOperStatus(int operStatus) {
 		linkOperStatus = operStatus;
 	}
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 			return ""+elem1.getId()+elem1.getType()+"-"+elem2.getId()+elem2.getType()+"-"+linkTypeId+"-"+linkOperStatus+" hashCode:"+this.hashCode();
 	}
@@ -180,6 +243,11 @@ final public class VLink {
     	return id;    	
     }
     
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getId() {
 		return id;
 	}

@@ -40,24 +40,59 @@ import org.springframework.core.io.Resource;
 /**
  * ReportRenderer is the interface for rendering xml reports to pdf, pdf with
  * embedded svg and html
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
-
 public interface ReportRenderer {
 
+    /**
+     * <p>render</p>
+     *
+     * @throws org.opennms.report.availability.render.ReportRenderException if any.
+     */
     public void render() throws ReportRenderException;
 
+    /**
+     * <p>setOutputFileName</p>
+     *
+     * @param outputFileName a {@link java.lang.String} object.
+     */
     public void setOutputFileName(String outputFileName);
     
+    /**
+     * <p>getOutputFileName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOutputFileName();
     
+    /**
+     * <p>setInputFileName</p>
+     *
+     * @param inputFileName a {@link java.lang.String} object.
+     */
     public void setInputFileName(String inputFileName);
 
+    /**
+     * <p>setXsltResource</p>
+     *
+     * @param xsltResource a {@link org.springframework.core.io.Resource} object.
+     */
     public void setXsltResource(Resource xsltResource);
     
+    /**
+     * <p>setBaseDir</p>
+     *
+     * @param baseDir a {@link java.lang.String} object.
+     */
     public void setBaseDir(String baseDir);
     
+    /**
+     * <p>getBaseDir</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBaseDir();
 
 }

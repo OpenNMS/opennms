@@ -35,9 +35,11 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.access.DefaultLocatorFactory;
 
 /**
- * This JMX bean loads the QoSD daemon as a spring bean using the 
+ * This JMX bean loads the QoSD daemon as a spring bean using the
  * qosd-context.xml file.
- * 
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class QoSD implements QoSDMBean {
 
@@ -52,11 +54,17 @@ public class QoSD implements QoSDMBean {
 		return m_context;
 	}
 
+	/**
+	 * <p>init</p>
+	 */
 	public void init() {
 		ThreadCategory.setPrefix(QoSD.NAME);
 	}
 
 
+	/**
+	 * <p>start</p>
+	 */
 	public void start() {
 
 
@@ -132,6 +140,9 @@ public class QoSD implements QoSDMBean {
 	}
 
 
+	/**
+	 * <p>stop</p>
+	 */
 	public void stop() {
 		ThreadCategory.setPrefix(QoSD.NAME);
 		m_status = Fiber.STOP_PENDING;
@@ -143,15 +154,30 @@ public class QoSD implements QoSDMBean {
 		m_status = Fiber.STOPPED;
 	}
 
+	/**
+	 * <p>status</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String status() {
 		ThreadCategory.setPrefix(QoSD.NAME);
 		return Fiber.STATUS_NAMES[m_status];
 	}
 
+	/**
+	 * <p>getStatus</p>
+	 *
+	 * @return a int.
+	 */
 	public int getStatus() {
 		return m_status;
 	}
 
+	/**
+	 * <p>getStats</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getStats() {
 		return getQoSD().getStats();
 	}

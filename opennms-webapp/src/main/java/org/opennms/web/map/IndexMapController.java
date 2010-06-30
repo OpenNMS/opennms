@@ -54,11 +54,14 @@ import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
+ * <p>IndexMapController class.</p>
+ *
  * @author mmigliore
- * 
- * this class provides to create, manage and delete 
+ *
+ * this class provides to create, manage and delete
  * proper session objects to use when working with maps
- * 
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class IndexMapController implements Controller {
 	Category log;
@@ -69,22 +72,43 @@ public class IndexMapController implements Controller {
 
 	
 
+	/**
+	 * <p>Getter for the field <code>mapsConstants</code>.</p>
+	 *
+	 * @return a {@link org.opennms.web.map.MapsConstants} object.
+	 */
 	public MapsConstants getMapsConstants() {
 		return mapsConstants;
 	}
 
+	/**
+	 * <p>Setter for the field <code>mapsConstants</code>.</p>
+	 *
+	 * @param mapsConstants a {@link org.opennms.web.map.MapsConstants} object.
+	 */
 	public void setMapsConstants(MapsConstants mapsConstants) {
 		this.mapsConstants = mapsConstants;
 	}
 
+	/**
+	 * <p>Getter for the field <code>manager</code>.</p>
+	 *
+	 * @return a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public Manager getManager() {
 		return manager;
 	}
 
+	/**
+	 * <p>Setter for the field <code>manager</code>.</p>
+	 *
+	 * @param manager a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public void setManager(Manager manager) {
 		this.manager = manager;
 	}
 
+	/** {@inheritDoc} */
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);

@@ -46,6 +46,12 @@ import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
 * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
 * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
 */
+/**
+ * <p>MX4JPlugin class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MX4JPlugin extends JMXPlugin {
   
   /* The factory handles the creation of the connection and returns a CollectionWrapper which is used
@@ -53,6 +59,7 @@ public class MX4JPlugin extends JMXPlugin {
    * 
    * @see org.opennms.netmgt.capsd.JMXPlugin#getMBeanServer(java.util.Map, java.net.InetAddress)
    */
+  /** {@inheritDoc} */
   public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
       return Jsr160ConnectionFactory.getMBeanServerConnection(parameterMap, address);
   }
@@ -60,6 +67,7 @@ public class MX4JPlugin extends JMXPlugin {
   /* The protocol name is used to...
    * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
    */
+  /** {@inheritDoc} */
   public String getProtocolName(Map<String, Object> map) {
       return ParameterMap.getKeyedString(map, "friendlyname", "mx4j");
   }
@@ -67,6 +75,7 @@ public class MX4JPlugin extends JMXPlugin {
   /* 
    * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
    */
+  /** {@inheritDoc} */
   public boolean isProtocolSupported(InetAddress address) {
       HashMap<String, Object> map = new HashMap<String, Object>();
       map.put("port",           "9004");

@@ -34,50 +34,111 @@ package org.opennms.netmgt.snmp;
 import java.math.BigInteger;
 import java.net.InetAddress;
 
+/**
+ * <p>Abstract AbstractSnmpValue class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class AbstractSnmpValue implements SnmpValue {
     
     private int m_type;
     
+    /**
+     * <p>Constructor for AbstractSnmpValue.</p>
+     *
+     * @param type a int.
+     */
     public AbstractSnmpValue(int type) {
         m_type = type;
     }
 
+    /**
+     * <p>isEndOfMib</p>
+     *
+     * @return a boolean.
+     */
     public boolean isEndOfMib() {
         return false;
     }
 
+    /**
+     * <p>toDisplayString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toDisplayString() {
         return toString();
     }
 
+    /**
+     * <p>isNumeric</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNumeric() {
         return false;
     }
 
+    /**
+     * <p>toInt</p>
+     *
+     * @return a int.
+     */
     public int toInt() {
         return (int)toLong();
     }
 
+    /**
+     * <p>toInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress toInetAddress() {
         throw new IllegalArgumentException("Unable to convert " + this + " to an InetAddress");
     }
 
+    /**
+     * <p>toLong</p>
+     *
+     * @return a long.
+     */
     public long toLong() {
         throw new IllegalArgumentException("Unable to convert " + this + " to a number");
     }
 
+    /**
+     * <p>toHexString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toHexString() {
         throw new IllegalArgumentException("Unable to convert " + this + " to a hex string");
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() {
         return m_type;
     }
 
+    /**
+     * <p>toBigInteger</p>
+     *
+     * @return a {@link java.math.BigInteger} object.
+     */
     public BigInteger toBigInteger() {
         throw new IllegalArgumentException("Unable to convert " + this + " to a big integer");
     }
 
+    /**
+     * <p>toSnmpObjId</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public SnmpObjId toSnmpObjId() {
         throw new IllegalArgumentException("Unable to convert " + this + " to an SnmpObjId");
     }

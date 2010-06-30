@@ -56,16 +56,18 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * The SNMPCollectorEntry class is designed to hold all SNMP collected data
  * pertaining to a particular interface.
  * </P>
- * 
+ *
  * <P>
  * An instance of this class is created by calling the constructor and passing a
  * list of SnmpVarBind objects from an SNMP PDU response. This class extends
  * java.util.TreeMap which is used to store each of the collected data points
  * indexed by object identifier.
  * </P>
- * 
+ *
+ * @author <A>Jon Whetzel </A>
  * @author <A>Jon Whetzel </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @version $Id: $
  */
 public final class SNMPCollectorEntry extends AbstractSnmpStore {
     /**
@@ -75,6 +77,12 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     private Collection<SnmpAttributeType> m_attrList;
     private SnmpCollectionSet m_collectionSet;
 
+    /**
+     * <p>Constructor for SNMPCollectorEntry.</p>
+     *
+     * @param attrList a {@link java.util.Collection} object.
+     * @param collectionSet a {@link org.opennms.netmgt.collectd.SnmpCollectionSet} object.
+     */
     public SNMPCollectorEntry(Collection<SnmpAttributeType> attrList, SnmpCollectionSet collectionSet) {
         if (attrList == null) throw new NullPointerException("attrList is null!");
         m_attrList = attrList;
@@ -97,6 +105,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     }
 
 
+    /** {@inheritDoc} */
     public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         String key = base.append(inst).toString();
         putValue(key, val);

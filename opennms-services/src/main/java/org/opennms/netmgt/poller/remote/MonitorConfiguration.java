@@ -38,8 +38,10 @@ package org.opennms.netmgt.poller.remote;
 import java.util.Map;
 
 /**
- * 
+ * <p>MonitorConfiguration class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class MonitorConfiguration {
 

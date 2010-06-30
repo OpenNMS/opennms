@@ -49,14 +49,20 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 
 /**
  * A servlet that handles updating the status of the notifications
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 
+    /** Constant <code>log</code> */
     protected static Category log = ThreadCategory.getInstance("WEB");
 
+	/** {@inheritDoc} */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	    log.info("Loading Discovery configuration.");
@@ -75,6 +81,7 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
         //dispatcher.forward(request, response);
     }
 	
+	/** {@inheritDoc} */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}

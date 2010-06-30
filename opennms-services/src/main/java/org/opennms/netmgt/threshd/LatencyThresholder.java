@@ -127,7 +127,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * <P>
      * Returns the name of the service that the plug-in threshold checks.
      * </P>
-     * 
+     *
      * @return The service that the plug-in collects.
      */
     public String serviceName() {
@@ -135,19 +135,14 @@ final class LatencyThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Initialize the service thresholder.
      * </P>
-     * 
-     * @param parameters
-     *            Parameter map which contains (currently) a single entry, the
-     *            name of the service which this thresholder is responsible for
-     *            latency threshold checking keyed by the String "svcName"
-     * 
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
-     * 
      */
     public void initialize(Map parameters) {
         // Service name
@@ -180,6 +175,9 @@ final class LatencyThresholder implements ServiceThresholder {
         return;
     }
 
+    /**
+     * <p>reinitialize</p>
+     */
     public void reinitialize() {
         //Nothing to do 
     }
@@ -192,15 +190,10 @@ final class LatencyThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
-     * 
-     * @param iface
-     *            Network interface to be prepped for thresholding.
-     * @param parameters
-     *            Key/value pairs associated with the package to which the
-     *            interface belongs..
-     * 
      */
     public void initialize(ThresholdNetworkInterface iface, Map parameters) {
         // Get interface address from NetworkInterface
@@ -361,26 +354,19 @@ final class LatencyThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for releasing any resources associated with the specified
      * interface.
-     * 
-     * @param iface
-     *            Network interface to be released.
      */
     public void release(ThresholdNetworkInterface iface) {
         // Nothing to release...
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Perform threshold checking.
-     * 
-     * @param iface
-     *            Network interface to be data collected.
-     * @param eproxy
-     *            Eventy proxy for sending events.
-     * @param parameters
-     *            Key/value pairs from the package to which the interface
-     *            belongs.
      */
     public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters) {
 		LatencyInterface latIface = new LatencyInterface(iface, m_svcName);
@@ -499,6 +485,11 @@ final class LatencyThresholder implements ServiceThresholder {
         }
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public final Category log() {
         return ThreadCategory.getInstance(LatencyThresholder.class);
     }

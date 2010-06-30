@@ -39,33 +39,112 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 
+/**
+ * <p>NodeDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
 	
+    /**
+     * <p>findByLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsNode> findByLabel(String label);
     
+    /**
+     * <p>findNodes</p>
+     *
+     * @param dp a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsNode> findNodes(OnmsDistPoller dp);
     
+    /**
+     * <p>getHierarchy</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public abstract OnmsNode getHierarchy(Integer id);
     
+    /**
+     * <p>getForeignIdToNodeIdMap</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     */
     public abstract Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
     
+    /**
+     * <p>findAllByVarCharAssetColumn</p>
+     *
+     * @param columnName a {@link java.lang.String} object.
+     * @param columnValue a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
     
+    /**
+     * <p>findAllByVarCharAssetColumnCategoryList</p>
+     *
+     * @param columnName a {@link java.lang.String} object.
+     * @param columnValue a {@link java.lang.String} object.
+     * @param categories a {@link java.util.Collection} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue,
             Collection<OnmsCategory> categories);
     
+    /**
+     * <p>findByCategory</p>
+     *
+     * @param category a {@link org.opennms.netmgt.model.OnmsCategory} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsNode> findByCategory(OnmsCategory category);
     
+    /**
+     * <p>findAllByCategoryList</p>
+     *
+     * @param categories a {@link java.util.Collection} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
 
+    /**
+     * <p>findAllByCategoryLists</p>
+     *
+     * @param rowCatNames a {@link java.util.Collection} object.
+     * @param colCatNames a {@link java.util.Collection} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
     
     /**
      * Returns a list of nodes ordered by label.
+     *
+     * @return a {@link java.util.List} object.
      */
     public abstract List<OnmsNode> findAll();
 
+    /**
+     * <p>findByForeignId</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public abstract OnmsNode findByForeignId(String foreignSource, String foreignId);
 
+    /**
+     * <p>getNodeCountForForeignSource</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @return a int.
+     */
     public abstract int getNodeCountForForeignSource(String groupName);
 }

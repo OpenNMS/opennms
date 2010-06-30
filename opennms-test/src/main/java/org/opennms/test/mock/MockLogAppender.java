@@ -53,43 +53,73 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
+ * <p>MockLogAppender class.</p>
+ *
  * @author brozow
+ * @version $Id: $
  */
 public class MockLogAppender extends AppenderSkeleton {
     private static List<LoggingEvent> s_events = null;
 
     private static Level s_logLevel = Level.ALL;
 
+    /**
+     * <p>Constructor for MockLogAppender.</p>
+     */
     public MockLogAppender() {
         super();
         resetEvents();
         resetLogLevel();
     }
 
+    /** {@inheritDoc} */
     public synchronized void doAppend(LoggingEvent event) {
         super.doAppend(event);
         receivedLogLevel(event.getLevel());
     }
 
+    /** {@inheritDoc} */
     protected void append(LoggingEvent event) {
         s_events.add(event);
     }
 
+    /**
+     * <p>close</p>
+     */
     public void close() {
     }
 
+    /**
+     * <p>requiresLayout</p>
+     *
+     * @return a boolean.
+     */
     public boolean requiresLayout() {
         return false;
     }
 
+    /**
+     * <p>resetEvents</p>
+     */
     public static void resetEvents() {
         s_events = Collections.synchronizedList(new LinkedList<LoggingEvent>());
     }
 
+    /**
+     * <p>getEvents</p>
+     *
+     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
+     */
     public static LoggingEvent[] getEvents() {
         return (LoggingEvent[]) s_events.toArray(new LoggingEvent[0]);
     }
 
+    /**
+     * <p>getEventsGreaterOrEqual</p>
+     *
+     * @param level a {@link org.apache.log4j.Level} object.
+     * @return an array of {@link org.apache.log4j.spi.LoggingEvent} objects.
+     */
     public static LoggingEvent[] getEventsGreaterOrEqual(Level level) {
         LinkedList<LoggingEvent> matching = new LinkedList<LoggingEvent>();
 
@@ -104,27 +134,59 @@ public class MockLogAppender extends AppenderSkeleton {
         return matching.toArray(new LoggingEvent[0]);
     }
 
+    /**
+     * <p>setupLogging</p>
+     */
     public static void setupLogging() {
         setupLogging(new Properties());
     }
 
+    /**
+     * <p>setupLogging</p>
+     *
+     * @param config a {@link java.util.Properties} object.
+     */
     public static void setupLogging(Properties config) {
         setupLogging(true, config);
     }
 
+    /**
+     * <p>setupLogging</p>
+     *
+     * @param toConsole a boolean.
+     */
     public static void setupLogging(boolean toConsole) {
         setupLogging(toConsole, new Properties());
     }
 
+    /**
+     * <p>setupLogging</p>
+     *
+     * @param toConsole a boolean.
+     * @param props a {@link java.util.Properties} object.
+     */
     public static void setupLogging(boolean toConsole, Properties props) {
         String level = System.getProperty("mock.logLevel", "DEBUG");
         setupLogging(toConsole, level, props);
     }
     
+    /**
+     * <p>setupLogging</p>
+     *
+     * @param toConsole a boolean.
+     * @param level a {@link java.lang.String} object.
+     */
     public static void setupLogging(boolean toConsole, String level) {
         setupLogging(toConsole, level, new Properties());
     }
     
+    /**
+     * <p>setupLogging</p>
+     *
+     * @param toConsole a boolean.
+     * @param level a {@link java.lang.String} object.
+     * @param config a {@link java.util.Properties} object.
+     */
     public static void setupLogging(boolean toConsole, String level, Properties config) {
         resetLogLevel();
         
@@ -161,24 +223,48 @@ public class MockLogAppender extends AppenderSkeleton {
         }
     }
 
+    /**
+     * <p>isLoggingSetup</p>
+     *
+     * @return a boolean.
+     */
     public static boolean isLoggingSetup() {
         return s_events != null;
     }
 
+    /**
+     * <p>receivedLogLevel</p>
+     *
+     * @param level a {@link org.apache.log4j.Level} object.
+     */
     public static void receivedLogLevel(Level level) {
         if (level.isGreaterOrEqual(s_logLevel)) {
             s_logLevel = level;
         }
     }
 
+    /**
+     * <p>resetLogLevel</p>
+     */
     public static void resetLogLevel() {
         s_logLevel = Level.ALL;
     }
 
+    /**
+     * <p>noWarningsOrHigherLogged</p>
+     *
+     * @return a boolean.
+     */
     public static boolean noWarningsOrHigherLogged() {
         return Level.INFO.isGreaterOrEqual(s_logLevel);
     }
 
+    /**
+     * <p>assertNotGreaterOrEqual</p>
+     *
+     * @param level a {@link org.apache.log4j.Level} object.
+     * @throws junit.framework.AssertionFailedError if any.
+     */
     public static void assertNotGreaterOrEqual(Level level) throws AssertionFailedError {
         if (!isLoggingSetup()) {
             throw new AssertionFailedError("MockLogAppender has not been initialized");
@@ -206,6 +292,11 @@ public class MockLogAppender extends AppenderSkeleton {
         throw new AssertionFailedError(message.toString());
     }
 
+    /**
+     * <p>assertNoWarningsOrGreater</p>
+     *
+     * @throws junit.framework.AssertionFailedError if any.
+     */
     public static void assertNoWarningsOrGreater() throws AssertionFailedError {
         assertNotGreaterOrEqual(Level.WARN);
     }

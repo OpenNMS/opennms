@@ -52,9 +52,20 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
+/**
+ * <p>ReportDefinitionBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReportDefinitionBuilder implements InitializingBean {
     private StatisticsDaemonConfigDao m_statsdConfigDao;
     
+    /**
+     * <p>buildReportDefinitions</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<ReportDefinition> buildReportDefinitions() {
         Set<ReportDefinition> reportDefinitions = new HashSet<ReportDefinition>();
         
@@ -100,14 +111,27 @@ public class ReportDefinitionBuilder implements InitializingBean {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_statsdConfigDao != null, "property statsdConfigDao must be set to a non-null value");
     }
 
+    /**
+     * <p>getStatsdConfigDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.StatisticsDaemonConfigDao} object.
+     */
     public StatisticsDaemonConfigDao getStatsdConfigDao() {
         return m_statsdConfigDao;
     }
 
+    /**
+     * <p>setStatsdConfigDao</p>
+     *
+     * @param statsdConfigDao a {@link org.opennms.netmgt.dao.StatisticsDaemonConfigDao} object.
+     */
     public void setStatsdConfigDao(StatisticsDaemonConfigDao statsdConfigDao) {
         m_statsdConfigDao = statsdConfigDao;
     }

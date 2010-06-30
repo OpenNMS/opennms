@@ -34,6 +34,13 @@ package org.opennms.web.acegisecurity;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.userdetails.UserDetails;
 
+/**
+ * <p>User class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class User implements UserDetails {
 	/**
 	 * 
@@ -48,62 +55,137 @@ public class User implements UserDetails {
 	//private Set m_dutySchedules;
 	private GrantedAuthority[] m_authorities;
 	
+	/**
+	 * <p>getComments</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getComments() {
 		return m_comments;
 	}
 	
+	/**
+	 * <p>setComments</p>
+	 *
+	 * @param comments a {@link java.lang.String} object.
+	 */
 	public void setComments(String comments) {
 		m_comments = comments;
 	}
 	
+	/**
+	 * <p>getPassword</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getPassword() {
 		return m_password;
 	}
 	
+	/**
+	 * <p>setPassword</p>
+	 *
+	 * @param password a {@link java.lang.String} object.
+	 */
 	public void setPassword(String password) {
 		m_password = password;
 	}
 	
+	/**
+	 * <p>getFullName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getFullName() {
 		return m_fullName;
 	}
 	
+	/**
+	 * <p>setFullName</p>
+	 *
+	 * @param fullName a {@link java.lang.String} object.
+	 */
 	public void setFullName(String fullName) {
 		m_fullName = fullName;
 	}
 	
+	/**
+	 * <p>getUsername</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getUsername() {
 		return m_username;
 	}
 	
+	/**
+	 * <p>setUsername</p>
+	 *
+	 * @param username a {@link java.lang.String} object.
+	 */
 	public void setUsername(String username) {
 		m_username = username;
 	}
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
     	return "Username " + m_username + " full name " + m_fullName + " comments " + m_comments + " password " + m_password;
     }
 
+	/**
+	 * <p>getAuthorities</p>
+	 *
+	 * @return an array of {@link org.acegisecurity.GrantedAuthority} objects.
+	 */
 	public GrantedAuthority[] getAuthorities() {
 		return m_authorities;
 	}
 	
+	/**
+	 * <p>setAuthorities</p>
+	 *
+	 * @param authorities an array of {@link org.acegisecurity.GrantedAuthority} objects.
+	 */
 	public void setAuthorities(GrantedAuthority[] authorities) {
 		m_authorities = authorities;
 	}
 
+	/**
+	 * <p>isAccountNonExpired</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isAccountNonExpired() {
 		return true;
 	}
 
+	/**
+	 * <p>isAccountNonLocked</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isAccountNonLocked() {
 		return true;
 	}
 
+	/**
+	 * <p>isCredentialsNonExpired</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
 
+	/**
+	 * <p>isEnabled</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isEnabled() {
 		return true;
 	}

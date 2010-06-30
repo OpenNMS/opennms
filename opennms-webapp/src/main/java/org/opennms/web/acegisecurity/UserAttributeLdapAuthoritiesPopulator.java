@@ -49,22 +49,41 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
+/**
+ * <p>UserAttributeLdapAuthoritiesPopulator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class UserAttributeLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator {
     
     private static final Log s_logger = LogFactory.getLog(UserAttributeLdapAuthoritiesPopulator.class);
 
     private String m_userAttribute;
 
+    /**
+     * <p>Constructor for UserAttributeLdapAuthoritiesPopulator.</p>
+     *
+     * @param userAttribute a {@link java.lang.String} object.
+     */
     public UserAttributeLdapAuthoritiesPopulator(String userAttribute) {
         Assert.notNull(userAttribute, "UserAttribute can not be null");
         m_userAttribute = userAttribute;
     }
 
+    /**
+     * <p>Constructor for UserAttributeLdapAuthoritiesPopulator.</p>
+     *
+     * @param initialDirContextFactory a {@link org.acegisecurity.ldap.InitialDirContextFactory} object.
+     * @param userAttribute a {@link java.lang.String} object.
+     */
     @Deprecated
     public UserAttributeLdapAuthoritiesPopulator(InitialDirContextFactory initialDirContextFactory, String userAttribute) {
         this(userAttribute);
     }
 
+    /** {@inheritDoc} */
     public GrantedAuthority[] getGrantedAuthorities(LdapUserDetails userDetails) throws LdapDataAccessException {
         Assert.notNull(userDetails, "UserDetails can not be null");
 

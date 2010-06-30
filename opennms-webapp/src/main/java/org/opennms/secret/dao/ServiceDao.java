@@ -39,14 +39,34 @@ import org.opennms.secret.model.InterfaceService;
 import org.opennms.secret.model.NodeInterface;
 
 /**
+ * <p>ServiceDao interface.</p>
+ *
  * @author Craig Gallen
  * @author David Hustace
- *
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface ServiceDao {
     
+    /**
+     * <p>getService</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link org.opennms.secret.model.InterfaceService} object.
+     */
     public abstract InterfaceService getService(Long id);
+    /**
+     * <p>getServices</p>
+     *
+     * @param nodeInterface a {@link org.opennms.secret.model.NodeInterface} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection getServices(NodeInterface nodeInterface);
+    /**
+     * <p>initalize</p>
+     *
+     * @param o a {@link java.lang.Object} object.
+     */
     public abstract void initalize(Object o);
 
 }

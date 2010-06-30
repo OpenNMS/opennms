@@ -35,14 +35,48 @@ import java.util.List;
 
 import org.opennms.secret.model.OGPMember;
 
+/**
+ * <p>MemberDAO interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public interface MemberDAO {
     
+    /**
+     * <p>initialize</p>
+     *
+     * @param o a {@link java.lang.Object} object.
+     */
     public abstract void initialize(Object o);
     
+    /**
+     * <p>getMember</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link org.opennms.secret.model.OGPMember} object.
+     */
     public abstract OGPMember getMember(Long id);
+    /**
+     * <p>createMember</p>
+     *
+     * @param member a {@link org.opennms.secret.model.OGPMember} object.
+     */
     public abstract void createMember(OGPMember member);
     
+    /**
+     * <p>findMembersByLastName</p>
+     *
+     * @param lastName a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public abstract List findMembersByLastName(String lastName);
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public abstract List findAll();
 
 }

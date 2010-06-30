@@ -39,13 +39,23 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * 
+ * <p>Abstract DirectionalChangeListener class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public abstract class DirectionalChangeListener implements ChangeListener {
+    /** {@inheritDoc} */
     public void onChange(Widget widget) {
         onChange(widget, 1);
     }
     
+    /**
+     * <p>onChange</p>
+     *
+     * @param widget a {@link com.google.gwt.user.client.ui.Widget} object.
+     * @param direction a int.
+     */
     public abstract void onChange(Widget widget, int direction);
 }

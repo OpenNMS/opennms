@@ -44,12 +44,20 @@ import org.opennms.secret.model.NodeInterface;
 import org.opennms.secret.service.DataSourceService;
 
 /**
- * @author Ted Kaczmarek	
+ * <p>DataSourceServiceImpl class.</p>
  *
+ * @author Ted Kaczmarek
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DataSourceServiceImpl implements DataSourceService {
 	private DataSourceDao m_dataSourceDao;
 	
+	/**
+	 * <p>setDataSourceDao</p>
+	 *
+	 * @param dataSourceDao a {@link org.opennms.secret.dao.DataSourceDao} object.
+	 */
 	public void setDataSourceDao(DataSourceDao dataSourceDao) {
 		m_dataSourceDao = dataSourceDao;
 	}
@@ -57,6 +65,7 @@ public class DataSourceServiceImpl implements DataSourceService {
 	/* (non-Javadoc)
 	 * @see org.opennms.secret.service.DataSourceService#getDataSourcesByInterface(org.opennms.secret.model.NodeInterface)
 	 */
+	/** {@inheritDoc} */
 	public List getDataSourcesByInterface(NodeInterface iface) {
 		return m_dataSourceDao.getDataSourcesByInterface(iface);
 	}
@@ -64,6 +73,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     /* (non-Javadoc)
      * @see org.opennms.secret.service.DataSourceService#getDataSourcesByService(org.opennms.secret.model.InterfaceService)
      */
+    /** {@inheritDoc} */
     public DataSource getDataSourceByService(InterfaceService service) {
         return m_dataSourceDao.getDataSourceByService(service);
     }
@@ -71,6 +81,7 @@ public class DataSourceServiceImpl implements DataSourceService {
 	/* (non-Javadoc)
 	 * @see org.opennms.secret.service.DataSourceService#getDataSourcesByNode(org.opennms.secret.model.Node)
 	 */
+	/** {@inheritDoc} */
 	public List getDataSourcesByNode(Node node) {
 		return m_dataSourceDao.getDataSourcesByNode(node);
     }
@@ -78,6 +89,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     /* (non-Javadoc)
      * @see org.opennms.secret.service.DataSourceService#getDataSourcesById(String)
      */
+    /** {@inheritDoc} */
     public DataSource getDataSourceById(String id) {
         return m_dataSourceDao.getDataSourceById(id);
     }

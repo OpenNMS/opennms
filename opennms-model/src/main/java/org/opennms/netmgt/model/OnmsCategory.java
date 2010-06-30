@@ -48,6 +48,12 @@ import org.springframework.core.style.ToStringCreator;
 
 
 @Entity
+/**
+ * <p>OnmsCategory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name="categories")
 public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 
@@ -64,20 +70,38 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 
     //private Set<OnmsNode> m_memberNodes;
 
+    /**
+     * <p>Constructor for OnmsCategory.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param descr a {@link java.lang.String} object.
+     */
     public OnmsCategory(String name, String descr) {
         m_name = name;
         m_description = descr;
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsCategory() {
     }
     
+    /**
+     * <p>Constructor for OnmsCategory.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public OnmsCategory(String name) {
         this();
         setName(name);
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @Column(name="categoryid")
     @SequenceGenerator(name="categorySequence", sequenceName="catNxtId")
@@ -86,22 +110,47 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="categoryName", unique=true, nullable=false)
     public String getName() {
         return m_name;
     }
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="categoryDescription")
 	public String getDescription() {
 		return m_description;
 	}
+	/**
+	 * <p>setDescription</p>
+	 *
+	 * @param description a {@link java.lang.String} object.
+	 */
 	public void setDescription(String description) {
 		m_description = description;
 	}
@@ -117,6 +166,11 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     }
     */
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("id", getId())
@@ -125,6 +179,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
             .toString();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof OnmsCategory) {
             OnmsCategory t = (OnmsCategory)obj;
@@ -133,10 +188,21 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
         return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return m_name.hashCode();
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.model.OnmsCategory} object.
+     * @return a int.
+     */
     public int compareTo(OnmsCategory o) {
         return m_name.compareToIgnoreCase(o.m_name);
     }

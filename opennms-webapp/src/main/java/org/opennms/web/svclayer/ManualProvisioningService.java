@@ -40,41 +40,141 @@ import java.util.Map;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 
 /**
- * 
+ * <p>ManualProvisioningService interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface ManualProvisioningService {
     
+    /**
+     * <p>getProvisioningGroupNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<String> getProvisioningGroupNames();
     
+    /**
+     * <p>getProvisioningGroup</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     ModelImport getProvisioningGroup(String name);
     
+    /**
+     * <p>createProvisioningGroup</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     ModelImport createProvisioningGroup(String name);
     
+    /**
+     * <p>saveProvisioningGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param groupData a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     * @return a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     ModelImport saveProvisioningGroup(String groupName, ModelImport groupData);
     
+    /**
+     * <p>addNewNodeToGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     ModelImport addNewNodeToGroup(String groupName, String nodeLabel);
     
+    /**
+     * <p>addCategoryToNode</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToNode a {@link java.lang.String} object.
+     * @param categoryName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     ModelImport addCategoryToNode(String groupName, String pathToNode, String categoryName);
     
+    /**
+     * <p>addInterfaceToNode</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToNode a {@link java.lang.String} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     ModelImport addInterfaceToNode(String groupName, String pathToNode, String ipAddr);
     
+    /**
+     * <p>addServiceToInterface</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToInterface a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     ModelImport addServiceToInterface(String groupName, String pathToInterface, String serviceName);
     
+    /**
+     * <p>deletePath</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToDelete a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     ModelImport deletePath(String groupName, String pathToDelete);
     
+    /**
+     * <p>importProvisioningGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     */
     void importProvisioningGroup(String groupName);
 
+    /**
+     * <p>getAllGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<ModelImport> getAllGroups();
 
+    /**
+     * <p>deleteProvisioningGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     */
     void deleteProvisioningGroup(String groupName);
 
+    /**
+     * <p>deleteAllNodes</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     */
     void deleteAllNodes(String groupName);
 
+    /**
+     * <p>getGroupDbNodeCounts</p>
+     *
+     * @return a java$util$Map object.
+     */
     Map<String, Integer> getGroupDbNodeCounts();
 
+    /**
+     * <p>getNodeCategoryNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<String> getNodeCategoryNames();
 
+    /**
+     * <p>getServiceTypeNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<String> getServiceTypeNames();
 
 }

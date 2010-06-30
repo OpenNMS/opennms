@@ -36,9 +36,17 @@ import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.springframework.dao.DataAccessException;
 
+/**
+ * <p>OpenNMSUserDaoImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class OpenNMSUserDaoImpl implements UserDetailsService {
 	private UserDao m_userDao;
 	
+	/** {@inheritDoc} */
 	public UserDetails loadUserByUsername(String username)
 		throws UsernameNotFoundException, DataAccessException {
 		if (m_userDao == null) {
@@ -55,11 +63,21 @@ public class OpenNMSUserDaoImpl implements UserDetailsService {
 		return userDetails;
 	}
 
+	/**
+	 * <p>setUserDao</p>
+	 *
+	 * @param userDao a {@link org.opennms.web.acegisecurity.UserDao} object.
+	 */
 	public void setUserDao(UserDao userDao) {
 		m_userDao = userDao;
 		
 	}
 
+	/**
+	 * <p>getUserDao</p>
+	 *
+	 * @return a {@link org.opennms.web.acegisecurity.UserDao} object.
+	 */
 	public UserDao getUserDao() {
 		return m_userDao;
 	}

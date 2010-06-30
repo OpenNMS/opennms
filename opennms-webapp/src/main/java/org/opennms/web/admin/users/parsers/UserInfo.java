@@ -44,12 +44,14 @@ import java.util.List;
  * This is a data class for storing the information on a user. This information
  * is stored in the users.xml file and is manipulated via the "Users, Groups and
  * Views" screen.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
  * @deprecated Use the User class instead
+ * @since 1.6.12
  */
 public class UserInfo extends Object implements Cloneable {
     /**
@@ -89,6 +91,9 @@ public class UserInfo extends Object implements Cloneable {
     }
 
     /**
+     * <p>clone</p>
+     *
+     * @return a {@link java.lang.Object} object.
      */
     public Object clone() {
         UserInfo clone = new UserInfo();
@@ -117,7 +122,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Returns the notification information for this user
-     * 
+     *
      * @return the notification info
      */
     public NotificationInfo getNotificationInfo() {
@@ -126,7 +131,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Sets the notificaton information for this user
-     * 
+     *
      * @param someInfo
      *            the notification info
      */
@@ -136,7 +141,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Sets the user id for this user
-     * 
+     *
      * @param aUserId
      *            the user id
      */
@@ -146,7 +151,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Returns the user id for this user
-     * 
+     *
      * @return the user id
      */
     public String getUserId() {
@@ -155,7 +160,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Sets the full name for this user
-     * 
+     *
      * @param aFullName
      *            the full name
      */
@@ -165,7 +170,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Returns the full name of this user
-     * 
+     *
      * @return the full name
      */
     public String getFullName() {
@@ -174,7 +179,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Sets the user comments for this user
-     * 
+     *
      * @param someUserComments
      *            the user comments
      */
@@ -184,7 +189,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Returns the user comments for this user
-     * 
+     *
      * @return the user comments
      */
     public String getUserComments() {
@@ -194,7 +199,7 @@ public class UserInfo extends Object implements Cloneable {
     /**
      * Sets the password for this user, assuming that the value passed in is
      * already encrypted properly
-     * 
+     *
      * @param aPassword
      *            the encrypted password
      */
@@ -204,9 +209,10 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Sets the password for this user, first encrypting it
-     * 
+     *
      * @param aPassword
      *            the password
+     * @throws java.lang.IllegalStateException if any.
      */
     public void setUnencryptedPassword(String aPassword) throws IllegalStateException {
         m_password = encryptPassword(aPassword);
@@ -214,10 +220,11 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * This method encrypts the password using MD5 hashing.
-     * 
+     *
      * @param aPassword
      *            the password to encrypt
      * @return the MD5 hash of the password, or null if the encryption fails
+     * @throws java.lang.IllegalStateException if any.
      */
     public static String encryptPassword(String aPassword) throws IllegalStateException {
         String encryptedPassword = null;
@@ -266,7 +273,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * This method compares two encrypted strings for equality
-     * 
+     *
      * @param aPassword
      *            the password to check for equality
      * @return true if the two passwords are equal (after encryption), false
@@ -278,7 +285,7 @@ public class UserInfo extends Object implements Cloneable {
 
     /**
      * Returns the password for this user
-     * 
+     *
      * @return String, the password for the user
      */
     public String getPassword() {
@@ -288,7 +295,7 @@ public class UserInfo extends Object implements Cloneable {
     /**
      * Returns a String representation of the user info, used primarily for
      * debugging purposes.
-     * 
+     *
      * @return String, a string representation
      */
     public String toString() {

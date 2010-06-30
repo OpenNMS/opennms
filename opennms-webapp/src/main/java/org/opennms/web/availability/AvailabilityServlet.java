@@ -54,9 +54,19 @@ import org.opennms.web.MissingParameterException;
 import org.opennms.web.ReportMailer;
 
 /**
+ * <p>AvailabilityServlet class.</p>
+ *
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AvailabilityServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -82,6 +92,11 @@ public class AvailabilityServlet extends HttpServlet {
 
     protected String logo;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
 
@@ -136,6 +151,7 @@ public class AvailabilityServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String view = request.getParameter("view");
         String format = request.getParameter("format");
@@ -258,8 +274,13 @@ public class AvailabilityServlet extends HttpServlet {
     }
 
     /**
-     * @deprecated Should use {@link org.opennms.web.Util#streamToStream 
+     * <p>streamToStream</p>
+     *
+     * @deprecated Should use {@link org.opennms.web.Util#streamToStream
      *             Util.streamToStream} instead.
+     * @param in a {@link java.io.Reader} object.
+     * @param out a {@link java.io.Writer} object.
+     * @throws java.io.IOException if any.
      */
     protected void streamToStream(Reader in, Writer out) throws IOException {
         char[] b = new char[100];

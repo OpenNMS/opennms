@@ -43,14 +43,20 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * This class is used as a wrapper object for the generated Specific class in the
  * config package.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public final class MergeableSpecific implements Comparable {
     private String m_specific;
     private SpecificComparator m_comparator;
     private long m_value;
 
+    /**
+     * <p>Constructor for MergeableSpecific.</p>
+     *
+     * @param specific a {@link java.lang.String} object.
+     */
     public MergeableSpecific(String specific) {
         Category log = ThreadCategory.getInstance(getClass());
         m_specific = specific;
@@ -64,23 +70,41 @@ public final class MergeableSpecific implements Comparable {
     }
     
     /**
+     * {@inheritDoc}
+     *
      * Uses a comparable comparing to Specifics from the config package.
-     * 
      */
     public int compareTo(Object specific) {
         return m_comparator.compare(m_specific, specific);
     }
+    /**
+     * <p>getSpecific</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSpecific() {
         return m_specific;
     }
+    /**
+     * <p>setSpecific</p>
+     *
+     * @param specific a {@link java.lang.String} object.
+     */
     public void setSpecific(String specific) {
         m_specific = specific;
     }
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return m_specific;
     }
     
     /**
+     * <p>getValue</p>
+     *
      * @return the value
      */
     public long getValue() {

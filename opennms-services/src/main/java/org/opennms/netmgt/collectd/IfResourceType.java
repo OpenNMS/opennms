@@ -43,10 +43,22 @@ import java.util.TreeMap;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 
+/**
+ * <p>IfResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class IfResourceType extends ResourceType {
 
     private TreeMap<Integer, IfInfo> m_ifMap;
 
+    /**
+     * <p>Constructor for IfResourceType.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
+     */
     public IfResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         super(agent, snmpCollection);
         m_ifMap = new TreeMap<Integer, IfInfo>();
@@ -73,14 +85,21 @@ public class IfResourceType extends ResourceType {
         return getIfMap().get(new Integer(ifIndex));
     }
 
+    /**
+     * <p>getIfInfos</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<IfInfo> getIfInfos() {
         return getIfMap().values();
     }
 
+    /** {@inheritDoc} */
     public SnmpCollectionResource findResource(SnmpInstId inst) {
         return getIfInfo(inst.toInt());
     }
 
+    /** {@inheritDoc} */
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         // This is here for completeness but it should not get called from here.
         // findResource should be called instead
@@ -88,10 +107,16 @@ public class IfResourceType extends ResourceType {
         return null;
     }
 
+    /**
+     * <p>getResources</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<IfInfo> getResources() {
         return m_ifMap.values();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getIndexedAttributeTypesForResourceType(getAgent(), this);

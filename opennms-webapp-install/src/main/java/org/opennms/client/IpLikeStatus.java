@@ -2,6 +2,9 @@ package org.opennms.client;
 
 /**
  * Contains possible states of the <code>iplike</code> database function.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public enum IpLikeStatus {
     /**

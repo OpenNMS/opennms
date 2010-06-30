@@ -54,9 +54,10 @@ import javax.persistence.Transient;
 
 /**
  * Model class for a statistics report.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see StatisticsReportData
+ * @version $Id: $
  */
 @Entity
 @Table(name="statisticsReport")
@@ -77,7 +78,8 @@ public class StatisticsReport implements Serializable {
     
     /**
      * Unique identifier for report.
-     * 
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     @Id
     @Column(name="id")
@@ -86,19 +88,30 @@ public class StatisticsReport implements Serializable {
     public Integer getId() {
         return m_id;
     }
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
     
     /**
      * The beginning date for the report (data starting at this time stamp is included).
-     * @return
+     *
+     * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="startDate", nullable=false)
     public Date getStartDate() {
         return m_startDate;
     }
+    /**
+     * <p>setStartDate</p>
+     *
+     * @param startDate a {@link java.util.Date} object.
+     */
     public void setStartDate(Date startDate) {
         m_startDate = startDate;
     }
@@ -107,12 +120,19 @@ public class StatisticsReport implements Serializable {
     /**
      * The end date for the report (data up to,
      * but not including this time stamp is included).
+     *
+     * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="endDate", nullable=false)
     public Date getEndDate() {
         return m_endDate;
     }
+    /**
+     * <p>setEndDate</p>
+     *
+     * @param endDate a {@link java.util.Date} object.
+     */
     public void setEndDate(Date endDate) {
         m_endDate = endDate;
     }
@@ -121,62 +141,102 @@ public class StatisticsReport implements Serializable {
     /**
      * Report name this references a report definition
      * in statsd-configuration.xml.
+     *
+     * @return a {@link java.lang.String} object.
      */
     @Column(name="name", length=63, nullable=false)
     public String getName() {
         return m_name;
     }
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
     /**
      * User-friendly description for this report.
+     *
+     * @return a {@link java.lang.String} object.
      */
     @Column(name="description", length=255, nullable=false)
     public String getDescription() {
         return m_description;
     }
+    /**
+     * <p>setDescription</p>
+     *
+     * @param description a {@link java.lang.String} object.
+     */
     public void setDescription(String description) {
         m_description = description;
     }
     
     /**
      * The date when this report run started.
+     *
+     * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="jobStartedDate", nullable=false)
     public Date getJobStartedDate() {
         return m_jobStartedDate;
     }
+    /**
+     * <p>setJobStartedDate</p>
+     *
+     * @param jobStartedDate a {@link java.util.Date} object.
+     */
     public void setJobStartedDate(Date jobStartedDate) {
         m_jobStartedDate = jobStartedDate;
     }
 
     /**
      * The date when this report run completed.
+     *
+     * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="jobCompletedDate", nullable=false)
     public Date getJobCompletedDate() {
         return m_jobCompletedDate;
     }
+    /**
+     * <p>setJobCompletedDate</p>
+     *
+     * @param jobCompletedDate a {@link java.util.Date} object.
+     */
     public void setJobCompletedDate(Date jobCompletedDate) {
         m_jobCompletedDate = jobCompletedDate;
     }
 
     /**
      * The date at which this report can be purged
+     *
+     * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="purgeDate", nullable=false)
     public Date getPurgeDate() {
         return m_purgeDate;
     }
+    /**
+     * <p>setPurgeDate</p>
+     *
+     * @param purgeDate a {@link java.util.Date} object.
+     */
     public void setPurgeDate(Date purgeDate) {
         m_purgeDate = purgeDate;
     }
     
+    /**
+     * <p>getData</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     @OneToMany(mappedBy="report", fetch=FetchType.LAZY)
     @org.hibernate.annotations.Cascade( {
         org.hibernate.annotations.CascadeType.ALL,
@@ -184,28 +244,58 @@ public class StatisticsReport implements Serializable {
     public Set<StatisticsReportData> getData() {
         return m_data;
     }
+    /**
+     * <p>setData</p>
+     *
+     * @param data a {@link java.util.Set} object.
+     */
     public void setData(Set<StatisticsReportData> data) {
         m_data = data;
     }
+    /**
+     * <p>addData</p>
+     *
+     * @param datum a {@link org.opennms.netmgt.model.StatisticsReportData} object.
+     */
     public void addData(StatisticsReportData datum) {
         m_data.add(datum);
     }
 
+    /**
+     * <p>getDuration</p>
+     *
+     * @return a long.
+     */
     @Transient
     public long getDuration() {
         return m_endDate.getTime() - m_startDate.getTime();
     }
     
+    /**
+     * <p>getDurationString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Transient
     public String getDurationString() {
         return getStringForInterval(getDuration());
     }
 
+    /**
+     * <p>getJobDuration</p>
+     *
+     * @return a long.
+     */
     @Transient
     public long getJobDuration() {
         return m_jobCompletedDate.getTime() - m_jobStartedDate.getTime();
     }
     
+    /**
+     * <p>getJobDurationString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Transient
     public String getJobDurationString() {
         return getStringForInterval(getJobDuration());

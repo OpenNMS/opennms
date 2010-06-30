@@ -44,9 +44,17 @@ import org.opennms.web.svclayer.AdminCategoryService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>NodeCategoryBoxController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NodeCategoryBoxController extends AbstractController {
     private AdminCategoryService m_adminCategoryService; 
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String nodeIdString = request.getParameter("node");
@@ -68,10 +76,20 @@ public class NodeCategoryBoxController extends AbstractController {
         return modelAndView;
     }
 
+    /**
+     * <p>getAdminCategoryService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.AdminCategoryService} object.
+     */
     public AdminCategoryService getAdminCategoryService() {
         return m_adminCategoryService;
     }
 
+    /**
+     * <p>setAdminCategoryService</p>
+     *
+     * @param adminCategoryService a {@link org.opennms.web.svclayer.AdminCategoryService} object.
+     */
     public void setAdminCategoryService(AdminCategoryService adminCategoryService) {
         m_adminCategoryService = adminCategoryService;
     }

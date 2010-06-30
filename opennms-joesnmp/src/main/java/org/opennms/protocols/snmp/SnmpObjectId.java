@@ -46,11 +46,12 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * Management Information Base (MIB). Each vendor is free to define their own
  * branch of the tree. The SnmpObjectId class provides an interface for naming
  * those tree instances.
- * 
+ *
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <A HREF="mailto:naz@personalgenie.com">Nazario Irizarry, Jr. </A>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <A HREF="mailto:naz@personalgenie.com">Nazario Irizarry, Jr. </A>
  * @version 1.1.1.1
- * 
  */
 public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Serializable {
     /**
@@ -197,7 +198,6 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Creates a default empty object identifier.
-     * 
      */
     public SnmpObjectId() {
         m_data = new int[2];
@@ -208,10 +208,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * Creates an object identifier from the passed array of identifiers. If the
      * passed argument is null then a default object id (.0.0) is created for
      * the instance.
-     * 
+     *
      * @param data
      *            The array of object identifiers
-     * 
      */
     public SnmpObjectId(int[] data) {
         this();
@@ -224,10 +223,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
     /**
      * Creates a duplicate object. The passed object identifier is copied into
      * the newly created object.
-     * 
+     *
      * @param second
      *            The object to copy
-     * 
      */
     public SnmpObjectId(SnmpObjectId second) {
         this(second.m_data);
@@ -238,10 +236,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * identifier string. The string is converted to the internal
      * representation. If the conversion fails then a default (.0.0) object
      * identifier is assigned to the object.
-     * 
+     *
      * @param strOid
      *            The dotted decimal object identifier string
-     * 
      */
     public SnmpObjectId(String strOid) {
         m_data = convert(strOid);
@@ -253,9 +250,8 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Gets the number of object identifiers in the object.
-     * 
+     *
      * @return Returns the number of object identifiers
-     * 
      */
     public int getLength() {
         return m_data.length;
@@ -263,6 +259,8 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
     
     /**
      * Returns the value of the last object identifier component value
+     *
+     * @return a int.
      */
     public int getLastIdentifier() {
         return m_data[m_data.length-1];
@@ -272,7 +270,7 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * Gets the array of object identifiers from the object. The instance is
      * returned as a reference. The caller should not make any modifications to
      * the returned list.
-     * 
+     *
      * @return Returns the list of identifiers
      */
     public int[] getIdentifiers() {
@@ -281,10 +279,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Sets the object to the passed object identifier
-     * 
+     *
      * @param data
      *            The new object identifier
-     * 
      */
     public void setIdentifiers(int[] data) {
         if (data != null) {
@@ -298,10 +295,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Sets the object to the passed dotted decimal object identifier string.
-     * 
+     *
      * @param strOid
      *            The dotted decimal object identifier.
-     * 
      */
     public void setIdentifiers(String strOid) {
         m_data = null;
@@ -316,10 +312,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Appends the specified identifiers to the current object.
-     * 
+     *
      * @param ids
      *            The array of identifiers to append
-     * 
      */
     public void append(int[] ids) {
         if (ids != null && ids.length != 0) {
@@ -336,10 +331,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
     /**
      * Converts the passed string to an object identifier and appends them to
      * the current object.
-     * 
+     *
      * @param strOids
      *            The dotted decimal identifiers to append
-     * 
      */
     public void append(String strOids) {
         int[] tmp = convert(strOids);
@@ -348,10 +342,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Appends the passed SnmpObjectId object to self.
-     * 
+     *
      * @param second
      *            The object to append to self
-     * 
      */
     public void append(SnmpObjectId second) {
         append(second.m_data);
@@ -359,10 +352,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Prepends the passed set of identifiers to the front of the object.
-     * 
+     *
      * @param ids
      *            The list of identifiers
-     * 
      */
     public void prepend(int[] ids) {
         if (ids != null && ids.length != 0) {
@@ -379,10 +371,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
     /**
      * Converts the passed string to an object identifier and prepends them to
      * the current object.
-     * 
+     *
      * @param strOids
      *            The dotted decimal identifiers to prepend
-     * 
      */
     public void prepend(String strOids) {
         int[] tmp = convert(strOids);
@@ -391,10 +382,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Prepends the passed SnmpObjectId object to self.
-     * 
+     *
      * @param second
      *            The object to prepend to self
-     * 
      */
     public void prepend(SnmpObjectId second) {
         prepend(second.m_data);
@@ -406,14 +396,12 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * number is returned. A positive number is returned if self is greater than
      * the passed identifers and a zero is returned if they are equal. The
      * length of the identifiers do not have to be equal.
-     * 
+     *
      * @param ids
      *            The array if identifier to compare
-     * 
      * @return Returns zero if the ids are equal. Less than zero if the object
      *         is less than 'ids' and greater than zero if the object is greater
      *         than 'ids'.
-     * 
      */
     public int compare(int[] ids) {
         //
@@ -465,16 +453,14 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * number is returned. A positive number is returned if self is greater than
      * the passed identifers and a zero is returned if they are equal. The
      * length of the identifiers do not have to be equal.
-     * 
+     *
      * @param ids
      *            The array if identifier to compare.
      * @param dist
      *            The maximum number of ids to compare.
-     * 
      * @return Returns zero if the ids are equal. Less than zero if the object
      *         is less than 'ids' and greater than zero if the object is greater
      *         than 'ids'.
-     * 
      */
     public int compare(int[] ids, int dist) {
         //
@@ -526,14 +512,12 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * number is returned. A positive number is returned if self is greater than
      * the passed identifer and a zero is returned if they are equal. The length
      * of the identifiers do not have to be equal.
-     * 
+     *
      * @param cmp
      *            The object identifier to compare
-     * 
      * @return Returns zero if the ids are equal. Less than zero if the object
      *         is less than 'cmp' and greater than zero if the object is greater
      *         than 'cmp'.
-     * 
      */
     public int compare(SnmpObjectId cmp) {
         return compare(cmp.m_data);
@@ -546,10 +530,9 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * root tree as self then a true value is returned. Otherwise a false value
      * is returned from the object.
      * </P>
-     * 
+     *
      * @param leaf
      *            The object to be tested
-     * 
      * @return True if leaf is in the tree.
      */
     public boolean isRootOf(SnmpObjectId leaf) {
@@ -557,15 +540,10 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Test for equality. Returns true if 'o' is an instance of an SnmpObjectId
      * and is equal to self.
-     * 
-     * @param o
-     *            The object to be tested for equality.
-     * 
-     * @return True if the object is an SnmpObjectId and is equal to self. False
-     *         otherwise.
-     * 
      */
     public boolean equals(Object o) {
         if (o instanceof SnmpObjectId) {
@@ -580,9 +558,8 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Converts the object identifier to a dotted decimal string representation.
-     * 
+     *
      * @return Returns the dotted decimal object id string.
-     * 
      */
     public String toString() {
         //
@@ -610,10 +587,8 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
      * value for the identifer will change. Care must be exercised by developers
      * to ensure that ObjectIds do not change when inserted into managers that
      * track object by their hash value.
-     * 
+     *
      * @return The hash code for the object.
-     * 
-     * 
      * @since 1.8
      */
     public int hashCode() {
@@ -626,25 +601,19 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Used to get the ASN.1 type for this particular object.
+     *
+     * @return a byte.
      */
     public byte typeId() {
         return ASNTYPE;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Encodes the ASN.1 object identifier using the passed encoder and stores
      * the results in the passed buffer. An exception is thrown if an error
      * occurs with the encoding of the information.
-     * 
-     * @param buf
-     *            The buffer to write the encoded information.
-     * @param offset
-     *            The offset to start writing information
-     * @param encoder
-     *            The encoder object.
-     * 
-     * @return The offset of the byte immediantly after the last encoded byte.
-     * 
      * @exception AsnEncodingException
      *                Thrown if the encoder finds an error in the buffer.
      */
@@ -653,21 +622,12 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Decodes the ASN.1 object identifer from the passed buffer. If an error
      * occurs during the decoding sequence then an AsnDecodingException is
      * thrown by the method. The value is decoded using the AsnEncoder passed to
      * the object.
-     * 
-     * @param buf
-     *            The encode buffer
-     * @param offset
-     *            The offset byte to begin decoding
-     * @param encoder
-     *            The decoder object.
-     * 
-     * @return The index of the byte immediantly after the last decoded byte of
-     *         information.
-     * 
      * @exception AsnDecodingException
      *                Thrown by the encoder if an error occurs trying to decode
      *                the data buffer.
@@ -685,9 +645,8 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Serves the same purpose as the method clone().
-     * 
+     *
      * @return A new copy of self.
-     * 
      */
     public SnmpSyntax duplicate() {
         return new SnmpObjectId(this);
@@ -700,9 +659,8 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
 
     /**
      * Implements the cloneable interface.
-     * 
+     *
      * @return Returns a new SnmpObjectId copy of self.
-     * 
      */
     public Object clone() {
         return new SnmpObjectId(this);

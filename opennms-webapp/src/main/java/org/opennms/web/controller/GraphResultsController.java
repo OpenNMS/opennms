@@ -54,11 +54,19 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 
+/**
+ * <p>GraphResultsController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class GraphResultsController extends AbstractController implements InitializingBean {
     private GraphResultsService m_graphResultsService;
     
     private static RelativeTimePeriod[] s_periods = RelativeTimePeriod.getDefaultPeriods();
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] {
@@ -180,18 +188,29 @@ public class GraphResultsController extends AbstractController implements Initia
         return new ModelAndView("/graph/results", "results", model);
     }
 
+    /**
+     * <p>getGraphResultsService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.GraphResultsService} object.
+     */
     public GraphResultsService getGraphResultsService() {
         return m_graphResultsService;
     }
 
+    /**
+     * <p>setGraphResultsService</p>
+     *
+     * @param graphResultsService a {@link org.opennms.web.svclayer.GraphResultsService} object.
+     */
     public void setGraphResultsService(GraphResultsService graphResultsService) {
         m_graphResultsService = graphResultsService;
     }
 
     /**
      * Ensures that required properties are set to valid values.
-     * 
+     *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_graphResultsService != null, "graphResultsService property must be set to a non-null value");

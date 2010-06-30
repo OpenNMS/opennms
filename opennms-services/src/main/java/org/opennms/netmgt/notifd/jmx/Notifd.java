@@ -48,12 +48,21 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
+/**
+ * <p>Notifd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Notifd implements NotifdMBean {
     /**
      * Logging category for log4j
      */
     private static String LOG4J_CATEGORY = "OpenNMS.Notifd";
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(getClass());
@@ -137,26 +146,47 @@ public class Notifd implements NotifdMBean {
         return org.opennms.netmgt.notifd.Notifd.getInstance();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         getNotifd().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         getNotifd().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         return getNotifd().getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];

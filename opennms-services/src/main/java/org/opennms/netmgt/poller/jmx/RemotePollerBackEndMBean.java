@@ -38,9 +38,13 @@ package org.opennms.netmgt.poller.jmx;
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
- * 
+ * <p>RemotePollerBackEndMBean interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface RemotePollerBackEndMBean extends BaseOnmsMBean {
 

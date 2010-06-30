@@ -52,10 +52,12 @@ import org.opennms.web.WebSecurityUtils;
 
 /**
  * The source for all path outage business objects (nodes, critical path IPs,
- * critical path service names). Encapsulates all lookup functionality for 
+ * critical path service names). Encapsulates all lookup functionality for
  * these business objects in one place.
- * 
+ *
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class PathOutageFactory extends Object {
 
@@ -83,6 +85,9 @@ public class PathOutageFactory extends Object {
      * <p>
      * Retrieve all the critical paths
      * from the database
+     *
+     * @return a {@link java.util.List} object.
+     * @throws java.sql.SQLException if any.
      */
     public static List<String[]> getAllCriticalPaths() throws SQLException {
         Connection conn = Vault.getDbConnection();
@@ -110,11 +115,13 @@ public class PathOutageFactory extends Object {
      * <p>
      * Retrieve all the nodes in a critical path
      * from the database
-     * 
+     *
      * @param criticalPathIp
      *            IP address of the critical path
      * @param criticalPathServiceName
      *            service name for the critical path
+     * @return a {@link java.util.List} object.
+     * @throws java.sql.SQLException if any.
      */
     public static List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         Connection conn = Vault.getDbConnection();
@@ -138,12 +145,14 @@ public class PathOutageFactory extends Object {
     }
 
     /**
-     * This method is responsible for determining the 
+     * This method is responsible for determining the
      * node label of a node, and the up/down status
-     * and status color 
-     * 
-     * @param String nodeID
-     *            the nodeID of the node being checked
+     * and status color
+     *
+     * @param nodeIDStr a {@link java.lang.String} object.
+     * @param conn a {@link java.sql.Connection} object.
+     * @return an array of {@link java.lang.String} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException {
 
@@ -197,19 +206,16 @@ public class PathOutageFactory extends Object {
     }
 
     /**
-     * This method is responsible for determining the 
+     * This method is responsible for determining the
      * data related to the critical path:
      * node label, nodeId, the number of nodes
      * dependent on this path, and the managed state
      * of the path
-     * 
-     * @param String criticalPathIp
-     *            the criticalPathIp of the node
-     *            being checked
-     * 
-     * @param String criticalPathServiceName the
-     *            criticalPathServiceName of the
-     *            node being checked
+     *
+     * @param criticalPathIp a {@link java.lang.String} object.
+     * @param criticalPathServiceName a {@link java.lang.String} object.
+     * @return an array of {@link java.lang.String} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         Connection conn = Vault.getDbConnection();

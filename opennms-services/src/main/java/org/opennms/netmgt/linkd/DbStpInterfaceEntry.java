@@ -51,8 +51,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
- * 
+ * <p>DbStpInterfaceEntry class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class DbStpInterfaceEntry {
 
@@ -590,28 +592,36 @@ public class DbStpInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_nodeId</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_nodeId() {
 		return m_nodeId;
 	}
 
 	/**
-	 * @return
+	 * <p>get_bridgeport</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_bridgeport() {
 		return m_bridgeport;
 	}
 
 	/**
-	 * @return
+	 * <p>get_stpvlan</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_stpvlan() {
 		return m_stpportvlan;
 	}
 
 	/**
-	 * @return
+	 * <p>get_ifindex</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_ifindex() {
 		return m_ifindex;
@@ -638,7 +648,9 @@ public class DbStpInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_stpportstate</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_stpportstate() {
 		return m_stpportstate;
@@ -673,7 +685,9 @@ public class DbStpInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_stpportpathcost</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_stpportpathcost() {
 		return m_stpportpathcost;
@@ -700,7 +714,9 @@ public class DbStpInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_stpportdesignatedroot</p>
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String get_stpportdesignatedroot() {
 		return m_stpportdesignatedroot;
@@ -727,7 +743,9 @@ public class DbStpInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_stpportdesignatedcost</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_stpportdesignatedcost() {
 		return m_stpportdesignatedcost;
@@ -754,7 +772,9 @@ public class DbStpInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_stpportdesignatedbridge</p>
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String get_stpportdesignatedbridge() {
 		return m_stpportdesignatedbridge;
@@ -781,7 +801,9 @@ public class DbStpInterfaceEntry {
 	}
 
 	/**
-	 * @return
+	 * <p>get_stpdesignatedport</p>
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String get_stpdesignatedport() {
 		return m_stpportdesignatedport;
@@ -998,6 +1020,11 @@ public class DbStpInterfaceEntry {
 		return entry;
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		String sep = System.getProperty("line.separator");
 		StringBuffer buf = new StringBuffer();

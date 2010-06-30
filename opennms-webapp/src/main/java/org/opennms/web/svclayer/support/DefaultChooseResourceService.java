@@ -47,13 +47,17 @@ import org.opennms.web.svclayer.ChooseResourceService;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * 
+ * <p>DefaultChooseResourceService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultChooseResourceService implements ChooseResourceService, InitializingBean {
 
     public ResourceDao m_resourceDao;
 
+    /** {@inheritDoc} */
     public ChooseResourceModel findChildResources(String resourceId, String endUrl) {
         if (resourceId == null) {
             throw new IllegalArgumentException("resourceId parameter may not be null");
@@ -83,16 +87,29 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
         return model;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         if (m_resourceDao == null) {
             throw new IllegalStateException("resourceDao property not set");
         }
     }
 
+    /**
+     * <p>getResourceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
     }
 
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }

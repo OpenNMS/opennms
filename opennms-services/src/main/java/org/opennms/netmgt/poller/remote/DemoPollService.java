@@ -50,19 +50,34 @@ class DemoPollService implements PollService {
 	private int m_pollCount;
 	private PollStatus m_currentStatus;
 
+	/**
+	 * <p>Constructor for DemoPollService.</p>
+	 *
+	 * @param repetitions a int.
+	 * @param initialStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+	 */
 	public DemoPollService(int repetitions, PollStatus initialStatus) {
 		m_repetitions = repetitions;
 		m_currentStatus = initialStatus;
 	}
 	
+	/**
+	 * <p>Constructor for DemoPollService.</p>
+	 *
+	 * @param repetitions a int.
+	 */
 	public DemoPollService(int repetitions) {
 		this(repetitions, PollStatus.up());
 	}
 	
+	/**
+	 * <p>Constructor for DemoPollService.</p>
+	 */
 	public DemoPollService() {
 		this(2);
 	}
 
+	/** {@inheritDoc} */
 	public PollStatus poll(PolledService polledService) {
         PollStatus status = m_currentStatus;
         
@@ -74,16 +89,19 @@ class DemoPollService implements PollService {
         return status;
     }
 
+    /** {@inheritDoc} */
     public void initialize(PolledService polledService) {
         // TODO Auto-generated method stub
         
     }
 
+    /** {@inheritDoc} */
     public void release(PolledService polledService) {
         // TODO Auto-generated method stub
         
     }
 
+    /** {@inheritDoc} */
     public void setServiceMonitorLocators(Collection<ServiceMonitorLocator> locators) {
         // TODO Auto-generated method stub
         

@@ -69,10 +69,14 @@ import org.extremecomponents.table.view.AbstractHtmlView;
 import org.extremecomponents.util.HtmlBuilder;
 
 /**
- * 
+ * <p>FixedRowCompact class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class FixedRowCompact extends AbstractHtmlView {
+	/** {@inheritDoc} */
 	protected void beforeBodyInternal(TableModel model) {
 		getTableBuilder().tableStart();
 
@@ -91,6 +95,7 @@ public class FixedRowCompact extends AbstractHtmlView {
 		getTableBuilder().tbodyStart();
 	}
 
+	/** {@inheritDoc} */
 	protected void afterBodyInternal(TableModel model) {
 		getCalcBuilder().defaultCalcLayout();
 
@@ -99,6 +104,12 @@ public class FixedRowCompact extends AbstractHtmlView {
 		getTableBuilder().tableEnd();
 	}
 
+	/**
+	 * <p>toolbar</p>
+	 *
+	 * @param html a {@link org.extremecomponents.util.HtmlBuilder} object.
+	 * @param model a {@link org.extremecomponents.table.core.TableModel} object.
+	 */
 	protected void toolbar(HtmlBuilder html, TableModel model) {
 		new CompactFixedRowToolbar(html, model).layout();
 	}

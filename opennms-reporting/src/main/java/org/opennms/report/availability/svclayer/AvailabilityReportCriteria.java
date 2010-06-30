@@ -39,12 +39,12 @@ package org.opennms.report.availability.svclayer;
  * of mail recipients for the report and whether to put and entry in the
  * report locator table in the database (so that the report can be retrieved
  * in the future).
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
 
 import java.util.Date;
-
 public class AvailabilityReportCriteria {
 
     private String m_monthFormat;
@@ -63,66 +63,146 @@ public class AvailabilityReportCriteria {
     
     private Boolean m_sendEmail;
 
+    /**
+     * <p>getLogo</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLogo() {
         return m_logo;
     }
 
+    /**
+     * <p>setLogo</p>
+     *
+     * @param logo a {@link java.lang.String} object.
+     */
     public void setLogo(String logo) {
         m_logo = logo;
     }
 
+    /**
+     * <p>getEmail</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getEmail() {
         return m_email;
     }
 
+    /**
+     * <p>setEmail</p>
+     *
+     * @param email a {@link java.lang.String} object.
+     */
     public void setEmail(String email) {
         m_email = email;
     }
 
+    /**
+     * <p>getCategoryName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCategoryName() {
         return m_categoryName;
     }
 
+    /**
+     * <p>setCategoryName</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     */
     public void setCategoryName(String categoryName) {
         m_categoryName = categoryName;
     }
 
+    /**
+     * <p>getFormat</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFormat() {
         return m_format;
     }
 
+    /**
+     * <p>setFormat</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     */
     public void setFormat(String format) {
         m_format = format;
     }
 
+    /**
+     * <p>getMonthFormat</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMonthFormat() {
         return m_monthFormat;
     }
 
+    /**
+     * <p>setMonthFormat</p>
+     *
+     * @param monthFormat a {@link java.lang.String} object.
+     */
     public void setMonthFormat(String monthFormat) {
         m_monthFormat = monthFormat;
     }
 
+    /**
+     * <p>getPeriodEndDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getPeriodEndDate() {
         return m_periodEndDate;
     }
 
+    /**
+     * <p>setPeriodEndDate</p>
+     *
+     * @param periodEndDate a {@link java.util.Date} object.
+     */
     public void setPeriodEndDate(Date periodEndDate) {
         m_periodEndDate = periodEndDate;
     }
 
+    /**
+     * <p>setPersist</p>
+     *
+     * @param persist a {@link java.lang.Boolean} object.
+     */
     public void setPersist(Boolean persist) {
         m_persist = persist;
     }
 
+    /**
+     * <p>getPersist</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean getPersist() {
         return m_persist;
     }
     
+    /**
+     * <p>setSendEmail</p>
+     *
+     * @param sendEmail a {@link java.lang.Boolean} object.
+     */
     public void setSendEmail(Boolean sendEmail) {
         m_sendEmail = sendEmail;
     }
 
+    /**
+     * <p>getSendEmail</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean getSendEmail() {
         return m_sendEmail;
     }

@@ -44,7 +44,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * Implements the ASN1.UNIVERSAL Octet String datatype. The string is a sequence
  * of 8-bit octet data. The format of the 8-bit characters are defined by the
  * application.
- * 
+ *
  * @version 1.1.1.1
  * @author <a href="mailto:weave@oculan.com>Brian Weaver </a>
  */
@@ -73,7 +73,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * contained by the octet string. The data is not duplicated, only the
      * reference to the array is stored. No validation of data is performed at
      * all.
-     * 
+     *
      * @param data
      *            The new data buffer.
      */
@@ -84,7 +84,6 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
     /**
      * The default class constructor. Constructs an Octet String with a length
      * of zero and no data.
-     * 
      */
     public SnmpOctetString() {
         m_data = null;
@@ -94,10 +93,9 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * Constructs an octet string with the inital value equal to data. The data
      * is actually copied so changes to the data reference do not affect the
      * Octet string object.
-     * 
+     *
      * @param data
      *            The data to be copied to self
-     * 
      */
     public SnmpOctetString(byte[] data) {
         this();
@@ -110,10 +108,9 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
     /**
      * Class copy constructor. Constructs and octet string object that is a
      * duplicate of the object second.
-     * 
+     *
      * @param second
      *            The object to copy into self
-     * 
      */
     public SnmpOctetString(SnmpOctetString second) {
         this(second.m_data);
@@ -123,7 +120,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * Returns a reference to the internal object string. Changes to this byte
      * array WILL affect the octet string object. These changes should not be
      * made lightly.
-     * 
+     *
      * @return A reference to the internal byte array.
      */
     public byte[] getString() {
@@ -135,10 +132,9 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * array. The array is actually copied so that changes to data after the
      * construction of the object are not reflected in the SnmpOctetString
      * Object.
-     * 
+     *
      * @param data
      *            The new octet string data.
-     * 
      */
     public void setString(byte[] data) {
         m_data = null;
@@ -152,10 +148,9 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * Sets the internal octet string equal to the converted stirng via the
      * method getBytes(). This may cause some data corruption since the
      * conversion is platform specific.
-     * 
+     *
      * @param data
      *            The new octet string data.
-     * 
      * @see java.lang.String#getBytes()
      */
     public void setString(String data) {
@@ -170,9 +165,8 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * over recovereing the length from the internal array. The method
      * compensates for a null set of data and returns zero if the internal array
      * is null.
-     * 
+     *
      * @return The length of the octet string.
-     * 
      */
     public int getLength() {
         int len = 0;
@@ -183,28 +177,19 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
 
     /**
      * Returns the ASN.1 type identifier for the Octet String.
-     * 
+     *
      * @return The ASN.1 identifier.
-     * 
      */
     public byte typeId() {
         return ASNTYPE;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Encodes the ASN.1 octet string using the passed encoder and stores the
      * results in the passed buffer. An exception is thrown if an error occurs
      * with the encoding of the information.
-     * 
-     * @param buf
-     *            The buffer to write the encoded information.
-     * @param offset
-     *            The offset to start writing information
-     * @param encoder
-     *            The encoder object.
-     * 
-     * @return The offset of the byte immediantly after the last encoded byte.
-     * 
      * @exception AsnEncodingException
      *                Thrown if the encoder finds an error in the buffer.
      */
@@ -216,21 +201,12 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Decodes the ASN.1 octet string from the passed buffer. If an error occurs
      * during the decoding sequence then an AsnDecodingException is thrown by
      * the method. The value is decoded using the AsnEncoder passed to the
      * object.
-     * 
-     * @param buf
-     *            The encode buffer
-     * @param offset
-     *            The offset byte to begin decoding
-     * @param encoder
-     *            The decoder object.
-     * 
-     * @return The index of the byte immediantly after the last decoded byte of
-     *         information.
-     * 
      * @exception AsnDecodingException
      *                Thrown by the encoder if an error occurs trying to decode
      *                the data buffer.
@@ -248,9 +224,8 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
 
     /**
      * Creates a duplicate copy of the object and returns it to the caller.
-     * 
+     *
      * @return A newly constructed copy of self
-     * 
      */
     public SnmpSyntax duplicate() {
         return new SnmpOctetString(this);
@@ -258,9 +233,8 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
 
     /**
      * Creates a duplicate copy of the object and returns it to the caller.
-     * 
+     *
      * @return A newly constructed copy of self
-     * 
      */
     public Object clone() {
         return new SnmpOctetString(this);
@@ -269,7 +243,8 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
     /**
      * Returns a string representation of the object. If the object contains
      * non-printable characters then the contents are printed in hexidecimal.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         //
@@ -322,13 +297,12 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
      * string. Special case in which the supplied SnmpOctetString consists of a
      * single ASCII Null byte is also handled. In this special case an empty
      * string is returned.
-     * 
+     *
      * NOTE: A character is considered unprintable if its decimal value falls
      * outside of the range: 32 - 126.
-     * 
+     *
      * @param octetString
      *            SnmpOctetString from which to generate the String
-     * 
      * @return a Java String object created from the octet string's byte array.
      */
     public static String toDisplayString(SnmpOctetString octetString) {
@@ -370,6 +344,12 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
     }
 
     // TODO: Move this to common base class
+    /**
+     * <p>toHexString</p>
+     *
+     * @param ostr a {@link org.opennms.protocols.snmp.SnmpOctetString} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String toHexString(SnmpOctetString ostr) {
         if (ostr == null) return null;
         StringBuffer sbuf = new StringBuffer();
@@ -384,6 +364,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         return physAddr;
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof SnmpOctetString) {
             SnmpOctetString str = (SnmpOctetString)obj;
@@ -400,6 +381,11 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return 0;
     }

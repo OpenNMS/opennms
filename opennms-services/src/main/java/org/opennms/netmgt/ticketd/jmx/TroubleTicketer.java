@@ -35,13 +35,21 @@ package org.opennms.netmgt.ticketd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>TroubleTicketer class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class TroubleTicketer extends AbstractSpringContextJmxServiceDaemon implements TroubleTicketerMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.TroubleTicketer";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "troubleTicketerContext";

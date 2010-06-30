@@ -38,17 +38,21 @@ package org.opennms.netmgt.queued.jmx;
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
 /**
- * 
+ * <p>Queued class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class Queued extends AbstractSpringContextJmxServiceDaemon implements
         QueuedMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Queued";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "queuedContext";

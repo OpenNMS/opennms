@@ -52,27 +52,49 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>CorrelationEngineFactoryBean class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
     
     private List<CorrelationEngine> m_correlationEngines = new ArrayList<CorrelationEngine>(0);
     private ApplicationContext m_applicationContext;
 
+    /**
+     * <p>getObject</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     * @throws java.lang.Exception if any.
+     */
     public Object getObject() throws Exception {
         return m_correlationEngines;
     }
 
+    /**
+     * <p>getObjectType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<?> getObjectType() {
         return m_correlationEngines.getClass();
     }
 
+    /**
+     * <p>isSingleton</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSingleton() {
         return true;
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_applicationContext != null, "applicationContext must be set");
         
@@ -92,10 +114,16 @@ public class CorrelationEngineFactoryBean implements FactoryBean, InitializingBe
         return BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, CorrelationEngine.class);
     }
 
+    /** {@inheritDoc} */
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }

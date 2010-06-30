@@ -49,14 +49,21 @@ import org.opennms.netmgt.config.outage.OutageConfiguration;
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
  * OutageManager from the outage-configuration xml file.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class OutageManagerConfigFactory implements OutageManagerConfig {
     /**
@@ -95,13 +102,16 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -119,13 +129,16 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -136,9 +149,8 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -151,7 +163,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
 
     /**
      * Return the number of writer threads to be started.
-     * 
+     *
      * @return the number of writer threads to be started
      */
     public synchronized int getWriters() {
@@ -160,7 +172,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
 
     /**
      * Return the SQL statemet to get the next outage ID.
-     * 
+     *
      * @return the SQL statemet to get the next outage ID
      */
     public synchronized String getGetNextOutageID() {
@@ -170,7 +182,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
     /**
      * Return a boolean flag to indicate if a deleteService should be propagated
      * to the interface or node level deletion when approciate.
-     * 
+     *
      * @return true for delete propagation otherwise false.
      */
     public synchronized boolean deletePropagation() {

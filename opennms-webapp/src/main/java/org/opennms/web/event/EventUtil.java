@@ -69,27 +69,45 @@ import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.event.filter.AlarmIDFilter;
 
+/**
+ * <p>Abstract EventUtil class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public abstract class EventUtil extends Object {
+    /** Constant <code>colors</code> */
     protected static final Map<Integer, String> colors;
 
+    /** Constant <code>classes</code> */
     protected static final Map<Integer, String> classes;
 
+    /** Constant <code>labels</code> */
     protected static final Map<Integer, String> labels;
 
+    /** Constant <code>sortStyles</code> */
     protected static final Map<EventFactory.SortStyle, String> sortStyles;
     
+    /** Constant <code>sortStylesString</code> */
     protected static final Map<String, EventFactory.SortStyle> sortStylesString;
 
+    /** Constant <code>ackTypes</code> */
     protected static final Map<EventFactory.AcknowledgeType, String> ackTypes;
     
+    /** Constant <code>ackTypesString</code> */
     protected static final Map<String, EventFactory.AcknowledgeType> ackTypesString;
 
+    /** Constant <code>severities</code> */
     protected static final List<Integer> severities;
 
+    /** Constant <code>ANY_SERVICES_OPTION="Any"</code> */
     public static final String ANY_SERVICES_OPTION = "Any";
 
+    /** Constant <code>ANY_SEVERITIES_OPTION="Any"</code> */
     public static final String ANY_SEVERITIES_OPTION = "Any";
 
+    /** Constant <code>ANY_RELATIVE_TIMES_OPTION="Any"</code> */
     public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
 
     static {
@@ -172,26 +190,61 @@ public abstract class EventUtil extends Object {
         ackTypes.put(EventFactory.AcknowledgeType.BOTH, "both");
     }
 
+    /**
+     * <p>getSeverityList</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public static List getSeverityList() {
         return severities;
     }
 
+    /**
+     * <p>getSeverityId</p>
+     *
+     * @param index a int.
+     * @return a int.
+     */
     public static int getSeverityId(int index) {
         return severities.get(index).intValue();
     }
 
+    /**
+     * <p>getSeverityColor</p>
+     *
+     * @param severity a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getSeverityColor(int severity) {
         return colors.get(new Integer(severity));
     }
 
+    /**
+     * <p>getSeverityClass</p>
+     *
+     * @param severity a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getSeverityClass(int severity) {
         return classes.get(new Integer(severity));
     }
 
+    /**
+     * <p>getSeverityLabel</p>
+     *
+     * @param severity a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getSeverityLabel(int severity) {
         return labels.get(new Integer(severity));
     }
 
+    /**
+     * <p>getSortStyle</p>
+     *
+     * @param sortStyleString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.event.EventFactory.SortStyle} object.
+     */
     public static EventFactory.SortStyle getSortStyle(String sortStyleString) {
         if (sortStyleString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -200,6 +253,12 @@ public abstract class EventUtil extends Object {
         return sortStylesString.get(sortStyleString.toLowerCase());
     }
 
+    /**
+     * <p>getSortStyleString</p>
+     *
+     * @param sortStyle a {@link org.opennms.web.event.EventFactory.SortStyle} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getSortStyleString(EventFactory.SortStyle sortStyle) {
         if (sortStyle == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -208,6 +267,12 @@ public abstract class EventUtil extends Object {
         return sortStyles.get(sortStyle);
     }
 
+    /**
+     * <p>getAcknowledgeType</p>
+     *
+     * @param ackTypeString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.event.EventFactory.AcknowledgeType} object.
+     */
     public static EventFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
         if (ackTypeString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -216,6 +281,12 @@ public abstract class EventUtil extends Object {
         return ackTypesString.get(ackTypeString.toLowerCase());
     }
 
+    /**
+     * <p>getAcknowledgeTypeString</p>
+     *
+     * @param ackType a {@link org.opennms.web.event.EventFactory.AcknowledgeType} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getAcknowledgeTypeString(EventFactory.AcknowledgeType ackType) {
         if (ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -224,6 +295,12 @@ public abstract class EventUtil extends Object {
         return ackTypes.get(ackType);
     }
 
+    /**
+     * <p>getFilter</p>
+     *
+     * @param filterString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.event.filter.Filter} object.
+     */
     public static Filter getFilter(String filterString) {
         if (filterString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -282,6 +359,12 @@ public abstract class EventUtil extends Object {
         return filter;
     }
 
+    /**
+     * <p>getFilterString</p>
+     *
+     * @param filter a {@link org.opennms.web.event.filter.Filter} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getFilterString(Filter filter) {
         if (filter == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -290,20 +373,33 @@ public abstract class EventUtil extends Object {
         return filter.getDescription();
     }
 
+    /** Constant <code>LAST_HOUR_RELATIVE_TIME=1</code> */
     public static final int LAST_HOUR_RELATIVE_TIME = 1;
 
+    /** Constant <code>LAST_FOUR_HOURS_RELATIVE_TIME=2</code> */
     public static final int LAST_FOUR_HOURS_RELATIVE_TIME = 2;
 
+    /** Constant <code>LAST_EIGHT_HOURS_RELATIVE_TIME=3</code> */
     public static final int LAST_EIGHT_HOURS_RELATIVE_TIME = 3;
 
+    /** Constant <code>LAST_TWELVE_HOURS_RELATIVE_TIME=4</code> */
     public static final int LAST_TWELVE_HOURS_RELATIVE_TIME = 4;
 
+    /** Constant <code>LAST_DAY_RELATIVE_TIME=5</code> */
     public static final int LAST_DAY_RELATIVE_TIME = 5;
 
+    /** Constant <code>LAST_WEEK_RELATIVE_TIME=6</code> */
     public static final int LAST_WEEK_RELATIVE_TIME = 6;
 
+    /** Constant <code>LAST_MONTH_RELATIVE_TIME=7</code> */
     public static final int LAST_MONTH_RELATIVE_TIME = 7;
 
+    /**
+     * <p>getRelativeTimeFilter</p>
+     *
+     * @param relativeTime a int.
+     * @return a {@link org.opennms.web.event.filter.Filter} object.
+     */
     public static Filter getRelativeTimeFilter(int relativeTime) {
         Filter filter = null;
         Calendar now = Calendar.getInstance();

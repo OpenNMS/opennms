@@ -55,6 +55,12 @@ import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
 
+/**
+ * <p>Snmp4JWalker class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Snmp4JWalker extends SnmpWalker {
     
     public static abstract class Snmp4JPduBuilder extends WalkerPduBuilder {
@@ -177,6 +183,13 @@ public class Snmp4JWalker extends SnmpWalker {
     private ResponseListener m_listener;
     private Snmp4JAgentConfig m_agentConfig;
 
+    /**
+     * <p>Constructor for Snmp4JWalker.</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.snmp4j.Snmp4JAgentConfig} object.
+     * @param name a {@link java.lang.String} object.
+     * @param tracker a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public Snmp4JWalker(Snmp4JAgentConfig agentConfig, String name, CollectionTracker tracker) {
         super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepetitions(), tracker);
         
@@ -186,6 +199,9 @@ public class Snmp4JWalker extends SnmpWalker {
         m_listener = new Snmp4JResponseListener();
     }
     
+    /**
+     * <p>start</p>
+     */
     public void start() {
         
         if (log().isDebugEnabled()) {
@@ -195,12 +211,19 @@ public class Snmp4JWalker extends SnmpWalker {
         super.start();
     }
 
+    /** {@inheritDoc} */
     protected WalkerPduBuilder createPduBuilder(int maxVarsPerPdu) {
         return (getVersion() == SnmpConstants.version1 
                 ? (WalkerPduBuilder)new GetNextBuilder(maxVarsPerPdu) 
                 : (WalkerPduBuilder)new GetBulkBuilder(maxVarsPerPdu));
     }
 
+    /**
+     * <p>sendNextPdu</p>
+     *
+     * @param pduBuilder a WalkerPduBuilder object.
+     * @throws java.io.IOException if any.
+     */
     protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws IOException {
         Snmp4JPduBuilder snmp4JPduBuilder = (Snmp4JPduBuilder)pduBuilder;
         if (m_session == null) {
@@ -214,10 +237,20 @@ public class Snmp4JWalker extends SnmpWalker {
         m_session.send(snmp4JPduBuilder.getPdu(), m_tgt, null, m_listener);
     }
     
+    /**
+     * <p>getVersion</p>
+     *
+     * @return a int.
+     */
     protected int getVersion() {
         return m_tgt.getVersion();
     }
 
+    /**
+     * <p>close</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     protected void close() throws IOException {
         if (m_session != null) {
             m_session.close();

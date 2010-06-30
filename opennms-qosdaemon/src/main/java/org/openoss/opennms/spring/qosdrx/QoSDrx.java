@@ -40,6 +40,12 @@ import org.openoss.ossj.fm.monitor.spring.OssBean;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
+/**
+ * <p>QoSDrx class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class QoSDrx implements PausableFiber {
 
 	//---------------SPRING DAO DECLARATIONS----------------
@@ -50,7 +56,9 @@ public class QoSDrx implements PausableFiber {
 	private OssBeanRunner initialOssBeanRunner=null;
 
 	/**
-	 * @param ossBeanRunner the ossBeanRunner to set
+	 * <p>Setter for the field <code>initialOssBeanRunner</code>.</p>
+	 *
+	 * @param initialOssBeanRunner a {@link org.openoss.ossj.fm.monitor.spring.OssBeanRunner} object.
 	 */
 	public void setinitialOssBeanRunner(OssBeanRunner initialOssBeanRunner) {
 		this.initialOssBeanRunner = initialOssBeanRunner;
@@ -66,7 +74,8 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
-	 * @param ar 
+	 *
+	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
 	 */
 	public  void setassetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
@@ -81,7 +90,8 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
-	 * @param nodedao 
+	 *
+	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
 	 */
 	public  void setnodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
@@ -96,7 +106,8 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 * Used by Spring Application context to pass in alarmDao
-	 * @param alarmDao
+	 *
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
 	 */
 	public  void setalarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
@@ -109,7 +120,8 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 * Used by jmx mbean QoSDrx to pass in Spring Application context
-	 * @param alarmDao
+	 *
+	 * @param m_context a {@link org.springframework.context.support.ClassPathXmlApplicationContext} object.
 	 */
 	public  void setapplicationcontext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
@@ -125,6 +137,7 @@ public class QoSDrx implements PausableFiber {
 	// STARTING, RUNNING, STOP_PENDING, STOPPED
 	private int status = START_PENDING;
 	private static final String LOG4J_CATEGORY = "OpenOSS.QoSDrx";
+	/** Constant <code>NAME="OpenOSS.QoSDrx"</code> */
 	public static final String NAME = "OpenOSS.QoSDrx";
 	private static String m_stats=null;  //not used but needed for initialisation	
 
@@ -136,7 +149,9 @@ public class QoSDrx implements PausableFiber {
 
 
 
-	/** Method to set up the fiber. */
+	/**
+	 * Method to set up the fiber.
+	 */
 	public void init()
 	{
 		Logger log = getLog();	//Get a reference to the QosDrx logger instance assigned by OpenNMS
@@ -176,8 +191,8 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 * Stop method of fiber, called by OpenNMS when fiber execution is to
-	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or 
-	 * database connections, before the fiber's execution is ended. 
+	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or
+	 * database connections, before the fiber's execution is ended.
 	 */
 	public void stop()
 	{
@@ -190,9 +205,9 @@ public class QoSDrx implements PausableFiber {
 	}
 
 	/**
-	 * Pause method of fiber, called by OpenNMS to put the fiber in a 
+	 * Pause method of fiber, called by OpenNMS to put the fiber in a
 	 * suspended state until it can be later resumed.
-	 * 
+	 *
 	 * NOTE QoSDrx.pause() NOT IMPLEMENTED - this method does nothing and returns
 	 */
 	public void pause()
@@ -208,9 +223,9 @@ public class QoSDrx implements PausableFiber {
 	}
 
 	/**
-	 * Resume method of fiber, called by OpenNMS to start the fiber up from 
+	 * Resume method of fiber, called by OpenNMS to start the fiber up from
 	 * a paused state.
-	 * 
+	 *
 	 * NOTE QoSDrx.resume() NOT IMPLEMENTED - this method does nothing and returns
 	 */
 	public void resume()
@@ -229,6 +244,8 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 *  Returns the Log category name
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String getName()
 	{
@@ -237,8 +254,9 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 *  lets OpenNMS know what state the daemon is in
-	 *  @param status
-	 */ 
+	 *
+	 * @return a int.
+	 */
 	public int getStatus()
 	{
 		return status;
@@ -247,6 +265,8 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 *  Method to get the QoSDrx's logger from OpenNMS
+	 *
+	 * @return a {@link org.apache.log4j.Logger} object.
 	 */
 	public static Logger getLog()
 	{
@@ -256,6 +276,7 @@ public class QoSDrx implements PausableFiber {
 
 	/**
 	 * Method to return statistics from the running receivers
+	 *
 	 * @return string representation of the statistics for the running receivers
 	 */
 	public String getRuntimeStatistics(){
@@ -273,7 +294,8 @@ public class QoSDrx implements PausableFiber {
 	
 	
 	/**
-	 * not used but needed for initialisation 
+	 * not used but needed for initialisation
+	 *
 	 * @return stats
 	 */
 	public String getStats() { 

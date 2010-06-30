@@ -35,12 +35,51 @@ package org.opennms.netmgt.importer.operations;
 
 
 
+/**
+ * <p>ImportOperationFactory interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ImportOperationFactory {
 
+    /**
+     * <p>createInsertOperation</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     * @param city a {@link java.lang.String} object.
+     * @param nonIpInterfaces a {@link java.lang.Boolean} object.
+     * @param nonIpSnmpPrimary a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.importer.operations.InsertOperation} object.
+     */
     public abstract InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, Boolean nonIpInterfaces, String nonIpSnmpPrimary);
 
+    /**
+     * <p>createUpdateOperation</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     * @param city a {@link java.lang.String} object.
+     * @param nonIpInterfaces a {@link java.lang.Boolean} object.
+     * @param nonIpSnmpPrimary a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.importer.operations.UpdateOperation} object.
+     */
     public abstract UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, Boolean nonIpInterfaces, String nonIpSnmpPrimary);
     
+    /**
+     * <p>createDeleteOperation</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.importer.operations.DeleteOperation} object.
+     */
     public abstract DeleteOperation createDeleteOperation(Integer nodeId, String foreignSource, String foreignId);
 
 }

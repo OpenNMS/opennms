@@ -47,6 +47,10 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 
 /**
+ * <p>NotificationCommandFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class NotificationCommandFactory extends NotificationCommandManager {
     /**
@@ -65,7 +69,11 @@ public class NotificationCommandFactory extends NotificationCommandManager {
     }
 
     /**
-     * 
+     * <p>init</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (!initialized) {
@@ -75,6 +83,9 @@ public class NotificationCommandFactory extends NotificationCommandManager {
     }
 
     /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.NotificationCommandFactory} object.
      */
     public static synchronized NotificationCommandFactory getInstance() {
 
@@ -86,10 +97,12 @@ public class NotificationCommandFactory extends NotificationCommandManager {
     }
 
     /**
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     * @throws FileNotFoundException
+     * <p>reload</p>
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
      */
     public void reload() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));

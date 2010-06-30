@@ -31,10 +31,29 @@
 //
 package org.opennms.netmgt.snmp;
 
+/**
+ * <p>ResponseProcessor interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ResponseProcessor {
 
+    /**
+     * <p>processResponse</p>
+     *
+     * @param snmpObjId a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     void processResponse(SnmpObjId snmpObjId, SnmpValue val);
 
+    /**
+     * <p>processErrors</p>
+     *
+     * @param errorStatus a int.
+     * @param errorIndex a int.
+     * @return a boolean.
+     */
     boolean processErrors(int errorStatus, int errorIndex);
 
 }

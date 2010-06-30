@@ -41,17 +41,19 @@ package org.opennms.netmgt.eventd.db;
 /**
  * This is an utility class used to format the event forward info - to be
  * inserted into the 'events' table
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class Forward {
     /**
      * Format each forward entry
-     * 
+     *
      * @param fwd
      *            the entry
-     * 
      * @return the formatted string
      */
     public static String format(org.opennms.netmgt.xml.event.Forward fwd) {
@@ -66,13 +68,12 @@ public class Forward {
 
     /**
      * Format the array of forward entries of the event
-     * 
+     *
      * @param forwards
      *            the list
      * @param sz
      *            the size to which the formatted string is to be limited
      *            to(usually the size of the column in the database)
-     * 
      * @return the formatted string
      */
     public static String format(org.opennms.netmgt.xml.event.Forward[] forwards, int sz) {

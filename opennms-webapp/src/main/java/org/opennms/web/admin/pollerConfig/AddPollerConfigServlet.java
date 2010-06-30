@@ -73,9 +73,13 @@ import org.opennms.web.Util;
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
  * node
- * 
+ *
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AddPollerConfigServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -104,6 +108,11 @@ public class AddPollerConfigServlet extends HttpServlet {
 
     boolean errorflag = false;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
@@ -137,6 +146,11 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>reloadFiles</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void reloadFiles() throws ServletException {
         ServletConfig config = this.getServletConfig();
         try {
@@ -170,6 +184,9 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>initCapsdProtocols</p>
+     */
     public void initCapsdProtocols() {
         capsdProtocols = new HashMap<String, ProtocolPlugin>();
         pluginColl = getProtocolPlugins();
@@ -187,6 +204,9 @@ public class AddPollerConfigServlet extends HttpServlet {
         return capsdConfig.getProtocolPluginCollection();
     }
 
+    /**
+     * <p>initPollerServices</p>
+     */
     public void initPollerServices() {
         pollerServices = new HashMap<String, Service>();
         Collection<org.opennms.netmgt.config.poller.Package> packageColl = getPackages();
@@ -213,6 +233,7 @@ public class AddPollerConfigServlet extends HttpServlet {
         return pollerConfig.getPackageCollection();
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String user_id = request.getRemoteUser();
 
@@ -259,6 +280,18 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>addCapsdInfo</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param port a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param protocol a {@link java.lang.String} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.io.IOException if any.
+     */
     @SuppressWarnings("null")
     public void addCapsdInfo(String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
@@ -369,6 +402,19 @@ public class AddPollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>addPollerInfo</p>
+     *
+     * @param bPolled a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     * @param port a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param protocol a {@link java.lang.String} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.io.IOException if any.
+     */
     public void addPollerInfo(String bPolled, String name, String port, String user, String protocol, HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.

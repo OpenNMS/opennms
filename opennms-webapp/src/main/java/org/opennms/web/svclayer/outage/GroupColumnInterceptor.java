@@ -43,16 +43,21 @@ import org.extremecomponents.table.core.TableModel;
 import org.extremecomponents.table.interceptor.ColumnInterceptor;
 
 /**
- * 
+ * <p>GroupColumnInterceptor class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class GroupColumnInterceptor implements ColumnInterceptor {
     private static final String LAST_VALUE = "lastValue";
 
+    /** {@inheritDoc} */
     public void addColumnAttributes(TableModel tableModel, Column column) {
         //do nothing
     }
 
+    /** {@inheritDoc} */
     public void modifyColumnAttributes(TableModel tableModel, Column column) {
         Object value = column.getValue();
         Object lastValue = column.getAttribute(LAST_VALUE);

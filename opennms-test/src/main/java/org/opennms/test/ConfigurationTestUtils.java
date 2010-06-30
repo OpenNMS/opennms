@@ -59,10 +59,23 @@ import java.net.URL;
 
 import junit.framework.Assert;
 
+/**
+ * <p>ConfigurationTestUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ConfigurationTestUtils extends Assert {
     private static final String POM_FILE = "pom.xml";
     private static final String DAEMON_DIRECTORY = "opennms-daemon";
 
+    /**
+     * <p>getUrlForResource</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param resource a {@link java.lang.String} object.
+     * @return a {@link java.net.URL} object.
+     */
     public static URL getUrlForResource(Object obj, String resource) {
         URL url = getClass(obj).getResource(resource);
         assertNotNull("could not get resource '" + resource + "' as a URL", url);
@@ -73,6 +86,13 @@ public class ConfigurationTestUtils extends Assert {
         return (obj != null) ? obj.getClass() : ConfigurationTestUtils.class.getClass();
     }
     
+    /**
+     * <p>getFileForResource</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param resource a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
     public static File getFileForResource(Object obj, String resource) {
         URL url = getUrlForResource(obj, resource);
         
@@ -85,10 +105,24 @@ public class ConfigurationTestUtils extends Assert {
         return file;
     }
 
+    /**
+     * <p>getReaderForResource</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param resource a {@link java.lang.String} object.
+     * @return a {@link java.io.Reader} object.
+     */
     public static Reader getReaderForResource(Object obj, String resource) {
         return new InputStreamReader(getInputStreamForResource(obj, resource));
     }
 
+    /**
+     * <p>getInputStreamForResource</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param resource a {@link java.lang.String} object.
+     * @return a {@link java.io.InputStream} object.
+     */
     public static InputStream getInputStreamForResource(Object obj,
             String resource) {
         assertFalse("obj should not be an instance of java.lang.Class; you usually want to use 'this'", obj instanceof Class);
@@ -97,6 +131,15 @@ public class ConfigurationTestUtils extends Assert {
         return is;
     }
     
+    /**
+     * <p>getReaderForResourceWithReplacements</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param resource a {@link java.lang.String} object.
+     * @param replacements an array of {@link java.lang.String} objects.
+     * @return a {@link java.io.Reader} object.
+     * @throws java.io.IOException if any.
+     */
     public static Reader getReaderForResourceWithReplacements(Object obj,
             String resource, String[] ... replacements) throws IOException {
         String newConfig = getConfigForResourceWithReplacements(obj, resource,
@@ -105,6 +148,15 @@ public class ConfigurationTestUtils extends Assert {
     }
     
     
+    /**
+     * <p>getInputStreamForResourceWithReplacements</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param resource a {@link java.lang.String} object.
+     * @param replacements an array of {@link java.lang.String} objects.
+     * @return a {@link java.io.InputStream} object.
+     * @throws java.io.IOException if any.
+     */
     public static InputStream getInputStreamForResourceWithReplacements(Object obj,
             String resource, String[] ... replacements) throws IOException {
         String newConfig = getConfigForResourceWithReplacements(obj, resource,
@@ -113,6 +165,15 @@ public class ConfigurationTestUtils extends Assert {
     }
     
     
+    /**
+     * <p>getConfigForResourceWithReplacements</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param resource a {@link java.lang.String} object.
+     * @param replacements an array of {@link java.lang.String} objects.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     public static String getConfigForResourceWithReplacements(Object obj,
             String resource, String[] ... replacements) throws IOException {
 
@@ -135,20 +196,45 @@ public class ConfigurationTestUtils extends Assert {
         return newConfig;
     }
 
+    /**
+     * <p>getReaderForConfigFile</p>
+     *
+     * @param configFile a {@link java.lang.String} object.
+     * @return a {@link java.io.Reader} object.
+     * @throws java.io.FileNotFoundException if any.
+     */
     public static Reader getReaderForConfigFile(String configFile) throws FileNotFoundException {
         return new InputStreamReader(getInputStreamForConfigFile(configFile));
     }
 
+    /**
+     * <p>getInputStreamForConfigFile</p>
+     *
+     * @param configFile a {@link java.lang.String} object.
+     * @return a {@link java.io.InputStream} object.
+     * @throws java.io.FileNotFoundException if any.
+     */
     public static InputStream getInputStreamForConfigFile(String configFile) throws FileNotFoundException {
         return new FileInputStream(getFileForConfigFile(configFile));
     }
 
+    /**
+     * <p>getFileForConfigFile</p>
+     *
+     * @param configFile a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
     public static File getFileForConfigFile(String configFile) {
         File file = new File(getDaemonEtcDirectory(), configFile);
         assertTrue("configuration file '" + configFile + "' does not exist at " + file.getAbsolutePath(), file.exists());
         return file;
     }
 
+    /**
+     * <p>getDaemonEtcDirectory</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public static File getDaemonEtcDirectory() {
         String etcPath = 
             "src"+File.separator+
@@ -158,14 +244,29 @@ public class ConfigurationTestUtils extends Assert {
         return new File(getDaemonProjectDirectory(), etcPath);
     }
     
+    /**
+     * <p>setRelativeHomeDirectory</p>
+     *
+     * @param relativeHomeDirectory a {@link java.lang.String} object.
+     */
     public static void setRelativeHomeDirectory(String relativeHomeDirectory) {
         setAbsoluteHomeDirectory(new File(getCurrentDirectory().getAbsolutePath(), relativeHomeDirectory).getAbsolutePath());
     }
 
+    /**
+     * <p>setAbsoluteHomeDirectory</p>
+     *
+     * @param absoluteHomeDirectory a {@link java.lang.String} object.
+     */
     public static void setAbsoluteHomeDirectory(final String absoluteHomeDirectory) {
         System.setProperty("opennms.home", absoluteHomeDirectory);
     }
 
+    /**
+     * <p>getTopProjectDirectory</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public static File getTopProjectDirectory() {
         File currentDirectory = getCurrentDirectory();
 
@@ -182,6 +283,11 @@ public class ConfigurationTestUtils extends Assert {
         return currentDirectory;
     }
 
+    /**
+     * <p>getDaemonProjectDirectory</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public static File getDaemonProjectDirectory() {
         File topLevelDirectory = getTopProjectDirectory();
         File daemonDirectory = new File(topLevelDirectory, DAEMON_DIRECTORY);
@@ -213,10 +319,20 @@ public class ConfigurationTestUtils extends Assert {
         }
     }
 
+    /**
+     * <p>setRrdBinary</p>
+     *
+     * @param path a {@link java.lang.String} object.
+     */
     public static void setRrdBinary(String path) {
         System.setProperty("rrd.binary", path);
     }
 
+    /**
+     * <p>setRelativeRrdBaseDirectory</p>
+     *
+     * @param relativePath a {@link java.lang.String} object.
+     */
     public static void setRelativeRrdBaseDirectory(String relativePath) {
         File rrdDir = new File(getCurrentDirectory(), relativePath);
         if (!rrdDir.exists()) {

@@ -44,18 +44,23 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * 
+ * <p>DistributedStatusDetailsValidator class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DistributedStatusDetailsValidator implements Validator, InitializingBean {
     
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
 
+    /** {@inheritDoc} */
     public boolean supports(Class clazz) {
         return clazz.equals(DistributedStatusDetailsCommand.class);
     }
 
+    /** {@inheritDoc} */
     public void validate(Object obj, Errors errors) {
         DistributedStatusDetailsCommand cmd = (DistributedStatusDetailsCommand) obj;
         
@@ -88,6 +93,9 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
         }
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         if (m_applicationDao == null) {
             throw new IllegalStateException("applicationDao property not set");
@@ -97,18 +105,38 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
         }
     }
 
+    /**
+     * <p>getApplicationDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     */
     public ApplicationDao getApplicationDao() {
         return m_applicationDao;
     }
 
+    /**
+     * <p>setApplicationDao</p>
+     *
+     * @param applicationDao a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     */
     public void setApplicationDao(ApplicationDao applicationDao) {
         m_applicationDao = applicationDao;
     }
 
+    /**
+     * <p>getLocationMonitorDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
 
+    /**
+     * <p>setLocationMonitorDao</p>
+     *
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
     }

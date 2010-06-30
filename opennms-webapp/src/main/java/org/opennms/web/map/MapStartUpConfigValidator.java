@@ -42,14 +42,19 @@ import org.springframework.validation.Validator;
 
 
 /**
- * 
+ * <p>MapStartUpConfigValidator class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class MapStartUpConfigValidator implements Validator{
+	/** {@inheritDoc} */
 	public boolean supports(Class aClass) {
 		return aClass.equals(MapStartUpConfig.class);
 	}
 
+	/** {@inheritDoc} */
 	public void validate(Object o, Errors errors) {
 		
 		MapStartUpConfig config = (MapStartUpConfig) o;

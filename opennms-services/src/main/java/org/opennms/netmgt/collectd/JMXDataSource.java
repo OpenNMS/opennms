@@ -53,18 +53,19 @@ import org.opennms.netmgt.snmp.SnmpValue;
 /**
  * This class encapsulates an RRDTool data source. Data source information
  * parsed from the DataCollection.xml file is stored in RRDDataSource objects.
- * 
+ *
  * For additional information on RRD and RRDTool see:
  * http://ee-staff.ethz.ch/~oetiker/webtools/rrdtool/
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
  */
 public class JMXDataSource  {
 	private static final int MAX_DS_NAME_LENGTH = 19;
+	/** Constant <code>RRD_ERROR="RRD_ERROR"</code> */
 	public static final String RRD_ERROR = "RRD_ERROR";
 
     /**
@@ -131,7 +132,9 @@ public class JMXDataSource  {
     private String m_name;
     private String m_collectionName;
 
-	/**
+         /**
+          * <p>handlesType</p>
+          *
           * @param objectType MIB object type being inquired about
           * @return true if RRDDataSource can  handle the given type, false if it can't
           */
@@ -147,10 +150,9 @@ public class JMXDataSource  {
      * object type cannot be mapped to an RRD type, null is returned. RRD only
      * supports integer data so MIB objects of type 'octetstring' are not
      * supported.
-     * 
+     *
      * @param objectType -
      *            MIB object type to be mapped.
-     * 
      * @return RRD type string or NULL object type is not supported.
      */
     public static String mapType(String objectType) {
@@ -197,6 +199,12 @@ public class JMXDataSource  {
         m_max = "U";
     }
 
+       /**
+        * <p>Constructor for JMXDataSource.</p>
+        *
+        * @param obj a {@link org.opennms.netmgt.config.MibObject} object.
+        * @param collectionName a {@link java.lang.String} object.
+        */
        public JMXDataSource(MibObject obj, String collectionName) {
                 
                 m_collectionName = collectionName;
@@ -247,7 +255,7 @@ public class JMXDataSource  {
 
     /**
      * This method is used to assign the object's identifier.
-     * 
+     *
      * @param oid -
      *            object identifier in dotted decimal notation (e.g.,
      *            ".1.3.6.1.2.1.1.1")
@@ -258,7 +266,7 @@ public class JMXDataSource  {
 
     /**
      * This method is used to assign the object's instance id.
-     * 
+     *
      * @param instance -
      *            instance identifier (to be appended to oid)
      */
@@ -268,9 +276,8 @@ public class JMXDataSource  {
 
     /**
      * This method is used to assign the data source name.
-     * 
-     * @param alias -
-     *            object alias (e.g., "sysDescription")
+     *
+     * @param name a {@link java.lang.String} object.
      */
     public void setName(String name) {
         m_name = name;
@@ -278,7 +285,7 @@ public class JMXDataSource  {
 
     /**
      * Returns the object's identifier.
-     * 
+     *
      * @return The object's identifier string.
      */
     public String getOid() {
@@ -287,7 +294,7 @@ public class JMXDataSource  {
 
     /**
      * Returns the object's instance id.
-     * 
+     *
      * @return The object's instance id string.
      */
     public String getInstance() {
@@ -296,7 +303,7 @@ public class JMXDataSource  {
 
     /**
      * Returns the object's name.
-     * 
+     *
      * @return The object's name.
      */
     public String getName() {
@@ -308,10 +315,9 @@ public class JMXDataSource  {
      * Class copy constructor. Constructs a new object that is an identical to
      * the passed object, however no data is shared between the two objects. Any
      * changes to one will not affect the other.
-     * 
+     *
      * @param second
      *            The object to make a duplicate of.
-     * 
      */
     public JMXDataSource(JMXDataSource second) {
         m_oid = second.m_oid;
@@ -325,7 +331,7 @@ public class JMXDataSource  {
 
     /**
      * This method is used to assign the object's expected data type.
-     * 
+     *
      * @param type -
      *            object's data type
      */
@@ -333,35 +339,65 @@ public class JMXDataSource  {
         m_type = type;
     }
 
+    /**
+     * <p>setHeartbeat</p>
+     *
+     * @param heartbeat a int.
+     */
     public void setHeartbeat(int heartbeat) {
         m_heartbeat = heartbeat;
     }
 
+    /**
+     * <p>setMin</p>
+     *
+     * @param minimum a {@link java.lang.String} object.
+     */
     public void setMin(String minimum) {
         m_min = minimum;
     }
 
+    /**
+     * <p>setMax</p>
+     *
+     * @param maximum a {@link java.lang.String} object.
+     */
     public void setMax(String maximum) {
         m_max = maximum;
     }
 
     /**
      * Returns the object's data type.
-     * 
+     *
      * @return The object's data type
      */
     public String getType() {
         return m_type;
     }
 
+    /**
+     * <p>getHeartbeat</p>
+     *
+     * @return a int.
+     */
     public int getHeartbeat() {
         return m_heartbeat;
     }
 
+    /**
+     * <p>getMin</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMin() {
         return m_min;
     }
 
+    /**
+     * <p>getMax</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMax() {
         return m_max;
     }
@@ -369,7 +405,7 @@ public class JMXDataSource  {
     /**
      * Used to get a duplicate of self. The duplicate is identical to self but
      * shares no common data.
-     * 
+     *
      * @return A newly created copy of self.
      */
     public Object clone() {
@@ -380,7 +416,7 @@ public class JMXDataSource  {
      * This method is responsible for returning a String object which represents
      * the content of this RRDDataSource object. Primarily used for debugging
      * purposes.
-     * 
+     *
      * @return String which represents the content of this RRDDataSource object
      */
     public String toString() {
@@ -397,6 +433,14 @@ public class JMXDataSource  {
         return buffer.toString();
     }
        
+	/**
+	 * <p>performUpdate</p>
+	 *
+	 * @param owner a {@link java.lang.String} object.
+	 * @param repository a {@link java.io.File} object.
+	 * @param value a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+	 * @return a boolean.
+	 */
 	public boolean performUpdate(
 		String owner,
 		File repository,
@@ -418,6 +462,12 @@ public class JMXDataSource  {
 		return result;
 	}
 
+    /**
+     * <p>getStorableValue</p>
+     *
+     * @param snmpVal a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getStorableValue(SnmpValue snmpVal) {
         return (snmpVal == null ? null : Long.toString(snmpVal.toLong()));
     }

@@ -35,14 +35,41 @@ import java.util.Collection;
 
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
+/**
+ * <p>ReportLocatorService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ReportLocatorService {
 	
+	/**
+	 * <p>locateReports</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	Collection<?> locateReports();
 
+	/**
+	 * <p>locateReports</p>
+	 *
+	 * @param categoryName a {@link java.lang.String} object.
+	 * @return a {@link java.util.Collection} object.
+	 */
 	Collection<?> locateReports(String categoryName);
 	
+	/**
+	 * <p>deleteReport</p>
+	 *
+	 * @param id a int.
+	 */
 	void deleteReport(int id);
 	
+	/**
+	 * <p>addReport</p>
+	 *
+	 * @param locator a {@link org.opennms.netmgt.model.AvailabilityReportLocator} object.
+	 */
 	void addReport(AvailabilityReportLocator locator);
 	
 }

@@ -69,13 +69,25 @@ import org.opennms.core.utils.ThreadCategory;
  * pack=client.processCheckCommand(NsclientManager.convertStringToType(command),
  * params); </CODE>
  * <P>
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS</A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS</A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS</A>
+ * @version $Id: $
  */
-
 public class NsclientManager {
     /**
      * The default socket timeout.
@@ -202,7 +214,7 @@ public class NsclientManager {
     /**
      * This method uses CheckStrings to convert from a short value such as
      * CHECK_CLIENTVERSION to the a string, for example "CLIENTVERSION"
-     * 
+     *
      * @param type
      *            the CHECK_ type to look up in the CheckStrings map.
      * @return a string containing "NONE" if the short is not found in the
@@ -224,7 +236,7 @@ public class NsclientManager {
      * This method uses the CheckStrings HashMap to convert from a string to a
      * short value. For example if you passed "CLIENTVERSION" you would
      * receive the value of CHECK_CLIENTVERSION in return.
-     * 
+     *
      * @param type
      *            A string to look up a CHECK_ value from the CheckStrings
      *            HashMap.
@@ -245,7 +257,7 @@ public class NsclientManager {
     /**
      * This method is used for setting the password used to perform service
      * checks.
-     * 
+     *
      * @param pass
      *            the password to use when performing service checks.
      */
@@ -257,7 +269,7 @@ public class NsclientManager {
      * This method is used for overriding the port that is used to connect to
      * the remote service. This method must be called before calling the
      * init() method or it will have no effect.
-     * 
+     *
      * @param port
      *            the remote service port.
      */
@@ -267,7 +279,7 @@ public class NsclientManager {
 
     /**
      * Returns the port being used to connect to the remote service.
-     * 
+     *
      * @return the port being used to connect to the remote service.
      * @see init
      */
@@ -279,7 +291,7 @@ public class NsclientManager {
      * This method is used to set the host name to connect to for performing
      * remote service checks. This method must be called before calling the
      * init() method or it will have no effect.
-     * 
+     *
      * @param host
      *            the host name to connect to.
      * @see init
@@ -290,7 +302,7 @@ public class NsclientManager {
 
     /**
      * Returns the host name being used to connect to the remote service.
-     * 
+     *
      * @return the host name being used to connect to the remote service.
      */
     public String getHostName() {
@@ -301,7 +313,7 @@ public class NsclientManager {
      * This method is used to set the TCP socket timeout to be used when
      * connecting to the remote service. This must be called before calling
      * <code>init</code> or it will have no effect.
-     * 
+     *
      * @param timeout
      *            the TCP socket timeout.
      */
@@ -312,7 +324,7 @@ public class NsclientManager {
     /**
      * Returns the TCP socket timeout used when connecting to the remote
      * service.
-     * 
+     *
      * @return the tcp socket timeout.
      */
     public int getTimeout() {
@@ -321,7 +333,7 @@ public class NsclientManager {
 
     /**
      * Constructor.
-     * 
+     *
      * @param host
      *            sets the host name to connect to.
      */
@@ -331,7 +343,7 @@ public class NsclientManager {
 
     /**
      * Constructor. The password defaults to "None"
-     * 
+     *
      * @param host
      *            sets the host name to connect to.
      * @param port
@@ -344,7 +356,7 @@ public class NsclientManager {
 
     /**
      * Constructor.
-     * 
+     *
      * @param host
      *            sets the host name to connect to.
      * @param port
@@ -360,7 +372,7 @@ public class NsclientManager {
 
     /**
      * Constructor. The port number defaults to <code>DEFAULT_PORT</code>.
-     * 
+     *
      * @param host
      *            sets the host name to connect to.
      * @param pass
@@ -382,8 +394,8 @@ public class NsclientManager {
      * This method creates a new socket and attempts to connect to the remote
      * service. The input and output streams are created after the socket is
      * connected.
-     * 
-     * @throws NsclientException
+     *
+     * @throws org.opennms.netmgt.poller.nsclient.NsclientException
      *             if the hostname is unknown if the connection is refused if
      *             there is no route to the host if the host did not respond
      *             if there was an unexpected IO error. The thrown exception
@@ -471,7 +483,7 @@ public class NsclientManager {
      * This method determines which check method to call to create a request,
      * send to the server and process the results. It merely determines the
      * method to be called based on the type param.
-     * 
+     *
      * @param type
      *            the short ID of the type of check to be processed.
      * @param param
@@ -479,8 +491,8 @@ public class NsclientManager {
      *            on the respones from the remote service.
      * @return the NsclientPacket as processed by the check command method
      *         that is called.
-     * @throws NsclientException
-     *             this method rethrows NsclientExceptions caused by the check
+     * @throws org.opennms.netmgt.poller.nsclient.NsclientException
+     *             this method rethrows org.opennms.netmgt.poller.nsclient.NsclientExceptions caused by the check
      *             commands.
      */
     public NsclientPacket processCheckCommand(String type,

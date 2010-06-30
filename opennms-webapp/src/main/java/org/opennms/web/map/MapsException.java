@@ -37,9 +37,13 @@ package org.opennms.web.map;
 
 /**
  * Generic maps exception.
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class MapsException extends Exception {
     private static final long serialVersionUID = 1L;
@@ -53,6 +57,7 @@ public class MapsException extends Exception {
 
     /**
      * Create a new MapsException with the String specified as an error message.
+     *
      * @param msg   The error message for the exception.
      */
     public MapsException(String msg) {
@@ -61,6 +66,7 @@ public class MapsException extends Exception {
 
     /**
      * Create a new MapsException with the given Exception base cause and detail message.
+     *
      * @param msg   The detail message.
      * @param e     The exception to be encapsulated in a MapsException
      */
@@ -70,6 +76,7 @@ public class MapsException extends Exception {
 
     /**
      * Create a new MapsException with a given Exception base cause of the exception.
+     *
      * @param e     The exception to be encapsulated in a MapsException
      */
     public MapsException(Exception e) {

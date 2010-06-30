@@ -34,8 +34,11 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.access.DefaultLocatorFactory;
 
 /**
- * This JMX bean loads the QoSDrx daemon as a spring bean using the 
+ * This JMX bean loads the QoSDrx daemon as a spring bean using the
  * qosdrx-context.xml file.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class QoSDrx implements QoSDrxMBean {
 
@@ -49,11 +52,17 @@ public class QoSDrx implements QoSDrxMBean {
 		return m_context;
 	}
 
+	/**
+	 * <p>init</p>
+	 */
 	public void init() {
 		ThreadCategory.setPrefix(QoSDrx.NAME);
 	}
 
 
+	/**
+	 * <p>start</p>
+	 */
 	public void start() {
 //		TODO REMOVE EXAMPLE IMPORTER CODE
 //		ThreadCategory.setPrefix(ImporterService.NAME);
@@ -107,6 +116,9 @@ public class QoSDrx implements QoSDrxMBean {
 	}
 
 
+	/**
+	 * <p>stop</p>
+	 */
 	public void stop() {
 		ThreadCategory.setPrefix(QoSDrx.NAME);
 		m_status = Fiber.STOP_PENDING;
@@ -121,6 +133,7 @@ public class QoSDrx implements QoSDrxMBean {
 	
 	/**
 	 * Method to return statistics from the running receivers to MX4J
+	 *
 	 * @return string representation of the statistics for the running receivers
 	 */
 	public String getRuntimeStatistics(){
@@ -129,15 +142,30 @@ public class QoSDrx implements QoSDrxMBean {
 	
 	
 
+	/**
+	 * <p>status</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String status() {
 		ThreadCategory.setPrefix(QoSDrx.NAME);
 		return Fiber.STATUS_NAMES[m_status];
 	}
 
+	/**
+	 * <p>getStatus</p>
+	 *
+	 * @return a int.
+	 */
 	public int getStatus() {
 		return m_status;
 	}
 
+	/**
+	 * <p>getStats</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getStats() {
 		return getQoSDrx().getStats();
 	}

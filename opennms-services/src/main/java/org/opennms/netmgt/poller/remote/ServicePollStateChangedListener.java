@@ -38,11 +38,18 @@ package org.opennms.netmgt.poller.remote;
 import java.util.EventListener;
 
 /**
- * 
+ * <p>ServicePollStateChangedListener interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface ServicePollStateChangedListener extends EventListener{
 	
+	/**
+	 * <p>pollStateChange</p>
+	 *
+	 * @param e a {@link org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent} object.
+	 */
 	public void pollStateChange(ServicePollStateChangedEvent e);
 
 }

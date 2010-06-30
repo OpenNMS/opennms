@@ -72,16 +72,28 @@ import org.opennms.protocols.ip.IPv4Address;
  * {@link org.opennms.netmgt.snmp.SnmpAgentConfig SnmpAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class SnmpPeerFactory extends PeerFactory {
     /**
@@ -119,6 +131,14 @@ public final class SnmpPeerFactory extends PeerFactory {
 
     }
     
+    /**
+     * <p>Constructor for SnmpPeerFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
     }
@@ -126,13 +146,16 @@ public final class SnmpPeerFactory extends PeerFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -156,13 +179,16 @@ public final class SnmpPeerFactory extends PeerFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -173,6 +199,8 @@ public final class SnmpPeerFactory extends PeerFactory {
 
     /**
      * Saves the current settings to disk
+     *
+     * @throws java.lang.Exception if any.
      */
     public static synchronized void saveCurrent() throws Exception {
 
@@ -193,9 +221,8 @@ public final class SnmpPeerFactory extends PeerFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -206,6 +233,11 @@ public final class SnmpPeerFactory extends PeerFactory {
         return m_singleton;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param singleton a {@link org.opennms.netmgt.config.SnmpPeerFactory} object.
+     */
     public static synchronized void setInstance(SnmpPeerFactory singleton) {
         m_singleton = singleton;
         m_loaded = true;
@@ -326,6 +358,12 @@ public final class SnmpPeerFactory extends PeerFactory {
         m_config.setDefinition(definitions);
     }
     
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @param agentAddress a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
         return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
     }
@@ -671,6 +709,11 @@ public final class SnmpPeerFactory extends PeerFactory {
         return version;
     }
 
+    /**
+     * <p>getSnmpConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
+     */
     public static synchronized SnmpConfig getSnmpConfig() {
         return m_config;
     }
@@ -682,6 +725,9 @@ public final class SnmpPeerFactory extends PeerFactory {
 
     /**
      * display an IP as a dotted quad xxx.xxx.xxx.xxx
+     *
+     * @param ip a long.
+     * @return a {@link java.lang.String} object.
      */
     public static String toIpAddr (long ip) {
         StringBuffer sb = new StringBuffer( 15 );
@@ -699,9 +745,12 @@ public final class SnmpPeerFactory extends PeerFactory {
      * with many other attributes.  Uses new classes the wrap Castor generated code to
      * help with merging, comparing, and optimizing definitions.  Thanks for your
      * initial work on this Gerald.
-     * 
+     *
      * Puts a specific IP address with associated read-community string into
      * the currently loaded snmp-config.xml.
+     *
+     * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
+     * @throws java.net.UnknownHostException if any.
      */
     public synchronized void define(SnmpEventInfo info) throws UnknownHostException {
         SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
@@ -711,8 +760,8 @@ public final class SnmpPeerFactory extends PeerFactory {
 
     /**
      * Creates a string containing the XML of the current SnmpConfig
-     * 
-     * @return Marshalled SnmpConfig 
+     *
+     * @return Marshalled SnmpConfig
      */
     public static synchronized String marshallConfig() {
         String marshalledConfig = null;

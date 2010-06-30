@@ -40,16 +40,27 @@ import org.opennms.web.WebSecurityUtils;
 import org.springframework.validation.Errors;
 
 /**
- * 
+ * <p>OpenMapValidator class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class OpenMapValidator extends MapApplianceValidator {
+	/** {@inheritDoc} */
 	public boolean supports(Class aClass) {
 		return aClass.equals(HttpServletRequest.class);
 	}
 
+	/** {@inheritDoc} */
 	public void validate(Object o, Errors errors) {
 		
 		

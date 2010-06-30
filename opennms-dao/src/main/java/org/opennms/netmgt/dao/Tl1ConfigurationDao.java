@@ -39,9 +39,15 @@ import org.opennms.netmgt.config.tl1d.Tl1Element;
  * Tl1ConfigurationDao
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface Tl1ConfigurationDao {
     
+    /**
+     * <p>getElements</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     List<Tl1Element> getElements();
 
 }

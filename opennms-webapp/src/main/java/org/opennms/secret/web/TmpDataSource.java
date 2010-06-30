@@ -30,21 +30,40 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>TmpDataSource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
  */
 package org.opennms.secret.web;
-
 public class TmpDataSource {
 	String m_name;
 	String m_label;
+	/**
+	 * <p>Constructor for TmpDataSource.</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 * @param label a {@link java.lang.String} object.
+	 */
 	public TmpDataSource(String name, String label) {
 		m_name = name;
 		m_label = label;
 	}
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_name;
 	}
 	
+	/**
+	 * <p>getLabel</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLabel() {
 		return m_label;
 	}

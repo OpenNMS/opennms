@@ -55,11 +55,17 @@ import org.opennms.core.utils.ThreadCategory;
  * This class implements a simple scheduler to ensure the polling occurs at the
  * expected intervals. The scheduler employees a dynamic thread pool that adjust
  * to the load until a maximum thread count is reached.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- *  
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
@@ -210,12 +216,11 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * executable threads is specified in the constructor. The executable
 	 * threads are part of a runnable thread pool where the scheduled runnables
 	 * are executed.
-	 * 
+	 *
 	 * @param parent
 	 *            String prepended to "Scheduler" to create fiber name
 	 * @param maxSize
 	 *            The maximum size of the thread pool.
-	 *  
 	 */
 	public Scheduler(String parent, int maxSize) {
 
@@ -234,7 +239,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * executable threads is specified in the constructor. The executable
 	 * threads are part of a runnable thread pool where the scheduled runnables
 	 * are executed.
-	 * 
+	 *
 	 * @param parent
 	 *            String prepended to "Scheduler" to create fiber name
 	 * @param maxSize
@@ -245,7 +250,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * @param hiMark
 	 *            The high water mark ratio of thread size to threads when
 	 *            threads are started.
-	 *  
 	 */
 	public Scheduler(String parent, int maxSize, float lowMark, float hiMark) {
 		m_name = parent + "Scheduler-" + maxSize;
@@ -261,12 +265,11 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * This method is used to schedule a ready runnable in the system. The
 	 * interval is used as the key for determining which queue to add the
 	 * runnable.
-	 * 
+	 *
 	 * @param runnable
 	 *            The element to run when interval expires.
 	 * @param interval
 	 *            The queue to add the runnable to.
-	 * 
 	 * @throws java.lang.RuntimeException
 	 *             Thrown if an error occurs adding the element to the queue.
 	 */
@@ -309,19 +312,12 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * This method is used to schedule a ready runnable in the system. The
 	 * interval is used as the key for determining which queue to add the
 	 * runnable.
-	 * 
-	 * @param interval
-	 *            The queue to add the runnable to.
-	 * @param runnable
-	 *            The element to run when interval expires.
-	 * 
-	 * @throws java.lang.RuntimeException
-	 *             Thrown if an error occurs adding the element to the queue.
 	 */
-
 	public synchronized void schedule(long interval,
 			final ReadyRunnable runnable) {
 
@@ -380,14 +376,12 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	}
 
 	/**
-	 * This method is used to unschedule a ready runnable in the system. 
+	 * This method is used to unschedule a ready runnable in the system.
 	 * The runnuble is removed from all queue interval where is found.
-	 * 
+	 *
 	 * @param runnable
 	 *            The element to remove from queue intervals.
-	 * 
 	 */
-
 	public synchronized void unschedule(ReadyRunnable runnable) {
 				
 		if (log().isDebugEnabled()) 
@@ -408,14 +402,12 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * This method is used to unschedule a ready runnable in the system. The
 	 * interval is used as the key for determining which queue to remove the
 	 * runnable.
-	 * 
+	 *
 	 * @param interval
 	 *            The queue to add the runnable to.
 	 * @param runnable
 	 *            The element to remove.
-	 * 
 	 */
-
 	public synchronized void unschedule(ReadyRunnable runnable, long interval) {
 				
 		if (log().isDebugEnabled()) {
@@ -481,10 +473,10 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 	/**
 	 * This method is used to get a ready runnable in the system.
-	 * 
+	 *
 	 * @param runnable
 	 *            The element to get from queues interval.
-	 * 
+	 * @return a {@link org.opennms.netmgt.linkd.scheduler.ReadyRunnable} object.
 	 */
 	public synchronized ReadyRunnable getReadyRunnable(ReadyRunnable runnable) {
 		
@@ -517,6 +509,13 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 		return ThreadCategory.getInstance(getClass());
 	}
 	
+	/**
+	 * <p>getReadyRunnable</p>
+	 *
+	 * @param runnable a {@link org.opennms.netmgt.linkd.scheduler.ReadyRunnable} object.
+	 * @param interval a long.
+	 * @return a {@link org.opennms.netmgt.linkd.scheduler.ReadyRunnable} object.
+	 */
 	public synchronized ReadyRunnable getReadyRunnable(ReadyRunnable runnable,
 			long interval) {
 
@@ -590,6 +589,8 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 	/**
 	 * This returns the current time for the scheduler
+	 *
+	 * @return a long.
 	 */
 	public long getCurrentTime() {
 		return System.currentTimeMillis();
@@ -597,7 +598,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 	/**
 	 * Starts the fiber.
-	 * 
+	 *
 	 * @throws java.lang.IllegalStateException
 	 *             Thrown if the fiber is already running.
 	 */
@@ -618,7 +619,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	/**
 	 * Stops the fiber. If the fiber has never been run then an exception is
 	 * generated.
-	 * 
+	 *
 	 * @throws java.lang.IllegalStateException
 	 *             Throws if the fiber has never been started.
 	 */
@@ -637,7 +638,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	/**
 	 * Pauses the scheduler if it is current running. If the fiber has not been
 	 * run or has already stopped then an exception is generated.
-	 * 
+	 *
 	 * @throws java.lang.IllegalStateException
 	 *             Throws if the operation could not be completed due to the
 	 *             fiber's state.
@@ -660,7 +661,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	/**
 	 * Resumes the scheduler if it has been paused. If the fiber has not been
 	 * run or has already stopped then an exception is generated.
-	 * 
+	 *
 	 * @throws java.lang.IllegalStateException
 	 *             Throws if the operation could not be completed due to the
 	 *             fiber's state.
@@ -682,7 +683,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 	/**
 	 * Returns the current of this fiber.
-	 * 
+	 *
 	 * @return The current status.
 	 */
 	public synchronized int getStatus() {
@@ -693,7 +694,8 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 
 	/**
 	 * Returns the name of this fiber.
-	 *  
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String getName() {
 		return m_runner.getName();
@@ -703,7 +705,6 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
 	 * The main method of the scheduler. This method is responsible for checking
 	 * the runnable queues for ready objects and then enqueuing them into the
 	 * thread pool for execution.
-	 *  
 	 */
 	public void run() {
 

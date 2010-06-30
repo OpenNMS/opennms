@@ -51,8 +51,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
- * 
+ * <p>DbStpNodeEntry class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class DbStpNodeEntry
 {
@@ -644,22 +646,28 @@ public class DbStpNodeEntry
         static DbStpNodeEntry create(int nodeId,int basevlan) {
         	return new DbStpNodeEntry(nodeId,basevlan, false);
         }
-        /**
-		 * @return
+		/**
+		 * <p>get_nodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>get_basevlan</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_basevlan() {
 			return m_basevlan;
 		}
 
 		/**
-		 * @return
+		 * <p>get_basevlanname</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_basevlanname() {
 			return m_basevlanname;
@@ -686,7 +694,9 @@ public class DbStpNodeEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_basebridgeaddress</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_basebridgeaddress() {
 			return m_basebridgeaddress;
@@ -713,7 +723,9 @@ public class DbStpNodeEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_basenumports</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_basenumports() {
 			return m_basenumports;
@@ -740,7 +752,9 @@ public class DbStpNodeEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_basetype</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_basetype() {
 			return m_basetype;
@@ -770,7 +784,9 @@ public class DbStpNodeEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpdesignatedroot</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_stpdesignatedroot() {
 			return m_stpdesignatedroot;
@@ -797,7 +813,9 @@ public class DbStpNodeEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_stppriority</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stppriority() {
 			return m_stppriority;
@@ -824,7 +842,9 @@ public class DbStpNodeEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpprotocolspecification</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stpprotocolspecification() {
 			return m_stpprotocolspecification;
@@ -854,7 +874,9 @@ public class DbStpNodeEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_stprootcost</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stprootcost() {
 			return m_stprootcost;
@@ -881,7 +903,9 @@ public class DbStpNodeEntry
 		}
 
 		/**
-		 * @return
+		 * <p>get_stprootport</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stprootport() {
 			return m_stprootport;
@@ -1083,6 +1107,11 @@ public class DbStpNodeEntry
 			return entry;
 		}
 
+		/**
+		 * <p>toString</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String toString() {
 			String sep = System.getProperty("line.separator");
 			StringBuffer buf = new StringBuffer();

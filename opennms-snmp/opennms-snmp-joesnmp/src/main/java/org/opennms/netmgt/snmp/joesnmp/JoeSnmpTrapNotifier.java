@@ -41,33 +41,35 @@ import org.opennms.protocols.snmp.SnmpPduTrap;
 import org.opennms.protocols.snmp.SnmpTrapHandler;
 import org.opennms.protocols.snmp.SnmpTrapSession;
 
+/**
+ * <p>JoeSnmpTrapNotifier class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
     
     private TrapProcessorFactory m_trapProcessorFactory;
     private TrapNotificationListener m_listener;
 
+    /**
+     * <p>Constructor for JoeSnmpTrapNotifier.</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.snmp.TrapNotificationListener} object.
+     * @param factory a {@link org.opennms.netmgt.snmp.TrapProcessorFactory} object.
+     */
     public JoeSnmpTrapNotifier(TrapNotificationListener listener, TrapProcessorFactory factory) {
         m_listener = listener;
         m_trapProcessorFactory = factory;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Process the recieved SNMP v2c trap that was received by the underlying
      * trap session.
      * </P>
-     * 
-     * @param session
-     *            The trap session that received the datagram.
-     * @param agent
-     *            The remote agent that sent the datagram.
-     * @param port
-     *            The remmote port the trap was sent from.
-     * @param community
-     *            The community string contained in the message.
-     * @param pdu
-     *            The protocol data unit containing the data
-     * 
      */
     public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
             int port, SnmpOctetString community, SnmpPduPacket pdu) {
@@ -79,7 +81,7 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
      * Process the recieved SNMP v1 trap that was received by the underlying
      * trap session.
      * </P>
-     * 
+     *
      * @param session
      *            The trap session that received the datagram.
      * @param agent
@@ -90,7 +92,6 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
      *            The community string contained in the message.
      * @param pdu
      *            The protocol data unit containing the data
-     * 
      */
     public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
             int port, SnmpOctetString community, SnmpPduTrap pdu) {
@@ -98,6 +99,8 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
     }
     
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Processes an error condition that occurs in the SnmpTrapSession. The
      * errors are logged and ignored by the trapd class.

@@ -51,10 +51,12 @@ import org.springframework.util.Assert;
 
 /**
  * OpenNMS Trouble Ticket API implementation.
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class DefaultTicketerServiceLayer implements TicketerServiceLayer, InitializingBean {
 	
@@ -64,14 +66,17 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     
     static final String COMMS_ERROR_UEI = "uei.opennms.org/troubleTicket/communicationError";
     
+    /**
+     * <p>Constructor for DefaultTicketerServiceLayer.</p>
+     */
     public DefaultTicketerServiceLayer() {
         m_eventIpcManager = EventIpcManagerFactory.getIpcManager();
     }
     
 	/**
 	 * Needs access to the AlarmDao.
-	 * 
-	 * @param alarmDao
+	 *
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
 	 */
 	public void setAlarmDao(AlarmDao alarmDao) {
 		m_alarmDao = alarmDao;
@@ -80,8 +85,8 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /**
      * Needs access to the ticketer Plugin API implementation for
      * communication with the HelpDesk.
-     * 
-     * @param ticketerPlugin
+     *
+     * @param ticketerPlugin a {@link org.opennms.api.integration.ticketing.Plugin} object.
      */
     public void setTicketerPlugin(Plugin ticketerPlugin) {
         m_ticketerPlugin = ticketerPlugin;
@@ -90,6 +95,8 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /**
      * Spring functionality implemented to validate the state of the trouble ticket
      * plugin API.
+     *
+     * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_alarmDao != null, "alarmDao property must be set");
@@ -100,6 +107,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      * (non-Javadoc)
      * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#cancelTicketForAlarm(int, java.lang.String)
      */
+	/** {@inheritDoc} */
 	public void cancelTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
 		if (alarm == null) {
@@ -137,6 +145,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      * (non-Javadoc)
      * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#closeTicketForAlarm(int, java.lang.String)
      */
+	/** {@inheritDoc} */
 	public void closeTicketForAlarm(int alarmId, String ticketId) {
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
         
@@ -157,6 +166,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
 	 * (non-Javadoc)
 	 * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#createTicketForAlarm(int)
 	 */
+	/** {@inheritDoc} */
 	public void createTicketForAlarm(int alarmId) {
 	    
 		OnmsAlarm alarm = m_alarmDao.get(alarmId);
@@ -199,6 +209,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      * (non-Javadoc)
      * @see org.opennms.netmgt.ticketd.TicketerServiceLayer#updateTicketForAlarm(int, java.lang.String)
      */
+	/** {@inheritDoc} */
 	public void updateTicketForAlarm(int alarmId, String ticketId) {
 		
 //      ticket.setState(State.OPEN);
@@ -237,10 +248,20 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         return bldr.getEvent();
     }
 
+	/**
+	 * <p>getEventIpcManager</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 */
 	public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
     }
 
+    /**
+     * <p>setEventIpcManager</p>
+     *
+     * @param ipcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventIpcManager(EventIpcManager ipcManager) {
         m_eventIpcManager = ipcManager;
     }

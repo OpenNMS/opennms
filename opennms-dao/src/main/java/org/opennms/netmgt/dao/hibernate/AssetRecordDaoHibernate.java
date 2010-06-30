@@ -41,16 +41,37 @@ import java.util.Map;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
+/**
+ * <p>AssetRecordDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecord, Integer> implements AssetRecordDao {
 
+    /**
+     * <p>Constructor for AssetRecordDaoHibernate.</p>
+     */
     public AssetRecordDaoHibernate() {
 		super(OnmsAssetRecord.class);
 	}
 
+    /**
+     * <p>findByNodeId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
+     */
     public OnmsAssetRecord findByNodeId(Integer id) {
         return (OnmsAssetRecord)findUnique("from OnmsAssetRecord rec where rec.nodeId = ?", id);
     }
 
+    /**
+     * <p>findImportedAssetNumbersToNodeIds</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     */
     @SuppressWarnings("unchecked")
     public Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource) {
         List assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '"+foreignSource+"%'");

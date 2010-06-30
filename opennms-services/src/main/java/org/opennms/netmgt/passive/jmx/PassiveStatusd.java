@@ -49,14 +49,26 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 
 /**
- * 
+ * <p>PassiveStatusd class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class PassiveStatusd implements PassiveStatusdMBean {
+    /** Constant <code>LOG4J_CATEGORY="OpenNMS.PassiveStatus"</code> */
     public final static String LOG4J_CATEGORY = "OpenNMS.PassiveStatus";
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -88,6 +100,9 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         keeper.init();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -95,6 +110,9 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         getPassiveStatusKeeper().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -102,6 +120,11 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         getPassiveStatusKeeper().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -109,6 +132,11 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         return getPassiveStatusKeeper().getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -116,6 +144,11 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);

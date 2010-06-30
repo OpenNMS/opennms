@@ -42,9 +42,12 @@ package org.opennms.netmgt.rtc;
 /**
  * This class is a repository for constant, static information concerning the
  * RTC.
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class RTCConstants {
     /**

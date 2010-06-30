@@ -34,7 +34,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>SnmpPrimaryChangeEventVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.importer.operations;
 
@@ -46,7 +49,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.xml.event.Event;
-
 public final class SnmpPrimaryChangeEventVisitor extends AbstractEntityVisitor {
 	private final List<Event> m_events;
 
@@ -54,6 +56,7 @@ public final class SnmpPrimaryChangeEventVisitor extends AbstractEntityVisitor {
 		m_events = events;
 	}
 
+	/** {@inheritDoc} */
 	public void visitNode(OnmsNode node) {
 		String snmpPrimaryIpAddr = "0.0.0.0";
 		for (OnmsIpInterface ipIface : node.getIpInterfaces()) {

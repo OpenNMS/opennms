@@ -34,23 +34,36 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>TmpNode class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
  */
 package org.opennms.secret.web;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
 public class TmpNode {
 	
 	static String[] nodeDSNames =  { "avgBusy5", "cpuLoad", "diskUtil" };
 	static String[] nodeDSLabels = { "Averge Busy 5", "CPU Load", "Disk Utilization" };
 
+	/**
+	 * <p>getNodeLabel</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getNodeLabel() {
 		return "Sample Node";
 	}
 	
+	/**
+	 * <p>getInterfaces</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<TmpInterface> getInterfaces() {
 		List<TmpInterface> list = new LinkedList<TmpInterface>();
 		for(int i =0; i < 2; i++) {
@@ -59,6 +72,11 @@ public class TmpNode {
 		return list;
 	}
 	
+	/**
+	 * <p>getDataSources</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<TmpDataSource> getDataSources() {
 		List<TmpDataSource> list = new LinkedList<TmpDataSource>();
 		for (int i = 0; i < nodeDSNames.length; i++) {
@@ -69,6 +87,11 @@ public class TmpNode {
 		return list;
 	}
 
+	/**
+	 * <p>getNodeId</p>
+	 *
+	 * @return a {@link java.lang.Long} object.
+	 */
 	public Long getNodeId() {
 		return new Long(1);
 	}

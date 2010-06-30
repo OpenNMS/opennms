@@ -46,43 +46,83 @@ import org.opennms.netmgt.rrd.RrdGraphDetails;
  * the graph command String used to generate the graph.  We keep the graph
  * command string around so we can generate a detailed error if
  * getInputStream() is called, but no graph was produced.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class JRobinRrdGraphDetails implements RrdGraphDetails {
     
     private RrdGraph m_rrdGraph;
     private String m_graphCommand;
 
+    /**
+     * <p>Constructor for JRobinRrdGraphDetails.</p>
+     *
+     * @param rrdGraph a {@link org.jrobin.graph.RrdGraph} object.
+     * @param graphCommand a {@link java.lang.String} object.
+     */
     public JRobinRrdGraphDetails(RrdGraph rrdGraph, String graphCommand) {
         m_rrdGraph = rrdGraph;
         m_graphCommand = graphCommand;
     }
     
+    /**
+     * <p>getRrdGraph</p>
+     *
+     * @return a {@link org.jrobin.graph.RrdGraph} object.
+     */
     public RrdGraph getRrdGraph() {
         return m_rrdGraph;
     }
     
+    /**
+     * <p>getGraphCommand</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGraphCommand() {
         return m_graphCommand;
     }
     
+    /**
+     * <p>getInputStream</p>
+     *
+     * @return a {@link java.io.InputStream} object.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
+     */
     public InputStream getInputStream() throws RrdException {
         assertGraphProduced();
 
         return new ByteArrayInputStream(m_rrdGraph.getRrdGraphInfo().getBytes());
     }
 
+    /**
+     * <p>getPrintLines</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getPrintLines() {
         return m_rrdGraph.getRrdGraphInfo().getPrintLines();
     }
 
+    /**
+     * <p>getHeight</p>
+     *
+     * @return a int.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
+     */
     public int getHeight() throws RrdException {
         assertGraphProduced();
         
         return m_rrdGraph.getRrdGraphInfo().getHeight();
     }
 
+    /**
+     * <p>getWidth</p>
+     *
+     * @return a int.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
+     */
     public int getWidth() throws RrdException {
         assertGraphProduced();
         

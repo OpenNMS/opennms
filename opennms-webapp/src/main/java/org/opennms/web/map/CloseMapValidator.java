@@ -39,14 +39,19 @@ import org.springframework.validation.Errors;
 
 
 /**
- * 
+ * <p>CloseMapValidator class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class CloseMapValidator extends MapApplianceValidator {
+	/** {@inheritDoc} */
 	public boolean supports(Class aClass) {
 		return aClass.equals(HttpServletRequest.class);
 	}
 
+	/** {@inheritDoc} */
 	public void validate(Object o, Errors errors) {
 		
 		super.validate(o, errors);

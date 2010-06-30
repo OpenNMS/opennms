@@ -35,8 +35,11 @@
 package org.opennms.web.map.view;
 
 /**
- * 
+ * <p>VLinkInfo class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class VLinkInfo {
 	String id;

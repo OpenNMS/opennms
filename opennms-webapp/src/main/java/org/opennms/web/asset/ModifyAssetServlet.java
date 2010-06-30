@@ -54,12 +54,24 @@ import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
 
+/**
+ * <p>ModifyAssetServlet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ModifyAssetServlet extends HttpServlet {
     private static final long serialVersionUID = 9203659232262966182L;
     private static Set<String> s_allowHtmlFields;
     
     protected AssetModel model;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         this.model = new AssetModel();
         initAllowHtmlFields();
@@ -76,6 +88,7 @@ public class ModifyAssetServlet extends HttpServlet {
         
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nodeIdString = request.getParameter("node");
         String isNewString = request.getParameter("isnew");
@@ -109,6 +122,13 @@ public class ModifyAssetServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>getRequestParameter</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String getRequestParameter(final HttpServletRequest request, final String name) {
         boolean allowHTML = false;
         if (s_allowHtmlFields.contains(name.toLowerCase())) {
@@ -117,6 +137,13 @@ public class ModifyAssetServlet extends HttpServlet {
         return WebSecurityUtils.sanitizeString(request.getParameter(name), allowHTML);
     }
     
+    /**
+     * <p>parms2Asset</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param nodeId a int.
+     * @return a {@link org.opennms.web.asset.Asset} object.
+     */
     protected Asset parms2Asset(HttpServletRequest request, int nodeId) {
         Asset asset = new Asset();
 

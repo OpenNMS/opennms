@@ -43,12 +43,18 @@ import org.springframework.validation.Validator;
 
 
 /**
- * 
+ * <p>MapApplianceValidator class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.it">DJ Gregor</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.it">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class MapApplianceValidator implements Validator {
 	
+	/** {@inheritDoc} */
 	public boolean supports(Class aClass) {
 		return aClass.equals(HttpServletRequest.class);
 	}
@@ -57,6 +63,7 @@ public class MapApplianceValidator implements Validator {
 	
 	HttpServletRequest request;
 	
+	/** {@inheritDoc} */
 	public void validate(Object o, Errors errors) {
 		
 		request = (HttpServletRequest) o;

@@ -88,6 +88,12 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
+/**
+ * <p>Snmp4JStrategy class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Snmp4JStrategy implements SnmpStrategy {
 
     private static Map<TrapNotificationListener, RegistrationInfo> s_registrations = new HashMap<TrapNotificationListener, RegistrationInfo>();
@@ -123,16 +129,17 @@ public class Snmp4JStrategy implements SnmpStrategy {
         s_initialized = true;
     }
     
+    /**
+     * <p>Constructor for Snmp4JStrategy.</p>
+     */
     public Snmp4JStrategy() {
         initialize();
     }
     
     /**
+     * {@inheritDoc}
+     *
      * SNMP4J createWalker implemenetation.
-     * 
-     * @param snmpAgentConfig
-     * @param name
-     * @param tracker
      */
     public SnmpWalker createWalker(SnmpAgentConfig snmpAgentConfig, String name, CollectionTracker tracker) {
         return new Snmp4JWalker(new Snmp4JAgentConfig(snmpAgentConfig), name, tracker);
@@ -140,11 +147,16 @@ public class Snmp4JStrategy implements SnmpStrategy {
     
     /**
      * Not yet implemented.  Use a walker.
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
      */
     public SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oid) {
     	throw new UnsupportedOperationException("Snmp4JStrategy.getBulk not yet implemented.");
     }
 
+    /** {@inheritDoc} */
     public SnmpValue set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value) {
         if (log().isDebugEnabled()) {
             log().debug("set: OID: " + oid + " value: " + value.toString() + " for Agent: " + agentConfig);
@@ -157,6 +169,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return retvalues[0];
     }
 
+    /** {@inheritDoc} */
     public SnmpValue[] set(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
         if (log().isDebugEnabled()) {
             log().debug("set: OIDs: " + oids + " values: " + values + " for Agent: " + agentConfig);
@@ -166,13 +179,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * SNMP4J get helper that takes a single SnmpObjId
      * and calls get with an array.lenght =1 and returns
      * the first element of the returned array of SnmpValue.
-     * 
-     * @param agentConfig
-     * @param oid
-     *
      */
     public SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid) {
         if (log().isDebugEnabled()) {
@@ -186,14 +197,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
     
     /**
+     * {@inheritDoc}
+     *
      * SnmpGet implementation.
-     * 
-     * @param agentConfig
-     * @param oids
-     * @return
-     *        Returns an array of Snmp4JValues.  If the
-     *        get was unsuccessful, then the first elment
-     *        of the array will be null and lenth of 1. 
      */
     public SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         if (log().isDebugEnabled()) {
@@ -205,10 +211,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
     
     /**
      * SNMP4J getNext implementation
-     * 
-     * @param agentConfig
-     * @param oid
-     * 
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
      */
     public SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
         if (log().isDebugEnabled()) {
@@ -222,13 +228,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
     
     /**
      * SNMP GetNext implementation.
-     * 
-     * @param agentConfig
-     * @param oids
-     * @return
-     *        Returns an array of Snmp4JValues.  If the
-     *        getNext was unsuccessful, then the first element
-     *        of the array will be null and length of 1. 
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oids an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
      */
     public SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         if (log().isDebugEnabled()) {
@@ -252,12 +255,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
     /**
      * Sends and SNMP4J request pdu.  The attributes in SnmpAgentConfig should have been
      * adapted from default SnmpAgentConfig values to those compatible with the SNMP4J library.
-     * 
-     * @param agentConfig
-     * @param pduType TODO
-     * @param oids
-     * @param values can be null
-     * @return
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.snmp4j.Snmp4JAgentConfig} object.
+     * @param pdu a {@link org.snmp4j.PDU} object.
+     * @param expectResponse a boolean.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
      */
     protected SnmpValue[] send(Snmp4JAgentConfig agentConfig, PDU pdu, boolean expectResponse) {
         Snmp session;
@@ -296,6 +298,15 @@ public class Snmp4JStrategy implements SnmpStrategy {
         }
     }
 
+    /**
+     * <p>buildPdu</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.snmp4j.Snmp4JAgentConfig} object.
+     * @param pduType a int.
+     * @param oids an array of {@link org.opennms.netmgt.snmp.SnmpObjId} objects.
+     * @param values an array of {@link org.opennms.netmgt.snmp.SnmpValue} objects.
+     * @return a {@link org.snmp4j.PDU} object.
+     */
     protected PDU buildPdu(Snmp4JAgentConfig agentConfig, int pduType, SnmpObjId[] oids, SnmpValue[] values) {
         PDU pdu = agentConfig.createPdu(pduType);
         
@@ -364,6 +375,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return ThreadCategory.getInstance(getClass());
     }
     
+    /**
+     * <p>getValueFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValueFactory} object.
+     */
     public SnmpValueFactory getValueFactory() {
         if (m_valueFactory == null) {
             m_valueFactory = new Snmp4JValueFactory();
@@ -433,6 +449,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
 
 
+    /** {@inheritDoc} */
     public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException {
         RegistrationInfo info = new RegistrationInfo(listener, snmpTrapPort);
         
@@ -450,19 +467,40 @@ public class Snmp4JStrategy implements SnmpStrategy {
         snmp.listen();
     }
 
+    /** {@inheritDoc} */
     public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException {
         RegistrationInfo info = s_registrations.remove(listener);
         closeQuietly(info.getSession());
     }
 
+    /**
+     * <p>getV1TrapBuilder</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpV1TrapBuilder} object.
+     */
     public SnmpV1TrapBuilder getV1TrapBuilder() {
         return new Snmp4JV1TrapBuilder(this);
     }
 
+    /**
+     * <p>getV2TrapBuilder</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpTrapBuilder} object.
+     */
     public SnmpTrapBuilder getV2TrapBuilder() {
         return new Snmp4JV2TrapBuilder(this);
     }
     
+    /**
+     * <p>buildAgentConfig</p>
+     *
+     * @param address a {@link java.lang.String} object.
+     * @param port a int.
+     * @param community a {@link java.lang.String} object.
+     * @param pdu a {@link org.snmp4j.PDU} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @throws java.net.UnknownHostException if any.
+     */
     protected SnmpAgentConfig buildAgentConfig(String address, int port, String community, PDU pdu) throws UnknownHostException {
         SnmpAgentConfig config = new SnmpAgentConfig();
         config.setAddress(InetAddress.getByName(address));
@@ -471,6 +509,14 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return config;
     }
     
+    /**
+     * <p>sendTest</p>
+     *
+     * @param agentAddress a {@link java.lang.String} object.
+     * @param port a int.
+     * @param community a {@link java.lang.String} object.
+     * @param pdu a {@link org.snmp4j.PDU} object.
+     */
     public void sendTest(String agentAddress, int port, String community, PDU pdu) {
         for (RegistrationInfo info : s_registrations.values()) {
             if (port == info.getPort()) {

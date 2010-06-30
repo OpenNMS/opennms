@@ -53,14 +53,18 @@ import org.drools.audit.WorkingMemoryFileLogger;
 import org.drools.compiler.PackageBuilder;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>CorrelationExample class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class CorrelationExample {
 
     /**
-     * @param args
+     * <p>main</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
      */
     public static void main(final String[] args) throws Exception {
 
@@ -322,6 +326,12 @@ public class CorrelationExample {
 
 
 
+    /**
+     * <p>getObjectCount</p>
+     *
+     * @param memory a {@link org.drools.WorkingMemory} object.
+     * @return a int.
+     */
     public static int getObjectCount(WorkingMemory memory) {
         int count = 0;
         for(Iterator<?> it = memory.iterateObjects(); it.hasNext(); it.next()) {

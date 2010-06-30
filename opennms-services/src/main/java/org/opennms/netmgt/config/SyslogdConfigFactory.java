@@ -67,6 +67,13 @@ import java.io.Reader;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class SyslogdConfigFactory implements SyslogdConfig {
     /**
@@ -105,6 +112,13 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
 
     }
 
+    /**
+     * <p>Constructor for SyslogdConfigFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public SyslogdConfigFactory(Reader rdr) throws MarshalException,
             ValidationException {
         m_config = (SyslogdConfiguration) Unmarshaller.unmarshal(
@@ -169,6 +183,11 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_singleton;
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param config a {@link org.opennms.netmgt.config.SyslogdConfig} object.
+     */
     public static synchronized void setInstance(SyslogdConfig config) {
         m_singleton = config;
         m_loaded = true;
@@ -193,28 +212,58 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_config.getConfiguration().getNewSuspectOnMessage();
     }
 
+    /**
+     * <p>getForwardingRegexp</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public synchronized String getForwardingRegexp() {
         return m_config.getConfiguration().getForwardingRegexp();
     }
 
+    /**
+     * <p>getMatchingGroupHost</p>
+     *
+     * @return a int.
+     */
     public synchronized int getMatchingGroupHost() {
         return m_config.getConfiguration().getMatchingGroupHost();
 
     }
 
+    /**
+     * <p>getMatchingGroupMessage</p>
+     *
+     * @return a int.
+     */
     public synchronized int getMatchingGroupMessage() {
         return m_config.getConfiguration().getMatchingGroupMessage();
 
     }
 
+    /**
+     * <p>getUeiList</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
+     */
     public synchronized UeiList getUeiList() {
         return m_config.getUeiList();
     }
 
+    /**
+     * <p>getHideMessages</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
+     */
     public synchronized HideMessage getHideMessages() {
         return m_config.getHideMessage();
     }
     
+    /**
+     * <p>getDiscardUei</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public synchronized String getDiscardUei() {
         return m_config.getConfiguration().getDiscardUei();
     }

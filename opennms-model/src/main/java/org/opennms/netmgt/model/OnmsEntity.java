@@ -31,8 +31,19 @@
 //
 package org.opennms.netmgt.model;
 
+/**
+ * <p>Abstract OnmsEntity class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class OnmsEntity {
 	
+	/**
+	 * <p>visit</p>
+	 *
+	 * @param visitor a {@link org.opennms.netmgt.model.EntityVisitor} object.
+	 */
 	public abstract void visit(EntityVisitor visitor);
 
 }

@@ -34,27 +34,57 @@
 
 package org.opennms.netmgt.discovery.jmx;
 
+/**
+ * <p>Discovery class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Discovery implements DiscoveryMBean {
+    /**
+     * <p>init</p>
+     */
     public void init() {
         org.opennms.netmgt.discovery.Discovery.getInstance().init();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         org.opennms.netmgt.discovery.Discovery.getInstance().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         org.opennms.netmgt.discovery.Discovery.getInstance().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return org.opennms.netmgt.discovery.Discovery.getInstance().getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

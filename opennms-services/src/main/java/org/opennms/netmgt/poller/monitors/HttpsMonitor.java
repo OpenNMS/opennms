@@ -65,12 +65,24 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  * availability of the HTTPS service on remote interfaces. The class implements
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
- * 
+ *
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * 
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @version $Id: $
  */
 @Distributable
 final public class HttpsMonitor extends HttpMonitor {
@@ -80,10 +92,12 @@ final public class HttpsMonitor extends HttpMonitor {
      */
     private static final int[] DEFAULT_PORTS = { 443 };
 
+    /** {@inheritDoc} */
     protected int[] determinePorts(Map parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 
+    /** {@inheritDoc} */
     protected Socket wrapSocket(Socket socket) throws IOException {
         SSLSocketFactory sslSF = null;
         TrustManager[] tm = { new RelaxedX509TrustManager() };

@@ -36,6 +36,12 @@ import java.net.InetAddress;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>Abstract TrapInformation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class TrapInformation implements TrapNotification {
 
     /**
@@ -48,6 +54,13 @@ public abstract class TrapInformation implements TrapNotification {
     private String m_community;
     private TrapProcessor m_trapProcessor;
 
+    /**
+     * <p>Constructor for TrapInformation.</p>
+     *
+     * @param agent a {@link java.net.InetAddress} object.
+     * @param community a {@link java.lang.String} object.
+     * @param trapProcessor a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
+     */
     protected TrapInformation(InetAddress agent, String community, TrapProcessor trapProcessor) {
         m_agent = agent;
         m_community = community;
@@ -55,10 +68,17 @@ public abstract class TrapInformation implements TrapNotification {
         
     }
 
+    /**
+     * <p>getTrapAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     protected abstract InetAddress getTrapAddress();
 
     /**
      * Returns the sending agent's internet address
+     *
+     * @return a {@link java.net.InetAddress} object.
      */
     protected InetAddress getAgent() {
         return m_agent;
@@ -66,37 +86,80 @@ public abstract class TrapInformation implements TrapNotification {
 
     /**
      * Returns the SNMP community string from the received packet.
+     *
+     * @return a {@link java.lang.String} object.
      */
     protected String getCommunity() {
         return m_community;
     }
 
+    /**
+     * <p>validate</p>
+     */
     protected void validate() {
         // by default we do nothing;
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getAgentAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     protected InetAddress getAgentAddress() {
         return getAgent();
     }
     
+    /**
+     * <p>getTrapProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
+     */
     public TrapProcessor getTrapProcessor() {
         // We do this here to processing of the data is delayed until it is requested.
         processTrap();
         return m_trapProcessor;
     }
 
+    /**
+     * <p>getVersion</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected abstract String getVersion();
 
+    /**
+     * <p>getPduLength</p>
+     *
+     * @return a int.
+     */
     protected abstract int getPduLength();
 
+    /**
+     * <p>getTimeStamp</p>
+     *
+     * @return a long.
+     */
     protected abstract long getTimeStamp();
 
+    /**
+     * <p>getTrapIdentity</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.TrapIdentity} object.
+     */
     protected abstract TrapIdentity getTrapIdentity();
 
+    /**
+     * <p>processTrap</p>
+     */
     protected void processTrap() {
         
         validate();
@@ -120,8 +183,19 @@ public abstract class TrapInformation implements TrapNotification {
         } // end for loop
     }
 
+    /**
+     * <p>processVarBindAt</p>
+     *
+     * @param i a int.
+     */
     protected abstract void processVarBindAt(int i);
 
+    /**
+     * <p>processVarBind</p>
+     *
+     * @param name a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param value a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     protected void processVarBind(SnmpObjId name, SnmpValue value) {
         m_trapProcessor.processVarBind(name, value);
     }

@@ -37,33 +37,66 @@ import java.sql.SQLException;
 
 import org.opennms.web.element.NetworkElementFactory;
 
-/** Encapsulates all service filtering functionality. */
+/**
+ * Encapsulates all service filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ServiceFilter extends Object implements Filter {
+    /** Constant <code>TYPE="service"</code> */
     public static final String TYPE = "service";
 
     protected int serviceId;
 
+    /**
+     * <p>Constructor for ServiceFilter.</p>
+     *
+     * @param serviceId a int.
+     */
     public ServiceFilter(int serviceId) {
         this.serviceId = serviceId;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" SERVICEID=" + this.serviceId);
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" SERVICEID=?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setInt(parameterIndex, this.serviceId);
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.serviceId);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         String serviceName = Integer.toString(this.serviceId);
         try {
@@ -74,14 +107,25 @@ public class ServiceFilter extends Object implements Filter {
         return (TYPE + "=" + serviceName);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.ServiceFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>Getter for the field <code>serviceId</code>.</p>
+     *
+     * @return a int.
+     */
     public int getServiceId() {
         return (this.serviceId);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

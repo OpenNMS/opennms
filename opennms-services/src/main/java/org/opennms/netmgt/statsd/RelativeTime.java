@@ -44,7 +44,10 @@ import org.opennms.core.utils.DefaultTimeKeeper;
 import org.opennms.core.utils.TimeKeeper;
 
 /**
+ * <p>RelativeTime class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public enum RelativeTime {
     YESTERDAY {
@@ -99,21 +102,46 @@ public enum RelativeTime {
         }
     };
 
+    /**
+     * <p>getStart</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public abstract Date getStart();
+    /**
+     * <p>getEnd</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public abstract Date getEnd();
     
     private static TimeKeeper DEFAULT_TIME_KEEPER = new DefaultTimeKeeper();
     
     private TimeKeeper m_timeKeeper = null;
     
+    /**
+     * <p>getTimeKeeper</p>
+     *
+     * @return a {@link org.opennms.core.utils.TimeKeeper} object.
+     */
     public TimeKeeper getTimeKeeper() {
         return m_timeKeeper;
     }
     
+    /**
+     * <p>setTimeKeeper</p>
+     *
+     * @param timeKeeper a {@link org.opennms.core.utils.TimeKeeper} object.
+     */
     public void setTimeKeeper(TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
     }
     
+    /**
+     * <p>getCurrentTime</p>
+     *
+     * @return a long.
+     */
     protected long getCurrentTime() {
         if (getTimeKeeper() == null) {
             return DEFAULT_TIME_KEEPER.getCurrentTime();

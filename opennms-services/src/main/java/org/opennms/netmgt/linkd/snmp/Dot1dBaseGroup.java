@@ -59,16 +59,31 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:rssntn67@opennms.org">Antonio Russo</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@opennms.org">Antonio Russo</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@opennms.org">Antonio Russo</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class Dot1dBaseGroup extends AggregateTracker
 {
 	//
 	// Lookup strings for specific table entries
 	//
+	/** Constant <code>BASE_BRIDGE_ADDRESS="dot1dBaseBridgeAddress"</code> */
 	public final static	String	BASE_BRIDGE_ADDRESS	= "dot1dBaseBridgeAddress";
+	/** Constant <code>BASE_NUM_PORTS="dot1dBaseNumPorts"</code> */
 	public final static	String	BASE_NUM_PORTS		= "dot1dBaseNumPorts";
+	/** Constant <code>BASE_NUM_TYPE="dot1dBaseType"</code> */
 	public final static	String	BASE_NUM_TYPE		= "dot1dBaseType";
 	
 	/**
@@ -142,9 +157,7 @@ public final class Dot1dBaseGroup extends AggregateTracker
 	 * data has been collected the passed signaler object is <EM>notified</em>
 	 * using the notifyAll() method.</P>
 	 *
-	 * @param session	The SNMP session with the remote agent.
-	 * @param signaler	The object signaled when data collection is done.
-	 *
+	 * @param address a {@link java.net.InetAddress} object.
 	 */
 	public Dot1dBaseGroup(InetAddress address) {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));
@@ -152,14 +165,17 @@ public final class Dot1dBaseGroup extends AggregateTracker
         m_store = new SnmpStore(ms_elemList); 
 	}
 
+    /** {@inheritDoc} */
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         m_store.storeResult(base, inst, val);
     }
 
+    /** {@inheritDoc} */
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
+    /** {@inheritDoc} */
     protected void reportNoSuchNameErr(String msg) {
         log().info("Error retrieving systemGroup from "+m_address+". "+msg);
     }
@@ -168,16 +184,31 @@ public final class Dot1dBaseGroup extends AggregateTracker
         return ThreadCategory.getInstance(getClass());
     }
     
+    /**
+     * <p>getBridgeAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBridgeAddress() {
         return m_store.getHexString(BASE_BRIDGE_ADDRESS);
     }
     
+    /**
+     * <p>getNumberOfPorts</p>
+     *
+     * @return a int.
+     */
     public int getNumberOfPorts() {
     	Integer nop = m_store.getInt32(BASE_NUM_PORTS);
     	if (nop == null) return -1;
     	return nop;
     }
 
+    /**
+     * <p>getBridgeType</p>
+     *
+     * @return a int.
+     */
     public int getBridgeType() {
     	Integer type = m_store.getInt32(BASE_NUM_TYPE);
     	if (type == null) return -1;

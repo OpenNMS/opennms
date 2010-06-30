@@ -71,9 +71,12 @@ import org.springframework.util.StringUtils;
 
 /**
  * AvailabilityReport generates the Availability report in pdf format
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">Oculan </A>
+ * @version $Id: $
  */
 public class AvailabilityReport extends Object {
     /**
@@ -103,6 +106,11 @@ public class AvailabilityReport extends Object {
 
     /**
      * Default constructor
+     *
+     * @param author a {@link java.lang.String} object.
+     * @param startMonth a {@link java.lang.String} object.
+     * @param startDate a {@link java.lang.String} object.
+     * @param startYear a {@link java.lang.String} object.
      */
     public AvailabilityReport(String author, String startMonth,
             String startDate, String startYear) {
@@ -145,7 +153,7 @@ public class AvailabilityReport extends Object {
 
     /**
      * This when invoked generates the data into report castor classes.
-     * 
+     *
      * @param logourl
      *            location of the logo to be displayed on the report
      * @param categoryName
@@ -154,6 +162,9 @@ public class AvailabilityReport extends Object {
      *            Report Format ("SVG" / all)
      * @param monthFormat
      *            Format for month data ("classic"/"calendar")
+     * @param startMonth a {@link java.lang.String} object.
+     * @param startDate a {@link java.lang.String} object.
+     * @param startYear a {@link java.lang.String} object.
      */
     public void getReportData(String logourl, String categoryName,
             String reportFormat, String monthFormat, String startMonth,
@@ -177,7 +188,7 @@ public class AvailabilityReport extends Object {
 
     /**
      * This when invoked populates the castor classes.
-     * 
+     *
      * @param logourl
      *            location of the logo to be displayed on the report
      * @param categoryName
@@ -186,6 +197,9 @@ public class AvailabilityReport extends Object {
      *            Report Format ("SVG" / all)
      * @param monthFormat
      *            Format for month data ("classic"/"calendar")
+     * @param startMonth a {@link java.lang.String} object.
+     * @param startDate a {@link java.lang.String} object.
+     * @param startYear a {@link java.lang.String} object.
      */
     public void populateReport(String logourl, String categoryName,
             String reportFormat, String monthFormat, String startMonth,
@@ -207,8 +221,12 @@ public class AvailabilityReport extends Object {
 
     /**
      * This when invoked marshalls the report XML from the castor classes.
+     *
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
      */
-
     public void marshalReport() throws ValidationException, MarshalException,
             IOException, Exception {
 
@@ -233,6 +251,11 @@ public class AvailabilityReport extends Object {
 
     /**
      * Generate PDF from castor classes.
+     *
+     * @param pdfFileName a {@link java.lang.String} object.
+     * @param out a {@link java.io.OutputStream} object.
+     * @param format a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public void generatePDF(String pdfFileName, OutputStream out,
             String format) throws Exception {
@@ -271,6 +294,8 @@ public class AvailabilityReport extends Object {
 
     /**
      * Main method
+     *
+     * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String args[]) {
         // Spit warning level and higher messages out to the console
@@ -322,9 +347,16 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * @param logourl
-     * @param categoryName
-     * @param format
+     * <p>generateReport</p>
+     *
+     * @param logourl a {@link java.lang.String} object.
+     * @param categoryName a {@link java.lang.String} object.
+     * @param format a {@link java.lang.String} object.
+     * @param monthFormat a {@link java.lang.String} object.
+     * @param startMonth a {@link java.lang.String} object.
+     * @param startDate a {@link java.lang.String} object.
+     * @param startYear a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public static void generateReport(String logourl, String categoryName,
             String format, String monthFormat, String startMonth,

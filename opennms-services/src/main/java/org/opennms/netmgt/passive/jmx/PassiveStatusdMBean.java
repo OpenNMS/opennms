@@ -37,13 +37,33 @@
 //
 package org.opennms.netmgt.passive.jmx;
 
+/**
+ * <p>PassiveStatusdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface PassiveStatusdMBean {
+    /**
+     * <p>init</p>
+     */
     public void init();
 
+    /**
+     * <p>start</p>
+     */
     public void start();
 
+    /**
+     * <p>stop</p>
+     */
     public void stop();
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status();
 
 }

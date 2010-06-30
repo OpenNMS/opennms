@@ -68,10 +68,12 @@ import com.novell.ldap.LDAPSocketFactory;
  * availability of a generic LDAP service on remote interfaces. The class
  * implements the ServiceMonitor interface that allows it to be used along with
  * other plug-ins by the service poller framework.
- * 
+ *
  * @author <A HREF="jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 
 @Distributable
@@ -119,22 +121,14 @@ final public class LdapMonitor extends IPv4Monitor {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Poll the specified address for service availability.
-     * 
+     *
      * During the poll an attempt is made to connect the service.
-     * 
+     *
      * Provided that the interface's response is valid we set the service status
      * to SERVICE_AVAILABLE and return.
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
-     * 
-     * @throws java.lang.RuntimeException
-     *             Thrown if the interface experiences errors during the poll.
      */
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();

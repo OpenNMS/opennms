@@ -38,6 +38,12 @@ import java.util.TreeMap;
  */
 
 
+/**
+ * <p>JMXCollectorEntry class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JMXCollectorEntry extends TreeMap {
 	
 	private String objectName;
@@ -49,7 +55,7 @@ public class JMXCollectorEntry extends TreeMap {
      * table for the loaded instance may be retrieved through its OID from the
      * MIBObject.
      * </P>
-     * 
+     *
      * <P>
      * The initial table is constructed with zero elements in the map.
      * </P>
@@ -65,21 +71,16 @@ public class JMXCollectorEntry extends TreeMap {
      * created, this constructor will initialize all the variables as per their
      * named variable from the passed array of JMX varbinds.
      * </P>
-     * 
+     *
      * <P>
      * If the information in the object should not be modified then a <EM>final
      * </EM> modifier can be applied to the created object.
      * </P>
-     * 
+     *
      * @param vars
      *            The array of collected JMX variable bindings
-     * @param objList
-     *            List of MibObject objects representing each of of the oid's
-     *            configured for collection.
-     * @param ifIndex
-     *            The ifIndex (as a String) of the interface for which the
-     *            collected JMX data is relevant. NOTE: NULL if the collected
-     *            JMX data is for the node.
+     * @param objectName a {@link java.lang.String} object.
+     * @param types an array of {@link java.lang.String} objects.
      */
     public JMXCollectorEntry(String objectName, String[] vars, String[] types) {
         this();
@@ -94,14 +95,29 @@ public class JMXCollectorEntry extends TreeMap {
     /* (non-Javadoc)
      * @see java.util.TreeMap#keySet()
      */
+    /**
+     * <p>attributeNames</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set attributeNames() {
         return super.keySet();
     }
 
+	/**
+	 * <p>Getter for the field <code>objectName</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getObjectName() {
 		return objectName;
 	}
 
+	/**
+	 * <p>Setter for the field <code>objectName</code>.</p>
+	 *
+	 * @param objectName a {@link java.lang.String} object.
+	 */
 	public void setObjectName(String objectName) {
 		this.objectName = objectName;
 	}

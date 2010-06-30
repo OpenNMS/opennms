@@ -36,6 +36,13 @@
 
 package org.opennms.web;
 
+/**
+ * <p>MissingParameterException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class MissingParameterException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
@@ -43,10 +50,21 @@ public class MissingParameterException extends RuntimeException {
 
     protected String[] requiredParameters;
 
+    /**
+     * <p>Constructor for MissingParameterException.</p>
+     *
+     * @param missingParameter a {@link java.lang.String} object.
+     */
     public MissingParameterException(String missingParameter) {
         this(missingParameter, new String[] { missingParameter });
     }
 
+    /**
+     * <p>Constructor for MissingParameterException.</p>
+     *
+     * @param missingParameter a {@link java.lang.String} object.
+     * @param requiredParameters an array of {@link java.lang.String} objects.
+     */
     public MissingParameterException(String missingParameter, String[] requiredParameters) {
         if (missingParameter == null || requiredParameters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -56,14 +74,29 @@ public class MissingParameterException extends RuntimeException {
         this.requiredParameters = requiredParameters;
     }
 
+    /**
+     * <p>Getter for the field <code>missingParameter</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMissingParameter() {
         return (this.missingParameter);
     }
 
+    /**
+     * <p>Getter for the field <code>requiredParameters</code>.</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getRequiredParameters() {
         return (this.requiredParameters);
     }
 
+    /**
+     * <p>getMessage</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMessage() {
 	StringBuffer b = new StringBuffer();
 

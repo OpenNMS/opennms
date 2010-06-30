@@ -72,9 +72,14 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultNodeListService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:ayres@opennms.org">Bill Ayres</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:ayres@opennms.org">Bill Ayres</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultNodeListService implements NodeListService, InitializingBean {
     private static final Comparator<OnmsIpInterface> IP_INTERFACE_COMPARATOR = new IpInterfaceComparator();
@@ -84,6 +89,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     private CategoryDao m_categoryDao;
     private SiteStatusViewConfigDao m_siteStatusViewConfigDao;
 
+    /** {@inheritDoc} */
     public NodeListModel createNodeList(NodeListCommand command) {
         Collection<OnmsNode> onmsNodes = null;
         
@@ -329,31 +335,66 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     
     
 
+    /**
+     * <p>getCategoryDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
 
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
 
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    /**
+     * <p>getSiteStatusViewConfigDao</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.dao.SiteStatusViewConfigDao} object.
+     */
     public SiteStatusViewConfigDao getSiteStatusViewConfigDao() {
         return m_siteStatusViewConfigDao;
     }
 
+    /**
+     * <p>setSiteStatusViewConfigDao</p>
+     *
+     * @param siteStatusViewConfigDao a {@link org.opennms.web.svclayer.dao.SiteStatusViewConfigDao} object.
+     */
     public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao siteStatusViewConfigDao) {
         m_siteStatusViewConfigDao = siteStatusViewConfigDao;
     }
 
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "nodeDao property cannot be null");
         Assert.state(m_categoryDao != null, "categoryDao property cannot be null");

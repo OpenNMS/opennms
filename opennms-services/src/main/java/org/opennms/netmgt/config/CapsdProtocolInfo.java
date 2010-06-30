@@ -44,10 +44,12 @@ import org.opennms.netmgt.capsd.Plugin;
  * This class is used to encapsulate the basic protocol information read
  * from the config file. The information includes the plugin, the protocol
  * name, the merged parameters to the plugin, and the action to be taken.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class CapsdProtocolInfo {
     public enum Action { 
@@ -94,7 +96,7 @@ public final class CapsdProtocolInfo {
 
     /**
      * Constructs a new protocol information element.
-     * 
+     *
      * @param proto
      *            The protocol supported.
      * @param plugin
@@ -113,6 +115,8 @@ public final class CapsdProtocolInfo {
 
     /**
      * Returns the protocol name
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getProtocol() {
         return m_protocol;
@@ -120,6 +124,8 @@ public final class CapsdProtocolInfo {
 
     /**
      * Returns the plugin module
+     *
+     * @return a {@link org.opennms.netmgt.capsd.Plugin} object.
      */
     public Plugin getPlugin() {
         return m_plugin;
@@ -127,6 +133,8 @@ public final class CapsdProtocolInfo {
 
     /**
      * Returns the input parameters for the plugin
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, Object> getParameters() {
         return m_parameters;
@@ -135,6 +143,8 @@ public final class CapsdProtocolInfo {
     /**
      * Returns true if the configuration has this particular module set as
      * automatically enabled.
+     *
+     * @return a boolean.
      */
     public boolean isAutoEnabled() {
         return m_action == Action.AUTO_SET;

@@ -46,8 +46,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>BottomNAttributeStatisticVisitor class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisitorWithResults, InitializingBean {
 
@@ -55,13 +57,14 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
     private SortedSet<AttributeStatistic> m_results = new TreeSet<AttributeStatistic>(new AttributeStatisticComparator());
     protected Comparator<Double> m_comparator = new DoubleComparator();
 
+    /**
+     * <p>Constructor for BottomNAttributeStatisticVisitor.</p>
+     */
     public BottomNAttributeStatisticVisitor() {
         super();
     }
 
-    /**
-     * @see org.opennms.netmgt.model.AttributeStatisticVisitor#visit(org.opennms.netmgt.model.OnmsAttribute, double)
-     */
+    /** {@inheritDoc} */
     public void visit(OnmsAttribute attribute, double statistic) {
         Assert.notNull(attribute, "attribute argument must not be null");
         
@@ -69,21 +72,31 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
     }
 
     /**
+     * <p>afterPropertiesSet</p>
+     *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet() {
         Assert.state(m_count != null, "property count must be set to a non-null value");
     }
 
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getCount() {
         return m_count;
     }
 
+    /** {@inheritDoc} */
     public void setCount(Integer count) {
         m_count = count;
     }
 
     /**
+     * <p>getResults</p>
+     *
      * @return top attribute statistics (up to getCount() number)
      */
     public SortedSet<AttributeStatistic> getResults() {
@@ -100,10 +113,20 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
         return top;
     }
 
+    /**
+     * <p>getComparator</p>
+     *
+     * @return a {@link java.util.Comparator} object.
+     */
     public Comparator<Double> getComparator() {
         return m_comparator;
     }
 
+    /**
+     * <p>setComparator</p>
+     *
+     * @param comparator a {@link java.util.Comparator} object.
+     */
     public void setComparator(Comparator<Double> comparator) {
         m_comparator = comparator;
     }

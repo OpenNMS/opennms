@@ -42,13 +42,45 @@ import org.opennms.secret.model.Node;
 import org.opennms.secret.model.NodeInterface;
 
 /**
- * @author Ted Kaczmarek
+ * <p>DataSourceDao interface.</p>
  *
+ * @author Ted Kaczmarek
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface DataSourceDao {
+	/**
+	 * <p>inititalize</p>
+	 *
+	 * @param obj a {@link java.lang.Object} object.
+	 */
 	public abstract void inititalize(Object obj);
+	/**
+	 * <p>getDataSourcesByInterface</p>
+	 *
+	 * @param iface a {@link org.opennms.secret.model.NodeInterface} object.
+	 * @return a {@link java.util.List} object.
+	 */
 	public abstract List getDataSourcesByInterface(NodeInterface iface);
+	/**
+	 * <p>getDataSourceByService</p>
+	 *
+	 * @param service a {@link org.opennms.secret.model.InterfaceService} object.
+	 * @return a {@link org.opennms.secret.model.DataSource} object.
+	 */
 	public abstract DataSource getDataSourceByService(InterfaceService service);
+	/**
+	 * <p>getDataSourcesByNode</p>
+	 *
+	 * @param node a {@link org.opennms.secret.model.Node} object.
+	 * @return a {@link java.util.List} object.
+	 */
 	public abstract List getDataSourcesByNode(Node node);
+    /**
+     * <p>getDataSourceById</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link org.opennms.secret.model.DataSource} object.
+     */
     public abstract DataSource getDataSourceById(String id);
 }

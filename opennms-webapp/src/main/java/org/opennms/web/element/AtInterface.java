@@ -35,8 +35,11 @@
 package org.opennms.web.element;
 
 /**
- * 
+ * <p>AtInterface class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AtInterface
 {
@@ -70,6 +73,11 @@ public class AtInterface
                 m_status = status;
         }
 
+        /**
+         * <p>toString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String toString()
         {
                 StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n" );
@@ -80,49 +88,63 @@ public class AtInterface
                 return str.toString();
         }
 		/**
-		 * @return
+		 * <p>get_ifindex</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_ifindex() {
 			return m_ifindex;
 		}
 
 		/**
-		 * @return
+		 * <p>get_ipaddr</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_ipaddr() {
 			return m_ipaddr;
 		}
 
 		/**
-		 * @return
+		 * <p>get_lastPollTime</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_lastPollTime() {
 			return m_lastPollTime;
 		}
 
 		/**
-		 * @return
+		 * <p>get_nodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>get_physaddr</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_physaddr() {
 			return m_physaddr;
 		}
 
 		/**
-		 * @return
+		 * <p>get_sourcenodeid</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_sourcenodeid() {
 			return m_sourcenodeid;
 		}
 
 		/**
-		 * @return
+		 * <p>get_status</p>
+		 *
+		 * @return a char.
 		 */
 		public char get_status() {
 			return m_status;

@@ -42,12 +42,23 @@ import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
 
 /**
  * DAO for accessing the configuration for statsd.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see ResourceReference
+ * @version $Id: $
  */
 public interface StatisticsDaemonConfigDao {
+    /**
+     * <p>getReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Report> getReports();
     
+    /**
+     * <p>getPackages</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<StatsdPackage> getPackages();
 }

@@ -34,10 +34,19 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
+/**
+ * <p>SnmpInterfaceDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpInterfaceDaoHibernate extends
 		AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements
 		SnmpInterfaceDao {
 
+	/**
+	 * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
+	 */
 	public SnmpInterfaceDaoHibernate() {
 		super(OnmsSnmpInterface.class);
 	}

@@ -37,17 +37,33 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.zip.CRC32;
 
+/**
+ * <p>NrpePacket class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NrpePacket {
+	/** Constant <code>QUERY_PACKET=1</code> */
 	public static final short QUERY_PACKET = 1;
 
+	/** Constant <code>RESPONSE_PACKET=2</code> */
 	public static final short RESPONSE_PACKET = 2;
 
+	/** Constant <code>HELLO_COMMAND="_NRPE_CHECK"</code> */
 	public static final String HELLO_COMMAND = "_NRPE_CHECK";
 
+	/** Constant <code>PACKET_VERSION_2=2</code> */
 	public static final short PACKET_VERSION_2 = 2;
 
+	/** Constant <code>MAX_PACKETBUFFER_LENGTH=1024</code> */
 	public static final int MAX_PACKETBUFFER_LENGTH = 1024;
 
+	/** Constant <code>PACKET_SIZE=2 + // packet version, 16 bit integer
+			2 + // packet type, 16 bit integer
+			4 + // crc32, 32 bit unsigned integer
+			2 + // result code
+			MAX_PACKETBUFFER_LENGTH</code> */
 	public static final int PACKET_SIZE =
 			2 + // packet version, 16 bit integer
 			2 + // packet type, 16 bit integer
@@ -55,6 +71,7 @@ public class NrpePacket {
 			2 + // result code
 			MAX_PACKETBUFFER_LENGTH; // buffer
 
+	/** Constant <code>DEFAULT_PADDING=2</code> */
 	public static final int DEFAULT_PADDING = 2;
 
 	private short m_version = PACKET_VERSION_2;
@@ -65,47 +82,106 @@ public class NrpePacket {
 
 	private String m_buffer;
 
+	/**
+	 * <p>Constructor for NrpePacket.</p>
+	 */
 	public NrpePacket() {
 	}
 
+	/**
+	 * <p>Constructor for NrpePacket.</p>
+	 *
+	 * @param type a short.
+	 * @param resultCode a short.
+	 * @param buffer a {@link java.lang.String} object.
+	 */
 	public NrpePacket(short type, short resultCode, String buffer) {
 		m_type = type;
 		m_resultCode = resultCode;
 		m_buffer = buffer;
 	}
 
+	/**
+	 * <p>getVersion</p>
+	 *
+	 * @return a short.
+	 */
 	public short getVersion() {
 		return m_version;
 	}
 
+	/**
+	 * <p>setVersion</p>
+	 *
+	 * @param version a short.
+	 */
 	public void setVersion(short version) {
 		m_version = version;
 	}
 
+	/**
+	 * <p>getType</p>
+	 *
+	 * @return a short.
+	 */
 	public short getType() {
 		return m_type;
 	}
 
+	/**
+	 * <p>setType</p>
+	 *
+	 * @param type a short.
+	 */
 	public void setType(short type) {
 		m_type = type;
 	}
 
+	/**
+	 * <p>getResultCode</p>
+	 *
+	 * @return a short.
+	 */
 	public short getResultCode() {
 		return m_resultCode;
 	}
 
+	/**
+	 * <p>setResultCode</p>
+	 *
+	 * @param resultCode a short.
+	 */
 	public void setResultCode(short resultCode) {
 		m_resultCode = resultCode;
 	}
 
+	/**
+	 * <p>getBuffer</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getBuffer() {
 		return m_buffer;
 	}
 
+	/**
+	 * <p>setBuffer</p>
+	 *
+	 * @param buffer a {@link java.lang.String} object.
+	 */
 	public void setBuffer(String buffer) {
 		m_buffer = buffer;
 	}
 
+	/**
+	 * <p>receivePacket</p>
+	 *
+	 * @param i a {@link java.io.InputStream} object.
+	 * @param padding a int.
+	 * @return a {@link org.opennms.netmgt.poller.nrpe.NrpePacket} object.
+	 * @throws org.opennms.netmgt.poller.nrpe.NrpeException if any.
+	 * @throws java.io.IOException if any.
+	 */
 	public static NrpePacket receivePacket(InputStream i, int padding) throws NrpeException, IOException {
 
 		NrpePacket p = new NrpePacket();
@@ -154,6 +230,12 @@ public class NrpePacket {
 		return p;
 	}
 
+	/**
+	 * <p>positive</p>
+	 *
+	 * @param b a byte.
+	 * @return a int.
+	 */
 	public static int positive(byte b) {
 		if (b < 0) {
 			return b + 256;
@@ -162,11 +244,22 @@ public class NrpePacket {
 		}
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return "Version: " + m_version + "\n" + "Type: " + m_type + "\n"
 				+ "Result Code: " + m_resultCode + "\n" + "Buffer: " + m_buffer;
 	}
 	
+	/**
+	 * <p>buildPacket</p>
+	 *
+	 * @param padding a int.
+	 * @return an array of byte.
+	 */
 	public byte[] buildPacket(int padding) {
 		SecureRandom random;
 		
@@ -179,6 +272,13 @@ public class NrpePacket {
 		return buildPacket(padding, random);
 	}
 
+	/**
+	 * <p>buildPacket</p>
+	 *
+	 * @param padding a int.
+	 * @param random a {@link java.security.SecureRandom} object.
+	 * @return an array of byte.
+	 */
 	public byte[] buildPacket(int padding, SecureRandom random) {
 		byte[] packet = new byte[PACKET_SIZE + padding];
 		byte[] buffer = m_buffer.getBytes();

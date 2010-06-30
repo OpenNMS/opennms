@@ -66,11 +66,12 @@ import org.opennms.netmgt.utils.ParameterMap;
  * information at <a
  * href="http://www.opennms.org/users/docs/docs/html/devref.html">OpenNMS
  * developer site </a>
- * 
+ *
  * @author Jose Vicente Nunez Zuleta (josevnz@users.sourceforge.net) - RHCE,
  *         SJCD, SJCP version 0.1 - 07/23/2002 * version 0.2 - 08/05/2002 --
  *         Added retry logic, input validations to poller.
  * @since 0.1
+ * @version $Id: $
  */
 
 // NOTE: This requires that the JDBC Drivers for the dbs be included with the remote poller
@@ -89,19 +90,19 @@ public class JDBCMonitor extends IPv4Monitor {
 
 	/**
 	 * Class constructor.
+	 *
+	 * @throws java.lang.ClassNotFoundException if any.
+	 * @throws java.lang.InstantiationException if any.
+	 * @throws java.lang.IllegalAccessException if any.
 	 */
-
 	public JDBCMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		log().info("JDBCmonitor class loaded");
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * This method is called after the framework loads the plugin.
-	 * @param parameters
-	 *            Configuration parameters passed to the plugin
-	 * 
-	 * @throws RuntimeException
-	 *             If there is any error that prevents the plugin from running
 	 */
 	public void initialize(Map parameters) {
 		super.initialize(parameters);
@@ -111,8 +112,8 @@ public class JDBCMonitor extends IPv4Monitor {
 	/**
 	 * Release any used services by the plugin,normally during framework exit
 	 * For now this method is just an 'adaptor', does nothing
-	 * 
-	 * @throws RuntimeException
+	 *
+	 * @throws java.lang.RuntimeException
 	 *             Thrown if an error occurs during deallocation.
 	 */
 	public void release() {
@@ -122,12 +123,13 @@ public class JDBCMonitor extends IPv4Monitor {
 	/**
 	 * This method is called when an interface that support the service is added
 	 * to the scheduling service.
-	 * 
+	 *
 	 * @throws java.lang.RuntimeException
 	 *             Thrown if an unrecoverable error occurs that prevents the
 	 *             interface from being monitored.
 	 * @throws org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
 	 *             Thrown if the passed interface is invalid for this monitor.
+	 * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
 	 */
 	public void initialize(MonitoredService svc) {
 		super.initialize(svc);
@@ -135,42 +137,30 @@ public class JDBCMonitor extends IPv4Monitor {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * <P>
 	 * This method is the called whenever an interface is being removed from the
 	 * scheduler. For now this method is just an 'adaptor', does nothing
-	 * 
-	 * @throws java.lang.RuntimeException
-	 *             Thrown if an unrecoverable error occurs that prevents the
-	 *             interface from being monitored.
 	 */
 	public void release(MonitoredService svc) {
 		log().debug("Shuting down plugin");
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Network interface to poll for a given service. Make sure you're using the
 	 * latest (at least 5.5) <a
 	 * href="http://www.sybase.com/detail_list/1,6902,2912,00.html">JConnect
 	 * version </a> or the plugin will not be able to tell exactly if the
 	 * service is up or not.
-	 * @param parameters
-	 *            Parameters to pass when polling the interface Currently
-	 *            recognized Map keys:
-	 *            <ul>
-	 *            <li>user - Database user
-	 *            <li>password - User password
-	 *            <li>port - server port
-	 *            <li>timeout - Number of miliseconds to wait before sending a
-	 *            timeout
-	 *            <li>driver - The JDBC driver to use
-	 *            <li>url - The vendor specific jdbc URL
-	 *            </ul>
-	 * @param iface
-	 *            The interface to poll
-	 * @return int An status code that shows the status of the service
-	 * @throws java.lang.RuntimeException
-	 *             Thrown if an unrecoverable error occurs that prevents the
-	 *             interface from being monitored.
+	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
+	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
+	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
+	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
+	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
+	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
@@ -268,6 +258,11 @@ public class JDBCMonitor extends IPv4Monitor {
 		
 	}
 
+	/**
+	 * <p>closeStmt</p>
+	 *
+	 * @param statement a {@link java.sql.Statement} object.
+	 */
 	protected void closeStmt(Statement statement) {
 		if (statement != null) {
 			try {
@@ -286,6 +281,13 @@ public class JDBCMonitor extends IPv4Monitor {
 		}
 	}
 
+	/**
+	 * <p>checkDatabaseStatus</p>
+	 *
+	 * @param con a {@link java.sql.Connection} object.
+	 * @param parameters a {@link java.util.Map} object.
+	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+	 */
 	public PollStatus checkDatabaseStatus( Connection con, Map parameters )
 	{
 		PollStatus status = PollStatus.unavailable("Unable to retrieve database catalogs");

@@ -33,8 +33,22 @@ package org.opennms.report.availability;
 
 import java.util.Date;
 
+/**
+ * <p>ReportSchedulerService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ReportSchedulerService {
 
+	/**
+	 * <p>Schedule</p>
+	 *
+	 * @param category a {@link java.lang.String} object.
+	 * @param type a {@link java.lang.String} object.
+	 * @param format a {@link java.lang.String} object.
+	 * @param date a {@link java.util.Date} object.
+	 */
 	void Schedule(String category, String type, String format, Date date);
 	
 }

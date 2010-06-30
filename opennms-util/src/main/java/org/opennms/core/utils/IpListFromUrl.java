@@ -53,6 +53,9 @@ import org.apache.log4j.Category;
 
 /**
  * Convenience class for generating a list of IP addresses from a file URL.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class IpListFromUrl extends Object {
     /**
@@ -69,7 +72,7 @@ public class IpListFromUrl extends Object {
 
     /**
      * This method is used to read all interfaces from an URL file.
-     * 
+     *
      * <pre>
      * The file URL is read and each entry in this file checked. Each line
      *  in the URL file can be one of -
@@ -78,14 +81,13 @@ public class IpListFromUrl extends Object {
      *  &lt;IP&gt;
      *  or
      *  #&lt;comments&gt;
-     * 
+     *
      *  Lines starting with a '#' are ignored and so are characters after
      *  a '&lt;space&gt;#' in a line.
      * </pre>
-     * 
+     *
      * @param url
      *            The url file to read
-     * 
      * @return list of IPs in the file
      */
     public static List<String> parse(String url) {

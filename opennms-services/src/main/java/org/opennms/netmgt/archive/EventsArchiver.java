@@ -57,52 +57,54 @@ import org.opennms.netmgt.config.EventsArchiverConfigFactory;
 
 /**
  * <pre>
- * 
+ *
  *  The EventsArchiver is responsible for archiving and removing events
- *  from the 'events' table. 
- * 
+ *  from the 'events' table.
+ *
  *  The archival/deletion depends on the 'eventLog' and the 'eventDisplay'
  *  values for the event -
- * 
+ *
  *  If the 'eventLog == N and the eventDisplay == N',
  *  the event is simply deleted from the events table
- * 
+ *
  *  If the 'eventLog == N and the eventDisplay == Y',
  *  the event is deleted ONLY if the event has been acknowledged
- * 
+ *
  *  If the 'eventLog == Y and the eventDisplay == N',
  *  the event is sent to the archive file and deleted from the table
- * 
+ *
  *  If the 'eventLog == Y and the eventDisplay == Y',
  *  the event is sent to the archive file and deleted from the table
  *  ONLY if the event has been acknowledged
- * 
+ *
  *  An event is considered acknowledged if the 'eventAckUser' column has
  *  a non-null value
- * 
+ *
  *  An EventsArchiver run depends on attributes in the events archiver
  *  configuration file. The following are the properties that govern a run -
- * 
+ *
  *  - archiveAge
  *    This determines which events are to be removed - i.e events older
  *    than current time minus this time are removed
- * 
+ *
  *  - separator
  *    This is the separator used in between event table column values when an
  *    event is written to the archive file
- * 
+ *
  *  The EventsArchiver uses Apache's log4j both for its output logs and for
  *  the actual archiving itself - the set up for the log4j appenders for
  *  this archiver are all doneexclusively in the 'events.archiver.properties'
  *  property file
- * 
+ *
  *  A {@link org.apache.log4j.RollingFileAppender RollingFileAppender} is used
  *  for the archive file with the defaults for this being to roll when the
  *  size is 100KB with the number of backups set to 4.
- * 
+ *
  *  @author &lt;A HREF=&quot;mailto:sowmya@opennms.org&quot;&gt;Sowmya Nataraj&lt;/A&gt;
  *  @author &lt;A HREF=&quot;http://www.opennms.org&quot;&gt;OpenNMS&lt;/A&gt;
- * 
+ *  @author &lt;A HREF=&quot;mailto:sowmya@opennms.org&quot;&gt;Sowmya Nataraj&lt;/A&gt;
+ *  @author &lt;A HREF=&quot;http://www.opennms.org&quot;&gt;OpenNMS&lt;/A&gt;
+ * @version $Id: $
  */
 public class EventsArchiver {
     /**
@@ -497,6 +499,8 @@ public class EventsArchiver {
      * The events archiver constructor - reads required properties, initializes
      * the database connection and the prepared statements to select and delete
      * events
+     *
+     * @throws org.opennms.netmgt.archive.ArchiverException if any.
      */
     public EventsArchiver() throws ArchiverException {
         // call init
@@ -516,6 +520,11 @@ public class EventsArchiver {
         }
     }
 
+    /**
+     * <p>main</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] args) {
         try {
             // create the archiver

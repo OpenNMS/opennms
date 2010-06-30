@@ -47,6 +47,9 @@ import org.opennms.netmgt.xml.event.Event;
  * configured thresholding type on each configured data source on each
  * configured node/interface/etc..  The object that implements this
  * interface usually also stores state (hence the name).
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public interface ThresholdEvaluatorState {
     public enum Status {
@@ -55,16 +58,37 @@ public interface ThresholdEvaluatorState {
         RE_ARMED
     }
 
+    /**
+     * <p>evaluate</p>
+     *
+     * @param dsValue a double.
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status} object.
+     */
     public Status evaluate(double dsValue);
 
     //public Event getEventForState(Status status, Date date, double dsValue);
+    /**
+     * <p>getEventForState</p>
+     *
+     * @param status a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status} object.
+     * @param date a {@link java.util.Date} object.
+     * @param dsValue a double.
+     * @param instance a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event getEventForState(Status status, Date date, double dsValue, String instance);
     
+    /**
+     * <p>getThresholdConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.BaseThresholdDefConfigWrapper} object.
+     */
     public BaseThresholdDefConfigWrapper getThresholdConfig();
 
     /**
      * Returns a "clean" (armed, non-triggered) clone of this object
-     * @return
+     *
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState} object.
      */
     public ThresholdEvaluatorState getCleanClone();
 }

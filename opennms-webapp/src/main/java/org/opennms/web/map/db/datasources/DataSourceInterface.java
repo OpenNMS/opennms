@@ -39,32 +39,36 @@ package org.opennms.web.map.db.datasources;
 
 /**
  * The interface DataSource provide a way to get data named like the input.
- * 
+ *
  * @author mmigliore
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface DataSourceInterface {
 
 	/**
-	 * Gets the status of the element with id in input using params in input 
-	 * @param velem
-	 * @param params
+	 * Gets the status of the element with id in input using params in input
+	 *
 	 * @return the status of velem, -1 if no status is found for velem
+	 * @param id a {@link java.lang.Object} object.
 	 */
 	public String getStatus(Object id);
 	/**
-	 * Gets the severity of the element with id in input using params in input 
-	 * @param velem
-	 * @param params
+	 * Gets the severity of the element with id in input using params in input
+	 *
 	 * @return the severity of velem, -1 if no severity is found for velem
+	 * @param id a {@link java.lang.Object} object.
 	 */
 	public String getSeverity(Object id);
 	/**
-	 * Gets the availability of the element with id in input using params in input 
-	 * @param velem
-	 * @param params
+	 * Gets the availability of the element with id in input using params in input
+	 *
 	 * @return the availability of velem, -1 if no availability is found for velem
+	 * @param id a {@link java.lang.Object} object.
 	 */
 	public double getAvailability(Object id);
 

@@ -34,14 +34,17 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>TmpInterface class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
  */
 package org.opennms.secret.web;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
 public class TmpInterface {
 	
 	static String[] ifDSNames =  { "ifInOctets", "ifOutOctets", "ifInErrors", "ifInDiscards" };
@@ -49,12 +52,27 @@ public class TmpInterface {
 	static String[] svcNames = { "ICMP", "HTTP", "DNS", "SSH" };
 
 	String m_label;
+	/**
+	 * <p>Constructor for TmpInterface.</p>
+	 *
+	 * @param label a {@link java.lang.String} object.
+	 */
 	public TmpInterface(String label) {
 		m_label = label;
 	}
+	/**
+	 * <p>getIfDescr</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getIfDescr() {
 		return m_label;
 	}
+	/**
+	 * <p>getServices</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<TmpService> getServices() {
 		List<TmpService> list = new LinkedList<TmpService>();
 		for (int i = 0; i < svcNames.length; i++) {
@@ -63,6 +81,11 @@ public class TmpInterface {
 		}
 		return list;
 	}
+	/**
+	 * <p>getDataSources</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<TmpDataSource> getDataSources() {
 		List<TmpDataSource> list = new LinkedList<TmpDataSource>();
 		for (int i = 0; i < ifDSNames.length; i++) {

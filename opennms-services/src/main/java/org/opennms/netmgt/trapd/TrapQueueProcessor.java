@@ -195,6 +195,11 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
         }
     }
 
+    /**
+     * <p>processTrapEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public void processTrapEvent(Event event) {
         String trapInterface = event.getInterface();
 
@@ -310,10 +315,9 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * Starts the current fiber. If the fiber has already been started,
      * regardless of it's current state, then an IllegalStateException is
      * thrown.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber has already been started.
-     *  
      */
     public synchronized void start() {
         Assert.state(m_worker == null, "The fiber is running or has already run");
@@ -353,7 +357,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * Stops this fiber. If the fiber has never been started then an
      * <code>IllegalStateExceptio</code> is generated.
      * </p>
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber has never been started.
      */
@@ -367,7 +371,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
 
     /**
      * Returns the name of the fiber.
-     * 
+     *
      * @return The name of the Fiber.
      */
     public String getName() {
@@ -376,7 +380,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
 
     /**
      * Returns the current status of the fiber
-     * 
+     *
      * @return The status of the Fiber.
      */
     public synchronized int getStatus() {
@@ -430,38 +434,83 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getBacklogQ</p>
+     *
+     * @return a {@link org.opennms.core.queue.FifoQueue} object.
+     */
     public FifoQueue<TrapNotification> getBacklogQ() {
         return m_backlogQ;
     }
 
+    /**
+     * <p>setBacklogQ</p>
+     *
+     * @param backlogQ a {@link org.opennms.core.queue.FifoQueue} object.
+     */
     public void setBacklogQ(FifoQueue<TrapNotification> backlogQ) {
         m_backlogQ = backlogQ;
     }
 
+    /**
+     * <p>getEventConfDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.EventConfDao} object.
+     */
     public EventConfDao getEventConfDao() {
         return m_eventConfDao;
     }
 
+    /**
+     * <p>setEventConfDao</p>
+     *
+     * @param eventConfDao a {@link org.opennms.netmgt.config.EventConfDao} object.
+     */
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;
     }
 
+    /**
+     * <p>getEventMgr</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventMgr() {
         return m_eventMgr;
     }
 
+    /**
+     * <p>setEventMgr</p>
+     *
+     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventMgr(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
 
+    /**
+     * <p>isNewSuspect</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean isNewSuspect() {
         return m_newSuspect;
     }
 
+    /**
+     * <p>setNewSuspect</p>
+     *
+     * @param newSuspect a {@link java.lang.Boolean} object.
+     */
     public void setNewSuspect(Boolean newSuspect) {
         m_newSuspect = newSuspect;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.IllegalStateException if any.
+     */
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_backlogQ != null, "property backlogQ must be set");
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");

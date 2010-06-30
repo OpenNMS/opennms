@@ -43,15 +43,32 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.WebSecurityUtils;
 
 /**
- * 
+ * <p>SuppressOutages class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:djgregor@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:djgregor@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:djgregor@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class SuppressOutages {
 
 	private static Integer LONG_TIME = new Integer(100);
 
+	/**
+	 * <p>suppress</p>
+	 *
+	 * @param outageid a {@link java.lang.Integer} object.
+	 * @param time a {@link java.lang.String} object.
+	 * @param outageService a {@link org.opennms.web.svclayer.outage.OutageService} object.
+	 * @param suppressor a {@link java.lang.String} object.
+	 */
 	public void suppress(Integer outageid, String time,OutageService outageService, String suppressor) {
 
 		OnmsOutage outage = (OnmsOutage) outageService.load(outageid);

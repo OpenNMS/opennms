@@ -56,6 +56,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * This is extended to create concreate classes that represent specific types of data
  * to be stored such as numeric data ({@link (NumericAttributeType)}) or string data
  * ({@link (StringAttributeType)}).
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public abstract class SnmpAttributeType implements AttributeDefinition,CollectionAttributeType {
     
@@ -64,6 +67,14 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     private ResourceType m_resourceType;
     private AttributeGroupType m_groupType;
 
+    /**
+     * <p>Constructor for SnmpAttributeType.</p>
+     *
+     * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     * @param collectionName a {@link java.lang.String} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     */
     protected SnmpAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         m_resourceType = resourceType;
         m_collectionName = collectionName;
@@ -75,11 +86,22 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
         return m_mibObj;
     }
     
+    /**
+     * <p>getCollectionName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected String getCollectionName() { return m_collectionName; }
 
     // FIXME: CollectionAttribute should be a tracker of its own
     // Also these should be created directly by the DAO rather 
     // than MibObject.
+    /**
+     * <p>getCollectionTrackers</p>
+     *
+     * @param objList a {@link java.util.Collection} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<Collectable> getCollectionTrackers(Collection<SnmpAttributeType> objList) {
         ArrayList<Collectable> trackers = new ArrayList<Collectable>(objList.size());
         for (Iterator<SnmpAttributeType> iter = objList.iterator(); iter.hasNext();) {
@@ -90,6 +112,15 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
         return trackers;
     }
 
+    /**
+     * <p>create</p>
+     *
+     * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     * @param collectionName a {@link java.lang.String} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
+     */
     public static SnmpAttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         if (NumericAttributeType.supportsType(mibObj.getType()))
             return new NumericAttributeType(resourceType, collectionName, mibObj, groupType);
@@ -99,32 +130,67 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
         throw new IllegalArgumentException("No support exists for AttributeType '" + mibObj.getType() + "' for MIB object: "+ mibObj);
     }
     
+    /**
+     * <p>getResourceType</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     */
     public ResourceType getResourceType() {
         return m_resourceType;
     }
     
+    /**
+     * <p>getGroupType</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     */
     public AttributeGroupType getGroupType() {
         return m_groupType;        
     }
     
+    /**
+     * <p>getGroupName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGroupName() {
         return m_groupType.getName();
     }
 
+    /**
+     * <p>getAlias</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAlias() {
         return m_mibObj.getAlias();
     }
     
+    /**
+     * <p>getOid</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOid() {
         return m_mibObj.getOid();
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInstance() {
         return m_mibObj.getInstance();
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AttributeDefinition#getType()
+     */
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getType() {
         return m_mibObj.getType();
@@ -137,12 +203,27 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AttributeDefinition#getName()
      */
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return getAlias();
     }
 
+    /** {@inheritDoc} */
     public abstract void storeAttribute(CollectionAttribute attribute, Persister persister);
     
+    /**
+     * <p>storeResult</p>
+     *
+     * @param collectionSet a {@link org.opennms.netmgt.collectd.SnmpCollectionSet} object.
+     * @param entry a {@link org.opennms.netmgt.collectd.SNMPCollectorEntry} object.
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param inst a {@link org.opennms.netmgt.snmp.SnmpInstId} object.
+     * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         log().info("Setting attribute: "+this+".["+inst+"] = '"+val+"'");
         SnmpCollectionResource resource = null;
@@ -158,10 +239,16 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
         }
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getAlias()+" ["+getOid()+"]";
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof SnmpAttributeType) {
             SnmpAttributeType attrType = (SnmpAttributeType) obj;
@@ -170,18 +257,40 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
         return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return getAlias().hashCode();
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getGroupIfType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGroupIfType() {
         return m_groupType.getIfType();
     }
 
+    /**
+     * <p>matches</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param inst a {@link org.opennms.netmgt.snmp.SnmpInstId} object.
+     * @return a boolean.
+     */
     public boolean matches(SnmpObjId base, SnmpInstId inst) {
         if (!base.equals(getSnmpObjId())) {
         	return false;

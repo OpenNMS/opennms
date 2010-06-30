@@ -60,20 +60,44 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 
+/**
+ * <p>DefaultCapsdConfigManager class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultCapsdConfigManager extends CapsdConfigManager {
     /**
      * Timestamp of the file for the currently loadded configuration
      */
     private long m_currentVersion = -1L;
 
+    /**
+     * <p>Constructor for DefaultCapsdConfigManager.</p>
+     */
     public DefaultCapsdConfigManager() {
         super();
     }
   
+    /**
+     * <p>Constructor for DefaultCapsdConfigManager.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public DefaultCapsdConfigManager(Reader rdr) throws MarshalException, ValidationException {
         super(rdr);
     }
 
+    /**
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     protected synchronized void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);
         
@@ -98,6 +122,7 @@ public class DefaultCapsdConfigManager extends CapsdConfigManager {
         }
     }
 
+    /** {@inheritDoc} */
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);

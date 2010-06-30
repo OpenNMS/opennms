@@ -48,12 +48,26 @@ import org.opennms.netmgt.config.OwnedIntervalSequence;
 import org.opennms.netmgt.config.Owner;
 import org.opennms.netmgt.config.groups.Role;
 
+/**
+ * <p>Day class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class Day {
     
     private Calendar m_calendar;
     private Role m_role;
     private GroupManager m_groupManager;
 
+    /**
+     * <p>Constructor for Day.</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @param role a {@link org.opennms.netmgt.config.groups.Role} object.
+     * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
+     */
     public Day(Date date, Role role, GroupManager groupManager) {
         m_role = role;
         m_groupManager = groupManager;
@@ -61,26 +75,63 @@ public class Day {
         m_calendar.setTime(date);
     }
     
+    /**
+     * <p>getDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getDate() {
         return m_calendar.getTime();
     }
     
+    /**
+     * <p>getMonth</p>
+     *
+     * @return a int.
+     */
     public int getMonth() { return m_calendar.get(Calendar.MONTH); }
 
+    /**
+     * <p>getDayOfMonth</p>
+     *
+     * @return a int.
+     */
     public int getDayOfMonth() { return m_calendar.get(Calendar.DAY_OF_MONTH); }
     
+    /**
+     * <p>getDayOfYear</p>
+     *
+     * @return a int.
+     */
     public int getDayOfYear() { return m_calendar.get(Calendar.DAY_OF_YEAR); }
     
+    /**
+     * <p>getDayOfWeek</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDayOfWeek() {
         return new SimpleDateFormat("EEEE").format(m_calendar.getTime());
     }
     
+    /**
+     * <p>getTime</p>
+     *
+     * @param hours a int.
+     * @param minutes a int.
+     * @return a {@link java.util.Date} object.
+     */
     public Date getTime(int hours, int minutes) {
         Calendar time = Calendar.getInstance();
         time.set(m_calendar.get(Calendar.YEAR), m_calendar.get(Calendar.MONTH), m_calendar.get(Calendar.DAY_OF_MONTH), hours, minutes);
         return time.getTime();
     }
     
+    /**
+     * <p>getEntries</p>
+     *
+     * @return an array of {@link org.opennms.web.admin.roles.CalendarEntry} objects.
+     */
     public CalendarEntry[] getEntries() {
         try {
             List<CalendarEntry> entries = new ArrayList<CalendarEntry>();

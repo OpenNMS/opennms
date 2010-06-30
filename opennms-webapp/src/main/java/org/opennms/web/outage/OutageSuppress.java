@@ -33,24 +33,57 @@ package org.opennms.web.outage;
 
 import java.sql.Date;
 
+/**
+ * <p>OutageSuppress class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class OutageSuppress {
     
+    /**
+     * <p>SuppressOutage</p>
+     *
+     * @param outageID a {@link java.lang.Integer} object.
+     * @param Time a {@link java.sql.Date} object.
+     * @param suppressedBy a {@link java.lang.String} object.
+     */
     public void SuppressOutage (Integer outageID, Date Time, String suppressedBy) {
         // Some quirks, if time is == 0 - We will set this to 
         // the largest possible date that we can come up with
         //    
     }
     
+    /**
+     * <p>UnSuppressOutage</p>
+     *
+     * @param outageID a {@link java.lang.Integer} object.
+     * @param suppressedBy a {@link java.lang.String} object.
+     */
     public void UnSuppressOutage (Integer outageID, String suppressedBy) {
         // Need no time really....
         // We'll actually just delete the suppresstimefield
     
     }
     
+    /**
+     * <p>SubmitOutageSuppressedEvent</p>
+     *
+     * @param outageID a {@link java.lang.Integer} object.
+     * @param suppressTime a {@link java.sql.Date} object.
+     * @param suppressedBy a {@link java.lang.String} object.
+     */
     public void SubmitOutageSuppressedEvent(Integer outageID, Date suppressTime, String suppressedBy){
 
     }
     
+    /**
+     * <p>SubmitUnSuppressedEvent</p>
+     *
+     * @param outageID a {@link java.lang.Integer} object.
+     * @param suppressedBy a {@link java.lang.String} object.
+     */
     public void SubmitUnSuppressedEvent (Integer outageID, String suppressedBy){
         
     }

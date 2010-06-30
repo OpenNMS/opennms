@@ -79,8 +79,8 @@ import org.springframework.util.Assert;
  * @author Ben Alex
  * @author Colin Sampaleanu
  * @version $Id: AuthenticationProcessingFilter.java 1496 2006-05-23 13:38:33 +0000 (Tue, 23 May 2006) benalex $
+ * @since 1.6.12
  */
-
 public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implements Filter, InitializingBean, ApplicationEventPublisherAware, MessageSourceAware {
     //~ Static fields/initializers =====================================================================================
 
@@ -118,6 +118,11 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
         //~ constructor
         
         
+        /**
+         * <p>Constructor for NtlmAuthenticationProcessingFilter.</p>
+         *
+         * @param initialDirContextFactory a {@link org.acegisecurity.ldap.InitialDirContextFactory} object.
+         */
         public NtlmAuthenticationProcessingFilter(
         	    InitialDirContextFactory initialDirContextFactory) {
 			super(initialDirContextFactory);
@@ -126,6 +131,11 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
         
         //~ Methods ========================================================================================================
 
+        /**
+         * <p>afterPropertiesSet</p>
+         *
+         * @throws java.lang.Exception if any.
+         */
         public void afterPropertiesSet() throws Exception {
             Assert.hasLength(defaultTargetUrl, "defaultTargetUrl must be specified");
             Assert.notNull(properties, "properties must be specified");
@@ -141,6 +151,7 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
          */
         public void destroy() {}
 
+        /** {@inheritDoc} */
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
@@ -234,7 +245,7 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
 
 		}
 
-		/**
+        /**
          * Supplies the default target Url that will be used if no saved request is found or the
          * <tt>alwaysUseDefaultTargetUrl</tt> propert is set to true.
          * Override this method of you want to provide a customized default Url (for example if you want different Urls
@@ -246,22 +257,29 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
             return defaultTargetUrl;
         }
 
+        /**
+         * <p>Getter for the field <code>exceptionMappings</code>.</p>
+         *
+         * @return a {@link java.util.Properties} object.
+         */
         public Properties getExceptionMappings() {
             return new Properties(exceptionMappings);
         }
 
+        /**
+         * <p>Getter for the field <code>rememberMeServices</code>.</p>
+         *
+         * @return a {@link org.acegisecurity.ui.rememberme.RememberMeServices} object.
+         */
         public RememberMeServices getRememberMeServices() {
             return rememberMeServices;
         }
 
         /**
+         * {@inheritDoc}
+         *
          * Does JCIFS Initialization. We use IoC container lifecycle services instead.
-         *
-         * @param arg0 ignored
-         *
-         * @throws ServletException ignored
          */
-        
         public void init(FilterConfig arg0) throws ServletException {
         	if (properties ==null || properties.isEmpty() ) return;
         	
@@ -304,6 +322,14 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
          * This method simply calls <tt>negotiate( req, resp, false )</tt>
          * and then <tt>chain.doFilter</tt>. You can override and call
          * negotiate manually to achive a variety of different behavior.
+         *
+         * @param request a {@link javax.servlet.ServletRequest} object.
+         * @param response a {@link javax.servlet.ServletResponse} object.
+         * @param chain a {@link javax.servlet.FilterChain} object.
+         * @return a {@link org.acegisecurity.Authentication} object.
+         * @throws java.io.IOException if any.
+         * @throws javax.servlet.ServletException if any.
+         * @throws org.acegisecurity.AuthenticationException if any.
          */
         public Authentication attemptAuthentication( ServletRequest request,
                     ServletResponse response,
@@ -345,8 +371,9 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
             return auth;
         }
         
-		/**
+        /**
          * Negotiate password hashes with MSIE clients using NTLM SSP
+         *
          * @param req The servlet request
          * @param resp The servlet response
          * @param skipAuthentication If true the negotiation is only done if it is
@@ -355,6 +382,8 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
          * the client will be forced to send an authentication (server sends
          * HttpServletResponse.SC_UNAUTHORIZED).
          * @return True if the negotiation is complete, otherwise false
+         * @throws java.io.IOException if any.
+         * @throws javax.servlet.ServletException if any.
          */
         protected NtlmPasswordAuthentication negotiate( HttpServletRequest req,
                     HttpServletResponse resp,
@@ -472,110 +501,244 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
             return ntlm;
         }
 
+    	/**
+    	 * <p>Getter for the field <code>defaultDomain</code>.</p>
+    	 *
+    	 * @return a {@link java.lang.String} object.
+    	 */
     	public String getDefaultDomain() {
     		return defaultDomain;
     	}
 
+    	/**
+    	 * <p>Setter for the field <code>defaultDomain</code>.</p>
+    	 *
+    	 * @param defaultDomain a {@link java.lang.String} object.
+    	 */
     	public void setDefaultDomain(String defaultDomain) {
     		this.defaultDomain = defaultDomain;
     	}
 
+    	/**
+    	 * <p>Getter for the field <code>domainController</code>.</p>
+    	 *
+    	 * @return a {@link java.lang.String} object.
+    	 */
     	public String getDomainController() {
     		return domainController;
     	}
 
+    	/**
+    	 * <p>Setter for the field <code>domainController</code>.</p>
+    	 *
+    	 * @param domainController a {@link java.lang.String} object.
+    	 */
     	public void setDomainController(String domainController) {
     		this.domainController = domainController;
     	}
 
+    	/**
+    	 * <p>isLoadBalance</p>
+    	 *
+    	 * @return a boolean.
+    	 */
     	public boolean isLoadBalance() {
     		return loadBalance;
     	}
 
+    	/**
+    	 * <p>Setter for the field <code>loadBalance</code>.</p>
+    	 *
+    	 * @param loadBalance a boolean.
+    	 */
     	public void setLoadBalance(boolean loadBalance) {
     		this.loadBalance = loadBalance;
     	}
 
+    	/**
+    	 * <p>isEnableBasic</p>
+    	 *
+    	 * @return a boolean.
+    	 */
     	public boolean isEnableBasic() {
     		return enableBasic;
     	}
 
+    	/**
+    	 * <p>Setter for the field <code>enableBasic</code>.</p>
+    	 *
+    	 * @param enableBasic a boolean.
+    	 */
     	public void setEnableBasic(boolean enableBasic) {
     		this.enableBasic = enableBasic;
     	}
 
+    	/**
+    	 * <p>isInsecureBasic</p>
+    	 *
+    	 * @return a boolean.
+    	 */
     	public boolean isInsecureBasic() {
     		return insecureBasic;
     	}
 
+    	/**
+    	 * <p>Setter for the field <code>insecureBasic</code>.</p>
+    	 *
+    	 * @param insecureBasic a boolean.
+    	 */
     	public void setInsecureBasic(boolean insecureBasic) {
     		this.insecureBasic = insecureBasic;
     	}
 
+    	/**
+    	 * <p>Getter for the field <code>realm</code>.</p>
+    	 *
+    	 * @return a {@link java.lang.String} object.
+    	 */
     	public String getRealm() {
     		return realm;
     	}
 
+    	/**
+    	 * <p>Setter for the field <code>realm</code>.</p>
+    	 *
+    	 * @param realm a {@link java.lang.String} object.
+    	 */
     	public void setRealm(String realm) {
     		this.realm = realm;
     	}
 
+    	/**
+    	 * <p>Getter for the field <code>properties</code>.</p>
+    	 *
+    	 * @return a {@link java.util.Properties} object.
+    	 */
     	public Properties getProperties() {
     		return properties;
     	}
 
+    	/**
+    	 * <p>Setter for the field <code>properties</code>.</p>
+    	 *
+    	 * @param properties a {@link java.util.Properties} object.
+    	 */
     	public void setProperties(Properties properties) {
     		this.properties = properties;
     	}
 
 
+        /**
+         * <p>isAlwaysUseDefaultTargetUrl</p>
+         *
+         * @return a boolean.
+         */
         public boolean isAlwaysUseDefaultTargetUrl() {
             return alwaysUseDefaultTargetUrl;
         }
 
+        /**
+         * <p>onPreAuthentication</p>
+         *
+         * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+         * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+         * @throws org.acegisecurity.AuthenticationException if any.
+         * @throws java.io.IOException if any.
+         */
         protected void onPreAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException {}
 
+        /**
+         * <p>onSuccessfulAuthentication</p>
+         *
+         * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+         * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+         * @param authResult a {@link org.acegisecurity.Authentication} object.
+         * @throws java.io.IOException if any.
+         */
         protected void onSuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
             Authentication authResult) throws IOException {
  
         }
 
+        /**
+         * <p>onUnsuccessfulAuthentication</p>
+         *
+         * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+         * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+         * @param failed a {@link org.acegisecurity.AuthenticationException} object.
+         * @throws java.io.IOException if any.
+         */
         protected void onUnsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed) throws IOException {
         }
 
+         /**
+          * <p>Setter for the field <code>alwaysUseDefaultTargetUrl</code>.</p>
+          *
+          * @param alwaysUseDefaultTargetUrl a boolean.
+          */
          public void setAlwaysUseDefaultTargetUrl(boolean alwaysUseDefaultTargetUrl) {
             this.alwaysUseDefaultTargetUrl = alwaysUseDefaultTargetUrl;
         }
 
+        /** {@inheritDoc} */
         public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
             this.eventPublisher = eventPublisher;
         }
 
+        /**
+         * <p>Setter for the field <code>authenticationDetailsSource</code>.</p>
+         *
+         * @param authenticationDetailsSource a {@link org.acegisecurity.ui.AuthenticationDetailsSource} object.
+         */
         public void setAuthenticationDetailsSource(AuthenticationDetailsSource authenticationDetailsSource) {
             Assert.notNull(authenticationDetailsSource, "AuthenticationDetailsSource required");
             this.authenticationDetailsSource = authenticationDetailsSource;
         }
 
+        /**
+         * <p>Setter for the field <code>defaultTargetUrl</code>.</p>
+         *
+         * @param defaultTargetUrl a {@link java.lang.String} object.
+         */
         public void setDefaultTargetUrl(String defaultTargetUrl) {
             Assert.isTrue(defaultTargetUrl.startsWith("/") | defaultTargetUrl.startsWith("http"),
                     "defaultTarget must start with '/' or with 'http(s)'");
             this.defaultTargetUrl = defaultTargetUrl;
         }
 
+        /**
+         * <p>Setter for the field <code>exceptionMappings</code>.</p>
+         *
+         * @param exceptionMappings a {@link java.util.Properties} object.
+         */
         public void setExceptionMappings(Properties exceptionMappings) {
             this.exceptionMappings = exceptionMappings;
         }
 
+        /** {@inheritDoc} */
         public void setMessageSource(MessageSource messageSource) {
             this.messages = new MessageSourceAccessor(messageSource);
         }
 
+        /**
+         * <p>Setter for the field <code>rememberMeServices</code>.</p>
+         *
+         * @param rememberMeServices a {@link org.acegisecurity.ui.rememberme.RememberMeServices} object.
+         */
         public void setRememberMeServices(RememberMeServices rememberMeServices) {
             this.rememberMeServices = rememberMeServices;
         }
 
+        /**
+         * <p>successfulAuthentication</p>
+         *
+         * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+         * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+         * @param authResult a {@link org.acegisecurity.Authentication} object.
+         * @throws java.io.IOException if any.
+         */
         protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
             Authentication authResult) throws IOException {
             if (log().isDebugEnabled()) {
@@ -599,6 +762,12 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
 
         }
         
+        /**
+         * <p>determineTargetUrl</p>
+         *
+         * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+         * @return a {@link java.lang.String} object.
+         */
         protected String determineTargetUrl(HttpServletRequest request) {
             // Don't attempt to obtain the url from the saved request if alwaysUsedefaultTargetUrl is set
             String targetUrl = alwaysUseDefaultTargetUrl ? null : AbstractProcessingFilter.obtainFullRequestUrl(request);
@@ -610,6 +779,14 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
             return targetUrl;
         }
 
+        /**
+         * <p>unsuccessfulAuthentication</p>
+         *
+         * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+         * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+         * @param failed a {@link org.acegisecurity.AuthenticationException} object.
+         * @throws java.io.IOException if any.
+         */
         protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed) throws IOException {
             SecurityContextHolder.getContext().setAuthentication(null);
@@ -632,6 +809,11 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
 
         }
 
+        /**
+         * <p>Getter for the field <code>authenticationDetailsSource</code>.</p>
+         *
+         * @return a {@link org.acegisecurity.ui.AuthenticationDetailsSource} object.
+         */
         public AuthenticationDetailsSource getAuthenticationDetailsSource() {
             // Required due to SEC-310
             return authenticationDetailsSource;
@@ -653,18 +835,38 @@ public class NtlmAuthenticationProcessingFilter extends BindAuthenticator implem
             authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
         }
 
+		/**
+		 * <p>Getter for the field <code>skipNtlmAuthUrls</code>.</p>
+		 *
+		 * @return a {@link java.util.List} object.
+		 */
 		public List<String> getSkipNtlmAuthUrls() {
 			return skipNtlmAuthUrls;
 		}
 
+		/**
+		 * <p>Setter for the field <code>skipNtlmAuthUrls</code>.</p>
+		 *
+		 * @param skipNtlmAuthUrls a {@link java.util.List} object.
+		 */
 		public void setSkipNtlmAuthUrls(List<String> skipNtlmAuthUrls) {
 			this.skipNtlmAuthUrls = skipNtlmAuthUrls;
 		}
 
+		/**
+		 * <p>Getter for the field <code>ldapAuthoritiesPopulator</code>.</p>
+		 *
+		 * @return a {@link org.acegisecurity.providers.ldap.LdapAuthoritiesPopulator} object.
+		 */
 		public LdapAuthoritiesPopulator getLdapAuthoritiesPopulator() {
 			return ldapAuthoritiesPopulator;
 		}
 
+		/**
+		 * <p>Setter for the field <code>ldapAuthoritiesPopulator</code>.</p>
+		 *
+		 * @param ldapAuthoritiesPopulator a {@link org.acegisecurity.providers.ldap.LdapAuthoritiesPopulator} object.
+		 */
 		public void setLdapAuthoritiesPopulator(
 				LdapAuthoritiesPopulator ldapAuthoritiesPopulator) {
 			this.ldapAuthoritiesPopulator = ldapAuthoritiesPopulator;

@@ -73,8 +73,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * 
+ * <p>DefaultPollerFrontEnd class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         DisposableBean {
@@ -390,51 +392,89 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
     // current state of polled services
     private Map<Integer, ServicePollState> m_pollState = new LinkedHashMap<Integer, ServicePollState>();
 
+    /** {@inheritDoc} */
     public void addConfigurationChangedListener(ConfigurationChangedListener l) {
         m_configChangeListeners.addFirst(l);
     }
 
+    /**
+     * <p>doResume</p>
+     */
     public void doResume() {
         doLoadConfig();
     }
 
+    /**
+     * <p>doPause</p>
+     */
     public void doPause() {
         // do I need to do anything here?
     }
 
+    /**
+     * <p>doDisconnected</p>
+     */
     public void doDisconnected() {
         doLoadConfig();
     }
 
+    /** {@inheritDoc} */
     public void addPropertyChangeListener(PropertyChangeListener l) {
         m_propertyChangeListeners.addFirst(l);
     }
 
+    /** {@inheritDoc} */
     public void addServicePollStateChangedListener(
             ServicePollStateChangedListener l) {
         m_servicePollStateChangedListeners.addFirst(l);
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         m_state.initialize();
     }
 
+    /**
+     * <p>checkConfig</p>
+     */
     public void checkConfig() {
         m_state.checkIn();
     }
 
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void destroy() throws Exception {
         stop();
     }
 
+    /**
+     * <p>doCheckIn</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus} object.
+     */
     public MonitorStatus doCheckIn() {
         return m_backEnd.pollerCheckingIn(getMonitorId(), getCurrentConfigTimestamp());
     }
 
+    /**
+     * <p>doDelete</p>
+     */
     public void doDelete() {
         setMonitorId(null);        
     }
 
+    /**
+     * <p>doInitialize</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer doInitialize() {
         assertNotNull(m_backEnd, "pollerBackEnd");
         assertNotNull(m_pollService, "pollService");
@@ -443,6 +483,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         return getMonitorId();
     }
 
+    /**
+     * <p>doPollerStart</p>
+     *
+     * @return a boolean.
+     */
     public boolean doPollerStart() {
         
         if (!m_backEnd.pollerStarting(getMonitorId(), getDetails())) {
@@ -456,6 +501,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
 
     }
 
+    /**
+     * <p>doPollService</p>
+     *
+     * @param polledServiceId a {@link java.lang.Integer} object.
+     */
     public void doPollService(Integer polledServiceId) {
         PollStatus result = doPoll(polledServiceId);
         if (result == null)
@@ -466,6 +516,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         m_backEnd.reportResult(getMonitorId(), polledServiceId, result);
     }
 
+    /**
+     * <p>doRegister</p>
+     *
+     * @param location a {@link java.lang.String} object.
+     */
     public void doRegister(String location) {
 
         int monitorId = m_backEnd.registerLocationMonitor(location);
@@ -475,10 +530,18 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         
     }
 
+    /**
+     * <p>doStop</p>
+     */
     public void doStop() {
         m_backEnd.pollerStopping(getMonitorId());
     }
 
+    /**
+     * <p>getDetails</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, String> getDetails() {
         HashMap<String, String> details = new HashMap<String, String>();
 
@@ -503,67 +566,114 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         return details;
     }
 
+    /**
+     * <p>getMonitorId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getMonitorId() {
         return m_pollerSettings.getMonitorId();
     }
 
+    /**
+     * <p>getMonitoringLocations</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         assertInitialized();
         return m_backEnd.getMonitoringLocations();
     }
 
+    /**
+     * <p>getMonitorName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMonitorName() {
         return (isRegistered() ? m_backEnd.getMonitorName(getMonitorId()) : "");
     }
 
+    /**
+     * <p>getPolledServices</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<PolledService> getPolledServices() {
         return Arrays.asList(m_pollerConfiguration.getPolledServices());
     }
 
+    /**
+     * <p>getPollerPollState</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<ServicePollState> getPollerPollState() {
         synchronized (m_pollState) {
             return new LinkedList<ServicePollState>(m_pollState.values());
         }
     }
 
+    /** {@inheritDoc} */
     public ServicePollState getServicePollState(int polledServiceId) {
         synchronized (m_pollState) {
             return m_pollState.get(polledServiceId);
         }
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatus() {
         return m_state.toString();
     }
     
+    /**
+     * <p>isRegistered</p>
+     *
+     * @return a boolean.
+     */
     public boolean isRegistered() {
         return m_state.isRegistered();
     }
 
+    /**
+     * <p>isStarted</p>
+     *
+     * @return a boolean.
+     */
     public boolean isStarted() {
         return m_state.isStarted();
     }
 
+    /** {@inheritDoc} */
     public void pollService(Integer polledServiceId) {
         m_state.pollService(polledServiceId);
     }
 
+    /** {@inheritDoc} */
     public void register(String monitoringLocation) {
         m_state.register(monitoringLocation);
     }
 
+    /** {@inheritDoc} */
     public void removeConfigurationChangedListener(ConfigurationChangedListener l) {
         m_configChangeListeners.remove(l);
     }
 
+    /** {@inheritDoc} */
     public void removePropertyChangeListener(PropertyChangeListener l) {
         m_propertyChangeListeners.remove(l);
     }
 
+    /** {@inheritDoc} */
     public void removeServicePollStateChangedListener(ServicePollStateChangedListener l) {
         m_servicePollStateChangedListeners.remove(l);
     }
 
+    /** {@inheritDoc} */
     public void setInitialPollTime(Integer polledServiceId, Date initialPollTime) {
         ServicePollState pollState = getServicePollState(polledServiceId);
         pollState.setInitialPollTime(initialPollTime);
@@ -571,22 +681,45 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
                 .getIndex());
     }
 
+    /**
+     * <p>setMonitorId</p>
+     *
+     * @param monitorId a {@link java.lang.Integer} object.
+     */
     public void setMonitorId(Integer monitorId) {
         m_pollerSettings.setMonitorId(monitorId);
     }
 
+    /**
+     * <p>setPollerBackEnd</p>
+     *
+     * @param backEnd a {@link org.opennms.netmgt.poller.remote.PollerBackEnd} object.
+     */
     public void setPollerBackEnd(PollerBackEnd backEnd) {
         m_backEnd = backEnd;
     }
 
+    /**
+     * <p>setPollerSettings</p>
+     *
+     * @param settings a {@link org.opennms.netmgt.poller.remote.PollerSettings} object.
+     */
     public void setPollerSettings(PollerSettings settings) {
         m_pollerSettings = settings;
     }
 
+    /**
+     * <p>setPollService</p>
+     *
+     * @param pollService a {@link org.opennms.netmgt.poller.remote.PollService} object.
+     */
     public void setPollService(PollService pollService) {
         m_pollService = pollService;
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         m_state.stop();
     }
@@ -714,6 +847,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean,
         return m_state.isPaused();
     }
     
+    /**
+     * <p>isExitNecessary</p>
+     *
+     * @return a boolean.
+     */
     public boolean isExitNecessary() {
         return m_state.isExitNecessary();
     }

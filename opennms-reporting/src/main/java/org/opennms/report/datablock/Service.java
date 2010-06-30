@@ -39,9 +39,12 @@ package org.opennms.report.datablock;
 
 /**
  * This class holds the service information and list of outages for the service.
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan Corp </A>
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">Oculan Corp </A>
+ * @version $Id: $
  */
 public class Service extends StandardNamedObject {
     /**
@@ -86,6 +89,11 @@ public class Service extends StandardNamedObject {
         m_outageList = new OutageSvcTimesList();
     }
 
+    /**
+     * <p>Constructor for Service.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public Service(String name) {
         setName(name);
         m_outageList = new OutageSvcTimesList();
@@ -93,7 +101,7 @@ public class Service extends StandardNamedObject {
 
     /**
      * Constructor that sets the name and the outages.
-     * 
+     *
      * @param name
      *            Name of the service.
      * @param outages
@@ -109,7 +117,7 @@ public class Service extends StandardNamedObject {
 
     /**
      * Constructor that sets the outages.
-     * 
+     *
      * @param outages
      *            Outages for this service to be set.
      */
@@ -120,6 +128,8 @@ public class Service extends StandardNamedObject {
 
     /**
      * Returns the outage time for this service.
+     *
+     * @return a double.
      */
     public double getDownTime() {
         return m_downTime;
@@ -127,6 +137,8 @@ public class Service extends StandardNamedObject {
 
     /**
      * Returns the outage time for this service during business hours.
+     *
+     * @return a long.
      */
     public long getBusDownTime() {
         return m_busDownTime;
@@ -134,6 +146,8 @@ public class Service extends StandardNamedObject {
 
     /**
      * Returns the percentage Availability.
+     *
+     * @return a double.
      */
     public double getPercentAvail() {
         return m_percentAvail;
@@ -142,6 +156,8 @@ public class Service extends StandardNamedObject {
     /**
      * Returns the percentage Availability for this service during business
      * hours.
+     *
+     * @return a double.
      */
     public double getBusPercentAvail() {
         return m_percentBusAvail;
@@ -150,6 +166,8 @@ public class Service extends StandardNamedObject {
     /**
      * Returns the percentage Availability for this service during business
      * hours.
+     *
+     * @return a long.
      */
     public long getMonitoredTime() {
         return m_monitoredTime;
@@ -157,6 +175,8 @@ public class Service extends StandardNamedObject {
 
     /**
      * Returns the monitored time for this service during business hours.
+     *
+     * @return a long.
      */
     public long getMonitoredBusTime() {
         return m_monitoredBusTime;
@@ -164,7 +184,7 @@ public class Service extends StandardNamedObject {
 
     /**
      * Return the outages
-     * 
+     *
      * @return outages Outages to be set.
      */
     public OutageSvcTimesList getOutages() {
@@ -173,6 +193,9 @@ public class Service extends StandardNamedObject {
 
     /**
      * Added outage.
+     *
+     * @param lost a long.
+     * @param regained a long.
      */
     public void addOutage(long lost, long regained) {
         if (m_outageList == null)
@@ -182,6 +205,8 @@ public class Service extends StandardNamedObject {
 
     /**
      * Added outage.
+     *
+     * @param lost a long.
      */
     public void addOutage(long lost) {
         if (m_outageList == null)
@@ -191,6 +216,8 @@ public class Service extends StandardNamedObject {
 
     /**
      * Adds a lost time / regained time combination for the node.
+     *
+     * @param outage a {@link org.opennms.report.datablock.Outage} object.
      */
     public void addOutage(Outage outage) {
         if (m_outageList == null)
@@ -200,6 +227,10 @@ public class Service extends StandardNamedObject {
 
     /**
      * Return the outage for this service.
+     *
+     * @param currentTime a long.
+     * @param rollingWindow a long.
+     * @return a long.
      */
     public long getDownTime(long currentTime, long rollingWindow) {
         if (m_outageList != null)
@@ -209,7 +240,7 @@ public class Service extends StandardNamedObject {
 
     /**
      * Returns the Percentage Availability for the service
-     * 
+     *
      * @param currentTime
      *            Time at the end of the Rolling Window.
      * @param rollingWindow
@@ -232,6 +263,8 @@ public class Service extends StandardNamedObject {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Equals method.
      */
     public boolean equals(Object obj) {

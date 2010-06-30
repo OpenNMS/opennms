@@ -44,40 +44,56 @@ import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.smi.IpAddress;
 
 /**
+ * <p>IpAddressNetSnmp64bitBugAware class.</p>
+ *
  * @author Jeff Gehlbach <jeffg@opennms.org>
- * 
+ *
  * This class exists solely to work around a bug in the Net-SNMP BER library
  * that causes Net-SNMP agents prior to version 5.4.1 on 64-bit platforms to
  * encode IPv4 addresses as 8 bytes rather than 4 bytes.  SNMP4J correctly
  * discards these representations by default.
- * 
+ *
  *  This class will be used in place of org.snmp4j.smi.IpAddress only if we
  *  call org.snmp4j.SNMP4JSettings.setExtensibilityEnabled(true) AND set the
  *  system property org.snmp4j.smisyntaxes to refer to a classpath properties
  *  resource (relative to class org.snmp4j.smi.AbstractVariable) that overrides
  *  the default mapping for BER type 64 (nominally IpAddress).  See the file
  *  opennms-snmp4j-smisyntaxes.properties.
- *  
+ *
  *  The workaround for 8-bit long IP addresses will be enabled only if the
  *  system property org.opennms.netmgt.snmp.workarounds.allow64BitIpAddress is
  *  set to "true".
- *
+ * @version $Id: $
  */
 public class IpAddressNetSnmp64bitBugAware extends IpAddress {
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * <p>Constructor for IpAddressNetSnmp64bitBugAware.</p>
+	 */
 	public IpAddressNetSnmp64bitBugAware() {
 		super();
 	}
 	
+	/**
+	 * <p>Constructor for IpAddressNetSnmp64bitBugAware.</p>
+	 *
+	 * @param address a {@link java.net.InetAddress} object.
+	 */
 	public IpAddressNetSnmp64bitBugAware(InetAddress address) {
 		super(address);
 	}
 	
+	/**
+	 * <p>Constructor for IpAddressNetSnmp64bitBugAware.</p>
+	 *
+	 * @param address a {@link java.lang.String} object.
+	 */
 	public IpAddressNetSnmp64bitBugAware(String address) {
 		super(address);
 	}
 	
+	/** {@inheritDoc} */
 	public void decodeBER(BERInputStream inputStream) throws java.io.IOException {
 		BER.MutableByte type = new BER.MutableByte();
 		byte[] value = BER.decodeString(inputStream, type);

@@ -89,12 +89,11 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing. Each event is queued for handling by the
      * Executor.
-     * 
-     * @param event
-     *            The event
      */
     public void onEvent(Event event) {
         if (event == null) {
@@ -121,7 +120,7 @@ final class BroadcastEventProcessor implements EventListener {
 
     /**
      * Return an id for this event listener
-     * 
+     *
      * @return The ID of this event listener.
      */
     public String getName() {

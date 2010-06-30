@@ -45,26 +45,43 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
- * 
+ * <p>ListNodes class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ListNodes extends AbstractController implements InitializingBean {
     private RtcService m_rtcService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RtcNodeModel model = m_rtcService.getNodeList();
         return new ModelAndView("rtc/category", "model", model);
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_rtcService != null, "property rtcService must be set and non-null");
     }
 
+    /**
+     * <p>getRtcService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.RtcService} object.
+     */
     public RtcService getRtcService() {
         return m_rtcService;
     }
 
+    /**
+     * <p>setRtcService</p>
+     *
+     * @param rtcService a {@link org.opennms.web.svclayer.RtcService} object.
+     */
     public void setRtcService(RtcService rtcService) {
         m_rtcService = rtcService;
     }

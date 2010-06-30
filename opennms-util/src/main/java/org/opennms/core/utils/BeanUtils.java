@@ -37,8 +37,9 @@ import org.springframework.context.access.DefaultLocatorFactory;
 
 /**
  * Helper methods for working with Spring beans.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class BeanUtils {
     /**
@@ -49,7 +50,7 @@ public class BeanUtils {
 
     /**
      * Get a Spring BeanFactory by context ID.
-     * 
+     *
      * @param contextId the context ID of the BeanFactory to fetch
      * @return the BeanFactory
      */
@@ -61,7 +62,7 @@ public class BeanUtils {
     /**
      * Get a Spring bean by name.  Uses Java 5 generics to cast the returned
      * class to the appropriate type.
-     * 
+     *
      * @param <T> class for the returned bean
      * @param beanFactory bean factory to use to fetch this bean
      * @param beanId ID of the bean to fetch
@@ -75,7 +76,7 @@ public class BeanUtils {
     
     /**
      * Helper method that combines getBeanFactory and getBean.
-     * 
+     *
      * @param <T> class for the returned bean
      * @param contextId the context ID of the BeanFactory from which to fetch
      *      this bean
@@ -90,7 +91,7 @@ public class BeanUtils {
     /**
      * Helper method that calls getBeanFactory(contextId).getFactory()
      * and casts the result.
-     * 
+     *
      * @param <T> class for the returned factory
      * @param contextId the context ID of the BeanFactory to fetch
      * @param clazz class representing the type for the returned factory

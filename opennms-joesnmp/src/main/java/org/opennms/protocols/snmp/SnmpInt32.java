@@ -44,8 +44,9 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * This class defines the SNMP 32-bit signed integer used by the SNMP SMI. This
  * class also serves as a base class for any additional SNMP SMI types that
  * exits now or may be defined in the future.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @version $Id: $
  */
 public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializable {
     /**
@@ -72,10 +73,9 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Constructs a SnmpInt32 object with the passed value.
-     * 
+     *
      * @param value
      *            The 32-bit signed integer value for the object.
-     * 
      */
     public SnmpInt32(int value) {
         m_value = value;
@@ -83,10 +83,9 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Constructs a SnmpInt32 object with the specified value.
-     * 
+     *
      * @param value
      *            An Integer object containing the 32-bte value.
-     * 
      */
     public SnmpInt32(Integer value) {
         m_value = value.intValue();
@@ -95,10 +94,9 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
     /**
      * Class copy constructor. Constructs a new object with the same value as
      * the passed SnmpInt32 object.
-     * 
+     *
      * @param second
      *            The object to get the value from.
-     * 
      */
     public SnmpInt32(SnmpInt32 second) {
         m_value = second.m_value;
@@ -108,10 +106,9 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
      * Simple class constructor that attempts to parse the passed string into a
      * valid integer value. If the String argument cannot be parse because it is
      * either invalid or malformed then an exception is generated.
-     * 
+     *
      * @param value
      *            The integer value represented as a String
-     * 
      * @throws java.lang.NumberFormatException
      *             Thrown if the passed value cannot be turned into a valid
      *             integer.
@@ -129,7 +126,7 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Used to access the internal 32-bit signed quantity.
-     * 
+     *
      * @return The 32-bit value
      */
     public int getValue() {
@@ -138,10 +135,9 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Used to set the 32-bit signed quantity
-     * 
+     *
      * @param value
      *            The new value for the object.
-     * 
      */
     public void setValue(int value) {
         m_value = value;
@@ -149,7 +145,7 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Used to set the 32-bit signed quantity
-     * 
+     *
      * @param value
      *            The new value for the object
      */
@@ -159,46 +155,29 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Used to retreive the ASN.1 type for this object.
-     * 
+     *
      * @return The ASN.1 value for the SnmpInt32
-     * 
      */
     public byte typeId() {
         return ASNTYPE;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Used to encode the integer value into an ASN.1 buffer. The passed encoder
      * defines the method for encoding the data.
-     * 
-     * @param buf
-     *            The location to write the encoded data
-     * @param offset
-     *            The start of the encoded buffer.
-     * @param encoder
-     *            The ASN.1 encoder object
-     * 
-     * @return The byte immediantly after the last encoded byte.
-     * 
      */
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         return encoder.buildInteger32(buf, offset, typeId(), m_value);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Used to decode the integer value from the ASN.1 buffer. The passed
      * encoder is used to decode the ASN.1 information and the integer value is
      * stored in the internal object.
-     * 
-     * @param buf
-     *            The encoded ASN.1 data
-     * @param offset
-     *            The offset of the first byte of data
-     * @param encoder
-     *            The ASN.1 decoder object.
-     * 
-     * @return The byte immediantly after the last decoded byte of information.
-     * 
      */
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseInteger32(buf, offset);
@@ -213,9 +192,8 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Returns a duplicate of the current object.
-     * 
+     *
      * @return A newly allocated duplicate object.
-     * 
      */
     public SnmpSyntax duplicate() {
         return new SnmpInt32(this);
@@ -223,9 +201,8 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Returns a duplicate of the current object.
-     * 
+     *
      * @return A newly allocated duplicate object.
-     * 
      */
     public Object clone() {
         return new SnmpInt32(this);
@@ -233,12 +210,14 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
 
     /**
      * Returns the string representation of the object.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         return Integer.toString(getValue());
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof SnmpInt32 ) {
             SnmpInt32 int32 = (SnmpInt32)obj;
@@ -248,10 +227,21 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
         return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return 0;
     }
 
+    /**
+     * <p>toInteger</p>
+     *
+     * @param val a {@link org.opennms.protocols.snmp.SnmpInt32} object.
+     * @return a {@link java.lang.Integer} object.
+     */
     public static Integer toInteger(SnmpInt32 val) {
         return (val == null ? null : new Integer(val.getValue()));
     }

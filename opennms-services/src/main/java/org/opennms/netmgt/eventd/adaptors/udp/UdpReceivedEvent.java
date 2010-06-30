@@ -191,20 +191,19 @@ final class UdpReceivedEvent {
 
     /**
      * Get the acknowledged events
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<Event> getAckedEvents() {
         return m_ackEvents;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the instance matches the object based upon the remote
      * agent's address &amp; port. If the passed instance is from the same agent
      * then it is considered equal.
-     * 
-     * @param o
-     *            instance of the class to compare.
-     * 
-     * @return Returns true if the objects are logically equal, false otherwise.
      */
     public boolean equals(Object o) {
         if (o != null && o instanceof UdpReceivedEvent) {
@@ -218,7 +217,7 @@ final class UdpReceivedEvent {
      * Returns the hash code of the instance. The hash code is computed by
      * taking the bitwise XOR of the port and the agent's internet address hash
      * code.
-     * 
+     *
      * @return The 32-bit has code for the instance.
      */
     public int hashCode() {

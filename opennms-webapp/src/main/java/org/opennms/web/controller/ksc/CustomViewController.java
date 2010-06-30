@@ -72,6 +72,13 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>CustomViewController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class CustomViewController extends AbstractController implements InitializingBean {
     
     private KSC_PerformanceReportFactory m_kscReportFactory;
@@ -82,6 +89,7 @@ public class CustomViewController extends AbstractController implements Initiali
     
     private Set<String> m_resourcesPendingPromotion = Collections.synchronizedSet(new HashSet<String>());
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] { "report or domain", "type" };
@@ -283,40 +291,85 @@ public class CustomViewController extends AbstractController implements Initiali
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getKscReportFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public KSC_PerformanceReportFactory getKscReportFactory() {
         return m_kscReportFactory;
     }
 
+    /**
+     * <p>setKscReportFactory</p>
+     *
+     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
         m_kscReportFactory = kscReportFactory;
     }
 
+    /**
+     * <p>getDefaultGraphsPerLine</p>
+     *
+     * @return a int.
+     */
     public int getDefaultGraphsPerLine() {
         return m_defaultGraphsPerLine;
     }
 
+    /**
+     * <p>setDefaultGraphsPerLine</p>
+     *
+     * @param defaultGraphsPerLine a int.
+     */
     public void setDefaultGraphsPerLine(int defaultGraphsPerLine) {
         Assert.isTrue(defaultGraphsPerLine > 0, "property defaultGraphsPerLine must be greater than zero");
 
         m_defaultGraphsPerLine = defaultGraphsPerLine;
     }
 
+    /**
+     * <p>getKscReportService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public KscReportService getKscReportService() {
         return m_kscReportService;
     }
 
+    /**
+     * <p>setKscReportService</p>
+     *
+     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;
     }
 
+    /**
+     * <p>getResourceService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public ResourceService getResourceService() {
         return m_resourceService;
     }
 
+    /**
+     * <p>setResourceService</p>
+     *
+     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
         Assert.state(m_kscReportService != null, "property kscReportService must be set");

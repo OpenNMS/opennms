@@ -31,11 +31,25 @@
 //
 package org.opennms.netmgt.poller.nrpe;
 
+/**
+ * <p>NrpeException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NrpeException extends Exception {
+	/**
+	 * <p>Constructor for NrpeException.</p>
+	 */
 	public NrpeException() {
 		super();
 	}
 	
+	/**
+	 * <p>Constructor for NrpeException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 */
 	public NrpeException(String message) {
 		super(message);
 	}

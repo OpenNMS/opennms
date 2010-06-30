@@ -38,6 +38,12 @@ package org.opennms.netmgt.snmp;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * <p>SnmpValueType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public enum SnmpValueType {
     //  The integer values match the ASN.1 constants
     INT32(0x02, "INTEGER"),
@@ -54,6 +60,7 @@ public enum SnmpValueType {
     NO_SUCH_INSTANCE(0x81, "NoSuchInstance"),
     END_OF_MIB(0x82, "EndOfMib");
     
+    /** Constant <code>s_intMap</code> */
     private static final Map<Integer, SnmpValueType> s_intMap = new HashMap<Integer, SnmpValueType>();
     
     private int m_int;
@@ -70,14 +77,30 @@ public enum SnmpValueType {
         m_displayString = displayString;
     }
     
+    /**
+     * <p>getInt</p>
+     *
+     * @return a int.
+     */
     public int getInt() {
         return m_int;
     }
     
+    /**
+     * <p>getDisplayString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayString() {
         return m_displayString;
     }
     
+    /**
+     * <p>valueOf</p>
+     *
+     * @param i a int.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValueType} object.
+     */
     public static SnmpValueType valueOf(int i) {
         return s_intMap.get(new Integer(i));
     }

@@ -36,22 +36,34 @@ import java.util.List;
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
+/**
+ * <p>AvailabilityReportLocatorDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AvailabilityReportLocatorDaoHibernate extends AbstractDaoHibernate<AvailabilityReportLocator, Integer>
 		implements AvailabilityReportLocatorDao {
 
+	/**
+	 * <p>Constructor for AvailabilityReportLocatorDaoHibernate.</p>
+	 */
 	public AvailabilityReportLocatorDaoHibernate() {
 		super(AvailabilityReportLocator.class);
 	}
 
+	/** {@inheritDoc} */
 	public void delete(int id) {
 		AvailabilityReportLocator locator = (AvailabilityReportLocator)getHibernateTemplate().get(AvailabilityReportLocator.class, id);
 		super.delete(locator);
 	}
 	
+	/** {@inheritDoc} */
 	public AvailabilityReportLocator get(int id) {
 		return super.get(id);
 	}
 
+	/** {@inheritDoc} */
 	public List<AvailabilityReportLocator> findByCategory(String category) {
 		return find("from AvailabilityReportLocator as a where a.category = ?", category);
 	}

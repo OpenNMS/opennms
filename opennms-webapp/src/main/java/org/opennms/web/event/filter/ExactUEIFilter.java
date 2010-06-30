@@ -35,12 +35,24 @@ package org.opennms.web.event.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-/** Encapsulates filtering on exact unique event identifiers. */
+/**
+ * Encapsulates filtering on exact unique event identifiers.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ExactUEIFilter extends Object implements Filter {
+    /** Constant <code>TYPE="exactUei"</code> */
     public static final String TYPE = "exactUei";
 
     protected String uei;
 
+    /**
+     * <p>Constructor for ExactUEIFilter.</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     */
     public ExactUEIFilter(String uei) {
         if (uei == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -49,35 +61,67 @@ public class ExactUEIFilter extends Object implements Filter {
         this.uei = uei;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" EVENTUEI='" + this.uei + "'");
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" EVENTUEI=?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setString(parameterIndex, this.uei);
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.uei);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return this.getDescription();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<EventFactory.ExactUEIFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getUEI</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUEI() {
         return (this.uei);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

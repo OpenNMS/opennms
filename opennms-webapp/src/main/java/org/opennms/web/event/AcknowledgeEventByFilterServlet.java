@@ -53,14 +53,20 @@ import org.opennms.web.event.filter.Filter;
  * This servlet receives an HTTP POST with a list of events to acknowledge or
  * unacknowledge, and then it redirects the client to a URL for display. The
  * target URL is configurable in the servlet config (web.xml file).
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AcknowledgeEventByFilterServlet extends BaseAcknowledgeServlet {
     private static final long serialVersionUID = 1L;
     
     /**
+     * {@inheritDoc}
+     *
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */

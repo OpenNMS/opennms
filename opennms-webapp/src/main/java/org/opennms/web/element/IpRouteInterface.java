@@ -37,8 +37,11 @@ package org.opennms.web.element;
 
 
 /**
- * 
+ * <p>IpRouteInterface class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class IpRouteInterface
 {
@@ -94,6 +97,11 @@ public class IpRouteInterface
             m_status = status;
         }
 
+        /**
+         * <p>toString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String toString()
         {
                 StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n" );
@@ -102,98 +110,126 @@ public class IpRouteInterface
                 return str.toString();
         }
 		/**
-		 * @return
+		 * <p>get_ifindex</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_ifindex() {
 			return m_routeifindex;
 		}
 
 		/**
-		 * @return
+		 * <p>get_lastPollTime</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_lastPollTime() {
 			return m_lastPollTime;
 		}
 
 		/**
-		 * @return
+		 * <p>get_nodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>get_status</p>
+		 *
+		 * @return a char.
 		 */
 		public char get_status() {
 			return m_status;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routedest</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_routedest() {
 			return m_routedest;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routemask</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_routemask() {
 			return m_routemask;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routemetric1</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_routemetric1() {
 			return m_routemetric1;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routemetric2</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_routemetric2() {
 			return m_routemetric2;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routemetric3</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_routemetric3() {
 			return m_routemetric3;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routemetric4</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_routemetric4() {
 			return m_routemetric4;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routemetric5</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_routemetric5() {
 			return m_routemetric5;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routenexthop</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_routenexthop() {
 			return m_routenexthop;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routeproto</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_routeproto() {
 			return m_routeproto;
 		}
 
 		/**
-		 * @return
+		 * <p>get_routetype</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_routetype() {
 			return m_routetype;

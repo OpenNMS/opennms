@@ -61,6 +61,11 @@ final class MergeableDefinition {
      */
     private final Definition m_snmpConfigDef;
     
+    /**
+     * <p>Constructor for MergeableDefinition.</p>
+     *
+     * @param def a {@link org.opennms.netmgt.config.snmp.Definition} object.
+     */
     public MergeableDefinition(Definition def) {
         m_snmpConfigDef = def;
     }
@@ -69,9 +74,9 @@ final class MergeableDefinition {
      * This compares the attributes (ignoring IP specifics and ranges
      * in the definitions) such as port, version, read-community, etc. to
      * determine if the definitions match.
-     * 
-     * @param def
-     * @return a definition in the config matching the attributes of the 
+     *
+     * @param def a {@link org.opennms.netmgt.config.snmp.Definition} object.
+     * @return a definition in the config matching the attributes of the
      *   specified def or null if one is not found.
      */
     public boolean equals(Definition def) {
@@ -90,6 +95,8 @@ final class MergeableDefinition {
     }
     
     /**
+     * {@inheritDoc}
+     *
      * simple little override
      */
     public boolean equals(Object obj) {
@@ -105,6 +112,8 @@ final class MergeableDefinition {
 
     /**
      * dirty little hashcode impl
+     *
+     * @return a int.
      */
     public int hashCode() {
         return 0;
@@ -112,10 +121,10 @@ final class MergeableDefinition {
     
     /**
      * This method is called when a definition is found in the config and
-     * that has the same attributes as the params in the configureSNMP event and 
+     * that has the same attributes as the params in the configureSNMP event and
      * the IP specific/range needs to be merged into the definition.
-     * 
-     * @param eventDef
+     *
+     * @param eventDef a {@link org.opennms.netmgt.config.snmp.Definition} object.
      */
     protected void mergeMatchingAttributeDef(final Definition eventDef)  {
         if (defIsSpecific(eventDef)) {
@@ -129,7 +138,7 @@ final class MergeableDefinition {
      * Little helper method for determining if this definition
      * from a configureSNMP event containts a specific IP address vs.
      * a range.
-     * 
+     *
      * @return true if the number of ranges in the def is 0.
      */
     public boolean isSpecific() {
@@ -145,8 +154,8 @@ final class MergeableDefinition {
      * Little helper method for determining if the definition created
      * from a configureSNMP event containts a specific IP address vs.
      * a range.
-     * 
-     * @param eventDef
+     *
+     * @param eventDef a {@link org.opennms.netmgt.config.snmp.Definition} object.
      * @return true if the number of ranges in the def is 0.
      */
     public boolean defIsSpecific(Definition eventDef) {
@@ -202,7 +211,7 @@ final class MergeableDefinition {
      * Enumerates over the list of specifics in a definition
      * looking for a matching specific element.  Assumes isSpecific()
      * returns true.
-     * 
+     *
      * @param specific IP address as a string
      * @return true if def has a matching specific IP address already
      */
@@ -219,7 +228,7 @@ final class MergeableDefinition {
     
     /**
      * Simple method to add readability
-     * 
+     *
      * @param specific IP address
      * @return true if the definition has a range covering
      *  the specified specific IP address
@@ -231,8 +240,8 @@ final class MergeableDefinition {
     /**
      * Analyzes the definition to determine if one of its ranges
      * matches the specified specific IP address
-     * 
-     * @param specific
+     *
+     * @param specific a {@link java.lang.String} object.
      * @return the matching range
      */
     public Range findRangeMatchingSpecific(final String specific) {
@@ -249,8 +258,8 @@ final class MergeableDefinition {
     
     /**
      * Responsible for merging new ranges in to this definition.
-     * 
-     * @param newRange
+     *
+     * @param newRange a {@link org.opennms.netmgt.config.common.Range} object.
      */
     public void mergeNewRangeIntoDef(final Range newRange) {
         purgeEclipsedRangesInDef(newRange);
@@ -268,8 +277,8 @@ final class MergeableDefinition {
     /**
      * Removes in ranges in the defintion that are eclipsed
      * by the new range.
-     * 
-     * @param range
+     *
+     * @param range a {@link org.opennms.netmgt.config.common.Range} object.
      */
     public void purgeEclipsedRangesInDef(final Range range) {
         Range[] ranges = getConfigDef().getRange();
@@ -288,9 +297,9 @@ final class MergeableDefinition {
      * The passed range is evaluated against the existing ranges in the
      * definition and updates the def range if it overlaps or eclipses
      * a def range.
-     * 
-     * @param range
-     * @return the state of having updated any ranges in the definition 
+     *
+     * @param range a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return the state of having updated any ranges in the definition
      *   due to being effected by the new range.
      */
     public boolean mergeOverlappingRanges(final Range range) {
@@ -321,7 +330,6 @@ final class MergeableDefinition {
     
     /**
      * Sorts the specifics in the current wrapped definition.
-     *
      */
     @SuppressWarnings("unchecked")
     public void sortSpecifics() {
@@ -341,16 +349,20 @@ final class MergeableDefinition {
     }
     
     /**
-     * @param def
-     * @return
+     * <p>hasSpecificMatchingNewRange</p>
+     *
+     * @param eventRange a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a boolean.
      */
     public boolean hasSpecificMatchingNewRange(final Range eventRange) {
         return (findSpecificMatchingNewRange(eventRange) != null);
     }
     
     /**
-     * @param def
-     * @return
+     * <p>findSpecificMatchingNewRange</p>
+     *
+     * @param eventRange a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a {@link java.lang.String} object.
      */
     public String findSpecificMatchingNewRange(final Range eventRange) {
         String matchingSpecific = null;
@@ -365,6 +377,11 @@ final class MergeableDefinition {
         return matchingSpecific;
     }
     
+    /**
+     * <p>getConfigDef</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.snmp.Definition} object.
+     */
     final public Definition getConfigDef() {
         synchronized (m_snmpConfigDef) {
             return m_snmpConfigDef;
@@ -385,7 +402,8 @@ final class MergeableDefinition {
 
     /**
      * Removes the specified specific from the wrapped definition.
-     * @param specific
+     *
+     * @param specific a {@link java.lang.String} object.
      */
     public void purgeSpecificFromDef(final String specific) {
         String[] specs = getConfigDef().getSpecific();
@@ -498,7 +516,8 @@ final class MergeableDefinition {
     
     /**
      * Removes the specifics and ranges covered by the range specified in the parameter from the current wrapped definition.
-     * @param eventRange
+     *
+     * @param eventRange a {@link org.opennms.netmgt.config.common.Range} object.
      */
     public void purgeRangeFromDef(final Range eventRange) {
         MergeableRange range = new MergeableRange(eventRange);

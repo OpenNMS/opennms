@@ -71,6 +71,13 @@ import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
 
+/**
+ * <p>CategoryList class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class CategoryList {
 
     protected CategoryModel m_model;
@@ -83,6 +90,11 @@ public class CategoryList {
 
     private int m_disconnectTimeout;
 
+    /**
+     * <p>Constructor for CategoryList.</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public CategoryList() throws ServletException {
         try {
             m_model = CategoryModel.getInstance();
@@ -116,12 +128,16 @@ public class CategoryList {
     /**
      * For the given map of category names to Category objects, organize the
      * categories into the currently active display rules.
-     * 
+     *
      * <p>
      * If there are no display rules, a single section named <em>Category</em>
      * will be returned. It will include all the categories in the category map,
      * in alphabetical order by category name.
      * </p>
+     *
+     * @param categoryMap a {@link java.util.Map} object.
+     * @return a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
      */
     public List<Section> getSections(Map<String, Category> categoryMap) throws IOException {
         if (m_sections != null) {
@@ -152,6 +168,14 @@ public class CategoryList {
         return sectionList;
     }
 
+    /**
+     * <p>getCategoryData</p>
+     *
+     * @return a {@link java.util.Map} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public Map<String, List<Category>> getCategoryData() throws IOException, MarshalException, ValidationException {
 
         Map<String, Category> categoryMap = m_model.getCategoryMap();
@@ -183,12 +207,13 @@ public class CategoryList {
 
     /**
      * Returns the earliest update time for the categories in categoryData.
-     * 
+     *
      * @param categoryData
      *            category data to evaluate. From getCategoryData().
      * @returns the earliest update time. If one of the categories has no RTC
      *          data, -1 is returned. If no categories exist in categoryData, 0
      *          is returned.
+     * @return a long.
      */
     public long getEarliestUpdate(Map categoryData) {
         long earliestUpdate = 0;
@@ -211,10 +236,24 @@ public class CategoryList {
         return earliestUpdate;
     }
 
+    /**
+     * <p>isDisconnected</p>
+     *
+     * @return a boolean.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public boolean isDisconnected() throws IOException, MarshalException, ValidationException {
         return isDisconnected(getEarliestUpdate(getCategoryData()));
     }
 
+    /**
+     * <p>isDisconnected</p>
+     *
+     * @param earliestUpdate a long.
+     * @return a boolean.
+     */
     public boolean isDisconnected(long earliestUpdate) {
         if (earliestUpdate < 1 || (earliestUpdate + m_disconnectTimeout) < System.currentTimeMillis()) {
             return true;

@@ -46,13 +46,18 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 /**
- * @author david
+ * <p>IpInterfaceDaoHibernate class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
     
     String m_findByServiceTypeQuery = null;
 
+    /**
+     * <p>Constructor for IpInterfaceDaoHibernate.</p>
+     */
     public IpInterfaceDaoHibernate() {
         super(OnmsIpInterface.class);
         
@@ -61,19 +66,23 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         
     }
 
+    /** {@inheritDoc} */
     public OnmsIpInterface get(OnmsNode node, String ipAddress) {
         return findUnique("from OnmsIpInterface as ipIf where ipIf.node = ? and ipIf.ipAddress = ?", node, ipAddress);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsIpInterface> findByIpAddress(String ipAddress) {
         return find("from OnmsIpInterface ipIf where ipIf.ipAddress = ?", ipAddress);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsIpInterface> findByServiceType(String svcName) {
         
         return find(m_findByServiceTypeQuery, svcName);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
         return find("select distinct ipIf " +
                     "from OnmsIpInterface as ipIf " +
@@ -85,6 +94,11 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
                     "where monSvc.serviceType.name = ?", svcName);
     }
 
+    /**
+     * <p>getInterfacesForNodes</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     @SuppressWarnings("unchecked")
     public Map<String, Integer> getInterfacesForNodes() {
         Map<String, Integer> map = new HashMap<String, Integer>();

@@ -44,16 +44,20 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.utils.IfLabel;
 
 /**
- * 
+ * <p>JdbcIfInfoGetter class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
-
 public class JdbcIfInfoGetter implements IfInfoGetter {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.threshd.IfInfoGetter#getIfInfoForNodeAndLabel(int, java.lang.String)
      */
+    /** {@inheritDoc} */
     public Map<String, String> getIfInfoForNodeAndLabel(int nodeId, String ifLabel) {
         // Get database connection
         java.sql.Connection dbConn = null;

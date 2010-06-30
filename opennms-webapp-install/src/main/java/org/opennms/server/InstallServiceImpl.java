@@ -52,6 +52,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * This is the main GWT RPC service that drives the installation UI.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService {
     private static final long serialVersionUID = 3125272519349298486L;
@@ -67,11 +70,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     /**
      * Fetch the OpenNMS home directory, as set in the <code>opennms.home</code>
      * system property.
+     *
+     * @return a {@link java.lang.String} object.
      */
     protected String getOpennmsInstallPath() {
         return ConfigFileConstants.getHome();
     }
 
+    /**
+     * <p>checkOwnershipFileExists</p>
+     *
+     * @return a boolean.
+     */
     public boolean checkOwnershipFileExists() {
         // return true;
         HttpServletRequest request = this.getThreadLocalRequest();
@@ -96,6 +106,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
+    /**
+     * <p>getOwnershipFilename</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOwnershipFilename(){
         HttpServletRequest request = this.getThreadLocalRequest();
         if (request == null) {
@@ -115,6 +130,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return attribute;
     }
 
+    /**
+     * <p>resetOwnershipFilename</p>
+     */
     public void resetOwnershipFilename() {
         HttpServletRequest request = this.getThreadLocalRequest();
         if (request == null) {
@@ -130,6 +148,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         session.setAttribute(OWNERSHIP_FILE_SESSION_ATTRIBUTE, attribute);
     }
 
+    /**
+     * <p>isAdminPasswordSet</p>
+     *
+     * @return a boolean.
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     */
     public boolean isAdminPasswordSet() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -162,6 +186,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
+    /** {@inheritDoc} */
     public void setAdminPassword(String password) throws OwnershipNotConfirmedException, UserConfigFileException, UserUpdateException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -183,6 +208,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
+    /**
+     * <p>getDatabaseConnectionSettings</p>
+     *
+     * @return a {@link org.opennms.client.DatabaseConnectionSettings} object.
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     * @throws org.opennms.client.DatabaseConfigFileException if any.
+     */
     public DatabaseConnectionSettings getDatabaseConnectionSettings() throws OwnershipNotConfirmedException, DatabaseConfigFileException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -229,6 +261,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return new DatabaseConnectionSettings(driver, dbName, dbAdminUser, dbAdminPassword, dbAdminUrl, dbNmsUser, dbNmsPassword, dbNmsUrl);
     }
 
+    /** {@inheritDoc} */
     public void connectToDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws DatabaseDoesNotExistException, OwnershipNotConfirmedException, DatabaseDriverException, DatabaseAccessException, DatabaseConfigFileException, IllegalDatabaseArgumentException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -285,6 +318,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
+    /** {@inheritDoc} */
     public void createDatabase(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword) 
     throws 
     OwnershipNotConfirmedException,
@@ -350,6 +384,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
     /**
      * Persist the database configuration parameters to the configuration files.
+     *
+     * @param driver a {@link java.lang.String} object.
+     * @param dbName a {@link java.lang.String} object.
+     * @param dbAdminUser a {@link java.lang.String} object.
+     * @param dbAdminPassword a {@link java.lang.String} object.
+     * @param dbAdminUrl a {@link java.lang.String} object.
+     * @param dbNmsUser a {@link java.lang.String} object.
+     * @param dbNmsPassword a {@link java.lang.String} object.
+     * @param dbNmsUrl a {@link java.lang.String} object.
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     * @throws org.opennms.client.DatabaseConfigFileException if any.
+     * @throws org.opennms.client.IllegalDatabaseArgumentException if any.
      */
     protected void setDatabaseConfig(String driver, String dbName, String dbAdminUser, String dbAdminPassword, String dbAdminUrl, String dbNmsUser, String dbNmsPassword, String dbNmsUrl) throws OwnershipNotConfirmedException, DatabaseConfigFileException, IllegalDatabaseArgumentException {
         if (!this.checkOwnershipFileExists()) {
@@ -403,6 +449,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
+    /** {@inheritDoc} */
     public List<LoggingEvent> getDatabaseUpdateLogs(int offset) throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -428,6 +475,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return retval;
     }
 
+    /**
+     * <p>getDatabaseUpdateLogsAsStrings</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     */
     public List<String> getDatabaseUpdateLogsAsStrings() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -442,8 +495,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     }
 
     /**
-     * Delegate to {@link #m_progressManager} to fetch the list of {@link InstallerProgressItem} 
+     * Delegate to {@link #m_progressManager} to fetch the list of {@link InstallerProgressItem}
      * classes to track the progress of the {@link Installer} execution.
+     *
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
      */
     public List<InstallerProgressItem> getDatabaseUpdateProgress() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
@@ -452,6 +508,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_progressManager.getProgressItems();
     }
 
+    /**
+     * <p>clearDatabaseUpdateLogs</p>
+     *
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     */
     public void clearDatabaseUpdateLogs() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -462,6 +523,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         }
     }
 
+    /**
+     * <p>updateDatabase</p>
+     *
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     */
     public void updateDatabase() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -496,6 +562,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         thread.start();
     }
 
+    /**
+     * <p>isUpdateInProgress</p>
+     *
+     * @return a boolean.
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     */
     public boolean isUpdateInProgress() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -504,6 +576,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_updateIsInProgress;
     }
 
+    /**
+     * <p>didLastUpdateSucceed</p>
+     *
+     * @return a boolean.
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     */
     public boolean didLastUpdateSucceed() throws OwnershipNotConfirmedException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -512,6 +590,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
         return m_lastUpdateSucceeded;
     }
 
+    /**
+     * <p>checkIpLike</p>
+     *
+     * @return a {@link org.opennms.client.IpLikeStatus} object.
+     * @throws org.opennms.client.OwnershipNotConfirmedException if any.
+     * @throws org.opennms.client.DatabaseConfigFileException if any.
+     * @throws org.opennms.client.DatabaseDriverException if any.
+     * @throws org.opennms.client.DatabaseAccessException if any.
+     */
     public IpLikeStatus checkIpLike() throws OwnershipNotConfirmedException, DatabaseConfigFileException, DatabaseDriverException, DatabaseAccessException {
         if (!this.checkOwnershipFileExists()) {
             throw new OwnershipNotConfirmedException();
@@ -578,6 +665,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
     /**
      * Perform validation on database settings. The driver class, usernames, and passwords must be
      * non-null and non-blank. URLs can be null but not blank.
+     *
+     * @param settings a {@link org.opennms.client.DatabaseConnectionSettings} object.
+     * @throws org.opennms.client.IllegalDatabaseArgumentException if any.
      */
     protected static void validateDbParameters(DatabaseConnectionSettings settings) throws IllegalDatabaseArgumentException {
         if (settings.getDbName() == null || "".equals(settings.getDbName().trim())) {

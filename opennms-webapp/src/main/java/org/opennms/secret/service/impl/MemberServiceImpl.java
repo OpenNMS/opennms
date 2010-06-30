@@ -40,24 +40,39 @@ import org.opennms.secret.dao.MemberDAO;
 import org.opennms.secret.model.OGPMember;
 import org.opennms.secret.service.MemberService;
 
+/**
+ * <p>MemberServiceImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class MemberServiceImpl implements MemberService {
     
     MemberDAO memberDAO;
     
+    /**
+     * <p>Setter for the field <code>memberDAO</code>.</p>
+     *
+     * @param memberDAO a {@link org.opennms.secret.dao.MemberDAO} object.
+     */
     public void setMemberDAO(MemberDAO memberDAO) {
         this.memberDAO = memberDAO;
     }
 
+    /** {@inheritDoc} */
     public OGPMember getMemberById(Long id) {
         OGPMember member = memberDAO.getMember(id);
         memberDAO.initialize(member);
         return member;
     }
 
+    /** {@inheritDoc} */
     public void createMember(OGPMember member) {
         memberDAO.createMember(member);
     }
 
+    /** {@inheritDoc} */
     public Set findMatching(String searchKey) {
         List members = memberDAO.findAll();
         Set<OGPMember> matches = new HashSet<OGPMember>();

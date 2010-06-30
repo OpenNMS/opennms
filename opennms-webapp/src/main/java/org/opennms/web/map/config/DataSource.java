@@ -34,13 +34,15 @@
  */
 
 /**
- * 
+ * <p>DataSource class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 package org.opennms.web.map.config;
 
 import java.util.HashMap;
-
 public class DataSource {
 	String label;
 	String implClass;
@@ -48,6 +50,14 @@ public class DataSource {
 	Filter[] filters;
 	
 
+	/**
+	 * <p>Constructor for DataSource.</p>
+	 *
+	 * @param label a {@link java.lang.String} object.
+	 * @param implClass a {@link java.lang.String} object.
+	 * @param param a {@link java.util.HashMap} object.
+	 * @param filters an array of {@link org.opennms.web.map.config.Filter} objects.
+	 */
 	public DataSource(String label, String implClass, HashMap param, Filter[] filters) {
 		super();
 		this.label=label;
@@ -56,38 +66,81 @@ public class DataSource {
 		this.filters = filters;
 	}
 	
+	/**
+	 * <p>Constructor for DataSource.</p>
+	 */
 	public DataSource(){
 		
 	}
 
+	/**
+	 * <p>Getter for the field <code>filters</code>.</p>
+	 *
+	 * @return an array of {@link org.opennms.web.map.config.Filter} objects.
+	 */
 	public Filter[] getFilters() {
 		return filters;
 	}
 
+	/**
+	 * <p>Setter for the field <code>filters</code>.</p>
+	 *
+	 * @param filters an array of {@link org.opennms.web.map.config.Filter} objects.
+	 */
 	public void setFilters(Filter[] filters) {
 		this.filters = filters;
 	}
 
+	/**
+	 * <p>Getter for the field <code>implClass</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getImplClass() {
 		return implClass;
 	}
 
+	/**
+	 * <p>Setter for the field <code>implClass</code>.</p>
+	 *
+	 * @param implClass a {@link java.lang.String} object.
+	 */
 	public void setImplClass(String implClass) {
 		this.implClass = implClass;
 	}
 
+	/**
+	 * <p>Getter for the field <code>param</code>.</p>
+	 *
+	 * @return a {@link java.util.HashMap} object.
+	 */
 	public HashMap getParam() {
 		return param;
 	}
 
+	/**
+	 * <p>Setter for the field <code>param</code>.</p>
+	 *
+	 * @param param a {@link java.util.HashMap} object.
+	 */
 	public void setParam(HashMap param) {
 		this.param = param;
 	}
 
+	/**
+	 * <p>Getter for the field <code>label</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLabel() {
 		return label;
 	}
 
+	/**
+	 * <p>Setter for the field <code>label</code>.</p>
+	 *
+	 * @param label a {@link java.lang.String} object.
+	 */
 	public void setLabel(String label) {
 		this.label = label;
 	}

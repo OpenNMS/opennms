@@ -34,16 +34,46 @@
 
 package org.opennms.netmgt.trapd.jmx;
 
+/**
+ * <p>TrapdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TrapdMBean {
+    /**
+     * <p>init</p>
+     */
     public void init();
 
+    /**
+     * <p>start</p>
+     */
     public void start();
 
+    /**
+     * <p>stop</p>
+     */
     public void stop();
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus();
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status();
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText();
 }

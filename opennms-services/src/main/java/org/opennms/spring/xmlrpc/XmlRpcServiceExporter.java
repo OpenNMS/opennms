@@ -54,8 +54,10 @@ import org.springframework.remoting.support.RemoteExporter;
 import org.springframework.util.MethodInvoker;
 
 /**
- * 
+ * <p>XmlRpcServiceExporter class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class XmlRpcServiceExporter extends RemoteExporter implements InitializingBean, DisposableBean, XmlRpcHandler {
     
@@ -63,22 +65,47 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
     private Object proxy;
     private String serviceName;
 
+    /**
+     * <p>Getter for the field <code>webServer</code>.</p>
+     *
+     * @return a {@link org.apache.xmlrpc.WebServer} object.
+     */
     public WebServer getWebServer() {
         return this.webServer;
     }
     
+    /**
+     * <p>Setter for the field <code>webServer</code>.</p>
+     *
+     * @param webServer a {@link org.apache.xmlrpc.WebServer} object.
+     */
     public void setWebServer(WebServer webServer) {
         this.webServer = webServer;
     }
     
+    /**
+     * <p>Getter for the field <code>serviceName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return this.serviceName;
     }
     
+    /**
+     * <p>Setter for the field <code>serviceName</code>.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     */
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         if (this.webServer == null)
             throw new IllegalArgumentException("webServer is required");
@@ -94,6 +121,11 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
         
     }
 
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void destroy() throws Exception {
         if (serviceName == null || "".equals(serviceName)) {
             this.webServer.removeHandler("$default");
@@ -114,6 +146,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
         
     }
 
+    /** {@inheritDoc} */
     public Object execute(String method, Vector params) throws Exception {
         
         log().debug("calling: "+method+'('+toArgList(params)+')');

@@ -47,14 +47,30 @@ import org.opennms.netmgt.model.ServiceDaemon;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jmx.access.MBeanProxyFactoryBean;
 
+/**
+ * <p>JmxDaemonStatusDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JmxDaemonStatusDao implements DaemonStatusDao {
 
 	private MBeanServer mbeanServer;
 
+	/**
+	 * <p>Setter for the field <code>mbeanServer</code>.</p>
+	 *
+	 * @param mbeanServer a {@link javax.management.MBeanServer} object.
+	 */
 	public void setMbeanServer(MBeanServer mbeanServer) {
 		this.mbeanServer = mbeanServer;
 	}
 
+	/**
+	 * <p>getCurrentDaemonStatus</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map<String, ServiceInfo> getCurrentDaemonStatus() {
 		// TODO Auto-generated method stub
 		Map<String, ServiceInfo> serviceInfo = new HashMap<String, ServiceInfo>();
@@ -92,11 +108,17 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
         return (Set<ObjectName>) mbeanServer.queryNames(foo1, foo2);
     }
 	
+	/**
+	 * <p>getCurrentDaemonStatusColl</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<ServiceInfo> getCurrentDaemonStatusColl() {
 		// TODO Auto-generated method stub
 		return this.getCurrentDaemonStatus().values();
 	}
 	
+	/** {@inheritDoc} */
 	public ServiceDaemon getServiceHandle(String service) {
 		Set<ObjectName> mBeanNames;
 		try {

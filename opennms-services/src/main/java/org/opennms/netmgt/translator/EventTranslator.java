@@ -49,10 +49,18 @@ import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 
 /**
- * 
+ * <p>EventTranslator class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @version $Id: $
  */
 public class EventTranslator extends AbstractServiceDaemon implements EventListener {
     
@@ -65,24 +73,45 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     private DataSource m_dataSource;
 
     
+    /**
+     * <p>Constructor for EventTranslator.</p>
+     */
     public EventTranslator() {
     	super(EventTranslatorConfig.TRANSLATOR_NAME);
     }
     
+    /**
+     * <p>Constructor for EventTranslator.</p>
+     *
+     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventTranslator(EventIpcManager eventMgr) {
     	this();
         setEventManager(eventMgr);
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param psk a {@link org.opennms.netmgt.translator.EventTranslator} object.
+     */
     public synchronized static void setInstance(EventTranslator psk) {
         s_instance = psk;
     }
     
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.translator.EventTranslator} object.
+     */
     public synchronized static EventTranslator getInstance() {
         return s_instance;
     }
 
     
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
         if (m_initialized) return;
         
@@ -101,6 +130,9 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             throw new IllegalStateException("dataSource has not been set");
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         m_initialized = false;
         m_eventMgr = null;
@@ -112,6 +144,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         getEventManager().addEventListener(this, m_config.getUEIList());
     }
 
+    /** {@inheritDoc} */
     public void onEvent(Event e) {
     	
     		if (getName().equals(e.getSource())) {
@@ -139,26 +172,56 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     		}
     }
 
+    /**
+     * <p>getEventManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
 
+    /**
+     * <p>setEventManager</p>
+     *
+     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
     
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.EventTranslatorConfig} object.
+     */
     public EventTranslatorConfig getConfig() {
         return m_config;
     }
     
+    /**
+     * <p>setConfig</p>
+     *
+     * @param config a {@link org.opennms.netmgt.config.EventTranslatorConfig} object.
+     */
     public void setConfig(EventTranslatorConfig config) {
         m_config = config;
     }
     
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
     
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }

@@ -8,6 +8,12 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>DefaultRtConfigDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultRtConfigDao {
 
 	/**
@@ -48,6 +54,11 @@ public class DefaultRtConfigDao {
 		return ThreadCategory.getInstance(getClass());
 	}
 
+	/**
+	 * <p>getUserName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getUserName() {
 		return getProperties().getString("rt.username");
 	}

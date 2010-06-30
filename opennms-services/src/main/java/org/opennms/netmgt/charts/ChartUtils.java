@@ -73,7 +73,10 @@ import org.opennms.netmgt.config.charts.SubTitle;
 import org.opennms.netmgt.config.charts.Title;
 
 /**
+ * <p>ChartUtils class.</p>
+ *
  * @author <a href="david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class ChartUtils {
     
@@ -114,13 +117,13 @@ public class ChartUtils {
 
     /**
      * This method will returns a JFreeChart bar chart constructed based on XML configuration.
-     * 
+     *
      * @param chartName Name specified in chart-configuration.xml
      * @return <code>JFreeChart</code> constructed from the chartName
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     * @throws SQLException
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.sql.SQLException if any.
      */
     public static JFreeChart getBarChart(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
 
@@ -303,12 +306,13 @@ public class ChartUtils {
     
     /**
      * Helper method that returns the JFreeChart to an output stream written in JPEG format.
-     * @param chartName
-     * @param out
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     * @throws SQLException
+     *
+     * @param chartName a {@link java.lang.String} object.
+     * @param out a {@link java.io.OutputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.sql.SQLException if any.
      */
     public static void getBarChart(String chartName, OutputStream out) throws MarshalException, ValidationException, IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
@@ -331,12 +335,13 @@ public class ChartUtils {
     
     /**
      * Helper method that returns the JFreeChart to an output stream written in JPEG format.
-     * @param chartName
-     * @param out
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     * @throws SQLException
+     *
+     * @param chartName a {@link java.lang.String} object.
+     * @param out a {@link java.io.OutputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.sql.SQLException if any.
      */
     public static void getBarChartPNG(String chartName, OutputStream out) throws MarshalException, ValidationException, IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
@@ -359,13 +364,13 @@ public class ChartUtils {
     
     /**
      * Helper method that returns the JFreeChart as a PNG byte array.
-     * 
-     * @param chartName
+     *
+     * @param chartName a {@link java.lang.String} object.
      * @return a byte array
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     * @throws SQLException
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.sql.SQLException if any.
      */
     public static byte[] getBarChartAsPNGByteArray(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
@@ -386,13 +391,13 @@ public class ChartUtils {
     
     /**
      * Helper method used to return a JFreeChart as a buffered Image.
-     * 
-     * @param chartName
+     *
+     * @param chartName a {@link java.lang.String} object.
      * @return a <code>BufferedImage</code>
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
-     * @throws SQLException
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.sql.SQLException if any.
      */
     public static BufferedImage getChartAsBufferedImage(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
@@ -415,12 +420,12 @@ public class ChartUtils {
     
     /**
      * Helper method used to retrieve the XML defined BarChart (castor class)
-     * 
-     * @param chartName
+     *
+     * @param chartName a {@link java.lang.String} object.
      * @return a derived Castor class: BarChart
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     public static BarChart getBarChartConfigByName(String chartName) throws MarshalException, ValidationException, IOException {
         Iterator it = getChartCollectionIterator();
@@ -435,11 +440,11 @@ public class ChartUtils {
     
     /**
      * Helper method used to fetch an Iterator for all defined Charts
-     * 
+     *
      * @return <code>BarChart</code> Iterator
-     * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static Iterator getChartCollectionIterator() throws IOException, MarshalException, ValidationException {
         return ChartConfigFactory.getInstance().getConfiguration().getBarChartCollection().iterator();

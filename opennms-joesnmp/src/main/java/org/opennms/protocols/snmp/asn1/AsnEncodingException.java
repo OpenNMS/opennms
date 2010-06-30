@@ -38,11 +38,12 @@ package org.opennms.protocols.snmp.asn1;
 /**
  * The AsnEncodingException is generated whenever an error occurs in ASN.1
  * encoding of data types. The errors are generally buffer overflow errors.
- * 
+ *
+ * @author <a href="http://www.opennms.org>OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org>OpenNMS </a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @version 1.1.1.1
- * 
  */
 public class AsnEncodingException extends Exception {
     /**
@@ -59,10 +60,9 @@ public class AsnEncodingException extends Exception {
 
     /**
      * The exception constructor
-     * 
+     *
      * @param why
      *            The reason the exception is being raised
-     * 
      */
     public AsnEncodingException(String why) {
         super(why);

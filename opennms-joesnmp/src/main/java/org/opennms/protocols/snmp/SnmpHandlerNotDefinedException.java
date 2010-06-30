@@ -41,9 +41,9 @@ package org.opennms.protocols.snmp;
  * and there is no default handler defined. This is considered a runtime
  * exception since if there isn't a handler registered yet, is there likely to
  * be one after the exception?
- * 
+ *
  * @version 1.1.1.1
- * 
+ * @author ranger
  */
 public class SnmpHandlerNotDefinedException extends RuntimeException {
     /**
@@ -53,10 +53,9 @@ public class SnmpHandlerNotDefinedException extends RuntimeException {
 
     /**
      * The exception constructor
-     * 
+     *
      * @param why
      *            The reason the exception is being raised
-     * 
      */
     public SnmpHandlerNotDefinedException(String why) {
         super(why);
@@ -64,7 +63,6 @@ public class SnmpHandlerNotDefinedException extends RuntimeException {
 
     /**
      * Default exception constructor
-     * 
      */
     public SnmpHandlerNotDefinedException() {
         super();

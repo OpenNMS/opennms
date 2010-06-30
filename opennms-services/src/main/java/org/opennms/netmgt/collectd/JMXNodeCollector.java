@@ -42,16 +42,18 @@ import org.opennms.core.utils.ThreadCategory;
  * data collection for a node over a specified network interface. The
  * JMXNodeCollector implements the SnmpHandler class in order to receive
  * notifications when an JMX reply is received or error occurs.
- * 
+ *
  * The JMXNodeCollector is provided a list of MIB objects to collect and an
  * interface over which to collect the data. Data collection can be via JMXv1
  * GetNext requests or JMXv2 GetBulk requests depending upon the parms used to
  * construct the collector.
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
-
 public class JMXNodeCollector {
     /**
      * Flag indicating the success or failure of the informational query. If the
@@ -137,11 +139,7 @@ public class JMXNodeCollector {
      * the initial JMX packet requesting data. The data is then received and
      * store by the object. When all the data has been collected the passed
      * signaler object is <EM>notified</EM> using the notifyAll() method.
-     * 
-     * @param session
-     *            The JMX session with the remote agent.
-     * @param signaler
-     *            The object signaled when data collection is done.
+     *
      * @param objList
      *            The list of object id's to be collected.
      */
@@ -173,8 +171,10 @@ public class JMXNodeCollector {
 
     }
 
-     /**
+    /**
      * Returns the success or failure code for collection of the data.
+     *
+     * @return a boolean.
      */
     public boolean failed() {
         return m_error;
@@ -183,6 +183,8 @@ public class JMXNodeCollector {
     /**
      * Returns true if JMX collection failed due to timeout. Otherwise, returns
      * false.
+     *
+     * @return a boolean.
      */
     public boolean timedout() {
         if (m_error)
@@ -194,8 +196,9 @@ public class JMXNodeCollector {
     /**
      * Returns the list of all entry maps that can be used to access all the
      * information from the service polling.
+     *
+     * @return a {@link org.opennms.netmgt.collectd.JMXCollectorEntry} object.
      */
-
     public JMXCollectorEntry getEntry() {
 
         return m_collectorEntry;

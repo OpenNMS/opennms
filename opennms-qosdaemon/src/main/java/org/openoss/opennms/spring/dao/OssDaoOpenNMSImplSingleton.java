@@ -33,14 +33,17 @@ package org.openoss.opennms.spring.dao;
 /**
  * Wrapper class for OssDaoOpenNMSImpl which makes it onto a singleton which can be shared
  * between Qosd and QoSDrx when either one or or both applications are running. This is needed because Qosd and
- * QoSDrx have different local application contexts but need to share access to the OssDao which provides the 
- * synchronized alarm cache for both applications. 
+ * QoSDrx have different local application contexts but need to share access to the OssDao which provides the
+ * synchronized alarm cache for both applications.
  * Either Qosd or QoSDrx can initialise the class. The first call to getInstance() causes the class to be created.
  * All subsiquent calls return the same instance.
- * 
- * Note it is expected thet the Spring application context has already set up the opennms DAO's before the first 
+ *
+ * Note it is expected thet the Spring application context has already set up the opennms DAO's before the first
  * call to getInstance(). This means that you must ensure that the application contexts for Qosd and QosDrx
  * set the same values for these DAO's otherwise there will be unpredictable results
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class OssDaoOpenNMSImplSingleton extends OssDaoOpenNMSImpl{
 	private static OssDaoOpenNMSImplSingleton instance = null;
@@ -51,6 +54,11 @@ public class OssDaoOpenNMSImplSingleton extends OssDaoOpenNMSImpl{
 	}
 
 	// This will return a single instance of this call (creating one if none exist)
+	/**
+	 * <p>Getter for the field <code>instance</code>.</p>
+	 *
+	 * @return a {@link org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton} object.
+	 */
 	public static OssDaoOpenNMSImplSingleton getInstance() {
 		if (instance == null) // test if an instance exists, if so then return it
 		{

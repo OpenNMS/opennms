@@ -38,10 +38,17 @@ import org.opennms.netmgt.config.StorageStrategyService;
 import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.config.datacollection.Parameter;
 
+/**
+ * <p>IndexStorageStrategy class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class IndexStorageStrategy implements StorageStrategy {
     private String m_resourceTypeName;
     protected StorageStrategyService m_storageStrategyService;
 
+    /** {@inheritDoc} */
     public String getRelativePathForAttribute(String resourceParent, String resource,
             String attribute) {
         StringBuffer buffer = new StringBuffer();
@@ -58,26 +65,40 @@ public class IndexStorageStrategy implements StorageStrategy {
         return buffer.toString();
     }
 
+    /** {@inheritDoc} */
     public void setResourceTypeName(String name) {
         m_resourceTypeName = name;
     }
 
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeName() {
         return m_resourceTypeName;
     }
 
+    /** {@inheritDoc} */
     public String getResourceNameFromIndex(String resourceParent, String resourceIndex) {
         return resourceIndex;
     }
 
+    /** {@inheritDoc} */
     public void setStorageStrategyService(StorageStrategyService agent) {
         m_storageStrategyService = agent;
     }
 
+    /** {@inheritDoc} */
     public void setParameters(List<Parameter> parameterCollection) {
         // Empty method, this strategy takes no parameters
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }

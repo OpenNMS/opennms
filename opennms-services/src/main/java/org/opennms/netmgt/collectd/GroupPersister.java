@@ -38,13 +38,26 @@ import java.util.Map;
 import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 
+/**
+ * <p>GroupPersister class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GroupPersister extends BasePersister {
 
+    /**
+     * <p>Constructor for GroupPersister.</p>
+     *
+     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     */
     public GroupPersister(ServiceParameters params, RrdRepository repository) {
         super(params, repository);
 
     }
 
+    /** {@inheritDoc} */
     public void visitGroup(AttributeGroup group) {
         pushShouldPersist(group);
         if (shouldPersist()) {
@@ -62,6 +75,7 @@ public class GroupPersister extends BasePersister {
         }
     }
 
+    /** {@inheritDoc} */
     public void completeGroup(AttributeGroup group) {
         if (shouldPersist()) commitBuilder();
         popShouldPersist();

@@ -59,9 +59,12 @@ import org.opennms.netmgt.utils.ParameterMap;
  * referenced to "SNMP Reference Guide", available from
  * http://support.dell.com/support/edocs/software/svradmin/6.1/en
  * </p>
- * 
+ *
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
+ * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS</A>
+ * @version $Id: $
  */
 
 // this does snmp and there relies on the snmp configuration so it is not
@@ -126,7 +129,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      * <P>
      * Returns the name of the service that the plug-in monitors
      * </P>
-     * 
+     *
      * @return The service that the plug-in monitors.
      */
     public String serviceName() {
@@ -134,12 +137,11 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Initialize the service monitor.
      * </P>
-     * 
-     * @param parameters
-     *            Not currently used.
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents
      *                the plug-in from functioning.
@@ -169,10 +171,11 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      * scheduler. Here we perform any necessary initialization to prepare the
      * NetworkInterface object for polling.
      * </P>
-     * 
+     *
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents
      *                the interface from being monitored.
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
     public void initialize(MonitoredService svc) {
         NetworkInterface iface = svc.getNetInterface();
@@ -207,18 +210,12 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * The poll() method is responsible for polling the specified address for
      * SNMP service availability.
      * </P>
-     * 
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used
-     *            for this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availability of the interface and if a transition event
-     *         should be supressed.
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */

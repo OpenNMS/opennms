@@ -58,10 +58,12 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * initially constructed no information is collected. The SNMP Session creating
  * and colletion occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">brozow </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- * 
+ * @author <a href="mailto:brozow@opennms.org">brozow </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public final class IfSnmpCollector implements Runnable {
 
@@ -94,7 +96,8 @@ public final class IfSnmpCollector implements Runnable {
      * Constructs a new snmp collector for a node using the passed interface as
      * the collection point. The collection does not occur until the
      * <code>run</code> method is invoked.
-     * 
+     *
+     * @param address a {@link java.net.InetAddress} object.
      */
     public IfSnmpCollector(InetAddress address) {
         m_address = address;
@@ -106,6 +109,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns true if any part of the collection failed.
+     *
+     * @return a boolean.
      */
     public boolean failed() {
         return !hasSystemGroup() || !hasIfTable() || !hasIpAddrTable();
@@ -113,6 +118,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns true if the system group was collected successfully
+     *
+     * @return a boolean.
      */
     public boolean hasSystemGroup() {
         return (m_sysGroup != null && !m_sysGroup.failed());
@@ -120,6 +127,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns the collected system group.
+     *
+     * @return a {@link org.opennms.netmgt.capsd.snmp.SystemGroup} object.
      */
     public SystemGroup getSystemGroup() {
         return m_sysGroup;
@@ -127,6 +136,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns true if the interface table was collected.
+     *
+     * @return a boolean.
      */
     public boolean hasIfTable() {
         // FIXME What should we do if the table had no error but was empty
@@ -138,6 +149,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns the collected interface table.
+     *
+     * @return a {@link org.opennms.netmgt.capsd.snmp.IfTable} object.
      */
     public IfTable getIfTable() {
         return m_ifTable;
@@ -145,6 +158,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns true if the IP Interface Address table was collected.
+     *
+     * @return a boolean.
      */
     public boolean hasIpAddrTable() {
         // FIXME What should we do if the table had no error but was empty
@@ -156,6 +171,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns the collected IP Interface Address table.
+     *
+     * @return a {@link org.opennms.netmgt.capsd.snmp.IpAddrTable} object.
      */
     public IpAddrTable getIpAddrTable() {
         return m_ipAddrTable;
@@ -163,6 +180,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns true if the interface extensions table was collected.
+     *
+     * @return a boolean.
      */
     public boolean hasIfXTable() {
         // FIXME What should we do if the table had no error but was empty
@@ -174,6 +193,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns the collected interface extensions table.
+     *
+     * @return a {@link org.opennms.netmgt.capsd.snmp.IfXTable} object.
      */
     public IfXTable getIfXTable() {
         return m_ifXTable;
@@ -181,6 +202,8 @@ public final class IfSnmpCollector implements Runnable {
 
     /**
      * Returns the target address that the collection occured for.
+     *
+     * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getCollectorTargetAddress() {
         return m_address;
@@ -189,13 +212,13 @@ public final class IfSnmpCollector implements Runnable {
     /**
      * Returns the Internet address at the corresponding index. If the address
      * cannot be resolved then a null reference is returned.
-     * 
+     *
      * @param ifIndex
      *            The index to search for.
-     * 
      * @throws java.lang.IndexOutOfBoundsException
      *             Thrown if the index cannot be resolved due to an incomplete
      *             table.
+     * @return an array of {@link java.net.InetAddress} objects.
      */
     public InetAddress[] getIfAddressAndMask(int ifIndex) {
         if (!hasIpAddrTable()) {
@@ -205,6 +228,12 @@ public final class IfSnmpCollector implements Runnable {
         return m_ipAddrTable.getIfAddressAndMask(ifIndex);
     }
 
+    /**
+     * <p>getAdminStatus</p>
+     *
+     * @param ifIndex a int.
+     * @return a int.
+     */
     public int getAdminStatus(int ifIndex) {
         if (!hasIfTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
@@ -213,6 +242,12 @@ public final class IfSnmpCollector implements Runnable {
         return m_ifTable.getAdminStatus(ifIndex);
     }
     
+    /**
+     * <p>getOperStatus</p>
+     *
+     * @param ifIndex a int.
+     * @return a int.
+     */
     public int getOperStatus(int ifIndex) {
         if (!hasIfTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
@@ -221,6 +256,12 @@ public final class IfSnmpCollector implements Runnable {
         return m_ifTable.getOperStatus(ifIndex);
     }
 
+    /**
+     * <p>getIfType</p>
+     *
+     * @param ifIndex a int.
+     * @return a int.
+     */
     public int getIfType(int ifIndex) {
         if (!hasIfTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
@@ -229,6 +270,12 @@ public final class IfSnmpCollector implements Runnable {
         return m_ifTable.getIfType(ifIndex);
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a int.
+     */
     public int getIfIndex(InetAddress address) {
         log().debug("getIfIndex: retrieving ifIndex for " + address.getHostAddress());
         if (!hasIpAddrTable()) {
@@ -240,7 +287,10 @@ public final class IfSnmpCollector implements Runnable {
     }
 
     /**
-     * 
+     * <p>getIfName</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
      */
     public String getIfName(int ifIndex) {
         String snmpIfName = null;
@@ -259,6 +309,12 @@ public final class IfSnmpCollector implements Runnable {
         return snmpIfName;
     }
     
+    /**
+     * <p>getIfDescr</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfDescr(final int ifIndex) {
         String ifDescr = null;
         
@@ -268,6 +324,12 @@ public final class IfSnmpCollector implements Runnable {
         return ifDescr;
     }
     
+    /**
+     * <p>getInterfaceSpeed</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getInterfaceSpeed(final int ifIndex) {
         Long ifSpeed = null;
         
@@ -287,6 +349,12 @@ public final class IfSnmpCollector implements Runnable {
         return ifSpeed;
     }
     
+    /**
+     * <p>getPhysAddr</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getPhysAddr(final int ifIndex) {
         String physAddr = null;
         
@@ -297,7 +365,10 @@ public final class IfSnmpCollector implements Runnable {
     }
     
     /**
-     * 
+     * <p>getIfAlias</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
      */
     public String getIfAlias(int ifIndex) {
         String snmpIfAlias = null;
@@ -327,12 +398,11 @@ public final class IfSnmpCollector implements Runnable {
      * failure of the collection should be tested via the <code>failed</code>
      * method.
      * </p>
-     * 
+     *
      * <p>
      * No synchronization is preformed, so if this is used in a separate thread
      * context synchornization must be added.
      * </p>
-     * 
      */
     public void run() {
 

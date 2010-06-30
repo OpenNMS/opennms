@@ -43,14 +43,20 @@ import org.opennms.secret.model.Node;
 import org.opennms.secret.model.NodeInterface;
 
 /**
- * @author craig
+ * <p>NodeInterfaceDaoSimple class.</p>
  *
+ * @author craig
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NodeInterfaceDaoSimple implements NodeInterfaceDao {
     
     private static int LENGTH = 5;
     private NodeInterface[] interfacearray =  new NodeInterface[LENGTH];
     
+    /**
+     * <p>Constructor for NodeInterfaceDaoSimple.</p>
+     */
     public NodeInterfaceDaoSimple(){
         this.populate();
     }
@@ -74,6 +80,7 @@ public class NodeInterfaceDaoSimple implements NodeInterfaceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#initialize(java.lang.Object)
      */
+    /** {@inheritDoc} */
     public void initialize(Object obj) {
         // TODO Auto-generated method stub
         
@@ -82,6 +89,7 @@ public class NodeInterfaceDaoSimple implements NodeInterfaceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#getNodeInterface(java.lang.Long)
      */
+    /** {@inheritDoc} */
     public NodeInterface getNodeInterface(Long id) {
         return interfacearray[id.intValue()];
     }
@@ -89,6 +97,7 @@ public class NodeInterfaceDaoSimple implements NodeInterfaceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#createInterface(org.opennms.secret.model.NodeInterface)
      */
+    /** {@inheritDoc} */
     public void createInterface(NodeInterface iface) {
         // TODO Auto-generated method stub
         
@@ -97,10 +106,12 @@ public class NodeInterfaceDaoSimple implements NodeInterfaceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeInterfaceDao#getServiceCollection(org.opennms.secret.model.NodeInterface)
      */
+    /** {@inheritDoc} */
     public Collection getServiceCollection(NodeInterface ni) {
         return null;
     }
     
+    /** {@inheritDoc} */
     public Collection<NodeInterface> getNodeInterfaces(Node node) {
         Collection<NodeInterface> interfaces = new HashSet<NodeInterface>();
         for (int i =1; i<LENGTH; i++ ) {

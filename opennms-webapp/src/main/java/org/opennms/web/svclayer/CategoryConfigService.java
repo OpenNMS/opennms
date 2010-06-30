@@ -39,11 +39,19 @@ import java.util.Collection;
 import org.opennms.netmgt.config.categories.Category;
 
 /**
- * 
+ * <p>CategoryConfigService interface.</p>
+ *
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface CategoryConfigService {
 
+    /**
+     * <p>getCategories</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<Category> getCategories();
 
 }

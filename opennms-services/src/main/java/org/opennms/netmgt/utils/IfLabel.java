@@ -57,32 +57,44 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * A convenience class for methods to encode/decode ifLabel descriptions for
  * storing SNMP data in an RRD file.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public class IfLabel extends Object {
 
+    /** Constant <code>log</code> */
     protected static Category log = ThreadCategory.getInstance(IfLabel.class);
 
     /**
      * Return a map of useful SNMP information for the interface specified by
      * the nodeId and ifLabel. Essentially a "decoding" algorithm for the
      * ifLabel.
-     * 
+     *
      * @param conn
      *            Database connection
      * @param nodeId
      *            Node id
      * @param ifLabel
      *            Interface label of format: <description>- <macAddr>
-     * 
      * @return Map of SNMP info keyed by 'snmpInterface' table column names for
      *         the interface specified by nodeId and ifLabel args.
-     * 
-     * @throws SQLException
+     * @throws java.sql.SQLException
      *             if error occurs accessing the database.
      */
     public static Map<String, String> getInterfaceInfoFromIfLabel(Connection conn, int nodeId, String ifLabel) throws SQLException {
@@ -154,19 +166,17 @@ public class IfLabel extends Object {
      * Return a map of useful SNMP information for the interface specified by
      * the nodeId and ifLabel. Essentially a "decoding" algorithm for the
      * ifLabel.
-     * 
+     *
      * Overloaded method which first obtains a database connection from the
      * vault.
-     * 
+     *
      * @param nodeId
      *            Node id
      * @param ifLabel
      *            Interface label of format: <description>-<macAddr>
-     * 
      * @return Map of SNMP info keyed by 'snmpInterface' table column names for
      *         the interface specified by nodeId and ifLabel args.
-     * 
-     * @throws SQLException
+     * @throws java.sql.SQLException
      *             if error occurs accessing the database.
      */
     public static Map<String, String> getInterfaceInfoFromIfLabel(int nodeId, String ifLabel) throws SQLException {
@@ -184,7 +194,13 @@ public class IfLabel extends Object {
         return info;
     }
 
-    /** Get the interface labels for each interface on a given node. */
+    /**
+     * Get the interface labels for each interface on a given node.
+     *
+     * @param nodeId a int.
+     * @return an array of {@link java.lang.String} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static String[] getIfLabels(int nodeId) throws SQLException {
         ArrayList<String> list = new ArrayList<String>();
         Connection conn = Vault.getDbConnection();
@@ -215,6 +231,14 @@ public class IfLabel extends Object {
         return labels;
     }
 
+    /**
+     * <p>getIfLabel</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static String getIfLabel(int nodeId, String ipAddr) throws SQLException {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -257,6 +281,16 @@ public class IfLabel extends Object {
         return label;
     }
 
+    /**
+     * <p>getIfLabelfromIfIndex</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     * @throws java.lang.NumberFormatException if any.
+     */
     public static String getIfLabelfromIfIndex(int nodeId, String ipAddr, int ifIndex) throws SQLException, NumberFormatException {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -305,6 +339,14 @@ public class IfLabel extends Object {
         return label;
     }
 
+    /**
+     * <p>getIfLabel</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param descr a {@link java.lang.String} object.
+     * @param physAddr a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getIfLabel(String name, String descr, String physAddr) {
         // If available ifName is used to generate the label
         // since it is guaranteed to be unique. Otherwise

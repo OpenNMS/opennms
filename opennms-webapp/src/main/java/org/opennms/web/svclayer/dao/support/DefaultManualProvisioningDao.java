@@ -64,17 +64,26 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultManualProvisioningDao class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     
     private File m_importFileDir;
 
+    /**
+     * <p>setImportFileDirectory</p>
+     *
+     * @param importFileDir a {@link java.io.File} object.
+     */
     public void setImportFileDirectory(File importFileDir) {
         m_importFileDir = importFileDir;
     }
 
+    /** {@inheritDoc} */
     public ModelImport get(String name) {
         checkGroupName(name);
         
@@ -107,6 +116,11 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         Assert.hasLength(name, "Group name must not be null or the empty string");
     }
 
+    /**
+     * <p>getProvisioningGroupNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getProvisioningGroupNames() {
         
         String[] importFiles = m_importFileDir.list(getImportFilenameFilter());
@@ -119,6 +133,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         return Arrays.asList(groupNames);
     }
 
+    /** {@inheritDoc} */
     public void save(String groupName, ModelImport group) {
         checkGroupName(groupName);
         
@@ -161,6 +176,11 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         return new File(m_importFileDir, "imports-"+groupName+".xml");
     }
     
+    /**
+     * <p>getImportFilenameFilter</p>
+     *
+     * @return a {@link java.io.FilenameFilter} object.
+     */
     public FilenameFilter getImportFilenameFilter() {
         return new FilenameFilter() {
 
@@ -183,6 +203,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
 
 
 
+    /** {@inheritDoc} */
     public String getUrlForGroup(String groupName) {
         checkGroupName(groupName);
         File groupFile = getImportFile(groupName);
@@ -194,6 +215,7 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         }
     }
 
+    /** {@inheritDoc} */
     public void delete(String groupName) {
         File groupFile = getImportFile(groupName);
         groupFile.delete();

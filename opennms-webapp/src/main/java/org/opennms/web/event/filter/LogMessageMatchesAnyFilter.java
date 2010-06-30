@@ -44,14 +44,21 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
+ * <p>LogMessageMatchesAnyFilter class.</p>
+ *
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class LogMessageMatchesAnyFilter extends Object implements Filter {
+    /** Constant <code>TYPE="msgmatchany"</code> */
     public static final String TYPE = "msgmatchany";
 
     protected String[] substrings;
 
     /**
+     * <p>Constructor for LogMessageMatchesAnyFilter.</p>
+     *
      * @param stringList
      *            a space-delimited list of search substrings
      */
@@ -74,6 +81,11 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
         this.substrings = list.toArray(new String[list.size()]);
     }
 
+    /**
+     * <p>Constructor for LogMessageMatchesAnyFilter.</p>
+     *
+     * @param substrings an array of {@link java.lang.String} objects.
+     */
     public LogMessageMatchesAnyFilter(String[] substrings) {
         if (substrings == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -82,6 +94,11 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
         this.substrings = substrings;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         StringBuffer buffer = new StringBuffer(" (");
 
@@ -93,19 +110,35 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
         return buffer.toString();
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" UPPER(EVENTLOGMSG) LIKE ?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setString(parameterIndex, "%"+getQueryString().toUpperCase()+"%");
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return TYPE + "=" + this.getQueryString();
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         StringBuffer buffer = new StringBuffer("message containing \"");
         buffer.append(getQueryString());
@@ -114,18 +147,34 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
         return buffer.toString();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "<LogMessageMatchesAnyFilter: " + this.getDescription() + ">";
     }
 
+    /**
+     * <p>Getter for the field <code>substrings</code>.</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getSubstrings() {
         return this.substrings;
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
     }
 
+    /**
+     * <p>getQueryString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getQueryString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append(this.substrings[0]);

@@ -59,6 +59,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 //public class NodeController implements ThrowawayController {
+/**
+ * <p>NodeController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NodeController implements Controller {
     private Long nodeId = new Long(0); // XXX This is hard-coded.  It shouldn't be. ;-)
     private NodeService m_nodeService;
@@ -67,10 +74,12 @@ public class NodeController implements Controller {
     private DataSourceService m_dataSourceService;
     private String m_viewName;
 
+    /** Constant <code>MODEL_NAME="node"</code> */
     public static final String MODEL_NAME = "node";
 
 //	public ModelAndView execute() throws Exception {
 
+    /** {@inheritDoc} */
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Node n = m_nodeService.getNodeById(nodeId);
         
@@ -112,26 +121,56 @@ public class NodeController implements Controller {
         return new ModelAndView(m_viewName, MODEL_NAME, node);
 	}
 
+    /**
+     * <p>setNodeService</p>
+     *
+     * @param nodeService a {@link org.opennms.secret.service.NodeService} object.
+     */
     public void setNodeService(NodeService nodeService) {
         m_nodeService = nodeService;
     }
 
+    /**
+     * <p>setNodeInterfaceService</p>
+     *
+     * @param nodeInterfaceService a {@link org.opennms.secret.service.NodeInterfaceService} object.
+     */
     public void setNodeInterfaceService(NodeInterfaceService nodeInterfaceService) {
         m_nodeInterfaceService = nodeInterfaceService;
     }
     
+    /**
+     * <p>setServiceService</p>
+     *
+     * @param serviceService a {@link org.opennms.secret.service.ServiceService} object.
+     */
     public void setServiceService(ServiceService serviceService) {
         m_serviceService = serviceService;
     }
 
+    /**
+     * <p>setDataSourceService</p>
+     *
+     * @param dataSourceService a {@link org.opennms.secret.service.DataSourceService} object.
+     */
     public void setDataSourceService(DataSourceService dataSourceService) {
         m_dataSourceService = dataSourceService;
     }
 	
+	/**
+	 * <p>Setter for the field <code>nodeId</code>.</p>
+	 *
+	 * @param id a {@link java.lang.Long} object.
+	 */
 	public void setNodeId(Long id) {
 		nodeId = id;
 	}
     
+    /**
+     * <p>setViewName</p>
+     *
+     * @param viewName a {@link java.lang.String} object.
+     */
     public void setViewName(String viewName) {
         m_viewName = viewName;
     }

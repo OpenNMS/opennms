@@ -70,10 +70,12 @@ import org.opennms.netmgt.xml.event.Event;
  * implements the <em>singleton</em> design pattern, in that there is only one
  * instance in any given virtual machine. The service delays the reading of
  * configuration information until the service is started.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @version $Id: $
  */
 @EventListener(name="OpenNMS.Discovery")
 public class Discovery extends AbstractServiceDaemon {
@@ -116,6 +118,9 @@ public class Discovery extends AbstractServiceDaemon {
         super("OpenNMS.Discovery");
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
 
         initializeConfiguration();
@@ -136,6 +141,9 @@ public class Discovery extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>doPings</p>
+     */
     protected void doPings() {
         debugf("starting ping sweep");
         initializeConfiguration();
@@ -182,6 +190,8 @@ public class Discovery extends AbstractServiceDaemon {
 
     /**
      * Returns the singular instance of the discovery process
+     *
+     * @return a {@link org.opennms.netmgt.discovery.Discovery} object.
      */
     public static Discovery getInstance() {
         return m_singleton;
@@ -220,23 +230,38 @@ public class Discovery extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
     	syncAlreadyDiscovered();
         startTimer();
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         stopTimer();
     }
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {
         stopTimer();
     }
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
         startTimer();
     }
     
+    /**
+     * <p>syncAlreadyDiscovered</p>
+     */
     protected void syncAlreadyDiscovered() {
     	/**
     	 * Make a new list with which we'll replace the existing one, that way
@@ -270,6 +295,11 @@ public class Discovery extends AbstractServiceDaemon {
     	log().info("syncAlreadyDiscovered initialized list of managed IP addresses with " + m_alreadyDiscovered.size() + " members");
     }
 
+    /**
+     * <p>handleDiscoveryConfigurationChanged</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
     public void handleDiscoveryConfigurationChanged(Event event) {
         initializeConfiguration();
@@ -277,6 +307,11 @@ public class Discovery extends AbstractServiceDaemon {
         this.start();
     }
 
+    /**
+     * <p>handleInterfaceDeleted</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
     public void handleInterfaceDeleted(Event event) {
         // remove from known nodes
@@ -285,6 +320,11 @@ public class Discovery extends AbstractServiceDaemon {
         debugf("Removed %s from known node list", event.getInterface());
     }
 
+    /**
+     * <p>handleDiscoveryResume</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)
     public void handleDiscoveryResume(Event event) {
         try {
@@ -293,6 +333,11 @@ public class Discovery extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>handleDiscoveryPause</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DISC_PAUSE_EVENT_UEI)
     public void handleDiscoveryPause(Event event) {
         try {
@@ -301,6 +346,11 @@ public class Discovery extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>handleNodeGainedInterface</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes

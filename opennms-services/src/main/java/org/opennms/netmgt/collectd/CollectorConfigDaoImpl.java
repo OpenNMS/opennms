@@ -50,8 +50,17 @@ import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 
+/**
+ * <p>CollectorConfigDaoImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CollectorConfigDaoImpl implements CollectorConfigDao {
 
+    /**
+     * <p>Constructor for CollectorConfigDaoImpl.</p>
+     */
     public CollectorConfigDaoImpl() {
 
         loadConfigFactory();
@@ -75,6 +84,11 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
         }
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -84,23 +98,42 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
     }
 
 
+    /**
+     * <p>getSchedulerThreads</p>
+     *
+     * @return a int.
+     */
     public int getSchedulerThreads() {
         return getConfig().getThreads();
     }
 
 
+    /**
+     * <p>getCollectors</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<Collector> getCollectors() {
         return getConfig().getConfig().getCollectorCollection();
     }
 
+    /**
+     * <p>rebuildPackageIpListMap</p>
+     */
     public void rebuildPackageIpListMap() {
         getConfig().rebuildPackageIpListMap();
     }
     
+    /**
+     * <p>getPackages</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<CollectdPackage> getPackages() {
         return getConfig().getPackages();
     }
     
+    /** {@inheritDoc} */
     public CollectdPackage getPackage(String name) {
         return getConfig().getPackage(name);
     }

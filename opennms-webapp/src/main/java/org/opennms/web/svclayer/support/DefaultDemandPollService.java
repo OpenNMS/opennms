@@ -44,10 +44,19 @@ import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.DemandPollService;
 
 /**
- * 
+ * <p>DefaultDemandPollService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultDemandPollService implements DemandPollService {
 	
@@ -55,18 +64,34 @@ public class DefaultDemandPollService implements DemandPollService {
 	private DemandPollDao m_demandPollDao;
 	private MonitoredServiceDao m_monitoredServiceDao;
 	
+	/**
+	 * <p>setDemandPollDao</p>
+	 *
+	 * @param demandPollDao a {@link org.opennms.netmgt.dao.DemandPollDao} object.
+	 */
 	public void setDemandPollDao(DemandPollDao demandPollDao) {
 		m_demandPollDao = demandPollDao;
 	}
 	
+	/**
+	 * <p>setPollerAPI</p>
+	 *
+	 * @param pollerAPI a {@link org.opennms.web.services.PollerService} object.
+	 */
 	public void setPollerAPI(PollerService pollerAPI) {
 		m_pollerService = pollerAPI;
 	}
 	
+	/**
+	 * <p>setMonitoredServiceDao</p>
+	 *
+	 * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+	 */
 	public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
 		m_monitoredServiceDao = monitoredServiceDao;
 	}
 	
+	/** {@inheritDoc} */
 	public DemandPoll pollMonitoredService(int nodeId, String ipAddr, int ifIndex, int serviceId) {
 		DemandPoll demandPoll = new DemandPoll();
 		demandPoll.setRequestTime(new Date());
@@ -82,6 +107,7 @@ public class DefaultDemandPollService implements DemandPollService {
 		return demandPoll;
 	}
 
+	/** {@inheritDoc} */
 	public DemandPoll getUpdatedResults(int pollId) {
 		return m_demandPollDao.get(pollId);
 	}

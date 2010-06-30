@@ -48,50 +48,108 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+/**
+ * <p>Abstract AbstractDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         HibernateDaoSupport implements OnmsDao<T, K> {
 
     Class<T> m_entityClass;
 
+    /**
+     * <p>Constructor for AbstractDaoHibernate.</p>
+     *
+     * @param entityClass a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @param <K> a K object.
+     */
     public AbstractDaoHibernate(Class<T> entityClass) {
         m_entityClass = entityClass;
     }
 
+    /** {@inheritDoc} */
     public void initialize(Object obj) {
         getHibernateTemplate().initialize(obj);
     }
 
+    /**
+     * <p>flush</p>
+     */
     public void flush() {
         getHibernateTemplate().flush();
     }
 
+    /**
+     * <p>clear</p>
+     */
     public void clear() {
         getHibernateTemplate().clear();
     }
 
+    /**
+     * <p>evict</p>
+     *
+     * @param entity a T object.
+     */
     public void evict(T entity) {
         getHibernateTemplate().evict(entity);
     }
 
+    /**
+     * <p>merge</p>
+     *
+     * @param entity a T object.
+     */
     public void merge(T entity) {
         getHibernateTemplate().merge(entity);
     }
 
+    /**
+     * <p>find</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<T> find(String query) {
         return getHibernateTemplate().find(query);
     }
 
+    /**
+     * <p>find</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @param values a {@link java.lang.Object} object.
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<T> find(String query, Object... values) {
         return getHibernateTemplate().find(query, values);
     }
     
+    /**
+     * <p>findObjects</p>
+     *
+     * @param clazz a {@link java.lang.Class} object.
+     * @param query a {@link java.lang.String} object.
+     * @param values a {@link java.lang.Object} object.
+     * @param <S> a S object.
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public <S> List<S> findObjects(Class<S> clazz, String query, Object... values) {
     	return getHibernateTemplate().find(query, values);
     }
 
+    /**
+     * <p>queryInt</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @return a int.
+     */
     protected int queryInt(final String query) {
         HibernateCallback callback = new HibernateCallback() {
 
@@ -106,6 +164,13 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         return ((Number) result).intValue();
     }
 
+    /**
+     * <p>queryInt</p>
+     *
+     * @param queryString a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     * @return a int.
+     */
     protected int queryInt(final String queryString, final Object... args) {
         HibernateCallback callback = new HibernateCallback() {
 
@@ -124,6 +189,12 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         return ((Number) result).intValue();
     }
 
+    /**
+     * <p>findUnique</p>
+     *
+     * @param query a {@link java.lang.String} object.
+     * @return a T object.
+     */
     protected T findUnique(final String query) {
         HibernateCallback callback = new HibernateCallback() {
 
@@ -137,6 +208,13 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         return m_entityClass.cast(result);
     }
 
+    /**
+     * <p>findUnique</p>
+     *
+     * @param queryString a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     * @return a T object.
+     */
     protected T findUnique(final String queryString, final Object... args) {
         HibernateCallback callback = new HibernateCallback() {
 
@@ -154,20 +232,36 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         return m_entityClass.cast(result);
     }
 
+    /**
+     * <p>countAll</p>
+     *
+     * @return a int.
+     */
     public int countAll() {
         return queryInt("select count(*) from " + m_entityClass.getName());
     }
 
+    /**
+     * <p>delete</p>
+     *
+     * @param entity a T object.
+     */
     public void delete(T entity) {
         getHibernateTemplate().delete(entity);
     }
 
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<T> findAll() {
         return getHibernateTemplate().loadAll(m_entityClass);
     }
     
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<T> findMatching(final OnmsCriteria onmsCrit) {
         onmsCrit.resultsOfType(m_entityClass);
@@ -191,24 +285,51 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         return getHibernateTemplate().executeFind(callback);
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param id a K object.
+     * @return a T object.
+     */
     public T get(K id) {
         return m_entityClass.cast(getHibernateTemplate().get(m_entityClass,
                                                              id));
     }
 
+    /**
+     * <p>load</p>
+     *
+     * @param id a K object.
+     * @return a T object.
+     */
     public T load(K id) {
         return m_entityClass.cast(getHibernateTemplate().load(m_entityClass,
                                                               id));
     }
 
+    /**
+     * <p>save</p>
+     *
+     * @param entity a T object.
+     */
     public void save(T entity) {
         getHibernateTemplate().save(entity);
     }
 
+    /**
+     * <p>saveOrUpdate</p>
+     *
+     * @param entity a T object.
+     */
     public void saveOrUpdate(T entity) {
         getHibernateTemplate().saveOrUpdate(entity);
     }
 
+    /**
+     * <p>update</p>
+     *
+     * @param entity a T object.
+     */
     public void update(T entity) {
         getHibernateTemplate().update(entity);
     }

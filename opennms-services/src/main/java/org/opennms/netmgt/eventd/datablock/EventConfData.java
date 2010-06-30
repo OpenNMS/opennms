@@ -49,23 +49,26 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * <pre>
  * The information read from the eventconf.xml is stored here. It maintains
- *  a map,  keyed with 'EventKey's. 
- * 
- *  It also has an UEI to 'EventKey'list map - this mapping fastens the lookup 
+ *  a map,  keyed with 'EventKey's.
+ *
+ *  It also has an UEI to 'EventKey'list map - this mapping fastens the lookup
  *  for OpenNMS internal events when different masks are configured for the
  *  same UEI.
- * 
- *  When a lookup is to be done for an 'Event',  
+ *
+ *  When a lookup is to be done for an 'Event',
  *  - its 'key' is used to get a lookup,
  *  - if no match is found for the key, UEI is used to lookup the keys that got added for that UEI
  *    and the first best fit in the event map for any of the UEI keys are used
  *  - if there is still no match at this point, all keys in the eventconf are iterated through to
  *    find a match
- *  
+ *
  * </pre>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class EventConfData extends Object {
     /**
@@ -111,10 +114,12 @@ public class EventConfData extends Object {
      * Check whether the eventvalue passes any of the mask values Mask values
      * ending with a '%' only need to be a substring of the eventvalue for the
      * eventvalue to pass the mask
-     * 
+     *
      * Enhanced 2005/08/31 to allow regular expression in eventconf.
-     * 
+     *
      * @return true if the values passes the mask
+     * @param eventvalue a {@link java.lang.String} object.
+     * @param maskValues a {@link java.util.List} object.
      */
     protected boolean eventValuePassesMaskValue(String eventvalue, List maskValues) {
         boolean maskMatch = false;
@@ -171,7 +176,7 @@ public class EventConfData extends Object {
     /**
      * Add an event - add to the 'EventKey' map using the event mask by default.
      * If the event has snmp information, add using the snmp EID
-     * 
+     *
      * @param event
      *            the org.opennms.netmgt.xml.eventconf.Event
      */
@@ -204,7 +209,7 @@ public class EventConfData extends Object {
 
     /**
      * Add an event with the specified key
-     * 
+     *
      * @param key
      *            the EventKey for this event
      * @param event
@@ -223,17 +228,18 @@ public class EventConfData extends Object {
      *  If no match is found, the event's uei to keylist is iterated through, and these keys
      *  used to lookup the event map. if still no match is found, all eventconf
      *  keys are iterated through to find a match. The first successful match is returned.
-     * 
-     *  
+     *
+     *
      * <EM>
      * NOTE:
      * </EM>
      * The first right config event that the event matches is returned.
      *  The ordering of the configurations is the responsibility of the user
      * </pre>
-     * 
+     *
      * @param event
      *            the event which is to be looked up
+     * @return a {@link org.opennms.netmgt.xml.eventconf.Event} object.
      */
     public synchronized org.opennms.netmgt.xml.eventconf.Event getEvent(org.opennms.netmgt.xml.event.Event event) {
         org.opennms.netmgt.xml.eventconf.Event matchedEvent = null;
@@ -299,9 +305,10 @@ public class EventConfData extends Object {
 
     /**
      * Get the event with the specified uei
-     * 
+     *
      * @param uei
      *            the uei
+     * @return a {@link org.opennms.netmgt.xml.eventconf.Event} object.
      */
     public synchronized org.opennms.netmgt.xml.eventconf.Event getEventByUEI(String uei) {
         EventKey key = new EventKey();

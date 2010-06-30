@@ -59,8 +59,10 @@ import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**
- * @author mhuot
+ * <p>Abstract ThreshdConfigManager class.</p>
  *
+ * @author mhuot
+ * @version $Id: $
  */
 public abstract class ThreshdConfigManager {
 
@@ -88,6 +90,15 @@ public abstract class ThreshdConfigManager {
      */
     protected String m_localServer;
     
+    /**
+     * <p>Constructor for ThreshdConfigManager.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @param localServer a {@link java.lang.String} object.
+     * @param verifyServer a boolean.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public ThreshdConfigManager(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
         m_config = (ThreshdConfiguration) Unmarshaller.unmarshal(ThreshdConfiguration.class, rdr);
 
@@ -175,8 +186,12 @@ public abstract class ThreshdConfigManager {
     }
 
     /**
-      * Saves the current in-memory configuration to disk and reloads
-      */
+     * Saves the current in-memory configuration to disk and reloads
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
     
              //marshall to a string first, then write the string to the file. This way the original config
@@ -193,17 +208,38 @@ public abstract class ThreshdConfigManager {
              reloadXML();
      }
 
+    /**
+     * <p>reloadXML</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public abstract void reloadXML() throws IOException, MarshalException, ValidationException;
 
+    /**
+     * <p>saveXML</p>
+     *
+     * @param xmlString a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     protected abstract void saveXML(String xmlString) throws IOException;
 
     /**
      * Return the threshd configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.threshd.ThreshdConfiguration} object.
      */
     public synchronized ThreshdConfiguration getConfiguration() {
         return m_config;
     }
 
+    /**
+     * <p>getPackage</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a org$opennms$netmgt$config$threshd$Package object.
+     */
     public synchronized org.opennms.netmgt.config.threshd.Package getPackage(String name) {
         for (org.opennms.netmgt.config.threshd.Package thisPackage : m_config.getPackageCollection()) {
             if(thisPackage.getName().equals(name)) {
@@ -256,15 +292,14 @@ public abstract class ThreshdConfigManager {
      * the passed package definition. If the interface belongs to the package
      * then a value of true is returned. If the interface does not belong to the
      * package a false value is returned.
-     * 
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
-     * 
+     *
      * @param iface
      *            The interface to test against the package.
      * @param pkg
      *            The package to check for the inclusion of the interface.
-     * 
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
@@ -343,11 +378,12 @@ public abstract class ThreshdConfigManager {
      * Returns true if the service is part of the package and the status of the
      * service is set to "on". Returns false if the service is not in the
      * package or it is but the status of the service is set to "off".
-     * 
+     *
      * @param svcName
      *            The service name to lookup.
      * @param pkg
      *            The package to lookup up service.
+     * @return a boolean.
      */
     public synchronized boolean serviceInPackageAndEnabled(String svcName, org.opennms.netmgt.config.threshd.Package pkg) {
         boolean result = false;

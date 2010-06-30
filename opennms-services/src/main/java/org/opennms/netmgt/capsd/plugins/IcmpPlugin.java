@@ -49,10 +49,12 @@ import org.opennms.netmgt.utils.ParameterMap;
  * interfaces as them are passed into the system. In order to minimize the
  * number of sockets and threads, this class creates a daemon thread to handle
  * all responses and a single socket for sending echo request to various hosts.
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Weave </a>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:weave@oculan.com">Weave </a>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class IcmpPlugin extends AbstractPlugin {
     /**
@@ -62,6 +64,8 @@ public final class IcmpPlugin extends AbstractPlugin {
 
     /**
      * Constructs a new monitor.
+     *
+     * @throws java.io.IOException if any.
      */
     public IcmpPlugin() throws IOException {
     }
@@ -69,7 +73,7 @@ public final class IcmpPlugin extends AbstractPlugin {
     /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.
-     * 
+     *
      * @return The protocol name for this plugin.
      */
     public String getProtocolName() {
@@ -77,13 +81,10 @@ public final class IcmpPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
-     * 
-     * @param address
-     *            The address to check for support.
-     * 
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address) {
 		try {
@@ -99,18 +100,13 @@ public final class IcmpPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      * The qualifier map passed to the method is used by the plugin to return
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
-     * 
-     * @param address
-     *            The address to check for support.
-     * @param qualifiers
-     *            The map where qualification are set by the plugin.
-     * 
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
     	int retries;

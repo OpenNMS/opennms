@@ -46,12 +46,23 @@ import org.opennms.web.svclayer.catstatus.model.StatusNode;
 import org.opennms.web.svclayer.catstatus.model.StatusService;
 
 /**
+ * <p>CategoryBuilder class.</p>
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class CategoryBuilder {
 	private Map<Integer, StatusNode> m_nodeMap = new HashMap<Integer, StatusNode>();
 	private Map<String, StatusInterface> m_nodeAndInterfaceMap = new HashMap<String, StatusInterface>();
 		
+	/**
+	 * <p>addNode</p>
+	 *
+	 * @param nodeId a int.
+	 * @param label a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.svclayer.catstatus.support.CategoryBuilder} object.
+	 */
 	public CategoryBuilder addNode(int nodeId, String label) {
 		if (!m_nodeMap.containsKey(nodeId)) {
 			StatusNode m_statusnode = new StatusNode();
@@ -62,6 +73,15 @@ public class CategoryBuilder {
 		return this;
 	}
 	
+	/**
+	 * <p>addInterface</p>
+	 *
+	 * @param nodeId a int.
+	 * @param interfaceIp a {@link java.lang.String} object.
+	 * @param ipAddress a {@link java.lang.String} object.
+	 * @param nodeLabel a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.svclayer.catstatus.support.CategoryBuilder} object.
+	 */
 	public CategoryBuilder addInterface(int nodeId, String interfaceIp, String ipAddress, String nodeLabel) {
 	    if (!m_nodeAndInterfaceMap.containsKey(getNodeAndInterfaceKey(nodeId, interfaceIp))) {
 	        addNode(nodeId, nodeLabel);	
@@ -75,6 +95,16 @@ public class CategoryBuilder {
         return this;
 	}
 	
+	/**
+	 * <p>addOutageService</p>
+	 *
+	 * @param nodeId a int.
+	 * @param interfaceIp a {@link java.lang.String} object.
+	 * @param ipAddress a {@link java.lang.String} object.
+	 * @param nodeLabel a {@link java.lang.String} object.
+	 * @param service a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.svclayer.catstatus.support.CategoryBuilder} object.
+	 */
 	public CategoryBuilder addOutageService(int nodeId, String interfaceIp, String ipAddress, String nodeLabel, String service) {
 		StatusService statusService = new StatusService();
 		addInterface(nodeId, interfaceIp, ipAddress, nodeLabel);
@@ -89,6 +119,11 @@ public class CategoryBuilder {
         return nodeId + ":" + interfaceIp;
     }
 	
+	/**
+	 * <p>getNodes</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<StatusNode> getNodes() { 
 		return m_nodeMap.values();
 	}

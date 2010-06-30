@@ -1740,13 +1740,12 @@ final class SuspectEventProcessor implements Runnable {
         }
     }
     
-    /** 
+    /**
      * Responsible for setting the Set used to track suspect scans that
      * are already enqueued for processing.  Should be called once by Capsd
      * at startup.
-     * 
-     * @param queuedSuspectsTracker
-     * 			The synchronized Set to use
+     *
+     * @param queuedSuspectTracker a {@link java.util.Set} object.
      */
     public static synchronized void setQueuedSuspectsTracker(Set<String> queuedSuspectTracker) {
     	m_queuedSuspectTracker = Collections.synchronizedSet(queuedSuspectTracker);
@@ -1754,9 +1753,10 @@ final class SuspectEventProcessor implements Runnable {
     
     /**
      * Is a suspect scan already enqueued for a given IP address?
-     * 
+     *
      * @param ipAddr
      * 			The IP address of interest
+     * @return a boolean.
      */
     public static boolean isScanQueuedForAddress(String ipAddr) {
     	synchronized(m_queuedSuspectTracker) {

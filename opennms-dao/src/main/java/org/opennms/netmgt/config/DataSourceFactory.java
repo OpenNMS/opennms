@@ -65,15 +65,18 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
  * from the opennms-database.xml. This provides convenience methods to create
  * database connections to the database configured in this default xml
  * </p>
- * 
+ *
  * <p>
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class DataSourceFactory implements DataSource {
 
@@ -89,16 +92,19 @@ public final class DataSourceFactory implements DataSource {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
-     * @throws SQLException 
-     * @throws PropertyVetoException 
-     * 
+     * @throws java.sql.SQLException if any.
+     * @throws java.beans.PropertyVetoException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.ClassNotFoundException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
         if (!isLoaded("opennms")) {
@@ -106,6 +112,17 @@ public final class DataSourceFactory implements DataSource {
         }
     }
 
+    /**
+     * <p>init</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.beans.PropertyVetoException if any.
+     * @throws java.sql.SQLException if any.
+     */
     public static synchronized void init(final String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
         if (isLoaded(dsName)) {
             // init already called - return
@@ -144,9 +161,8 @@ public final class DataSourceFactory implements DataSource {
      * <code>reload</code> method was invoked. The instance will not change
      * unless a <code>reload</code> method is invoked.
      * </p>
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -155,6 +171,12 @@ public final class DataSourceFactory implements DataSource {
         return getInstance("opennms");
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public static synchronized DataSource getInstance(String name) {
         DataSource dataSource = m_dataSources.get(name);
         if (dataSource == null) {
@@ -169,10 +191,9 @@ public final class DataSourceFactory implements DataSource {
      * <tt>opennms-database.xml</tt>. The database connection is not managed
      * by the factory and must be release by the caller by using the
      * <code>close</code> method.
-     * 
+     *
      * @return a new database connection to the database configured in the
      *         <tt>opennms-database.xml</tt>
-     * 
      * @throws java.sql.SQLException
      *             Thrown if there is an error opening the connection to the
      *             database.
@@ -181,73 +202,153 @@ public final class DataSourceFactory implements DataSource {
         return getConnection("opennms");
     }
 
+    /**
+     * <p>getConnection</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @return a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public Connection getConnection(String dsName) throws SQLException {
         return m_dataSources.get(dsName).getConnection();
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param singleton a {@link javax.sql.DataSource} object.
+     */
     public static void setInstance(DataSource singleton) {
         m_singleton=singleton;
         setInstance("opennms", singleton);
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @param singleton a {@link javax.sql.DataSource} object.
+     */
     public static void setInstance(String dsName, DataSource singleton) {
         m_dataSources.put(dsName,singleton);
     }
 
     /**
      * Return the datasource configured for the database
-     * 
+     *
      * @return the datasource configured for the database
      */
     public static DataSource getDataSource() {
         return getDataSource("opennms");
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public static DataSource getDataSource(String dsName) {
         return m_dataSources.get(dsName);
     }
 
+    /** {@inheritDoc} */
     public Connection getConnection(String username, String password) throws SQLException {
         return getConnection();
     }
 
+    /**
+     * <p>getLogWriter</p>
+     *
+     * @return a {@link java.io.PrintWriter} object.
+     * @throws java.sql.SQLException if any.
+     */
     public PrintWriter getLogWriter() throws SQLException {
         return m_singleton.getLogWriter();
     }
 
+    /**
+     * <p>getLogWriter</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @return a {@link java.io.PrintWriter} object.
+     * @throws java.sql.SQLException if any.
+     */
     public PrintWriter getLogWriter(String dsName) throws SQLException {
         return m_dataSources.get(dsName).getLogWriter();
     }
 
+    /** {@inheritDoc} */
     public void setLogWriter(PrintWriter out) throws SQLException {
         setLogWriter("opennms", out);
     }
 
+    /**
+     * <p>setLogWriter</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @param out a {@link java.io.PrintWriter} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void setLogWriter(String dsName, PrintWriter out) throws SQLException {
         m_dataSources.get(dsName).setLogWriter(out);
     }
 
+    /** {@inheritDoc} */
     public void setLoginTimeout(int seconds) throws SQLException {
         setLoginTimeout("opennms", seconds);
     }
 
+    /**
+     * <p>setLoginTimeout</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @param seconds a int.
+     * @throws java.sql.SQLException if any.
+     */
     public void setLoginTimeout(String dsName, int seconds) throws SQLException {
         m_dataSources.get(dsName).setLoginTimeout(seconds);
     }
 
+    /**
+     * <p>getLoginTimeout</p>
+     *
+     * @return a int.
+     * @throws java.sql.SQLException if any.
+     */
     public int getLoginTimeout() throws SQLException {
         return getLoginTimeout("opennms");
     }
 
+    /**
+     * <p>getLoginTimeout</p>
+     *
+     * @param dsName a {@link java.lang.String} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
+     */
     public int getLoginTimeout(String dsName) throws SQLException {
         return m_dataSources.get(dsName).getLoginTimeout();
     }
 
+    /**
+     * <p>initialize</p>
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.ClassNotFoundException if any.
+     */
     public void initialize() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
         // TODO Auto-generated method stub
 
     }
 
+    /**
+     * <p>close</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public static synchronized void close() throws SQLException {
         
         for(Runnable closer : m_closers) {
@@ -259,10 +360,12 @@ public final class DataSourceFactory implements DataSource {
 
     }
 
+    /** {@inheritDoc} */
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null;  //TODO
     }
 
+    /** {@inheritDoc} */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;  //TODO
     }

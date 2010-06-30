@@ -58,19 +58,25 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * another reason.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AcegiSessionAttributeListenerOnmsEventBuilder implements HttpSessionAttributeListener {
+    /** Constant <code>LOGGED_OUT_EVENT="uei.opennms.org/internal/authentication"{trunked}</code> */
     public final static String LOGGED_OUT_EVENT = "uei.opennms.org/internal/authentication/loggedOut";
+    /** Constant <code>SESSION_REMOVED_EVENT="uei.opennms.org/internal/authentication"{trunked}</code> */
     public final static String SESSION_REMOVED_EVENT = "uei.opennms.org/internal/authentication/sessionRemoved";
 
     private Set<String> m_sessionIdsLoggedOut = Collections.synchronizedSet(new HashSet<String>());
     
+    /** {@inheritDoc} */
     public void attributeAdded(HttpSessionBindingEvent event) {
         if (event.getName().equals(SessionNotatingLogoutHandler.SESSION_ATTRIBUTE)) {
             m_sessionIdsLoggedOut.add(event.getSession().getId());
         }
     }
 
+    /** {@inheritDoc} */
     public void attributeRemoved(HttpSessionBindingEvent event) {
         if (event.getName().equals(HttpSessionContextIntegrationFilter.ACEGI_SECURITY_CONTEXT_KEY)) {
             SecurityContext securityContext = (SecurityContext) event.getValue();
@@ -88,6 +94,7 @@ public class AcegiSessionAttributeListenerOnmsEventBuilder implements HttpSessio
         }
     }
 
+    /** {@inheritDoc} */
     public void attributeReplaced(HttpSessionBindingEvent event) {
     }
 

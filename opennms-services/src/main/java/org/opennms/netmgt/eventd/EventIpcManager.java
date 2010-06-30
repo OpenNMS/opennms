@@ -42,19 +42,31 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
 /**
- * 
+ * <p>EventIpcManager interface.</p>
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public interface EventIpcManager extends EventSubscriptionService, EventProxy {
     /**
      * Called by a service to send an event to eventd
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public void sendNow(Event event);
 
     /**
      * Called by a service to send a set of events to eventd
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      */
     public void sendNow(Log eventLog);
 

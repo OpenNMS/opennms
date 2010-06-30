@@ -43,10 +43,13 @@ import javax.persistence.Table;
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
+/**
+ * <p>OnmsServiceType class.</p>
+ *
  * @hibernate.class table="service"
- *     
-*/
+ * @author ranger
+ * @version $Id: $
+ */
 @Entity
 @Table(name="service")
 public class OnmsServiceType implements Serializable {
@@ -59,15 +62,26 @@ public class OnmsServiceType implements Serializable {
     /** persistent field */
     private String m_name;
 
-    /** full constructor */
+    /**
+     * full constructor
+     *
+     * @param servicename a {@link java.lang.String} object.
+     */
     public OnmsServiceType(String servicename) {
         m_name = servicename;
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsServiceType() {
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @Column(name="serviceId")
     @SequenceGenerator(name="serviceTypeSequence", sequenceName="serviceNxtId")
@@ -76,19 +90,39 @@ public class OnmsServiceType implements Serializable {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param serviceid a {@link java.lang.Integer} object.
+     */
     public void setId(Integer serviceid) {
         m_id = serviceid;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="serviceName", nullable=false, unique=true, length=32)
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("id", getId())
@@ -96,6 +130,7 @@ public class OnmsServiceType implements Serializable {
             .toString();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof OnmsServiceType) {
             OnmsServiceType t = (OnmsServiceType)obj;
@@ -104,6 +139,11 @@ public class OnmsServiceType implements Serializable {
         return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return m_id.intValue();
     }

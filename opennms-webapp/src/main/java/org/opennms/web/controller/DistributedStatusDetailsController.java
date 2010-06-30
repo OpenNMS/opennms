@@ -41,11 +41,19 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 
+/**
+ * <p>DistributedStatusDetailsController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class DistributedStatusDetailsController extends AbstractCommandController {
     
     private DistributedStatusService m_distributedStatusService;
     private String m_successView;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         DistributedStatusDetailsCommand cmd = (DistributedStatusDetailsCommand) command;
@@ -53,18 +61,38 @@ public class DistributedStatusDetailsController extends AbstractCommandControlle
         return new ModelAndView(getSuccessView(), "webTable", table);
     }
 
+    /**
+     * <p>getDistributedStatusService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.DistributedStatusService} object.
+     */
     public DistributedStatusService getDistributedStatusService() {
         return m_distributedStatusService;
     }
 
+    /**
+     * <p>setDistributedStatusService</p>
+     *
+     * @param statusService a {@link org.opennms.web.svclayer.DistributedStatusService} object.
+     */
     public void setDistributedStatusService(DistributedStatusService statusService) {
         m_distributedStatusService = statusService;
     }
 
+    /**
+     * <p>getSuccessView</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSuccessView() {
         return m_successView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }

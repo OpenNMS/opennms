@@ -48,13 +48,16 @@ import org.opennms.netmgt.config.dhcpd.DhcpdConfiguration;
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
  * DHCP client deamon from the dhcpd-configuration xml file.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class DhcpdConfigFactory {
     /**
@@ -92,13 +95,16 @@ public final class DhcpdConfigFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -115,13 +121,16 @@ public final class DhcpdConfigFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -132,9 +141,8 @@ public final class DhcpdConfigFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -148,7 +156,7 @@ public final class DhcpdConfigFactory {
     /**
      * Return the TCP port on which the DHCP client daemon is to listen for
      * incoming client connections.
-     * 
+     *
      * @return the DHCP client daemon port.
      */
     public synchronized int getPort() {
@@ -158,7 +166,7 @@ public final class DhcpdConfigFactory {
     /**
      * Return the MAC address to be used in outgoing DHCP packets generated
      * by the DHCP client daemon.
-     * 
+     *
      * @return string mac address
      */
     public synchronized String getMacAddress() {
@@ -169,7 +177,7 @@ public final class DhcpdConfigFactory {
      * Return the IP address to be used as the relay
      * address in outgoing DHCP packets generated
      * by the DHCP client daemon.
-     * 
+     *
      * @return string ip address
      */
     public synchronized String getMyIpAddress() {
@@ -181,7 +189,7 @@ public final class DhcpdConfigFactory {
      * Return the IP address to be used
      * in outgoing DHCP REQUEST packets generated
      * by the DHCP client daemon.
-     * 
+     *
      * @return string ip address
      */
     public synchronized String getRequestIpAddress() {
@@ -189,9 +197,9 @@ public final class DhcpdConfigFactory {
     }
 
     /**
-     * Return the string value of the extended mode option 
+     * Return the string value of the extended mode option
      * for the DHCP client daemon.
-     * 
+     *
      * @return string extended mode
      */
     public synchronized String getExtendedMode() {

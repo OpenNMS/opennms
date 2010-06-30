@@ -55,9 +55,13 @@ import org.opennms.web.WebSecurityUtils;
 /**
  * Changes the label of a node, throws an event signalling that change, and then
  * redirects the user to a web page displaying that node's details.
- * 
+ *
  * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NodeLabelChangeServlet extends HttpServlet {
 
@@ -67,6 +71,11 @@ public class NodeLabelChangeServlet extends HttpServlet {
     private static final long serialVersionUID = -7766362068448931124L;
     protected EventProxy proxy;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             this.proxy = Util.createEventProxy();
@@ -75,6 +84,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nodeIdString = request.getParameter("node");
         String labelType = request.getParameter("labeltype");
@@ -113,6 +123,14 @@ public class NodeLabelChangeServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>sendLabelChangeEvent</p>
+     *
+     * @param nodeId a int.
+     * @param oldNodeLabel a {@link org.opennms.netmgt.utils.NodeLabel} object.
+     * @param newNodeLabel a {@link org.opennms.netmgt.utils.NodeLabel} object.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     protected void sendLabelChangeEvent(int nodeId, NodeLabel oldNodeLabel, NodeLabel newNodeLabel) throws EventProxyException {
         Event outEvent = new Event();
         outEvent.setSource("NodeLabelChangeServlet");

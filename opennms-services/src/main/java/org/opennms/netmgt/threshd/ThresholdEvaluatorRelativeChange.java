@@ -62,15 +62,20 @@ import org.springframework.util.Assert;
  * samples (0.0) are ignored, as 0.0 multiplied by anything is 0.0 (if
  * they were not ignored, an interface that gets no traffic would always
  * trigger a threshold, for example).
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
     
     private static final String TYPE = "relativeChange";
 
+    /** {@inheritDoc} */
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateRelativeChange(threshold);
     }
 
+    /** {@inheritDoc} */
     public boolean supportsType(String type) {
         return TYPE.equals(type);
     }

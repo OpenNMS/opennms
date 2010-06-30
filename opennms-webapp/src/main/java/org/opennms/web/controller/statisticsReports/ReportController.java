@@ -49,13 +49,16 @@ import org.springframework.web.servlet.mvc.AbstractCommandController;
 
 /**
  * Show a specific statistics report.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ReportController extends AbstractCommandController implements InitializingBean {
     private StatisticsReportService m_statisticsReportService;
     private String m_successView;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object cmd, BindException errors) throws Exception {
         StatisticsReportCommand command = (StatisticsReportCommand) cmd;
@@ -68,23 +71,48 @@ public class ReportController extends AbstractCommandController implements Initi
         }
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_statisticsReportService != null, "property statisticsReportService must be set to a non-null value");
         Assert.state(m_successView != null, "property successView must be set to a non-null value");
     }
 
+    /**
+     * <p>getStatisticsReportService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.StatisticsReportService} object.
+     */
     public StatisticsReportService getStatisticsReportService() {
         return m_statisticsReportService;
     }
 
+    /**
+     * <p>setStatisticsReportService</p>
+     *
+     * @param statisticsReportService a {@link org.opennms.web.svclayer.StatisticsReportService} object.
+     */
     public void setStatisticsReportService(StatisticsReportService statisticsReportService) {
         m_statisticsReportService = statisticsReportService;
     }
 
+    /**
+     * <p>getSuccessView</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSuccessView() {
         return m_successView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }

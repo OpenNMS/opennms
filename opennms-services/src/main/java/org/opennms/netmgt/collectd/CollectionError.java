@@ -34,33 +34,66 @@ package org.opennms.netmgt.collectd;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>CollectionError class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CollectionError extends Exception {
     
     private static final long serialVersionUID = 1L;
 
     private int m_errorCode = ServiceCollector.COLLECTION_FAILED;
 
+    /**
+     * <p>Constructor for CollectionError.</p>
+     */
     public CollectionError() {
         super();
     }
 
+    /**
+     * <p>Constructor for CollectionError.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public CollectionError(String message) {
         super(message);
     }
 
+    /**
+     * <p>Constructor for CollectionError.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public CollectionError(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * <p>Constructor for CollectionError.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public CollectionError(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * <p>reportError</p>
+     *
+     * @return a int.
+     */
     public int reportError() {
         logError();
     	return getErrorCode();
     }
 
+    /**
+     * <p>logError</p>
+     */
     protected void logError() {
         if (getCause() == null) {
             log().error(getMessage());
@@ -69,6 +102,11 @@ public class CollectionError extends Exception {
     	}
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }

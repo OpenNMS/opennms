@@ -61,6 +61,12 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.utils.ParameterMap;
 
 //this does snmp and there relies on the snmp configuration so it is not distributable
+/**
+ * <p>OmsaStorageMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Distributable(DistributionContext.DAEMON)
 final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     private static final String m_serviceName = "OMSAStorage";
@@ -73,10 +79,16 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     private static final String arrayDiskLogicalConnectionArrayDiskNumber =".1.3.6.1.4.1.674.10893.1.20.140.3.1.3";
     private static final String arrayDiskState=".1.3.6.1.4.1.674.10893.1.20.130.4.1.4";
     
+    /**
+     * <p>serviceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String serviceName() {
         return m_serviceName;
     }
 
+    /** {@inheritDoc} */
     public void initialize(Map parameters) {
         try {
             SnmpPeerFactory.init();
@@ -95,6 +107,11 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     }
 
 
+    /**
+     * <p>initialize</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
+     */
     public void initialize(MonitoredService svc) {
         NetworkInterface iface = svc.getNetInterface();
         
@@ -117,6 +134,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return;
     }
 
+    /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();
         

@@ -32,10 +32,23 @@ package org.opennms.web;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * <p>SafeHtmlUtil class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class SafeHtmlUtil
 {
     private static Pattern scriptPattern = Pattern.compile("script", Pattern.CASE_INSENSITIVE);
 
+    /**
+     * <p>sanitize</p>
+     *
+     * @param raw a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String sanitize(String raw)
     {
         if (raw==null || raw.length()==0)

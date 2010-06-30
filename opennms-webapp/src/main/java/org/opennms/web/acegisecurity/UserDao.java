@@ -31,6 +31,19 @@
 //
 package org.opennms.web.acegisecurity;
 
+/**
+ * <p>UserDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public interface UserDao {
+	/**
+	 * <p>getByUsername</p>
+	 *
+	 * @param username a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.acegisecurity.User} object.
+	 */
 	public User getByUsername(String username);
 }

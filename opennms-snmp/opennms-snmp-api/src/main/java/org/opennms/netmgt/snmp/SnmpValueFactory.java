@@ -35,28 +35,100 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 
 
+/**
+ * <p>SnmpValueFactory interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface SnmpValueFactory {
 
+    /**
+     * <p>getOctetString</p>
+     *
+     * @param bytes an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getOctetString(byte[] bytes);
 
+    /**
+     * <p>getCounter32</p>
+     *
+     * @param val a long.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getCounter32(long val);
 
+    /**
+     * <p>getCounter64</p>
+     *
+     * @param val a {@link java.math.BigInteger} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getCounter64(BigInteger val);
 
+    /**
+     * <p>getGauge32</p>
+     *
+     * @param val a long.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getGauge32(long val);
 
+    /**
+     * <p>getInt32</p>
+     *
+     * @param val a int.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getInt32(int val);
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @param val a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getIpAddress(InetAddress val);
 
+    /**
+     * <p>getObjectId</p>
+     *
+     * @param objId a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getObjectId(SnmpObjId objId);
 
+    /**
+     * <p>getTimeTicks</p>
+     *
+     * @param val a long.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getTimeTicks(long val);
 
+    /**
+     * <p>getValue</p>
+     *
+     * @param type a int.
+     * @param bytes an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getValue(int type, byte[] bytes);
 
+    /**
+     * <p>getNull</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getNull();
 
+    /**
+     * <p>getOpaque</p>
+     *
+     * @param bs an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     SnmpValue getOpaque(byte[] bs);
 
 }

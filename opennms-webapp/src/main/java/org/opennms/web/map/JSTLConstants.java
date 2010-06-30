@@ -52,12 +52,19 @@ import org.opennms.core.utils.ThreadCategory;
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class JSTLConstants extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
     
     private boolean initialised = false;
      
+	/**
+	 * <p>Constructor for JSTLConstants.</p>
+	 */
 	public JSTLConstants() {
 		Category log = ThreadCategory.getInstance(MapsConstants.LOG4J_CATEGORY);
 		Class c = this.getClass();
@@ -77,6 +84,9 @@ public class JSTLConstants extends HashMap<String, Object> {
 		initialised = true;
 	}
  
+	/**
+	 * <p>clear</p>
+	 */
 	public void clear() {
 		if (!initialised) {
 			super.clear();
@@ -85,6 +95,7 @@ public class JSTLConstants extends HashMap<String, Object> {
         }
 	}
  
+	/** {@inheritDoc} */
 	public Object put(String key, Object value) {
 		if (!initialised) {
 			return super.put(key, value);
@@ -93,6 +104,7 @@ public class JSTLConstants extends HashMap<String, Object> {
         }
 	}
  
+	/** {@inheritDoc} */
 	public void putAll(Map<? extends String, ? extends Object> m) {
 		if (!initialised) {
 			super.putAll(m);
@@ -101,6 +113,12 @@ public class JSTLConstants extends HashMap<String, Object> {
         }
 	}
  
+	/**
+	 * <p>remove</p>
+	 *
+	 * @param key a {@link java.lang.String} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object remove(String key) {
 		if (!initialised) {
 			return super.remove(key);

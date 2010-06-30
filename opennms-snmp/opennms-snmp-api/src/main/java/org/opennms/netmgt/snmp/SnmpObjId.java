@@ -31,6 +31,12 @@ package org.opennms.netmgt.snmp;
 
 import java.util.StringTokenizer;
 
+/**
+ * <p>SnmpObjId class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpObjId implements Comparable {
     
     /* FIXME: Change the implementation of this to cache oids and share common prefixes
@@ -42,28 +48,37 @@ public class SnmpObjId implements Comparable {
     
     /**
      * These constructors are private.  The get method should be called to create a new oid
-     */ 
+     *
+     * @param ids an array of int.
+     * @param clone a boolean.
+     */
     protected SnmpObjId(int[] ids, boolean clone) {
         m_ids = (clone ? cloneIds(ids) : ids);
     }
     
     /**
      * These constructors are private.  The get method should be called to create a new oid
-     */ 
+     *
+     * @param ids an array of int.
+     */
     protected SnmpObjId(int[] ids) {
         this(ids, true);
     }
 
     /**
      * These constructors are private.  The get method should be called to create a new oid
-     */ 
+     *
+     * @param oid a {@link java.lang.String} object.
+     */
     protected SnmpObjId(String oid) {
         this(convertStringToInts(oid), false);
     }
     
     /**
      * These constructors are private.  The get method should be called to create a new oid
-     */ 
+     *
+     * @param oid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     protected SnmpObjId(SnmpObjId oid) {
         this(oid.m_ids);
     }
@@ -89,6 +104,11 @@ public class SnmpObjId implements Comparable {
         this(appendArrays(objId.m_ids, instance.m_ids), false);
     }
 
+    /**
+     * <p>getIds</p>
+     *
+     * @return an array of int.
+     */
     public int[] getIds() {
         return cloneIds(m_ids);
     }
@@ -129,6 +149,7 @@ public class SnmpObjId implements Comparable {
     
     
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof SnmpObjId)
             return compareTo(obj) == 0;
@@ -136,10 +157,20 @@ public class SnmpObjId implements Comparable {
             return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return 0;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer buf = new StringBuffer(length()*2+10); // a guess at the str len
         for(int i = 0; i < length(); i++) {
@@ -151,10 +182,16 @@ public class SnmpObjId implements Comparable {
         return buf.toString();
     }
 
+    /**
+     * <p>addPrefixDotInToString</p>
+     *
+     * @return a boolean.
+     */
     protected boolean addPrefixDotInToString() {
         return true;
     }
 
+    /** {@inheritDoc} */
     public int compareTo(Object o) {
         if (o == null) throw new NullPointerException("o is null");
         SnmpObjId other = (SnmpObjId)o;
@@ -174,14 +211,32 @@ public class SnmpObjId implements Comparable {
         return length() - other.length();
     }
 
+    /**
+     * <p>append</p>
+     *
+     * @param inst a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public SnmpObjId append(String inst) {
         return append(convertStringToInts(inst));
     }
     
+    /**
+     * <p>append</p>
+     *
+     * @param inst a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public SnmpObjId append(SnmpObjId inst) {
         return append(inst.m_ids);
     }
 
+    /**
+     * <p>append</p>
+     *
+     * @param instIds an array of int.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public SnmpObjId append(int[] instIds) {
         int[] ids = appendArrays(m_ids, instIds);
         return new SnmpObjId(ids, false);
@@ -194,30 +249,75 @@ public class SnmpObjId implements Comparable {
         return ids;
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param oid a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public static SnmpObjId get(String oid) {
         return new SnmpObjId(oid);
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param ids an array of int.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public static SnmpObjId get(int[] ids) {
         return new SnmpObjId(ids);
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param oid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public static SnmpObjId get(SnmpObjId oid) {
         return new SnmpObjId(oid);
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param objId a {@link java.lang.String} object.
+     * @param instance a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public static SnmpObjId get(String objId, String instance) {
         return new SnmpObjId(objId, instance);
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param objId a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param instance a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public static SnmpObjId get(SnmpObjId objId, String instance) {
         return new SnmpObjId(objId, instance);
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param objId a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param instance a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public static SnmpObjId get(SnmpObjId objId, SnmpObjId instance) {
         return new SnmpObjId(objId, instance);
     }
 
+    /**
+     * <p>isPrefixOf</p>
+     *
+     * @param other a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a boolean.
+     */
     public boolean isPrefixOf(SnmpObjId other) {
         if (length() > other.length())
             return false;
@@ -230,6 +330,12 @@ public class SnmpObjId implements Comparable {
         return true;
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpInstId} object.
+     */
     public SnmpInstId getInstance(SnmpObjId base) {
         if (!base.isPrefixOf(this)) return null;
         
@@ -238,18 +344,39 @@ public class SnmpObjId implements Comparable {
         return new SnmpInstId(instanceIds);
     }
 
+    /**
+     * <p>length</p>
+     *
+     * @return a int.
+     */
     public int length() {
         return m_ids.length;
     }
     
+    /**
+     * <p>getSubIdAt</p>
+     *
+     * @param index a int.
+     * @return a int.
+     */
     public int getSubIdAt(int index) {
         return m_ids[index];
     }
     
+    /**
+     * <p>getLastSubId</p>
+     *
+     * @return a int.
+     */
     public int getLastSubId() {
         return getSubIdAt(length()-1);
     }
 
+    /**
+     * <p>decrement</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public SnmpObjId decrement() {
         if (getLastSubId() == 0) {
             return new SnmpObjId(cloneIds(m_ids, length() - 1), false);

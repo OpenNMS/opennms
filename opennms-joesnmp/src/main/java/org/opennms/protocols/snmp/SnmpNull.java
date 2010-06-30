@@ -55,13 +55,12 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * object has no data or length, but is encoded with a specific header. Often
  * used as the value portion of an SnmpVarBind when sending a GET, GETNEXT, etc
  * to a remote agent.
- * 
+ *
  * This class manages no internal data, but is derived to provide the proper
  * encoding and handling of SNMP Null datatypes.
- * 
+ *
  * @version 1.1.1.1
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * 
  */
 public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializable {
     /**
@@ -78,7 +77,6 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
 
     /**
      * Constructs a default SnmpNull class
-     * 
      */
     public SnmpNull() {
         // do nothing
@@ -88,10 +86,9 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
      * Copy constructor. Provided so that if the class is extended or should at
      * some point manage internal data, the data could be meaningfully copied
      * from the passed object.
-     * 
+     *
      * @param second
      *            The class object to set data from.
-     * 
      */
     public SnmpNull(SnmpNull second) {
         // do nothing
@@ -99,45 +96,28 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
 
     /**
      * Used to retreive the ASN.1 type for this object.
-     * 
+     *
      * @return The ASN.1 value for the SnmpNull
-     * 
      */
     public byte typeId() {
         return ASNTYPE;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Used to encode the null value into an ASN.1 buffer. The passed encoder
      * defines the method for encoding the data.
-     * 
-     * @param buf
-     *            The location to write the encoded data
-     * @param offset
-     *            The start of the encoded buffer.
-     * @param encoder
-     *            The ASN.1 encoder object
-     * 
-     * @return The byte immediantly after the last encoded byte.
-     * 
      */
     public int encodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnEncodingException {
         return encoder.buildNull(buf, offset, typeId());
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Used to decode the null value from the ASN.1 buffer. The passed encoder
      * is used to decode the ASN.1 information.
-     * 
-     * @param buf
-     *            The encoded ASN.1 data
-     * @param offset
-     *            The offset of the first byte of data
-     * @param encoder
-     *            The ASN.1 decoder object.
-     * 
-     * @return The byte immediantly after the last decoded byte of information.
-     * 
      */
     public int decodeASN(byte[] buf, int offset, AsnEncoder encoder) throws AsnDecodingException {
         Object[] rVals = encoder.parseNull(buf, offset);
@@ -151,9 +131,8 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
     /**
      * Used to get a duplicate of the current object so that it can be modified
      * without affecting the creating object.
-     * 
+     *
      * @return A duplicate of the current object.
-     * 
      */
     public SnmpSyntax duplicate() {
         return new SnmpNull(this);
@@ -162,9 +141,8 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
     /**
      * Used to get a duplicate of the current object so that it can be modified
      * without affecting the creating object.
-     * 
+     *
      * @return A duplicate of the current object.
-     * 
      */
     public Object clone() {
         return new SnmpNull(this);
@@ -172,7 +150,8 @@ public class SnmpNull extends Object implements SnmpSyntax, Cloneable, Serializa
 
     /**
      * Returns a string representation of the SNMP Null object
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         return "";

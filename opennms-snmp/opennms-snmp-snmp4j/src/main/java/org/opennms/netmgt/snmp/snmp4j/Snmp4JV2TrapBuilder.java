@@ -46,24 +46,48 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
+/**
+ * <p>Snmp4JV2TrapBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
     private Snmp4JStrategy m_strategy;
     private PDU m_pdu;
     
+    /**
+     * <p>Constructor for Snmp4JV2TrapBuilder.</p>
+     *
+     * @param strategy a {@link org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy} object.
+     * @param pdu a {@link org.snmp4j.PDU} object.
+     * @param type a int.
+     */
     protected Snmp4JV2TrapBuilder(Snmp4JStrategy strategy, PDU pdu, int type) {
         m_strategy = strategy;
         m_pdu = pdu;
         m_pdu.setType(type);
     }
     
+    /**
+     * <p>Constructor for Snmp4JV2TrapBuilder.</p>
+     *
+     * @param strategy a {@link org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy} object.
+     */
     protected Snmp4JV2TrapBuilder(Snmp4JStrategy strategy) {
         this(strategy, new PDU(), PDU.TRAP);
     }
     
+    /**
+     * <p>getPDU</p>
+     *
+     * @return a {@link org.snmp4j.PDU} object.
+     */
     protected PDU getPDU() {
         return m_pdu;
     }
 
+    /** {@inheritDoc} */
     public void send(String destAddr, int destPort, String community) throws Exception {
         SnmpAgentConfig snmpAgentConfig = m_strategy.buildAgentConfig(destAddr, destPort, community, m_pdu);
         Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(snmpAgentConfig);
@@ -71,12 +95,14 @@ public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
         m_strategy.send(agentConfig, m_pdu, false);
     }
 
+    /** {@inheritDoc} */
     public void addVarBind(SnmpObjId name, SnmpValue value) {
         OID oid = new OID(name.getIds());
         Variable val = ((Snmp4JValue) value).getVariable();
         m_pdu.add(new VariableBinding(oid, val));
     }
 
+    /** {@inheritDoc} */
     public void sendTest(String destAddr, int destPort, String community) throws Exception {
         m_strategy.sendTest(destAddr, destPort, community, m_pdu);
     }

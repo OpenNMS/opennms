@@ -50,8 +50,8 @@ import javax.persistence.TemporalType;
  * AvailabilityReportLocator contains details of a pre-run availability report
  *
  *  @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
-
 public class AvailabilityReportLocator implements Serializable {
 	
 	private static final long serialVersionUID = 4674675490758669590L;
@@ -85,6 +85,11 @@ public class AvailabilityReportLocator implements Serializable {
 	//* getters and setters */
 	
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @Column(name="reportId")
     @SequenceGenerator(name="reportSequence", sequenceName="reportNxtId")
@@ -93,62 +98,127 @@ public class AvailabilityReportLocator implements Serializable {
 		return m_id;
 	}
 
+	/**
+	 * <p>setId</p>
+	 *
+	 * @param id a {@link java.lang.Integer} object.
+	 */
 	public void setId(Integer id) {
 		m_id = id;
 	}
 	
+	/**
+	 * <p>getCategory</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	@Column(name="reportCategory", length=256)
 	public String getCategory() {
 		return m_category;
 	}
 	
+	/**
+	 * <p>setCategory</p>
+	 *
+	 * @param category a {@link java.lang.String} object.
+	 */
 	public void setCategory(String category) {
 		m_category = category;
 	}
 	
+    /**
+     * <p>getDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="reportDate", nullable=false)
     	public Date getDate() {
 		return m_date;
 	}
 	
+	/**
+	 * <p>setDate</p>
+	 *
+	 * @param date a {@link java.util.Date} object.
+	 */
 	public void setDate(Date date) {
 		m_date = date;
 	}
 	
+	/**
+	 * <p>getFormat</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	@Column(name="reportFormat", length=256)
 	public String getFormat() {
 		return m_format;
 	}
 	
+	/**
+	 * <p>setFormat</p>
+	 *
+	 * @param format a {@link java.lang.String} object.
+	 */
 	public void setFormat(String format) {
 		m_format = format;
 	}
 
+	/**
+	 * <p>getType</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	@Column(name="reportType", length=256)
 	public String getType() {
 		return m_type;
 	}
 	
+	/**
+	 * <p>setType</p>
+	 *
+	 * @param type a {@link java.lang.String} object.
+	 */
 	public void setType(String type) {
 		m_type = type;
 	}
 
+	/**
+	 * <p>getLocation</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	@Column(name="reportLocation", length=256)
 	public String getLocation() {
 		return m_location;
 	}
 
+	/**
+	 * <p>setLocation</p>
+	 *
+	 * @param location a {@link java.lang.String} object.
+	 */
 	public void setLocation(String location) {
 		m_location = location;
 	}
 
 	
+	/**
+	 * <p>getAvailable</p>
+	 *
+	 * @return a {@link java.lang.Boolean} object.
+	 */
 	@Column(name="reportAvailable")
 	public Boolean getAvailable() {
 		return m_available;
 	}
 	
+	/**
+	 * <p>setAvailable</p>
+	 *
+	 * @param available a {@link java.lang.Boolean} object.
+	 */
 	public void setAvailable(Boolean available) {
 		m_available = available;
 	}

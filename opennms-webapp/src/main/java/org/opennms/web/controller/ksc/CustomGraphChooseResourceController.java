@@ -51,9 +51,17 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>CustomGraphChooseResourceController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class CustomGraphChooseResourceController extends AbstractController implements InitializingBean {
     private ResourceService m_resourceService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView = new ModelAndView("KSC/customGraphChooseResource");
@@ -92,14 +100,29 @@ public class CustomGraphChooseResourceController extends AbstractController impl
         return modelAndView;
     }
 
+    /**
+     * <p>getResourceService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public ResourceService getResourceService() {
         return m_resourceService;
     }
 
+    /**
+     * <p>setResourceService</p>
+     *
+     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "property resourceService must be set");
     }

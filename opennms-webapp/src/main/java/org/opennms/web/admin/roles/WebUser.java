@@ -31,22 +31,45 @@
 //
 package org.opennms.web.admin.roles;
 
+/**
+ * <p>WebUser class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class WebUser {
     
     private String m_name;
     
+    /**
+     * <p>Constructor for WebUser.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public WebUser(String name) {
         m_name = name;
     }
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return m_name;
     }
     
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj instanceof WebUser) {
             WebUser u = (WebUser)obj;
@@ -55,6 +78,11 @@ public class WebUser {
         return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return m_name.hashCode();
     }

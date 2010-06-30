@@ -65,7 +65,10 @@ import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
+ * <p>NSClientDataCollectionConfigFactory class.</p>
+ *
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
+ * @version $Id: $
  */
 public class NSClientDataCollectionConfigFactory {
      /** The singleton instance. */
@@ -81,6 +84,14 @@ public class NSClientDataCollectionConfigFactory {
 
      private static NsclientDatacollectionConfig m_config;
 
+     /**
+      * <p>Constructor for NSClientDataCollectionConfigFactory.</p>
+      *
+      * @param configFile a {@link java.lang.String} object.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      * @throws java.io.IOException if any.
+      */
      public NSClientDataCollectionConfigFactory(String configFile) throws MarshalException, ValidationException, IOException {
          InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
          
@@ -91,6 +102,13 @@ public class NSClientDataCollectionConfigFactory {
          }
      }
 
+     /**
+      * <p>Constructor for NSClientDataCollectionConfigFactory.</p>
+      *
+      * @param rdr a {@link java.io.Reader} object.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      */
      public NSClientDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
          initialize(rdr);
      }
@@ -100,7 +118,14 @@ public class NSClientDataCollectionConfigFactory {
          m_config = (NsclientDatacollectionConfig) Unmarshaller.unmarshal(NsclientDatacollectionConfig.class, rdr);
      }
 
-     /** Be sure to call this method before calling getInstance(). */
+     /**
+      * Be sure to call this method before calling getInstance().
+      *
+      * @throws java.io.IOException if any.
+      * @throws java.io.FileNotFoundException if any.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      */
      public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
          
          if (m_instance == null) {
@@ -113,9 +138,9 @@ public class NSClientDataCollectionConfigFactory {
 
      /**
       * Singleton static call to get the only instance that should exist
-      * 
+      *
       * @return the single factory instance
-      * @throws IllegalStateException
+      * @throws java.lang.IllegalStateException
       *             if init has not been called
       */
      public static synchronized NSClientDataCollectionConfigFactory getInstance() {
@@ -126,11 +151,24 @@ public class NSClientDataCollectionConfigFactory {
          return m_instance;
      }
      
+     /**
+      * <p>setInstance</p>
+      *
+      * @param instance a {@link org.opennms.netmgt.config.NSClientDataCollectionConfigFactory} object.
+      */
      public static synchronized void setInstance(NSClientDataCollectionConfigFactory instance) {
          m_instance = instance;
          m_loadedFromFile = false;
      }
 
+     /**
+      * <p>reload</p>
+      *
+      * @throws java.io.IOException if any.
+      * @throws java.io.FileNotFoundException if any.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      */
      public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
          m_instance = null;
          init();
@@ -140,6 +178,10 @@ public class NSClientDataCollectionConfigFactory {
      /**
       * Reload the nsclient-datacollection-config.xml file if it has been changed since we last
       * read it.
+      *
+      * @throws java.io.IOException if any.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
       */
      protected void updateFromFile() throws IOException, MarshalException, ValidationException {
          if (m_loadedFromFile) {
@@ -150,10 +192,20 @@ public class NSClientDataCollectionConfigFactory {
          }
      }
 
+     /**
+      * <p>getConfig</p>
+      *
+      * @return a {@link org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig} object.
+      */
      public synchronized static NsclientDatacollectionConfig getConfig() {
          return m_config;
      }
 
+     /**
+      * <p>setConfig</p>
+      *
+      * @param m_config a {@link org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig} object.
+      */
      public synchronized static void setConfig(NsclientDatacollectionConfig m_config) {
          NSClientDataCollectionConfigFactory.m_config = m_config;
      }
@@ -162,6 +214,12 @@ public class NSClientDataCollectionConfigFactory {
          return ThreadCategory.getInstance();
      }
 
+      /**
+       * <p>getNSClientCollection</p>
+       *
+       * @param collectionName a {@link java.lang.String} object.
+       * @return a {@link org.opennms.netmgt.config.nsclient.NsclientCollection} object.
+       */
       @SuppressWarnings("unchecked")
      public NsclientCollection getNSClientCollection(String collectionName) {
         NsclientCollection[] collections = m_config.getNsclientCollection();
@@ -177,6 +235,12 @@ public class NSClientDataCollectionConfigFactory {
          return collection;
      }
 
+     /**
+      * <p>getRrdRepository</p>
+      *
+      * @param collectionName a {@link java.lang.String} object.
+      * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+      */
      public RrdRepository getRrdRepository(String collectionName) {
          RrdRepository repo = new RrdRepository();
          repo.setRrdBaseDir(new File(getRrdPath()));
@@ -186,6 +250,12 @@ public class NSClientDataCollectionConfigFactory {
          return repo;
      }
      
+     /**
+      * <p>getStep</p>
+      *
+      * @param cName a {@link java.lang.String} object.
+      * @return a int.
+      */
      public int getStep(String cName) {
          NsclientCollection collection = getNSClientCollection(cName);
          if (collection != null)
@@ -194,6 +264,12 @@ public class NSClientDataCollectionConfigFactory {
              return -1;
      }
      
+     /**
+      * <p>getRRAList</p>
+      *
+      * @param cName a {@link java.lang.String} object.
+      * @return a {@link java.util.List} object.
+      */
      public List getRRAList(String cName) {
          NsclientCollection collection = (NsclientCollection) getNSClientCollection(cName);
          if (collection != null)
@@ -203,6 +279,11 @@ public class NSClientDataCollectionConfigFactory {
 
      }
      
+     /**
+      * <p>getRrdPath</p>
+      *
+      * @return a {@link java.lang.String} object.
+      */
      public String getRrdPath() {
          String rrdPath = m_config.getRrdRepository();
          if (rrdPath == null) {

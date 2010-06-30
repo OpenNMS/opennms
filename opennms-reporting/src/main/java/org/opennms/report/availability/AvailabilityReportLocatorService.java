@@ -42,14 +42,19 @@ import org.opennms.netmgt.model.AvailabilityReportLocator;
 /**
  * AvailibilityReportLocatorService is used to store, retrieve and delete
  * report locator entries from the report locator table
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
-
 public class AvailabilityReportLocatorService implements ReportLocatorService {
 
     private AvailabilityReportLocatorDao availabilityReportLocatorDao;
 
+    /**
+     * <p>Setter for the field <code>availabilityReportLocatorDao</code>.</p>
+     *
+     * @param availabilityReportLocatorDao a {@link org.opennms.netmgt.dao.AvailabilityReportLocatorDao} object.
+     */
     public void setAvailabilityReportLocatorDao(
             AvailabilityReportLocatorDao availabilityReportLocatorDao) {
         this.availabilityReportLocatorDao = availabilityReportLocatorDao;
@@ -58,24 +63,19 @@ public class AvailabilityReportLocatorService implements ReportLocatorService {
     /**
      * Returns a collection of ReportLocator objects that represent all the
      * ready run reports available
-     * 
+     *
      * @return Collection of AvailabilityReportLocator
      */
-
     public Collection<AvailabilityReportLocator> locateReports() {
         return availabilityReportLocatorDao.findAll();
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns a collection of ReportLocator objects that represent all the
      * ready run reports available for a given category
-     * 
-     * @param catgegoryName
-     *            A valid category name (see views.xml)
-     * @return Collection of AvailabilityReportLocator applicable to
-     *         categoryName
      */
-
     public Collection<AvailabilityReportLocator> locateReports(
             String categoryName) {
         return availabilityReportLocatorDao.findByCategory(categoryName);
@@ -83,22 +83,20 @@ public class AvailabilityReportLocatorService implements ReportLocatorService {
 
     /**
      * Returns a single AvailabilityReportLocator
-     * 
-     * @param id
+     *
+     * @param id a int.
      * @return AvailabilityReportLocator
      */
-
     public AvailabilityReportLocator locateReport(int id) {
         return availabilityReportLocatorDao.get(id);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Delete an availability report. Currently only deletes the locator, not
      * the report on disk.
-     * 
-     * @param id
      */
-
     public void deleteReport(int id) {
         // TODO Need to add the capability to remove reports from the
         // filsystem, as well as remove them from the locator
@@ -106,11 +104,10 @@ public class AvailabilityReportLocatorService implements ReportLocatorService {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Add an availability Report Locator record to the database
-     * 
-     * @param AvailabilityReportLocator
      */
-    
     public void addReport(AvailabilityReportLocator locator) {
         availabilityReportLocatorDao.save(locator);
     }

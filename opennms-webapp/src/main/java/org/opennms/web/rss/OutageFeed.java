@@ -47,23 +47,39 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 
 /**
- * 
+ * <p>OutageFeed class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class OutageFeed extends AbstractFeed {
 
+    /**
+     * <p>Constructor for OutageFeed.</p>
+     */
     public OutageFeed() {
         super();
         // date-based
         setMaxEntries(Integer.MAX_VALUE);
     }
     
+    /**
+     * <p>Constructor for OutageFeed.</p>
+     *
+     * @param feedType a {@link java.lang.String} object.
+     */
     public OutageFeed(String feedType) {
         super(feedType);
         // date-based
         setMaxEntries(Integer.MAX_VALUE);
     }
     
+    /**
+     * <p>getFeed</p>
+     *
+     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
+     */
     public SyndFeed getFeed() {
         SyndFeed feed = new SyndFeedImpl();
 

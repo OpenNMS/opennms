@@ -41,16 +41,17 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
+ * <p>ResourceAttributeFilteringResourceVisitor class.</p>
+ *
  * @author <a href="dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class ResourceAttributeFilteringResourceVisitor implements ResourceVisitor, InitializingBean {
     private ResourceVisitor m_delegatedVisitor;
     private String m_resourceAttributeKey;
     private String m_resourceAttributeValueMatch;
 
-    /**
-     * @see org.opennms.netmgt.model.ResourceVisitor#visit(org.opennms.netmgt.model.OnmsResource)
-     */
+    /** {@inheritDoc} */
     public void visit(OnmsResource resource) {
         if (m_resourceAttributeValueMatch.equals(resource.getExternalValueAttributes().get(m_resourceAttributeKey))
                 || m_resourceAttributeValueMatch.equals(resource.getStringPropertyAttributes().get(m_resourceAttributeKey))) {
@@ -59,6 +60,8 @@ public class ResourceAttributeFilteringResourceVisitor implements ResourceVisito
     }
 
     /**
+     * <p>afterPropertiesSet</p>
+     *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet() {
@@ -67,26 +70,56 @@ public class ResourceAttributeFilteringResourceVisitor implements ResourceVisito
         Assert.state(m_resourceAttributeValueMatch != null, "property resourceAttributeValueMatch must be set to a non-null value");
     }
 
+    /**
+     * <p>getDelegatedVisitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.ResourceVisitor} object.
+     */
     public ResourceVisitor getDelegatedVisitor() {
         return m_delegatedVisitor;
     }
 
+    /**
+     * <p>setDelegatedVisitor</p>
+     *
+     * @param delegatedVisitor a {@link org.opennms.netmgt.model.ResourceVisitor} object.
+     */
     public void setDelegatedVisitor(ResourceVisitor delegatedVisitor) {
         m_delegatedVisitor = delegatedVisitor;
     }
 
+    /**
+     * <p>getResourceAttributeKey</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceAttributeKey() {
         return m_resourceAttributeKey;
     }
 
+    /**
+     * <p>setResourceAttributeKey</p>
+     *
+     * @param resourceAttributeKey a {@link java.lang.String} object.
+     */
     public void setResourceAttributeKey(String resourceAttributeKey) {
         m_resourceAttributeKey = resourceAttributeKey;
     }
 
+    /**
+     * <p>getResourceAttributeValueMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceAttributeValueMatch() {
         return m_resourceAttributeValueMatch;
     }
 
+    /**
+     * <p>setResourceAttributeValueMatch</p>
+     *
+     * @param resourceAttributeValueMatch a {@link java.lang.String} object.
+     */
     public void setResourceAttributeValueMatch(String resourceAttributeValueMatch) {
         m_resourceAttributeValueMatch = resourceAttributeValueMatch;
     }

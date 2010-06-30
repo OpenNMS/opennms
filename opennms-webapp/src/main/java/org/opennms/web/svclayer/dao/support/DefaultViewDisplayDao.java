@@ -45,13 +45,25 @@ import org.opennms.web.svclayer.dao.ViewDisplayDao;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**
- * 
+ * <p>DefaultViewDisplayDao class.</p>
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultViewDisplayDao implements ViewDisplayDao {
 	
+	/**
+	 * <p>Constructor for DefaultViewDisplayDao.</p>
+	 */
 	public DefaultViewDisplayDao() {
 		try {
 			ViewsDisplayFactory.init();
@@ -66,6 +78,11 @@ public class DefaultViewDisplayDao implements ViewDisplayDao {
 		}
 	}
 	
+	/**
+	 * <p>getView</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.config.viewsdisplay.View} object.
+	 */
 	public View getView() {
 		try {
 			return ViewsDisplayFactory.getInstance().getView("WebConsoleView");

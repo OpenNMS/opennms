@@ -39,10 +39,12 @@ import org.opennms.netmgt.model.events.EventProxy;
 
 /**
  * The Collector class.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * 
+ * @author <a href="mailto:mike@opennms.org">Mike</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @version $Id: $
  */
 public interface ServiceCollector {
     /**
@@ -50,28 +52,61 @@ public interface ServiceCollector {
      */
     public static final int COLLECTION_UNKNOWN = 0;
 
+    /** Constant <code>COLLECTION_SUCCEEDED=1</code> */
     public static final int COLLECTION_SUCCEEDED = 1;
 
+    /** Constant <code>COLLECTION_FAILED=2</code> */
     public static final int COLLECTION_FAILED = 2;
 
+    /** Constant <code>statusType="{Unknown,COLLECTION_SUCCEEDED,COLLECTIO"{trunked}</code> */
     public static final String[] statusType = {
         "Unknown",
         "COLLECTION_SUCCEEDED",
         "COLLECTION_FAILED"
         };
 
+    /**
+     * <p>initialize</p>
+     *
+     * @param parameters a {@link java.util.Map} object.
+     */
     public void initialize(Map parameters);
 
+    /**
+     * <p>release</p>
+     */
     public void release();
 
+    /**
+     * <p>initialize</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param parameters a {@link java.util.Map} object.
+     */
     public void initialize(CollectionAgent agent, Map parameters);
 
+    /**
+     * <p>release</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public void release(CollectionAgent agent);
 
     /**
      * Invokes a collection on the object.
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param eproxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param parameters a {@link java.util.Map} object.
+     * @return a {@link org.opennms.netmgt.collectd.CollectionSet} object.
      */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters);
 
+    /**
+     * <p>getRrdRepository</p>
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     */
     public RrdRepository getRrdRepository(String collectionName);
 }

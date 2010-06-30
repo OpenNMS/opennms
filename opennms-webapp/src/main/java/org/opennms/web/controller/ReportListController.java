@@ -42,10 +42,18 @@ import org.opennms.web.svclayer.ReportListService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>ReportListController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ReportListController extends AbstractController {
 
     private ReportListService m_reportListService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -54,10 +62,20 @@ public class ReportListController extends AbstractController {
         return mav;
     }
 
+    /**
+     * <p>getReportListService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.ReportListService} object.
+     */
     public ReportListService getReportListService() {
         return m_reportListService;
     }
 
+    /**
+     * <p>setReportListService</p>
+     *
+     * @param listService a {@link org.opennms.web.svclayer.ReportListService} object.
+     */
     public void setReportListService(ReportListService listService) {
         m_reportListService = listService;
     }

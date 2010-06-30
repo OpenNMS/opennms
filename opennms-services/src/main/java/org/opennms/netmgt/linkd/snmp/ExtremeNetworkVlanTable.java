@@ -46,23 +46,36 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * is received/error occurs in the SnmpSession used to send requests /recieve
  * replies.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public class ExtremeNetworkVlanTable extends SnmpTable<ExtremeNetworkVlanTableEntry> {
 
+	/**
+	 * <p>Constructor for ExtremeNetworkVlanTable.</p>
+	 *
+	 * @param address a {@link java.net.InetAddress} object.
+	 */
 	public ExtremeNetworkVlanTable(InetAddress address) {
         super(address, "ExtremeNetworkVlanTable", ExtremeNetworkVlanTableEntry.enVlan_elemList);
     }
     
+    /** {@inheritDoc} */
     protected ExtremeNetworkVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new ExtremeNetworkVlanTableEntry();
     }
 
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected final Category log() {
         return ThreadCategory.getInstance(ExtremeNetworkVlanTable.class);
     }

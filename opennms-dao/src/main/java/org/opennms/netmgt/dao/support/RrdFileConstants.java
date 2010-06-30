@@ -40,9 +40,12 @@ import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * A convenience class containing RRD file and directory related constants.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @version $Id: $
  */
 public class RrdFileConstants extends Object {
 
@@ -73,6 +76,12 @@ public class RrdFileConstants extends Object {
         }
     };
 
+    /**
+     * <p>isValidRRDNodeDir</p>
+     *
+     * @param file a {@link java.io.File} object.
+     * @return a boolean.
+     */
     public static final boolean isValidRRDNodeDir(File file) {
         if (!file.isDirectory()) {
             return false;
@@ -111,6 +120,12 @@ public class RrdFileConstants extends Object {
         }
     };
 
+    /**
+     * <p>isValidRRDDomainDir</p>
+     *
+     * @param file a {@link java.io.File} object.
+     * @return a boolean.
+     */
     public static final boolean isValidRRDDomainDir(File file) {
         if (!file.isDirectory()) {
             return false;
@@ -132,6 +147,12 @@ public class RrdFileConstants extends Object {
         return false;
     }
 
+    /**
+     * <p>isValidRRDInterfaceDir</p>
+     *
+     * @param file a {@link java.io.File} object.
+     * @return a boolean.
+     */
     public static final boolean isValidRRDInterfaceDir(File file) {
         if (!file.isDirectory()) {
             return false;
@@ -149,6 +170,9 @@ public class RrdFileConstants extends Object {
     /**
      * Determines if the provided File object represents a valid RRD latency
      * directory.
+     *
+     * @param file a {@link java.io.File} object.
+     * @return a boolean.
      */
     public static final boolean isValidRRDLatencyDir(File file) {
         if (!file.isDirectory()) {
@@ -167,13 +191,16 @@ public class RrdFileConstants extends Object {
     /**
      * Checks an RRD filename to make sure it is of the proper length and does
      * not contain any unexpected charaters.
-     * 
+     *
      * The maximum length is specified by the
      * {@link #MAX_RRD_FILENAME_LENGTH MAX_RRD_FILENAME_LENGTH}constant. The
      * only valid characters are letters (A-Z and a-z), numbers (0-9), dashes
      * (-), dots (.), and underscores (_). These precautions are necessary since
      * the RRD filename is used on the commandline and specified in the graph
      * URL.
+     *
+     * @param rrd a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public static boolean isValidRRDName(String rrd) {
         if (rrd == null) {
@@ -205,6 +232,9 @@ public class RrdFileConstants extends Object {
     /**
      * Note this method will <strong>not </strong> handle references to higher
      * directories ("..").
+     *
+     * @param rrd a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String convertToValidRrdName(String rrd) {
         if (rrd == null) {
@@ -231,6 +261,11 @@ public class RrdFileConstants extends Object {
         return buffer.toString();
     }
 
+    /**
+     * <p>getRrdSuffix</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public static String getRrdSuffix() {
         return RrdUtils.getExtension();
     }

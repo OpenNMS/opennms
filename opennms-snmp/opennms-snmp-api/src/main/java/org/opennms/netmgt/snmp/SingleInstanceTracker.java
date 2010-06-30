@@ -34,6 +34,12 @@ package org.opennms.netmgt.snmp;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>SingleInstanceTracker class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SingleInstanceTracker extends CollectionTracker {
 
     private SnmpObjId m_base;
@@ -41,10 +47,23 @@ public class SingleInstanceTracker extends CollectionTracker {
     private SnmpObjId m_oid;
     private boolean m_finished = false;
     
+    /**
+     * <p>Constructor for SingleInstanceTracker.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param inst a {@link org.opennms.netmgt.snmp.SnmpInstId} object.
+     */
     public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst) {
         this(base, inst, null);
     }
 
+    /**
+     * <p>Constructor for SingleInstanceTracker.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param inst a {@link org.opennms.netmgt.snmp.SnmpInstId} object.
+     * @param parent a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst, CollectionTracker parent) {
         super(parent);
         m_base = base;
@@ -52,15 +71,22 @@ public class SingleInstanceTracker extends CollectionTracker {
         m_oid = SnmpObjId.get(m_base, m_inst);
     }
     
+    /** {@inheritDoc} */
     @Override
     public void setMaxRepititions(int maxRepititions) {
         // do nothing since we are not a repeater
     }
 
+    /**
+     * <p>isFinished</p>
+     *
+     * @return a boolean.
+     */
     public boolean isFinished() {
         return m_finished;
     }
 
+    /** {@inheritDoc} */
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
         if (pduBuilder.getMaxVarsPerPdu() < 1)
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
@@ -108,14 +134,25 @@ public class SingleInstanceTracker extends CollectionTracker {
 
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>errorOccurred</p>
+     */
     protected void errorOccurred() {
         m_finished = true;
     }
 
+    /**
+     * <p>receivedEndOfMib</p>
+     */
     protected void receivedEndOfMib() {
         m_finished = true;
     }

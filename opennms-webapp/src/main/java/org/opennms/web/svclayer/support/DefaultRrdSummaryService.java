@@ -56,8 +56,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultRrdSummaryService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultRrdSummaryService implements RrdSummaryService, InitializingBean {
 
@@ -269,6 +272,15 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
 
     }
 
+    /**
+     * <p>getSummary</p>
+     *
+     * @param filterRule a {@link java.lang.String} object.
+     * @param startTime a long.
+     * @param endTime a long.
+     * @param attributeSieve a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.attrsummary.Summary} object.
+     */
     public Summary getSummary(String filterRule, final long startTime, final long endTime, final String attributeSieve) {
         m_stats.begin("getSummary");
         try {
@@ -381,24 +393,45 @@ public class DefaultRrdSummaryService implements RrdSummaryService, Initializing
         }
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_filterDao != null, "filterDao property must be set");
         Assert.state(m_resourceDao != null, "resourceDao property must be set");
         Assert.state(m_rrdDao != null, "rrdDao property must be set");
     }
 
+    /**
+     * <p>setFilterDao</p>
+     *
+     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     */
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;
     }
 
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
 
+    /**
+     * <p>setRrdDao</p>
+     *
+     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
     }
 
+    /** {@inheritDoc} */
     public Summary getSummary(SummarySpecification spec) {
         return getSummary(spec.getFilterRule(), spec.getStartTime(), spec.getEndTime(), spec.getAttributeSieve());
     }

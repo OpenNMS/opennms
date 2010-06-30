@@ -33,6 +33,13 @@ package org.opennms.secret.dao.impl;
 
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
+/**
+ * <p>SessionFactoryBean class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class SessionFactoryBean extends LocalSessionFactoryBean {
     
     

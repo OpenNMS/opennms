@@ -50,23 +50,43 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>BroadcastEventProcessor class.</p>
+ *
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class BroadcastEventProcessor implements EventListener, InitializingBean, DisposableBean {
     private final EventIpcManager m_eventMgr;
     private final TrapdIpMgr m_trapdIpMgr;
     
+    /**
+     * <p>Constructor for BroadcastEventProcessor.</p>
+     *
+     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param trapdIpMgr a {@link org.opennms.netmgt.trapd.TrapdIpMgr} object.
+     */
     public BroadcastEventProcessor(EventIpcManager eventMgr, TrapdIpMgr trapdIpMgr) {
         m_eventMgr = eventMgr;
         m_trapdIpMgr = trapdIpMgr;
     }
     
+    /**
+     * <p>getEventManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
 
+    /**
+     * <p>getTrapdIpMgr</p>
+     *
+     * @return a {@link org.opennms.netmgt.trapd.TrapdIpMgr} object.
+     */
     public TrapdIpMgr getTrapdIpMgr() {
         return m_trapdIpMgr;
     }
@@ -89,23 +109,29 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
         m_eventMgr.removeEventListener(this);
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_eventMgr != null, "eventManager not set");
         Assert.state(m_trapdIpMgr != null, "trapIpMgr not set");
     }
 
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void destroy() throws Exception {
         close();
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
-     * 
-     * @param event
-     *            The event
-     * 
      */
     public void onEvent(Event event) {
         Category log = ThreadCategory.getInstance(getClass());
@@ -153,6 +179,8 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
 
     /**
      * Return an id for this event listener
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "Trapd:BroadcastEventProcessor";

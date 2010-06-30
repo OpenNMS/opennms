@@ -50,9 +50,13 @@ import org.opennms.web.Util;
 
 /**
  * A servlet that handles signaling that the poller config has been updated
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class FinishPollerConfigServlet extends HttpServlet {
     /**
@@ -60,9 +64,15 @@ public class FinishPollerConfigServlet extends HttpServlet {
      */
     private static final long serialVersionUID = -7110008476977279641L;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Event newEvent = new Event();
         newEvent.setUei("uei.opennms.org/internal/reloadPollerConfig");

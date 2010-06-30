@@ -35,12 +35,24 @@ package org.opennms.web.alarm.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-/** Encapsulates filtering on partial unique event identifiers. */
+/**
+ * Encapsulates filtering on partial unique event identifiers.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NegativePartialUEIFilter extends Object implements Filter {
+    /** Constant <code>TYPE="partialUeiNot"</code> */
     public static final String TYPE = "partialUeiNot";
 
     protected String uei;
 
+    /**
+     * <p>Constructor for NegativePartialUEIFilter.</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     */
     public NegativePartialUEIFilter(String uei) {
         if (uei == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -49,35 +61,67 @@ public class NegativePartialUEIFilter extends Object implements Filter {
         this.uei = uei;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" LOWER(EVENTUEI) NOT LIKE '%" + this.uei.toLowerCase() + "%'");
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" LOWER(EVENTUEI) NOT LIKE ?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setString(parameterIndex, "%"+this.uei.toLowerCase()+"%");
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.uei);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("partial UEI not like " + this.uei);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.NegativePartialUEIFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getUEI</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUEI() {
         return (this.uei);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

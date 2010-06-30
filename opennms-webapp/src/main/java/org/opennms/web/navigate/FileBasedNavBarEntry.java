@@ -39,9 +39,17 @@ import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * <p>FileBasedNavBarEntry class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class FileBasedNavBarEntry extends LocationBasedNavBarEntry {
     private File m_file; 
     
+    /** {@inheritDoc} */
     @Override
     public DisplayStatus evaluate(HttpServletRequest request) {
         if (m_file.exists()) {
@@ -51,10 +59,20 @@ public class FileBasedNavBarEntry extends LocationBasedNavBarEntry {
         }
     }
 
+    /**
+     * <p>getFile</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public File getFile() {
         return m_file;
     }
 
+    /**
+     * <p>setFile</p>
+     *
+     * @param file a {@link java.io.File} object.
+     */
     public void setFile(File file) {
         m_file = file;
     }

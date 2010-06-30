@@ -42,6 +42,12 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.server.LocalServer;
 
+/**
+ * <p>OpennmsServerConfigManager class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OpennmsServerConfigManager {
 
     /**
@@ -49,13 +55,20 @@ public class OpennmsServerConfigManager {
      */
     private LocalServer m_config;
     
+    /**
+     * <p>Constructor for OpennmsServerConfigManager.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     protected OpennmsServerConfigManager(Reader rdr) throws MarshalException, ValidationException {
         m_config = (LocalServer) Unmarshaller.unmarshal(LocalServer.class, rdr);
     }
 
     /**
      * Return the local opennms server name.
-     * 
+     *
      * @return the name of the local opennms server
      */
     public synchronized String getServerName() {
@@ -64,7 +77,7 @@ public class OpennmsServerConfigManager {
 
     /**
      * Return the default critical path IP
-     * 
+     *
      * @return the default critical path IP
      */
     public synchronized String getDefaultCriticalPathIp() {
@@ -73,7 +86,7 @@ public class OpennmsServerConfigManager {
 
     /**
      * Return the default critical path service
-     * 
+     *
      * @return the default critical path service
      */
     public synchronized String getDefaultCriticalPathService() {
@@ -82,7 +95,7 @@ public class OpennmsServerConfigManager {
 
     /**
      * Return the default critical path timeout
-     * 
+     *
      * @return the default critical path timeout
      */
     public synchronized int getDefaultCriticalPathTimeout() {
@@ -91,7 +104,7 @@ public class OpennmsServerConfigManager {
 
     /**
      * Return the default critical path retries
-     * 
+     *
      * @return the default critical path retries
      */
     public synchronized int getDefaultCriticalPathRetries() {
@@ -101,7 +114,7 @@ public class OpennmsServerConfigManager {
     /**
      * Return the boolean flag verify server to determine if poller what to use
      * server to restrict services to poll.
-     * 
+     *
      * @return boolean flag
      */
     public synchronized boolean verifyServer() {

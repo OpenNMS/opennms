@@ -44,11 +44,14 @@ import org.opennms.netmgt.config.common.Range;
 
 /**
  * Use this class to compare two castor generated Range objects from the SnmpConfig class.
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class RangeComparator implements Comparator {
     Category log = ThreadCategory.getInstance(getClass());
 
+    /** {@inheritDoc} */
     public int compare(Object rng1, Object rng2) {
         long compared = 0;
         try {

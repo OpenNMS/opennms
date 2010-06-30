@@ -56,10 +56,13 @@ import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.utils.Updater;
 
 /**
+ * <p>DefaultQueryManager class.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public class DefaultQueryManager implements QueryManager {
 
@@ -90,10 +93,16 @@ public class DefaultQueryManager implements QueryManager {
 
     private DataSource m_dataSource;
 
+    /** {@inheritDoc} */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
@@ -103,13 +112,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
 
-    /**
-     * @param whichEvent
-     * @param nodeId
-     * @param ipAddr
-     * @param serviceName
-     * @return
-     */
+    /** {@inheritDoc} */
     public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
         Category log = log();
         java.sql.Connection dbConn = null;
@@ -143,11 +146,7 @@ public class DefaultQueryManager implements QueryManager {
         return false;
     }
 
-    /**
-     * @param ipaddr
-     * @return
-     * @throws SQLException
-     */
+    /** {@inheritDoc} */
     public List getActiveServiceIdsForInterface(String ipaddr) throws SQLException {
         final DBUtils d = new DBUtils(getClass());
         java.sql.Connection dbConn = null;
@@ -175,11 +174,7 @@ public class DefaultQueryManager implements QueryManager {
         }
     }
 
-    /**
-     * @param ipaddr
-     * @return
-     * @throws SQLException
-     */
+    /** {@inheritDoc} */
     public int getNodeIDForInterface(String ipaddr) throws SQLException {
         Category log = log();
 
@@ -211,11 +206,7 @@ public class DefaultQueryManager implements QueryManager {
         return nodeid;
     }
 
-    /**
-     * @param nodeId
-     * @return
-     * @throws SQLException
-     */
+    /** {@inheritDoc} */
     public String getNodeLabel(int nodeId) throws SQLException {
         Category log = log();
 
@@ -246,11 +237,7 @@ public class DefaultQueryManager implements QueryManager {
         return nodeLabel;
     }
 
-    /**
-     * @param ipaddr
-     * @return
-     * @throws SQLException
-     */
+    /** {@inheritDoc} */
     public int getServiceCountForInterface(String ipaddr) throws SQLException {
         Category log = log();
         java.sql.Connection dbConn = null;
@@ -280,11 +267,7 @@ public class DefaultQueryManager implements QueryManager {
         return count;
     }
 
-    /**
-     * @param svcName
-     * @return
-     * @throws SQLException
-     */
+    /** {@inheritDoc} */
     public List getInterfacesWithService(String svcName) throws SQLException {
         List ifkeys;
         Category log = log();
@@ -321,13 +304,7 @@ public class DefaultQueryManager implements QueryManager {
         return ifkeys;
     }
 
-    /**
-     * @param poller
-     * @param nodeId
-     * @param ipAddr
-     * @param svcName
-     * @return
-     */
+    /** {@inheritDoc} */
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
         Category log = ThreadCategory.getInstance(Poller.class);
         log.debug("getting last known status for address: " + ipAddr + " service: " + svcName);
@@ -404,6 +381,12 @@ public class DefaultQueryManager implements QueryManager {
     }
     
     
+    /**
+     * <p>convertEventTimeToTimeStamp</p>
+     *
+     * @param time a {@link java.lang.String} object.
+     * @return a {@link java.sql.Timestamp} object.
+     */
     public Timestamp convertEventTimeToTimeStamp(String time) {
         try {
             Date date = EventConstants.parseToDate(time);
@@ -414,6 +397,7 @@ public class DefaultQueryManager implements QueryManager {
         }
     }
     
+    /** {@inheritDoc} */
     public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbId, String time) {
         
         int attempt = 0;
@@ -456,6 +440,7 @@ public class DefaultQueryManager implements QueryManager {
         }
     }
 
+    /** {@inheritDoc} */
     public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbId, String time) {
         int attempt = 0;
         boolean notUpdated = true;
@@ -489,6 +474,7 @@ public class DefaultQueryManager implements QueryManager {
         }
     }
     
+    /** {@inheritDoc} */
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
         try {
             log().info("reparenting outages for "+oldNodeId+":"+ipAddr+" to new node "+newNodeId);
@@ -508,6 +494,12 @@ public class DefaultQueryManager implements QueryManager {
         
     }
 
+    /**
+     * <p>getServiceID</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @return a int.
+     */
     public int getServiceID(String serviceName) {
         if (serviceName == null) return -1;
 
@@ -526,6 +518,7 @@ public class DefaultQueryManager implements QueryManager {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /** {@inheritDoc} */
     public String[] getCriticalPath(int nodeId) {
         Category log = ThreadCategory.getInstance(getClass());
         

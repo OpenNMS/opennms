@@ -33,6 +33,12 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 
+/**
+ * <p>AlarmDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface AlarmDao extends OnmsDao<OnmsAlarm, Integer> {
     
 }

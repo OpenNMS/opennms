@@ -44,12 +44,26 @@ import org.springframework.validation.BindException;
 
 /**
  * Web service layer for statistics reports.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 @Transactional(readOnly=true)
 public interface StatisticsReportService {
+    /**
+     * <p>getStatisticsReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<StatisticsReport> getStatisticsReports();
 
+    /**
+     * <p>getReport</p>
+     *
+     * @param command a {@link org.opennms.web.command.StatisticsReportCommand} object.
+     * @param errors a {@link org.springframework.validation.BindException} object.
+     * @return a {@link org.opennms.web.svclayer.support.StatisticsReportModel} object.
+     */
     public StatisticsReportModel getReport(StatisticsReportCommand command, BindException errors);
 }

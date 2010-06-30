@@ -54,27 +54,37 @@ import org.opennms.web.alarm.filter.Filter;
 /**
  * A servlet that handles querying the event table by using filters to create an
  * event list and and then forwards that event list to a JSP for display.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AlarmFilterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** Constant <code>DEFAULT_LIMIT=20</code> */
     public static final int DEFAULT_LIMIT = 20;
 
+    /** Constant <code>DEFAULT_MULTIPLE=0</code> */
     public static final int DEFAULT_MULTIPLE = 0;
 
+    /** Constant <code>DEFAULT_SORT_STYLE</code> */
     public static final AlarmFactory.SortStyle DEFAULT_SORT_STYLE = AlarmFactory.SortStyle.ID;
 
+    /** Constant <code>DEFAULT_ACKNOWLEDGE_TYPE</code> */
     public static final AlarmFactory.AcknowledgeType DEFAULT_ACKNOWLEDGE_TYPE = AlarmFactory.AcknowledgeType.UNACKNOWLEDGED;
 
     /**
+     * {@inheritDoc}
+     *
      * Parses the query string to determine what types of event filters to use
      * (for example, what to filter on or sort by), then does the database query
      * (through the AlarmFactory) and then forwards the results to a JSP for
      * display.
-     * 
+     *
      * <p>
      * Sets the <em>alarms</em> and <em>parms</em> request attributes for
      * the forwardee JSP (or whatever gets called).

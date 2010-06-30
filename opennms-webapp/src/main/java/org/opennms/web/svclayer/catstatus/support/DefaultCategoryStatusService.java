@@ -58,13 +58,22 @@ import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.dao.ViewDisplayDao;
 
 /**
+ * <p>DefaultCategoryStatusService class.</p>
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultCategoryStatusService implements CategoryStatusService {
 	private ViewDisplayDao m_viewDisplayDao;
 	private CategoryConfigDao m_categoryConfigDao;
 	private OutageDao m_outageDao;
 	
+	/**
+	 * <p>getCategoriesStatus</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<StatusSection> getCategoriesStatus() {
 		View view = m_viewDisplayDao.getView();
 
@@ -132,14 +141,29 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		
 	}
 
+	/**
+	 * <p>setViewDisplayDao</p>
+	 *
+	 * @param viewDisplayDao a {@link org.opennms.web.svclayer.dao.ViewDisplayDao} object.
+	 */
 	public void setViewDisplayDao(ViewDisplayDao viewDisplayDao){	
 		m_viewDisplayDao = viewDisplayDao;
 	}
 
+	/**
+	 * <p>setCategoryConfigDao</p>
+	 *
+	 * @param categoryDao a {@link org.opennms.web.svclayer.dao.CategoryConfigDao} object.
+	 */
 	public void setCategoryConfigDao(CategoryConfigDao categoryDao){
 		m_categoryConfigDao = categoryDao;
 	}
 
+	/**
+	 * <p>setOutageDao</p>
+	 *
+	 * @param outageDao a {@link org.opennms.netmgt.dao.OutageDao} object.
+	 */
 	public void setOutageDao(OutageDao outageDao) {
 		m_outageDao = outageDao;
 	}

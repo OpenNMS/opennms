@@ -51,9 +51,9 @@ import org.mortbay.start.Monitor;
 
 /**
  * Launches a WAR file on port 8980.
- * 
- * @author Seth
  *
+ * @author Seth
+ * @version $Id: $
  */
 public class JettyLauncher {
 
@@ -61,6 +61,9 @@ public class JettyLauncher {
 	// Random string that should make it harder for a random user to shut down Jetty
 	private static final String STOP_KEY = "b7f3609ab1dd8c7e5bac070bca9ba0d5";
 
+	/**
+	 * <p>usage</p>
+	 */
 	public static void usage() {
 		System.out.println("To launch a WAR file on port 8980:");
 		System.out.println("  org.opennms.netmgt.jetty.JettyLauncher <war_file_path>");
@@ -70,6 +73,12 @@ public class JettyLauncher {
 		System.out.println("  org.opennms.netmgt.jetty.JettyLauncher STOP");
 	}
 
+	/**
+	 * <p>main</p>
+	 *
+	 * @param args an array of {@link java.lang.String} objects.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
 			System.out.println("ERROR: Incorrect number of arguments.");

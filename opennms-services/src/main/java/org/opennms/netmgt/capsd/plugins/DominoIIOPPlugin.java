@@ -65,11 +65,12 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * implements the Plugin interface that allows it to be used along with other
  * plugins by the daemon.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * 
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class DominoIIOPPlugin extends AbstractTcpPlugin {
 
@@ -131,6 +132,9 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      */
     private static final String PROTOCOL_NAME = "DominoIIOP";
 
+    /**
+     * <p>Constructor for DominoIIOPPlugin.</p>
+     */
     public DominoIIOPPlugin() {
         super(PROTOCOL_NAME, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
     }
@@ -141,6 +145,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#createProtocol(java.net.Socket,
      *      org.opennms.netmgt.capsd.ConnectonConfig)
      */
+    /** {@inheritDoc} */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) {
         return true;
     }
@@ -151,6 +156,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#createConfig(java.net.InetAddress,
      *      java.util.Map)
      */
+    /** {@inheritDoc} */
     protected ConnectionConfig createConnectionConfig(InetAddress address, int port) {
         return new DominoConnectionConfig(address, port);
     }
@@ -161,6 +167,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#populateConnectionConfig(org.opennms.netmgt.capsd.ConnectionConfig,
      *      java.util.Map)
      */
+    /** {@inheritDoc} */
     protected void populateConnectionConfig(ConnectionConfig connConfig, Map<String, Object> qualifiers) {
         super.populateConnectionConfig(connConfig, qualifiers);
 
@@ -169,6 +176,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
 
     }
 
+    /** {@inheritDoc} */
     protected boolean preconnectCheck(ConnectionConfig tcpConfig) {
         // get a log to send errors
         //
@@ -230,6 +238,11 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
      * (non-Javadoc)
      * 
      * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#saveConfig(org.opennms.netmgt.capsd.ConnectionConfig)
+     */
+    /**
+     * <p>saveConfig</p>
+     *
+     * @param config a {@link org.opennms.netmgt.capsd.ConnectionConfig} object.
      */
     protected void saveConfig(ConnectionConfig config) {
         // override this as this plugin does not save any params

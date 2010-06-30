@@ -11,20 +11,33 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
-/** 
- * Log4j {@link org.apache.log4j.Appender Appender} that will capture log 
+/**
+ * Log4j {@link org.apache.log4j.Appender Appender} that will capture log
  * events in a list so that they can be relayed to the UI.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class ListAppender extends AppenderSkeleton implements Appender {
     private List<LoggingEvent> m_list = new ArrayList<LoggingEvent>();
 
     // private int m_counter = 0;
 
+    /**
+     * <p>resetCounter</p>
+     */
     public void resetCounter() {
         // Integer operation, sync not necessary
         // m_counter = 0;
     }
 
+    /**
+     * <p>getEvents</p>
+     *
+     * @param offset a int.
+     * @param count a int.
+     * @return a {@link java.util.List} object.
+     */
     public List<LoggingEvent> getEvents(int offset, int count) {
         List<LoggingEvent> retval = null;
 
@@ -39,6 +52,11 @@ public class ListAppender extends AppenderSkeleton implements Appender {
         return retval;
     }
 
+    /**
+     * <p>getEventsAsStrings</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getEventsAsStrings() {
         List<String> retval = new ArrayList<String>();
 
@@ -71,22 +89,34 @@ public class ListAppender extends AppenderSkeleton implements Appender {
         return retval;
     }
 
+    /** {@inheritDoc} */
     protected void append(LoggingEvent event) {
         synchronized(m_list) {
             m_list.add(event);
         }
     }
 
+    /**
+     * <p>clear</p>
+     */
     public void clear() {
         synchronized(m_list){
             m_list.clear();
         }
     }
 
+    /**
+     * <p>close</p>
+     */
     public void close() {
         this.clear();
     }
 
+    /**
+     * <p>requiresLayout</p>
+     *
+     * @return a boolean.
+     */
     public boolean requiresLayout() {
         return false;
     }

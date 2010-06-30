@@ -41,15 +41,19 @@ import org.opennms.secret.model.Node;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
+ * <p>NodeDaoHibernate class.</p>
+ *
  * @author Ted Kazmark
  * @author David Hustace
- *
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NodeDaoHibernate extends HibernateDaoSupport implements NodeDao {
 
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeDao#initialize(java.lang.Object)
      */
+    /** {@inheritDoc} */
     public void initialize(Object obj) {
         getHibernateTemplate().initialize(obj);
 
@@ -58,6 +62,7 @@ public class NodeDaoHibernate extends HibernateDaoSupport implements NodeDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeDao#getNode(java.lang.Long)
      */
+    /** {@inheritDoc} */
     public Node getNode(Long id) {
         return (Node)getHibernateTemplate().load(Node.class, id);
     }
@@ -65,15 +70,22 @@ public class NodeDaoHibernate extends HibernateDaoSupport implements NodeDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.NodeDao#createNode(org.opennms.secret.model.Node)
      */
+    /** {@inheritDoc} */
     public void createNode(Node node) {
         getHibernateTemplate().save(node);
     }
 
+    /** {@inheritDoc} */
     public Collection getInterfaceCollection(Node node) {
         return getHibernateTemplate().find("from NodeInterface interface where interface.nodeId = ?", node.getNodeId());
      
     }
 
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<Node> findAll() {
         // TODO Auto-generated method stub
         return null;

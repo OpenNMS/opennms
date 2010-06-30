@@ -38,11 +38,24 @@ import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
 
+/**
+ * <p>BeforeLastEventTimeFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class BeforeLastEventTimeFilter extends Object implements Filter {
+    /** Constant <code>TYPE="beforelasteventtime"</code> */
     public static final String TYPE = "beforelasteventtime";
 
     protected Date date;
 
+    /**
+     * <p>Constructor for BeforeLastEventTimeFilter.</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     */
     public BeforeLastEventTimeFilter(Date date) {
         if (date == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -51,39 +64,76 @@ public class BeforeLastEventTimeFilter extends Object implements Filter {
         this.date = date;
     }
 
+    /**
+     * <p>Constructor for BeforeLastEventTimeFilter.</p>
+     *
+     * @param epochTime a long.
+     */
     public BeforeLastEventTimeFilter(long epochTime) {
         this(new Date(epochTime));
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" LASTEVENTTIME < to_timestamp(\'" + this.date.toString() + "\'," + EventConstants.POSTGRES_DATE_FORMAT + ")");
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" LASTEVENTTIME < ?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setTimestamp(parameterIndex, new java.sql.Timestamp(this.date.getTime()));
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.date.getTime());
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("date before \"" + this.date.toString() + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<BeforeLastEventTimeFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>Getter for the field <code>date</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getDate() {
         return (this.date);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

@@ -45,7 +45,10 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
 /**
+ * <p>ReportDefinition class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class ReportDefinition implements InitializingBean {
     private PackageReport m_report;
@@ -59,33 +62,83 @@ public class ReportDefinition implements InitializingBean {
     private String m_resourceAttributeKey;
     private String m_resourceAttributeValueMatch;
     
+    /**
+     * <p>getAttributeMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAttributeMatch() {
         return m_attributeMatch;
     }
+    /**
+     * <p>setAttributeMatch</p>
+     *
+     * @param attributeMatch a {@link java.lang.String} object.
+     */
     public void setAttributeMatch(String attributeMatch) {
         m_attributeMatch = attributeMatch;
     }
+    /**
+     * <p>getConsolidationFunction</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getConsolidationFunction() {
         return m_consolidationFunction;
     }
+    /**
+     * <p>setConsolidationFunction</p>
+     *
+     * @param consolidationFunction a {@link java.lang.String} object.
+     */
     public void setConsolidationFunction(String consolidationFunction) {
         m_consolidationFunction = consolidationFunction;
     }
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getCount() {
         return m_count;
     }
+    /**
+     * <p>setCount</p>
+     *
+     * @param count a {@link java.lang.Integer} object.
+     */
     public void setCount(Integer count) {
         m_count = count;
     }
+    /**
+     * <p>getResourceTypeMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeMatch() {
         return m_resourceTypeMatch;
     }
+    /**
+     * <p>setResourceTypeMatch</p>
+     *
+     * @param resourceTypeMatch a {@link java.lang.String} object.
+     */
     public void setResourceTypeMatch(String resourceTypeMatch) {
         this.m_resourceTypeMatch = resourceTypeMatch;
     }
+    /**
+     * <p>getReportClass</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<? extends AttributeStatisticVisitorWithResults> getReportClass() {
         return m_reportClass;
     }
+    /**
+     * <p>setReportClass</p>
+     *
+     * @param reportClass a {@link java.lang.Class} object.
+     */
     public void setReportClass(Class<? extends AttributeStatisticVisitorWithResults> reportClass) {
         /*
          * Even though we are using generics, it's just a compile-time check,
@@ -95,46 +148,115 @@ public class ReportDefinition implements InitializingBean {
 
         m_reportClass = reportClass;
     }
+    /**
+     * <p>getRelativeTime</p>
+     *
+     * @return a {@link org.opennms.netmgt.statsd.RelativeTime} object.
+     */
     public RelativeTime getRelativeTime() {
         return m_relativeTime;
     }
+    /**
+     * <p>setRelativeTime</p>
+     *
+     * @param relativeTime a {@link org.opennms.netmgt.statsd.RelativeTime} object.
+     */
     public void setRelativeTime(RelativeTime relativeTime) {
         m_relativeTime = relativeTime;
     }
+    /**
+     * <p>getReport</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.castor.statsd.PackageReport} object.
+     */
     public PackageReport getReport() {
         return m_report;
     }
+    /**
+     * <p>setReport</p>
+     *
+     * @param report a {@link org.opennms.netmgt.dao.castor.statsd.PackageReport} object.
+     */
     public void setReport(PackageReport report) {
         m_report = report;
     }
+    /**
+     * <p>setResourceAttributeKey</p>
+     *
+     * @param resourceAttributeKey a {@link java.lang.String} object.
+     */
     public void setResourceAttributeKey(String resourceAttributeKey) {
         m_resourceAttributeKey = resourceAttributeKey;
     }
+    /**
+     * <p>setResourceAttributeValueMatch</p>
+     *
+     * @param resourceAttributeValueMatch a {@link java.lang.String} object.
+     */
     public void setResourceAttributeValueMatch(String resourceAttributeValueMatch) {
         m_resourceAttributeValueMatch = resourceAttributeValueMatch;
     }
+    /**
+     * <p>getResourceAttributeKey</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceAttributeKey() {
         return m_resourceAttributeValueMatch;
     }
+    /**
+     * <p>getResourceAttributeValueMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceAttributeValueMatch() {
         return m_resourceAttributeKey;
     }
     
     
+    /**
+     * <p>getCronExpression</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCronExpression() {
         return getReport().getSchedule();
     }
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return getReport().getDescription();
     }
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return getReport().getReport().getName();
     }
+    /**
+     * <p>getRetainInterval</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getRetainInterval() {
         return getReport().getRetainInterval();
     }
 
     
+    /**
+     * <p>createReport</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     * @return a {@link org.opennms.netmgt.statsd.ReportInstance} object.
+     * @throws java.lang.Exception if any.
+     */
     public ReportInstance createReport(ResourceDao resourceDao, RrdDao rrdDao, FilterDao filterDao) throws Exception {
         Assert.notNull(resourceDao, "resourceDao argument must not be null");
         Assert.notNull(rrdDao, "rrdDao argument must not be null");
@@ -186,6 +308,9 @@ public class ReportDefinition implements InitializingBean {
     
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    /**
+     * <p>afterPropertiesSet</p>
      */
     public void afterPropertiesSet() {
         Assert.state(m_report != null, "property report must be set to a non-null value");

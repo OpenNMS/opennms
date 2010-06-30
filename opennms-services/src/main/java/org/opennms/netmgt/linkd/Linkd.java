@@ -48,6 +48,12 @@ import org.opennms.netmgt.linkd.QueryManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
+/**
+ * <p>Linkd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Linkd extends AbstractServiceDaemon {
 
 	/**
@@ -99,19 +105,35 @@ public class Linkd extends AbstractServiceDaemon {
 
 	private List<String> m_newSuspenctEventsIpAddr = null;
 	
+	/**
+	 * <p>Constructor for Linkd.</p>
+	 */
 	public Linkd() {
 		super("OpenNMS.Linkd");
 	}
 
+	/**
+	 * <p>getInstance</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.Linkd} object.
+	 */
 	public static Linkd getInstance() {
 		return m_singleton;
 	}
 
+	/**
+	 * <p>log</p>
+	 *
+	 * @return a {@link org.apache.log4j.Category} object.
+	 */
 	public Category log() {
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		return ThreadCategory.getInstance();
 	}
 	
+	/**
+	 * <p>onInit</p>
+	 */
 	protected void onInit() {
 
         Assert.state(m_queryMgr != null, "must set the queryManager property");
@@ -197,6 +219,9 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 	}
 	
+	/**
+	 * <p>onStart</p>
+	 */
 	public synchronized void onStart() {
 
 		// start the scheduler
@@ -210,6 +235,9 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
+	/**
+	 * <p>onStop</p>
+	 */
 	public synchronized void onStop() {
 
 		// Stop the scheduler
@@ -221,20 +249,37 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
+	/**
+	 * <p>onPause</p>
+	 */
 	public synchronized void onPause() {
 		m_scheduler.pause();
 	}
 
+	/**
+	 * <p>onResume</p>
+	 */
 	public synchronized void onResume() {
 		m_scheduler.resume();
 	}
 
+	/**
+	 * <p>getLinkableNodes</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<LinkableNode> getLinkableNodes() {
 		synchronized (m_nodes) {
 			return m_nodes;
 		}
 	}
 
+	/**
+	 * <p>getLinkableNodesOnPackage</p>
+	 *
+	 * @param pkg a {@link java.lang.String} object.
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<LinkableNode> getLinkableNodesOnPackage(String pkg) {
 		Collection<LinkableNode> nodesOnPkg = new ArrayList<LinkableNode>();
 		synchronized (m_nodes) {
@@ -248,11 +293,25 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 	}
 	
+	/**
+	 * <p>isInterfaceInPackage</p>
+	 *
+	 * @param ipaddr a {@link java.lang.String} object.
+	 * @param pkg a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public boolean isInterfaceInPackage(String ipaddr, String pkg) {
 		if (m_linkdConfig.interfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
 	}
 
+	/**
+	 * <p>isInterfaceInPackageRange</p>
+	 *
+	 * @param ipaddr a {@link java.lang.String} object.
+	 * @param pkg a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public boolean isInterfaceInPackageRange(String ipaddr, String pkg) {
 		if (m_linkdConfig.interfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
@@ -546,30 +605,65 @@ public class Linkd extends AbstractServiceDaemon {
 		return null;
 	}
 	
+    /**
+     * <p>setQueryManager</p>
+     *
+     * @param queryMgr a {@link org.opennms.netmgt.linkd.QueryManager} object.
+     */
     public void setQueryManager(QueryManager queryMgr) {
         m_queryMgr = queryMgr;
     }
 
+	/**
+	 * <p>getScheduler</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+	 */
 	public Scheduler getScheduler() {
 		return m_scheduler;
 	}
 
+	/**
+	 * <p>setScheduler</p>
+	 *
+	 * @param scheduler a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+	 */
 	public void setScheduler(Scheduler scheduler) {
 		m_scheduler = scheduler;
 	}
 	
+	/**
+	 * <p>getLinkdConfig</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.config.LinkdConfig} object.
+	 */
 	public LinkdConfig getLinkdConfig() {
 		return m_linkdConfig;
 	}
 
+	/**
+	 * <p>setLinkdConfig</p>
+	 *
+	 * @param config a {@link org.opennms.netmgt.config.LinkdConfig} object.
+	 */
 	public void setLinkdConfig(LinkdConfig config) {
 		m_linkdConfig = config;
 	}
 
+	/**
+	 * <p>getEventListener</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.LinkdEventProcessor} object.
+	 */
 	public LinkdEventProcessor getEventListener() {
 		return m_eventListener;
 	}
 
+	/**
+	 * <p>setEventListener</p>
+	 *
+	 * @param eventListener a {@link org.opennms.netmgt.linkd.LinkdEventProcessor} object.
+	 */
 	public void setEventListener(LinkdEventProcessor eventListener) {
 		m_eventListener = eventListener;
 	}

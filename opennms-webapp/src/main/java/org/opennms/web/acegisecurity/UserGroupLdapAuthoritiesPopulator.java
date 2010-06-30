@@ -83,6 +83,7 @@ import javax.naming.directory.SearchControls;
  *
  * @author Luke Taylor
  * @version $Id: DefaultLdapAuthoritiesPopulator.java 1784 2007-02-24 21:00:24 +0000 (Sat, 24 Feb 2007) luke_t $
+ * @since 1.6.12
  */
 public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulator {
     //~ Static fields/initializers =====================================================================================
@@ -150,22 +151,18 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
      * roles for the given user (on top of those obtained from the standard
      * search implemented by this class).
      *
-     *
      * @param ldapUser the user who's roles are required
      * @return the extra roles which will be merged with those returned by the group search
      */
-
     protected Set<GrantedAuthority> getAdditionalRoles(LdapUserDetails ldapUser) {
         return null;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Obtains the authorities for the user who's directory entry is represented by
      * the supplied LdapUserDetails object.
-     *
-     * @param userDetails the user who's authorities are required
-     *
-     * @return the set of roles granted to the user.
      */
     public final GrantedAuthority[] getGrantedAuthorities(LdapUserDetails userDetails) {
         String userDn = userDetails.getDn();
@@ -209,6 +206,13 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
 //  }
 
 
+    /**
+     * <p>getGroupMembershipRoles</p>
+     *
+     * @param userDn a {@link java.lang.String} object.
+     * @param username a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
     public Set<GrantedAuthority> getGroupMembershipRoles(String userDn, String username) {
         Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 
@@ -285,16 +289,19 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
      *
      * @param userDn the user's distinguished name.
      * @param userAttributes the retrieved user's attributes (unused by default).
-     *
      * @return the set of roles obtained from a group membership search, or null if <tt>groupSearchBase</tt> has been
      *         set.
-     *
      * @deprecated Subclasses should implement <tt>getAdditionalRoles</tt> instead.
      */
     protected Set<GrantedAuthority> getGroupMembershipRoles(String userDn, Attributes userAttributes) {
         return new HashSet<GrantedAuthority>();
     }
 
+    /**
+     * <p>Getter for the field <code>initialDirContextFactory</code>.</p>
+     *
+     * @return a {@link org.acegisecurity.ldap.InitialDirContextFactory} object.
+     */
     protected InitialDirContextFactory getInitialDirContextFactory() {
         return initialDirContextFactory;
     }
@@ -331,6 +338,11 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         return groupSearchBase;
     }
 
+    /**
+     * <p>Setter for the field <code>convertToUpperCase</code>.</p>
+     *
+     * @param convertToUpperCase a boolean.
+     */
     public void setConvertToUpperCase(boolean convertToUpperCase) {
         this.convertToUpperCase = convertToUpperCase;
     }
@@ -345,62 +357,132 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         this.defaultRole = new GrantedAuthorityImpl(defaultRole);
     }
 
+    /**
+     * <p>Setter for the field <code>groupRoleAttribute</code>.</p>
+     *
+     * @param groupRoleAttribute a {@link java.lang.String} object.
+     */
     public void setGroupRoleAttribute(String groupRoleAttribute) {
         Assert.notNull(groupRoleAttribute, "groupRoleAttribute must not be null");
         this.groupRoleAttribute = groupRoleAttribute;
     }
 
+    /**
+     * <p>Setter for the field <code>groupSearchFilter</code>.</p>
+     *
+     * @param groupSearchFilter a {@link java.lang.String} object.
+     */
     public void setGroupSearchFilter(String groupSearchFilter) {
         Assert.notNull(groupSearchFilter, "groupSearchFilter must not be null");
         this.groupSearchFilter = groupSearchFilter;
     }
 
+    /**
+     * <p>Setter for the field <code>rolePrefix</code>.</p>
+     *
+     * @param rolePrefix a {@link java.lang.String} object.
+     */
     public void setRolePrefix(String rolePrefix) {
         Assert.notNull(rolePrefix, "rolePrefix must not be null");
         this.rolePrefix = rolePrefix;
     }
 
+    /**
+     * <p>setSearchSubtree</p>
+     *
+     * @param searchSubtree a boolean.
+     */
     public void setSearchSubtree(boolean searchSubtree) {
         int searchScope = searchSubtree ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE;
         searchControls.setSearchScope(searchScope);
     }
 
+    /**
+     * <p>Getter for the field <code>adminGroups</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getAdminGroups() {
         return adminGroups;
     }
 
+    /**
+     * <p>Setter for the field <code>adminGroups</code>.</p>
+     *
+     * @param adminGroups a {@link java.util.List} object.
+     */
     public void setAdminGroups(List<String> adminGroups) {
         this.adminGroups = adminGroups;
     }
 
+    /**
+     * <p>Getter for the field <code>dashboardGroups</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getDashboardGroups() {
         return dashboardGroups;
     }
 
+    /**
+     * <p>Setter for the field <code>dashboardGroups</code>.</p>
+     *
+     * @param dashboardGroups a {@link java.util.List} object.
+     */
     public void setDashboardGroups(List<String> dashboardGroups) {
         this.dashboardGroups = dashboardGroups;
     }
 
+    /**
+     * <p>Getter for the field <code>rtcGroups</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getRtcGroups() {
         return rtcGroups;
     }
 
+    /**
+     * <p>Setter for the field <code>rtcGroups</code>.</p>
+     *
+     * @param rtcGroups a {@link java.util.List} object.
+     */
     public void setRtcGroups(List<String> rtcGroups) {
         this.rtcGroups = rtcGroups;
     }
 
+    /**
+     * <p>Getter for the field <code>userGroups</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getUserGroups() {
         return userGroups;
     }
 
+    /**
+     * <p>Setter for the field <code>userGroups</code>.</p>
+     *
+     * @param userGroups a {@link java.util.List} object.
+     */
     public void setUserGroups(List<String> userGroups) {
         this.userGroups = userGroups;
     }
 
+    /**
+     * <p>Getter for the field <code>readonlyGroups</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getReadonlyGroups() {
         return readonlyGroups;
     }
 
+    /**
+     * <p>Setter for the field <code>readonlyGroups</code>.</p>
+     *
+     * @param readonlyGroups a {@link java.util.List} object.
+     */
     public void setReadonlyGroups(List<String> readonlyGroups) {
         this.readonlyGroups = readonlyGroups;
     }

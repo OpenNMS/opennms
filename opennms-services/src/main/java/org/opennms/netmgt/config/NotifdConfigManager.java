@@ -55,10 +55,13 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
+ * <p>Abstract NotifdConfigManager class.</p>
+ *
  * @author david
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public abstract class NotifdConfigManager {
 
@@ -68,20 +71,24 @@ public abstract class NotifdConfigManager {
     protected NotifdConfiguration configuration;
 
     /**
-     * @param reader
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
+     * <p>parseXml</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     public synchronized void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
         configuration = (NotifdConfiguration) Unmarshaller.unmarshal(NotifdConfiguration.class, reader);
     }
 
     /**
-     * @return
-     * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
+     * <p>Getter for the field <code>configuration</code>.</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @return a {@link org.opennms.netmgt.config.notifd.NotifdConfiguration} object.
      */
     public NotifdConfiguration getConfiguration() throws IOException, MarshalException, ValidationException {
         update();
@@ -90,18 +97,21 @@ public abstract class NotifdConfigManager {
     }
 
     /**
-     * @throws ValidationException
-     * @throws MarshalException
-     * @throws IOException
-     * 
+     * <p>update</p>
+     *
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
      */
     protected abstract void update() throws IOException, MarshalException, ValidationException;
 
     /**
-     * @return
-     * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
+     * <p>getNotificationStatus</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @return a {@link java.lang.String} object.
      */
     public String getNotificationStatus() throws IOException, MarshalException, ValidationException {
         update();
@@ -110,6 +120,10 @@ public abstract class NotifdConfigManager {
 
     /**
      * Turns the notifd service on
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     public void turnNotifdOn() throws MarshalException, ValidationException, IOException {
         sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
@@ -120,6 +134,10 @@ public abstract class NotifdConfigManager {
 
     /**
      * Turns the notifd service off
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     public void turnNotifdOff() throws MarshalException, ValidationException, IOException {
         sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
@@ -129,10 +147,12 @@ public abstract class NotifdConfigManager {
     }
 
     /**
-     * @return
-     * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
+     * <p>getNotificationMatch</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @return a boolean.
      */
     public boolean getNotificationMatch() throws IOException, MarshalException, ValidationException {
         update();
@@ -140,7 +160,11 @@ public abstract class NotifdConfigManager {
     }
 
     /**
-     * 
+     * <p>saveCurrent</p>
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     public synchronized void saveCurrent() throws MarshalException, ValidationException, IOException {
         // marshall to a string first, then write the string to the file. This
@@ -154,13 +178,17 @@ public abstract class NotifdConfigManager {
     }
 
     /**
-     * @param xml
-     * @throws IOException
+     * <p>saveXml</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
      */
     protected abstract void saveXml(String xml) throws IOException;
 
     /**
-     * 
+     * <p>sendEvent</p>
+     *
+     * @param uei a {@link java.lang.String} object.
      */
     protected void sendEvent(String uei) {
         Event event = new Event();
@@ -176,16 +204,25 @@ public abstract class NotifdConfigManager {
     }
 
     /**
-     * @return
-     * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
+     * <p>getNextNotifIdSql</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @return a {@link java.lang.String} object.
      */
     public String getNextNotifIdSql() throws IOException, MarshalException, ValidationException {
         return getConfiguration().getNextNotifId();
     }
     
     // TODO This change only works for one parameter, need to expand it to many.
+    /**
+     * <p>matchNotificationParameters</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param notification a {@link org.opennms.netmgt.config.notifications.Notification} object.
+     * @return a boolean.
+     */
     public boolean matchNotificationParameters(Event event, Notification notification) {
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -226,14 +263,38 @@ public abstract class NotifdConfigManager {
         return parmmatch;
     }
 
+    /**
+     * <p>getNextUserNotifIdSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public String getNextUserNotifIdSql() throws IOException, MarshalException, ValidationException {
         return getConfiguration().getNextUserNotifId();
     }
 
+    /**
+     * <p>getAutoAcknowledges</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public Collection<AutoAcknowledge> getAutoAcknowledges() throws MarshalException, ValidationException, IOException {
         return getConfiguration().getAutoAcknowledgeCollection();
     }
 
+    /**
+     * <p>getOutageCalendarNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public Collection<String> getOutageCalendarNames() throws MarshalException, ValidationException, IOException {
         return getConfiguration().getOutageCalendarCollection();
     }

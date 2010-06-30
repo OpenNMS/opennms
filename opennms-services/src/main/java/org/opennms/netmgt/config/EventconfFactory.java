@@ -54,6 +54,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
+ * <p>EventconfFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class EventconfFactory {
     /**
@@ -70,7 +74,9 @@ public class EventconfFactory {
     }
     
     /**
-     * 
+     * <p>init</p>
+     *
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     public static synchronized void init() throws DataAccessException {
         if (isInitialized()) {
@@ -89,6 +95,8 @@ public class EventconfFactory {
     /**
      * A full reinitialization, from scratch.  Subtly different from a reload (more encompassing).
      * Safe to call in place of init if you so desire
+     *
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     public static synchronized void reinit() throws DataAccessException {
         setInstance(null);
@@ -98,7 +106,7 @@ public class EventconfFactory {
     /**
      * Singleton static call to get the only instance that should exist for the
      * EventConfDao.
-     * 
+     *
      * @return the single eventconf factory instance
      */
     public static synchronized EventConfDao getInstance() {
@@ -109,6 +117,11 @@ public class EventconfFactory {
         return s_instance;
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.EventConfDao} object.
+     */
     public static void setInstance(EventConfDao instance) {
         s_instance = instance;
     }

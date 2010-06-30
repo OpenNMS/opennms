@@ -35,10 +35,14 @@
 package org.opennms.web.map.view;
 
 /**
+ * <p>VElementInfo class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class VElementInfo implements Cloneable {
     
@@ -52,15 +56,35 @@ public class VElementInfo implements Cloneable {
     
     
     
+	/**
+	 * <p>Getter for the field <code>label</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLabel() {
 		return label;
 	}
+	/**
+	 * <p>Getter for the field <code>id</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getId() {
 		return id;
 	}
+	/**
+	 * <p>Getter for the field <code>severity</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getSeverity() {
 		return severity;
 	}
+	/**
+	 * <p>Getter for the field <code>uei</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getUei() {
 		return uei;
 	}
@@ -68,10 +92,12 @@ public class VElementInfo implements Cloneable {
     
     
 	/**
-	 * @param id
-	 * @param uei
-	 * @param severity
-	 * @param label
+	 * <p>Constructor for VElementInfo.</p>
+	 *
+	 * @param id a int.
+	 * @param uei a {@link java.lang.String} object.
+	 * @param severity a int.
+	 * @param label a {@link java.lang.String} object.
 	 */
 	public VElementInfo(int id, String uei, int severity, String label) {
 		super();
@@ -82,9 +108,11 @@ public class VElementInfo implements Cloneable {
 	}
 	
 	/**
-	 * @param id
-	 * @param uei
-	 * @param severity
+	 * <p>Constructor for VElementInfo.</p>
+	 *
+	 * @param id a int.
+	 * @param uei a {@link java.lang.String} object.
+	 * @param severity a int.
 	 */
 	public VElementInfo(int id, String uei, int severity) {
 		super();

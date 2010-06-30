@@ -41,6 +41,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
+ * <p>Category class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class Category implements Cloneable {
     /**
@@ -68,12 +73,19 @@ public class Category implements Cloneable {
     private String m_comments;
 
     /**
+     * <p>Constructor for Category.</p>
      */
     public Category() {
         m_services = new ArrayList<String>();
     }
 
     /**
+     * <p>Constructor for Category.</p>
+     *
+     * @param aLabel a {@link java.lang.String} object.
+     * @param aRule a {@link java.lang.String} object.
+     * @param aNormal a {@link java.lang.String} object.
+     * @param aWarning a {@link java.lang.String} object.
      */
     public Category(String aLabel, String aRule, String aNormal, String aWarning) {
         m_label = aLabel;
@@ -85,6 +97,9 @@ public class Category implements Cloneable {
     }
 
     /**
+     * <p>clone</p>
+     *
+     * @return a {@link org.opennms.web.admin.views.parsers.Category} object.
      */
     public Category clone() {
         try {
@@ -106,10 +121,9 @@ public class Category implements Cloneable {
     /**
      * This constructor creates a Category by parsing a string in the
      * UserManager format
-     * 
+     *
      * @param aDataString
      *            a string in the format "label$normal$warning$rule"
-     * @deprecated
      */
     public Category(String aDataString) {
         // each parameter is stored in the string delimited by the $ symbol
@@ -145,48 +159,72 @@ public class Category implements Cloneable {
     }
 
     /**
+     * <p>setLabel</p>
+     *
+     * @param aValue a {@link java.lang.String} object.
      */
     public void setLabel(String aValue) {
         m_label = aValue;
     }
 
     /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getLabel() {
         return m_label;
     }
 
     /**
+     * <p>setRule</p>
+     *
+     * @param aValue a {@link java.lang.String} object.
      */
     public void setRule(String aValue) {
         m_rule = aValue;
     }
 
     /**
+     * <p>getRule</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getRule() {
         return m_rule;
     }
 
     /**
+     * <p>setNormal</p>
+     *
+     * @param aValue a {@link java.lang.String} object.
      */
     public void setNormal(String aValue) {
         m_normal = aValue;
     }
 
     /**
+     * <p>getNormal</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getNormal() {
         return m_normal;
     }
 
     /**
+     * <p>setWarning</p>
+     *
+     * @param aValue a {@link java.lang.String} object.
      */
     public void setWarning(String aValue) {
         m_warning = aValue;
     }
 
     /**
+     * <p>getWarning</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getWarning() {
         return m_warning;
@@ -194,7 +232,7 @@ public class Category implements Cloneable {
 
     /**
      * Adds a service to this category
-     * 
+     *
      * @param name
      *            the service name.
      */
@@ -204,7 +242,7 @@ public class Category implements Cloneable {
 
     /**
      * Returns the list of services in this category
-     * 
+     *
      * @return the list of services.
      */
     public List<String> getServices() {
@@ -213,7 +251,7 @@ public class Category implements Cloneable {
 
     /**
      * Sets the list of services
-     * 
+     *
      * @param services
      *            a list of service names
      */
@@ -222,19 +260,27 @@ public class Category implements Cloneable {
     }
 
     /**
+     * <p>setComments</p>
+     *
+     * @param comment a {@link java.lang.String} object.
      */
     public void setComments(String comment) {
         m_comments = comment;
     }
 
     /**
+     * <p>getComments</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getComments() {
         return m_comments;
     }
 
     /**
-     * @deprecated
+     * <p>getUserManagerFormat</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getUserManagerFormat() {
         return m_label + "$" + m_normal + "$" + m_warning + "$" + m_rule + "#";

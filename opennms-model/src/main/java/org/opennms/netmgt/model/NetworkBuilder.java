@@ -35,6 +35,12 @@
 //
 package org.opennms.netmgt.model;
 
+/**
+ * <p>NetworkBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NetworkBuilder {
 
 	OnmsDistPoller m_distPoller;
@@ -45,14 +51,31 @@ public class NetworkBuilder {
 
 	OnmsMonitoredService m_currentMonSvc;
 
+	/**
+	 * <p>Constructor for NetworkBuilder.</p>
+	 *
+	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+	 */
 	public NetworkBuilder(OnmsDistPoller distPoller) {
 		m_distPoller = distPoller;
 	}
 	
+	/**
+	 * <p>Constructor for NetworkBuilder.</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 * @param ipAddress a {@link java.lang.String} object.
+	 */
 	public NetworkBuilder(String name, String ipAddress) {
 	    m_distPoller = new OnmsDistPoller(name, ipAddress);
 	}
 
+	/**
+	 * <p>addNode</p>
+	 *
+	 * @param label a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.model.NetworkBuilder.NodeBuilder} object.
+	 */
 	public NodeBuilder addNode(String label) {
 		m_currentNode = new OnmsNode(m_distPoller);
 		m_currentNode.setLabel(label);
@@ -92,6 +115,12 @@ public class NetworkBuilder {
         
     }
     
+    /**
+     * <p>addInterface</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder} object.
+     */
     public InterfaceBuilder addInterface(String ipAddr) {
 		m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
 //        return m_currentIf;
@@ -140,6 +169,13 @@ public class NetworkBuilder {
 		}
 	}
     
+    /**
+     * <p>addInterface</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param snmpInterface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
+     * @return a {@link org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder} object.
+     */
     public InterfaceBuilder addInterface(String ipAddr, OnmsSnmpInterface snmpInterface) {
         m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
         m_currentIf.setSnmpInterface(snmpInterface);
@@ -147,25 +183,53 @@ public class NetworkBuilder {
     }
 
     
+	/**
+	 * <p>addSnmpInterface</p>
+	 *
+	 * @param ipAddr a {@link java.lang.String} object.
+	 * @param ifIndex a int.
+	 * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+	 */
 	public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
 		OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
 		return new SnmpInterfaceBuilder(snmpIf);
 
 	}
 
+	/**
+	 * <p>addService</p>
+	 *
+	 * @param serviceType a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+	 * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+	 */
 	public OnmsMonitoredService addService(OnmsServiceType serviceType) {
 		m_currentMonSvc = new OnmsMonitoredService(m_currentIf, serviceType);
 		return m_currentMonSvc;
 	}
 
+	/**
+	 * <p>setDisplayCategory</p>
+	 *
+	 * @param displayCategory a {@link java.lang.String} object.
+	 */
 	public void setDisplayCategory(String displayCategory) {
 		m_currentNode.getAssetRecord().setDisplayCategory(displayCategory);
 	}
 
+	/**
+	 * <p>getCurrentNode</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+	 */
 	public OnmsNode getCurrentNode() {
 		return m_currentNode;
 	}
 
+    /**
+     * <p>addCategory</p>
+     *
+     * @param cat a {@link org.opennms.netmgt.model.OnmsCategory} object.
+     */
     public void addCategory(OnmsCategory cat) {
         m_currentNode.addCategory(cat);
     }

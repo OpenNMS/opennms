@@ -73,15 +73,28 @@ import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
  * Vulnscand service from the vulnscand-configuration xml file.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class VulnscandConfigFactory {
     /**
@@ -166,13 +179,16 @@ public final class VulnscandConfigFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -198,13 +214,16 @@ public final class VulnscandConfigFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -220,6 +239,8 @@ public final class VulnscandConfigFactory {
 
     /**
      * Saves the current settings to disk
+     *
+     * @throws java.lang.Exception if any.
      */
     public static synchronized void saveCurrent() throws Exception {
         // Marshall to a string first, then write the string to the file. This
@@ -239,9 +260,8 @@ public final class VulnscandConfigFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -254,6 +274,8 @@ public final class VulnscandConfigFactory {
 
     /**
      * Return the Vulnscand configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.vulnscand.VulnscandConfiguration} object.
      */
     public static VulnscandConfiguration getConfiguration() {
         return m_config;
@@ -265,16 +287,13 @@ public final class VulnscandConfigFactory {
      * (big endin). This is compatable with the number format of the JVM, and
      * thus the return longs can be compared with other converted IP Addresses
      * to determine inclusion.
-     * 
+     *
      * @param addr
      *            The IP address to convert.
-     * 
      * @return The converted IP address.
-     * 
      * @deprecated See
      *             org.opennms.core.utils.InetAddressCollection.toLong(InetAddress
      *             addr)
-     * 
      */
     public static long toLong(InetAddress addr) {
         byte[] baddr = addr.getAddress();
@@ -287,12 +306,11 @@ public final class VulnscandConfigFactory {
      * Converts a 64-bit unsigned quantity to a IPv4 dotted decimal string
      * address.
      * </P>
-     * 
+     *
      * @param address
      *            The 64-bit quantity to convert.
-     * 
      * @return The dotted decimal IPv4 address string.
-     * 
+     * @throws java.net.UnknownHostException if any.
      */
     public static InetAddress toInetAddress(long address) throws UnknownHostException {
         StringBuffer buf = new StringBuffer();
@@ -305,7 +323,12 @@ public final class VulnscandConfigFactory {
     }
 
     /**
-     * 
+     * <p>isInterfaceInDB</p>
+     *
+     * @param dbConn a {@link java.sql.Connection} object.
+     * @param ifAddress a {@link java.net.InetAddress} object.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
      */
     public static boolean isInterfaceInDB(Connection dbConn, InetAddress ifAddress) throws SQLException {
         Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
@@ -332,7 +355,12 @@ public final class VulnscandConfigFactory {
     }
 
     /**
-     * 
+     * <p>getInterfaceDbNodeId</p>
+     *
+     * @param dbConn a {@link java.sql.Connection} object.
+     * @param ifAddress a {@link java.net.InetAddress} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress) throws SQLException {
         Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
@@ -374,18 +402,44 @@ public final class VulnscandConfigFactory {
         throw new ArrayIndexOutOfBoundsException("No scan level with that index could be located in the configuration file, index = " + level);
     }
 
+    /**
+     * <p>addSpecific</p>
+     *
+     * @param level a int.
+     * @param specific a {@link java.net.InetAddress} object.
+     */
     public void addSpecific(int level, InetAddress specific) {
         addSpecific(getScanLevel(level), specific);
     }
 
+    /**
+     * <p>addSpecific</p>
+     *
+     * @param level a {@link org.opennms.netmgt.config.vulnscand.ScanLevel} object.
+     * @param specific a {@link java.net.InetAddress} object.
+     */
     public void addSpecific(ScanLevel level, InetAddress specific) {
         level.addSpecific(specific.getHostAddress());
     }
 
+    /**
+     * <p>addRange</p>
+     *
+     * @param level a int.
+     * @param begin a {@link java.net.InetAddress} object.
+     * @param end a {@link java.net.InetAddress} object.
+     */
     public void addRange(int level, InetAddress begin, InetAddress end) {
         addRange(getScanLevel(level), begin, end);
     }
 
+    /**
+     * <p>addRange</p>
+     *
+     * @param level a {@link org.opennms.netmgt.config.vulnscand.ScanLevel} object.
+     * @param begin a {@link java.net.InetAddress} object.
+     * @param end a {@link java.net.InetAddress} object.
+     */
     public void addRange(ScanLevel level, InetAddress begin, InetAddress end) {
         Range addMe = new Range();
         addMe.setBegin(begin.getHostAddress());
@@ -394,18 +448,44 @@ public final class VulnscandConfigFactory {
         level.addRange(addMe);
     }
 
+    /**
+     * <p>removeSpecific</p>
+     *
+     * @param level a int.
+     * @param specific a {@link java.net.InetAddress} object.
+     */
     public void removeSpecific(int level, InetAddress specific) {
         removeSpecific(getScanLevel(level), specific);
     }
 
+    /**
+     * <p>removeSpecific</p>
+     *
+     * @param level a {@link org.opennms.netmgt.config.vulnscand.ScanLevel} object.
+     * @param specific a {@link java.net.InetAddress} object.
+     */
     public void removeSpecific(ScanLevel level, InetAddress specific) {
         level.removeSpecific(specific.getHostAddress());
     }
 
+    /**
+     * <p>removeRange</p>
+     *
+     * @param level a int.
+     * @param begin a {@link java.net.InetAddress} object.
+     * @param end a {@link java.net.InetAddress} object.
+     */
     public void removeRange(int level, InetAddress begin, InetAddress end) {
         removeRange(getScanLevel(level), begin, end);
     }
 
+    /**
+     * <p>removeRange</p>
+     *
+     * @param level a {@link org.opennms.netmgt.config.vulnscand.ScanLevel} object.
+     * @param begin a {@link java.net.InetAddress} object.
+     * @param end a {@link java.net.InetAddress} object.
+     */
     public void removeRange(ScanLevel level, InetAddress begin, InetAddress end) {
         Range removeMe = new Range();
         removeMe.setBegin(begin.getHostAddress());
@@ -415,12 +495,21 @@ public final class VulnscandConfigFactory {
     }
 
     /**
-     * 
+     * <p>getAllIpAddresses</p>
+     *
+     * @param level a int.
+     * @return a {@link java.util.Set} object.
      */
     public Set getAllIpAddresses(int level) {
         return getAllIpAddresses(getScanLevel(level));
     }
 
+    /**
+     * <p>getAllIpAddresses</p>
+     *
+     * @param level a {@link org.opennms.netmgt.config.vulnscand.ScanLevel} object.
+     * @return a {@link java.util.Set} object.
+     */
     public Set getAllIpAddresses(ScanLevel level) {
         Set retval = new TreeSet();
 
@@ -453,6 +542,11 @@ public final class VulnscandConfigFactory {
         return retval;
     }
 
+    /**
+     * <p>getAllExcludes</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set getAllExcludes() {
 	Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
         if (m_excludes == null) {
@@ -502,6 +596,12 @@ public final class VulnscandConfigFactory {
         return m_excludes;
     }
 
+    /**
+     * <p>removeExcludeRange</p>
+     *
+     * @param begin a {@link java.net.InetAddress} object.
+     * @param end a {@link java.net.InetAddress} object.
+     */
     public void removeExcludeRange(InetAddress begin, InetAddress end) {
         Range removeMe = new Range();
         removeMe.setBegin(begin.getHostAddress());
@@ -510,12 +610,19 @@ public final class VulnscandConfigFactory {
         m_config.getExcludes().removeRange(removeMe);
     }
 
+    /**
+     * <p>removeExcludeSpecific</p>
+     *
+     * @param specific a {@link java.net.InetAddress} object.
+     */
     public void removeExcludeSpecific(InetAddress specific) {
         m_config.getExcludes().removeSpecific(specific.getHostAddress());
     }
 
     /**
-     * 
+     * <p>getRescanFrequency</p>
+     *
+     * @return a long.
      */
     public long getRescanFrequency() {
         long frequency = -1;
@@ -531,7 +638,9 @@ public final class VulnscandConfigFactory {
     }
 
     /**
-     * 
+     * <p>getInitialSleepTime</p>
+     *
+     * @return a long.
      */
     public long getInitialSleepTime() {
         long sleep = -1;
@@ -547,7 +656,9 @@ public final class VulnscandConfigFactory {
     }
 
     /**
-     * 
+     * <p>getServerAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getServerAddress() {
         try {
@@ -560,6 +671,8 @@ public final class VulnscandConfigFactory {
 
     /**
      * Gets the cached value of the plugin lists in the config file
+     *
+     * @return an array of {@link java.lang.String} objects.
      */
     public String[] getPluginLists() {
         if (m_pluginLists == null) {
@@ -591,6 +704,8 @@ public final class VulnscandConfigFactory {
 
     /**
      * Gets the cached value of the safe checks settings in the config file
+     *
+     * @return an array of boolean.
      */
     public boolean[] getSafeChecks() {
         if (m_safeChecks == null) {
@@ -614,56 +729,72 @@ public final class VulnscandConfigFactory {
     }
 
     /**
-     * 
+     * <p>getServerPort</p>
+     *
+     * @return a int.
      */
     public int getServerPort() {
         return m_config.getServerPort();
     }
 
     /**
-     * 
+     * <p>getServerUsername</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getServerUsername() {
         return m_config.getServerUsername();
     }
 
     /**
-     * 
+     * <p>getServerPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getServerPassword() {
         return m_config.getServerPassword();
     }
 
     /**
-     * 
+     * <p>getStatus</p>
+     *
+     * @return a boolean.
      */
     public boolean getStatus() {
         return m_config.getStatus();
     }
 
     /**
-     * 
+     * <p>getManagedInterfacesStatus</p>
+     *
+     * @return a boolean.
      */
     public boolean getManagedInterfacesStatus() {
         return m_config.getManagedInterfaces().getStatus();
     }
 
     /**
-     * 
+     * <p>getManagedInterfacesScanLevel</p>
+     *
+     * @return a int.
      */
     public int getManagedInterfacesScanLevel() {
         return m_config.getManagedInterfaces().getScanLevel();
     }
 
     /**
-     * 
+     * <p>getMaxSuspectThreadPoolSize</p>
+     *
+     * @return a int.
      */
     public int getMaxSuspectThreadPoolSize() {
         return m_config.getMaxSuspectThreadPoolSize();
     }
 
     /**
-     * 
+     * <p>getMaxRescanThreadPoolSize</p>
+     *
+     * @return a int.
      */
     public int getMaxRescanThreadPoolSize() {
         return m_config.getMaxRescanThreadPoolSize();

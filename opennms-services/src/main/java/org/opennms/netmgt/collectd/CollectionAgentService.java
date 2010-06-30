@@ -42,25 +42,67 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
- * 
+ * <p>CollectionAgentService interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface CollectionAgentService {
 
+    /**
+     * <p>getHostAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getHostAddress();
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public abstract int getNodeId();
     
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a int.
+     */
     public abstract int getIfIndex();
 
+    /**
+     * <p>getSysObjectId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getSysObjectId();
 
+    /**
+     * <p>getCollectionType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface.CollectionType} object.
+     */
     public abstract CollectionType getCollectionType();
     
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     public abstract SnmpAgentConfig getAgentConfig();
 
+    /**
+     * <p>getSnmpInterfaceData</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public abstract Set<SnmpIfData> getSnmpInterfaceData();
     
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public abstract InetAddress getInetAddress();
 
 }

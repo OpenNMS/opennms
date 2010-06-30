@@ -37,6 +37,12 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
+/**
+ * <p>TcpEventReceiverMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TcpEventReceiverMBean {
     /**
      * Starts the current managed bean.
@@ -62,6 +68,8 @@ public interface TcpEventReceiverMBean {
      * The current status of the managed bean. This is a representation of the
      * managed bean's run state as defined by the <code>Fiber</code>
      * interface.
+     *
+     * @return a int.
      */
     public int getStatus();
 
@@ -69,7 +77,7 @@ public interface TcpEventReceiverMBean {
      * Sets the port where new requests will be handled. This can only be done
      * prior to starting the managed bean. If the managed bean is already
      * running then an exception is thrown.
-     * 
+     *
      * @param port
      *            The port to listen on.
      */
@@ -77,17 +85,16 @@ public interface TcpEventReceiverMBean {
 
     /**
      * Returns the where a listener is waiting to process new request.
-     * 
+     *
      * @return The listening port.
      */
     public Integer getPort();
 
     /**
      * Adds a new event handler by its managed name.
-     * 
+     *
      * @param name
      *            The name of the handler to add.
-     * 
      * @throws javax.management.MalformedObjectNameException
      *             Thrown if the passed name is not a valid ObjectName.
      * @throws javax.management.InstanceNotFoundException
@@ -98,10 +105,9 @@ public interface TcpEventReceiverMBean {
     /**
      * Removes an event handler. The passed name must be a valid JMX object
      * name.
-     * 
+     *
      * @param name
      *            The name of the handler to remove.
-     * 
      * @throws javax.management.MalformedObjectNameException
      *             Thrown if the passed name is not a valid ObjectName.
      * @throws javax.management.InstanceNotFoundException
@@ -111,6 +117,8 @@ public interface TcpEventReceiverMBean {
 
     /**
      * The logging prefix to use
+     *
+     * @param prefix a {@link java.lang.String} object.
      */
     public void setLogPrefix(String prefix);
 
@@ -118,7 +126,7 @@ public interface TcpEventReceiverMBean {
      * The number of event records a new connection is allowed to send before
      * the connection is terminated by the server. The connection is always
      * terminated after an event receipt is generated, if one is required.
-     * 
+     *
      * @param number
      *            The number of event records.
      */

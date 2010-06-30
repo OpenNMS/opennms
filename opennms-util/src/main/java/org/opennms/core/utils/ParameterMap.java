@@ -46,19 +46,25 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * Convenience class for looking up string and integer values in a parameter
  * map.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class ParameterMap extends Object {
 	
-    /**
-     * This method is used to lookup a specific key in the map. If the mapped
-     * value is a string it is converted to a long and the original string
-     * value is replaced in the map. The converted value is returned to the
-     * caller. If the value cannot be converted then the default value is stored
-     * in the map. If the specified key does not exist in the map then the
-     * default value is returned.
-     * 
-     * @return The long value associated with the key.
-     */
+	/**
+	 * This method is used to lookup a specific key in the map. If the mapped
+	 * value is a string it is converted to a long and the original string
+	 * value is replaced in the map. The converted value is returned to the
+	 * caller. If the value cannot be converted then the default value is stored
+	 * in the map. If the specified key does not exist in the map then the
+	 * default value is returned.
+	 *
+	 * @return The long value associated with the key.
+	 * @param map a {@link java.util.Map} object.
+	 * @param key a {@link java.lang.String} object.
+	 * @param defValue a long.
+	 */
 	public static long getKeyedLong(final Map map, final String key, final long defValue) {
         long value = defValue;
         Object oValue = map.get(key);
@@ -84,8 +90,11 @@ public class ParameterMap extends Object {
      * caller. If the value cannot be converted then the default value is stored
      * in the map. If the specified key does not exist in the map then the
      * default value is returned.
-     * 
+     *
      * @return The int value associated with the key.
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a int.
      */
     public static int getKeyedInteger(final Map map, final String key, final int defValue) {
     	return new Long(ParameterMap.getKeyedLong(map, key, new Long(defValue))).intValue();
@@ -96,8 +105,11 @@ public class ParameterMap extends Object {
      * value is a string is is converted to an integer and the original string
      * value is replaced in the map. The converted value is returned to the
      * caller. If the value cannot be converted then the default value is used.
-     * 
+     *
      * @return The array of integer values associated with the key.
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValues an array of int.
      */
     public final static int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
         int[] result = defValues;
@@ -135,8 +147,11 @@ public class ParameterMap extends Object {
      * is replaced in the map. The converted value is returned to the caller. If
      * the specified key does not exist in the map then the default value is
      * returned.
-     * 
+     *
      * @return The String value associated with the key.
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a {@link java.lang.String} object.
      */
     public static String getKeyedString(final Map map, final String key, final String defValue) {
 
@@ -161,6 +176,9 @@ public class ParameterMap extends Object {
      * default value is returned.
      *
      * @return The bool value associated with the key.
+     * @param map a {@link java.util.Map} object.
+     * @param key a {@link java.lang.String} object.
+     * @param defValue a boolean.
      */
     public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
         boolean value = defValue;

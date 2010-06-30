@@ -37,23 +37,34 @@ import java.util.Date;
 /**
  * A JavaBean implementation to hold information about a network event as
  * defined by OpenNMS.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class Event extends Object {
+    /** Constant <code>INDETERMINATE_SEVERITY=1</code> */
     public static final int INDETERMINATE_SEVERITY = 1;
 
+    /** Constant <code>CLEARED_SEVERITY=2</code> */
     public static final int CLEARED_SEVERITY = 2;
 
+    /** Constant <code>NORMAL_SEVERITY=3</code> */
     public static final int NORMAL_SEVERITY = 3;
 
+    /** Constant <code>WARNING_SEVERITY=4</code> */
     public static final int WARNING_SEVERITY = 4;
 
+    /** Constant <code>MINOR_SEVERITY=5</code> */
     public static final int MINOR_SEVERITY = 5;
 
+    /** Constant <code>MAJOR_SEVERITY=6</code> */
     public static final int MAJOR_SEVERITY = 6;
 
+    /** Constant <code>CRITICAL_SEVERITY=7</code> */
     public static final int CRITICAL_SEVERITY = 7;
 
     /** Unique identifier for the event, cannot be null */
@@ -222,6 +233,13 @@ public class Event extends Object {
     /**
      * Create an event that represents a real network event with only the
      * required parameters.
+     *
+     * @param id a int.
+     * @param uei a {@link java.lang.String} object.
+     * @param time a {@link java.util.Date} object.
+     * @param dpName a {@link java.lang.String} object.
+     * @param createTime a {@link java.util.Date} object.
+     * @param severity a int.
      */
     public Event(int id, String uei, Date time, String dpName, Date createTime, int severity) {
         if (uei == null || time == null || dpName == null || createTime == null) {
@@ -239,6 +257,34 @@ public class Event extends Object {
     /**
      * Create an event that represents a real network event with all the
      * parameters.
+     *
+     * @param id a int.
+     * @param uei a {@link java.lang.String} object.
+     * @param time a {@link java.util.Date} object.
+     * @param dpName a {@link java.lang.String} object.
+     * @param createTime a {@link java.util.Date} object.
+     * @param severity a int.
+     * @param snmp a {@link java.lang.String} object.
+     * @param host a {@link java.lang.String} object.
+     * @param snmphost a {@link java.lang.String} object.
+     * @param parms a {@link java.lang.String} object.
+     * @param nodeID a {@link java.lang.Integer} object.
+     * @param serviceID a {@link java.lang.Integer} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param logMessage a {@link java.lang.String} object.
+     * @param logGroup a {@link java.lang.String} object.
+     * @param operatorInstruction a {@link java.lang.String} object.
+     * @param autoAction a {@link java.lang.String} object.
+     * @param operatorAction a {@link java.lang.String} object.
+     * @param operatorActionMenuText a {@link java.lang.String} object.
+     * @param notification a {@link java.lang.String} object.
+     * @param troubleTicket a {@link java.lang.String} object.
+     * @param troubleTicketState a {@link java.lang.Integer} object.
+     * @param forward a {@link java.lang.String} object.
+     * @param mouseOverText a {@link java.lang.String} object.
+     * @param acknowledgeUser a {@link java.lang.String} object.
+     * @param acknowledgeTime a {@link java.util.Date} object.
      */
     public Event(int id, String uei, Date time, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
         this(id, uei, time, dpName, createTime, severity, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, null, null, null);
@@ -247,6 +293,37 @@ public class Event extends Object {
     /**
      * Create an event that represents a real network event with all the
      * parameters.
+     *
+     * @param id a int.
+     * @param uei a {@link java.lang.String} object.
+     * @param time a {@link java.util.Date} object.
+     * @param dpName a {@link java.lang.String} object.
+     * @param createTime a {@link java.util.Date} object.
+     * @param severity a int.
+     * @param snmp a {@link java.lang.String} object.
+     * @param host a {@link java.lang.String} object.
+     * @param snmphost a {@link java.lang.String} object.
+     * @param parms a {@link java.lang.String} object.
+     * @param nodeID a {@link java.lang.Integer} object.
+     * @param serviceID a {@link java.lang.Integer} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param logMessage a {@link java.lang.String} object.
+     * @param logGroup a {@link java.lang.String} object.
+     * @param operatorInstruction a {@link java.lang.String} object.
+     * @param autoAction a {@link java.lang.String} object.
+     * @param operatorAction a {@link java.lang.String} object.
+     * @param operatorActionMenuText a {@link java.lang.String} object.
+     * @param notification a {@link java.lang.String} object.
+     * @param troubleTicket a {@link java.lang.String} object.
+     * @param troubleTicketState a {@link java.lang.Integer} object.
+     * @param forward a {@link java.lang.String} object.
+     * @param mouseOverText a {@link java.lang.String} object.
+     * @param acknowledgeUser a {@link java.lang.String} object.
+     * @param acknowledgeTime a {@link java.util.Date} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param alarmId a {@link java.lang.Integer} object.
      */
     public Event(int id, String uei, Date time, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
 
@@ -289,126 +366,281 @@ public class Event extends Object {
         this.alarmId = alarmId;
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a int.
+     */
     public int getId() {
         return (this.id);
     }
 
+    /**
+     * <p>Getter for the field <code>uei</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUei() {
         return (this.uei);
     }
 
+    /**
+     * <p>Getter for the field <code>time</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getTime() {
         return (time);
     }
 
+    /**
+     * <p>Getter for the field <code>dpName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDpName() {
         return (this.dpName);
     }
 
+    /**
+     * <p>Getter for the field <code>createTime</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getCreateTime() {
         return (this.createTime);
     }
 
+    /**
+     * <p>Getter for the field <code>severity</code>.</p>
+     *
+     * @return a int.
+     */
     public int getSeverity() {
         return (this.severity);
     }
 
+    /**
+     * <p>Getter for the field <code>snmp</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmp() {
         return (this.snmp);
     }
 
+    /**
+     * <p>Getter for the field <code>host</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHost() {
         return (this.host);
     }
 
+    /**
+     * <p>getSnmpHost</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpHost() {
         return (this.snmphost);
     }
 
+    /**
+     * <p>Getter for the field <code>parms</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParms() {
         return (this.parms);
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return (this.nodeID.intValue());
     }
 
+    /**
+     * <p>Getter for the field <code>nodeLabel</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return (this.nodeLabel);
     }
 
+    /**
+     * <p>getServiceId</p>
+     *
+     * @return a int.
+     */
     public int getServiceId() {
         return (this.serviceID.intValue());
     }
 
+    /**
+     * <p>Getter for the field <code>serviceName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return (this.serviceName);
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return (this.ipAddr);
     }
 
+    /**
+     * <p>Getter for the field <code>description</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (this.description);
     }
 
+    /**
+     * <p>Getter for the field <code>logMessage</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLogMessage() {
         return (this.logMessage);
     }
 
+    /**
+     * <p>Getter for the field <code>logGroup</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLogGroup() {
         return (this.logGroup);
     }
 
+    /**
+     * <p>Getter for the field <code>operatorInstruction</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOperatorInstruction() {
         return (this.operatorInstruction);
     }
 
+    /**
+     * <p>Getter for the field <code>autoAction</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAutoAction() {
         return (this.autoAction);
     }
 
+    /**
+     * <p>Getter for the field <code>operatorAction</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOperatorAction() {
         return (this.operatorAction);
     }
 
+    /**
+     * <p>Getter for the field <code>operatorActionMenuText</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOperatorActionMenuText() {
         return (this.operatorActionMenuText);
     }
 
+    /**
+     * <p>Getter for the field <code>notification</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNotification() {
         return (this.notification);
     }
 
+    /**
+     * <p>Getter for the field <code>troubleTicket</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTroubleTicket() {
         return (this.troubleTicket);
     }
 
+    /**
+     * <p>Getter for the field <code>troubleTicketState</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getTroubleTicketState() {
         return (this.troubleTicketState);
     }
 
+    /**
+     * <p>Getter for the field <code>forward</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForward() {
         return (this.forward);
     }
 
+    /**
+     * <p>Getter for the field <code>mouseOverText</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMouseOverText() {
         return (this.mouseOverText);
     }
 
+    /**
+     * <p>Getter for the field <code>acknowledgeUser</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAcknowledgeUser() {
         return (this.acknowledgeUser);
     }
 
+    /**
+     * <p>Getter for the field <code>acknowledgeTime</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getAcknowledgeTime() {
         return (this.acknowledgeTime);
     }
 
+    /**
+     * <p>isAcknowledged</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAcknowledged() {
         return (this.acknowledgeUser != null);
     }
 
+    /**
+     * <p>Getter for the field <code>alarmId</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getAlarmId() {
         return (this.alarmId);
     }

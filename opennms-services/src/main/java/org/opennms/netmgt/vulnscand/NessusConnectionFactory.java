@@ -41,6 +41,13 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 class NessusConnectionFactory {
+    /**
+     * <p>getConnection</p>
+     *
+     * @param hostname a {@link java.net.InetAddress} object.
+     * @param hostport a int.
+     * @return a {@link java.net.Socket} object.
+     */
     static public Socket getConnection(InetAddress hostname, int hostport) {
         Category log = ThreadCategory.getInstance(NessusConnectionFactory.class);
 
@@ -56,6 +63,11 @@ class NessusConnectionFactory {
         }
     }
 
+    /**
+     * <p>releaseConnection</p>
+     *
+     * @param socket a {@link java.net.Socket} object.
+     */
     static public void releaseConnection(Socket socket) {
         Category log = ThreadCategory.getInstance(NessusConnectionFactory.class);
 

@@ -268,14 +268,12 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * failure of the collection should be tested via the <code>failed</code>
 	 * method.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * No synchronization is performed, so if this is used in a separate thread
 	 * context synchornization must be added.
 	 * </p>
-	 *  
 	 */
-
 	public void run() {
 		Category log = ThreadCategory.getInstance(getClass());
 		
@@ -393,6 +391,11 @@ final class SnmpVlanCollection implements ReadyRunnable {
 
 	}
 
+	/**
+	 * <p>isReady</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isReady() {
 		return true;
 	}

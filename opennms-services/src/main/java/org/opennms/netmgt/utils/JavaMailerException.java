@@ -41,26 +41,45 @@ package org.opennms.netmgt.utils;
 
 /**
  * Exception used to create proper return code
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * 
+ * @version $Id: $
  */
 public class JavaMailerException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * <p>Constructor for JavaMailerException.</p>
+     */
     public JavaMailerException() {
         super();
     }
 
+    /**
+     * <p>Constructor for JavaMailerException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public JavaMailerException(String message) {
         super(message);
     }
 
+    /**
+     * <p>Constructor for JavaMailerException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public JavaMailerException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * <p>Constructor for JavaMailerException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public JavaMailerException(Throwable cause) {
         super(cause);
     }

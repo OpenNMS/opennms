@@ -32,20 +32,52 @@
 package org.opennms.netmgt.snmp;
 
 
+/**
+ * <p>InstanceListTracker class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class InstanceListTracker extends AggregateTracker {
     
+    /**
+     * <p>Constructor for InstanceListTracker.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param instances a {@link java.lang.String} object.
+     */
     public InstanceListTracker(SnmpObjId base, String instances) {
         this(base, SnmpInstId.convertToSnmpInstIds(instances), null);
     }
     
+    /**
+     * <p>Constructor for InstanceListTracker.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param instances a {@link java.lang.String} object.
+     * @param parent a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public InstanceListTracker(SnmpObjId base, String instances, CollectionTracker parent) {
         this(base, SnmpInstId.convertToSnmpInstIds(instances), parent);
     }
     
+    /**
+     * <p>Constructor for InstanceListTracker.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param instances an array of {@link org.opennms.netmgt.snmp.SnmpInstId} objects.
+     */
     public InstanceListTracker(SnmpObjId base, SnmpInstId[] instances) {
         this(base, instances, null);
     }
     
+    /**
+     * <p>Constructor for InstanceListTracker.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param instances an array of {@link org.opennms.netmgt.snmp.SnmpInstId} objects.
+     * @param parent a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public InstanceListTracker(SnmpObjId base, SnmpInstId[] instances, CollectionTracker parent) {
         super(getSingleInstanceTrackers(base, instances), parent);
     }

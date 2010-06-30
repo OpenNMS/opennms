@@ -78,13 +78,16 @@ import org.springframework.beans.FatalBeanException;
  * This is the singleton class used to load the configuration from the
  * passive-status-configuration.xml. This provides convenience methods to get the configured
  * categories and their information, add/delete categories from category groups.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class EventTranslatorConfigFactory implements EventTranslatorConfig {
     /**
@@ -127,6 +130,14 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         rdr.close();
     }
     
+    /**
+     * <p>Constructor for EventTranslatorConfigFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @param dbConnFactory a {@link javax.sql.DataSource} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public EventTranslatorConfigFactory(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
         marshallReader(rdr, dbConnFactory);
     }
@@ -139,14 +150,19 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
-     * @throws ClassNotFoundException 
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.sql.SQLException if any.
+     * @throws java.beans.PropertyVetoException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (m_loaded) {
@@ -166,14 +182,19 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
-     * @throws ClassNotFoundException 
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.sql.SQLException if any.
+     * @throws java.beans.PropertyVetoException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException {
         m_singleton = null;
@@ -184,9 +205,8 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -197,6 +217,11 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         return m_singleton;
     }
 
+	/**
+	 * <p>setInstance</p>
+	 *
+	 * @param singleton a {@link org.opennms.netmgt.config.EventTranslatorConfig} object.
+	 */
 	public static void setInstance(EventTranslatorConfig singleton) {
 		m_singleton=singleton;
 		m_loaded=true;
@@ -219,6 +244,11 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     /*
      *  (non-Javadoc)
      * @see org.opennms.netmgt.config.PassiveStatusConfig#getUEIList()
+     */
+    /**
+     * <p>getUEIList</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getUEIList() {
     		return getTranslationUEIs();
@@ -243,6 +273,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     		}
     }
 
+    /** {@inheritDoc} */
     public boolean isTranslationEvent(Event e) {
 		for (TranslationSpec spec : getTranslationSpecs()) {
 			if (spec.matches(e))
@@ -251,6 +282,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		return false;
     }
     
+	/** {@inheritDoc} */
 	public List<Event> translateEvent(Event e) {
 		ArrayList<Event> events = new ArrayList<Event>();
 		for (TranslationSpec spec : getTranslationSpecs()) {

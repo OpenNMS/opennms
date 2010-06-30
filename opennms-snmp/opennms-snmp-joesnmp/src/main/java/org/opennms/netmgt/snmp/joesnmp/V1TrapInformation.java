@@ -52,8 +52,10 @@ import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * V1 trap element for processing by the queue reader
+ *
+ * @author ranger
+ * @version $Id: $
  */
-
 public class V1TrapInformation extends TrapInformation {
     /**
      * The received PDU
@@ -63,7 +65,7 @@ public class V1TrapInformation extends TrapInformation {
     /**
      * Constructs a new trap information instance that contains the sending
      * agent, the community string, and the Protocol Data Unit.
-     * 
+     *
      * @param agent
      *            The sending agent's address
      * @param community
@@ -71,37 +73,68 @@ public class V1TrapInformation extends TrapInformation {
      * @param pdu
      *            The encapsulated Protocol Data Unit.
      * @param trapProcessor The trap processor used to process the trap data
-     * 
      */
     public V1TrapInformation(InetAddress agent, String community, SnmpPduTrap pdu, TrapProcessor trapProcessor) {
         super(agent, community, trapProcessor);
         m_pdu = pdu;
     }
 
+    /**
+     * <p>getPduLength</p>
+     *
+     * @return a int.
+     */
     protected int getPduLength() {
         return m_pdu.getLength();
     }
 
+    /**
+     * <p>getTimeStamp</p>
+     *
+     * @return a long.
+     */
     protected long getTimeStamp() {
         return m_pdu.getTimeStamp();
     }
 
+    /**
+     * <p>getTrapIdentity</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.TrapIdentity} object.
+     */
     protected TrapIdentity getTrapIdentity() {
         return new TrapIdentity(SnmpObjId.get(m_pdu.getEnterprise().getIdentifiers()), m_pdu.getGeneric(), m_pdu.getSpecific());
     }
 
+    /**
+     * <p>getTrapAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     protected InetAddress getTrapAddress() {
         return SnmpIPAddress.toInetAddress(m_pdu.getAgentAddress());
     }
 
+    /**
+     * <p>getVarBindAt</p>
+     *
+     * @param index a int.
+     * @return a {@link org.opennms.protocols.snmp.SnmpVarBind} object.
+     */
     protected SnmpVarBind getVarBindAt(int index) {
         return m_pdu.getVarBindAt(index);
     }
 
+    /**
+     * <p>getVersion</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected String getVersion() {
         return "v1";
     }
 
+    /** {@inheritDoc} */
     protected void processVarBindAt(int i) {
         SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
         SnmpValue value = new JoeSnmpValue(getVarBindAt(i).getValue());

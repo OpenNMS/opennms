@@ -76,11 +76,13 @@ import org.opennms.report.datablock.OutageSvcTimesList;
 /**
  * AvailabilityData collects all the outages for all node/ip/service
  * combination and stores it appropriately in the m_nodes structure.
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">Oculan </A>
+ * @version $Id: $
  */
-
 public class AvailabilityData extends Object {
     /**
      * The log4j category used to log debug messsages and statements.
@@ -134,6 +136,21 @@ public class AvailabilityData extends Object {
      */
     private int m_sectionIndex = 0;
 
+    /**
+     * <p>Constructor for AvailabilityData.</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     * @param report a {@link org.opennms.report.availability.Report} object.
+     * @param monthFormat a {@link java.lang.String} object.
+     * @param calendar a {@link java.util.Calendar} object.
+     * @param startMonth a {@link java.lang.String} object.
+     * @param startDate a {@link java.lang.String} object.
+     * @param startYear a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.Exception if any.
+     */
     public AvailabilityData(String categoryName, Report report,
             String monthFormat, Calendar calendar, String startMonth,
             String startDate, String startYear) throws IOException,
@@ -150,6 +167,22 @@ public class AvailabilityData extends Object {
                      calendar, new Date(cal.getTimeInMillis()));
     }
 
+    /**
+     * <p>Constructor for AvailabilityData.</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     * @param report a {@link org.opennms.report.availability.Report} object.
+     * @param format a {@link java.lang.String} object.
+     * @param monthFormat a {@link java.lang.String} object.
+     * @param calendar a {@link java.util.Calendar} object.
+     * @param startMonth a {@link java.lang.String} object.
+     * @param startDate a {@link java.lang.String} object.
+     * @param startYear a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.Exception if any.
+     */
     public AvailabilityData(String categoryName, Report report,
             String format, String monthFormat, Calendar calendar,
             String startMonth, String startDate, String startYear)
@@ -167,6 +200,20 @@ public class AvailabilityData extends Object {
                      new Date(cal.getTimeInMillis()));
     }
 
+    /**
+     * <p>Constructor for AvailabilityData.</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     * @param report a {@link org.opennms.report.availability.Report} object.
+     * @param format a {@link java.lang.String} object.
+     * @param monthFormat a {@link java.lang.String} object.
+     * @param calendar a {@link java.util.Calendar} object.
+     * @param periodEndDate a {@link java.util.Date} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.Exception if any.
+     */
     public AvailabilityData(String categoryName, Report report,
             String format, String monthFormat, Calendar calendar,
             Date periodEndDate)
@@ -355,8 +402,10 @@ public class AvailabilityData extends Object {
     /**
      * Initialize the endTime, start Time, last Months end time and number of days in the
      * last month.
+     *
+     * @param calendar a {@link java.util.Calendar} object.
+     * @param periodEndDate a {@link java.util.Date} object.
      */
-    
     public void initializeInterval(Calendar calendar, Date periodEndDate) {
         
         Calendar tempCal = new GregorianCalendar();
@@ -401,6 +450,8 @@ public class AvailabilityData extends Object {
     
     /**
      * Returns the nodes.
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<Node> getNodes() {
         return m_nodes;
@@ -408,6 +459,12 @@ public class AvailabilityData extends Object {
 
     /**
      * Initializes the database connection.
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.sql.SQLException if any.
      */
     public void initialiseConnection() throws IOException, MarshalException,
             ValidationException, ClassNotFoundException, SQLException {
@@ -469,6 +526,8 @@ public class AvailabilityData extends Object {
     /**
      * Returns percent/node combinations for the last month. This is used to
      * get the last months top 20 offenders
+     *
+     * @return a {@link java.util.TreeMap} object.
      */
     public TreeMap<Double, List<String>> getPercentNode() {
         org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
@@ -724,6 +783,13 @@ public class AvailabilityData extends Object {
 
     /**
      * This method adds a unique tuple to the list of nodes m_nodes.
+     *
+     * @param nodeName a {@link java.lang.String} object.
+     * @param nodeid a int.
+     * @param ipaddr a {@link java.lang.String} object.
+     * @param serviceid a {@link java.lang.String} object.
+     * @param losttime a long.
+     * @param regainedtime a long.
      */
     public void addNode(String nodeName, int nodeid, String ipaddr,
             String serviceid, long losttime, long regainedtime) {

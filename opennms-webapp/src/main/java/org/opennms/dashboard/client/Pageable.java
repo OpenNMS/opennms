@@ -36,17 +36,40 @@
 package org.opennms.dashboard.client;
 
 /**
- * 
+ * <p>Pageable interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface Pageable {
 
+    /**
+     * <p>getCurrentElement</p>
+     *
+     * @return a int.
+     */
     int getCurrentElement();
     
+    /**
+     * <p>setCurrentElement</p>
+     *
+     * @param element a int.
+     */
     void setCurrentElement(int element);
 
+    /**
+     * <p>getPageSize</p>
+     *
+     * @return a int.
+     */
     int getPageSize();
 
+    /**
+     * <p>getElementCount</p>
+     *
+     * @return a int.
+     */
     int getElementCount();
 
 }

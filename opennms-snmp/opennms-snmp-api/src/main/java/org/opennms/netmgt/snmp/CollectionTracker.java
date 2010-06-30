@@ -32,11 +32,21 @@
 package org.opennms.netmgt.snmp;
 
 
+/**
+ * <p>Abstract CollectionTracker class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class CollectionTracker implements Collectable {
     
+    /** Constant <code>NO_ERR=0</code> */
     public static final int NO_ERR = 0;
+    /** Constant <code>TOO_BIG_ERR=1</code> */
     public static final int TOO_BIG_ERR = 1;
+    /** Constant <code>NO_SUCH_NAME_ERR=2</code> */
     public static final int NO_SUCH_NAME_ERR = 2;
+    /** Constant <code>GEN_ERR=5</code> */
     public static final int GEN_ERR = 5;
 
     private CollectionTracker m_parent;
@@ -44,61 +54,142 @@ public abstract class CollectionTracker implements Collectable {
     private boolean m_timedOut;
     
     
+    /**
+     * <p>Constructor for CollectionTracker.</p>
+     */
     public CollectionTracker() {
         this(null);
     }
     
+    /**
+     * <p>Constructor for CollectionTracker.</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public CollectionTracker(CollectionTracker parent) {
         m_parent = parent;
         m_failed = false;
     }
 
+    /**
+     * <p>setParent</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public void setParent(CollectionTracker parent) {
         m_parent = parent;
     }
     
+    /**
+     * <p>getParent</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public CollectionTracker getParent() {
         return m_parent;
     }
 
+    /**
+     * <p>failed</p>
+     *
+     * @return a boolean.
+     */
     public boolean failed() { return m_failed || m_timedOut; }
     
+    /**
+     * <p>timedOut</p>
+     *
+     * @return a boolean.
+     */
     public boolean timedOut() { return m_timedOut; }
     
+    /**
+     * <p>setMaxRepititions</p>
+     *
+     * @param maxRepititions a int.
+     */
     abstract public void setMaxRepititions(int maxRepititions);
     
+    /**
+     * <p>setFailed</p>
+     *
+     * @param failed a boolean.
+     */
     public void setFailed(boolean failed) {
         m_failed = failed;
     }
     
+    /**
+     * <p>setTimedOut</p>
+     *
+     * @param timedOut a boolean.
+     */
     public void setTimedOut(boolean timedOut) {
         m_timedOut = timedOut;
     }
     
+    /**
+     * <p>storeResult</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param inst a {@link org.opennms.netmgt.snmp.SnmpInstId} object.
+     * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         if (m_parent != null)
             m_parent.storeResult(base, inst, val);
     }
     
+    /**
+     * <p>isFinished</p>
+     *
+     * @return a boolean.
+     */
     public abstract boolean isFinished();
 
+    /**
+     * <p>buildNextPdu</p>
+     *
+     * @param pduBuilder a {@link org.opennms.netmgt.snmp.PduBuilder} object.
+     * @return a {@link org.opennms.netmgt.snmp.ResponseProcessor} object.
+     */
     public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
 
+    /**
+     * <p>reportTooBigErr</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     */
     protected void reportTooBigErr(String msg) {
         if (m_parent != null)
             m_parent.reportTooBigErr(msg);
     }
     
+    /**
+     * <p>reportGenErr</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     */
     protected void reportGenErr(String msg) {
         if (m_parent != null)
             m_parent.reportGenErr(msg);
     }
     
+    /**
+     * <p>reportNoSuchNameErr</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     */
     protected void reportNoSuchNameErr(String msg) {
         if (m_parent != null)
             m_parent.reportNoSuchNameErr(msg);
     }
     
+    /**
+     * <p>getCollectionTracker</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public CollectionTracker getCollectionTracker() {
         return this;
     }

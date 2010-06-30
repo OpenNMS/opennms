@@ -38,25 +38,35 @@ import org.jfree.chart.axis.ExtendedCategoryAxis;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
+ * <p>SeveritySubLabels class.</p>
+ *
  * @author <a href="david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class SeveritySubLabels extends ExtendedCategoryAxis {
 
     private static final long serialVersionUID = -2409809186462909526L;
     
+    /**
+     * <p>Constructor for SeveritySubLabels.</p>
+     */
     public SeveritySubLabels() {
         super(null);
     }
 
+    /**
+     * <p>Constructor for SeveritySubLabels.</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
     public SeveritySubLabels(String label) {
         super(label);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Adds a sublabel for a category.
-     * 
-     * @param category  the category.
-     * @param label  the label.
      */
     public void addSubLabel(Comparable category, String label) {
         super.addSubLabel(category, convertLabel(label));

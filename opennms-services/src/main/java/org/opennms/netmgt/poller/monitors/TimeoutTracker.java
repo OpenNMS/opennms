@@ -40,10 +40,12 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * Helper class used for tracking retires and timeouts for ServiceMonitors.
- * 
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- *
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class TimeoutTracker {
 
@@ -57,6 +59,13 @@ public class TimeoutTracker {
     private long m_nextRetryTimeNanos = -1L;
     private long m_attemptStartTimeNanos = -1L;
 
+    /**
+     * <p>Constructor for TimeoutTracker.</p>
+     *
+     * @param parameters a {@link java.util.Map} object.
+     * @param defaultRetry a int.
+     * @param defaultTimeout a int.
+     */
     public TimeoutTracker(Map parameters, int defaultRetry, int defaultTimeout) {
         m_retry = ParameterMap.getKeyedInteger(parameters, "retry", defaultRetry);
 
@@ -72,19 +81,37 @@ public class TimeoutTracker {
 
     }
 
+    /**
+     * <p>shouldRetry</p>
+     *
+     * @return a boolean.
+     */
     public boolean shouldRetry() {
         return m_attempt <= m_retry;
     }
     
+    /**
+     * <p>getTimeoutInMillis</p>
+     *
+     * @return a long.
+     */
     public long getTimeoutInMillis() {
         return m_timeoutInMillis;
     }
     
+    /**
+     * <p>getTimeoutInSeconds</p>
+     *
+     * @return a long.
+     */
     public long getTimeoutInSeconds() {
         return m_timeoutInSeconds;
     }
     
 
+    /**
+     * <p>reset</p>
+     */
     public void reset() {
         m_attempt = 0;
         resetAttemptStartTime();
@@ -94,15 +121,26 @@ public class TimeoutTracker {
         m_attemptStartTimeNanos = -1L;
     }
 
+    /**
+     * <p>nextAttempt</p>
+     */
     public void nextAttempt() {
         m_attempt++;
         resetAttemptStartTime();
     }
 
+    /**
+     * <p>getAttempt</p>
+     *
+     * @return a int.
+     */
     public int getAttempt() {
         return m_attempt;
     }
 
+    /**
+     * <p>startAttempt</p>
+     */
     public void startAttempt() {
         long now = System.nanoTime();
         while (m_strictTimeouts && now < m_nextRetryTimeNanos) {
@@ -130,16 +168,32 @@ public class TimeoutTracker {
         }
     }
     
+    /**
+     * <p>elapsedTimeInMillis</p>
+     *
+     * @return a double.
+     */
     public double elapsedTimeInMillis() {
         return convertFromNanos(elapsedTimeNanos(), TimeUnit.MILLISECONDS);
     }
     
+    /**
+     * <p>elapsedTimeNanos</p>
+     *
+     * @return a long.
+     */
     public long elapsedTimeNanos() {
         long nanoTime = System.nanoTime();
         assertStarted();
         return nanoTime - m_attemptStartTimeNanos;
     }
     
+    /**
+     * <p>elapsedTime</p>
+     *
+     * @param unit a {@link java.util.concurrent.TimeUnit} object.
+     * @return a double.
+     */
     public double elapsedTime(TimeUnit unit) {
         return convertFromNanos(elapsedTimeNanos(), unit);
     }
@@ -149,6 +203,7 @@ public class TimeoutTracker {
         return nanos/nanosPerUnit;
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new StringBuilder(64)
@@ -158,10 +213,20 @@ public class TimeoutTracker {
 
     }
 
+    /**
+     * <p>getSoTimeout</p>
+     *
+     * @return a int.
+     */
     public int getSoTimeout() {
         return (int)getTimeoutInMillis();
     }
     
+    /**
+     * <p>getConnectionTimeout</p>
+     *
+     * @return a int.
+     */
     public int getConnectionTimeout() {
         return (int)getTimeoutInMillis();
     }

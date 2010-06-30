@@ -39,6 +39,12 @@ package org.opennms.netmgt.model;
 
 import org.springframework.util.Assert;
 
+/**
+ * <p>PrefabGraph class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     private String m_name;
 
@@ -64,6 +70,22 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     
     private String[] m_suppress;
 
+    /**
+     * <p>Constructor for PrefabGraph.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param title a {@link java.lang.String} object.
+     * @param columns an array of {@link java.lang.String} objects.
+     * @param command a {@link java.lang.String} object.
+     * @param externalValues an array of {@link java.lang.String} objects.
+     * @param propertiesValues an array of {@link java.lang.String} objects.
+     * @param order a int.
+     * @param types an array of {@link java.lang.String} objects.
+     * @param description a {@link java.lang.String} object.
+     * @param graphWidth a {@link java.lang.Integer} object.
+     * @param graphHeight a {@link java.lang.Integer} object.
+     * @param suppress an array of {@link java.lang.String} objects.
+     */
     public PrefabGraph(String name, String title, String[] columns,
             String command, String[] externalValues,
             String[] propertiesValues, int order, String[] types,
@@ -92,31 +114,63 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
         m_graphHeight = graphHeight;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>getTitle</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle() {
         return m_title;
     }
 
+    /**
+     * <p>getOrder</p>
+     *
+     * @return a int.
+     */
     public int getOrder() {
         return m_order;
     }
 
+    /**
+     * <p>getColumns</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getColumns() {
         return m_columns;
     }
 
+    /**
+     * <p>getCommand</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCommand() {
         return m_command;
     }
 
+    /**
+     * <p>getExternalValues</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getExternalValues() {
         return m_externalValues;
     }
 
     /**
+     * <p>getPropertiesValues</p>
+     *
      * @return list of required string properties
      * @see org.opennms.netmgt.model.StringPropertyAttribute
      */
@@ -124,11 +178,21 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
         return m_propertiesValues;
     }
 
-    /** Can be null. */
+    /**
+     * Can be null.
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getTypes() {
         return m_types;
     }
     
+    /**
+     * <p>hasMatchingType</p>
+     *
+     * @param matchingTypes a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean hasMatchingType(String... matchingTypes) {
         for (String matchingType : matchingTypes) {
             for (String type : m_types) {
@@ -140,25 +204,48 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
         return false;
     }
 
-    /** Can be null. */
+    /**
+     * Can be null.
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return m_description;
     }
 
-    /** Can be null. */
+    /**
+     * Can be null.
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getGraphWidth() {
         return m_graphWidth;
     }
 
-    /** Can be null. */
+    /**
+     * Can be null.
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getGraphHeight() {
         return m_graphHeight;
     }
     
+    /**
+     * <p>getSuppress</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getSuppress() {
         return m_suppress;
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.PrefabGraph} object.
+     * @return a int.
+     */
     public int compareTo(PrefabGraph other) {
         if (other == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");

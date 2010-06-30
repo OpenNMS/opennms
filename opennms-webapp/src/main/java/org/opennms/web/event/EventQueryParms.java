@@ -42,9 +42,13 @@ import org.opennms.web.event.filter.Filter;
 
 /**
  * Convenience data structure for holding the arguments to an event query.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class EventQueryParms extends Object {
     public EventFactory.SortStyle sortStyle;
@@ -60,6 +64,8 @@ public class EventQueryParms extends Object {
     /**
      * Convert the internal (and useful) ArrayList filters object into an array
      * of Filter instances.
+     *
+     * @return an array of {@link org.opennms.web.event.filter.Filter} objects.
      */
     public Filter[] getFilters() {
         return this.filters.toArray(new Filter[this.filters.size()]);

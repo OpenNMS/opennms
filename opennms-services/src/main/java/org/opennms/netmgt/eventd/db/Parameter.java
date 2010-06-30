@@ -43,17 +43,19 @@ import org.opennms.netmgt.xml.event.Value;
 /**
  * This is an utility class used to format the event parameters - to be inserted
  * into the 'events' table
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class Parameter {
     /**
      * Format the list of event paramaters
-     * 
+     *
      * @param parms
      *            the list
-     * 
      * @return the formatted event parameters string
      */
     public static String format(Parms parms) {
@@ -75,10 +77,9 @@ public final class Parameter {
 
     /**
      * Format each parameter
-     * 
+     *
      * @param parm
      *            the parameter
-     * 
      * @return the formatted event parameter string
      */
     public static String format(Parm parm) {
@@ -113,6 +114,12 @@ public final class Parameter {
         // Constants.DB_ATTRIB_DELIM + encoding + ")";
     }
     
+    /**
+     * <p>decode</p>
+     *
+     * @param eventparms a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Parms} object.
+     */
     public static Parms decode(String eventparms) {
         if (eventparms == null ) return null;
         Parms parms = new Parms();

@@ -38,6 +38,12 @@ package org.opennms.netmgt.trapd;
 
 import java.sql.SQLException;
 
+/**
+ * <p>TrapdIpMgr interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TrapdIpMgr {
 
     /**
@@ -45,49 +51,45 @@ public interface TrapdIpMgr {
      * current information contained in the database. To synchronize the cache
      * the method opens a new connection to the database, loads the address, and
      * then closes it's connection.
-     * 
+     *
      * @throws java.sql.SQLException
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
-     * 
      */
     public abstract void dataSourceSync() throws SQLException;
 
     /**
      * Returns the nodeid for the IP Address
-     * 
+     *
      * @param addr
      *            The IP Address to query.
-     * 
      * @return The node ID of the IP Address if known.
-     * 
      */
     public abstract long getNodeId(String addr);
 
     /**
      * Sets the IP Address and Node ID in the Map.
-     * 
+     *
      * @param addr
      *            The IP Address to add.
      * @param nodeid
      *            The Node ID to add.
-     * 
      * @return The nodeid if it existed in the map.
-     * 
      */
     public abstract long setNodeId(String addr, long nodeid);
 
     /**
      * Removes an address from the node ID map.
-     * 
+     *
      * @param addr
      *            The address to remove from the node ID map.
-     * 
      * @return The nodeid that was in the map.
-     * 
      */
     public abstract long removeNodeId(String addr);
 
+    /**
+     * <p>clearKnownIpsMap</p>
+     */
     public abstract void clearKnownIpsMap();
 
 }

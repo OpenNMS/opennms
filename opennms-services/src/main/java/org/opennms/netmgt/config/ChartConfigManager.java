@@ -44,31 +44,41 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 
 /**
- * @author david
+ * <p>Abstract ChartConfigManager class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 public abstract class ChartConfigManager {
     
     static ChartConfiguration m_configuration = null;
     
     /**
-     * @param reader
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
+     * <p>parseXml</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     public synchronized static void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
         m_configuration = (ChartConfiguration) Unmarshaller.unmarshal(ChartConfiguration.class, reader);
     }
     
     /**
-     * @param xml
-     * @throws IOException
+     * <p>saveXml</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
      */
     protected abstract void saveXml(String xml) throws IOException;
 
     /**
-     * 
+     * <p>saveCurrent</p>
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     public synchronized void saveCurrent() throws MarshalException, ValidationException, IOException {
         // marshall to a string first, then write the string to the file. This
@@ -83,24 +93,32 @@ public abstract class ChartConfigManager {
 
 
     /**
-     * @return
-     * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
+     * <p>getConfiguration</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @return a {@link org.opennms.netmgt.config.charts.ChartConfiguration} object.
      */
     public ChartConfiguration getConfiguration() throws IOException, MarshalException, ValidationException {
         return m_configuration;
     }
     
+    /**
+     * <p>setConfiguration</p>
+     *
+     * @param configuration a {@link org.opennms.netmgt.config.charts.ChartConfiguration} object.
+     */
     public void setConfiguration(ChartConfiguration configuration) {
         m_configuration = configuration;
     }
 
     /**
-     * @throws ValidationException
-     * @throws MarshalException
-     * @throws IOException
-     * 
+     * <p>update</p>
+     *
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
      */
     protected abstract void update() throws IOException, MarshalException, ValidationException;
 

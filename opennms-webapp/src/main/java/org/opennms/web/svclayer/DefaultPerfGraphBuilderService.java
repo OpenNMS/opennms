@@ -45,24 +45,36 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.secret.model.GraphDefinition;
 
 /**
- * 
+ * <p>DefaultPerfGraphBuilderService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultPerfGraphBuilderService implements PerfGraphBuilderService {
 
 	private NodeDao m_nodeDao;
 	private AttributeSecretDao m_attributeDao;
 
+	/**
+	 * <p>createGraphDefinition</p>
+	 *
+	 * @return a {@link org.opennms.secret.model.GraphDefinition} object.
+	 */
 	public GraphDefinition createGraphDefinition() {
 		return new GraphDefinition();
 	}
 
+	/** {@inheritDoc} */
 	public void addAttributeToGraphDefinition(String attributeId, String graphDefId) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/** {@inheritDoc} */
 	public Palette getAttributePalette(int nodeId) {
 		OnmsNode node = m_nodeDao.get(nodeId);
 		
@@ -92,25 +104,38 @@ public class DefaultPerfGraphBuilderService implements PerfGraphBuilderService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	public byte[] getGraph(String graphDefId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	public GraphDefinition getGraphDefinition(String graphDefId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	public void saveGraphDefinition(String graphDefId) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * <p>setNodeDao</p>
+	 *
+	 * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+	 */
 	public void setNodeDao(NodeDao nodeDao) {
 		m_nodeDao = nodeDao;
 	}
 
+	/**
+	 * <p>setAttributeDao</p>
+	 *
+	 * @param attributeDao a {@link org.opennms.netmgt.dao.AttributeSecretDao} object.
+	 */
 	public void setAttributeDao(AttributeSecretDao attributeDao) {
 		m_attributeDao = attributeDao;
 	}

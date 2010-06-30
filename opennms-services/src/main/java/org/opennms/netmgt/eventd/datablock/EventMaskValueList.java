@@ -47,9 +47,12 @@ import java.util.Collection;
  * This list is pretty much constant once it constructed - so the hashcode is
  * evaluated once at construction and reused(if new values are added or values
  * changed, hashcode is re-evaluated)
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class EventMaskValueList extends ArrayList<String> {
     private static final long serialVersionUID = 1L;
@@ -69,6 +72,8 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * constructor for this class
+     *
+     * @param c a {@link java.util.Collection} object.
      */
     public EventMaskValueList(Collection<String> c) {
         super(c);
@@ -77,6 +82,8 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * constructor for this class
+     *
+     * @param initCapacity a int.
      */
     public EventMaskValueList(int initCapacity) {
         super(initCapacity);
@@ -85,7 +92,7 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * the constructor for this class
-     * 
+     *
      * @param value
      *            the string to be added to this list.
      */
@@ -101,8 +108,10 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * Override to re-evaluate hashcode
-     * 
+     *
      * @see java.util.ArrayList#add(Object)
+     * @param o a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean add(String o) {
         boolean ret = super.add(o);
@@ -112,8 +121,10 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * Override to re-evaluate hashcode
-     * 
+     *
      * @see java.util.ArrayList#add(int, Object)
+     * @param index a int.
+     * @param o a {@link java.lang.String} object.
      */
     public void add(int index, String o) {
         super.add(index, o);
@@ -121,8 +132,9 @@ public class EventMaskValueList extends ArrayList<String> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Override to re-evaluate hashcode
-     * 
      * @see java.util.ArrayList#addAll(Collection)
      */
     public boolean addAll(Collection<? extends String> o) {
@@ -132,8 +144,9 @@ public class EventMaskValueList extends ArrayList<String> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Override to re-evaluate hashcode
-     * 
      * @see java.util.ArrayList#addAll(int, Collection)
      */
     public boolean addAll(int index, Collection<? extends String> o) {
@@ -144,7 +157,7 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * Override to re-evaluate hashcode
-     * 
+     *
      * @see java.util.ArrayList#clear()
      */
     public void clear() {
@@ -153,8 +166,9 @@ public class EventMaskValueList extends ArrayList<String> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Override to re-evaluate hashcode
-     * 
      * @see java.util.ArrayList#remove(int)
      */
     public String remove(int index) {
@@ -165,8 +179,9 @@ public class EventMaskValueList extends ArrayList<String> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Override to re-evaluate hashcode
-     * 
      * @see java.util.ArrayList#removeRange(int,int)
      */
     protected void removeRange(int from, int to) {
@@ -176,8 +191,10 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * Override to re-evaluate hashcode
-     * 
+     *
      * @see java.util.ArrayList#remove(Object)
+     * @param o a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean remove(String o) {
         boolean ret = super.remove(o);
@@ -186,8 +203,9 @@ public class EventMaskValueList extends ArrayList<String> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Override to re-evaluate hashcode
-     * 
      * @see java.util.ArrayList#removeAll(Collection)
      */
     public boolean removeAll(Collection o) {
@@ -198,8 +216,11 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * Override to re-evaluate hashcode
-     * 
+     *
      * @see java.util.ArrayList#set(int,Object)
+     * @param index a int.
+     * @param o a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String set(int index, String o) {
         String old = super.set(index, o);
@@ -282,7 +303,7 @@ public class EventMaskValueList extends ArrayList<String> {
 
     /**
      * Overrides the 'hashCode()' method in the superclass.
-     * 
+     *
      * @return a hash code for this object
      */
     public int hashCode() {

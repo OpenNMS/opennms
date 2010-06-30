@@ -50,9 +50,13 @@ import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.springframework.remoting.RemoteLookupFailureException;
 
 /**
- * 
+ * <p>ServerUnreachableAdaptor class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class ServerUnreachableAdaptor implements PollerBackEnd {
     
@@ -60,24 +64,41 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     private PollerBackEnd m_remoteBackEnd;
     private boolean m_serverUnresponsive = false;
     
+    /**
+     * <p>setRemoteBackEnd</p>
+     *
+     * @param remoteBackEnd a {@link org.opennms.netmgt.poller.remote.PollerBackEnd} object.
+     */
     public void setRemoteBackEnd(PollerBackEnd remoteBackEnd) {
         m_remoteBackEnd = remoteBackEnd;
     }
 
 
+    /**
+     * <p>checkForDisconnectedMonitors</p>
+     */
     public void checkForDisconnectedMonitors() {
         // this is a server side only method
     }
 
+    /**
+     * <p>configurationUpdated</p>
+     */
     public void configurationUpdated() {
         // this is a server side only method
     }
 
+    /**
+     * <p>getMonitoringLocations</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         // leave this method as it is a 'before registration' method and we want errors to occur?
         return m_remoteBackEnd.getMonitoringLocations();
     }
 
+    /** {@inheritDoc} */
     public PollerConfiguration getPollerConfiguration(int locationMonitorId) {
         if (m_serverUnresponsive) {
             return new EmptyPollerConfiguration();
@@ -90,6 +111,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
         // if we check in and get a remote exception then we switch to the EmptyConfiguration
         try {
@@ -103,6 +125,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
         try {
             
@@ -120,15 +143,18 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public void pollerStopping(int locationMonitorId) {
         m_remoteBackEnd.pollerStopping(locationMonitorId);
     }
 
+    /** {@inheritDoc} */
     public int registerLocationMonitor(String monitoringLocationId) {
         // leave this method as it is a 'before registration' method and we want errors to occur?
         return m_remoteBackEnd.registerLocationMonitor(monitoringLocationId);
     }
 
+    /** {@inheritDoc} */
     public void reportResult(int locationMonitorID, int serviceId, PollStatus status) {
         if (!m_serverUnresponsive) {
             try {
@@ -140,6 +166,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     }
 
 
+    /** {@inheritDoc} */
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
         try {
             return m_remoteBackEnd.getServiceMonitorLocators(context);
@@ -150,6 +177,7 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     }
 
 
+    /** {@inheritDoc} */
     public String getMonitorName(int locationMonitorId) {
         try {
             return m_remoteBackEnd.getMonitorName(locationMonitorId);

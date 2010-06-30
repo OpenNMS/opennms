@@ -52,9 +52,12 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * This class encapsulates all the information required by the SNMP collector in
  * order to perform data collection for an individual interface and store that
  * data in an appropriately named RRD file.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class IfInfo extends SnmpCollectionResource {
 
@@ -62,6 +65,13 @@ public final class IfInfo extends SnmpCollectionResource {
     private String m_ifAlias;
     private SnmpIfData m_snmpIfData;
 
+    /**
+     * <p>Constructor for IfInfo.</p>
+     *
+     * @param def a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param snmpIfData a {@link org.opennms.netmgt.collectd.SnmpIfData} object.
+     */
     public IfInfo(ResourceType def, CollectionAgent agent, SnmpIfData snmpIfData) {
         super(def);
         m_snmpIfData = snmpIfData;
@@ -72,18 +82,38 @@ public final class IfInfo extends SnmpCollectionResource {
         return m_snmpIfData.getNodeId();
     }
 
+    /**
+     * <p>getIndex</p>
+     *
+     * @return a int.
+     */
     public int getIndex() {
         return m_snmpIfData.getIfIndex();
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() {
         return m_snmpIfData.getIfType();
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_snmpIfData.getLabelForRRD();
     }
 
+    /**
+     * <p>setIfAlias</p>
+     *
+     * @param ifAlias a {@link java.lang.String} object.
+     */
     public void setIfAlias(String ifAlias) {
         m_ifAlias = ifAlias;
     }
@@ -92,18 +122,38 @@ public final class IfInfo extends SnmpCollectionResource {
         return m_ifAlias;
     }
 
+    /**
+     * <p>getCollType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface.CollectionType} object.
+     */
     public CollectionType getCollType() {
         return m_snmpIfData.getCollectionType();
     }
 
+    /**
+     * <p>setEntry</p>
+     *
+     * @param ifEntry a {@link org.opennms.netmgt.collectd.SNMPCollectorEntry} object.
+     */
     public void setEntry(SNMPCollectorEntry ifEntry) {
         m_entry = ifEntry;
     }
 
+    /**
+     * <p>getEntry</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.SNMPCollectorEntry} object.
+     */
     protected SNMPCollectorEntry getEntry() {
         return m_entry;
     }
 
+    /**
+     * <p>getAttributesMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,String> getAttributesMap() {
         return m_snmpIfData.getAttribtuesMap();
     }
@@ -175,6 +225,7 @@ public final class IfInfo extends SnmpCollectionResource {
         return getResourceType().getCollection();
     }
 
+    /** {@inheritDoc} */
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
         File nodeDir = new File(rrdBaseDir, String.valueOf(getNodeId()));
@@ -182,6 +233,11 @@ public final class IfInfo extends SnmpCollectionResource {
         return ifDir;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "node["+ getNodeId() + "].interfaceSnmp[" + getLabel() + ']';
     }
@@ -194,6 +250,7 @@ public final class IfInfo extends SnmpCollectionResource {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean shouldPersist(ServiceParameters serviceParameters) {
 
         boolean shdprsist = shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getCurrentIfAlias()));
@@ -201,10 +258,20 @@ public final class IfInfo extends SnmpCollectionResource {
         return shdprsist;
     }
     
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeName() {
         return "if"; //This is IfInfo, must be an interface
     }
     
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInstance() {
         return Integer.toString(getIndex()); //For interfaces, use ifIndex as it's unique within a node (by definition)
     }

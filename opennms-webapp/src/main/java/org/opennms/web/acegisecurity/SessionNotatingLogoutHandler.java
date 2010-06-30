@@ -38,9 +38,18 @@ import javax.servlet.http.HttpSession;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.ui.logout.LogoutHandler;
 
+/**
+ * <p>SessionNotatingLogoutHandler class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class SessionNotatingLogoutHandler implements LogoutHandler {
+    /** Constant <code>SESSION_ATTRIBUTE="EVENT_SENDING_LOGOUT_HANDLER_LOGGED_OUT"</code> */
     public static final String SESSION_ATTRIBUTE = "EVENT_SENDING_LOGOUT_HANDLER_LOGGED_OUT";
 
+    /** {@inheritDoc} */
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         HttpSession session = request.getSession(false);
         if (session != null) {

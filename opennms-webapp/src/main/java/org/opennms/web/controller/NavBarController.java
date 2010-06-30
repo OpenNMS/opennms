@@ -50,13 +50,24 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>NavBarController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NavBarController extends AbstractController implements InitializingBean {
     private List<NavBarEntry> m_navBarItems;
     
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_navBarItems != null, "navBarItems property has not been set");
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return new ModelAndView("navBar", "model", createNavBarModel(request));
@@ -72,10 +83,20 @@ public class NavBarController extends AbstractController implements Initializing
         return new NavBarModel(navBar);
     }
 
+    /**
+     * <p>getNavBarItems</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<NavBarEntry> getNavBarItems() {
         return m_navBarItems;
     }
 
+    /**
+     * <p>setNavBarItems</p>
+     *
+     * @param navBarItems a {@link java.util.List} object.
+     */
     public void setNavBarItems(List<NavBarEntry> navBarItems) {
         m_navBarItems = navBarItems;
     }

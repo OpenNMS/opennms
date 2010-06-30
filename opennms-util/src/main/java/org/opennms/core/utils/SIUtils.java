@@ -36,9 +36,10 @@ import java.text.DecimalFormat;
 /**
  * Utilities for manipulating values in SI units.  This is the
  * International System of Units that you learned in science class.
- * 
+ *
  * @author djgregor
  * @link http://www.physics.nist.gov/cuu/Units/
+ * @version $Id: $
  */
 public class SIUtils {
     /**
@@ -56,7 +57,7 @@ public class SIUtils {
      * Method used to convert an integer bits-per-second value and a more
      * commonly recognized abbreviation for network interface speeds. Feel free
      * to expand it as necessary to accomodate different values.
-     * 
+     *
      * @param ifSpeed
      *            The bits-per-second value to be converted into a string
      *            description

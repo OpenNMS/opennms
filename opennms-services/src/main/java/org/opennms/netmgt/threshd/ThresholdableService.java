@@ -212,6 +212,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 
     /**
      * Returns node identifier
+     *
+     * @return a int.
      */
     public int getNodeId() {
         return m_nodeId;
@@ -219,6 +221,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 
     /**
      * Set node identifier
+     *
+     * @param nodeId a int.
      */
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
@@ -226,6 +230,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 
     /**
      * Returns the service name
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getServiceName() {
         return m_service.getName();
@@ -233,6 +239,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 
     /**
      * Returns the service name
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getPackageName() {
         return m_package.getName();
@@ -251,6 +259,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 
     /**
      * Returns updates object
+     *
+     * @return a {@link org.opennms.netmgt.threshd.ThresholderUpdates} object.
      */
     public ThresholderUpdates getThresholderUpdates() {
         return m_updates;
@@ -261,6 +271,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * pair. If it is time to run the threshold check again then a value of true
      * is returned. If the interface is not ready then a value of false is
      * returned.
+     *
+     * @return a boolean.
      */
     public boolean isReady() {
         boolean ready = false;
@@ -279,6 +291,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 
     /**
      * Returns the service's configured thresholding interval.
+     *
+     * @return a long.
      */
     public long getInterval() {
         return m_service.getInterval();
@@ -323,7 +337,6 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * execution. If the instance is ready for execution then it is started with
      * it's own thread context to execute the query. The last step in the method
      * before it exits is to reschedule the interface.
-     * 
      */
     public void run() {
         Category log = log();

@@ -41,9 +41,13 @@ import java.util.List;
 
 /**
  * A servlet that stores interface information
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ManagedInterface {
     /**
@@ -67,59 +71,79 @@ public class ManagedInterface {
     protected int nodeid;
 
     /**
+     * <p>Constructor for ManagedInterface.</p>
      */
     public ManagedInterface() {
         services = new ArrayList<ManagedService>();
     }
 
     /**
+     * <p>addService</p>
+     *
+     * @param newService a {@link org.opennms.web.admin.nodeManagement.ManagedService} object.
      */
     public void addService(ManagedService newService) {
         services.add(newService);
     }
 
     /**
-     * 
+     * <p>Setter for the field <code>address</code>.</p>
+     *
+     * @param newAddress a {@link java.lang.String} object.
      */
     public void setAddress(String newAddress) {
         address = newAddress;
     }
 
     /**
+     * <p>Getter for the field <code>address</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getAddress() {
         return address;
     }
 
     /**
+     * <p>Getter for the field <code>services</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<ManagedService> getServices() {
         return services;
     }
 
     /**
-     * 
+     * <p>getServiceCount</p>
+     *
+     * @return a int.
      */
     public int getServiceCount() {
         return services.size();
     }
 
     /**
-     * 
+     * <p>Setter for the field <code>nodeid</code>.</p>
+     *
+     * @param id a int.
      */
     public void setNodeid(int id) {
         nodeid = id;
     }
 
     /**
-     * 
+     * <p>Getter for the field <code>nodeid</code>.</p>
+     *
+     * @return a int.
      */
     public int getNodeid() {
         return nodeid;
     }
 
     /**
-     * 
+     * <p>Setter for the field <code>status</code>.</p>
+     *
+     * @param newStatus a {@link java.lang.String} object.
      */
     public void setStatus(String newStatus) {
         if (newStatus.equals("M")) {
@@ -132,7 +156,9 @@ public class ManagedInterface {
     }
 
     /**
-     * 
+     * <p>Getter for the field <code>status</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getStatus() {
         return status;

@@ -52,13 +52,16 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 
 /**
- * @author david
+ * <p>SnmpTrapNotificationStrategy class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 public class SnmpTrapNotificationStrategy implements NotificationStrategy {
     
     private List<Argument> m_arguments;
 
+    /** {@inheritDoc} */
     public int send (List<Argument> arguments) {
         
         m_arguments = arguments;
@@ -98,6 +101,11 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         return ThreadCategory.getInstance(this.getClass());
     }
 
+    /**
+     * <p>sendV1Trap</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void sendV1Trap() throws Exception {        
         SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
 
@@ -116,6 +124,11 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         pdu.send(agentAddress.getHostAddress(), getPort(), getCommunity());
     }
 
+    /**
+     * <p>sendV2Trap</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void sendV2Trap() throws Exception {
         
         SnmpObjId enterpriseId = SnmpObjId.get(getEnterpriseId());

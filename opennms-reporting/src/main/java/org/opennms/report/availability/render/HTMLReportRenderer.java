@@ -54,8 +54,9 @@ import org.springframework.core.io.Resource;
 /**
  * HTMLReportRenderer will transform its input.xml into html using the
  * supplied xslt resource.
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
 public class HTMLReportRenderer implements ReportRenderer {
 
@@ -69,6 +70,11 @@ public class HTMLReportRenderer implements ReportRenderer {
 
     private Resource m_xsltResource;
 
+    /**
+     * <p>render</p>
+     *
+     * @throws org.opennms.report.availability.render.ReportRenderException if any.
+     */
     public void render() throws ReportRenderException {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -108,26 +114,40 @@ public class HTMLReportRenderer implements ReportRenderer {
         }
     }
 
+    /** {@inheritDoc} */
     public void setXsltResource(Resource xsltResource) {
         this.m_xsltResource = xsltResource;
     }
 
+    /** {@inheritDoc} */
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
     
+    /**
+     * <p>getOutputFileName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOutputFileName() {
         return m_outputFileName;
     }
 
+    /** {@inheritDoc} */
     public void setInputFileName(String intputFileName) {
         this.m_inputFileName = intputFileName;
     }
     
+    /** {@inheritDoc} */
     public void setBaseDir(String baseDir){
         this.m_baseDir = baseDir;
     }
     
+    /**
+     * <p>getBaseDir</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBaseDir(){
        return m_baseDir;
     }

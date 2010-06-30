@@ -52,12 +52,18 @@ class AlarmView extends PageableTableView {
 		super(dashlet, 5, new String[] { "Node", "Description", "Count", "First Time", "Last Time" });
 	}
     
+    /**
+     * <p>setAlarms</p>
+     *
+     * @param alarms an array of {@link org.opennms.dashboard.client.Alarm} objects.
+     */
     public void setAlarms(Alarm[] alarms) {
         m_alarms = alarms;
         refresh();
         
     }
     
+    /** {@inheritDoc} */
     protected void setRow(FlexTable table, int row, int elementIndex) {
     	Alarm alarm = m_alarms[elementIndex];
         table.setText(row, 0, alarm.getNodeLabel());
@@ -70,10 +76,16 @@ class AlarmView extends PageableTableView {
         table.getRowFormatter().setStyleName(row, alarm.getSeverity());
     }
     
+    /**
+     * <p>getElementCount</p>
+     *
+     * @return a int.
+     */
     public int getElementCount() {
         return (m_alarms == null ? 0 : m_alarms.length);
     }
 
+	/** {@inheritDoc} */
 	protected void formatCells(FlexTable table, int row) {
 		super.formatCells(table, row);
 	    table.getCellFormatter().addStyleName(row, 1, "bright");

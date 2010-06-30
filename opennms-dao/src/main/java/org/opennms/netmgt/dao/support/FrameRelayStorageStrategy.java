@@ -34,11 +34,13 @@ import java.util.StringTokenizer;
 /**
  * This class use the new implementation of SnmpStorageStrategy extending the new
  * IndexStorageStrategy from opennms-services
- * 
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
 public class FrameRelayStorageStrategy extends IndexStorageStrategy {
 
+    /** {@inheritDoc} */
     @Override
     public String getResourceNameFromIndex(String resourceParent, String resourceIndex) {
         StringTokenizer indexes = new StringTokenizer(resourceIndex, ".");
@@ -48,6 +50,13 @@ public class FrameRelayStorageStrategy extends IndexStorageStrategy {
         return ifName + "." + dlci;
     }
        
+    /**
+     * <p>getInterfaceName</p>
+     *
+     * @param nodeId a {@link java.lang.String} object.
+     * @param ifIndex a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getInterfaceName(String nodeId, String ifIndex) {
        String label = m_storageStrategyService.getSnmpInterfaceLabel(new Integer(ifIndex));
        return label != null ? label : ifIndex;

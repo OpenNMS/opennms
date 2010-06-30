@@ -67,9 +67,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultGraphResultsService class.</p>
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultGraphResultsService implements GraphResultsService, InitializingBean {
 
@@ -85,11 +90,15 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
     private RelativeTimePeriod[] m_periods;
 
+    /**
+     * <p>Constructor for DefaultGraphResultsService.</p>
+     */
     public DefaultGraphResultsService() {
         // Should this be injected, as well?
         m_periods = RelativeTimePeriod.getDefaultPeriods();
     }
 
+    /** {@inheritDoc} */
     public GraphResults findResults(String[] resourceIds,
             String[] reports, long start, long end, String relativeTime) {
         if (resourceIds == null) {
@@ -120,6 +129,14 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         return graphResults;
     }
     
+    /**
+     * <p>createGraphResultSet</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     * @param reports an array of {@link java.lang.String} objects.
+     * @param graphResults a {@link org.opennms.web.graph.GraphResults} object.
+     * @return a {@link org.opennms.web.graph.GraphResults.GraphResultSet} object.
+     */
     public GraphResultSet createGraphResultSet(String resourceId, String[] reports, GraphResults graphResults) {
         OnmsResource resource = m_resourceDao.getResourceById(resourceId);
         GraphResultSet rs = graphResults.new GraphResultSet();
@@ -187,6 +204,9 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_nodeDao != null, "nodeDao property has not been set");
         Assert.state(m_resourceDao != null, "resourceDao property has not been set");
@@ -194,38 +214,83 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         Assert.state(m_rrdDao != null, "rrdDao property has not been set");
     }
 
+    /**
+     * <p>getResourceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
     }
 
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
 
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    /**
+     * <p>getGraphDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.GraphDao} object.
+     */
     public GraphDao getGraphDao() {
         return m_graphDao;
     }
 
+    /**
+     * <p>setGraphDao</p>
+     *
+     * @param graphDao a {@link org.opennms.netmgt.dao.GraphDao} object.
+     */
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
     }
 
+    /**
+     * <p>getRrdDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public RrdDao getRrdDao() {
         return m_rrdDao;
     }
 
+    /**
+     * <p>setRrdDao</p>
+     *
+     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
     }
     
+    /**
+     * <p>setEventProxy</p>
+     *
+     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }

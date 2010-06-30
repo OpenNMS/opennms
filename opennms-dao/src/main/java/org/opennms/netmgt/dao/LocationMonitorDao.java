@@ -43,38 +43,101 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 
 /**
- * 
+ * <p>LocationMonitorDao interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer> {
     
+    /**
+     * <p>findByLocationDefinition</p>
+     *
+     * @param locationDefinition a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsLocationMonitor> findByLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition);
     
+    /**
+     * <p>findAllMonitoringLocationDefinitions</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions();
     
+    /**
+     * <p>findMonitoringLocationDefinition</p>
+     *
+     * @param monitoringLocationDefinitionName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     */
     OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(String monitoringLocationDefinitionName);
     
+    /**
+     * <p>saveMonitoringLocationDefinition</p>
+     *
+     * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     */
     void saveMonitoringLocationDefinition(OnmsMonitoringLocationDefinition def);
     
+    /**
+     * <p>saveMonitoringLocationDefinitions</p>
+     *
+     * @param defs a {@link java.util.Collection} object.
+     */
     void saveMonitoringLocationDefinitions(Collection<OnmsMonitoringLocationDefinition> defs);
 
+    /**
+     * <p>saveStatusChange</p>
+     *
+     * @param status a {@link org.opennms.netmgt.model.OnmsLocationSpecificStatus} object.
+     */
     void saveStatusChange(OnmsLocationSpecificStatus status);
     
+    /**
+     * <p>getMostRecentStatusChange</p>
+     *
+     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsLocationSpecificStatus} object.
+     */
     OnmsLocationSpecificStatus getMostRecentStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monSvc);
 
+    /**
+     * <p>getAllMostRecentStatusChanges</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsLocationSpecificStatus> getAllMostRecentStatusChanges();
     
+    /**
+     * <p>getAllStatusChangesAt</p>
+     *
+     * @param timestamp a {@link java.util.Date} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(Date timestamp);
     
     /**
      * Returns all status changes since the date, <b>and</b> one previous
      * status change (so that status at the beginning of the period can be
      * determined).
+     *
+     * @param startDate a {@link java.util.Date} object.
+     * @param endDate a {@link java.util.Date} object.
+     * @return a {@link java.util.Collection} object.
      */
     Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(Date startDate, Date endDate);
 
+    /**
+     * <p>findStatusChangesForNodeForUniqueMonitorAndInterface</p>
+     *
+     * @param nodeId a int.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(int nodeId);
     
 }

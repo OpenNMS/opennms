@@ -43,17 +43,24 @@ import org.springframework.beans.factory.InitializingBean;
  * applicationContext-svclayer.xml in the web application.
  * In particular, this sets up system properties that are needed by Spring.
  * System properties are not set until afterPropertiesSet() is called.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class WebAppTestConfigBean extends DaoTestConfigBean implements InitializingBean {
     private String m_webAppLogsDirectory = "target/test/logs/webapp";
     private String m_layoutApplicationsVertically = "false";
 
+    /**
+     * <p>Constructor for WebAppTestConfigBean.</p>
+     */
     public WebAppTestConfigBean() {
         super();
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
         
@@ -61,18 +68,38 @@ public class WebAppTestConfigBean extends DaoTestConfigBean implements Initializ
         System.setProperty("opennms.webapplogs.dir", m_webAppLogsDirectory);
     }
 
+    /**
+     * <p>getLayoutApplicationsVertically</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLayoutApplicationsVertically() {
         return m_layoutApplicationsVertically;
     }
 
+    /**
+     * <p>setLayoutApplicationsVertically</p>
+     *
+     * @param layoutApplicationsVertically a {@link java.lang.String} object.
+     */
     public void setLayoutApplicationsVertically(String layoutApplicationsVertically) {
         m_layoutApplicationsVertically = layoutApplicationsVertically;
     }
 
+    /**
+     * <p>getWebAppLogsDirectory</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getWebAppLogsDirectory() {
         return m_webAppLogsDirectory;
     }
 
+    /**
+     * <p>setWebAppLogsDirectory</p>
+     *
+     * @param webAppLogsDirectory a {@link java.lang.String} object.
+     */
     public void setWebAppLogsDirectory(String webAppLogsDirectory) {
         m_webAppLogsDirectory = webAppLogsDirectory;
     }

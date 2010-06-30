@@ -42,8 +42,10 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * 
+ * <p>ThresholdResourceType class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class ThresholdResourceType {
 
@@ -51,22 +53,47 @@ public class ThresholdResourceType {
 
     private Map<String, Set<ThresholdEntity>> m_thresholdMap;
     
+    /**
+     * <p>Constructor for ThresholdResourceType.</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     */
     public ThresholdResourceType(String type) {
         m_dsType = type;
     }
 
+    /**
+     * <p>getDsType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDsType() {
         return m_dsType;
     }
     
+    /**
+     * <p>getThresholdMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Set<ThresholdEntity>> getThresholdMap() {
         return m_thresholdMap;
     }
     
+    /**
+     * <p>setThresholdMap</p>
+     *
+     * @param thresholdMap a {@link java.util.Map} object.
+     */
     public void setThresholdMap(Map<String, Set<ThresholdEntity>> thresholdMap) {
     	m_thresholdMap = thresholdMap;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }

@@ -31,20 +31,42 @@
 //
 package org.opennms.report.availability.render;
 
+/**
+ * <p>ReportRenderException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReportRenderException extends Exception {
 
     private static final long serialVersionUID = 3345608823051705228L;
 
+    /**
+     * <p>Constructor for ReportRenderException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public ReportRenderException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * <p>Constructor for ReportRenderException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 */
 	public ReportRenderException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * <p>Constructor for ReportRenderException.</p>
+	 *
+	 * @param cause a {@link java.lang.Throwable} object.
+	 */
 	public ReportRenderException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub

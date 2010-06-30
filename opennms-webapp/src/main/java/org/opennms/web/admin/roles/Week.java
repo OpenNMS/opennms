@@ -37,16 +37,35 @@ import java.util.Date;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.groups.Role;
 
+/**
+ * <p>Week class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class Week {
     
     private Calendar m_calendar;
     private Role m_role;
     private GroupManager m_groupManager;
 
+    /**
+     * <p>Constructor for Week.</p>
+     *
+     * @param weekBegin a {@link java.util.Calendar} object.
+     */
     public Week(Calendar weekBegin) {
         m_calendar = weekBegin;
     }
     
+    /**
+     * <p>Constructor for Week.</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @param role a {@link org.opennms.netmgt.config.groups.Role} object.
+     * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
+     */
     public Week(Date date, Role role, GroupManager groupManager) {
         m_role = role;
         m_groupManager = groupManager;
@@ -55,8 +74,18 @@ public class Week {
         m_calendar = calendar;
     }
 
+    /**
+     * <p>getWeekOfYear</p>
+     *
+     * @return a int.
+     */
     public int getWeekOfYear() { return m_calendar.get(Calendar.WEEK_OF_YEAR); }
     
+    /**
+     * <p>getDays</p>
+     *
+     * @return an array of {@link org.opennms.web.admin.roles.Day} objects.
+     */
     public Day[] getDays() {
         Calendar day = (Calendar)m_calendar.clone();
         Day days[] = new Day[7];

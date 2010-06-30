@@ -51,9 +51,13 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>TransactionAwareEventIpcManagerProxy class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, InitializingBean {
     
@@ -126,46 +130,80 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
     private EventIpcManager m_eventIpcManager;
     
     
+    /**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_eventIpcManager != null, "eventIpcManager property must be set");
     }
 
+    /** {@inheritDoc} */
     public void addEventListener(EventListener listener, Collection<String> ueis) {
         m_eventIpcManager.addEventListener(listener, ueis);
     }
 
+    /**
+     * <p>addEventListener</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param uei a {@link java.lang.String} object.
+     */
     public void addEventListener(EventListener listener, String uei) {
         m_eventIpcManager.addEventListener(listener, uei);
     }
 
+    /** {@inheritDoc} */
     public void addEventListener(EventListener listener) {
         m_eventIpcManager.addEventListener(listener);
     }
 
+    /** {@inheritDoc} */
     public void removeEventListener(EventListener listener, Collection<String> ueis) {
         m_eventIpcManager.removeEventListener(listener, ueis);
     }
 
+    /**
+     * <p>removeEventListener</p>
+     *
+     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param uei a {@link java.lang.String} object.
+     */
     public void removeEventListener(EventListener listener, String uei) {
         m_eventIpcManager.removeEventListener(listener, uei);
     }
 
+    /** {@inheritDoc} */
     public void removeEventListener(EventListener listener) {
         m_eventIpcManager.removeEventListener(listener);
     }
     
+    /** {@inheritDoc} */
     public void send(Event event) throws EventProxyException {
         sendNow(event);
     }
 
+    /**
+     * <p>send</p>
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public void send(Log eventLog) throws EventProxyException {
         sendNow(eventLog);
     }
 
+    /** {@inheritDoc} */
     public void sendNow(Event event) {
         Log eventLog = new Log();
         Events events = new Events();
@@ -174,6 +212,11 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
         sendNow(eventLog);
     }
 
+    /**
+     * <p>sendNow</p>
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
+     */
     public void sendNow(Log eventLog) {
         List<Log> pendingEvents = requestPendingEventsList();
         
@@ -182,6 +225,11 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
         releasePendingEventsList(pendingEvents);
     }
     
+    /**
+     * <p>requestPendingEventsList</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Log> requestPendingEventsList() {
         PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager.getResource(m_eventIpcManager);
         if (eventsHolder != null && (eventsHolder.hasPendingEvents() || eventsHolder.isSynchronizedWithTransaction())) {
@@ -214,6 +262,11 @@ public class TransactionAwareEventIpcManagerProxy implements EventIpcManager, In
         return pendingEvents;
     }
     
+    /**
+     * <p>releasePendingEventsList</p>
+     *
+     * @param pendingEvents a {@link java.util.List} object.
+     */
     public void releasePendingEventsList(List<Log> pendingEvents) {
         if (pendingEvents == null) {
             return;

@@ -36,12 +36,21 @@
 package org.opennms.netmgt.protocols;
 
 /**
- * 
+ * <p>InsufficientParametersException class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @version $Id: $
  */
 public class InsufficientParametersException extends Exception {
 
+    /**
+     * <p>Constructor for InsufficientParametersException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public InsufficientParametersException(String message) {
         super(message);
     }

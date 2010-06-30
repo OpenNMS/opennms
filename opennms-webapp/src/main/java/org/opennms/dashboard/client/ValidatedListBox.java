@@ -38,9 +38,14 @@ package org.opennms.dashboard.client;
 import com.google.gwt.user.client.ui.ListBox;
 
 /**
- * 
+ * <p>ValidatedListBox class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ValidatedListBox extends ListBox {
     /**
@@ -51,19 +56,39 @@ public class ValidatedListBox extends ListBox {
     private ValidatedListBox m_parent = null;
     private DirectionalChangeListener m_directionalChangeListener = null;
 
+    /**
+     * <p>Constructor for ValidatedListBox.</p>
+     *
+     * @param dashlet a {@link org.opennms.dashboard.client.Dashlet} object.
+     */
     public ValidatedListBox(Dashlet dashlet) {
         super();
         m_dashlet = dashlet;
     }
     
+    /**
+     * <p>setParent</p>
+     *
+     * @param parent a {@link org.opennms.dashboard.client.ValidatedListBox} object.
+     */
     public void setParent(ValidatedListBox parent) {
         m_parent = parent;
     }
     
+    /**
+     * <p>setDirectionalChangeListener</p>
+     *
+     * @param listener a {@link org.opennms.dashboard.client.DirectionalChangeListener} object.
+     */
     public void setDirectionalChangeListener(DirectionalChangeListener listener) {
         m_directionalChangeListener = listener;
     }
     
+    /**
+     * <p>getSelectedValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSelectedValue() {
         int index = getSelectedIndex();
         if (index < 0 || index >= getItemCount()) {
@@ -74,6 +99,12 @@ public class ValidatedListBox extends ListBox {
         return getValue(index);
     }
 
+    /**
+     * <p>getRelativeSelectedValue</p>
+     *
+     * @param offset a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getRelativeSelectedValue(int offset) {
         int relativeIndex = getSelectedIndex() + offset;
         if (relativeIndex < 0 || relativeIndex >= getItemCount()) {
@@ -83,6 +114,11 @@ public class ValidatedListBox extends ListBox {
         return getValue(relativeIndex);
     }
     
+    /**
+     * <p>adjustSelectedValue</p>
+     *
+     * @param direction a int.
+     */
     public void adjustSelectedValue(int direction) {
         int newPrefabIndex = getSelectedIndex() + direction;
         if (newPrefabIndex < 0) {

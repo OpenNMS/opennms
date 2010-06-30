@@ -43,15 +43,18 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
- * 
- * @author fastjay
+ * <p>CategoryStatusController class.</p>
  *
+ * @author fastjay
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class CategoryStatusController extends AbstractController {
 
 	DefaultCategoryStatusService m_categorystatusservice;
 	Collection <StatusSection>statusSections;
 	
+	/** {@inheritDoc} */
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest arg0,
 			HttpServletResponse arg1) throws Exception {
@@ -63,6 +66,11 @@ public class CategoryStatusController extends AbstractController {
 	}
 
 	
+	/**
+	 * <p>setCategoryStatusService</p>
+	 *
+	 * @param categoryStatusService a {@link org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService} object.
+	 */
 	public void setCategoryStatusService(DefaultCategoryStatusService categoryStatusService){
 		
 		m_categorystatusservice = categoryStatusService;

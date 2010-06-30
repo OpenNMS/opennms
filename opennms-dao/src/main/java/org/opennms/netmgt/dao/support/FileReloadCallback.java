@@ -40,11 +40,11 @@ import org.springframework.core.io.Resource;
 /**
  * Supporting interface for {@link FileReloadContainer} for performing a
  * reload callback.
- *  
- * @author dj@opennms.org
  *
+ * @author dj@opennms.org
  * @param <T>  the class of the inner object that is stored in the
  *  {@link FileReloadContainer}
+ * @version $Id: $
  */
 public interface FileReloadCallback<T> {
     /**
@@ -54,7 +54,7 @@ public interface FileReloadCallback<T> {
      * {@link FileReloadContainer#getObject()}
      * determines that the underlying file object has changed.
      * </p>
-     * 
+     *
      * <p>
      * Any unchecked exceptions that are thrown will be caught by the
      * container, logged, and rethrown with additional details including the
@@ -62,9 +62,9 @@ public interface FileReloadCallback<T> {
      * exceptions <b>will</b> propogate back up to the caller of getObject().
      * Unchecked exceptions should be caught if this is not desired.  Null can
      * be returned to indicated to the caller that the old object should
-     * continue to be used. 
+     * continue to be used.
      * </p>
-     * 
+     *
      * @param object object to be reloaded.  This is useful if the class
      *  receiving the callback handles many objects of the same type and
      *  needs to know any details about the object being reloaded.
@@ -72,6 +72,7 @@ public interface FileReloadCallback<T> {
      *  used for reloading
      * @return the new object, or null if the old object should continue
      *  being used
+     * @param <T> a T object.
      */
     public T reload(T object, Resource resource);
 }

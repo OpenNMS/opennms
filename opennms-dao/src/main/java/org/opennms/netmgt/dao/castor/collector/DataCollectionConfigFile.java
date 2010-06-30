@@ -54,14 +54,30 @@ import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 import org.opennms.netmgt.config.datacollection.Systems;
 
+/**
+ * <p>DataCollectionConfigFile class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DataCollectionConfigFile {
 	
 	File m_file;
 	
+	/**
+	 * <p>Constructor for DataCollectionConfigFile.</p>
+	 *
+	 * @param file a {@link java.io.File} object.
+	 */
 	public DataCollectionConfigFile(File file) {
 		m_file = file;
 	}
 	
+	/**
+	 * <p>visit</p>
+	 *
+	 * @param visitor a {@link org.opennms.netmgt.dao.castor.collector.DataCollectionVisitor} object.
+	 */
 	public void visit(DataCollectionVisitor visitor) {
         DatacollectionConfig dataCollectionConfig = getDataCollectionConfig();
         visitor.visitDataCollectionConfig(dataCollectionConfig);

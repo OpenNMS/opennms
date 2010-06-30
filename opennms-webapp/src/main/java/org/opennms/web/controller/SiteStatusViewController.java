@@ -50,9 +50,10 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * Controller servlet for presenting aggregate (propogated) status of nodes
  * using a list of aggregate status definitions (container object for lists
  * of categories).
- * 
- * @author david
  *
+ * @author david
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class SiteStatusViewController extends AbstractController {
 
@@ -60,15 +61,24 @@ public class SiteStatusViewController extends AbstractController {
     
     private static SiteStatusViewService m_service;
 
+    /**
+     * <p>Constructor for SiteStatusViewController.</p>
+     */
     public SiteStatusViewController() {
         setSupportedMethods(new String[] {METHOD_GET});
         setCacheSeconds(FIVE_MINUTES);
     }
     
+    /**
+     * <p>setService</p>
+     *
+     * @param svc a {@link org.opennms.web.svclayer.SiteStatusViewService} object.
+     */
     public void setService(SiteStatusViewService svc) {
         m_service = svc;
     }
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         ModelAndView mav = new ModelAndView("siteStatus");

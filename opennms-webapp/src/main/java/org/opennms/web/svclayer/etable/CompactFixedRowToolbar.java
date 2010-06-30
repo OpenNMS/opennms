@@ -77,15 +77,25 @@ import org.extremecomponents.table.view.html.ToolbarBuilder;
 import org.extremecomponents.util.HtmlBuilder;
 
 /**
- * 
+ * <p>CompactFixedRowToolbar class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author Jeff Johnston
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class CompactFixedRowToolbar extends CustomizableTwoColumnRowLayout {
+	/**
+	 * <p>Constructor for CompactFixedRowToolbar.</p>
+	 *
+	 * @param html a {@link org.extremecomponents.util.HtmlBuilder} object.
+	 * @param model a {@link org.extremecomponents.table.core.TableModel} object.
+	 */
 	public CompactFixedRowToolbar(HtmlBuilder html, TableModel model) {
 		super(html, model);
 	}
 
+    /** {@inheritDoc} */
     @Override
 	protected boolean showLayout(TableModel model) {
 		boolean showStatusBar = BuilderUtils.showStatusBar(model);
@@ -101,6 +111,7 @@ public class CompactFixedRowToolbar extends CustomizableTwoColumnRowLayout {
 		return true;
 	}
 
+    /** {@inheritDoc} */
     @Override
 	protected void columnLeft(HtmlBuilder html, TableModel model) {
 		boolean showStatusBar = BuilderUtils.showStatusBar(model);
@@ -115,6 +126,7 @@ public class CompactFixedRowToolbar extends CustomizableTwoColumnRowLayout {
 		html.tdEnd();
 	}
 
+    /** {@inheritDoc} */
     @Override
 	protected void columnRight(HtmlBuilder html, TableModel model) {
 		boolean filterable = BuilderUtils.filterable(model);
@@ -197,6 +209,7 @@ public class CompactFixedRowToolbar extends CustomizableTwoColumnRowLayout {
 		}
 	}
 
+    /** {@inheritDoc} */
     @Override
     protected HtmlBuilder startTable(HtmlBuilder html) {
         return html.table(2).styleClass("normal").style("width: 100%;   margin-bottom: 0px;").close();

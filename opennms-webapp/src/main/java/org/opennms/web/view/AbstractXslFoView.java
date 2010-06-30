@@ -47,8 +47,10 @@ import org.springframework.web.servlet.view.xslt.AbstractXsltView;
 /**
  * Convenient superclass for views rendered to PDF (or other FOP output
  * format) using XSLT-FO stylesheet.
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public abstract class AbstractXslFoView extends AbstractXsltView {
 
@@ -62,8 +64,13 @@ public abstract class AbstractXslFoView extends AbstractXsltView {
     /**
      * Perform the actual transformation, writing to the HTTP response via the
      * FOP Driver.
+     *
+     * @param model a {@link java.util.Map} object.
+     * @param source a {@link javax.xml.transform.Source} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @throws java.lang.Exception if any.
      */
-
     protected void doTransform(Map model, javax.xml.transform.Source source,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
@@ -82,7 +89,7 @@ public abstract class AbstractXslFoView extends AbstractXsltView {
     /**
      * Sets the renderer to use for this FOP transformation. See the available
      * types in org.apache.fop.apps.Driver. Defaults to Driver.RENDER_PDF
-     * 
+     *
      * @param renderer
      *            the type of renderer
      */

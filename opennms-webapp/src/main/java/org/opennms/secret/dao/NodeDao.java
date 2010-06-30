@@ -35,16 +35,50 @@ import java.util.Collection;
 
 import org.opennms.secret.model.Node;
 
+/**
+ * <p>NodeDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public interface NodeDao {
 	
+	/**
+	 * <p>initialize</p>
+	 *
+	 * @param obj a {@link java.lang.Object} object.
+	 */
 	public abstract void initialize(Object obj);
 	
+	/**
+	 * <p>getNode</p>
+	 *
+	 * @param id a {@link java.lang.Long} object.
+	 * @return a {@link org.opennms.secret.model.Node} object.
+	 */
 	public abstract Node getNode(Long id);
 	
+	/**
+	 * <p>createNode</p>
+	 *
+	 * @param node a {@link org.opennms.secret.model.Node} object.
+	 */
 	public abstract void createNode(Node node);
 
+    /**
+     * <p>getInterfaceCollection</p>
+     *
+     * @param node a {@link org.opennms.secret.model.Node} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection getInterfaceCollection(Node node);
 
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<Node> findAll();
 
 }

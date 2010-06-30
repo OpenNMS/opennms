@@ -62,10 +62,18 @@ import org.springframework.util.ClassUtils;
  * @author <A HREF="mike@opennms.org">Mike</A>
  * @author <A HREF="weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mike@opennms.org">Mike</A>
+ * @author <A HREF="weave@oculan.com">Weave</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mike@opennms.org">Mike</A>
+ * @author <A HREF="weave@oculan.com">Weave</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
  */
 abstract public class IPv4Monitor implements ServiceMonitor {
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * This method is called after the framework creates an instance of the
      * plug-in. The framework passes the object a proxy object that can be used
@@ -73,19 +81,15 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * Additionally, any parameters for the plug-in from the package definition
      * are passed using the parameters element.
      * </P>
-     * 
+     *
      * <P>
      * If there is a critical error, like missing service libraries, the the
      * montior may throw a ServiceMonitorException. If the plug-in throws an
      * exception then the plug-in will be disabled in the framework.
      * </P>
-     * @param parameters
-     *            Not currently used
-     * 
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
-     * 
      */
     public void initialize(Map parameters) {
     }
@@ -97,17 +101,16 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * resource and save any state information using the proxy object from the
      * initialization routine.
      * </P>
-     * 
+     *
      * <P>
      * Even if the plug-in throws a monitor exception, it will not prevent the
      * plug-in from being unloaded. The plug-in should not return until all of
      * its state information is saved. Once the plug-in returns from this call
      * its configuration proxy object is considered invalid.
      * </P>
-     * 
+     *
      * @exception java.lang.RuntimeException
      *                Thrown if an error occurs during deallocation.
-     * 
      */
     public void release() {
     }
@@ -119,21 +122,17 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * load and/or associate configuration information with the interface before
      * the framework begins scheduling the new device.
      * </P>
-     * 
+     *
      * <P>
      * Should a monitor exception be thrown during an initialization call then
      * the framework will log an error and discard the interface from
      * scheduling.
      * </P>
-     * 
+     *
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
-     * @exception
-     *                org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
-     *                Thrown if the passed interface is invalid for this
-     *                monitor.
-     * 
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
     public void initialize(MonitoredService svc) {
         NetworkInterface iface = svc.getNetInterface();
@@ -144,6 +143,8 @@ abstract public class IPv4Monitor implements ServiceMonitor {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * This method is the called whenever an interface is being removed from the
      * scheduler. For example, if a service is determined as being no longer
@@ -151,12 +152,11 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * associated with this device. This gives the implementor of the interface
      * the ability to serialize any data prior to the interface being discarded.
      * </P>
-     * 
+     *
      * <P>
      * If an exception is thrown during the release the exception will be
      * logged, but the interface will still be discarded for garbage collection.
      * </P>
-     * 
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
@@ -164,22 +164,51 @@ abstract public class IPv4Monitor implements ServiceMonitor {
     public void release(MonitoredService svc) {
     }
     
+    /** {@inheritDoc} */
     abstract public PollStatus poll(MonitoredService svc, Map parameters);
 
+	/**
+	 * <p>log</p>
+	 *
+	 * @return a {@link org.apache.log4j.Category} object.
+	 */
 	protected Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
+	/**
+	 * <p>logDown</p>
+	 *
+	 * @param level a {@link org.apache.log4j.Level} object.
+	 * @param reason a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+	 */
 	protected PollStatus logDown(Level level, String reason) {
 		return logDown(level, reason, null);
 	}
 
+	/**
+	 * <p>logDown</p>
+	 *
+	 * @param level a {@link org.apache.log4j.Level} object.
+	 * @param reason a {@link java.lang.String} object.
+	 * @param e a {@link java.lang.Throwable} object.
+	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+	 */
 	protected PollStatus logDown(Level level, String reason, Throwable e) {
 		String className = ClassUtils.getShortName(getClass());
 	    log().debug(className+": "+reason, e);
 	    return PollStatus.unavailable(reason);
 	}
 	
+	/**
+	 * <p>logUp</p>
+	 *
+	 * @param level a {@link org.apache.log4j.Level} object.
+	 * @param responseTime a double.
+	 * @param logMsg a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+	 */
 	protected PollStatus logUp(Level level, double responseTime, String logMsg) {
 		String className = ClassUtils.getShortName(getClass());
 	    log().debug(className+": "+logMsg);

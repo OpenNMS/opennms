@@ -37,9 +37,11 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 
 /**
+ * <p>SnmpInterfaceDao interface.</p>
+ *
  * @author Ted Kazmark
  * @author David Hustace
- *
+ * @version $Id: $
  */
 public interface SnmpInterfaceDao extends OnmsDao<OnmsSnmpInterface, Integer> {
     

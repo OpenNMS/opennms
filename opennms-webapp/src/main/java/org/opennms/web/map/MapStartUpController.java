@@ -56,8 +56,11 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
 /**
+ * <p>MapStartUpController class.</p>
+ *
  * @author mmigliore
- * 
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class MapStartUpController extends SimpleFormController {
 	Category log;
@@ -68,31 +71,62 @@ public class MapStartUpController extends SimpleFormController {
 	
 	private MapPropertiesFactory mapsPropertiesFactory;
 	
+	/**
+	 * <p>Getter for the field <code>mapsPropertiesFactory</code>.</p>
+	 *
+	 * @return a org$opennms$web$map$config$MapPropertiesFactory object.
+	 */
 	public MapPropertiesFactory getMapsPropertiesFactory() {
 		return mapsPropertiesFactory;
 	}
 
+	/**
+	 * <p>Setter for the field <code>mapsPropertiesFactory</code>.</p>
+	 *
+	 * @param mapsPropertiesFactory a org$opennms$web$map$config$MapPropertiesFactory object.
+	 */
 	public void setMapsPropertiesFactory(MapPropertiesFactory mapsPropertiesFactory) {
 		this.mapsPropertiesFactory = mapsPropertiesFactory;
 	}
 
+	/**
+	 * <p>Getter for the field <code>manager</code>.</p>
+	 *
+	 * @return a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public Manager getManager() {
 		return manager;
 	}
 
+	/**
+	 * <p>Setter for the field <code>manager</code>.</p>
+	 *
+	 * @param manager a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public void setManager(Manager manager) {
 		this.manager = manager;
 	}
 	
 
+	/**
+	 * <p>Getter for the field <code>mapsConstants</code>.</p>
+	 *
+	 * @return a {@link org.opennms.web.map.MapsConstants} object.
+	 */
 	public MapsConstants getMapsConstants() {
 		return mapsConstants;
 	}
 
+	/**
+	 * <p>Setter for the field <code>mapsConstants</code>.</p>
+	 *
+	 * @param mapsConstants a {@link org.opennms.web.map.MapsConstants} object.
+	 */
 	public void setMapsConstants(MapsConstants mapsConstants) {
 		this.mapsConstants = mapsConstants;
 	}
 
+	/** {@inheritDoc} */
 	protected ModelAndView onSubmit(Object arg0) throws Exception {
 		
 		MapStartUpConfig config = (MapStartUpConfig) arg0;
@@ -105,6 +139,7 @@ public class MapStartUpController extends SimpleFormController {
 		return new ModelAndView("/map/map",models);
 	}
 	
+	/** {@inheritDoc} */
 	public Object formBackingObject(HttpServletRequest request) throws Exception {
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());

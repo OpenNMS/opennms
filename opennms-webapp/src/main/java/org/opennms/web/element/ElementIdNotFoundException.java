@@ -40,6 +40,13 @@ package org.opennms.web.element;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+/**
+ * <p>ElementIdNotFoundException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ElementIdNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
@@ -55,6 +62,16 @@ public class ElementIdNotFoundException extends RuntimeException {
     
     protected String browseUri;
 
+    /**
+     * <p>Constructor for ElementIdNotFoundException.</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object.
+     * @param elemType a {@link java.lang.String} object.
+     * @param detailUri a {@link java.lang.String} object.
+     * @param detailParam a {@link java.lang.String} object.
+     * @param browseUri a {@link java.lang.String} object.
+     */
     public ElementIdNotFoundException(String msg, String id, String elemType, String detailUri, String detailParam, String browseUri) {
         this.message = msg;
         setBadId(id);
@@ -63,6 +80,14 @@ public class ElementIdNotFoundException extends RuntimeException {
         this.detailParam = detailParam;
     }
     
+    /**
+     * <p>Constructor for ElementIdNotFoundException.</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object.
+     * @param elemType a {@link java.lang.String} object.
+     * @param browseUri a {@link java.lang.String} object.
+     */
     public ElementIdNotFoundException(String msg, String id, String elemType, String browseUri) {
     	this.message = msg;
     	setBadId(id);
@@ -72,6 +97,13 @@ public class ElementIdNotFoundException extends RuntimeException {
     	this.detailParam = null;
     }
 
+    /**
+     * <p>Constructor for ElementIdNotFoundException.</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object.
+     * @param elemType a {@link java.lang.String} object.
+     */
     public ElementIdNotFoundException(String msg, String id, String elemType) {
     	this.message = msg;
     	setBadId(id);
@@ -90,18 +122,39 @@ public class ElementIdNotFoundException extends RuntimeException {
     }
 
     
+    /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMessage() {
         return this.message;
     }
 
+    /**
+     * <p>getBadID</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBadID() {
         return this.badId;
     }
 
+	/**
+	 * <p>Getter for the field <code>elemType</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getElemType() {
 		return getElemType(false);
 	}
 	
+	/**
+	 * <p>Getter for the field <code>elemType</code>.</p>
+	 *
+	 * @param initialCap a boolean.
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getElemType(boolean initialCap) {
 		String result;
 		if (initialCap) {
@@ -112,14 +165,29 @@ public class ElementIdNotFoundException extends RuntimeException {
 		return result;
 	}
 
+	/**
+	 * <p>Getter for the field <code>detailUri</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getDetailUri() {
 		return detailUri;
 	}
 
+	/**
+	 * <p>Getter for the field <code>detailParam</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getDetailParam() {
 		return detailParam;
 	}
 	
+	/**
+	 * <p>Getter for the field <code>browseUri</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getBrowseUri() {
 		return browseUri;
 	}

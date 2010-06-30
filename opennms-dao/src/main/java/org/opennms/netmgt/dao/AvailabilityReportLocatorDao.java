@@ -35,12 +35,35 @@ import java.util.List;
 
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
+/**
+ * <p>AvailabilityReportLocatorDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface AvailabilityReportLocatorDao extends OnmsDao<AvailabilityReportLocator, Integer>  {
 	
+	/**
+	 * <p>delete</p>
+	 *
+	 * @param id a int.
+	 */
 	public abstract void delete(int id);
 	
+	/**
+	 * <p>findByCategory</p>
+	 *
+	 * @param category a {@link java.lang.String} object.
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<AvailabilityReportLocator> findByCategory(String category);
 	
+	/**
+	 * <p>get</p>
+	 *
+	 * @param it a int.
+	 * @return a {@link org.opennms.netmgt.model.AvailabilityReportLocator} object.
+	 */
 	public AvailabilityReportLocator get(int it);
 	
 }

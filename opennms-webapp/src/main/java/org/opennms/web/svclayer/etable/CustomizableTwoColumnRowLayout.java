@@ -42,15 +42,24 @@ import org.extremecomponents.util.HtmlBuilder;
  * A stupidly simple class that extends TwoColumnRowLayout but allows us to
  * override the bit of code that creates the table.  We need to do this so we
  * can customize its CSS class.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see TwoColumnRowLayout
+ * @version $Id: $
+ * @since 1.6.12
  */
 public abstract class CustomizableTwoColumnRowLayout extends TwoColumnRowLayout {
+    /**
+     * <p>Constructor for CustomizableTwoColumnRowLayout.</p>
+     *
+     * @param html a {@link org.extremecomponents.util.HtmlBuilder} object.
+     * @param model a {@link org.extremecomponents.table.core.TableModel} object.
+     */
     public CustomizableTwoColumnRowLayout(HtmlBuilder html, TableModel model) {
         super(html, model);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void layout() {
         TableModel model = getTableModel();
@@ -84,6 +93,12 @@ public abstract class CustomizableTwoColumnRowLayout extends TwoColumnRowLayout 
         html.newline();
     }
 
+    /**
+     * <p>startTable</p>
+     *
+     * @param html a {@link org.extremecomponents.util.HtmlBuilder} object.
+     * @return a {@link org.extremecomponents.util.HtmlBuilder} object.
+     */
     protected HtmlBuilder startTable(HtmlBuilder html) {
         return html.table(2).border("0").cellPadding("0").cellSpacing("0").width("100%").close();
     }

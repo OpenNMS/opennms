@@ -48,9 +48,12 @@ import org.opennms.netmgt.xml.rtc.EuiLevel;
 
 /**
  * The class that marshalls the object to be sent to a PipedReader
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class PipedMarshaller {
     private EuiLevel m_objToMarshall;
@@ -91,10 +94,21 @@ public class PipedMarshaller {
         }
     }
 
+    /**
+     * <p>Constructor for PipedMarshaller.</p>
+     *
+     * @param toMarshall a {@link org.opennms.netmgt.xml.rtc.EuiLevel} object.
+     */
     public PipedMarshaller(EuiLevel toMarshall) {
         m_objToMarshall = toMarshall;
     }
 
+    /**
+     * <p>getReader</p>
+     *
+     * @return a {@link java.io.Reader} object.
+     * @throws java.io.IOException if any.
+     */
     public Reader getReader() throws IOException {
         Reader inr = null;
         try {

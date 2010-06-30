@@ -54,7 +54,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * at once. The number of SNMP packets should not exceed the number of interface +
  * 1, assuming no lost packets or error conditions occur.
  * </P>
- * 
+ *
  * <p>
  * <em>Addition by Jon Whetzel</em>
  * </p>
@@ -64,12 +64,18 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * necessary data. Otherwise, the method will resort to its previous
  * implementation with GETNEXT commands.
  * </p>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public final class IfTable extends SnmpTable<IfTableEntry> {
     
@@ -81,6 +87,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
+     *
      * @param address TODO
      * @see IfTableEntry
      */
@@ -88,15 +95,27 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         super(address, "ifTable", IfTableEntry.ms_elemList);
     }
     
+    /** {@inheritDoc} */
     protected IfTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IfTableEntry();
     }
 
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected final Category log() {
         return ThreadCategory.getInstance(IfTable.class);
     }
     
+    /**
+     * <p>getEntry</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link org.opennms.netmgt.capsd.snmp.IfTableEntry} object.
+     */
     public IfTableEntry getEntry(int ifIndex) {
         if (getEntries() == null) {
             return null;
@@ -112,6 +131,12 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return null;
     }
     
+    /**
+     * <p>getOperStatus</p>
+     *
+     * @param ifIndex a int.
+     * @return a int.
+     */
     public int getOperStatus(int ifIndex) {
         if (getEntries() == null)
             return -1;
@@ -130,6 +155,12 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return -1;
     }
         
+    /**
+     * <p>getAdminStatus</p>
+     *
+     * @param ifIndex a int.
+     * @return a int.
+     */
     public int getAdminStatus(int ifIndex) {
         if (getEntries() == null)
             return -1;
@@ -148,6 +179,12 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return -1;
     }
 
+    /**
+     * <p>getIfType</p>
+     *
+     * @param ifIndex a int.
+     * @return a int.
+     */
     public int getIfType(int ifIndex) {
         if (getEntries() == null)
             return -1;
@@ -166,6 +203,12 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return -1;
     }
 
+    /**
+     * <p>getIfDescr</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfDescr(final int ifIndex) {
         String ifDescr = null;   
         if (getEntries() != null) {
@@ -179,6 +222,12 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return ifDescr;
     }
 
+    /**
+     * <p>getIfSpeed</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getIfSpeed(final int ifIndex) {
         Long ifSpeed = null;   
         if (getEntries() != null) {
@@ -192,6 +241,12 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         return ifSpeed;
     }
     
+    /**
+     * <p>getPhysAddr</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getPhysAddr(final int ifIndex) {
         String physAddr = null;   
         if (getEntries() != null) {

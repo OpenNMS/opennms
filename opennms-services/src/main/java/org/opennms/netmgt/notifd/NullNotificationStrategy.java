@@ -47,13 +47,18 @@ import org.opennms.core.utils.ThreadCategory;
  * Implements NotificationStragey pattern used to send NULL notifications The
  * idea here is to allow for user assignment of a notice with in the UI with
  * out an email sent. Typically the email will be sent to a shared email box.
- * 
+ *
  * @author <A HREF="mailto:Jason@Czerak.com">Jason Czerak</A>
+ * @version $Id: $
  */
 public class NullNotificationStrategy implements NotificationStrategy {
+    /**
+     * <p>Constructor for NullNotificationStrategy.</p>
+     */
     public NullNotificationStrategy() {
     }
 
+    /** {@inheritDoc} */
     public int send(List<Argument> arguments) {
         log().debug("In the NullNotification class.");
         return 0;

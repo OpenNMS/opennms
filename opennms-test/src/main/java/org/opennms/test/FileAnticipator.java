@@ -52,39 +52,13 @@ import org.opennms.core.utils.ProcessExec;
 
 /**
  * File anticipator.
- * 
+ *
  * Example usage with late initialization:
  * <pre>
  * private FileAnticipator m_fileAnticipator;
  *
- * @Override
- * protected void setUp() throws Exception {
- *     super.setUp();
- *       
- *     // Don't initialize by default since not all tests need it.
- *     m_fileAnticipator = new FileAnticipator(false);
- *
- *     ...
- * }
- *    
- * @Override
- * protected void runTest() throws Throwable {
- *     super.runTest();
- *
- *     if (m_fileAnticipator.isInitialized()) {
- *         m_fileAnticipator.deleteExpected();
- *     }
- * }
- *  
- * @Override
- * protected void tearDown() throws Exception {
- *     m_fileAnticipator.tearDown();
- *     
- *     super.tearDown();
- * }
- * </pre>
- * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class FileAnticipator extends Assert {
     private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
@@ -94,21 +68,36 @@ public class FileAnticipator extends Assert {
     private File m_tempDir = null;
     private boolean m_initialized = false;
     
+    /**
+     * <p>Constructor for FileAnticipator.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public FileAnticipator() throws IOException {
         this(true);
     }
     
+    /**
+     * <p>Constructor for FileAnticipator.</p>
+     *
+     * @param initialize a boolean.
+     * @throws java.io.IOException if any.
+     */
     public FileAnticipator(boolean initialize) throws IOException {
         if (initialize) {
             initialize();
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void finalize() {
         tearDown();
     }
 
+    /**
+     * <p>tearDown</p>
+     */
     public void tearDown() {
         if (!isInitialized()) {
             return;
@@ -162,6 +151,11 @@ public class FileAnticipator extends Assert {
         }
     }
     
+    /**
+     * <p>initialize</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void initialize() throws IOException {
         if (m_initialized) {
             return;
@@ -180,6 +174,12 @@ public class FileAnticipator extends Assert {
         m_initialized = true;
     }
 
+    /**
+     * <p>generateRandomHexString</p>
+     *
+     * @param length a int.
+     * @return a {@link java.lang.String} object.
+     */
     protected static String generateRandomHexString(int length) {
         if (length < 0) {
             throw new IllegalArgumentException("length argument is " + length + " and cannot be below zero");
@@ -208,6 +208,11 @@ public class FileAnticipator extends Assert {
         return sb.toString();
     }
     
+    /**
+     * <p>getTempDir</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public File getTempDir() {
         assertInitialized();
         
@@ -220,6 +225,13 @@ public class FileAnticipator extends Assert {
         }
     }
 
+    /**
+     * <p>tempFile</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
     public File tempFile(String name) throws IOException {
         if (name == null) {
             throw new IllegalArgumentException("name argument cannot be null");
@@ -230,6 +242,14 @@ public class FileAnticipator extends Assert {
         return internalTempFile(m_tempDir, name);
     }
     
+    /**
+     * <p>tempFile</p>
+     *
+     * @param parent a {@link java.io.File} object.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
     public File tempFile(File parent, String name) throws IOException {
         if (parent == null) {
             throw new IllegalArgumentException("parent argument cannot be null");
@@ -243,6 +263,14 @@ public class FileAnticipator extends Assert {
         return internalTempFile(parent, name);
     }
     
+    /**
+     * <p>tempFile</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param contents a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
     public File tempFile(String name, String contents) throws IOException {
         if (name == null) {
             throw new IllegalArgumentException("name argument cannot be null");
@@ -256,6 +284,15 @@ public class FileAnticipator extends Assert {
         return internalTempFile(m_tempDir, name, contents);
     }
     
+    /**
+     * <p>tempFile</p>
+     *
+     * @param parent a {@link java.io.File} object.
+     * @param name a {@link java.lang.String} object.
+     * @param contents a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
     public File tempFile(File parent, String name, String contents) throws IOException {
         if (parent == null) {
             throw new IllegalArgumentException("parent argument cannot be null");
@@ -304,6 +341,13 @@ public class FileAnticipator extends Assert {
         return f;
     }
 
+    /**
+     * <p>tempDir</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
     public File tempDir(String name) throws IOException {
         if (name == null) {
             throw new IllegalArgumentException("name argument cannot be null");
@@ -312,6 +356,14 @@ public class FileAnticipator extends Assert {
         return tempDir(m_tempDir, name);
     }
     
+    /**
+     * <p>tempDir</p>
+     *
+     * @param parent a {@link java.io.File} object.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
     public File tempDir(File parent, String name) throws IOException {
         if (parent == null) {
             throw new IllegalArgumentException("parent argument cannot be null");
@@ -325,6 +377,12 @@ public class FileAnticipator extends Assert {
         return internalTempDir(parent, name);
     }
     
+    /**
+     * <p>expecting</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
     public File expecting(String name) {
         if (name == null) {
             throw new IllegalArgumentException("name argument cannot be null");
@@ -334,6 +392,13 @@ public class FileAnticipator extends Assert {
         return internalExpecting(m_tempDir, name);
     }
     
+    /**
+     * <p>expecting</p>
+     *
+     * @param parent a {@link java.io.File} object.
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
     public File expecting(File parent, String name) {
         if (parent == null) {
             throw new IllegalArgumentException("parent argument cannot be null");
@@ -387,6 +452,11 @@ public class FileAnticipator extends Assert {
         assertEquals("No expected files left over", m_expecting.size(), 0);
     }
 
+    /**
+     * <p>isInitialized</p>
+     *
+     * @return a boolean.
+     */
     public boolean isInitialized() {
         return m_initialized;
     }

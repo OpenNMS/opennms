@@ -30,15 +30,28 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>TmpService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
  */
 package org.opennms.secret.web;
-
 public class TmpService {
 	String m_name;
+	/**
+	 * <p>Constructor for TmpService.</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public TmpService(String name) {
 		m_name = name;
 	}
+	/**
+	 * <p>getServiceName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getServiceName() {
 		return m_name;
 	}

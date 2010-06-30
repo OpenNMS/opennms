@@ -150,7 +150,7 @@ final class DataSender implements Fiber {
 
     /**
      * The constructor for this object
-     * 
+     *
      * @param categories
      *            The category map.
      * @param numSenders
@@ -219,6 +219,8 @@ final class DataSender implements Fiber {
 
     /**
      * Returns a name/ID for this fiber
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "OpenNMS.RTC.DataSender";
@@ -226,6 +228,8 @@ final class DataSender implements Fiber {
 
     /**
      * Returns the current status
+     *
+     * @return a int.
      */
     public int getStatus() {
         return m_status;
@@ -235,6 +239,11 @@ final class DataSender implements Fiber {
      * Subscribe - Add the received URL and related info to the category->URLs map
      * so the sendData() can send out to appropriate URLs for each category.
      * Also send the latest info for the category
+     *
+     * @param url a {@link java.lang.String} object.
+     * @param catlabel a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param passwd a {@link java.lang.String} object.
      */
     public synchronized void subscribe(String url, String catlabel, String user, String passwd) {
         // send category data to the newly subscribed URL
@@ -322,6 +331,8 @@ final class DataSender implements Fiber {
     /**
      * Unsubscribe - remove the received URL and related info from the
      * category->URLs map so the sendData() will know when it sends data out
+     *
+     * @param urlStr a {@link java.lang.String} object.
      */
     public synchronized void unsubscribe(final String urlStr) {
         URL url = null;

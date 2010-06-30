@@ -55,7 +55,6 @@ import java.util.TimeZone;
  * @author Timothy Gerard Endres, <a href="mailto:time@ice.com">time@ice.com</a>.
  * @version $Revision: 1.1.1.1 $
  */
-
 public class SyslogTimeStamp extends Format {
 
     /**
@@ -63,22 +62,46 @@ public class SyslogTimeStamp extends Format {
      */
     private static final long serialVersionUID = 1L;
 
+    /** Constant <code>DEFAULT_GMT_TZID="GMT+00"</code> */
     static public final String DEFAULT_GMT_TZID = "GMT+00";
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.syslogd.SyslogTimeStamp} object.
+     */
     static public final SyslogTimeStamp getInstance() {
         return new SyslogTimeStamp();
     }
 
+    /**
+     * <p>Constructor for SyslogTimeStamp.</p>
+     */
     public SyslogTimeStamp() {
         super();
     }
 
+    /**
+     * <p>format</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     */
     public String format(Date date) throws IllegalArgumentException {
         TimeZone tz = TimeZone.getTimeZone(SyslogTimeStamp.DEFAULT_GMT_TZID);
 
         return formatTimeZone(date, tz);
     }
 
+    /**
+     * <p>formatTimeZone</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @param tz a {@link java.util.TimeZone} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     */
     public String formatTimeZone(Date date, TimeZone tz)
             throws IllegalArgumentException {
         SimpleDateFormat dateFormat;
@@ -96,6 +119,7 @@ public class SyslogTimeStamp extends Format {
         return month + " " + rest;
     }
 
+    /** {@inheritDoc} */
     public StringBuffer format(Object date, StringBuffer appendTo,
                                FieldPosition fieldPos) throws IllegalArgumentException {
         // UNDONE - handle fieldPos!
@@ -104,10 +128,18 @@ public class SyslogTimeStamp extends Format {
         return appendTo;
     }
 
+    /**
+     * <p>parse</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @return a {@link java.util.Date} object.
+     * @throws java.text.ParseException if any.
+     */
     public Date parse(String source) throws ParseException {
         return parseTimestamp(source);
     }
 
+    /** {@inheritDoc} */
     public Object parseObject(String source, ParsePosition pos) {
         Date stamp = null;
 
@@ -122,6 +154,13 @@ public class SyslogTimeStamp extends Format {
 
     // UNDONE - all the positions in ParseExceptions are zero.
 
+    /**
+     * <p>parseTimestamp</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @return a {@link java.util.Date} object.
+     * @throws java.text.ParseException if any.
+     */
     @SuppressWarnings({"UnnecessaryLocalVariable"})
     public Date parseTimestamp(String source) throws ParseException {
         String monName = null;

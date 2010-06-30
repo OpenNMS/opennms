@@ -61,32 +61,47 @@ import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles updating the status of the notifications
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ActionDiscoveryServlet extends HttpServlet {
  
     private static final long serialVersionUID = 2L;
     
+    /** Constant <code>log</code> */
     protected static Category log = ThreadCategory.getInstance("WEB");
     
     
+    /** Constant <code>addSpecificAction="AddSpecific"</code> */
     public static String addSpecificAction = "AddSpecific";
+    /** Constant <code>removeSpecificAction="RemoveSpecific"</code> */
     public static String removeSpecificAction = "RemoveSpecific";
     
+    /** Constant <code>addIncludeRangeAction="AddIncludeRange"</code> */
     public static String addIncludeRangeAction = "AddIncludeRange";
+    /** Constant <code>removeIncludeRangeAction="RemoveIncludeRange"</code> */
     public static String removeIncludeRangeAction = "RemoveIncludeRange";
 
+    /** Constant <code>addIncludeUrlAction="AddIncludeUrl"</code> */
     public static String addIncludeUrlAction = "AddIncludeUrl";
+    /** Constant <code>removeIncludeUrlAction="RemoveIncludeUrl"</code> */
     public static String removeIncludeUrlAction = "RemoveIncludeUrl";
 
+    /** Constant <code>addExcludeRangeAction="AddExcludeRange"</code> */
     public static String addExcludeRangeAction = "AddExcludeRange";
+    /** Constant <code>removeExcludeRangeAction="RemoveExcludeRange"</code> */
     public static String removeExcludeRangeAction = "RemoveExcludeRange";
     
+    /** Constant <code>saveAndRestartAction="SaveAndRestart"</code> */
     public static String saveAndRestartAction = "SaveAndRestart";
     
     
+	/** {@inheritDoc} */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	    log.info("Loading Discovery configuration.");
@@ -250,6 +265,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 	
+	/** {@inheritDoc} */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}

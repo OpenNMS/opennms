@@ -37,23 +37,74 @@ import java.util.Map;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.model.RrdRepository;
 
+/**
+ * <p>DataCollectionConfig interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface DataCollectionConfig {
     
+    /** Constant <code>NODE_ATTRIBUTES=-1</code> */
     public static final int NODE_ATTRIBUTES = -1;
+    /** Constant <code>ALL_IF_ATTRIBUTES=-2</code> */
     public static final int ALL_IF_ATTRIBUTES = -2;
 
+    /**
+     * <p>getSnmpStorageFlag</p>
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     String getSnmpStorageFlag(String collectionName);
 
+    /**
+     * <p>getMibObjectList</p>
+     *
+     * @param cName a {@link java.lang.String} object.
+     * @param aSysoid a {@link java.lang.String} object.
+     * @param anAddress a {@link java.lang.String} object.
+     * @param ifType a int.
+     * @return a {@link java.util.List} object.
+     */
     public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType);
 
+    /**
+     * <p>getConfiguredResourceTypes</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,ResourceType> getConfiguredResourceTypes();
     
+    /**
+     * <p>getRrdRepository</p>
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     */
     public RrdRepository getRrdRepository(String collectionName);
     
+    /**
+     * <p>getStep</p>
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a int.
+     */
     int getStep(String collectionName);
 
+    /**
+     * <p>getRRAList</p>
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     List<String> getRRAList(String collectionName);
 
+    /**
+     * <p>getRrdPath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     String getRrdPath();
 
 }

@@ -77,38 +77,53 @@ import org.opennms.web.Util;
 
 /**
  * A servlet that handles the data comming in from the notification wizard jsps.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NotificationWizardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     //SOURCE_PAGE_EVENTS_VIEW is more of a tag than an actual page - can't be used for navigation as is
+    /** Constant <code>SOURCE_PAGE_OTHER_WEBUI="eventslist"</code> */
     public static final String SOURCE_PAGE_OTHER_WEBUI = "eventslist";
     
+    /** Constant <code>SOURCE_PAGE_NOTICES="eventNotices.jsp"</code> */
     public static final String SOURCE_PAGE_NOTICES = "eventNotices.jsp";
     
+    /** Constant <code>SOURCE_PAGE_NOTIFS_FOR_UEI="notifsForUEI.jsp"</code> */
     public static final String SOURCE_PAGE_NOTIFS_FOR_UEI = "notifsForUEI.jsp";
 
+    /** Constant <code>SOURCE_PAGE_UEIS="chooseUeis.jsp"</code> */
     public static final String SOURCE_PAGE_UEIS = "chooseUeis.jsp";
 
+    /** Constant <code>SOURCE_PAGE_RULE="buildRule.jsp"</code> */
     public static final String SOURCE_PAGE_RULE = "buildRule.jsp";
 
+    /** Constant <code>SOURCE_PAGE_VALIDATE="validateRule.jsp"</code> */
     public static final String SOURCE_PAGE_VALIDATE = "validateRule.jsp";
 
+    /** Constant <code>SOURCE_PAGE_PATH_OUTAGE="buildPathOutage.jsp"</code> */
     public static final String SOURCE_PAGE_PATH_OUTAGE = "buildPathOutage.jsp";
 
+    /** Constant <code>SOURCE_PAGE_VALIDATE_PATH_OUTAGE="validatePathOutage.jsp"</code> */
     public static final String SOURCE_PAGE_VALIDATE_PATH_OUTAGE = "validatePathOutage.jsp";
 
+    /** Constant <code>SOURCE_PAGE_PATH="choosePath.jsp"</code> */
     public static final String SOURCE_PAGE_PATH = "choosePath.jsp";
 
+    /** Constant <code>SOURCE_PAGE_NOTIFICATION_INDEX="../index.jsp"</code> */
     public static final String SOURCE_PAGE_NOTIFICATION_INDEX = "../index.jsp";
 
     private static final String SQL_DELETE_CRITICAL_PATH = "DELETE FROM pathoutage WHERE nodeid=?";
 
     private static final String SQL_SET_CRITICAL_PATH = "INSERT INTO pathoutage (nodeid, criticalpathip, criticalpathservicename) VALUES (?, ?, ?)";
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String sourcePage = request.getParameter("sourcePage");
         HttpSession user = request.getSession(true);

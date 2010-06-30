@@ -38,6 +38,17 @@ import org.snmp4j.agent.ManagedObject;
 /*
  * @author Jeff Gehlbach <jeffg jeffg org>
  */
+/**
+ * <p>MockSnmpMOLoader interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface MockSnmpMOLoader {
+	/**
+	 * <p>loadMOs</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<ManagedObject> loadMOs();
 }

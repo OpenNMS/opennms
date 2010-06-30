@@ -40,20 +40,57 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 
 /**
+ * <p>MonitoredServiceDao interface.</p>
+ *
  * @author Craig Gallen
  * @author David Hustace
- *
+ * @version $Id: $
  */
 public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integer> {
 
+    /**
+     * <p>get</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param ifIndex a {@link java.lang.Integer} object.
+     * @param serviceId a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
     public abstract OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId);
 
+    /**
+     * <p>get</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
     public abstract OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName);
 
+    /**
+     * <p>findByType</p>
+     *
+     * @param typeName a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsMonitoredService> findByType(String typeName);
 
+    /**
+     * <p>findMatchingServices</p>
+     *
+     * @param serviceSelector a {@link org.opennms.netmgt.model.ServiceSelector} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector);
 
+    /**
+     * <p>findByApplication</p>
+     *
+     * @param application a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsMonitoredService> findByApplication(OnmsApplication application);
 
 }

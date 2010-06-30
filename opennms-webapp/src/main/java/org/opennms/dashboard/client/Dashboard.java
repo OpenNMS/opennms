@@ -47,9 +47,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * 
+ * <p>Dashboard class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class Dashboard implements EntryPoint, ErrorHandler {
     
@@ -61,6 +66,9 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     GraphDashlet m_graphs;
     private SurveillanceServiceAsync m_surveillanceService;
 
+    /**
+     * <p>onModuleLoad</p>
+     */
     public void onModuleLoad() {
 
         add(createSurveillanceDashlet(), "surveillanceView");
@@ -149,6 +157,12 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         return m_nodeStatus;
     }
     
+    /**
+     * <p>add</p>
+     *
+     * @param widget a {@link com.google.gwt.user.client.ui.Widget} object.
+     * @param elementId a {@link java.lang.String} object.
+     */
     public void add(Widget widget, String elementId) {
         RootPanel panel = RootPanel.get(elementId);
         if (panel == null) {
@@ -157,10 +171,16 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         panel.add(widget);
     }
 
+    /** {@inheritDoc} */
     public void error(Throwable e) {
         error(e.toString());
     }
     
+    /**
+     * <p>error</p>
+     *
+     * @param err a {@link java.lang.String} object.
+     */
     public void error(String err) {
         final DialogBox dialog = new DialogBox();
         dialog.setText("Error Occurred");

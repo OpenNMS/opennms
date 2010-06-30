@@ -35,19 +35,35 @@ import org.opennms.secret.model.OGPMember;
 import org.opennms.secret.service.MemberService;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * <p>AddMemberFormController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class AddMemberFormController extends SimpleFormController {
     
     MemberService m_memberService;
     
+    /**
+     * <p>Constructor for AddMemberFormController.</p>
+     */
     public AddMemberFormController() {
         setCommandClass(OGPMember.class);
     }
     
+    /** {@inheritDoc} */
     protected void doSubmitAction(Object formObject) throws Exception {
         OGPMember member = (OGPMember)formObject;
         m_memberService.createMember(member);
     }
 
+    /**
+     * <p>setMemberService</p>
+     *
+     * @param memberService a {@link org.opennms.secret.service.MemberService} object.
+     */
     public void setMemberService(MemberService memberService) {
         m_memberService = memberService;
     }

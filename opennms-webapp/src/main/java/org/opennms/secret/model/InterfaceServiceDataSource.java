@@ -32,19 +32,46 @@
 package org.opennms.secret.model;
 
 
+/**
+ * <p>InterfaceServiceDataSource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class InterfaceServiceDataSource {
     private InterfaceService m_interfaceService;
     private DataSource m_dataSource;
     
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link org.opennms.secret.model.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link org.opennms.secret.model.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
+    /**
+     * <p>getInterfaceService</p>
+     *
+     * @return a {@link org.opennms.secret.model.InterfaceService} object.
+     */
     public InterfaceService getInterfaceService() {
         return m_interfaceService;
     }
+    /**
+     * <p>setInterfaceService</p>
+     *
+     * @param interfaceService a {@link org.opennms.secret.model.InterfaceService} object.
+     */
     public void setInterfaceService(InterfaceService interfaceService) {
         m_interfaceService = interfaceService;
     }

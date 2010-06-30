@@ -40,6 +40,12 @@ import java.util.Date;
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
+/**
+ * <p>AvailabilityReportSchedulerService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AvailabilityReportSchedulerService implements
         ReportSchedulerService {
 
@@ -47,11 +53,17 @@ public class AvailabilityReportSchedulerService implements
 
     private AvailabilityReportLocatorDao m_availabilityReportLocatorDao;
 
+    /**
+     * <p>setAvailabilityReportLocatorDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.AvailabilityReportLocatorDao} object.
+     */
     public void setAvailabilityReportLocatorDao(
             AvailabilityReportLocatorDao dao) {
         m_availabilityReportLocatorDao = dao;
     }
 
+    /** {@inheritDoc} */
     public void Schedule(String category, String type, String format,
             Date date) {
 

@@ -39,13 +39,27 @@ import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
 
+/**
+ * <p>LostServiceDateBeforeFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class LostServiceDateBeforeFilter extends Object implements Filter {
+    /** Constant <code>TYPE="lostbefore"</code> */
     public static final String TYPE = "lostbefore";
 
+    /** Constant <code>DATE_FORMAT</code> */
     protected static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
 
     protected Date date;
 
+    /**
+     * <p>Constructor for LostServiceDateBeforeFilter.</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     */
     public LostServiceDateBeforeFilter(Date date) {
         if (date == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -54,39 +68,76 @@ public class LostServiceDateBeforeFilter extends Object implements Filter {
         this.date = date;
     }
 
+    /**
+     * <p>Constructor for LostServiceDateBeforeFilter.</p>
+     *
+     * @param epochTime a long.
+     */
     public LostServiceDateBeforeFilter(long epochTime) {
         this(new Date(epochTime));
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" ifLostService < to_timestamp(\'" + this.date.toString() + "\'," + EventConstants.POSTGRES_DATE_FORMAT + ")");
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" ifLostService < ?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setTimestamp(parameterIndex, new java.sql.Timestamp(this.date.getTime()));
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.date.getTime());
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("lost service date before \"" + DATE_FORMAT.format(this.date) + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<Lost Service Date Before Filter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>Getter for the field <code>date</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getDate() {
         return (this.date);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

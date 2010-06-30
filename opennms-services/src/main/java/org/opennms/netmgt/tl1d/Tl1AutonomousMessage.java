@@ -41,48 +41,55 @@ import java.util.Date;
  * This class is used to represent a TL1 Autonomous Message as defined below and scraped from
  * WikiPedia.
  *
-<table border="1" cellspacing="0">
-<tr>
-<td colspan="8" align="center"><b>TL1 autonomous message</b></td>
-</tr>
-<tr>
-<td colspan="3" align="center">Auto Header</td>
-<td colspan="3" align="center">Auto Id</td>
-<td colspan="1" align="center">Auto block</td>
-<td colspan="1" align="center">Terminators</td>
-</tr>
-<tr>
-<td>SID</td>
-<td>Date</td>
-<td>Time</td>
-<td>Alarm code</td>
-<td>ATAG</td>
-<td>Verb</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><i>MyNE</i></td>
-<td><i>04-08-14</i></td>
-<td><i>09:12:04</i></td>
-<td><i>A</i></td>
-<td><i>101</i></td>
-<td><i>REPT EVT SESSION</i></td>
-<td></td>
-<td></td>
-</tr>
-</table>
-
+ *<table border="1" cellspacing="0">
+ *<tr>
+ *<td colspan="8" align="center"><b>TL1 autonomous message</b></td>
+ *</tr>
+ *<tr>
+ *<td colspan="3" align="center">Auto Header</td>
+ *<td colspan="3" align="center">Auto Id</td>
+ *<td colspan="1" align="center">Auto block</td>
+ *<td colspan="1" align="center">Terminators</td>
+ *</tr>
+ *<tr>
+ *<td>SID</td>
+ *<td>Date</td>
+ *<td>Time</td>
+ *<td>Alarm code</td>
+ *<td>ATAG</td>
+ *<td>Verb</td>
+ *<td></td>
+ *<td></td>
+ *</tr>
+ *<tr>
+ *<td><i>MyNE</i></td>
+ *<td><i>04-08-14</i></td>
+ *<td><i>09:12:04</i></td>
+ *<td><i>A</i></td>
+ *<td><i>101</i></td>
+ *<td><i>REPT EVT SESSION</i></td>
+ *<td></td>
+ *<td></td>
+ *</tr>
+ *</table>
+ *
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @version $Id: $
  */
 public class Tl1AutonomousMessage extends Tl1Message {
     
+    /** Constant <code>UEI="uei.opennms.org/api/tl1d/message/autono"{trunked}</code> */
     public static final String UEI = "uei.opennms.org/api/tl1d/message/autonomous";
     private AutoHeader m_autoHeader;
     private AutoId m_autoId;
     private AutoBlock m_autoBlock;
     private String m_terminator;
     
+    /**
+     * <p>Constructor for Tl1AutonomousMessage.</p>
+     *
+     * @param rawMessage a {@link java.lang.String} object.
+     */
     public Tl1AutonomousMessage(String rawMessage) {
         super.setRawMessage(rawMessage);
         m_autoHeader = new AutoHeader();
@@ -237,34 +244,74 @@ public class Tl1AutonomousMessage extends Tl1Message {
         }
     }
 
+    /**
+     * <p>getHeader</p>
+     *
+     * @return a {@link org.opennms.netmgt.tl1d.Tl1AutonomousMessage.AutoHeader} object.
+     */
     public AutoHeader getHeader() {
         return m_autoHeader;
     }
 
+    /**
+     * <p>setHeader</p>
+     *
+     * @param header a {@link org.opennms.netmgt.tl1d.Tl1AutonomousMessage.AutoHeader} object.
+     */
     public void setHeader(AutoHeader header) {
         m_autoHeader = header;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link org.opennms.netmgt.tl1d.Tl1AutonomousMessage.AutoId} object.
+     */
     public AutoId getId() {
         return m_autoId;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link org.opennms.netmgt.tl1d.Tl1AutonomousMessage.AutoId} object.
+     */
     public void setId(AutoId id) {
         m_autoId = id;
     }
 
+    /**
+     * <p>getAutoBlock</p>
+     *
+     * @return a {@link org.opennms.netmgt.tl1d.Tl1AutonomousMessage.AutoBlock} object.
+     */
     public AutoBlock getAutoBlock() {
         return m_autoBlock;
     }
 
+    /**
+     * <p>setAutoBlock</p>
+     *
+     * @param block a {@link org.opennms.netmgt.tl1d.Tl1AutonomousMessage.AutoBlock} object.
+     */
     public void setAutoBlock(AutoBlock block) {
         m_autoBlock = block;
     }
 
+    /**
+     * <p>getTerminator</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTerminator() {
         return m_terminator;
     }
     
+    /**
+     * <p>setTerminator</p>
+     *
+     * @param terminator a {@link java.lang.String} object.
+     */
     public void setTerminator(String terminator) {
         m_terminator = terminator;
     }

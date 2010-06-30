@@ -34,12 +34,17 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
+ * <p>HostFileSystemStorageStrategy class.</p>
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
 public class HostFileSystemStorageStrategy extends IndexStorageStrategy {
 
+    /** Constant <code>HR_STORAGE_DESC=".1.3.6.1.2.1.25.2.3.1.3"</code> */
     public static String HR_STORAGE_DESC = ".1.3.6.1.2.1.25.2.3.1.3";
 
+    /** {@inheritDoc} */
     @Override
     public String getResourceNameFromIndex(String resourceParent, String resourceIndex) {
         SnmpObjId oid = SnmpObjId.get(HR_STORAGE_DESC + "." + resourceIndex);

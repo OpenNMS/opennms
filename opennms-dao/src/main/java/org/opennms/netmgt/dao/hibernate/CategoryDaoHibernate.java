@@ -50,17 +50,33 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+/**
+ * <p>CategoryDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CategoryDaoHibernate extends AbstractDaoHibernate<OnmsCategory, Integer> implements
 CategoryDao {
 
+    /**
+     * <p>Constructor for CategoryDaoHibernate.</p>
+     */
     public CategoryDaoHibernate() {
         super(OnmsCategory.class);
     }
 
+    /** {@inheritDoc} */
     public OnmsCategory findByName(String name) {
         return findUnique("from OnmsCategory as category where category.name = ?", name);
     }
 
+    /**
+     * <p>getCriterionForCategorySetsUnion</p>
+     *
+     * @param categories an array of {@link java.lang.String} objects.
+     * @return a {@link java.util.List} object.
+     */
     public List<Criterion> getCriterionForCategorySetsUnion(String[]... categories) {
         Assert.notNull(categories, "categories argument must not be null");
         Assert.isTrue(categories.length >= 1, "categories must have at least one set of categories");

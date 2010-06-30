@@ -40,9 +40,14 @@ import java.util.Date;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * 
+ * <p>Alarm class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class Alarm implements IsSerializable {
     
@@ -57,10 +62,24 @@ public class Alarm implements IsSerializable {
     private Date m_firstEventTime;
     private Date m_lastEventTime;
     
+    /**
+     * <p>Constructor for Alarm.</p>
+     */
     public Alarm() {
         
     }
     
+    /**
+     * <p>Constructor for Alarm.</p>
+     *
+     * @param severity a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param logMsg a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param count a int.
+     * @param firstEventTime a {@link java.util.Date} object.
+     * @param lastEventTime a {@link java.util.Date} object.
+     */
     public Alarm(String severity, String nodeLabel, String logMsg, String description, int count, Date firstEventTime, Date lastEventTime) {
         m_severity = severity;
         m_nodeLabel = nodeLabel;
@@ -70,69 +89,169 @@ public class Alarm implements IsSerializable {
         m_firstEventTime = firstEventTime;
         m_lastEventTime = lastEventTime;
     }
+    /**
+     * <p>getCount</p>
+     *
+     * @return a int.
+     */
     public int getCount() {
         return m_count;
     }
+    /**
+     * <p>setCount</p>
+     *
+     * @param count a int.
+     */
     public void setCount(int count) {
         m_count = count;
     }
+    /**
+     * <p>getDescrption</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescrption() {
         return m_descrption;
     }
+    /**
+     * <p>setDescrption</p>
+     *
+     * @param descrption a {@link java.lang.String} object.
+     */
     public void setDescrption(String descrption) {
         m_descrption = descrption;
     }
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return m_ipAddress;
     }
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipAddress) {
         m_ipAddress = ipAddress;
     }
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
+    /**
+     * <p>setNodeId</p>
+     *
+     * @param nodeId a int.
+     */
     public void setNodeId(int nodeId) {
         m_nodeId = nodeId;
     }
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return m_nodeLabel;
     }
+    /**
+     * <p>setNodeLabel</p>
+     *
+     * @param nodeLabel a {@link java.lang.String} object.
+     */
     public void setNodeLabel(String nodeLabel) {
         m_nodeLabel = nodeLabel;
     }
+    /**
+     * <p>getSeverity</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSeverity() {
         return m_severity;
     }
+    /**
+     * <p>setSeverity</p>
+     *
+     * @param severity a {@link java.lang.String} object.
+     */
     public void setSeverity(String severity) {
         m_severity = severity;
     }
+    /**
+     * <p>getSvcName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSvcName() {
         return m_svcName;
     }
+    /**
+     * <p>setSvcName</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     */
     public void setSvcName(String svcName) {
         m_svcName = svcName;
     }
 
+    /**
+     * <p>getFirstEventTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getFirstEventTime() {
         return m_firstEventTime;
     }
 
+    /**
+     * <p>setFirstEventTime</p>
+     *
+     * @param firstEventTime a {@link java.util.Date} object.
+     */
     public void setFirstEventTime(Date firstEventTime) {
         m_firstEventTime = firstEventTime;
     }
 
+    /**
+     * <p>getLastEventTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getLastEventTime() {
         return m_lastEventTime;
     }
 
+    /**
+     * <p>setLastEventTime</p>
+     *
+     * @param lastEventTime a {@link java.util.Date} object.
+     */
     public void setLastEventTime(Date lastEventTime) {
         m_lastEventTime = lastEventTime;
     }
 
+    /**
+     * <p>getLogMsg</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLogMsg() {
         return m_logMsg;
     }
 
+    /**
+     * <p>setLogMsg</p>
+     *
+     * @param logMsg a {@link java.lang.String} object.
+     */
     public void setLogMsg(String logMsg) {
         m_logMsg = logMsg;
     }

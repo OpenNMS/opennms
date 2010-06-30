@@ -57,6 +57,9 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * remote agent with {@link #createCollectionSet} and to provide
  * data to CollectionSet and other classes that are created during
  * collection.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class OnmsSnmpCollection {
 
@@ -70,10 +73,23 @@ public class OnmsSnmpCollection {
     private List<SnmpAttributeType> m_indexedAttributeTypes;
     private List<SnmpAttributeType> m_aliasAttributeTypes;
 
+    /**
+     * <p>Constructor for OnmsSnmpCollection.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     */
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params) {
         this(agent, params, null);
     }
 
+    /**
+     * <p>Constructor for OnmsSnmpCollection.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param config a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     */
     public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params, DataCollectionConfig config) {
         setDataCollectionConfig(config);
 
@@ -84,74 +100,179 @@ public class OnmsSnmpCollection {
         }
     }
 
+    /**
+     * <p>getServiceParameters</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     */
     public ServiceParameters getServiceParameters() {
         return m_params;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_params.getCollectionName();
     }
 
+    /**
+     * <p>getSnmpPort</p>
+     *
+     * @param current a int.
+     * @return a int.
+     */
     public int getSnmpPort(int current) {
         return m_params.getSnmpPort(current);
     }
 
+    /**
+     * <p>getSnmpRetries</p>
+     *
+     * @param current a int.
+     * @return a int.
+     */
     public int getSnmpRetries(int current) {
         return m_params.getSnmpRetries(current);
     }
 
+    /**
+     * <p>getSnmpTimeout</p>
+     *
+     * @param current a int.
+     * @return a int.
+     */
     public int getSnmpTimeout(int current) {
         return m_params.getSnmpTimeout(current);
     }
 
+    /**
+     * <p>getSnmpReadCommunity</p>
+     *
+     * @param current a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpReadCommunity(String current) {
         return m_params.getSnmpReadCommunity(current);
     }
 
+    /**
+     * <p>getSnmpWriteCommunity</p>
+     *
+     * @param current a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpWriteCommunity(String current) {
         return m_params.getSnmpWriteCommunity(current);
     }
 
+    /**
+     * <p>getSnmpProxyFor</p>
+     *
+     * @param current a {@link java.net.InetAddress} object.
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getSnmpProxyFor(InetAddress current) {
         return m_params.getSnmpProxyFor(current);
     }
 
+    /**
+     * <p>getSnmpVersion</p>
+     *
+     * @param current a int.
+     * @return a int.
+     */
     public int getSnmpVersion(int current) {
         return m_params.getSnmpVersion(current);
     }
 
+    /**
+     * <p>getSnmpMaxVarsPerPdu</p>
+     *
+     * @param current a int.
+     * @return a int.
+     */
     public int getSnmpMaxVarsPerPdu(int current) {
         return m_params.getSnmpMaxVarsPerPdu(current);
     }
 
+    /**
+     * <p>getSnmpMaxRepetitions</p>
+     *
+     * @param current a int.
+     * @return a int.
+     */
     public int getSnmpMaxRepetitions(int current) {
         return m_params.getSnmpMaxRepetitions(current);
     }
 
+    /**
+     * <p>getSnmpMaxRequestSize</p>
+     *
+     * @param current a int.
+     * @return a int.
+     */
     public int getSnmpMaxRequestSize(int current) {
         return m_params.getSnmpMaxRequestSize(current);
     }
 
+    /**
+     * <p>getSnmpSecurityName</p>
+     *
+     * @param current a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpSecurityName(String current) {
         return m_params.getSnmpSecurityName(current);
     }
 
+    /**
+     * <p>getSnmpAuthPassPhrase</p>
+     *
+     * @param current a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpAuthPassPhrase(String current) {
         return m_params.getSnmpAuthPassPhrase(current);
     }
 
+    /**
+     * <p>getSnmpAuthProtocol</p>
+     *
+     * @param current a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpAuthProtocol(String current) {
         return m_params.getSnmpAuthProtocol(current);
     }
 
+    /**
+     * <p>getSnmpPrivPassPhrase</p>
+     *
+     * @param current a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpPrivPassPhrase(String current) {
         return m_params.getSnmpPrivPassPhrase(current);
     }
 
+    /**
+     * <p>getSnmpPrivProtocol</p>
+     *
+     * @param current a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSnmpPrivProtocol(String current) {
         return m_params.getSnmpPrivProtocol(current);
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -163,10 +284,20 @@ public class OnmsSnmpCollection {
         return m_dataCollectionConfig;
     }
 
+    /**
+     * <p>setDataCollectionConfig</p>
+     *
+     * @param config a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     */
     public void setDataCollectionConfig(DataCollectionConfig config) {
         m_dataCollectionConfig = config;
     }
 
+    /**
+     * <p>getStorageFlag</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStorageFlag() {
         String collectionName = getName();
         String storageFlag = getDataCollectionConfig().getSnmpStorageFlag(collectionName);
@@ -179,10 +310,21 @@ public class OnmsSnmpCollection {
         return storageFlag;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getName();
     }
 
+    /**
+     * <p>createCollectionSet</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collectd.SnmpCollectionSet} object.
+     */
     public SnmpCollectionSet createCollectionSet(CollectionAgent agent) {
         return new SnmpCollectionSet(agent, this);
     }
@@ -194,6 +336,13 @@ public class OnmsSnmpCollection {
         return m_indexedAttributeTypes;
     }
     
+    /**
+     * <p>getIndexedAttributeTypesForResourceType</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<SnmpAttributeType> getIndexedAttributeTypesForResourceType(CollectionAgent agent, ResourceType resourceType) {
         LinkedList<SnmpAttributeType> resAttrTypes = new LinkedList<SnmpAttributeType>();
         for(SnmpAttributeType attrType : getIndexedAttributeTypes(agent)) {
@@ -204,6 +353,12 @@ public class OnmsSnmpCollection {
         return resAttrTypes;
     }
 
+    /**
+     * <p>getNodeAttributeTypes</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<SnmpAttributeType> getNodeAttributeTypes(CollectionAgent agent) {
         if (m_nodeAttributeTypes == null) {
             m_nodeAttributeTypes = loadAttributeTypes(agent, DataCollectionConfig.NODE_ATTRIBUTES);
@@ -211,6 +366,13 @@ public class OnmsSnmpCollection {
         return m_nodeAttributeTypes;
     }
 
+    /**
+     * <p>loadAttributeTypes</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param ifType a int.
+     * @return a {@link java.util.List} object.
+     */
     public List<SnmpAttributeType> loadAttributeTypes(CollectionAgent agent, int ifType) {
         String sysObjectId = agent.getSysObjectId();
         String hostAddress = agent.getHostAddress();
@@ -239,6 +401,13 @@ public class OnmsSnmpCollection {
         return groupType;
     }
 
+    /**
+     * <p>getResourceType</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param instanceName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     */
     public ResourceType getResourceType(CollectionAgent agent, String instanceName) {
         if (MibObject.INSTANCE_IFINDEX.equals(instanceName)) {
             return getIfResourceType(agent);
@@ -249,12 +418,24 @@ public class OnmsSnmpCollection {
         }
     }
 
+    /**
+     * <p>getNodeResourceType</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collectd.NodeResourceType} object.
+     */
     public NodeResourceType getNodeResourceType(CollectionAgent agent) {
         if (m_nodeResourceType == null)
             m_nodeResourceType = new NodeResourceType(agent, this);
         return m_nodeResourceType;
     }
 
+    /**
+     * <p>getIfResourceType</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collectd.IfResourceType} object.
+     */
     public IfResourceType getIfResourceType(CollectionAgent agent) {
         if (m_ifResourceType == null) {
             m_ifResourceType = new IfResourceType(agent, this);
@@ -262,6 +443,12 @@ public class OnmsSnmpCollection {
         return m_ifResourceType;
     }
 
+    /**
+     * <p>getIfAliasResourceType</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link org.opennms.netmgt.collectd.IfAliasResourceType} object.
+     */
     public IfAliasResourceType getIfAliasResourceType(CollectionAgent agent) {
         if (m_ifAliasResourceType == null) {
             m_ifAliasResourceType = new IfAliasResourceType(agent, this, m_params, getIfResourceType(agent));            
@@ -270,6 +457,12 @@ public class OnmsSnmpCollection {
 
     }
     
+    /**
+     * <p>getGenericIndexResourceTypes</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<ResourceType> getGenericIndexResourceTypes(CollectionAgent agent) {
         return Collections.unmodifiableCollection(getGenericIndexResourceTypeMap(agent).values());
     }
@@ -300,6 +493,12 @@ public class OnmsSnmpCollection {
         return set;
     }
 
+    /**
+     * <p>getAttributeTypes</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<SnmpAttributeType> getAttributeTypes(CollectionAgent agent) {
         HashSet<SnmpAttributeType> set = new HashSet<SnmpAttributeType>();
         for (ResourceType resourceType : getResourceTypes(agent)) {
@@ -309,6 +508,12 @@ public class OnmsSnmpCollection {
 
     }
 
+    /**
+     * <p>getResources</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<? extends CollectionResource> getResources(CollectionAgent agent) {
         LinkedList<CollectionResource> resources = new LinkedList<CollectionResource>();
         for (ResourceType resourceType : getResourceTypes(agent)) {
@@ -328,6 +533,12 @@ public class OnmsSnmpCollection {
         return CollectionType.NO_COLLECT;
     }
 
+    /**
+     * <p>loadAliasAttributeTypes</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<SnmpAttributeType> loadAliasAttributeTypes(CollectionAgent agent) {
         IfAliasResourceType resType = getIfAliasResourceType(agent);
         MibObject ifAliasMibObject = new MibObject();
@@ -345,6 +556,12 @@ public class OnmsSnmpCollection {
         return Collections.singletonList(type);
     }
 
+    /**
+     * <p>getAliasAttributeTypes</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<SnmpAttributeType> getAliasAttributeTypes(CollectionAgent agent) {
         if (m_aliasAttributeTypes == null) {
             m_aliasAttributeTypes = loadAliasAttributeTypes(agent);

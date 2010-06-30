@@ -42,6 +42,12 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>TrapIdentity class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class TrapIdentity {
     private int m_generic;
     private int m_specific;
@@ -74,6 +80,10 @@ public class TrapIdentity {
     
     /**
      * Create the standard traps list - used in v2 processing
+     *
+     * @param snmpTrapOid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param lastVarBindOid a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param lastVarBindValue a {@link org.opennms.netmgt.snmp.SnmpValue} object.
      */
     static {
         GENERIC_TRAPS = new ArrayList<SnmpObjId>();
@@ -84,7 +94,6 @@ public class TrapIdentity {
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.5")); // authenticationFailure
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.6")); // egpNeighborLoss
     }
-    
     public TrapIdentity(SnmpObjId snmpTrapOid, SnmpObjId lastVarBindOid, SnmpValue lastVarBindValue) {
         String snmpTrapOidValue = snmpTrapOid.toString();
         
@@ -144,6 +153,13 @@ public class TrapIdentity {
         }
     }
     
+    /**
+     * <p>Constructor for TrapIdentity.</p>
+     *
+     * @param entId a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param generic a int.
+     * @param specific a int.
+     */
     public TrapIdentity(SnmpObjId entId, int generic, int specific) {
         m_enterpriseId = entId.toString();
         m_generic = generic;
@@ -154,6 +170,11 @@ public class TrapIdentity {
         return ThreadCategory.getInstance(getClass());
     }
     
+    /**
+     * <p>getGeneric</p>
+     *
+     * @return a int.
+     */
     public int getGeneric() {
         return m_generic;
     }
@@ -162,6 +183,11 @@ public class TrapIdentity {
         m_generic = generic;
     }
     
+    /**
+     * <p>getSpecific</p>
+     *
+     * @return a int.
+     */
     public int getSpecific() {
         return m_specific;
     }
@@ -170,6 +196,11 @@ public class TrapIdentity {
         m_specific = specific;
     }
     
+    /**
+     * <p>getEnterpriseId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getEnterpriseId() {
         return m_enterpriseId;
     }
@@ -178,6 +209,11 @@ public class TrapIdentity {
         m_enterpriseId = enterpriseId;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "[Generic="+getGeneric()+", Specific="+getSpecific()+", EnterpriseId="+getEnterpriseId()+"]";
     }

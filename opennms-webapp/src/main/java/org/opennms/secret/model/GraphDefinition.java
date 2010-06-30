@@ -33,6 +33,13 @@ package org.opennms.secret.model;
 
 import java.util.LinkedList;
 
+/**
+ * <p>GraphDefinition class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class GraphDefinition {
 
 	//name of graph
@@ -52,6 +59,9 @@ public class GraphDefinition {
 	LinkedList<GraphDataElement> graphDataElements; // data source objects for the graph 
 	                     // name of data, file, rrd dsname
 
+	/**
+	 * <p>Constructor for GraphDefinition.</p>
+	 */
 	public GraphDefinition(){
 		graphDataElements= new LinkedList<GraphDataElement>();
 		setGraphTitle("");
@@ -59,42 +69,92 @@ public class GraphDefinition {
 		setStartTime(getEndTime() - 86400000);
 	}
 	
+	/**
+	 * <p>addGraphDataElement</p>
+	 *
+	 * @param ds a {@link org.opennms.secret.model.GraphDataElement} object.
+	 */
 	public void addGraphDataElement(GraphDataElement ds){
 		graphDataElements.add(ds);
 	}
 	
+	/**
+	 * <p>removeGraphDataElement</p>
+	 *
+	 * @param ds a {@link org.opennms.secret.model.GraphDataElement} object.
+	 */
 	public void removeGraphDataElement(GraphDataElement ds){
 		graphDataElements.remove(ds);
 	}
 	
+	/**
+	 * <p>Getter for the field <code>graphDataElements</code>.</p>
+	 *
+	 * @return a {@link java.util.LinkedList} object.
+	 */
 	public LinkedList<GraphDataElement> getGraphDataElements() {
 		return graphDataElements;
 	}
 	
+	/**
+	 * <p>Setter for the field <code>graphDataElements</code>.</p>
+	 *
+	 * @param graphDataElements a {@link java.util.LinkedList} object.
+	 */
 	public void setGraphDataElements(LinkedList<GraphDataElement> graphDataElements) {
 		this.graphDataElements = graphDataElements;
 	}
 
+	/**
+	 * <p>Getter for the field <code>endTime</code>.</p>
+	 *
+	 * @return a long.
+	 */
 	public long getEndTime() {
 		return endTime;
 	}
 
+	/**
+	 * <p>Setter for the field <code>endTime</code>.</p>
+	 *
+	 * @param endTime a long.
+	 */
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
 
+	/**
+	 * <p>Getter for the field <code>graphTitle</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getGraphTitle() {
 		return graphTitle;
 	}
 
+	/**
+	 * <p>Setter for the field <code>graphTitle</code>.</p>
+	 *
+	 * @param graphTitle a {@link java.lang.String} object.
+	 */
 	public void setGraphTitle(String graphTitle) {
 		this.graphTitle = graphTitle;
 	}
 
+	/**
+	 * <p>Getter for the field <code>startTime</code>.</p>
+	 *
+	 * @return a long.
+	 */
 	public long getStartTime() {
 		return startTime;
 	}
 
+	/**
+	 * <p>Setter for the field <code>startTime</code>.</p>
+	 *
+	 * @param startTime a long.
+	 */
 	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 	}

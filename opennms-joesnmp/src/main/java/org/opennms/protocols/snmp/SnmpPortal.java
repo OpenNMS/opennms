@@ -57,14 +57,20 @@ import org.opennms.protocols.snmp.asn1.AsnEncoder;
 /**
  * Abstracts the communication related details from the SnmpSession and
  * SnmpTrapSession.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
  * @see SnmpSession
  * @see SnmpTrapSession
  * @see java.net.DatagramSocket
+ * @version $Id: $
  */
 public class SnmpPortal extends Object {
     /**

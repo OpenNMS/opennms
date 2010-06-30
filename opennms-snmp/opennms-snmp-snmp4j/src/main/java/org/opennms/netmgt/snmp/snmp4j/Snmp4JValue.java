@@ -126,6 +126,11 @@ class Snmp4JValue implements SnmpValue {
 
     }
     
+    /**
+     * <p>getBytes</p>
+     *
+     * @return an array of byte.
+     */
     public byte[] getBytes() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_INTEGER:
@@ -149,14 +154,29 @@ class Snmp4JValue implements SnmpValue {
         }
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() {
         return m_value.getSyntax();
     }
     
+    /**
+     * <p>isEndOfMib</p>
+     *
+     * @return a boolean.
+     */
     public boolean isEndOfMib() {
         return m_value.getSyntax() == SMIConstants.EXCEPTION_END_OF_MIB_VIEW;
     }
     
+    /**
+     * <p>isNumeric</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNumeric() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_INTEGER:
@@ -170,6 +190,11 @@ class Snmp4JValue implements SnmpValue {
         }
     }
     
+    /**
+     * <p>toInt</p>
+     *
+     * @return a int.
+     */
     public int toInt() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_COUNTER64:
@@ -185,6 +210,11 @@ class Snmp4JValue implements SnmpValue {
         }
     }
     
+    /**
+     * <p>toLong</p>
+     *
+     * @return a long.
+     */
     public long toLong() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_COUNTER64:
@@ -206,6 +236,11 @@ class Snmp4JValue implements SnmpValue {
         return Double.valueOf(m_value.toString()).longValue();
     }
 
+    /**
+     * <p>toDisplayString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toDisplayString() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_OBJECT_IDENTIFIER :
@@ -227,6 +262,11 @@ class Snmp4JValue implements SnmpValue {
         return new String(results);
     }
 
+    /**
+     * <p>toInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress toInetAddress() {
         switch (m_value.getSyntax()) {
             case SMIConstants.SYNTAX_IPADDRESS:
@@ -236,6 +276,11 @@ class Snmp4JValue implements SnmpValue {
         }
     }
 
+    /**
+     * <p>toHexString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toHexString() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_OCTET_STRING:
@@ -245,10 +290,20 @@ class Snmp4JValue implements SnmpValue {
         }
     }
         
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return toDisplayString();
     }
 
+    /**
+     * <p>toBigInteger</p>
+     *
+     * @return a {@link java.math.BigInteger} object.
+     */
     public BigInteger toBigInteger() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_COUNTER64:
@@ -269,6 +324,11 @@ class Snmp4JValue implements SnmpValue {
         }
     }
 
+    /**
+     * <p>toSnmpObjId</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public SnmpObjId toSnmpObjId() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_OBJECT_IDENTIFIER:
@@ -278,6 +338,11 @@ class Snmp4JValue implements SnmpValue {
         }
     }
     
+    /**
+     * <p>isDisplayable</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDisplayable() {
         if (isNumeric())
             return true;
@@ -301,14 +366,29 @@ class Snmp4JValue implements SnmpValue {
 		return true;
 	}
 
+    /**
+     * <p>isNull</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNull() {
         return getType() == SnmpValue.SNMP_NULL;
     }
 
+    /**
+     * <p>getVariable</p>
+     *
+     * @return a {@link org.snmp4j.smi.Variable} object.
+     */
     public Variable getVariable() {
         return m_value;
     }
 
+    /**
+     * <p>isError</p>
+     *
+     * @return a boolean.
+     */
     public boolean isError() {
         switch (getType()) {
         case SnmpValue.SNMP_NO_SUCH_INSTANCE:

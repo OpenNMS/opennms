@@ -49,22 +49,23 @@ import org.opennms.core.utils.ThreadCategory;
  * This is an utility class used to format the event correlation info - to be
  * inserted into the 'events' table - it simply returns the correlation as an
  * 'XML' block
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see org.opennms.netmgt.eventd.db.Constants#VALUE_TRUNCATE_INDICATOR
+ * @version $Id: $
  */
 public class Correlation {
     /**
      * Format the correlation block to have the xml
-     * 
+     *
      * @param ec
      *            the correlation
      * @param sz
      *            the size to which the formatted string is to be limited
      *            to(usually the size of the column in the database)
-     * 
      * @return the formatted event correlation
      */
     public static String format(org.opennms.netmgt.xml.event.Correlation ec, int sz) {

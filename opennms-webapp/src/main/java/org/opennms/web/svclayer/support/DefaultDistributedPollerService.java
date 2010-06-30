@@ -50,9 +50,14 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 
 /**
- * 
+ * <p>DefaultDistributedPollerService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultDistributedPollerService implements
         DistributedPollerService {
@@ -61,6 +66,11 @@ public class DefaultDistributedPollerService implements
     private OnmsLocationMonitorAreaNameComparator m_comparator =
         new OnmsLocationMonitorAreaNameComparator();
 
+    /**
+     * <p>getLocationMonitorList</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.LocationMonitorListModel} object.
+     */
     public LocationMonitorListModel getLocationMonitorList() {
         List<OnmsLocationMonitor> monitors = m_locationMonitorDao.findAll();
         
@@ -75,10 +85,20 @@ public class DefaultDistributedPollerService implements
         return model;
     }
 
+    /**
+     * <p>getLocationMonitorDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
 
+    /**
+     * <p>setLocationMonitorDao</p>
+     *
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
     }
@@ -124,6 +144,7 @@ public class DefaultDistributedPollerService implements
         }
     }
 
+    /** {@inheritDoc} */
     public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand cmd, BindException errors) {
         LocationMonitorListModel model = new LocationMonitorListModel();
         model.setErrors(errors);
@@ -139,6 +160,7 @@ public class DefaultDistributedPollerService implements
         return model;
     }
 
+    /** {@inheritDoc} */
     public void pauseLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");
@@ -165,6 +187,7 @@ public class DefaultDistributedPollerService implements
         m_locationMonitorDao.update(monitor);
     }
 
+    /** {@inheritDoc} */
     public void resumeLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");
@@ -191,6 +214,7 @@ public class DefaultDistributedPollerService implements
         m_locationMonitorDao.update(monitor);
     }
 
+    /** {@inheritDoc} */
     public void deleteLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");

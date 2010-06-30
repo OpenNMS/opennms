@@ -32,11 +32,12 @@
 package org.opennms.secret.model;
 
 /**
- * Represents a OGPMember 
+ * Represents a OGPMember
  *
  * @author brozow
- * 
  * @hibernate.class table="member" dynamic-update="true dynamic-insert="true"
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class OGPMember {
     
@@ -46,46 +47,72 @@ public class OGPMember {
 
     /**
      * The id field
+     *
      * @hibernate.id generator-class="native"
+     * @return a {@link java.lang.Long} object.
      */
     public Long getId() {
         return m_id;
     }
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     */
     public void setId(Long id) {
         m_id = id;
     }
 
     /**
      * The first name
+     *
      * @hibernate.property column="primoNombre"
+     * @return a {@link java.lang.String} object.
      */
     public String getFirstName() {
         return m_first;
     }
+    /**
+     * <p>setFirstName</p>
+     *
+     * @param first a {@link java.lang.String} object.
+     */
     public void setFirstName(String first) {
         m_first = first;
     }
 
     /**
      * The last name
-     * @hibernate.property
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getLastName() {
         return m_last;
     }
     
+    /**
+     * <p>setLastName</p>
+     *
+     * @param last a {@link java.lang.String} object.
+     */
     public void setLastName(String last) {
         m_last = last;
     }
     
     /**
      * The members full name
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getFullName() {
         return getFirstName()+" "+getLastName();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getFullName();
     }

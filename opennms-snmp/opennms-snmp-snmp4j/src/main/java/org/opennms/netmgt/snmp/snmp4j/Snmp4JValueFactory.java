@@ -48,48 +48,85 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.Opaque;
 import org.snmp4j.smi.TimeTicks;
 
+/**
+ * <p>Snmp4JValueFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Snmp4JValueFactory implements SnmpValueFactory {
 
+    /**
+     * <p>getOctetString</p>
+     *
+     * @param bytes an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getOctetString(byte[] bytes) {
         return new Snmp4JValue(new OctetString(bytes));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getCounter32(long val) {
         return new Snmp4JValue(new Counter32(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getCounter64(BigInteger bigInt) {
         return new Snmp4JValue(new Counter64(bigInt.longValue()));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getGauge32(long val) {
         return new Snmp4JValue(new Gauge32(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getInt32(int val) {
         return new Snmp4JValue(new Integer32(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getIpAddress(InetAddress val) {
         return new Snmp4JValue(new IpAddress(val));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getObjectId(SnmpObjId objId) {
         return new Snmp4JValue(new OID(objId.getIds()));
     }
 
+    /** {@inheritDoc} */
     public SnmpValue getTimeTicks(long val) {
         return new Snmp4JValue(new TimeTicks(val));
     }
 
+    /**
+     * <p>getNull</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getNull() {
         return new Snmp4JValue(new Null());
     }
 
+    /**
+     * <p>getValue</p>
+     *
+     * @param type a int.
+     * @param bytes an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getValue(int type, byte[] bytes) {
         return new Snmp4JValue(type, bytes);
     }
 
+    /**
+     * <p>getOpaque</p>
+     *
+     * @param bs an array of byte.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getOpaque(byte[] bs) {
         return new Snmp4JValue(new Opaque(bs));
     }

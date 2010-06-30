@@ -41,45 +41,96 @@ import org.opennms.core.utils.DBUtils;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**
- * @author brozow
+ * <p>Abstract JDBCTemplate class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 abstract public class JDBCTemplate {
 
     private DataSource m_db;
     private String m_sql;
     
+    /**
+     * <p>Constructor for JDBCTemplate.</p>
+     *
+     * @param db a {@link javax.sql.DataSource} object.
+     * @param sql a {@link java.lang.String} object.
+     */
     protected JDBCTemplate(DataSource db, String sql) {
         m_db = db;
         m_sql = sql;
     }
 
+    /**
+     * <p>execute</p>
+     */
     public void execute() {
          execute(new Object[0]);
      }
 
+    /**
+     * <p>execute</p>
+     *
+     * @param o a {@link java.lang.Object} object.
+     */
     public void execute(Object o) {
          execute(new Object[] { o });
      }
 
+    /**
+     * <p>execute</p>
+     *
+     * @param o1 a {@link java.lang.Object} object.
+     * @param o2 a {@link java.lang.Object} object.
+     */
     public void execute(Object o1, Object o2) {
          execute(new Object[] { o1, o2 } );
      }
     
+    /**
+     * <p>execute</p>
+     *
+     * @param o1 a {@link java.lang.Object} object.
+     * @param o2 a {@link java.lang.Object} object.
+     * @param o3 a {@link java.lang.Object} object.
+     */
     public void execute(Object o1, Object o2, Object o3) {
         execute (new Object[] { o1, o2, o3 } );
     }
     
+    /**
+     * <p>execute</p>
+     *
+     * @param o1 a {@link java.lang.Object} object.
+     * @param o2 a {@link java.lang.Object} object.
+     * @param o3 a {@link java.lang.Object} object.
+     * @param o4 a {@link java.lang.Object} object.
+     */
     public void execute(Object o1, Object o2, Object o3, Object o4) {
         execute (new Object[] { o1, o2, o3, o4 } );
     }
 
+    /**
+     * <p>execute</p>
+     *
+     * @param o1 a {@link java.lang.Object} object.
+     * @param o2 a {@link java.lang.Object} object.
+     * @param o3 a {@link java.lang.Object} object.
+     * @param o4 a {@link java.lang.Object} object.
+     * @param o5 a {@link java.lang.Object} object.
+     */
     public void execute(Object o1, Object o2, Object o3, Object o4, Object o5) {
         execute (new Object[] { o1, o2, o3, o4, o5 } );
     }
 
 
 
+    /**
+     * <p>execute</p>
+     *
+     * @param values an array of {@link java.lang.Object} objects.
+     */
     public void execute(Object values[]) {
          try {
              doExecute(values);
@@ -117,6 +168,12 @@ abstract public class JDBCTemplate {
         }
     }
     
+    /**
+     * <p>reproduceStatement</p>
+     *
+     * @param values an array of {@link java.lang.Object} objects.
+     * @return a {@link java.lang.String} object.
+     */
     public String reproduceStatement(Object values[]) {
     		return m_sql+": with vals "+argsToString(values);
     }

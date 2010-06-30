@@ -37,15 +37,32 @@ package org.opennms.web.navigate;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * <p>LocationBasedNavBarEntry class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class LocationBasedNavBarEntry implements NavBarEntry {
     private String m_locationMatch;
     private String m_url;
     private String m_name;
  
+    /**
+     * <p>getLocationMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLocationMatch() {
         return m_locationMatch;
     }
 
+    /**
+     * <p>setLocationMatch</p>
+     *
+     * @param locationMatch a {@link java.lang.String} object.
+     */
     public void setLocationMatch(String locationMatch) {
         m_locationMatch = locationMatch;
     }
@@ -53,10 +70,20 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
     /* (non-Javadoc)
      * @see org.opennms.web.navigate.NavBarEntry#getURL()
      */
+    /**
+     * <p>getUrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrl() {
         return m_url;
     }
 
+    /**
+     * <p>setUrl</p>
+     *
+     * @param url a {@link java.lang.String} object.
+     */
     public void setUrl(String url) {
         m_url = url;
     }
@@ -64,10 +91,20 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
     /* (non-Javadoc)
      * @see org.opennms.web.navigate.NavBarEntry#getName()
      */
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
@@ -75,10 +112,17 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
     /* (non-Javadoc)
      * @see org.opennms.web.navigate.NavBarEntry#evaluate(javax.servlet.http.HttpServletRequest)
      */
+    /** {@inheritDoc} */
     public DisplayStatus evaluate(HttpServletRequest request) {
         return isLinkMatches(request) ? DisplayStatus.DISPLAY_NO_LINK : DisplayStatus.DISPLAY_LINK;
     }
 
+    /**
+     * <p>isLinkMatches</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a boolean.
+     */
     protected boolean isLinkMatches(HttpServletRequest request) {
         return m_locationMatch.equals(request.getParameter("location"));
     }

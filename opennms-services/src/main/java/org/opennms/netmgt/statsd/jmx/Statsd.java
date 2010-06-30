@@ -38,12 +38,20 @@ package org.opennms.netmgt.statsd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>Statsd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Statsd extends AbstractSpringContextJmxServiceDaemon implements StatsdMBean {
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Statsd";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "statisticsDaemonContext";       

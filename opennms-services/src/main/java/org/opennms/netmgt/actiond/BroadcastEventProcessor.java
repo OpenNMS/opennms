@@ -86,12 +86,11 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing. Each event's autoactions and trouble tickets
      * are queued to be run
-     * 
-     * @param event
-     *            The event
      */
     public void onEvent(Event event) {
         Category log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
@@ -141,6 +140,8 @@ final class BroadcastEventProcessor implements EventListener {
 
     /**
      * Return an id for this event listener
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "Actiond:BroadcastEventProcessor";

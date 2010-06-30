@@ -40,24 +40,43 @@ import org.opennms.secret.dao.NodeDao;
 import org.opennms.secret.model.Node;
 import org.opennms.secret.service.NodeService;
 
+/**
+ * <p>NodeServiceImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NodeServiceImpl implements NodeService {
 
 	private NodeDao m_nodeDao;
 
+	/** {@inheritDoc} */
 	public Node getNodeById(Long id) {
 		Node node = m_nodeDao.getNode(id);
         m_nodeDao.initialize(node);
 		return node;
 	}
 
+	/**
+	 * <p>setNodeDao</p>
+	 *
+	 * @param nodeDao a {@link org.opennms.secret.dao.NodeDao} object.
+	 */
 	public void setNodeDao(NodeDao nodeDao) {
 		m_nodeDao = nodeDao;
 	}
 
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<Node> findAll() {
         return new HashSet<Node>(m_nodeDao.findAll());
     }
 
+    /** {@inheritDoc} */
     public Set<Node> findWithMatchingLabel(String searchKey) {
         Collection nodes = m_nodeDao.findAll();
         Set<Node> matching = new HashSet<Node>();

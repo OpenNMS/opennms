@@ -55,8 +55,10 @@ import org.springframework.validation.BindException;
 
 /**
  * Model object for web statistics reports.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class StatisticsReportModel {
     public static class Datum implements Comparable<Datum> {
@@ -165,24 +167,59 @@ public class StatisticsReportModel {
     private StatisticsReport m_report;
     private SortedSet<Datum> m_data = new TreeSet<Datum>();
     
+    /**
+     * <p>getData</p>
+     *
+     * @return a {@link java.util.SortedSet} object.
+     */
     public SortedSet<Datum> getData() {
         return m_data;
     }
+    /**
+     * <p>setData</p>
+     *
+     * @param data a {@link java.util.SortedSet} object.
+     */
     public void setData(SortedSet<StatisticsReportModel.Datum> data) {
         m_data = data;
     }
+    /**
+     * <p>addData</p>
+     *
+     * @param datum a {@link org.opennms.web.svclayer.support.StatisticsReportModel.Datum} object.
+     */
     public void addData(Datum datum) {
         m_data.add(datum);
     }
+    /**
+     * <p>getErrors</p>
+     *
+     * @return a {@link org.springframework.validation.BindException} object.
+     */
     public BindException getErrors() {
         return m_errors;
     }
+    /**
+     * <p>setErrors</p>
+     *
+     * @param errors a {@link org.springframework.validation.BindException} object.
+     */
     public void setErrors(BindException errors) {
         m_errors = errors;
     }
+    /**
+     * <p>getReport</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.StatisticsReport} object.
+     */
     public StatisticsReport getReport() {
         return m_report;
     }
+    /**
+     * <p>setReport</p>
+     *
+     * @param report a {@link org.opennms.netmgt.model.StatisticsReport} object.
+     */
     public void setReport(StatisticsReport report) {
         m_report = report;
     }

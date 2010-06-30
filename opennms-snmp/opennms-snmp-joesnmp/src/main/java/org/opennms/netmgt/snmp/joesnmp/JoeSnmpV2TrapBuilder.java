@@ -40,23 +40,35 @@ import org.opennms.protocols.snmp.SnmpPduRequest;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
+/**
+ * <p>JoeSnmpV2TrapBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JoeSnmpV2TrapBuilder implements SnmpTrapBuilder {
 
     SnmpPduRequest m_pdu;
     
+    /**
+     * <p>Constructor for JoeSnmpV2TrapBuilder.</p>
+     */
     public JoeSnmpV2TrapBuilder() {
         m_pdu = new SnmpPduRequest(SnmpPduPacket.V2TRAP);
         m_pdu.setRequestId(SnmpPduPacket.nextSequence());
     }
     
+    /** {@inheritDoc} */
     public void send(String destAddr, int destPort, String community) throws Exception {
         JoeSnmpStrategy.send(destAddr, destPort, community, m_pdu);
     }
 
+    /** {@inheritDoc} */
     public void sendTest(String destAddr, int destPort, String community) throws Exception {
         JoeSnmpStrategy.sendTest(destAddr, destPort, community, m_pdu);
     }
     
+    /** {@inheritDoc} */
     public void addVarBind(SnmpObjId name, SnmpValue value) {
         SnmpSyntax val = ((JoeSnmpValue) value).getSnmpSyntax();
         m_pdu.addVarBind(new SnmpVarBind(new SnmpObjectId(name.getIds()), val));

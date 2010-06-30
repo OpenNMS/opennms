@@ -68,7 +68,7 @@ import org.opennms.netmgt.utils.IpValidator;
  * or UDP/67 or will unicast responses back to the client's UDP port on from
  * which the request originated.
  * </p>
- * 
+ *
  * <p>
  * The DHCP daemon accepts client connections on TCP/5818. Once a client is
  * connected it can begin forwarding requests. A list of all currently connected
@@ -80,18 +80,18 @@ import org.opennms.netmgt.utils.IpValidator;
  * <li>byte 9 - byte n : buffer containing the formatted DHCP discover request.
  * </li>
  * </ul>
- * 
+ *
  * <p>
  * The client indicates that it is finished by sending a request with the remote
  * host IP address set to zero (0).
  * </p>
- * 
+ *
  * <p>
  * Incoming requests are sent to UDP/67 on specified remote host. If the remote
  * host is runnning a DHCP server it will send/broadcast an appropriate response
  * to UDP/68 or UDP/67 (or will unicast the response).
  * </p>
- * 
+ *
  * <p>
  * The DHCP daemon includes a listener thread which binds to UDP/68 or UDP/67
  * and simply listens for any incoming DHCP responses. In extended mode,
@@ -101,10 +101,12 @@ import org.opennms.netmgt.utils.IpValidator;
  * of the client to validate that the datagram is in response to a DHCP request
  * packet that it generated.
  * </p>
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Observer {
 
@@ -152,6 +154,9 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         m_worker = null;
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         boolean relayMode = false;
         log().debug("start: DHCP client daemon starting...");
@@ -243,6 +248,9 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         m_worker.start();
 	}
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
 	if (m_worker == null) {
             return;
@@ -278,7 +286,6 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     /**
      * The main routine of the DHCP server. This method accepts incomming client
      * requests and starts new client handlers to process each request.
-     * 
      */
     public void run() {
         
@@ -342,14 +349,10 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is called by the observable instances that the server has
      * registered to receive.
-     * 
-     * @param inst
-     *            The observable object that has changed.
-     * @param ignored
-     *            Thsi parameter is ignored by this method.
-     * 
      */
     public void update(Observable inst, Object ignored) {
         synchronized (this) {
@@ -361,7 +364,8 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
 
     /**
      * Returns the singular instance of the DHCP server.
-     * 
+     *
+     * @return a {@link org.opennms.netmgt.dhcpd.Dhcpd} object.
      */
     public static Dhcpd getInstance() {
         return m_singleton;
@@ -370,17 +374,15 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     /**
      * Contacts the public server and checks to see if the the passed address is
      * a DHCP server.
-     * 
+     *
      * @param address
      *            The address to query.
      * @param timeout
      *            The time to wait between retries.
      * @param retries
      *            The maximum number of attempts.
-     * 
      * @return response time in milliseconds if remote box is a DHCP server or
      *         -1 if it is NOT.
-     * 
      * @throws java.io.IOException
      *             Thrown if an error occurs.
      */
@@ -391,13 +393,11 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
     /**
      * Contacts the public server and checks to see if the the passed address is
      * a DHCP server.
-     * 
+     *
      * @param address
      *            The address to query.
-     * 
      * @return response time in milliseconds if remote box is a DHCP server or
      *         -1 if it is NOT.
-     * 
      * @throws java.io.IOException
      *             Thrown if an error occurs.
      */
@@ -405,6 +405,9 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
         return Poller.isServer(address, Poller.DEFAULT_TIMEOUT, Poller.DEFAULT_RETRIES);
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
     	
     }

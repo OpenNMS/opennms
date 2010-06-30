@@ -75,11 +75,24 @@ import org.springframework.util.Assert;
 
 /**
  * Encapsulates all SNMP performance reporting for the web user interface.
- * 
+ *
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
@@ -87,9 +100,12 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      */
     public static final String STRINGS_PROPERTIES_FILE_NAME = "strings.properties";
 
+    /** Constant <code>INTERFACE_GRAPH_TYPE="interface"</code> */
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 
+    /** Constant <code>RESPONSE_DIRECTORY="response"</code> */
     public static final String RESPONSE_DIRECTORY = "response";
+    /** Constant <code>SNMP_DIRECTORY="snmp"</code> */
     public static final String SNMP_DIRECTORY = "snmp";
 
     private NodeDao m_nodeDao;
@@ -102,17 +118,31 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     private NodeResourceType m_nodeResourceType;
     private DomainResourceType m_domainResourceType;
     
+    /**
+     * <p>Constructor for DefaultResourceDao.</p>
+     */
     public DefaultResourceDao() {
     }
 
+    /**
+     * <p>setRrdDirectory</p>
+     *
+     * @param rrdDirectory a {@link java.io.File} object.
+     */
     public void setRrdDirectory(File rrdDirectory) {
         m_rrdDirectory = rrdDirectory;
     }
 
+    /**
+     * <p>getRrdDirectory</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public File getRrdDirectory() {
         return m_rrdDirectory;
     }
     
+    /** {@inheritDoc} */
     public File getRrdDirectory(boolean verify) {
         if (verify && !getRrdDirectory().isDirectory()) {
             throw new ObjectRetrievalFailureException("RRD directory does not exist: " + getRrdDirectory().getAbsolutePath(), getRrdDirectory());
@@ -121,38 +151,83 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return getRrdDirectory();
     }
 
+    /**
+     * <p>getDataCollectionConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     */
     public DataCollectionConfig getDataCollectionConfig() {
         return m_dataCollectionConfig;
     }
 
+    /**
+     * <p>setDataCollectionConfig</p>
+     *
+     * @param dataCollectionConfig a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+     */
     public void setDataCollectionConfig(DataCollectionConfig dataCollectionConfig) {
         m_dataCollectionConfig = dataCollectionConfig;
     }
     
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
+    /**
+     * <p>getCollectdConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     */
     public CollectdConfigFactory getCollectdConfig() {
         return m_collectdConfig;
     }
 
+    /**
+     * <p>setCollectdConfig</p>
+     *
+     * @param collectdConfig a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     */
     public void setCollectdConfig(CollectdConfigFactory collectdConfig) {
         m_collectdConfig = collectdConfig;
     }
     
+    /**
+     * <p>getLocationMonitorDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
     
+    /**
+     * <p>setLocationMonitorDao</p>
+     *
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void afterPropertiesSet() throws IOException {
         if (m_rrdDirectory == null) {
             throw new IllegalStateException("rrdDirectory property has not been set");
@@ -245,14 +320,21 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return resourceTypes;
     }
     
+    /**
+     * <p>getResourceTypes</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<OnmsResourceType> getResourceTypes() {
         return m_resourceTypes.values();
     }
     
+    /** {@inheritDoc} */
     public OnmsResource getResourceById(String id) {
     	return getResourceById(id, false);
     }
 
+    /** {@inheritDoc} */
     public OnmsResource getResourceById(String id, boolean ignoreErrors) {
         OnmsResource resource = null;
 
@@ -294,6 +376,13 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return resource;
     }
     
+    /**
+     * <p>getTopLevelResource</p>
+     *
+     * @param resourceType a {@link java.lang.String} object.
+     * @param resource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     protected OnmsResource getTopLevelResource(String resourceType, String resource) {
         if ("node".equals(resourceType)) {
             return getNodeEntityResource(resource);
@@ -304,6 +393,14 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         }
     }
     
+    /**
+     * <p>getChildResource</p>
+     *
+     * @param parentResource a {@link org.opennms.netmgt.model.OnmsResource} object.
+     * @param resourceType a {@link java.lang.String} object.
+     * @param resource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     protected OnmsResource getChildResource(OnmsResource parentResource, String resourceType, String resource) {
         for (OnmsResource r : parentResource.getChildResources()) {
             if (resourceType.equals(r.getResourceType().getName())
@@ -317,9 +414,11 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     
     /**
      * Returns a list of resources for a node.
-     * 
+     *
      * XXX It does not currently fully check that an IP address that is found to have
      * distributed response time data is in the database on the proper node so it can have false positives.
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<OnmsResource> findNodeResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
@@ -360,6 +459,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     
     /**
      * Returns a list of resources for domains.
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<OnmsResource> findDomainResources() {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
@@ -382,6 +483,12 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return resources;
     }
     
+    /**
+     * <p>getNodeEntityResource</p>
+     *
+     * @param resource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     protected OnmsResource getNodeEntityResource(String resource) {
         int nodeId;
         try {
@@ -403,6 +510,12 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return onmsResource;
     }
 
+    /**
+     * <p>getDomainEntityResource</p>
+     *
+     * @param domain a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     protected OnmsResource getDomainEntityResource(String domain) {
         if (!m_collectdConfig.domainExists(domain)
                 && !m_collectdConfig.packageExists(domain)) {
@@ -493,7 +606,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
     /**
      * Encapsulate the deprecated decode method to fix it in one place.
-     * 
+     *
      * @param string
      *            string to be decoded
      * @return decoded string
@@ -507,6 +620,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public OnmsResource getResourceForNode(OnmsNode node) {
         Assert.notNull(node, "node argument must not be null");
         
@@ -534,6 +648,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return null;
     }
 
+    /** {@inheritDoc} */
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface) {
         Assert.notNull(ipInterface, "ipInterface argument must not be null");
         Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
@@ -541,6 +656,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return getChildResourceForNode(ipInterface.getNode(), "responseTime", ipInterface.getIpAddress());
     }
 
+    /** {@inheritDoc} */
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locMon) {
         Assert.notNull(ipInterface, "ipInterface argument must not be null");
         Assert.notNull(locMon, "locMon argument must not be null");
@@ -549,6 +665,11 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return getChildResourceForNode(ipInterface.getNode(), "distributedStatus", locMon.getId() + File.separator + ipInterface.getIpAddress());
     }
     
+    /**
+     * <p>findTopLevelResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsResource> findTopLevelResources() {
         List<OnmsResource> resources = new ArrayList<OnmsResource>();
         resources.addAll(findNodeResources());

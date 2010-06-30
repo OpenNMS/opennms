@@ -45,9 +45,14 @@ import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.web.graph.RelativeTimePeriod;
 
 /**
- * 
+ * <p>DistributedStatusHistoryModel class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DistributedStatusHistoryModel {
     private List<OnmsMonitoringLocationDefinition> m_locations;
@@ -62,6 +67,20 @@ public class DistributedStatusHistoryModel {
     private OnmsLocationMonitor m_chosenMonitor;
     private SortedSet<ServiceGraph> m_serviceGraphs;
     
+    /**
+     * <p>Constructor for DistributedStatusHistoryModel.</p>
+     *
+     * @param locations a {@link java.util.List} object.
+     * @param applications a {@link java.util.List} object.
+     * @param monitors a {@link java.util.List} object.
+     * @param periods a {@link java.util.List} object.
+     * @param chosenLocation a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @param chosenApplication a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     * @param chosenApplicationMemberServices a {@link java.util.Collection} object.
+     * @param chosenMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param chosenPeriod a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     * @param errors a {@link java.util.List} object.
+     */
     public DistributedStatusHistoryModel(
             List<OnmsMonitoringLocationDefinition> locations,
             List<OnmsApplication> applications,
@@ -86,50 +105,110 @@ public class DistributedStatusHistoryModel {
         
     }
 
+    /**
+     * <p>getApplications</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsApplication> getApplications() {
         return m_applications;
     }
 
+    /**
+     * <p>getLocations</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsMonitoringLocationDefinition> getLocations() {
         return m_locations;
     }
 
+    /**
+     * <p>getChosenApplication</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     */
     public OnmsApplication getChosenApplication() {
         return m_chosenApplication;
     }
 
+    /**
+     * <p>getChosenApplicationMemberServices</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<OnmsMonitoredService> getChosenApplicationMemberServices() {
         return m_chosenApplicationMemberServices;
     }
 
+    /**
+     * <p>getChosenLocation</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     */
     public OnmsMonitoringLocationDefinition getChosenLocation() {
         return m_chosenLocation;
     }
     
+    /**
+     * <p>getErrors</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getErrors() {
         return m_errors;
     }
 
+    /**
+     * <p>getChosenPeriod</p>
+     *
+     * @return a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     */
     public RelativeTimePeriod getChosenPeriod() {
         return m_chosenPeriod;
     }
 
+    /**
+     * <p>getPeriods</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<RelativeTimePeriod> getPeriods() {
         return m_periods;
     }
 
+    /**
+     * <p>getChosenMonitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     */
     public OnmsLocationMonitor getChosenMonitor() {
         return m_chosenMonitor;
     }
 
+    /**
+     * <p>getMonitors</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsLocationMonitor> getMonitors() {
         return m_monitors;
     }
     
+    /**
+     * <p>getServiceGraphs</p>
+     *
+     * @return a {@link java.util.SortedSet} object.
+     */
     public SortedSet<ServiceGraph >getServiceGraphs() {
         return m_serviceGraphs;
     }
     
+    /**
+     * <p>setServiceGraphs</p>
+     *
+     * @param serviceGraphs a {@link java.util.SortedSet} object.
+     */
     public void setServiceGraphs(SortedSet<ServiceGraph> serviceGraphs) {
         m_serviceGraphs = serviceGraphs;
     }

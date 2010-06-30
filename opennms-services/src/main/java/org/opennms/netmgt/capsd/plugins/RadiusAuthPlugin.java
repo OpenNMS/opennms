@@ -58,10 +58,12 @@ import org.opennms.netmgt.utils.ParameterMap;
  *
  * uses the <A HREF="http://jradius.sourceforge.net/">JRadius</A>
  * class library.
- * 
+ *
  * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class RadiusAuthPlugin extends AbstractPlugin {
     /**
@@ -192,7 +194,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
     /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.
-     * 
+     *
      * @return The protocol name for this plugin.
      */
     public String getProtocolName() {
@@ -200,13 +202,10 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
-     * 
-     * @param address
-     *            The address to check for support.
-     * 
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address) {
         return isRadius(address, DEFAULT_AUTH_PORT, DEFAULT_ACCT_PORT, DEFAULT_AUTH_TYPE,
@@ -215,6 +214,8 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <p>
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
@@ -222,20 +223,13 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
      * </p>
-     * 
+     *
      * <p>
      * In addition, the input qualifiers map also provides information about how
      * the plugin should contact the remote server. The plugin may check the
      * qualifier map for specific elements and then adjust its behavior as
      * necessary
      * </p>
-     * 
-     * @param address
-     *            The address to check for support.
-     * @param qualifiers
-     *            The map where qualification are set by the plugin.
-     * 
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int authport = DEFAULT_AUTH_PORT;

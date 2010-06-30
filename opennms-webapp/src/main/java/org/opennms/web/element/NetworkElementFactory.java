@@ -75,14 +75,18 @@ import org.springframework.transaction.support.TransactionTemplate;
  * The source for all network element business objects (nodes, interfaces,
  * services). Encapsulates all lookup functionality for the network element
  * business objects in one place.
- * 
+ *
  * To use this factory to lookup network elements, you must first initialize the
  * Vault with the database connection manager * and JDBC URL it will use. Call
  * the init method to initialize the factory. After that, you can call any
  * lookup methods.
- * 
+ *
  * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NetworkElementFactory extends Object {
 
@@ -108,9 +112,11 @@ public class NetworkElementFactory extends Object {
     /**
      * Translate a node id into a human-readable node label. Note these values
      * are not cached.
-     * 
+     *
      * @return A human-readable node name or null if the node id given does not
      *         specify a real node.
+     * @param nodeId a int.
+     * @throws java.sql.SQLException if any.
      */
     public static String getNodeLabel(int nodeId) throws SQLException {
         String label = null;
@@ -135,6 +141,13 @@ public class NetworkElementFactory extends Object {
         return (label);
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @param nodeId a int.
+     * @return a {@link org.opennms.web.element.Node} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Node getNode(int nodeId) throws SQLException {
         Node node = null;
 
@@ -163,6 +176,9 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Returns all non-deleted nodes.
+     *
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Node[] getAllNodes() throws SQLException {
         Node[] nodes = null;
@@ -188,6 +204,10 @@ public class NetworkElementFactory extends Object {
     /**
      * Returns all non-deleted nodes that have the given nodeLabel substring
      * somewhere in their nodeLabel.
+     *
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Node[] getNodesLike(String nodeLabel) throws SQLException {
         if (nodeLabel == null) {
@@ -221,6 +241,10 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Returns all non-deleted nodes with an IP address like the rule given.
+     *
+     * @param iplike a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Node[] getNodesWithIpLike(String iplike) throws SQLException {
         if (iplike == null) {
@@ -250,6 +274,10 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Returns all non-deleted nodes that have the given service.
+     *
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Node[] getNodesWithService(int serviceId) throws SQLException {
         Node[] nodes = null;
@@ -275,6 +303,10 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Returns all non-deleted nodes that have the given mac.
+     *
+     * @param macAddr a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Node[] getNodesWithPhysAddr(String macAddr) throws SQLException {
         Node[] nodes = null;
@@ -310,8 +342,11 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Returns all non-deleted nodes with a MAC address like the rule given from AtInterface.
+     *
+     * @param macAddr a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
      */
-
     public static Node[] getNodesWithPhysAddrAtInterface(String macAddr)
 			throws SQLException {
 		if (macAddr == null) {
@@ -347,8 +382,11 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Returns all non-deleted nodes with a MAC address like the rule given from SnmpInterface.
+     *
+     * @param macAddr a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
      */
-
     public static Node[] getNodesWithPhysAddrFromSnmpInterface(String macAddr)
 			throws SQLException {
 		if (macAddr == null) {
@@ -382,12 +420,15 @@ public class NetworkElementFactory extends Object {
 		return nodes;
 	}
 
-	/**
+    /**
      * Returns all non-deleted nodes that contain the given string in an ifAlias
+     *
      * @Param ifAlias
      *               the ifAlias string we are looking for
      * @return nodes
      *               the nodes with a matching ifAlias on one or more interfaces
+     * @param ifAlias a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static Node[] getNodesWithIfAlias(String ifAlias) throws SQLException {
         Node[] nodes = null;
@@ -418,6 +459,10 @@ public class NetworkElementFactory extends Object {
     /**
      * Resolve an IP address to a DNS hostname via the database. If no hostname
      * can be found, the given IP address is returned.
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static String getHostname(String ipAddress) throws SQLException {
         if (ipAddress == null) {
@@ -445,6 +490,13 @@ public class NetworkElementFactory extends Object {
         return hostname;
     }
 
+    /**
+     * <p>getInterface</p>
+     *
+     * @param ipInterfaceId a int.
+     * @return a {@link org.opennms.web.element.Interface} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface getInterface(int ipInterfaceId) throws SQLException {
         Interface intf = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -472,6 +524,14 @@ public class NetworkElementFactory extends Object {
         return intf;
     }
 
+    /**
+     * <p>getInterface</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.element.Interface} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface getInterface(int nodeId, String ipAddress) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -504,6 +564,15 @@ public class NetworkElementFactory extends Object {
         return intf;
     }
 
+    /**
+     * <p>getInterface</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param ifindex a int.
+     * @return a {@link org.opennms.web.element.Interface} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface getInterface(int nodeId, String ipAddress, int ifindex) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -538,6 +607,13 @@ public class NetworkElementFactory extends Object {
         return intf;
     }
 
+    /**
+     * <p>getInterfacesWithIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.Interface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface[] getInterfacesWithIpAddress(String ipAddress) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -575,6 +651,9 @@ public class NetworkElementFactory extends Object {
      *               the ifAlias string we are looking for
      * @return intfs
      *               the Interfaces with a matching ifAlias
+     * @param nodeId a int.
+     * @param ifAlias a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static Interface[] getInterfacesWithIfAlias(int nodeId, String ifAlias) throws SQLException {
         if (ifAlias == null) {
@@ -623,6 +702,8 @@ public class NetworkElementFactory extends Object {
      *               the ifAlias string we are looking for
      * @return boolean
      *               true if node has any snmpIfAliases
+     * @param nodeId a int.
+     * @throws java.sql.SQLException if any.
      */
     public static boolean nodeHasIfAliases(int nodeId) throws SQLException {
 
@@ -650,6 +731,13 @@ public class NetworkElementFactory extends Object {
         return hasAliases;
     }
 
+    /**
+     * <p>getAllInterfacesOnNode</p>
+     *
+     * @param nodeId a int.
+     * @return an array of {@link org.opennms.web.element.Interface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface[] getAllInterfacesOnNode(int nodeId) throws SQLException {
         Interface[] intfs = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -672,6 +760,13 @@ public class NetworkElementFactory extends Object {
         return intfs;
     }
 
+    /**
+     * <p>getActiveInterfacesOnNode</p>
+     *
+     * @param nodeId a int.
+     * @return an array of {@link org.opennms.web.element.Interface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface[] getActiveInterfacesOnNode(int nodeId) throws SQLException {
         Interface[] intfs = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -697,6 +792,12 @@ public class NetworkElementFactory extends Object {
     /*
      * Returns all interfaces, including their SNMP information
      */
+    /**
+     * <p>getAllInterfaces</p>
+     *
+     * @return an array of {@link org.opennms.web.element.Interface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface[] getAllInterfaces() throws SQLException {
         return getAllInterfaces(true);
     }
@@ -705,6 +806,13 @@ public class NetworkElementFactory extends Object {
      * Returns all interfaces, but only includes snmp data if includeSNMP is true
      * This may be useful for pages that don't need snmp data and don't want to execute
      * a sub-query per interface!
+     */
+    /**
+     * <p>getAllInterfaces</p>
+     *
+     * @param includeSNMP a boolean.
+     * @return an array of {@link org.opennms.web.element.Interface} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Interface[] getAllInterfaces(boolean includeSNMP) throws SQLException {
         Interface[] intfs = null;
@@ -732,13 +840,19 @@ public class NetworkElementFactory extends Object {
     /**
      * Return the service specified by the node identifier, IP address, and
      * service identifier.
-     * 
+     *
      * <p>
      * Note that if there are both an active service and historically deleted
      * services with this (nodeid, ipAddress, serviceId) key, then the active
      * service will be returned. If there are only deleted services, then the
      * first deleted service will be returned.
      * </p>
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @return a {@link org.opennms.web.element.Service} object.
+     * @throws java.sql.SQLException if any.
      */
     public static Service getService(int nodeId, String ipAddress, int serviceId) throws SQLException {
         if (ipAddress == null) {
@@ -782,13 +896,17 @@ public class NetworkElementFactory extends Object {
     /**
      * Return the service specified by the node identifier, IP address, and
      * service identifier.
-     * 
+     *
      * <p>
      * Note that if there are both an active service and historically deleted
      * services with this (nodeid, ipAddress, serviceId) key, then the active
      * service will be returned. If there are only deleted services, then the
      * first deleted service will be returned.
      * </p>
+     *
+     * @param ifServiceId a int.
+     * @return a {@link org.opennms.web.element.Service} object.
+     * @throws java.sql.SQLException if any.
      */
     public static Service getService(int ifServiceId) throws SQLException {
         Service service = null;
@@ -824,6 +942,12 @@ public class NetworkElementFactory extends Object {
         return service;
     }
 
+    /**
+     * <p>getAllServices</p>
+     *
+     * @return an array of {@link org.opennms.web.element.Service} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Service[] getAllServices() throws SQLException {
         Service[] services = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -843,10 +967,27 @@ public class NetworkElementFactory extends Object {
         return services;
     }
 
+    /**
+     * <p>getServicesOnInterface</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.Service} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Service[] getServicesOnInterface(int nodeId, String ipAddress) throws SQLException {
         return getServicesOnInterface(nodeId, ipAddress, false);
     }
 
+    /**
+     * <p>getServicesOnInterface</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param includeDeletions a boolean.
+     * @return an array of {@link org.opennms.web.element.Service} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Service[] getServicesOnInterface(int nodeId, String ipAddress, boolean includeDeletions) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -880,6 +1021,10 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Get the list of all services on a given node.
+     *
+     * @param nodeId a int.
+     * @return an array of {@link org.opennms.web.element.Service} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Service[] getServicesOnNode(int nodeId) throws SQLException {
         Service[] services = null;
@@ -903,6 +1048,11 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Get the list of all instances of a specific service on a given node.
+     *
+     * @param nodeId a int.
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.element.Service} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Service[] getServicesOnNode(int nodeId, int serviceId) throws SQLException {
         Service[] services = null;
@@ -928,6 +1078,10 @@ public class NetworkElementFactory extends Object {
     /**
      * This method returns the data from the result set as an array of Node
      * objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static Node[] rs2Nodes(ResultSet rs) throws SQLException {
         if (rs == null) {
@@ -976,6 +1130,10 @@ public class NetworkElementFactory extends Object {
     /**
      * This method returns the data from the result set as an vector of
      * ipinterface objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.Interface} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static Interface[] rs2Interfaces(ResultSet rs) throws SQLException {
         List<Interface> intfs = new ArrayList<Interface>();
@@ -1009,6 +1167,13 @@ public class NetworkElementFactory extends Object {
 
     }
 
+    /**
+     * <p>augmentInterfacesWithSnmpData</p>
+     *
+     * @param intfs an array of {@link org.opennms.web.element.Interface} objects.
+     * @param conn a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     protected static void augmentInterfacesWithSnmpData(Interface[] intfs, Connection conn) throws SQLException {
         if (intfs == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1060,6 +1225,13 @@ public class NetworkElementFactory extends Object {
         }
     }
 
+    /**
+     * <p>rs2Services</p>
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.Service} objects.
+     * @throws java.sql.SQLException if any.
+     */
     protected static Service[] rs2Services(ResultSet rs) throws SQLException {
         List<Service> services = new ArrayList<Service>();
 
@@ -1097,6 +1269,13 @@ public class NetworkElementFactory extends Object {
         return services.toArray(new Service[services.size()]);
     }
 
+    /**
+     * <p>getServiceNameFromId</p>
+     *
+     * @param serviceId a int.
+     * @return a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static String getServiceNameFromId(int serviceId) throws SQLException {
         if (serviceId2NameMap == null) {
             createServiceIdNameMaps();
@@ -1107,6 +1286,13 @@ public class NetworkElementFactory extends Object {
         return (serviceName);
     }
 
+    /**
+     * <p>getServiceIdFromName</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
+     */
     public static int getServiceIdFromName(String serviceName) throws SQLException {
         if (serviceName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -1127,6 +1313,12 @@ public class NetworkElementFactory extends Object {
         return (serviceId);
     }
 
+    /**
+     * <p>getServiceIdToNameMap</p>
+     *
+     * @return a java$util$Map object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Map<Integer, String> getServiceIdToNameMap() throws SQLException {
         if (serviceId2NameMap == null) {
             createServiceIdNameMaps();
@@ -1135,6 +1327,12 @@ public class NetworkElementFactory extends Object {
         return (new HashMap<Integer, String>(serviceId2NameMap));
     }
 
+    /**
+     * <p>getServiceNameToIdMap</p>
+     *
+     * @return a java$util$Map object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Map<String, Integer> getServiceNameToIdMap() throws SQLException {
         if (serviceName2IdMap == null) {
             createServiceIdNameMaps();
@@ -1143,6 +1341,11 @@ public class NetworkElementFactory extends Object {
         return (new HashMap<String, Integer>(serviceName2IdMap));
     }
 
+    /**
+     * <p>createServiceIdNameMaps</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     protected static void createServiceIdNameMaps() throws SQLException {
         HashMap<Integer, String> idMap = new HashMap<Integer, String>();
         HashMap<String, Integer> nameMap = new HashMap<String, Integer>();
@@ -1172,6 +1375,15 @@ public class NetworkElementFactory extends Object {
 
     // OpenNMS IA Stuff
     
+    /**
+     * <p>getNodesLikeAndIpLike</p>
+     *
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param iplike a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Node[] getNodesLikeAndIpLike(String nodeLabel, String iplike,
             int serviceId) throws SQLException {
         if (nodeLabel == null) {
@@ -1206,6 +1418,14 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getNodesLike</p>
+     *
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Node[] getNodesLike(String nodeLabel, int serviceId)
             throws SQLException {
         if (nodeLabel == null) {
@@ -1238,6 +1458,14 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getNodesWithIpLike</p>
+     *
+     * @param iplike a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Node[] getNodesWithIpLike(String iplike, int serviceId)
             throws SQLException {
         if (iplike == null) {
@@ -1264,6 +1492,13 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getAllNodes</p>
+     *
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Node[] getAllNodes(int serviceId) throws SQLException {
         Node[] nodes = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -1284,6 +1519,13 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getAtInterfacesFromPhysaddr</p>
+     *
+     * @param AtPhysAddr a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.AtInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static AtInterface[] getAtInterfacesFromPhysaddr(String AtPhysAddr)
             throws SQLException {
 
@@ -1310,6 +1552,13 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getNodesFromPhysaddr</p>
+     *
+     * @param AtPhysAddr a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Node[] getNodesFromPhysaddr(String AtPhysAddr)
             throws SQLException {
 
@@ -1337,6 +1586,14 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getAtInterface</p>
+     *
+     * @param nodeID a int.
+     * @param ipaddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.element.AtInterface} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static AtInterface getAtInterface(int nodeID, String ipaddr)
             throws SQLException {
 
@@ -1367,6 +1624,13 @@ public class NetworkElementFactory extends Object {
         return node;
     }
 
+    /**
+     * <p>getIpRoute</p>
+     *
+     * @param nodeID a int.
+     * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static IpRouteInterface[] getIpRoute(int nodeID) throws SQLException {
 
         IpRouteInterface[] nodes = null;
@@ -1388,6 +1652,14 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getIpRoute</p>
+     *
+     * @param nodeID a int.
+     * @param ifindex a int.
+     * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static IpRouteInterface[] getIpRoute(int nodeID, int ifindex)
             throws SQLException {
 
@@ -1411,6 +1683,13 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>isParentNode</p>
+     *
+     * @param nodeID a int.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public static boolean isParentNode(int nodeID) throws SQLException {
 
         boolean isPN = false;
@@ -1436,6 +1715,13 @@ public class NetworkElementFactory extends Object {
         return isPN;
     }
 
+    /**
+     * <p>isBridgeNode</p>
+     *
+     * @param nodeID a int.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public static boolean isBridgeNode(int nodeID) throws SQLException {
 
         boolean isPN = false;
@@ -1461,6 +1747,13 @@ public class NetworkElementFactory extends Object {
         return isPN;
     }
 
+    /**
+     * <p>isRouteInfoNode</p>
+     *
+     * @param nodeID a int.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public static boolean isRouteInfoNode(int nodeID) throws SQLException {
 
         boolean isRI = false;
@@ -1487,6 +1780,13 @@ public class NetworkElementFactory extends Object {
         return isRI;
     }
 
+    /**
+     * <p>getDataLinksOnNode</p>
+     *
+     * @param nodeID a int.
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static DataLinkInterface[] getDataLinksOnNode(int nodeID) throws SQLException {
         DataLinkInterface[] normalnodes = null;
         normalnodes = NetworkElementFactory.getDataLinks(nodeID);
@@ -1508,6 +1808,13 @@ public class NetworkElementFactory extends Object {
     	
     }
 
+    /**
+     * <p>getLinkedNodeIdOnNode</p>
+     *
+     * @param nodeID a int.
+     * @return a {@link java.util.Set} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Set<Integer> getLinkedNodeIdOnNode(int nodeID) throws SQLException {
         Set<Integer> nodes = new TreeSet<Integer>();
         Integer node = null;
@@ -1548,6 +1855,14 @@ public class NetworkElementFactory extends Object {
         
     }
     
+    /**
+     * <p>getLinkedNodeIdOnNode</p>
+     *
+     * @param nodeID a int.
+     * @param conn a {@link java.sql.Connection} object.
+     * @return a {@link java.util.Set} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Set<Integer> getLinkedNodeIdOnNode(int nodeID,Connection conn) throws SQLException {
         Set<Integer> nodes = new TreeSet<Integer>();
         Integer node = null;
@@ -1588,6 +1903,14 @@ public class NetworkElementFactory extends Object {
         
     }    
 
+    /**
+     * <p>getLinkedNodeIdOnNodes</p>
+     *
+     * @param nodeIds a {@link java.util.Set} object.
+     * @param conn a {@link java.sql.Connection} object.
+     * @return a {@link java.util.Set} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Set<Integer> getLinkedNodeIdOnNodes(Set<Integer> nodeIds, Connection conn) throws SQLException {
         List<Integer> nodes = new ArrayList<Integer>();
         if(nodeIds==null || nodeIds.size()==0){
@@ -1632,6 +1955,13 @@ public class NetworkElementFactory extends Object {
         
     }
     
+    /**
+     * <p>getDataLinks</p>
+     *
+     * @param nodeID a int.
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     protected static DataLinkInterface[] getDataLinks(int nodeID)
             throws SQLException {
 
@@ -1654,6 +1984,13 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getDataLinksFromNodeParent</p>
+     *
+     * @param nodeID a int.
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     protected static DataLinkInterface[] getDataLinksFromNodeParent(int nodeID)
             throws SQLException {
 
@@ -1676,6 +2013,14 @@ public class NetworkElementFactory extends Object {
         return invertDataLinkInterface(nodes);
     }
 
+    /**
+     * <p>getDataLinksOnInterface</p>
+     *
+     * @param nodeID a int.
+     * @param ifindex a int.
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static DataLinkInterface[] getDataLinksOnInterface(int nodeID, int ifindex) throws SQLException {
         DataLinkInterface[] normalnodes = null;
         normalnodes = NetworkElementFactory.getDataLinks(nodeID,ifindex);
@@ -1698,6 +2043,14 @@ public class NetworkElementFactory extends Object {
     	
     }
 
+    /**
+     * <p>getDataLinks</p>
+     *
+     * @param nodeID a int.
+     * @param ifindex a int.
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static DataLinkInterface[] getDataLinks(int nodeID, int ifindex)
     throws SQLException {
 
@@ -1721,6 +2074,14 @@ public class NetworkElementFactory extends Object {
     	return nodes;
     }
 
+    /**
+     * <p>getDataLinksFromNodeParent</p>
+     *
+     * @param nodeID a int.
+     * @param ifindex a int.
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     protected static DataLinkInterface[] getDataLinksFromNodeParent(int nodeID,
             int ifindex) throws SQLException {
 
@@ -1744,6 +2105,12 @@ public class NetworkElementFactory extends Object {
         return invertDataLinkInterface(nodes);
     }
 
+    /**
+     * <p>getAllDataLinks</p>
+     *
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static DataLinkInterface[] getAllDataLinks() throws SQLException {
 
         DataLinkInterface[] nodes = null;
@@ -1764,6 +2131,13 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getVlansOnNode</p>
+     *
+     * @param nodeID a int.
+     * @return an array of {@link org.opennms.web.element.Vlan} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Vlan[] getVlansOnNode(int nodeID) throws SQLException {
     	Vlan[] vlans = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -1787,6 +2161,13 @@ public class NetworkElementFactory extends Object {
         return vlans;
     }
     
+    /**
+     * <p>getStpInterface</p>
+     *
+     * @param nodeID a int.
+     * @return an array of {@link org.opennms.web.element.StpInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static StpInterface[] getStpInterface(int nodeID)
             throws SQLException {
 
@@ -1817,6 +2198,14 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getStpInterface</p>
+     *
+     * @param nodeID a int.
+     * @param ifindex a int.
+     * @return an array of {@link org.opennms.web.element.StpInterface} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static StpInterface[] getStpInterface(int nodeID, int ifindex)
             throws SQLException {
 
@@ -1848,6 +2237,13 @@ public class NetworkElementFactory extends Object {
         return nodes;
     }
 
+    /**
+     * <p>getStpNode</p>
+     *
+     * @param nodeID a int.
+     * @return an array of {@link org.opennms.web.element.StpNode} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static StpNode[] getStpNode(int nodeID) throws SQLException {
 
         StpNode[] nodes = null;
@@ -1872,6 +2268,10 @@ public class NetworkElementFactory extends Object {
     /**
      * This method returns the data from the result set as an array of
      * AtInterface objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.AtInterface} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static AtInterface[] rs2AtInterface(ResultSet rs)
             throws SQLException {
@@ -1922,6 +2322,10 @@ public class NetworkElementFactory extends Object {
     /**
      * This method returns the data from the result set as an array of
      * IpRouteInterface objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static IpRouteInterface[] rs2IpRouteInterface(ResultSet rs)
             throws SQLException {
@@ -2005,6 +2409,10 @@ public class NetworkElementFactory extends Object {
     /**
      * This method returns the data from the result set as an array of
      * StpInterface objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.StpInterface} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static StpInterface[] rs2StpInterface(ResultSet rs)
             throws SQLException {
@@ -2095,6 +2503,10 @@ public class NetworkElementFactory extends Object {
     /**
      * This method returns the data from the result set as an array of StpNode
      * objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.StpNode} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static StpNode[] rs2StpNode(ResultSet rs) throws SQLException {
         if (rs == null) {
@@ -2180,6 +2592,10 @@ public class NetworkElementFactory extends Object {
     /**
      * This method returns the data from the result set as an array of StpNode
      * objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.Vlan} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static Vlan[] rs2Vlan(ResultSet rs) throws SQLException {
         if (rs == null) {
@@ -2232,6 +2648,10 @@ public class NetworkElementFactory extends Object {
     /**
      * This method returns the data from the result set as an array of
      * DataLinkInterface objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static DataLinkInterface[] rs2DataLink(ResultSet rs)
             throws SQLException {
@@ -2288,6 +2708,12 @@ public class NetworkElementFactory extends Object {
         return dataLinkIfs.toArray(new DataLinkInterface[dataLinkIfs.size()]);
     }
 
+    /**
+     * <p>invertDataLinkInterface</p>
+     *
+     * @param nodes an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
+     */
     protected static DataLinkInterface[] invertDataLinkInterface(DataLinkInterface[] nodes) {
     	for (int i=0; i<nodes.length;i++) {
     		DataLinkInterface dli = nodes[i];
@@ -2298,6 +2724,13 @@ public class NetworkElementFactory extends Object {
     	return nodes;
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @param nodeid a int.
+     * @return a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     */
     protected static String getIpAddress(int nodeid) throws SQLException {
 
         String ipaddr = null;
@@ -2323,6 +2756,14 @@ public class NetworkElementFactory extends Object {
 
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @param nodeid a int.
+     * @param ifindex a int.
+     * @return a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     */
     protected static String getIpAddress(int nodeid, int ifindex)
             throws SQLException {
         String ipaddr = null;
@@ -2351,6 +2792,10 @@ public class NetworkElementFactory extends Object {
 
     /**
      * Returns all non-deleted nodes with an IP address like the rule given.
+     *
+     * @param iplike a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws java.sql.SQLException if any.
      */
     public static List<Integer> getNodeIdsWithIpLike(String iplike) throws SQLException {
         if (iplike == null) {
@@ -2387,6 +2832,16 @@ public class NetworkElementFactory extends Object {
     
 
 
+    /**
+     * <p>getNodesWithCategories</p>
+     *
+     * @param transTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categories1 an array of {@link java.lang.String} objects.
+     * @param onlyNodesWithDownAggregateStatus a boolean.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     */
     public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final boolean onlyNodesWithDownAggregateStatus) {
     	return (Node[])transTemplate.execute(new TransactionCallback() {
 
@@ -2397,6 +2852,15 @@ public class NetworkElementFactory extends Object {
     	});
     }
     
+    /**
+     * <p>getNodesWithCategories</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categories1 an array of {@link java.lang.String} objects.
+     * @param onlyNodesWithDownAggregateStatus a boolean.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     */
     public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, boolean onlyNodesWithDownAggregateStatus) {
         Collection<OnmsNode> ourNodes = getNodesInCategories(nodeDao, categoryDao, categories1);
         
@@ -2421,6 +2885,17 @@ public class NetworkElementFactory extends Object {
         return ourNodes;
     }
 
+    /**
+     * <p>getNodesWithCategories</p>
+     *
+     * @param transTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categories1 an array of {@link java.lang.String} objects.
+     * @param categories2 an array of {@link java.lang.String} objects.
+     * @param onlyNodesWithDownAggregateStatus a boolean.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     */
     public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
     	return (Node[])transTemplate.execute(new TransactionCallback() {
 
@@ -2430,6 +2905,16 @@ public class NetworkElementFactory extends Object {
     		
     	});
     }
+    /**
+     * <p>getNodesWithCategories</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     * @param categories1 an array of {@link java.lang.String} objects.
+     * @param categories2 an array of {@link java.lang.String} objects.
+     * @param onlyNodesWithDownAggregateStatus a boolean.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     */
     public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, String[] categories2, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
         for (String category : categories1) {
@@ -2463,6 +2948,12 @@ public class NetworkElementFactory extends Object {
         return convertOnmsNodeCollectionToNodeArray(ourNodes);
     }
     
+    /**
+     * <p>convertOnmsNodeCollectionToNodeArray</p>
+     *
+     * @param ourNodes a {@link java.util.Collection} object.
+     * @return an array of {@link org.opennms.web.element.Node} objects.
+     */
     public static Node[] convertOnmsNodeCollectionToNodeArray(Collection<OnmsNode> ourNodes) {
         ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
         for (OnmsNode on : ourNodes) {

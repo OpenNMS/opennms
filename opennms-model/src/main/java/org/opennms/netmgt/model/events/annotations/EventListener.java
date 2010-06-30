@@ -45,6 +45,7 @@ import java.lang.annotation.Target;
  * EventListener
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)

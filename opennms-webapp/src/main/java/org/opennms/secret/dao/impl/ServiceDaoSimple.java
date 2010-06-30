@@ -41,14 +41,18 @@ import org.opennms.secret.model.InterfaceService;
 import org.opennms.secret.model.NodeInterface;
 
 /**
- * @author david
+ * <p>ServiceDaoSimple class.</p>
  *
+ * @author david
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ServiceDaoSimple implements ServiceDao {
 
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.ServiceDao#getService(java.lang.Long)
      */
+    /** {@inheritDoc} */
     public InterfaceService getService(Long id) {
         
         InterfaceService svc = new InterfaceService();
@@ -62,11 +66,13 @@ public class ServiceDaoSimple implements ServiceDao {
     /* (non-Javadoc)
      * @see org.opennms.secret.dao.ServiceDao#initalize(java.lang.Object)
      */
+    /** {@inheritDoc} */
     public void initalize(Object o) {
         // TODO Auto-generated method stub
 
     }
 
+    /** {@inheritDoc} */
     public Collection<InterfaceService> getServices(NodeInterface nodeInterface) {
         
         Collection<InterfaceService> services = new ArrayList<InterfaceService>();

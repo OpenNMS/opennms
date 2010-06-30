@@ -142,7 +142,7 @@ class SnmpRequest implements Runnable {
      * then the SnmpHandler's snmpTimeoutError() method is invoked. If an error
      * occurs transmiting the pdu then the snmpInternalError() method is
      * invoked.
-     * 
+     *
      * @see SnmpHandler
      * @see SnmpPduRequest
      * @see SnmpSession

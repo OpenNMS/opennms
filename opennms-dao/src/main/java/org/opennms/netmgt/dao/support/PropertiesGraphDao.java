@@ -73,7 +73,14 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+/**
+ * <p>PropertiesGraphDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PropertiesGraphDao implements GraphDao, InitializingBean {
+    /** Constant <code>DEFAULT_GRAPH_LIST_KEY="reports"</code> */
     public static final String DEFAULT_GRAPH_LIST_KEY = "reports";
     
     private Map<String, Resource> m_prefabConfigs;
@@ -90,6 +97,9 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     private AdhocGraphTypeCallback m_adhocCallback =
         new AdhocGraphTypeCallback();
 
+    /**
+     * <p>Constructor for PropertiesGraphDao.</p>
+     */
     public PropertiesGraphDao() {
     }
     
@@ -105,14 +115,23 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public PrefabGraphType findByName(String name) {
         return m_types.get(name).getObject();
     }
     
+    /** {@inheritDoc} */
     public AdhocGraphType findAdhocByName(String name) {
         return m_adhocTypes.get(name).getObject();
     }
 
+    /**
+     * <p>loadProperties</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @throws java.io.IOException if any.
+     */
     public void loadProperties(String type, Resource resource) throws IOException {
         InputStream in = resource.getInputStream();
         PrefabGraphType t;
@@ -126,6 +145,13 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                     new FileReloadContainer<PrefabGraphType>(t, resource, m_prefabCallback));
     }
     
+    /**
+     * <p>loadProperties</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @param in a {@link java.io.InputStream} object.
+     * @throws java.io.IOException if any.
+     */
     public void loadProperties(String type, InputStream in) throws IOException {
         PrefabGraphType t = createPrefabGraphType(type, in);
         m_types.put(t.getName(), new FileReloadContainer<PrefabGraphType>(t));
@@ -148,6 +174,13 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         return t;
     }
     
+    /**
+     * <p>loadAdhocProperties</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @throws java.io.IOException if any.
+     */
     public void loadAdhocProperties(String type, Resource resource) throws IOException {
         InputStream in = resource.getInputStream();
         AdhocGraphType t;
@@ -160,11 +193,26 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         m_adhocTypes.put(t.getName(), new FileReloadContainer<AdhocGraphType>(t, resource, m_adhocCallback));
     }
     
+    /**
+     * <p>loadAdhocProperties</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @param in a {@link java.io.InputStream} object.
+     * @throws java.io.IOException if any.
+     */
     public void loadAdhocProperties(String type, InputStream in) throws IOException {
         AdhocGraphType t = createAdhocGraphType(type, in);
         m_adhocTypes.put(t.getName(), new FileReloadContainer<AdhocGraphType>(t));
     }
     
+    /**
+     * <p>createAdhocGraphType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @param in a {@link java.io.InputStream} object.
+     * @return a {@link org.opennms.netmgt.model.AdhocGraphType} object.
+     * @throws java.io.IOException if any.
+     */
     public AdhocGraphType createAdhocGraphType(String type, InputStream in) throws IOException {
         Properties properties = new Properties();
         properties.load(in);
@@ -336,6 +384,11 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
     }
     
+    /**
+     * <p>getAllPrefabGraphs</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<PrefabGraph> getAllPrefabGraphs() {
         List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
         for (FileReloadContainer<PrefabGraphType> container : m_types.values()) {
@@ -344,6 +397,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         return graphs;
     }
     
+    /** {@inheritDoc} */
     public PrefabGraph getPrefabGraph(String name) {
         for (FileReloadContainer<PrefabGraphType> container : m_types.values()) {
             PrefabGraph graph = container.getObject().getQuery(name);
@@ -354,6 +408,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         throw new ObjectRetrievalFailureException(PrefabGraph.class, name, "Could not find prefabricated graph report with name '" + name + "'", null);
     }
     
+    /** {@inheritDoc} */
     public PrefabGraph[] getPrefabGraphsForResource(OnmsResource resource) {
         Set<OnmsAttribute> attributes = resource.getAttributes();
         // Check if there are no attributes
@@ -456,6 +511,11 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void afterPropertiesSet() throws IOException {
         Assert.notNull(m_prefabConfigs, "property prefabConfigs must be set to a non-null value");
         Assert.notNull(m_adhocConfigs, "property adhocConfigs must be set to a non-null value");
@@ -464,18 +524,38 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         initAdhoc();
     }
 
+    /**
+     * <p>getAdhocConfigs</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Resource> getAdhocConfigs() {
         return m_adhocConfigs;
     }
 
+    /**
+     * <p>setAdhocConfigs</p>
+     *
+     * @param adhocConfigs a {@link java.util.Map} object.
+     */
     public void setAdhocConfigs(Map<String, Resource> adhocConfigs) {
         m_adhocConfigs = adhocConfigs;
     }
 
+    /**
+     * <p>getPrefabConfigs</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Resource> getPrefabConfigs() {
         return m_prefabConfigs;
     }
 
+    /**
+     * <p>setPrefabConfigs</p>
+     *
+     * @param prefabConfigs a {@link java.util.Map} object.
+     */
     public void setPrefabConfigs(Map<String, Resource> prefabConfigs) {
         m_prefabConfigs = prefabConfigs;
     }

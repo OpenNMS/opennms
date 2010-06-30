@@ -124,21 +124,20 @@ final class BroadcastEventProcessor implements EventListener {
      * This method may be invoked by the garbage collection. Once invoked it
      * ensures that the <code>close</code> method is called <em>at least</em>
      * once during the cycle of this object.
-     * 
+     *
+     * @throws java.lang.Throwable if any.
      */
     protected void finalize() throws Throwable {
         close(); // ensure it's closed
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the JMS topic session when a new event is
      * available for processing. Currently only text based messages are
      * processed by this callback. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
-     * 
-     * @param event
-     *            The event message.
-     * 
      */
     public void onEvent(Event event) {
         Category log = ThreadCategory.getInstance(getClass());
@@ -174,6 +173,11 @@ final class BroadcastEventProcessor implements EventListener {
         }
     } // end onEvent()
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "Vulnscand:BroadcastEventProcessor";
     }

@@ -39,12 +39,18 @@ package org.opennms.core.utils;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+/**
+ * <p>StringUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class StringUtils {
 
     /**
      * Convenience method for creating arrays of strings suitable for use as
      * command-line parameters when executing an external process.
-     * 
+     *
      * <p>
      * The default {@link Runtime#exec Runtime.exec}method will split a single
      * string based on spaces, but it does not respect spaces within quotation
@@ -54,18 +60,18 @@ public class StringUtils {
      * string by the remaining out-of-quote spaces. It then goes through each
      * substring and replaces the delimiters with spaces.
      * </p>
-     * 
+     *
      * <p>
      * <em>Caveat:</em> This method does not respect escaped quotes! It will
      * simply remove them and leave the stray escape characters.
      * </p>
-     * 
+     *
      * @param s
      *            the string to split
      * @param delim
      *            a char that does not already exist in <code>s</code>
      * @return An array of strings split by spaces outside of quotes.
-     * @throws IllegalArgumentException
+     * @throws java.lang.IllegalArgumentException
      *             If <code>s</code> is null or if <code>delim</code>
      *             already exists in <code>s</code>.
      */
@@ -116,6 +122,13 @@ public class StringUtils {
         return list;
     }
 
+    /**
+     * <p>truncate</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param length a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String truncate(String name, int length) {
         if (name.length() <= length) return name;
         return name.substring(0, length);

@@ -33,10 +33,28 @@ package org.opennms.web.admin.roles;
 
 import java.util.Collection;
 
+/**
+ * <p>WebUserManager interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public interface WebUserManager {
     
+    /**
+     * <p>getUsers</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection getUsers();
 
+    /**
+     * <p>getUser</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.admin.roles.WebUser} object.
+     */
     public WebUser getUser(String name);
 
 }

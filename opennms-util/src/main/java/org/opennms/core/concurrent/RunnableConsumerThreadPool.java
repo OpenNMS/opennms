@@ -49,6 +49,12 @@ import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.util.Assert;
 
+/**
+ * <p>RunnableConsumerThreadPool class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class RunnableConsumerThreadPool extends Object implements Fiber {
     /**
      * The queue where runnable objects are added.
@@ -563,7 +569,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * consumes {@link java.lang.Runnable Runnable}instances from the input
      * queue, calling the <code>run</code> method as they are consumed.
      * </p>
-     * 
+     *
      * <p>
      * The size of the thread pool is controlled by the low and high water
      * marks, each water mark being the ratio of queue elements to threads. As
@@ -571,7 +577,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * the maximum amount. As the ratio drops past the low water mark the number
      * of threads are reduced.
      * </p>
-     * 
+     *
      * @param name
      *            The name of the thread pool.
      * @param loMark
@@ -580,7 +586,6 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      *            The high ration used to mark thread production.
      * @param max
      *            The maximum number of threads in the pool.
-     * 
      * @exception java.lang.IllegalArgumentException
      *                Thrown if the low or high marks are invalid, or the
      *                maximum number of threads is invalid.
@@ -608,7 +613,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * Returns the input queue where {@link java.lang.Runnable Runnable}objects
      * are enqueued. Each runnable object will be executed in the order that it
      * is entered.
-     * 
+     *
      * @return The Runnable input queue.
      */
     public FifoQueue<Runnable> getRunQueue() {
@@ -651,7 +656,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
 
     /**
      * Returns the current status of the fiber.
-     * 
+     *
      * @return The current pool status.
      */
     public int getStatus() {
@@ -666,7 +671,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
 
     /**
      * Returns the name of the thread pool.
-     * 
+     *
      * @return The name of the pool.
      */
     public String getName() {
@@ -675,7 +680,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
 
     /**
      * Adds a listener that is notified upon completion of each runnable.
-     * 
+     *
      * @param listener
      *            The listener notified on runnable completion.
      */
@@ -687,7 +692,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
 
     /**
      * Removes a previous register listener.
-     * 
+     *
      * @param listener
      *            The listener to remove from notification.
      */
@@ -699,7 +704,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
 
     /**
      * Adds a listener that is notified of error from any runnable.
-     * 
+     *
      * @param listener
      *            The listener notified on runnable completion.
      */
@@ -711,7 +716,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
 
     /**
      * Removes a previous register listener.
-     * 
+     *
      * @param listener
      *            The listener to remove from notification.
      */

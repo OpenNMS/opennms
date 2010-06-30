@@ -62,6 +62,12 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.xml.event.Event;
 
+/**
+ * <p>Abstract AbstractSaveOrUpdateOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperation implements SaveOrUpdateOperation {
 
 	private OnmsNode m_node;
@@ -78,11 +84,34 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     protected Boolean m_nonIpInterfaces;
     protected String m_nonIpSnmpPrimary;
 
+    /**
+     * <p>Constructor for AbstractSaveOrUpdateOperation.</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     * @param city a {@link java.lang.String} object.
+     * @param nonIpInterfaces a {@link java.lang.Boolean} object.
+     * @param nonIpSnmpPrimary a {@link java.lang.String} object.
+     */
     public AbstractSaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city,
             Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
 		this(null, foreignSource, foreignId, nodeLabel, building, city, nonIpInterfaces, nonIpSnmpPrimary);
 	}
 
+	/**
+	 * <p>Constructor for AbstractSaveOrUpdateOperation.</p>
+	 *
+	 * @param nodeId a {@link java.lang.Integer} object.
+	 * @param foreignSource a {@link java.lang.String} object.
+	 * @param foreignId a {@link java.lang.String} object.
+	 * @param nodeLabel a {@link java.lang.String} object.
+	 * @param building a {@link java.lang.String} object.
+	 * @param city a {@link java.lang.String} object.
+	 * @param nonIpInterfaces a {@link java.lang.Boolean} object.
+	 * @param nonIpSnmpPrimary a {@link java.lang.String} object.
+	 */
 	public AbstractSaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city,
 	        Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
         m_node = new OnmsNode();
@@ -98,6 +127,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_nonIpSnmpPrimary = nonIpSnmpPrimary;
 	}
 
+	/** {@inheritDoc} */
 	public void foundInterface(String ipAddr, Object descr, String snmpPrimary, boolean managed, int status) {
 		
 		if ("".equals(ipAddr)) {
@@ -126,16 +156,32 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_node.addIpInterface(m_currentInterface);
     }
 	
+	/**
+	 * <p>gatherAdditionalData</p>
+	 */
 	public void gatherAdditionalData() {
     	updateSnmpData();
 	}
 	
+    /**
+     * <p>persist</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Event> persist() {
     	return doPersist();
 	}
 
+    /**
+     * <p>doPersist</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     protected abstract List<Event> doPersist();
 
+	/**
+	 * <p>updateSnmpData</p>
+	 */
 	protected void updateSnmpData() {
 		if (m_collector != null) 
 			m_collector.run();
@@ -224,10 +270,20 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         }
 	}
 	
+	/**
+	 * <p>isSnmpDataForNodeUpToDate</p>
+	 *
+	 * @return a boolean.
+	 */
 	protected boolean isSnmpDataForNodeUpToDate() {
 		return m_collector != null && m_collector.hasSystemGroup();
 	}
 	
+	/**
+	 * <p>isSnmpDataForInterfacesUpToDate</p>
+	 *
+	 * @return a boolean.
+	 */
 	protected boolean isSnmpDataForInterfacesUpToDate() {
 		return m_collector != null && m_collector.hasIfTable() && m_collector.hasIpAddrTable();
 	}
@@ -272,16 +328,34 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
 	}
 
+	/**
+	 * <p>getAdminStatus</p>
+	 *
+	 * @param ifIndex a int.
+	 * @return a {@link java.lang.Integer} object.
+	 */
 	protected Integer getAdminStatus(int ifIndex) {
 		int adminStatus = m_collector.getAdminStatus(ifIndex);
 		return (adminStatus == -1 ? null : new Integer(adminStatus));
 	}
 
+	/**
+	 * <p>getIfType</p>
+	 *
+	 * @param ifIndex a int.
+	 * @return a {@link java.lang.Integer} object.
+	 */
 	protected Integer getIfType(int ifIndex) {
 		int ifType = m_collector.getIfType(ifIndex);
 		return (ifType == -1 ? null : new Integer(ifType));
 	}
 
+	/**
+	 * <p>getNetMask</p>
+	 *
+	 * @param ifIndex a int.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected String getNetMask(int ifIndex) {
 		InetAddress[] ifAddressAndMask = m_collector.getIfAddressAndMask(ifIndex);
 		if (ifAddressAndMask != null && ifAddressAndMask.length > 1 && ifAddressAndMask[1] != null)
@@ -304,6 +378,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 //		}
 	}
 
+	/** {@inheritDoc} */
 	public void foundMonitoredService(String serviceName) {
         OnmsServiceType svcType = getServiceType(serviceName);
         OnmsMonitoredService service = new OnmsMonitoredService(m_currentInterface, svcType);
@@ -312,6 +387,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     
     }
 
+    /** {@inheritDoc} */
     public void foundCategory(String name) {
         OnmsCategory category = getCategory(name);
         m_node.getCategories().add(category);
@@ -354,14 +430,29 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         }
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     protected OnmsNode getNode() {
         return m_node;
     }
     
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     protected NodeDao getNodeDao() {
         return m_nodeDao;
     }
     
+    /**
+     * <p>getDistPollerDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     */
     protected DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
     }
@@ -382,6 +473,12 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
     }
 
+    /**
+     * <p>getIpAddrToInterfaceMap</p>
+     *
+     * @param imported a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @return a {@link java.util.Map} object.
+     */
     protected Map<String, OnmsIpInterface> getIpAddrToInterfaceMap(OnmsNode imported) {
         Map<String, OnmsIpInterface> ipAddrToIface = new HashMap<String, OnmsIpInterface>();
         for (OnmsIpInterface iface : imported.getIpInterfaces()) {
@@ -412,54 +509,121 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         return m_categories.get();
     }
 
+    /**
+     * <p>getCategoryDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
 
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
 
+    /**
+     * <p>setServiceTypeDao</p>
+     *
+     * @param svcTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     */
     public void setServiceTypeDao(ServiceTypeDao svcTypeDao) {
         m_svcTypeDao = svcTypeDao;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    /**
+     * <p>setDistPollerDao</p>
+     *
+     * @param distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
+     */
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
     }
     
+    /**
+     * <p>setTypeCache</p>
+     *
+     * @param typeCache a {@link java.lang.ThreadLocal} object.
+     */
     public void setTypeCache(ThreadLocal<HashMap<String, OnmsServiceType>> typeCache) {
         m_types = typeCache;
     }
     
+    /**
+     * <p>setCategoryCache</p>
+     *
+     * @param categoryCache a {@link java.lang.ThreadLocal} object.
+     */
     public void setCategoryCache(ThreadLocal<HashMap<String, OnmsCategory>> categoryCache) {
         m_categories = categoryCache;
     }
     
+    /**
+     * <p>setNonIpInterfaces</p>
+     *
+     * @param nonIpInterfaces a {@link java.lang.Boolean} object.
+     */
     public void setNonIpInterfaces(Boolean nonIpInterfaces) {
         m_nonIpInterfaces = nonIpInterfaces;
     }
     
+    /**
+     * <p>getNonIpInterfaces</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean getNonIpInterfaces() {
         return m_nonIpInterfaces;
     }
     
+    /**
+     * <p>setNonIpSnmpPrimary</p>
+     *
+     * @param nonIpSnmpPrimary a {@link java.lang.String} object.
+     */
     public void setNonIpSnmpPrimary(String nonIpSnmpPrimary) {
         m_nonIpSnmpPrimary = nonIpSnmpPrimary;
     }
     
+    /**
+     * <p>getNonIpSnmpPrimary</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNonIpSnmpPrimary() {
         return m_nonIpSnmpPrimary;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+	/**
+	 * <p>nullSafeEquals</p>
+	 *
+	 * @param o1 a {@link java.lang.Object} object.
+	 * @param o2 a {@link java.lang.Object} object.
+	 * @return a boolean.
+	 */
 	public boolean nullSafeEquals(Object o1, Object o2) {
 	    return (o1 == null ? o2 == null : o1.equals(o2));
 	}

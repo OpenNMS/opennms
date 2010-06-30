@@ -55,7 +55,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
+ * <p>Statsd class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class Statsd implements SpringServiceDaemon {
     private ResourceDao m_resourceDao;
@@ -66,6 +69,15 @@ public class Statsd implements SpringServiceDaemon {
     private Scheduler m_scheduler;
     private ReportDefinitionBuilder m_reportDefinitionBuilder;
 
+    /**
+     * <p>start</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.text.ParseException if any.
+     * @throws org.quartz.SchedulerException if any.
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.lang.NoSuchMethodException if any.
+     */
     public void start() throws InterruptedException, ParseException, SchedulerException, ClassNotFoundException, NoSuchMethodException {
         for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
             scheduleReport(reportDef);
@@ -92,6 +104,12 @@ public class Statsd implements SpringServiceDaemon {
         log().debug("Schedule report " + cronReportTrigger);
     }
 
+    /**
+     * <p>runReport</p>
+     *
+     * @param reportDef a {@link org.opennms.netmgt.statsd.ReportDefinition} object.
+     * @throws java.lang.Throwable if any.
+     */
     public void runReport(ReportDefinition reportDef) throws Throwable {
         final ReportInstance report;
         try {
@@ -118,6 +136,11 @@ public class Statsd implements SpringServiceDaemon {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceDao != null, "property resourceDao must be set to a non-null value");
         Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
@@ -128,58 +151,128 @@ public class Statsd implements SpringServiceDaemon {
         Assert.state(m_reportDefinitionBuilder != null, "property reportDefinitionBuilder must be set to a non-null value");
     }
     
+    /**
+     * <p>getResourceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
     }
 
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
 
+    /**
+     * <p>getRrdDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public RrdDao getRrdDao() {
         return m_rrdDao;
     }
 
+    /**
+     * <p>setRrdDao</p>
+     *
+     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
     }
 
+    /**
+     * <p>getTransactionTemplate</p>
+     *
+     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public TransactionTemplate getTransactionTemplate() {
         return m_transactionTemplate;
     }
 
+    /**
+     * <p>setTransactionTemplate</p>
+     *
+     * @param transactionTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         m_transactionTemplate = transactionTemplate;
     }
     
+    /**
+     * <p>getReportPersister</p>
+     *
+     * @return a {@link org.opennms.netmgt.statsd.ReportPersister} object.
+     */
     public ReportPersister getReportPersister() {
         return m_reportPersister;
     }
 
+    /**
+     * <p>setReportPersister</p>
+     *
+     * @param reportPersister a {@link org.opennms.netmgt.statsd.ReportPersister} object.
+     */
     public void setReportPersister(ReportPersister reportPersister) {
         m_reportPersister = reportPersister;
     }
 
+    /**
+     * <p>getScheduler</p>
+     *
+     * @return a {@link org.quartz.Scheduler} object.
+     */
     public Scheduler getScheduler() {
         return m_scheduler;
     }
 
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link org.quartz.Scheduler} object.
+     */
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }
 
+    /**
+     * <p>getReportDefinitionBuilder</p>
+     *
+     * @return a {@link org.opennms.netmgt.statsd.ReportDefinitionBuilder} object.
+     */
     public ReportDefinitionBuilder getReportDefinitionBuilder() {
         return m_reportDefinitionBuilder;
     }
 
+    /**
+     * <p>setReportDefinitionBuilder</p>
+     *
+     * @param reportDefinitionBuilder a {@link org.opennms.netmgt.statsd.ReportDefinitionBuilder} object.
+     */
     public void setReportDefinitionBuilder(ReportDefinitionBuilder reportDefinitionBuilder) {
         m_reportDefinitionBuilder = reportDefinitionBuilder;
     }
 
+    /**
+     * <p>getFilterDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.FilterDao} object.
+     */
     public FilterDao getFilterDao() {
         return m_filterDao;
     }
 
+    /**
+     * <p>setFilterDao</p>
+     *
+     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     */
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;
     }

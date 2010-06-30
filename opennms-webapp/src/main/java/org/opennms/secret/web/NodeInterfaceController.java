@@ -38,18 +38,38 @@ import org.opennms.secret.service.NodeInterfaceService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.throwaway.ThrowawayController;
 
+/**
+ * <p>NodeInterfaceController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NodeInterfaceController implements ThrowawayController {
 
+	/** Constant <code>IF_VIEW="ifView"</code> */
 	public static final String IF_VIEW = "ifView";
+	/** Constant <code>MODEL_NAME="interfaces"</code> */
 	public static final String MODEL_NAME = "interfaces";
 	private Node node;
 	private NodeInterfaceService m_nodeInterfaceService;
 	
+	/**
+	 * <p>execute</p>
+	 *
+	 * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public ModelAndView execute() throws Exception {
 		HashSet interfaces = m_nodeInterfaceService.getInterfaces(node);
         return new ModelAndView(IF_VIEW, MODEL_NAME, interfaces);
 	}
 
+	/**
+	 * <p>setNodeInterfaceService</p>
+	 *
+	 * @param nodeInterfaceService a {@link org.opennms.secret.service.NodeInterfaceService} object.
+	 */
 	public void setNodeInterfaceService(NodeInterfaceService nodeInterfaceService) {
 		m_nodeInterfaceService = nodeInterfaceService;
 	}

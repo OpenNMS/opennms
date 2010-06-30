@@ -41,11 +41,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Source;
 
 /**
- * 
+ * <p>FoAvailabilityReportView class.</p>
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class FoAvailabilityReportView extends AbstractXslFoView {
 
+    /** {@inheritDoc} */
     protected Source createXsltSource(Map model, String root,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {

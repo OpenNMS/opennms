@@ -76,8 +76,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * Sends an email message using the Java Mail API
- * 
+ *
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @version $Id: $
  */
 public class JavaMailer {
     private static final String DEFAULT_FROM_ADDRESS = "root@[127.0.0.1]";
@@ -134,6 +135,12 @@ public class JavaMailer {
     private String m_fileName;
 
     
+    /**
+     * <p>Constructor for JavaMailer.</p>
+     *
+     * @param javamailProps a {@link java.util.Properties} object.
+     * @throws org.opennms.netmgt.utils.JavaMailerException if any.
+     */
     public JavaMailer(Properties javamailProps) throws JavaMailerException {
         
         try {
@@ -149,7 +156,9 @@ public class JavaMailer {
     /**
      * Default constructor.  Default properties from javamailer-properties are set into session.  To change these
      * properties, retrieve the current properties from the session and override as needed.
-     * @throws IOException 
+     *
+     * @throws IOException if any.
+     * @throws org.opennms.netmgt.utils.JavaMailerException if any.
      */
     public JavaMailer() throws JavaMailerException {
         this(new Properties());
@@ -231,6 +240,8 @@ public class JavaMailer {
 
     /**
      * Sends a message based on properties set on this bean.
+     *
+     * @throws org.opennms.netmgt.utils.JavaMailerException if any.
      */
     public void mailSend() throws JavaMailerException {
         log().debug(createSendLogMsg());        
@@ -239,7 +250,8 @@ public class JavaMailer {
 
     /**
      * Helper method to create an Authenticator based on Password Authentication
-     * @return
+     *
+     * @return a {@link javax.mail.Authenticator} object.
      */
     public Authenticator createAuthenticator() {
         Authenticator auth;
@@ -257,10 +269,9 @@ public class JavaMailer {
 
     /**
      * Build a complete message ready for sending.
-     * 
-     * @param session session to use to create a new MimeMessage
+     *
      * @return completed message, ready to be passed to Transport.sendMessage
-     * @throws JavaMailerException if any of the underlying operations fail
+     * @throws org.opennms.netmgt.utils.JavaMailerException if any of the underlying operations fail
      */
     public Message buildMessage() throws JavaMailerException {
         try {
@@ -337,12 +348,12 @@ public class JavaMailer {
     /**
      * Create a file attachment as a MimeBodyPart, checking to see if the file
      * exists before we create the attachment.
-     * 
+     *
      * @param file file to attach
      * @return attachment body part
-     * @throws MessagingException if we can't set the data handler or
+     * @throws javax.mail.MessagingException if we can't set the data handler or
      *      the file name on the MimeBodyPart
-     * @throws JavaMailerException if the file does not exist or is not
+     * @throws org.opennms.netmgt.utils.JavaMailerException if the file does not exist or is not
      *      readable
      */
     public MimeBodyPart createFileAttachment(final File file) throws MessagingException, JavaMailerException {
@@ -398,10 +409,9 @@ public class JavaMailer {
 
     /**
      * Send message.
-     * 
-     * @param session
-     * @param message
-     * @throws JavaMailerException
+     *
+     * @param message a {@link javax.mail.Message} object.
+     * @throws org.opennms.netmgt.utils.JavaMailerException if any.
      */
     public void sendMessage(Message message) throws JavaMailerException {
         Transport t = null;
@@ -443,6 +453,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getPassword</p>
+     *
      * @return Returns the password.
      */
     public String getPassword() {
@@ -450,6 +462,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setPassword</p>
+     *
      * @param password
      *            The password to set.
      */
@@ -458,6 +472,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getUser</p>
+     *
      * @return Returns the user.
      */
     public String getUser() {
@@ -465,6 +481,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setUser</p>
+     *
      * @param user
      *            The user to set.
      */
@@ -473,6 +491,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>isUseJMTA</p>
+     *
      * @return Returns the _useMailHost.
      */
     public boolean isUseJMTA() {
@@ -480,13 +500,17 @@ public class JavaMailer {
     }
 
     /**
-     * @param mailHost The _useMailHost to set.
+     * <p>setUseJMTA</p>
+     *
+     * @param useMTA a boolean.
      */
     public void setUseJMTA(boolean useMTA) {
         m_useJMTA = useMTA;
     }
 
     /**
+     * <p>getFrom</p>
+     *
      * @return Returns the from address.
      */
     public String getFrom() {
@@ -494,6 +518,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setFrom</p>
+     *
      * @param from
      *            The from address to set.
      */
@@ -502,6 +528,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>isAuthenticate</p>
+     *
      * @return Returns the authenticate boolean.
      */
     public boolean isAuthenticate() {
@@ -509,6 +537,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setAuthenticate</p>
+     *
      * @param authenticate
      *            The authenticate boolean to set.
      */
@@ -517,6 +547,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getFileName</p>
+     *
      * @return Returns the file name attachment.
      */
     public String getFileName() {
@@ -524,14 +556,17 @@ public class JavaMailer {
     }
 
     /**
-     * @param file
-     *            Sets the file name to be attached to the messaget.
+     * <p>setFileName</p>
+     *
+     * @param fileName a {@link java.lang.String} object.
      */
     public void setFileName(String fileName) {
         m_fileName = fileName;
     }
 
     /**
+     * <p>getMailHost</p>
+     *
      * @return Returns the mail host.
      */
     public String getMailHost() {
@@ -539,6 +574,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setMailHost</p>
+     *
      * @param mail_host
      *            Sets the mail host.
      */
@@ -547,6 +584,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getMailer</p>
+     *
      * @return Returns the mailer.
      */
     public String getMailer() {
@@ -554,6 +593,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setMailer</p>
+     *
      * @param mailer
      *            Sets the mailer.
      */
@@ -562,6 +603,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getMessageText</p>
+     *
      * @return Returns the message text.
      */
     public String getMessageText() {
@@ -569,6 +612,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setMessageText</p>
+     *
      * @param messageText
      *            Sets the message text.
      */
@@ -577,6 +622,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getSubject</p>
+     *
      * @return Returns the message Subject.
      */
     public String getSubject() {
@@ -584,6 +631,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setSubject</p>
+     *
      * @param subject
      *            Sets the message Subject.
      */
@@ -592,6 +641,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getTo</p>
+     *
      * @return Returns the To address.
      */
     public String getTo() {
@@ -599,6 +650,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setTo</p>
+     *
      * @param to
      *            Sets the To address.
      */
@@ -606,6 +659,11 @@ public class JavaMailer {
         m_to = to;
     }
 
+    /**
+     * <p>getTransport</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTransport() {
         if (isUseJMTA()) {
             return "mta";
@@ -614,14 +672,29 @@ public class JavaMailer {
         }
     }
 
+    /**
+     * <p>setTransport</p>
+     *
+     * @param transport a {@link java.lang.String} object.
+     */
     public void setTransport(String transport) {
         m_transport = transport;
     }
 
+    /**
+     * <p>isDebug</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDebug() {
         return m_debug;
     }
 
+    /**
+     * <p>setDebug</p>
+     *
+     * @param debug a boolean.
+     */
     public void setDebug(boolean debug) {
         m_debug = debug;
         if (isDebug()) {
@@ -743,6 +816,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getSession</p>
+     *
      * @return the session
      */
     public Session getSession() {
@@ -750,6 +825,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setSession</p>
+     *
      * @param session the session to set
      */
     public void setSession(Session session) {
@@ -757,6 +834,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getContentType</p>
+     *
      * @return the contentType
      */
     public String getContentType() {
@@ -764,6 +843,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setContentType</p>
+     *
      * @param contentType the contentType to set
      */
     public void setContentType(String contentType) {
@@ -771,6 +852,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getCharSet</p>
+     *
      * @return the charSet
      */
     public String getCharSet() {
@@ -778,6 +861,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setCharSet</p>
+     *
      * @param charSet the charSet to set
      */
     public void setCharSet(String charSet) {
@@ -785,6 +870,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getEncoding</p>
+     *
      * @return the encoding
      */
     public String getEncoding() {
@@ -792,6 +879,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setEncoding</p>
+     *
      * @param encoding the encoding to set
      */
     public void setEncoding(String encoding) {
@@ -799,6 +888,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>isStartTlsEnabled</p>
+     *
      * @return the startTlsEnabled
      */
     public boolean isStartTlsEnabled() {
@@ -806,6 +897,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setStartTlsEnabled</p>
+     *
      * @param startTlsEnabled the startTlsEnabled to set
      */
     public void setStartTlsEnabled(boolean startTlsEnabled) {
@@ -813,6 +906,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>isQuitWait</p>
+     *
      * @return the quitWait
      */
     public boolean isQuitWait() {
@@ -820,6 +915,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setQuitWait</p>
+     *
      * @param quitWait the quitWait to set
      */
     public void setQuitWait(boolean quitWait) {
@@ -827,6 +924,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>getSmtpPort</p>
+     *
      * @return the smtpPort
      */
     public int getSmtpPort() {
@@ -834,6 +933,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setSmtpPort</p>
+     *
      * @param smtpPort the smtpPort to set
      */
     public void setSmtpPort(int smtpPort) {
@@ -841,6 +942,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>isSmtpSsl</p>
+     *
      * @return the smtpSsl
      */
     public boolean isSmtpSsl() {
@@ -848,6 +951,8 @@ public class JavaMailer {
     }
 
     /**
+     * <p>setSmtpSsl</p>
+     *
      * @param smtpSsl the smtpSsl to set
      */
     public void setSmtpSsl(boolean smtpSsl) {
@@ -856,7 +961,8 @@ public class JavaMailer {
 
     /**
      * This returns the properties configured in the javamail-configuration.properties file.
-     * @return
+     *
+     * @return a {@link java.util.Properties} object.
      */
     public Properties getMailProps() {
         return m_mailProps;

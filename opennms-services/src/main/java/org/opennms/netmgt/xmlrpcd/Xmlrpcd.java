@@ -58,12 +58,33 @@ import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
  * The Xmlrpcd receives events selectively and sends notification to an external
  * XMLRPC server via the XMLRPC protocol.
  * </p>
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class Xmlrpcd extends AbstractServiceDaemon {
     /**
@@ -101,6 +122,9 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     	super("OpenNMS.Xmlrpcd");
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
 
 
@@ -149,6 +173,14 @@ public class Xmlrpcd extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.XmlrpcdConfigFactory} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public XmlrpcdConfigFactory getConfig() throws MarshalException, ValidationException, IOException {
         if (m_config == null) {
             createConfig();
@@ -156,15 +188,35 @@ public class Xmlrpcd extends AbstractServiceDaemon {
         return m_config;
     }
 
+    /**
+     * <p>createConfig</p>
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public void createConfig() throws MarshalException, ValidationException, IOException {
         XmlrpcdConfigFactory.init();
         setConfig(XmlrpcdConfigFactory.getInstance());
     }
 
+    /**
+     * <p>setConfig</p>
+     *
+     * @param config a {@link org.opennms.netmgt.config.XmlrpcdConfigFactory} object.
+     */
     public void setConfig(XmlrpcdConfigFactory config) {
         m_config = config;
     }
     
+    /**
+     * <p>getServerConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.OpennmsServerConfigFactory} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public OpennmsServerConfigFactory getServerConfig() throws MarshalException, ValidationException, IOException {
         if (m_serverConfig == null) {
             createServerConfig(); 
@@ -172,15 +224,30 @@ public class Xmlrpcd extends AbstractServiceDaemon {
         return m_serverConfig;
     }
 
+    /**
+     * <p>createServerConfig</p>
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public void createServerConfig() throws MarshalException, ValidationException, IOException {
         OpennmsServerConfigFactory.init();
         setServerConfig(OpennmsServerConfigFactory.getInstance());
     }
 
+    /**
+     * <p>setServerConfig</p>
+     *
+     * @param serverConfig a {@link org.opennms.netmgt.config.OpennmsServerConfigFactory} object.
+     */
     public void setServerConfig(OpennmsServerConfigFactory serverConfig) {
         m_serverConfig = serverConfig;
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         log().debug("start: Initializing the xmlrpcd config factory");
         
@@ -191,6 +258,9 @@ public class Xmlrpcd extends AbstractServiceDaemon {
         log().debug("start: xmlrpcd ready to process events");
     }
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {
         log().debug("Calling pause on processor");
 
@@ -201,6 +271,9 @@ public class Xmlrpcd extends AbstractServiceDaemon {
         log().debug("Processor paused");
     }
     
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
         log().debug("Calling resume on processor");
 
@@ -211,6 +284,9 @@ public class Xmlrpcd extends AbstractServiceDaemon {
         log().debug("Processor resumed");
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         // shutdown and wait on the background processing thread to exit.
         log().debug("exit: closing communication paths.");
@@ -226,6 +302,8 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * Returns the singular instance of the xmlrpcd daemon. There can be only
      * one instance of this service per virtual machine.
+     *
+     * @return a {@link org.opennms.netmgt.daemon.AbstractServiceDaemon} object.
      */
     public static AbstractServiceDaemon getInstance() {
         return m_singleton;

@@ -33,30 +33,68 @@ package org.opennms.netmgt.snmp;
 
 import java.util.StringTokenizer;
 
+/**
+ * <p>SnmpInstId class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpInstId extends SnmpObjId {
     
+    /** Constant <code>INST_ZERO</code> */
     public static final SnmpInstId INST_ZERO = new SnmpInstId(0);
 
+    /**
+     * <p>Constructor for SnmpInstId.</p>
+     *
+     * @param instanceIds an array of int.
+     */
     public SnmpInstId(int[] instanceIds) {
         super(instanceIds);
     }
 
+    /**
+     * <p>Constructor for SnmpInstId.</p>
+     *
+     * @param instance a {@link java.lang.String} object.
+     */
     public SnmpInstId(String instance) {
         super(instance);
     }
     
+    /**
+     * <p>Constructor for SnmpInstId.</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public SnmpInstId(SnmpObjId instance) {
         super(instance);
     }
 
+    /**
+     * <p>Constructor for SnmpInstId.</p>
+     *
+     * @param instance a int.
+     */
     public SnmpInstId(int instance) {
         super(new int[] { instance }, false);
     }
 
+    /**
+     * <p>addPrefixDotInToString</p>
+     *
+     * @return a boolean.
+     */
     protected boolean addPrefixDotInToString() {
         return false;
     }
 
+    /**
+     * <p>convertToSnmpInstIds</p>
+     *
+     * @param instances a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.netmgt.snmp.SnmpInstId} objects.
+     */
     public static SnmpInstId[] convertToSnmpInstIds(String instances) {
         StringTokenizer tokenizer = new StringTokenizer(instances, ",");
         SnmpInstId[] insts = new SnmpInstId[tokenizer.countTokens()];
@@ -70,6 +108,11 @@ public class SnmpInstId extends SnmpObjId {
         return insts;
     }
 
+    /**
+     * <p>toInt</p>
+     *
+     * @return a int.
+     */
     public int toInt() {
         if (this.length() != 1)
             throw new IllegalArgumentException("Cannot convert "+this+" to an int");

@@ -38,31 +38,58 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * <p>StatusSection class.</p>
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class StatusSection {
 
 	private String m_name;
 	private Collection<StatusCategory> m_categorylist;
 	
+	/**
+	 * <p>Constructor for StatusSection.</p>
+	 */
 	public StatusSection(){
 		
 		m_categorylist = new ArrayList<StatusCategory>();
 		
 	}
 	
+	/**
+	 * <p>setName</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public void setName(String name){
 		m_name = name;
 	}
 	
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_name;
 	}
 	
+	/**
+	 * <p>getCategories</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<StatusCategory> getCategories() {
 		return m_categorylist;
 	}
 	
+	/**
+	 * <p>addCategory</p>
+	 *
+	 * @param newCategory a {@link org.opennms.web.svclayer.catstatus.model.StatusCategory} object.
+	 */
 	public void addCategory(StatusCategory newCategory) {
 		m_categorylist.add(newCategory);
 	}

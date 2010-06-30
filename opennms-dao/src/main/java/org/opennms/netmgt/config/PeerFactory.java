@@ -40,12 +40,18 @@ import java.net.InetAddress;
 
 /**
  * Convenience superclass for NSClientPeerFactory and SnmpPeerFactory, with common code used in both
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
+ * @version $Id: $
  */
-
 public class PeerFactory {
 
+    /**
+     * <p>Constructor for PeerFactory.</p>
+     */
     public PeerFactory() {
         super();
     }
@@ -55,12 +61,10 @@ public class PeerFactory {
      * using simple opertions. The address is converted in network byte order
      * (big endin) and allows for comparisions like &lt;, &gt;, &lt;=, &gt;=,
      * ==, and !=.
-     * 
+     *
      * @param addr
      *            The address to convert to a long
-     * 
      * @return The address as a long value.
-     * 
      */
     protected static long toLong(InetAddress addr) {
         byte[] baddr = addr.getAddress();
@@ -69,6 +73,13 @@ public class PeerFactory {
         return result;
     }
     
+    /**
+     * <p>verifyIpMatch</p>
+     *
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param ipMatch a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public static boolean verifyIpMatch(String hostAddress, String ipMatch) {
         
         String hostOctets[] = hostAddress.split("\\.", 0);
@@ -81,16 +92,16 @@ public class PeerFactory {
     }
 
     /**
-    * Use this method to match ranges, lists, and specific number strings
-    * such as:
-    * "200-300" or "200,300,501-700"
-    * "*" matches any
-    * This method is commonly used for matching IP octets or ports
-    * 
-    * @param value
-    * @param patterns
-    * @return
-    */
+     * Use this method to match ranges, lists, and specific number strings
+     * such as:
+     * "200-300" or "200,300,501-700"
+     * "*" matches any
+     * This method is commonly used for matching IP octets or ports
+     *
+     * @param value a {@link java.lang.String} object.
+     * @param patterns a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public static boolean matchNumericListOrRange(String value, String patterns) {
         
         String patternList[] = patterns.split(",", 0);
@@ -102,11 +113,12 @@ public class PeerFactory {
     }
 
     /**
-    * Helper method in support of matchNumericListOrRange
-    * @param value
-    * @param pattern
-    * @return
-    */
+     * Helper method in support of matchNumericListOrRange
+     *
+     * @param value a {@link java.lang.String} object.
+     * @param pattern a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public static boolean matchRange(String value, String pattern) {
         int dashCount = countChar('-', pattern);
         
@@ -126,6 +138,13 @@ public class PeerFactory {
         return false;
     }
 
+    /**
+     * <p>countChar</p>
+     *
+     * @param charIn a char.
+     * @param stingIn a {@link java.lang.String} object.
+     * @return a int.
+     */
     public static int countChar(char charIn, String stingIn) {
         
         int charCount = 0;

@@ -37,12 +37,20 @@ package org.opennms.netmgt.trapd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>Trapd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Trapd extends AbstractSpringContextJmxServiceDaemon implements TrapdMBean {
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Trapd";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "trapDaemonContext";       

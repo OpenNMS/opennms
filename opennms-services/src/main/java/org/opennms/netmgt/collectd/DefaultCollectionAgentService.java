@@ -58,6 +58,9 @@ import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class DefaultCollectionAgentService implements CollectionAgentService {
 
@@ -66,6 +69,14 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      */
     private static final long serialVersionUID = 6694654071513990997L;
 
+    /**
+     * <p>create</p>
+     *
+     * @param ifaceId a {@link java.lang.Integer} object.
+     * @param ifaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAgentService} object.
+     */
     public static CollectionAgentService create(Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
         CollectionAgentService agent = new DefaultCollectionAgentService(ifaceId, ifaceDao);
         
@@ -109,6 +120,11 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getHostAddress()
      */
+    /**
+     * <p>getHostAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHostAddress() {
         return getInetAddress().getHostAddress();
     }
@@ -116,10 +132,20 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getNodeId()
      */
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return getIpInterface().getNode().getId() == null ? -1 : getIpInterface().getNode().getId().intValue();
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a int.
+     */
     public int getIfIndex() {
         return (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
     }
@@ -127,16 +153,31 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSysObjectId()
      */
+    /**
+     * <p>getSysObjectId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSysObjectId() {
         return getIpInterface().getNode().getSysObjectId();
     }
 
+    /**
+     * <p>getCollectionType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface.CollectionType} object.
+     */
     public CollectionType getCollectionType() {
         return getIpInterface().getIsSnmpPrimary();
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#toString()
+     */
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         return "Agent[nodeid = "+getNodeId()+" ipaddr= "+getHostAddress()+']';
@@ -145,12 +186,22 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getAgentConfig()
      */
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     public SnmpAgentConfig getAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
+     */
+    /**
+     * <p>getSnmpInterfaceData</p>
+     *
+     * @return a {@link java.util.Set} object.
      */
     public Set<SnmpIfData> getSnmpInterfaceData() {
         
@@ -195,6 +246,11 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     }
 
 
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getInetAddress() {
         return getIpInterface().getInetAddress();
     }

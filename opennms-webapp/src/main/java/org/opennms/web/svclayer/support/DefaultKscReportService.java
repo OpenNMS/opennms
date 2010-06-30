@@ -49,8 +49,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultKscReportService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultKscReportService implements KscReportService, InitializingBean {
     
@@ -60,12 +63,14 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     private static final LinkedHashMap<String, String> s_timeSpans = new LinkedHashMap<String, String>();
     private static final LinkedHashMap<String, String> s_timeSpansWithNone = new LinkedHashMap<String, String>();
 
+    /** {@inheritDoc} */
     public Report buildDomainReport(String domain) {
         String resourceId = OnmsResource.createResourceId("domain", domain);
         OnmsResource node = getResourceService().getResourceById(resourceId, true);
         return buildResourceReport(node, "Domain Report for Domain " + domain);
     }
 
+    /** {@inheritDoc} */
     public Report buildNodeReport(int node_id) {
         String resourceId = OnmsResource.createResourceId("node", Integer.toString(node_id));
         OnmsResource node = getResourceService().getResourceById(resourceId, true);
@@ -97,6 +102,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     }
 
 
+    /** {@inheritDoc} */
     public OnmsResource getResourceFromGraph(Graph graph) {
         if (graph == null) {
             throw new IllegalArgumentException("graph argument cannot be null");
@@ -144,6 +150,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         s_timeSpansWithNone.putAll(s_timeSpans);
     }
 
+    /** {@inheritDoc} */
     public Map<String, String> getTimeSpans(boolean includeNone) {
         if (includeNone) {
             return s_timeSpansWithNone;
@@ -152,26 +159,56 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         }
     }
     
+    /**
+     * <p>getReportList</p>
+     *
+     * @return a java$util$Map object.
+     */
     public Map<Integer, String> getReportList() {
         return m_kscReportFactory.getReportList();  
     }
 
+    /**
+     * <p>getResourceService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public ResourceService getResourceService() {
         return m_resourceService;
     }
 
+    /**
+     * <p>setResourceService</p>
+     *
+     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;
     }
 
+    /**
+     * <p>getKscReportFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public KSC_PerformanceReportFactory getKscReportFactory() {
         return m_kscReportFactory;
     }
 
+    /**
+     * <p>setKscReportFactory</p>
+     *
+     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
         m_kscReportFactory = kscReportFactory;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "resourceService property has not been set");
         Assert.state(m_kscReportFactory != null, "kscReportFactory property has not been set");

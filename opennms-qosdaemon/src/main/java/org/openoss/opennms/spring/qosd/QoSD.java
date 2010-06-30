@@ -34,105 +34,126 @@ import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
 import org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * <p>QoSD interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface QoSD {
 
 	/**
-	 * provides an interface to OpenNMS which provides a unified api 
-	 * @param ossDao the ossDao to set
+	 * provides an interface to OpenNMS which provides a unified api
+	 *
+	 * @param _ossDao a {@link org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl} object.
 	 */
 	public abstract void setossDao(OssDaoOpenNMSImpl _ossDao);
 
 	/**
 	 * Used by Spring Application context to pass in OnmsAlarmOssjMapper
 	 * The OnmsAlarmOssjMapper class maps OpenNMS alarms to OSS/J alarms and events
-	 * @param onmsAlarmOssjMapper the onmsAlarmOssjMapper to set
+	 *
+	 * @param _onmsAlarmOssjMapper a {@link org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper} object.
 	 */
 	public abstract void setOnmsAlarmOssjMapper(
 			OnmsAlarmOssjMapper _onmsAlarmOssjMapper);
 
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
-	 * @param ar 
+	 *
+	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
 	 */
 	public abstract void setassetRecordDao(AssetRecordDao ar);
 
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
-	 * @param nodedao 
+	 *
+	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
 	 */
 	public abstract void setnodeDao(NodeDao nodedao);
 
 	/**
 	 * Used by Spring Application context to pass in EventIpcManager
-	 * @param eventIpcManager
+	 *
+	 * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
 	 */
 	public abstract void seteventIpcManager(EventIpcManager eventIpcManager);
 
 	/**
 	 * Used by Spring Application context to pass in alarmDao
-	 * @param alarmDao
+	 *
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
 	 */
 	public abstract void setalarmDao(AlarmDao alarmDao);
 
 	/**
 	 * Used by Spring Application context to pass in AlarmListConnectionManager
-	 * @param alcm
+	 *
+	 * @param alcm a {@link org.openoss.opennms.spring.qosd.AlarmListConnectionManager} object.
 	 */
 	public abstract void setalarmListConnectionManager(
 			AlarmListConnectionManager alcm);
 	
 	/**
 	 * Used by jmx mbean QoSD to pass in Spring Application context
+	 *
 	 * @param m_context - application context for this bean to use
 	 */
 	public abstract void setapplicationcontext(ClassPathXmlApplicationContext m_context);
 
+	/** Constant <code>NAME="OpenOSS.QoSD"</code> */
 	public static final String NAME = "OpenOSS.QoSD";
 
-	/** Method to set up the fiber
-	 *  Note - not used in Spring activation */
+	/**
+	 * Method to set up the fiber
+	 *  Note - not used in Spring activation
+	 */
 	public abstract void init();
 
 	/**
 	 * The start() method loads the configuration for the QosD daemon and registers for events
-	 * 
 	 */
 	public abstract void start();
 
 	/**
 	 * Stop method of fiber, called by OpenNMS when fiber execution is to
-	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or 
-	 * database connections, before the fiber's execution is ended. 
+	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or
+	 * database connections, before the fiber's execution is ended.
 	 */
 	public abstract void stop();
 
 	/**
-	 * Resume method of fiber, called by OpenNMS to start the fiber up from 
+	 * Resume method of fiber, called by OpenNMS to start the fiber up from
 	 * a paused state.
 	 */
 	public abstract void resume();
 
 	/**
-	 * Pause method of fiber, called by OpenNMS to put the fiber in a 
+	 * Pause method of fiber, called by OpenNMS to put the fiber in a
 	 * suspended state until it can be later resumed.
 	 */
 	public abstract void pause();
 
 	/**
 	 *  Returns the Log category name
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public abstract String getName();
 
 	/**
 	 *  lets OpenNMS know what state the daemon is in
-	 *  @param status
+	 *
+	 * @return a int.
 	 */
 	public abstract int getStatus();
 
 	/**
-	 * The OpenNMS event listener runs this routine when a 
-	 * new event is detected. This can be run on any event but only needs to run on 
+	 * The OpenNMS event listener runs this routine when a
+	 * new event is detected. This can be run on any event but only needs to run on
 	 * uei.opennms.org/vacuumd/alarmListChanged
+	 *
+	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
 	public abstract void onEvent(Event event);
 
@@ -150,13 +171,14 @@ public interface QoSD {
 	public abstract void unregisterListener();
 
 	/**
-	 * not used but needed for initialisation 
+	 * not used but needed for initialisation
+	 *
 	 * @return stats
 	 */
 	public abstract String getStats();
 	
 	/**
-	 * A method to request an alarm list from the OpenNMS database 
+	 * A method to request an alarm list from the OpenNMS database
 	 * and send the "unacked" alarms to the remote AlarmMonitor bean
 	 */
 	public abstract void sendAlarms();

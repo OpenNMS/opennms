@@ -38,8 +38,9 @@ import java.util.Map;
 /**
  * This object implements the packets created by the
  * <code>NsclientManager</code> system.
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @version $Id: $
  */
 public class NsclientPacket {
     /**
@@ -93,7 +94,7 @@ public class NsclientPacket {
 
     /**
      * This method converts a result code to a string.
-     * 
+     *
      * @param type
      *            the result code to convert
      * @return the string name of the result code passed, default "UNKNOWN" if
@@ -112,7 +113,7 @@ public class NsclientPacket {
 
     /**
      * This method returns the result code for a corresponding string.
-     * 
+     *
      * @param type
      *            the string name of the result code.
      * @return the short ID for the result code.
@@ -133,7 +134,7 @@ public class NsclientPacket {
 
     /**
      * Returns the value of the server response.
-     * 
+     *
      * @return the value of the server response.
      */
     public String getResponse() {
@@ -142,7 +143,7 @@ public class NsclientPacket {
 
     /**
      * Returns the result code for the validation.
-     * 
+     *
      * @return the result code for the validation.
      */
     public short getResultCode() {
@@ -151,6 +152,7 @@ public class NsclientPacket {
 
     /**
      * This method sets the result code for the check validation.
+     *
      * @param res the result code.
      */
     public void setResultCode(short res) {

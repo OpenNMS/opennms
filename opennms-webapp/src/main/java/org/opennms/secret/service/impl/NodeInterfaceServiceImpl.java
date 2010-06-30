@@ -42,14 +42,23 @@ import org.opennms.secret.model.Node;
 import org.opennms.secret.model.NodeInterface;
 import org.opennms.secret.service.NodeInterfaceService;
 
+/**
+ * <p>NodeInterfaceServiceImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NodeInterfaceServiceImpl implements NodeInterfaceService {
     @SuppressWarnings("unused")
     private NodeInterfaceDao m_nodeInterfaceDao;
     
+    /** {@inheritDoc} */
     public void setNodeInterfaceDao(NodeInterfaceDao nodeInterfaceDao) {
         m_nodeInterfaceDao = nodeInterfaceDao;
     }
     
+    /** {@inheritDoc} */
     public HashSet getInterfaces(Node node) {
 		HashSet<NodeInterface> interfaces = new HashSet<NodeInterface>();
 		for (int i = 0; i < 5; i++) {

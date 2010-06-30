@@ -52,17 +52,25 @@ import org.springframework.validation.BindException;
 
 /**
  * Web service layer implementation for statistics reports.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultStatisticsReportService implements StatisticsReportService, InitializingBean {
     private StatisticsReportDao m_statisticsReportDao;
     private ResourceDao m_resourceDao;
 
+    /**
+     * <p>getStatisticsReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<StatisticsReport> getStatisticsReports() {
         return m_statisticsReportDao.findAll();
     }
 
+    /** {@inheritDoc} */
     public StatisticsReportModel getReport(StatisticsReportCommand command, BindException errors) {
         StatisticsReportModel model = new StatisticsReportModel();
         model.setErrors(errors);
@@ -93,23 +101,48 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
         return model;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_statisticsReportDao != null, "property statisticsReportDao must be set to a non-null value");
         Assert.state(m_resourceDao != null, "property resourceDao must be set to a non-null value");
     }
 
+    /**
+     * <p>getStatisticsReportDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.StatisticsReportDao} object.
+     */
     public StatisticsReportDao getStatisticsReportDao() {
         return m_statisticsReportDao;
     }
 
+    /**
+     * <p>setStatisticsReportDao</p>
+     *
+     * @param statisticsReportDao a {@link org.opennms.netmgt.dao.StatisticsReportDao} object.
+     */
     public void setStatisticsReportDao(StatisticsReportDao statisticsReportDao) {
         m_statisticsReportDao = statisticsReportDao;
     }
 
+    /**
+     * <p>getResourceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
     }
 
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }

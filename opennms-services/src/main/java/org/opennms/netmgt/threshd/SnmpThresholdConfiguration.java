@@ -40,6 +40,12 @@ import java.util.Map;
 
 import org.opennms.netmgt.utils.ParameterMap;
 
+/**
+ * <p>SnmpThresholdConfiguration class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpThresholdConfiguration {
 
     /**
@@ -64,64 +70,140 @@ public class SnmpThresholdConfiguration {
 
     private int m_interval;
 
+    /**
+     * <p>Constructor for SnmpThresholdConfiguration.</p>
+     *
+     * @param thresholdsDao a {@link org.opennms.netmgt.threshd.ThresholdsDao} object.
+     * @param parms a {@link java.util.Map} object.
+     */
     public SnmpThresholdConfiguration(ThresholdsDao thresholdsDao, Map parms) {
         setRange(ParameterMap.getKeyedInteger(parms, "range", SnmpThresholdConfiguration.DEFAULT_RANGE));
         setInterval(ParameterMap.getKeyedInteger(parms, "interval", SnmpThresholdConfiguration.DEFAULT_INTERVAL));
         setThresholdGroup(thresholdsDao.get(ParameterMap.getKeyedString(parms, "thresholding-group", DEFAULT_GROUP)));
     }
 
+    /**
+     * <p>getRange</p>
+     *
+     * @return a int.
+     */
     public int getRange() {
         return m_range;
     }
 
+    /**
+     * <p>setRange</p>
+     *
+     * @param range a int.
+     */
     public void setRange(int range) {
         m_range = range;
     }
 
+    /**
+     * <p>getInterval</p>
+     *
+     * @return a int.
+     */
     public int getInterval() {
         return m_interval;
     }
 
+    /**
+     * <p>setInterval</p>
+     *
+     * @param interval a int.
+     */
     public void setInterval(int interval) {
         m_interval = interval;
     }
 
+    /**
+     * <p>getThresholdGroup</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdGroup} object.
+     */
     public ThresholdGroup getThresholdGroup() {
         return m_thresholdGroup;
     }
 
+    /**
+     * <p>setThresholdGroup</p>
+     *
+     * @param thresholdGroup a {@link org.opennms.netmgt.threshd.ThresholdGroup} object.
+     */
     public void setThresholdGroup(ThresholdGroup thresholdGroup) {
         m_thresholdGroup = thresholdGroup;
     }
 
+    /**
+     * <p>getRrdRepository</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public File getRrdRepository() {
         return m_thresholdGroup.getRrdRepository();
     }
 
+    /**
+     * <p>getGroupName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGroupName() {
         return m_thresholdGroup.getName();
     }
 
+    /**
+     * <p>getIfResourceType</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+     */
     public ThresholdResourceType getIfResourceType() {
         return m_thresholdGroup.getIfResourceType();
     }
 
+    /**
+     * <p>setIfResourceType</p>
+     *
+     * @param ifResourceType a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+     */
     public void setIfResourceType(ThresholdResourceType ifResourceType) {
         m_thresholdGroup.setIfResourceType(ifResourceType);
     }
 
+    /**
+     * <p>getNodeResourceType</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+     */
     public ThresholdResourceType getNodeResourceType() {
         return m_thresholdGroup.getNodeResourceType();
     }
 
+    /**
+     * <p>setNodeResourceType</p>
+     *
+     * @param nodeResourceType a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+     */
     public void setNodeResourceType(ThresholdResourceType nodeResourceType) {
         m_thresholdGroup.setNodeResourceType(nodeResourceType);
     }
 
+    /**
+     * <p>getGenericResourceTypeMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,ThresholdResourceType> getGenericResourceTypeMap() {
         return m_thresholdGroup.getGenericResourceTypeMap();
     }
 
+    /**
+     * <p>setGenericResourceTypeMap</p>
+     *
+     * @param genericResourceTypeMap a {@link java.util.Map} object.
+     */
     public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) {
         m_thresholdGroup.setGenericResourceTypeMap(genericResourceTypeMap);
     }

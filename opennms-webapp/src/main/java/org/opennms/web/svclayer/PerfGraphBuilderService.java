@@ -38,21 +38,58 @@ package org.opennms.web.svclayer;
 import org.opennms.secret.model.GraphDefinition;
 
 /**
- * 
+ * <p>PerfGraphBuilderService interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface PerfGraphBuilderService {
 	
+	/**
+	 * <p>createGraphDefinition</p>
+	 *
+	 * @return a {@link org.opennms.secret.model.GraphDefinition} object.
+	 */
 	GraphDefinition	createGraphDefinition();
 	
+	/**
+	 * <p>saveGraphDefinition</p>
+	 *
+	 * @param graphDefId a {@link java.lang.String} object.
+	 */
 	void saveGraphDefinition(String graphDefId);
 	
+	/**
+	 * <p>getGraphDefinition</p>
+	 *
+	 * @param graphDefId a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.secret.model.GraphDefinition} object.
+	 */
 	GraphDefinition getGraphDefinition(String graphDefId);
 	
+	/**
+	 * <p>addAttributeToGraphDefinition</p>
+	 *
+	 * @param attributeId a {@link java.lang.String} object.
+	 * @param graphDefId a {@link java.lang.String} object.
+	 */
 	void addAttributeToGraphDefinition(String attributeId, String graphDefId);
 	
+	/**
+	 * <p>getAttributePalette</p>
+	 *
+	 * @param nodeId a int.
+	 * @return a {@link org.opennms.web.svclayer.Palette} object.
+	 */
 	Palette getAttributePalette(int nodeId); 
 
+	/**
+	 * <p>getGraph</p>
+	 *
+	 * @param graphDefId a {@link java.lang.String} object.
+	 * @return an array of byte.
+	 */
 	byte[] getGraph(String graphDefId);
 	
 }

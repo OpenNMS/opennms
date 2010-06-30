@@ -36,18 +36,30 @@
 package org.opennms.netmgt.capsd;
 
 /**
- * 
+ * <p>DefaultProcessorFactory class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class DefaultProcessorFactory implements SuspectEventProcessorFactory, RescanProcessorFactory {
     
     private CapsdDbSyncer m_capsdDbSyncer;
     private PluginManager m_pluginManager;
 
+    /**
+     * <p>setCapsdDbSyncer</p>
+     *
+     * @param capsdDbSyncer a {@link org.opennms.netmgt.capsd.CapsdDbSyncer} object.
+     */
     public void setCapsdDbSyncer(CapsdDbSyncer capsdDbSyncer) {
         m_capsdDbSyncer = capsdDbSyncer;
     }
 
+    /**
+     * <p>setPluginManager</p>
+     *
+     * @param pluginManager a {@link org.opennms.netmgt.capsd.PluginManager} object.
+     */
     public void setPluginManager(PluginManager pluginManager) {
         m_pluginManager = pluginManager;
     }
@@ -55,6 +67,7 @@ public class DefaultProcessorFactory implements SuspectEventProcessorFactory, Re
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.SuspectEventProcessorFactory#createSuspectEventProcessor(java.lang.String)
      */
+    /** {@inheritDoc} */
     public SuspectEventProcessor createSuspectEventProcessor(String ifAddress) {
         return new SuspectEventProcessor(m_capsdDbSyncer, m_pluginManager, ifAddress);
     }
@@ -62,6 +75,7 @@ public class DefaultProcessorFactory implements SuspectEventProcessorFactory, Re
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.RescanProcessorFactory#createRescanProcessor(int)
      */
+    /** {@inheritDoc} */
     public RescanProcessor createRescanProcessor(int nodeId) {
         return new RescanProcessor(nodeId, false, m_capsdDbSyncer, m_pluginManager);
     }
@@ -69,6 +83,7 @@ public class DefaultProcessorFactory implements SuspectEventProcessorFactory, Re
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.RescanProcessorFactory#createForcedRescanProcessor(int)
      */
+    /** {@inheritDoc} */
     public RescanProcessor createForcedRescanProcessor(int nodeId) {
         return new RescanProcessor(nodeId, true, m_capsdDbSyncer, m_pluginManager);
     }

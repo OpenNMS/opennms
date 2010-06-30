@@ -37,8 +37,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+/**
+ * <p>HomeController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class HomeController implements Controller {
 
+    /** {@inheritDoc} */
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return new ModelAndView("home");
     }

@@ -44,16 +44,19 @@ import org.opennms.netmgt.config.RTCConfigFactory;
 /**
  * List of service times. This contains a list of service lost/regained set/pair
  * for the RTCNode.
- * 
+ *
  * Also maintains the outage/down time each time it is calculated and the time
  * from which this was calculated - this is done so when the outage time for a
  * window is calculated, the same calculations are not done on the node multiple
  * times.
- * 
+ *
  * 'Expired' outages are removed during 'add' and 'getDownTime' operations.
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class RTCNodeSvcTimesList extends LinkedList {
     /**
@@ -120,7 +123,7 @@ public class RTCNodeSvcTimesList extends LinkedList {
 
     /**
      * Add a new servicetime entry.
-     * 
+     *
      * @param losttime
      *            time at which service was lost
      * @param regainedtime
@@ -142,7 +145,7 @@ public class RTCNodeSvcTimesList extends LinkedList {
 
     /**
      * Add a new servicetime entry
-     * 
+     *
      * @param losttime
      *            time at which service was lost
      */
@@ -156,12 +159,11 @@ public class RTCNodeSvcTimesList extends LinkedList {
     /**
      * Calculate the total downtime in this list of service times for the last
      * 'rollingWindow' time starting at 'curTime'
-     * 
+     *
      * @param curTime
      *            the current time from which the down time is to be calculated
      * @param rollingWindow
      *            the last window for which the downtime is to be calculated
-     * 
      * @return total down time in service times in this list
      */
     public long getDownTime(long curTime, long rollingWindow) {

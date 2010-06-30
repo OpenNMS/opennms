@@ -39,10 +39,12 @@ package org.opennms.netmgt.poller;
  * interface type an exception of this type will prevent it from being passed to
  * the monitor again.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class NetworkInterfaceNotSupportedException extends UnsupportedOperationException {
     /**
@@ -54,10 +56,9 @@ public class NetworkInterfaceNotSupportedException extends UnsupportedOperationE
 
     /**
      * Constructs a new exception instance with the specific message
-     * 
+     *
      * @param msg
      *            The exception message.
-     * 
      */
     public NetworkInterfaceNotSupportedException(String msg) {
         super(msg);

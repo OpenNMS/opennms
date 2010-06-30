@@ -81,9 +81,13 @@ import java.util.regex.PatternSyntaxException;
 
 // This routine do the majority of the Syslogd's work
 // Improvements most likely are to be made.
+
+// This routine do the majority of the Syslogd's work
+// Improvements most likely are to be made.
 final class ConvertToEvent {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
+    /** Constant <code>HIDDEN_MESSAGE="The message logged has been removed due"{trunked}</code> */
     protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
     /**
@@ -584,23 +588,28 @@ final class ConvertToEvent {
 
     /**
      * Get the acknowledged events
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<Event> getAckedEvents() {
         return m_ackEvents;
     }
 
+    /**
+     * <p>getEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event getEvent() {
         return m_event;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the instance matches the object based upon the remote
      * agent's address &amp; port. If the passed instance is from the same
      * agent then it is considered equal.
-     *
-     * @param o instance of the class to compare.
-     * @return Returns true if the objects are logically equal, false
-     *         otherwise.
      */
     public boolean equals(Object o) {
         if (o != null && o instanceof ConvertToEvent) {

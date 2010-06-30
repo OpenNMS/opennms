@@ -39,8 +39,11 @@ import java.util.Map;
 
 
 /**
- * 
+ * <p>StpInterface class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class StpInterface
 {
@@ -60,6 +63,7 @@ public class StpInterface
         int		m_stprootnodeid;
         int		m_stpbridgenodeid;
 
+        /** Constant <code>STP_PORT_STATUS="new String[] {&nbsp;,     //0 (not supp"{trunked}</code> */
         public static final String[] STP_PORT_STATUS = new String[] {
             "&nbsp;",     //0 (not supported)
             "Disables",   //1
@@ -118,6 +122,11 @@ public class StpInterface
                 m_stpbridgenodeid = stpbridgenodeid;
         }
 
+        /**
+         * <p>toString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String toString()
         {
                 StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n" );
@@ -128,123 +137,170 @@ public class StpInterface
         }
 
 		/**
-		 * @return
+		 * <p>get_bridgeport</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_bridgeport() {
 			return m_bridgeport;
 		}
 
 		/**
-		 * @return
+		 * <p>get_ifindex</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_ifindex() {
 			return m_ifindex;
 		}
 
 		/**
-		 * @return
+		 * <p>get_lastPollTime</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_lastPollTime() {
 			return m_lastPollTime;
 		}
 
 		/**
-		 * @return
+		 * <p>get_nodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>get_status</p>
+		 *
+		 * @return a char.
 		 */
 		public char get_status() {
 			return m_status;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpdesignatedbridge</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_stpdesignatedbridge() {
 			return m_stpdesignatedbridge;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpdesignatedport</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_stpdesignatedport() {
 			return m_stpdesignatedport;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpdesignatedroot</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_stpdesignatedroot() {
 			return m_stpdesignatedroot;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpportdesignatedcost</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stpportdesignatedcost() {
 			return m_stpportdesignatedcost;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpportpathcost</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stpportpathcost() {
 			return m_stpportpathcost;
 		}
 
 		/**
-		 * @return
+		 * <p>get_stpportstate</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stpportstate() {
 			return m_stpportstate;
 		}
 
+		/**
+		 * <p>getStpPortState</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String getStpPortState() {
 			return STP_PORT_STATUS[m_stpportstate];
 			
 		}
 			
 		/**
-		 * @return
+		 * <p>get_stpvlan</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_stpvlan() {
 			return m_stpvlan;
 		}
 
         /**
+         * <p>get_stpbridgenodeid</p>
+         *
          * @return Returns the m_stpdesignatedbridgenodeid.
          */
         public int get_stpbridgenodeid() {
             return m_stpbridgenodeid;
         }
         /**
+         * <p>get_stprootnodeid</p>
+         *
          * @return Returns the m_stpdesignatedrootnodeid.
          */
         public int get_stprootnodeid() {
             return m_stprootnodeid;
         }
 		/**
+		 * <p>get_ipaddr</p>
+		 *
 		 * @return Returns the m_ipaddr.
 		 */
 		public String get_ipaddr() {
 			return m_ipaddr;
 		}
 		/**
+		 * <p>set_ipaddr</p>
+		 *
 		 * @param m_ipaddr The m_ipaddr to set.
 		 */
 		public void set_ipaddr(String m_ipaddr) {
 			this.m_ipaddr = m_ipaddr;
 		}
 		
+	    /**
+	     * <p>getStatusString</p>
+	     *
+	     * @return a {@link java.lang.String} object.
+	     */
 	    public String getStatusString() {
 	        return( (String)statusMap.get( new Character(m_status) ));
 	    }
 
+	    /**
+	     * <p>getVlanColorIdentifier</p>
+	     *
+	     * @return a {@link java.lang.String} object.
+	     */
 	    public String getVlanColorIdentifier() {
 	        int red = 128;
 	        int green = 128;

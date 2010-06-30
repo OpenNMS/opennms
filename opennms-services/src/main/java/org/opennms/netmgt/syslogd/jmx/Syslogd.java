@@ -37,27 +37,57 @@
 
 package org.opennms.netmgt.syslogd.jmx;
 
+/**
+ * <p>Syslogd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Syslogd implements SyslogdMBean {
+    /**
+     * <p>init</p>
+     */
     public void init() {
         org.opennms.netmgt.syslogd.Syslogd.getInstance().init();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         org.opennms.netmgt.syslogd.Syslogd.getInstance().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         org.opennms.netmgt.syslogd.Syslogd.getInstance();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return org.opennms.netmgt.syslogd.Syslogd.getInstance().getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

@@ -57,6 +57,9 @@ import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * V2 Trap information object for processing by the queue reader
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class V2TrapInformation extends TrapInformation {
 	/**
@@ -88,7 +91,7 @@ public class V2TrapInformation extends TrapInformation {
 	/**
 	 * Constructs a new trap information instance that contains the sending
 	 * agent, the community string, and the Protocol Data Unit.
-	 * 
+	 *
 	 * @param agent
 	 *            The sending agent's address
 	 * @param community
@@ -96,7 +99,6 @@ public class V2TrapInformation extends TrapInformation {
 	 * @param pdu
 	 *            The encapsulated Protocol Data Unit.
 	 * @param trapProcessor The trap processor used to process the trap data
-	 * 
 	 */
 	public V2TrapInformation(InetAddress agent, String community, SnmpPduPacket pdu, TrapProcessor trapProcessor) {
 		super(agent, community, trapProcessor);
@@ -111,10 +113,20 @@ public class V2TrapInformation extends TrapInformation {
 		return m_pdu;
 	}
 
+	/**
+	 * <p>getPduLength</p>
+	 *
+	 * @return a int.
+	 */
 	protected int getPduLength() {
         return getPdu().getLength();
     }
     
+    /**
+     * <p>getTimeStamp</p>
+     *
+     * @return a long.
+     */
     protected long getTimeStamp() {
 
         if (log().isDebugEnabled()) {
@@ -133,6 +145,11 @@ public class V2TrapInformation extends TrapInformation {
         }
     }
 
+    /**
+     * <p>getTrapIdentity</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.TrapIdentity} object.
+     */
     protected TrapIdentity getTrapIdentity() {
         // Get the value for the snmpTrapOID
         SnmpObjectId snmpTrapOid = (SnmpObjectId) getPdu().getVarBindAt(V2TrapInformation.SNMP_TRAP_OID_INDEX).getValue();
@@ -141,18 +158,37 @@ public class V2TrapInformation extends TrapInformation {
         return new TrapIdentity(SnmpObjId.get(snmpTrapOid.getIdentifiers()), SnmpObjId.get(lastVarBindOid.getIdentifiers()), new JoeSnmpValue(lastVarBindValue));
     }
 
+    /**
+     * <p>getTrapAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getTrapAddress() {
         return getAgentAddress();
     }
 
+    /**
+     * <p>getVarBindAt</p>
+     *
+     * @param index a int.
+     * @return a {@link org.opennms.protocols.snmp.SnmpVarBind} object.
+     */
     protected SnmpVarBind getVarBindAt(int index) {
         return getPdu().getVarBindAt(index);
     }
 
+    /**
+     * <p>getVersion</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected String getVersion() {
         return "v2";
     }
 
+    /**
+     * <p>validate</p>
+     */
     protected void validate() {
         //
         // verify the type
@@ -185,6 +221,7 @@ public class V2TrapInformation extends TrapInformation {
         }
     }
 
+    /** {@inheritDoc} */
     protected void processVarBindAt(int i) {
     	if (i<2) {
             if (i == 0) {

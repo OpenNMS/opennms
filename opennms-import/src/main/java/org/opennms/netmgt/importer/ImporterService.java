@@ -62,8 +62,15 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
+/**
+ * <p>ImporterService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ImporterService extends BaseImporter implements SpringServiceDaemon, DisposableBean, EventListener {
 	
+	/** Constant <code>NAME="ModelImporter"</code> */
 	public static final String NAME = "ModelImporter";
 
 	private volatile Resource m_importResource;
@@ -71,6 +78,9 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 	private volatile ImporterStats m_stats;
 
             
+	/**
+	 * <p>doImport</p>
+	 */
 	public void doImport() {
 	    doImport(null);
 	}
@@ -106,6 +116,11 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
         return EventUtils.getParm(event, EventConstants.PARM_URL);
     }
     
+    /**
+     * <p>getStats</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
     private void sendImportSuccessful(ImporterStats stats, Resource resource) {
@@ -128,37 +143,69 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 		m_eventManager.sendNow(builder.getEvent());
 	}
 
+    /**
+     * <p>setImportResource</p>
+     *
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     */
     public void setImportResource(Resource resource) {
         m_importResource = resource;
     }
 
+	/**
+	 * <p>getEventManager</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 */
 	public EventIpcManager getEventManager() {
 	    return m_eventManager;
 	}
 
+	/**
+	 * <p>setEventManager</p>
+	 *
+	 * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 */
 	public void setEventManager(EventIpcManager eventManager) {
 		m_eventManager = eventManager;
 	}
 
+	/** {@inheritDoc} */
 	protected ImportOperationsManager createImportOperationsManager(Map<String, Integer> assetNumbersToNodes, ImportStatistics stats) {
 		ImportOperationsManager opsMgr = super.createImportOperationsManager(assetNumbersToNodes, stats);
 		opsMgr.setEventMgr(m_eventManager);
 		return opsMgr;
 	}
 
+	/**
+	 * <p>afterPropertiesSet</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void afterPropertiesSet() throws Exception {
 		m_eventManager.addEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
 	}
 
+	/**
+	 * <p>destroy</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void destroy() throws Exception {
 		m_eventManager.removeEventListener(this, EventConstants.RELOAD_IMPORT_UEI);
 		
 	}
 
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return NAME;
 	}
 
+	/** {@inheritDoc} */
 	public void onEvent(Event e) {
 	    ThreadCategory.setPrefix(NAME);
 
@@ -402,6 +449,11 @@ public class ImporterService extends BaseImporter implements SpringServiceDaemon
 
 	}
 
+    /**
+     * <p>start</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void start() throws Exception {
         // nothing to do -- we're event-driven
     }

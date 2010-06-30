@@ -71,34 +71,39 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
- * 
+ *
  * While loading mutiple values of the same element into a single DB column, the
  * mutiple values are delimited by MULTIPLE_VAL_DELIM.
- * 
+ *
  * When an element and its attribute are loaded into a single DB column, the
  * value and the attribute are separated by a DB_ATTRIB_DELIM.
- * 
+ *
  * When using delimiters to append values, if the values already have the
  * delimiter, the delimiter in the value is escaped as in URLs.
- * 
+ *
  * Values for the ' <parms>' block are loaded with each parm name and parm value
  * delimited with the NAME_VAL_DELIM.
- * 
+ *
  * @see org.opennms.netmgt.eventd.db.Constants#MULTIPLE_VAL_DELIM
  * @see org.opennms.netmgt.eventd.db.Constants#DB_ATTRIB_DELIM
  * @see org.opennms.netmgt.eventd.db.Constants#NAME_VAL_DELIM
- * 
+ * @see org.opennms.netmgt.eventd.db.Constants#MULTIPLE_VAL_DELIM
+ * @see org.opennms.netmgt.eventd.db.Constants#DB_ATTRIB_DELIM
+ * @see org.opennms.netmgt.eventd.db.Constants#NAME_VAL_DELIM
+ * @see org.opennms.netmgt.eventd.db.Constants#MULTIPLE_VAL_DELIM
+ * @see org.opennms.netmgt.eventd.db.Constants#DB_ATTRIB_DELIM
+ * @see org.opennms.netmgt.eventd.db.Constants#NAME_VAL_DELIM
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public final class JdbcEventWriter extends AbstractJdbcPersister implements EventProcessor, InitializingBean {
     /**
+     * {@inheritDoc}
+     *
      * The method that inserts the event into the database
-     * 
-     * @param eventHeader
-     *            the event header
-     * @param event
-     *            the actual event to be inserted
      */
     public void process(Header eventHeader, Event event) throws SQLException, DataAccessException {
         if (!checkEventSanityAndDoWeProcess(event, "JdbcEventWriter")) {
@@ -381,6 +386,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * 
      */
     // FIXME: This uses JdbcTemplate and not the passed in connection
+    // FIXME: This uses JdbcTemplate and not the passed in connection
     String getHostName(int nodeId, String hostip, Connection connection) throws SQLException {
         try {
             String hostname = new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
@@ -409,8 +415,11 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
     }
 
     /**
-     * @param event
-     * @return
+     * <p>getEventHost</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param connection a {@link java.sql.Connection} object.
+     * @return a {@link java.lang.String} object.
      */
     protected String getEventHost(Event event, Connection connection) {
         if (event.getHost() == null) {

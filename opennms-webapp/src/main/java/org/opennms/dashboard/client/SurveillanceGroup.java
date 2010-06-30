@@ -38,9 +38,14 @@ package org.opennms.dashboard.client;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * 
+ * <p>SurveillanceGroup class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class SurveillanceGroup extends SurveillanceSet implements IsSerializable {
     
@@ -48,44 +53,90 @@ public class SurveillanceGroup extends SurveillanceSet implements IsSerializable
     private String m_id;
     private boolean m_column;
     
+    /**
+     * <p>Constructor for SurveillanceGroup.</p>
+     */
     public SurveillanceGroup() {
         this(null, null, false);
     }
     
+    /**
+     * <p>Constructor for SurveillanceGroup.</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param isColumn a boolean.
+     */
     public SurveillanceGroup(String id, String label, boolean isColumn) {
         m_id = id;
         m_label = label;
         m_column = isColumn;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getId() {
         return m_id;
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_label;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     */
     public void setId(String id) {
         m_id = id;
     }
 
+    /**
+     * <p>setLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
     public void setLabel(String label) {
         m_label = label;
     }
 
+    /**
+     * <p>isColumn</p>
+     *
+     * @return a boolean.
+     */
     public boolean isColumn() {
         return m_column;
     }
 
+    /**
+     * <p>setColumn</p>
+     *
+     * @param isColumn a boolean.
+     */
     public void setColumn(boolean isColumn) {
         m_column = isColumn;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return m_label;
     }
 
+    /** {@inheritDoc} */
     public void visit(Visitor v) {
         v.visitGroup(this);
     }

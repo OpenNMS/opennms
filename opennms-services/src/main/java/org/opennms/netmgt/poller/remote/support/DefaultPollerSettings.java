@@ -48,8 +48,10 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultPollerSettings class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class DefaultPollerSettings implements InitializingBean, PollerSettings {
     
@@ -59,11 +61,17 @@ public class DefaultPollerSettings implements InitializingBean, PollerSettings {
     
     private Properties m_settings;
 
+    /**
+     * <p>getMonitorId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getMonitorId() {
         String monIdStr = m_settings.getProperty(MONITOR_ID_KEY);
         return (monIdStr == null ? null : Integer.decode(monIdStr));
     }
 
+    /** {@inheritDoc} */
     public void setMonitorId(Integer monitorId) {
         if (monitorId == null)
             m_settings.remove(MONITOR_ID_KEY);
@@ -91,10 +99,20 @@ public class DefaultPollerSettings implements InitializingBean, PollerSettings {
         }
     }
 
+    /**
+     * <p>setConfigurationResource</p>
+     *
+     * @param configResource a {@link org.springframework.core.io.Resource} object.
+     */
     public void setConfigurationResource(Resource configResource) {
         m_configResource = configResource;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_configResource, "The configurationDir property must be set");
         

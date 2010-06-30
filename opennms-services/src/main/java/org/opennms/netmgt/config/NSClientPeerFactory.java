@@ -47,16 +47,28 @@ import org.opennms.protocols.ip.IPv4Address;
  * {@link org.opennms.netmgt.nsclient.NSClientAgentConfig NSClientAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class NSClientPeerFactory extends PeerFactory {
     /**
@@ -92,6 +104,14 @@ public final class NSClientPeerFactory extends PeerFactory {
 
     }
     
+    /**
+     * <p>Constructor for NSClientPeerFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public NSClientPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = (NsclientConfig) Unmarshaller.unmarshal(NsclientConfig.class, rdr);
     }
@@ -99,13 +119,16 @@ public final class NSClientPeerFactory extends PeerFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -129,13 +152,16 @@ public final class NSClientPeerFactory extends PeerFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -146,6 +172,8 @@ public final class NSClientPeerFactory extends PeerFactory {
 
     /**
      * Saves the current settings to disk
+     *
+     * @throws java.lang.Exception if any.
      */
     public static synchronized void saveCurrent() throws Exception {
         optimize();
@@ -323,9 +351,8 @@ public final class NSClientPeerFactory extends PeerFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -336,6 +363,11 @@ public final class NSClientPeerFactory extends PeerFactory {
         return m_singleton;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param singleton a {@link org.opennms.netmgt.config.NSClientPeerFactory} object.
+     */
     public static synchronized void setInstance(NSClientPeerFactory singleton) {
         m_singleton = singleton;
         m_loaded = true;
@@ -345,6 +377,10 @@ public final class NSClientPeerFactory extends PeerFactory {
      * Puts a specific IP address with associated password into
      * the currently loaded nsclient-config.xml.
      *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
+     *
+     * @param ip a {@link java.net.InetAddress} object.
+     * @param password a {@link java.lang.String} object.
+     * @throws java.net.UnknownHostException if any.
      */
     public void define(InetAddress ip, String password) throws UnknownHostException {
         Category log = log();
@@ -458,6 +494,12 @@ public final class NSClientPeerFactory extends PeerFactory {
         m_config.setDefinition(definitions);
     }
     
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @param agentInetAddress a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.poller.nsclient.NSClientAgentConfig} object.
+     */
     public synchronized NSClientAgentConfig getAgentConfig(InetAddress agentInetAddress) {
 
         if (m_config == null) {
@@ -580,10 +622,20 @@ public final class NSClientPeerFactory extends PeerFactory {
         return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
     }
 
+    /**
+     * <p>getNSClientConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.nsclient.NsclientConfig} object.
+     */
     public static NsclientConfig getNSClientConfig() {
         return m_config;
     }
 
+    /**
+     * <p>setNSClientConfig</p>
+     *
+     * @param m_config a {@link org.opennms.netmgt.config.nsclient.NsclientConfig} object.
+     */
     public static synchronized void setNSClientConfig(NsclientConfig m_config) {
         NSClientPeerFactory.m_config = m_config;
     }

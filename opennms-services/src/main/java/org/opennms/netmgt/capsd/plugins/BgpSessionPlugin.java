@@ -58,9 +58,12 @@ import org.opennms.netmgt.utils.ParameterMap;
  * This class is used to test if BGP Sessions for a specific peer is
  * available. Check for BgpSession via RFC1269-MIB.
  * </p>
- * 
+ *
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class BgpSessionPlugin extends SnmpPlugin {
     /**
@@ -115,7 +118,7 @@ public final class BgpSessionPlugin extends SnmpPlugin {
     /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.
-     * 
+     *
      * @return The protocol name for this plugin.
      */
     public String getProtocolName() {
@@ -123,17 +126,13 @@ public final class BgpSessionPlugin extends SnmpPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If
      * the protocol is not supported then a false value is returned to the
      * caller. The qualifier map passed to the method is used by the plugin to
      * return additional information by key-name. These key-value pairs can be
      * added to service events if needed.
-     * 
-     * @param ipaddr
-     *            The address to check for support.
-     * @param qualifiers
-     *            The map where qualification are set by the plugin.
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress ipaddr,
             Map<String, Object> qualifiers) {
@@ -246,6 +245,11 @@ public final class BgpSessionPlugin extends SnmpPlugin {
         return false;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public static Category log() {
         return ThreadCategory.getInstance(BgpSessionPlugin.class);
     }

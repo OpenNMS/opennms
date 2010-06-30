@@ -54,6 +54,12 @@ import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
+/**
+ * <p>JoeSnmpWalker class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JoeSnmpWalker extends SnmpWalker {
     
     static public abstract class JoeSnmpPduBuilder extends WalkerPduBuilder {
@@ -166,6 +172,13 @@ public class JoeSnmpWalker extends SnmpWalker {
     private SnmpSession m_session;
 	private JoeSnmpAgentConfig m_agentConfig;
 
+    /**
+     * <p>Constructor for JoeSnmpWalker.</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.joesnmp.JoeSnmpAgentConfig} object.
+     * @param name a {@link java.lang.String} object.
+     * @param tracker a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public JoeSnmpWalker(JoeSnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
         super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepetitions(), tracker);
         m_agentConfig = agentConfig;
@@ -184,17 +197,27 @@ public class JoeSnmpWalker extends SnmpWalker {
         return peer;        
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         log().info("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion())+" with config: "+m_agentConfig);
         super.start();
     }
 
+    /** {@inheritDoc} */
     protected WalkerPduBuilder createPduBuilder(int maxVarsPerPdu) {
         return (getVersion() == SnmpSMI.SNMPV1 
                 ? (JoeSnmpPduBuilder)new GetNextBuilder(maxVarsPerPdu) 
                 : (JoeSnmpPduBuilder)new GetBulkBuilder(maxVarsPerPdu));
     }
 
+    /**
+     * <p>sendNextPdu</p>
+     *
+     * @param pduBuilder a WalkerPduBuilder object.
+     * @throws java.net.SocketException if any.
+     */
     protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws SocketException {
         JoeSnmpPduBuilder joePduBuilder = (JoeSnmpPduBuilder)pduBuilder;
         if (m_session == null) m_session = new SnmpSession(m_peer);
@@ -202,10 +225,18 @@ public class JoeSnmpWalker extends SnmpWalker {
         m_session.send(joePduBuilder.getPdu(), m_handler);
     }
     
+    /**
+     * <p>getVersion</p>
+     *
+     * @return a int.
+     */
     protected int getVersion() {
         return m_peer.getParameters().getVersion();
     }
 
+    /**
+     * <p>close</p>
+     */
     protected void close() {
         if (m_session != null) {
             m_session.close();

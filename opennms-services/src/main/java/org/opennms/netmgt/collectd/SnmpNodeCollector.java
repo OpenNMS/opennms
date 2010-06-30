@@ -53,18 +53,20 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * data collection for a node over a specified network interface. The
  * SnmpNodeCollector implements the SnmpHandler class in order to receive
  * notifications when an SNMP reply is received or error occurs.
- * 
+ *
  * The SnmpNodeCollector is provided a list of MIB objects to collect and an
  * interface over which to collect the data. Data collection can be via SNMPv1
  * GetNext requests or SNMPv2 GetBulk requests depending upon the parms used to
  * construct the collector.
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A>Jon Whetzel </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
  */
 public class SnmpNodeCollector extends AggregateTracker {
     /**
@@ -84,6 +86,7 @@ public class SnmpNodeCollector extends AggregateTracker {
      * the initial SNMP packet requesting data. The data is then received and
      * store by the object. When all the data has been collected the passed
      * signaler object is <EM>notified</EM> using the notifyAll() method.
+     *
      * @param address TODO
      * @param objList
      *            The list of object id's to be collected.
@@ -100,6 +103,11 @@ public class SnmpNodeCollector extends AggregateTracker {
     }
 
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -107,25 +115,34 @@ public class SnmpNodeCollector extends AggregateTracker {
     /**
      * Returns the list of all entry maps that can be used to access all the
      * information from the service polling.
+     *
+     * @return a {@link org.opennms.netmgt.collectd.SNMPCollectorEntry} object.
      */
-
     public SNMPCollectorEntry getEntry() {
         return m_collectorEntry;
     }
     
+    /** {@inheritDoc} */
     protected void reportGenErr(String msg) {
         log().warn("genErr collecting data for node "+m_primaryIf+": "+msg);
     }
 
+    /** {@inheritDoc} */
     protected void reportNoSuchNameErr(String msg) {
         log().info("noSuchName collecting data for node "+m_primaryIf+": "+msg);
     }
 
+    /** {@inheritDoc} */
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         m_collectorEntry.storeResult(base, inst, val);
     }
 
 
+    /**
+     * <p>getCollectionSet</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.SnmpCollectionSet} object.
+     */
     public SnmpCollectionSet getCollectionSet() {
         return m_collectionSet;
     }

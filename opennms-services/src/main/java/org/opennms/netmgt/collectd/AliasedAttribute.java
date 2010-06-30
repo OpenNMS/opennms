@@ -34,8 +34,20 @@ package org.opennms.netmgt.collectd;
 import org.apache.log4j.Category;
 import org.opennms.netmgt.snmp.SnmpValue;
 
+/**
+ * <p>AliasedAttribute class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AliasedAttribute extends SnmpAttribute {
 	
+	/**
+	 * <p>Constructor for AliasedAttribute.</p>
+	 *
+	 * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+	 * @param attr a {@link org.opennms.netmgt.collectd.SnmpAttribute} object.
+	 */
 	public AliasedAttribute(CollectionResource resource, SnmpAttribute attr) {
 		super(resource, attr.getAttributeType(), attr.getValue());
 		m_attr = attr;
@@ -43,38 +55,75 @@ public class AliasedAttribute extends SnmpAttribute {
 
 	private SnmpAttribute m_attr;
 
+	/** {@inheritDoc} */
 	public boolean equals(Object obj) {
 		return m_attr.equals(obj);
 	}
 
+	/**
+	 * <p>getAttributeType</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
+	 */
 	public SnmpAttributeType getAttributeType() {
 		return m_attr.getAttributeType();
 	}
 
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_attr.getName();
 	}
 
+	/**
+	 * <p>getType</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getType() {
 		return m_attr.getType();
 	}
 
+	/**
+	 * <p>getValue</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+	 */
 	public SnmpValue getValue() {
 		return m_attr.getValue();
 	}
 
+	/**
+	 * <p>hashCode</p>
+	 *
+	 * @return a int.
+	 */
 	public int hashCode() {
 		return m_attr.hashCode();
 	}
 
+	/**
+	 * <p>log</p>
+	 *
+	 * @return a {@link org.apache.log4j.Category} object.
+	 */
 	public Category log() {
 		return m_attr.log();
 	}
 
+	/** {@inheritDoc} */
 	public boolean shouldPersist(ServiceParameters params) {
 		return m_attr.shouldPersist(params);
 	}
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getResource()+"."+getAttributeType()+" = "+getValue();
     }

@@ -38,12 +38,13 @@ package org.opennms.protocols.snmp;
  * Defines a SNMPv1 32-bit time ticks object. The object is a 32-bit unsigned
  * value that is incremented periodically by an agent using a specific timer
  * interval.
- * 
+ *
  * The object inherients and uses most of the methods defined by the SnmpUInt32
  * class. This class does not define any specific data, but is instead used to
  * override the ASN.1 type of the base class.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @version $Id: $
  */
 public class SnmpTimeTicks extends SnmpUInt32 {
     /**
@@ -67,10 +68,9 @@ public class SnmpTimeTicks extends SnmpUInt32 {
 
     /**
      * Constructs the object with the specified value.
-     * 
+     *
      * @param value
      *            The default value for the object.
-     * 
      */
     public SnmpTimeTicks(long value) {
         super(value);
@@ -78,10 +78,9 @@ public class SnmpTimeTicks extends SnmpUInt32 {
 
     /**
      * Constructs the object with the specified value.
-     * 
+     *
      * @param value
      *            The default value for the object.
-     * 
      */
     public SnmpTimeTicks(Long value) {
         super(value);
@@ -89,10 +88,9 @@ public class SnmpTimeTicks extends SnmpUInt32 {
 
     /**
      * Constructs a new object with the same value as the passed object.
-     * 
+     *
      * @param second
      *            The object to recover values from.
-     * 
      */
     public SnmpTimeTicks(SnmpTimeTicks second) {
         super(second);
@@ -101,10 +99,9 @@ public class SnmpTimeTicks extends SnmpUInt32 {
     /**
      * Constructs a new object with the value constained in the SnmpUInt32
      * object.
-     * 
+     *
      * @param uint32
      *            The SnmpUInt32 object to copy.
-     * 
      */
     public SnmpTimeTicks(SnmpUInt32 uint32) {
         super(uint32);
@@ -117,15 +114,14 @@ public class SnmpTimeTicks extends SnmpUInt32 {
      * If the decoded argument is malformed, null, or evaluates to a negative
      * value then an exception is generated.
      * </p>
-     * 
+     *
      * <p>
      * The value passed to the constructor should be the number of milliseconds
      * since epoch, as defined by RFC 1155.
      * </p>
-     * 
+     *
      * @param value
      *            The string encoded value of TimeTicks
-     * 
      * @throws java.lang.NumberFormatException
      *             Thrown if the passed value is malformed and cannot be parsed.
      * @throws java.lang.IllegalArgumentException
@@ -139,7 +135,7 @@ public class SnmpTimeTicks extends SnmpUInt32 {
 
     /**
      * Returns the ASN.1 type specific to this object.
-     * 
+     *
      * @return The ASN.1 value for this object.
      */
     public byte typeId() {
@@ -148,9 +144,8 @@ public class SnmpTimeTicks extends SnmpUInt32 {
 
     /**
      * Creates a new object that is a duplicate of the current object.
-     * 
+     *
      * @return The newly created duplicate object.
-     * 
      */
     public SnmpSyntax duplicate() {
         return new SnmpTimeTicks(this);
@@ -158,9 +153,8 @@ public class SnmpTimeTicks extends SnmpUInt32 {
 
     /**
      * Creates a new object that is a duplicate of the current object.
-     * 
+     *
      * @return The newly created duplicate object.
-     * 
      */
     public Object clone() {
         return new SnmpTimeTicks(this);
@@ -168,7 +162,8 @@ public class SnmpTimeTicks extends SnmpUInt32 {
 
     /**
      * Returns the string representation of the object.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         StringBuffer buf = new StringBuffer();

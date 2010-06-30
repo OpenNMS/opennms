@@ -48,10 +48,14 @@ import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
 
 /**
+ * <p>DeleteInterfaceServlet class.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DeleteInterfaceServlet extends HttpServlet {
 
@@ -66,6 +70,7 @@ public class DeleteInterfaceServlet extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         checkParameters(request);
 
@@ -92,6 +97,11 @@ public class DeleteInterfaceServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>checkParameters</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     */
     public void checkParameters(HttpServletRequest request) {
         String nodeIdString = request.getParameter("node");
         String ipAddr = request.getParameter("intf");

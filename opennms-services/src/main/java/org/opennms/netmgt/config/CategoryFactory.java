@@ -59,13 +59,16 @@ import org.opennms.netmgt.config.categories.Catinfo;
  * This is the singleton class used to load the configuration from the
  * categories.xml. This provides convenience methods to get the configured
  * categories and their information, add/delete categories from category groups.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class CategoryFactory implements CatFactory{
     /**
@@ -100,6 +103,14 @@ public final class CategoryFactory implements CatFactory{
         reader.close();
     }
     
+    /**
+     * <p>Constructor for CategoryFactory.</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public CategoryFactory(Reader reader) throws IOException, MarshalException, ValidationException {
         marshal(reader);
     }
@@ -112,13 +123,16 @@ public final class CategoryFactory implements CatFactory{
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -133,13 +147,16 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -150,9 +167,8 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -163,6 +179,11 @@ public final class CategoryFactory implements CatFactory{
         return m_singleton;
     }
 
+	/**
+	 * <p>setInstance</p>
+	 *
+	 * @param singleton a {@link org.opennms.netmgt.config.CatFactory} object.
+	 */
 	public static void setInstance(CatFactory singleton) {
 		m_singleton=singleton;
 		m_loaded=true;
@@ -170,7 +191,7 @@ public final class CategoryFactory implements CatFactory{
 	
     /**
      * Return the categories configuration.
-     * 
+     *
      * @return the categories configuration
      */
     public synchronized Catinfo getConfig() {
@@ -179,7 +200,7 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Add a categorygroup.
-     * 
+     *
      * @param group
      *            category group to be added
      */
@@ -189,10 +210,9 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Replace categorygroup.
-     * 
+     *
      * @param group
      *            category group to be replaced
-     * 
      * @return true if categorygroup is successfully replaced
      */
     public synchronized boolean replaceCategoryGroup(Categorygroup group) {
@@ -215,10 +235,9 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Delete a categorygroup.
-     * 
+     *
      * @param group
      *            category group to be removed
-     * 
      * @return true if categorygroup is successfully deleted
      */
     public synchronized boolean deleteCategoryGroup(Categorygroup group) {
@@ -227,10 +246,9 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Delete a categorygroup.
-     * 
+     *
      * @param groupname
      *            category group to be removed
-     * 
      * @return true if categorygroup is successfully deleted
      */
     public synchronized boolean deleteCategoryGroup(String groupname) {
@@ -252,12 +270,11 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Add category to a categorygroup.
-     * 
+     *
      * @param groupname
      *            category group to which category is to be added
      * @param cat
      *            category to be added
-     * 
      * @return true if category is successfully added to the specified category
      *         group
      */
@@ -282,12 +299,11 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Replace category in a categorygroup.
-     * 
+     *
      * @param groupname
      *            category group to which category is to be added
      * @param cat
      *            category to be replaced
-     * 
      * @return true if category is successfully replaced in the specified
      *         category group
      */
@@ -321,12 +337,11 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Delete category from a categorygroup.
-     * 
+     *
      * @param groupname
      *            category group from which category is to be removed
      * @param cat
      *            category to be deleted
-     * 
      * @return true if category is successfully deleted from the specified
      *         category group
      */
@@ -351,12 +366,11 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Delete category from a categorygroup.
-     * 
+     *
      * @param groupname
      *            category group from which category is to be removed
      * @param catlabel
      *            label of the category to be deleted
-     * 
      * @return true if category is successfully deleted from the specified
      *         category group
      */
@@ -389,9 +403,9 @@ public final class CategoryFactory implements CatFactory{
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return the category specified by name.
-     * 
-     * @return the category specified by name, null if not found
      */
     public synchronized Category getCategory(String name) {
         Enumeration enumCG = m_config.enumerateCategorygroup();
@@ -414,13 +428,9 @@ public final class CategoryFactory implements CatFactory{
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return the normal value for the specified category.
-     * 
-     * @param catlabel
-     *            the label for the category whose normal value is needed
-     * 
-     * @return the normal value for the specified category, -1 if category is
-     *         not found
      */
     public synchronized double getNormal(String catlabel) {
         Enumeration enumCG = m_config.enumerateCategorygroup();
@@ -443,13 +453,9 @@ public final class CategoryFactory implements CatFactory{
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return the warning value for the specified category.
-     * 
-     * @param catlabel
-     *            the label for the category whose warning value is needed
-     * 
-     * @return the warning value for the specified category, -1 if category is
-     *         not found
      */
     public synchronized double getWarning(String catlabel) {
         Enumeration enumCG = m_config.enumerateCategorygroup();
@@ -473,10 +479,9 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Return the services list for the specified category.
-     * 
+     *
      * @param catlabel
      *            the label for the category whose services list is needed
-     * 
      * @return the services list for the specified category, null if category is
      *         not found
      */
@@ -502,10 +507,9 @@ public final class CategoryFactory implements CatFactory{
 
     /**
      * Return the rule for the specified category.
-     * 
+     *
      * @param catlabel
      *            the label for the category whose services list is needed
-     * 
      * @return the rule for the specified category, null if the category is not
      *         found
      */
@@ -530,14 +534,10 @@ public final class CategoryFactory implements CatFactory{
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return the effective rule for the specified category. The category rule
      * ANDed with the rule of the category group that the category belongs to.
-     * 
-     * @param catlabel
-     *            the label for the category whose effective rule is needed
-     * 
-     * @return the effective rule for the specified category, null if the
-     *         category is not found
      */
     public synchronized String getEffectiveRule(String catlabel) {
         Enumeration enumCG = m_config.enumerateCategorygroup();

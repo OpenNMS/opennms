@@ -51,16 +51,21 @@ import java.util.Iterator;
 import org.opennms.web.map.db.Map;
 
 /**
+ * <p>VMap class.</p>
+ *
  * @author micmas
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
+ * @since 1.6.12
  */
 final public class VMap extends Map {
     Hashtable<String, VElement> elements = new Hashtable<String, VElement>();
     
     Hashtable<String, VLink> links = new Hashtable<String, VLink>();
     
+    /** Constant <code>DEFAULT_NAME="NewMap"</code> */
     public static final String DEFAULT_NAME = "NewMap";
     
     /**
@@ -71,6 +76,7 @@ final public class VMap extends Map {
     	super.setName(DEFAULT_NAME);
     }
 
+    /** {@inheritDoc} */
     public void setId(int id) {
         super.setId(id);
         VElement[] elements = getAllElements();
@@ -82,9 +88,10 @@ final public class VMap extends Map {
     }
     
     /**
-     * Copy constructor: create a VMap with all properties and elements of the input VMap without 
-     * time informations (create time, lastmodifiedtime) and id that will be automatically setted.   
-     * @param map
+     * Copy constructor: create a VMap with all properties and elements of the input VMap without
+     * time informations (create time, lastmodifiedtime) and id that will be automatically setted.
+     *
+     * @param map a {@link org.opennms.web.map.view.VMap} object.
      */
     public VMap(VMap map) {
         super();
@@ -103,9 +110,10 @@ final public class VMap extends Map {
     }
     
     /**
-     * Copy constructor: create a VMap with all properties and elements of the input VMap without 
-     * time informations (create time, lastmodifiedtime) and id that will be automatically setted.   
-     * @param map
+     * Copy constructor: create a VMap with all properties and elements of the input VMap without
+     * time informations (create time, lastmodifiedtime) and id that will be automatically setted.
+     *
+     * @param map a {@link org.opennms.web.map.db.Map} object.
      */
     public VMap(Map map) {
         super();
@@ -123,16 +131,20 @@ final public class VMap extends Map {
     }
     
     /**
-     * @param id
-     * @param name
-     * @param background
-     * @param owner
-     * @param accessMode
-     * @param userLastModifies
-     * @param scale
-     * @param offsetX
-     * @param offsetY
-     * @param type
+     * <p>Constructor for VMap.</p>
+     *
+     * @param id a int.
+     * @param name a {@link java.lang.String} object.
+     * @param background a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     * @param accessMode a {@link java.lang.String} object.
+     * @param userLastModifies a {@link java.lang.String} object.
+     * @param scale a float.
+     * @param offsetX a int.
+     * @param offsetY a int.
+     * @param type a {@link java.lang.String} object.
+     * @param width a int.
+     * @param height a int.
      */
     public VMap(int id, String name, String background, String owner,
             String accessMode, String userLastModifies, float scale,
@@ -141,6 +153,11 @@ final public class VMap extends Map {
                 offsetX, offsetY, type, width, height);
     }
     
+    /**
+     * <p>addElement</p>
+     *
+     * @param ve a {@link org.opennms.web.map.view.VElement} object.
+     */
     public void addElement(VElement ve) {
         if (ve != null) {
 	        elements.put(getElementId(ve), ve);
@@ -148,6 +165,11 @@ final public class VMap extends Map {
         }
     }
 
+    /**
+     * <p>addElements</p>
+     *
+     * @param ve an array of {@link org.opennms.web.map.view.VElement} objects.
+     */
     public void addElements(VElement[] ve) {
         if (ve != null) {
 	        for (int i = 0; i < ve.length; i++) {
@@ -156,6 +178,11 @@ final public class VMap extends Map {
         }
     }
 
+    /**
+     * <p>addElements</p>
+     *
+     * @param elems a {@link java.util.List} object.
+     */
     public void addElements(List<VElement> elems) {
         if (elems != null) {
             for (VElement elem : elems) {
@@ -165,6 +192,11 @@ final public class VMap extends Map {
     }
 
 
+    /**
+     * <p>addLink</p>
+     *
+     * @param link a {@link org.opennms.web.map.view.VLink} object.
+     */
     public void addLink(VLink link) {
     	// add a link only if map contains element.
     	VElement first = link.getFirst();
@@ -174,6 +206,11 @@ final public class VMap extends Map {
     	links.put(link.getId(), link);
     }
 
+    /**
+     * <p>addLinks</p>
+     *
+     * @param vl an array of {@link org.opennms.web.map.view.VLink} objects.
+     */
     public void addLinks(VLink[] vl) {
         if (vl != null) {
 	        for (VLink link : vl) {
@@ -182,6 +219,11 @@ final public class VMap extends Map {
         }
     }
  
+    /**
+     * <p>addLinks</p>
+     *
+     * @param elems a {@link java.util.List} object.
+     */
     public void addLinks(List<VLink> elems) {
         if (elems != null) {
             for (VLink elem : elems) {
@@ -191,6 +233,13 @@ final public class VMap extends Map {
     }
 
 
+    /**
+     * <p>removeElement</p>
+     *
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.map.view.VElement} object.
+     */
     public VElement removeElement(int id, String type) {
     	VElement ve = elements.remove(getElementId(id, type));
         
@@ -201,10 +250,23 @@ final public class VMap extends Map {
         return ve;
     }
 
+    /**
+     * <p>removeLink</p>
+     *
+     * @param link a {@link org.opennms.web.map.view.VLink} object.
+     * @return a {@link org.opennms.web.map.view.VLink} object.
+     */
     public VLink removeLink(VLink link) {
     	return links.remove(link.getId());
     }
     
+    /**
+     * <p>removeLinksOnElement</p>
+     *
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.map.view.VLink} objects.
+     */
     public VLink[] removeLinksOnElement(int id, String type) {
      	VLink[] lnksToDelete = getLinksOnElement(id, type);
     	List<VLink> links = new ArrayList<VLink>();
@@ -217,6 +279,13 @@ final public class VMap extends Map {
     }
     
     
+    /**
+     * <p>getLinksOnElement</p>
+     *
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.map.view.VLink} objects.
+     */
     public VLink[] getLinksOnElement(int id, String type) {
     	List<VLink> lns = new ArrayList<VLink>();
         
@@ -229,10 +298,23 @@ final public class VMap extends Map {
     	return lns.toArray(new VLink[lns.size()]);
     }
 
+    /**
+     * <p>removeLinksOnElementList</p>
+     *
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<VLink> removeLinksOnElementList(int id, String type) {
     	return Arrays.asList(removeLinksOnElement(id, type));
     }
 
+    /**
+     * <p>removeElements</p>
+     *
+     * @param ids an array of int.
+     * @param type a {@link java.lang.String} object.
+     */
     public void removeElements(int[] ids, String type) {
         if (ids != null) {
 	        for (int id : ids) {
@@ -241,10 +323,22 @@ final public class VMap extends Map {
         }
     }
 
+    /**
+     * <p>getElement</p>
+     *
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.map.view.VElement} object.
+     */
     public VElement getElement(int id, String type) {
     	return elements.get(getElementId(id, type));
     }
 
+    /**
+     * <p>getAllElements</p>
+     *
+     * @return an array of {@link org.opennms.web.map.view.VElement} objects.
+     */
     public VElement[] getAllElements() {
     	if (elements.size() == 0) {
     		return null;
@@ -253,6 +347,11 @@ final public class VMap extends Map {
     	return elements.values().toArray(new VElement[elements.size()]);
     } 
 
+    /**
+     * <p>getAllLinks</p>
+     *
+     * @return an array of {@link org.opennms.web.map.view.VLink} objects.
+     */
     public VLink[] getAllLinks() {
     	if (links.size() == 0) {
     		return null;
@@ -261,6 +360,11 @@ final public class VMap extends Map {
     	return links.values().toArray(new VLink[links.size()]);
     } 
 
+    /**
+     * <p>getCloneAllElements</p>
+     *
+     * @return an array of {@link org.opennms.web.map.view.VElement} objects.
+     */
     public VElement[] getCloneAllElements() {
     	if (elements.size() == 0) {
     		return null;
@@ -277,82 +381,129 @@ final public class VMap extends Map {
         return arrayElems;
     }     
     
+    /**
+     * <p>removeAllElements</p>
+     */
     public void removeAllElements() {
         elements.clear();
     }
     
+    /**
+     * <p>removeAllLinks</p>
+     */
     public void removeAllLinks() {
         links.clear();
     }
     
+    /**
+     * <p>size</p>
+     *
+     * @return a int.
+     */
     public int size() {
         return elements.size();
     }
     
+    /**
+     * <p>linksize</p>
+     *
+     * @return a int.
+     */
     public int linksize() {
     	return links.size();
     }
 
+    /**
+     * <p>containsElement</p>
+     *
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean containsElement(int id, String type) {
     	return elements.containsKey(getElementId(id, type));
     }
 
+    /**
+     * <p>containsLink</p>
+     *
+     * @param link a {@link org.opennms.web.map.view.VLink} object.
+     * @return a boolean.
+     */
     public boolean containsLink(VLink link) {
      	return links.containsKey(link.getId());
     }
     
+    /** {@inheritDoc} */
     public  void setAccessMode(String accessMode) {
     	super.setAccessMode(accessMode);
     }
     
+    /** {@inheritDoc} */
     public  void setBackground(String background) {
     	super.setBackground(background);
     }
     
+    /** {@inheritDoc} */
     public void setCreateTime(Timestamp createTime) {
     	super.setCreateTime(createTime);
     }
     
+    /** {@inheritDoc} */
     public void setLastModifiedTime(Timestamp lastModifiedTime) {
     	super.setLastModifiedTime(lastModifiedTime);
     }
     
+    /** {@inheritDoc} */
     public void setName(String name) {
     	super.setName(name);
     }
     
+    /** {@inheritDoc} */
     public void setOffsetX(int offsetX) {
     	super.setOffsetX(offsetX);
     }
     
+    /** {@inheritDoc} */
     public void setOffsetY(int offsetY) {
     	super.setOffsetY(offsetY);
     }
     
+    /** {@inheritDoc} */
     public void setOwner(String owner) {
     	super.setOwner(owner);
     }
     
+    /** {@inheritDoc} */
     public void setScale(float scale) {
     	super.setScale(scale);
     }
     
+    /** {@inheritDoc} */
     public void setType(String type) {
     	super.setType(type);
     }
     
+    /** {@inheritDoc} */
     public void setWidth(int width) {
     	super.setWidth(width);
     }
     
+    /** {@inheritDoc} */
     public void setHeight(int height) {
     	super.setHeight(height);
     }
     
+    /** {@inheritDoc} */
     public void setUserLastModifies(String userLastModifies) {
     	super.setUserLastModifies(userLastModifies);
     }
     
+    /**
+     * <p>isNew</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNew() {
     	return super.isNew();
     }

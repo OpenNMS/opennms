@@ -40,12 +40,15 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
+ * <p>SeveritySeriesColors class.</p>
+ *
  * @author <a href="david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class SeveritySeriesColors implements CustomSeriesColors {
 
     /**
-     * 
+     * <p>Constructor for SeveritySeriesColors.</p>
      */
     public SeveritySeriesColors() {
         super();
@@ -54,6 +57,7 @@ public class SeveritySeriesColors implements CustomSeriesColors {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.charts.CustomSeriesColors#getPaint(java.lang.Comparable)
      */
+    /** {@inheritDoc} */
     public Paint getPaint(Comparable cat) {
         
         int sev = 0;

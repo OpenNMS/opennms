@@ -35,21 +35,47 @@
 //
 package org.opennms.web.admin.roles;
 
+/**
+ * <p>WebRolesException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class WebRolesException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * <p>Constructor for WebRolesException.</p>
+     */
     public WebRolesException() {
         super();
     }
 
+    /**
+     * <p>Constructor for WebRolesException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public WebRolesException(String message) {
         super(message);
     }
 
+    /**
+     * <p>Constructor for WebRolesException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public WebRolesException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * <p>Constructor for WebRolesException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public WebRolesException(Throwable cause) {
         super(cause);
     }

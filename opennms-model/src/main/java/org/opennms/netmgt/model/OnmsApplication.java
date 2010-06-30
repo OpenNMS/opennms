@@ -50,6 +50,12 @@ import javax.persistence.Table;
 import org.springframework.core.style.ToStringCreator;
 
 @Entity
+/**
+ * <p>OnmsApplication class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name = "applications")
 public class OnmsApplication implements Comparable<OnmsApplication> {
 
@@ -59,6 +65,11 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     //private Set<OnmsMonitoredService> m_memberServices;
     
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
@@ -66,15 +77,30 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "name", length=32, nullable=false, unique=true)
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
@@ -95,10 +121,17 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     }
     */
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     * @return a int.
+     */
     public int compareTo(OnmsApplication o) {
         return getName().compareToIgnoreCase(o.getName());
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         ToStringCreator creator = new ToStringCreator(this);

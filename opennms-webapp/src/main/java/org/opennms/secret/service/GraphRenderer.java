@@ -39,12 +39,22 @@ import org.opennms.secret.model.GraphDefinition;
 
 /**
  * returns a rendered version of the graph definition supplied
- * @author mhuot
  *
+ * @author mhuot
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface GraphRenderer {
 	
 	
+	/**
+	 * <p>getPNG</p>
+	 *
+	 * @param gdef a {@link org.opennms.secret.model.GraphDefinition} object.
+	 * @return a {@link java.io.ByteArrayInputStream} object.
+	 * @throws java.io.IOException if any.
+	 * @throws org.jrobin.core.RrdException if any.
+	 */
 	public  ByteArrayInputStream getPNG(GraphDefinition gdef) throws IOException, RrdException;
 	
 }

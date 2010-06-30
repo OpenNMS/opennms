@@ -84,10 +84,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultSurveillanceService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 @Transactional(readOnly = true)
 public class DefaultSurveillanceService implements SurveillanceService, InitializingBean {
@@ -104,6 +113,11 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     private GroupDao m_groupDao;
     private OutageDao m_outageDao;
     
+    /**
+     * <p>getSurveillanceData</p>
+     *
+     * @return a {@link org.opennms.dashboard.client.SurveillanceData} object.
+     */
     public SurveillanceData getSurveillanceData() {
         SurveillanceData data = new SurveillanceData();
 
@@ -209,6 +223,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
 */
 
+    /** {@inheritDoc} */
     public Alarm[] getAlarmsForSet(SurveillanceSet set) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
         OnmsCriteria nodeCriteria = criteria.createCriteria("node");
@@ -242,6 +257,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         }
     }
 
+    /** {@inheritDoc} */
     public String[] getNodeNames(SurveillanceSet set) {
 
         List<OnmsNode> nodes = m_nodeDao.findAll();
@@ -255,6 +271,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
 
     }
 
+    /** {@inheritDoc} */
     public String[][] getResources(SurveillanceSet set) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
         addCriteriaForSurveillanceSet(criteria, set);
@@ -324,6 +341,11 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
 
 
+    /**
+     * <p>getUsername</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected String getUsername() {
         /*
          * This should never be null, as the strategy should create a
@@ -347,6 +369,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
     }
 
 
+    /** {@inheritDoc} */
     public String[][] getChildResources(String id) {
         OnmsResource parentResource = m_resourceDao.getResourceById(id);
         if (parentResource == null) {
@@ -363,6 +386,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         return labels.toArray(new String[labels.size()][]);
     }
 
+    /** {@inheritDoc} */
     public String[][] getPrefabGraphs(String id) {
         OnmsResource resource = m_resourceDao.getResourceById(id);
         if (resource == null) {
@@ -379,6 +403,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         return labels.toArray(new String[labels.size()][]);
     }
     
+    /** {@inheritDoc} */
     public Notification[] getNotificationsForSet(SurveillanceSet set) {
         List<Notification> notifications = new ArrayList<Notification>();
         
@@ -432,6 +457,7 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         return notif;
     }
     
+    /** {@inheritDoc} */
     public NodeRtc[] getRtcForSet(SurveillanceSet set) {
         OnmsCriteria serviceCriteria = m_rtcService.createServiceCriteria();
         OnmsCriteria outageCriteria = m_rtcService.createOutageCriteria();
@@ -469,10 +495,20 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         return nodeRtc;
     }
     
+    /**
+     * <p>getOutagesForSet</p>
+     *
+     * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
+     */
     public void getOutagesForSet(SurveillanceSet set) {
         throw new UnsupportedOperationException("method not implemented");
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "nodeDao property must be set and cannot be null");
         Assert.state(m_resourceDao != null, "resourceDao property must be set and cannot be null");
@@ -487,74 +523,164 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         Assert.state(m_outageDao != null, "outageDao property must be set and cannot be null");
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
+    /**
+     * <p>setNotificationDao</p>
+     *
+     * @param notifDao a {@link org.opennms.netmgt.dao.NotificationDao} object.
+     */
     public void setNotificationDao(NotificationDao notifDao) {
         m_notificationDao = notifDao;
     }
     
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
 
+    /**
+     * <p>setGraphDao</p>
+     *
+     * @param graphDao a {@link org.opennms.netmgt.dao.GraphDao} object.
+     */
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
     }
 
+    /**
+     * <p>getWebSurveillanceService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.SurveillanceService} object.
+     */
     public org.opennms.web.svclayer.SurveillanceService getWebSurveillanceService() {
         return m_webSurveillanceService;
     }
 
+    /**
+     * <p>setWebSurveillanceService</p>
+     *
+     * @param webSurveillanceService a {@link org.opennms.web.svclayer.SurveillanceService} object.
+     */
     public void setWebSurveillanceService(org.opennms.web.svclayer.SurveillanceService webSurveillanceService) {
         m_webSurveillanceService = webSurveillanceService;
     }
 
+    /**
+     * <p>getSurveillanceViewConfigDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     */
     public SurveillanceViewConfigDao getSurveillanceViewConfigDao() {
         return m_surveillanceViewConfigDao;
     }
 
+    /**
+     * <p>setSurveillanceViewConfigDao</p>
+     *
+     * @param surveillanceViewConfigDao a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     */
     public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao surveillanceViewConfigDao) {
         m_surveillanceViewConfigDao = surveillanceViewConfigDao;
     }
 
+    /**
+     * <p>getCategoryDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
 
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
 
+    /**
+     * <p>getAlarmDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     */
     public AlarmDao getAlarmDao() {
         return m_alarmDao;
     }
 
+    /**
+     * <p>setAlarmDao</p>
+     *
+     * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     */
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
     
+    /**
+     * <p>getRtcService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.RtcService} object.
+     */
     public RtcService getRtcService() {
         return m_rtcService;
     }
 
+    /**
+     * <p>setRtcService</p>
+     *
+     * @param rtcService a {@link org.opennms.web.svclayer.RtcService} object.
+     */
     public void setRtcService(RtcService rtcService) {
         m_rtcService = rtcService;
     }
 
+    /**
+     * <p>getGroupDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.GroupDao} object.
+     */
     public GroupDao getGroupDao() {
         return m_groupDao;
     }
 
+    /**
+     * <p>setGroupDao</p>
+     *
+     * @param groupDao a {@link org.opennms.netmgt.config.GroupDao} object.
+     */
     public void setGroupDao(GroupDao groupDao) {
         m_groupDao = groupDao;
     }
 
+    /**
+     * <p>getOutageDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.OutageDao} object.
+     */
     public OutageDao getOutageDao() {
         return m_outageDao;
     }
 
+    /**
+     * <p>setOutageDao</p>
+     *
+     * @param outageDao a {@link org.opennms.netmgt.dao.OutageDao} object.
+     */
     public void setOutageDao(OutageDao outageDao) {
         m_outageDao = outageDao;
     }

@@ -38,27 +38,66 @@ package org.opennms.netmgt.collectd;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>Abstract AbstractCollectionAttribute class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class AbstractCollectionAttribute implements  CollectionAttribute {
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
     
+    /**
+     * <p>getAttributeType</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     */
     public abstract CollectionAttributeType getAttributeType();
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getName();
 
+    /**
+     * <p>getNumericValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getNumericValue() ;
 
+    /**
+     * <p>getResource</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     */
     public abstract CollectionResource getResource();
 
+    /**
+     * <p>getStringValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getStringValue() ;
 
+    /** {@inheritDoc} */
     public abstract boolean shouldPersist(ServiceParameters params);
 
+    /** {@inheritDoc} */
     public void storeAttribute(Persister persister) {
         getAttributeType().storeAttribute(this, persister);
     }
 
+    /** {@inheritDoc} */
     public void visit(CollectionSetVisitor visitor) {
         log().debug("Visiting attribute "+this);
         visitor.visitAttribute(this);

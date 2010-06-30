@@ -42,8 +42,10 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 /**
- * @author david
+ * <p>LoopMonitor class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 
 @Distributable
@@ -52,12 +54,16 @@ public class LoopMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.config.PollerConfig, java.util.Map)
      */
+    /** {@inheritDoc} */
     public void initialize(Map parameters) {
         return;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#release()
+     */
+    /**
+     * <p>release</p>
      */
     public void release() {
         return;
@@ -66,6 +72,11 @@ public class LoopMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.poller.MonitoredService)
      */
+    /**
+     * <p>initialize</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
+     */
     public void initialize(MonitoredService svc) {
         return;
     }
@@ -73,6 +84,7 @@ public class LoopMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#release(org.opennms.netmgt.poller.MonitoredService)
      */
+    /** {@inheritDoc} */
     public void release(MonitoredService svc) {
         return;
     }
@@ -80,6 +92,7 @@ public class LoopMonitor implements ServiceMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
+    /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map parameters) {
         LoopPlugin lp = new LoopPlugin();
         boolean isAvailable = lp.isProtocolSupported(svc.getAddress(), parameters);

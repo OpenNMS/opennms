@@ -69,8 +69,9 @@ import org.opennms.netmgt.xml.event.Event;
  * vacuumd-configuration.xml file. Automations are identified by a name and
  * they reference Triggers and Actions by name, as well. Autmations also have
  * an interval attribute that determines how often they run.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class AutomationProcessor implements ReadyRunnable {
 
@@ -646,6 +647,8 @@ public class AutomationProcessor implements ReadyRunnable {
 
     /**
      * Public constructor.
+     *
+     * @param automation a {@link org.opennms.netmgt.config.vacuumd.Automation} object.
      */
     public AutomationProcessor(Automation automation) {
         m_ready = true;
@@ -656,10 +659,20 @@ public class AutomationProcessor implements ReadyRunnable {
         m_actionEvent = new ActionEventProcessor(m_automation.getName(), VacuumdConfigFactory.getInstance().getActionEvent(m_automation.getActionEvent()));
     }
 
+    /**
+     * <p>getAction</p>
+     *
+     * @return a {@link org.opennms.netmgt.vacuumd.AutomationProcessor.ActionProcessor} object.
+     */
     public ActionProcessor getAction() {
         return m_action;
     }
 
+    /**
+     * <p>getTrigger</p>
+     *
+     * @return a {@link org.opennms.netmgt.vacuumd.AutomationProcessor.TriggerProcessor} object.
+     */
     public TriggerProcessor getTrigger() {
         return m_trigger;
     }
@@ -667,6 +680,9 @@ public class AutomationProcessor implements ReadyRunnable {
     /*
      * (non-Javadoc)
      * @see java.lang.Runnable#run()
+     */
+    /**
+     * <p>run</p>
      */
     public void run() {
 
@@ -693,10 +709,9 @@ public class AutomationProcessor implements ReadyRunnable {
      * actions defined for an automation. An automation may have 0 or 1
      * trigger and must have 1 action. If the automation doesn't have a
      * trigger than the action must not contain any tokens.
-     * 
-     * @param auto
-     * @return
-     * @throws SQLException
+     *
+     * @throws java.sql.SQLException if any.
+     * @return a boolean.
      */
     public boolean runAutomation() throws SQLException {
         log().debug("runAutomation: " + m_automation.getName() + " running...");
@@ -769,6 +784,13 @@ public class AutomationProcessor implements ReadyRunnable {
         }
     }
 
+    /**
+     * <p>verifyRowCount</p>
+     *
+     * @param triggerResultSet a {@link java.sql.ResultSet} object.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     protected boolean verifyRowCount(ResultSet triggerResultSet) throws SQLException {
         if (!m_trigger.hasTrigger()) {
             return true;
@@ -795,10 +817,10 @@ public class AutomationProcessor implements ReadyRunnable {
     /**
      * Method used to count the rows in a ResultSet. This probably requires
      * that your ResultSet is scrollable.
-     * 
-     * @param rs
-     * @return
-     * @throws SQLException
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @throws java.sql.SQLException if any.
+     * @return a int.
      */
     public int countRows(ResultSet rs) throws SQLException {
         if (rs == null) {
@@ -815,26 +837,35 @@ public class AutomationProcessor implements ReadyRunnable {
     /**
      * Simple helper method to determine if the targetString contains any
      * '${token}'s.
-     * 
-     * @param targetString
-     * @return
+     *
+     * @param targetString a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean containsTokens(String targetString) {
         return m_action.getTokenCount(targetString) > 0;
     }
 
     /**
+     * <p>getAutomation</p>
+     *
      * @return Returns the automation.
      */
     public Automation getAutomation() {
         return m_automation;
     }
 
+    /**
+     * <p>isReady</p>
+     *
+     * @return a boolean.
+     */
     public boolean isReady() {
         return m_ready;
     }
 
     /**
+     * <p>getSchedule</p>
+     *
      * @return Returns the schedule.
      */
     public Schedule getSchedule() {
@@ -842,6 +873,8 @@ public class AutomationProcessor implements ReadyRunnable {
     }
 
     /**
+     * <p>setSchedule</p>
+     *
      * @param schedule
      *            The schedule to set.
      */
@@ -857,6 +890,11 @@ public class AutomationProcessor implements ReadyRunnable {
         return m_trigger.hasTrigger();
     }
 
+    /**
+     * <p>setReady</p>
+     *
+     * @param ready a boolean.
+     */
     public void setReady(boolean ready) {
         m_ready = ready;
     }

@@ -42,16 +42,31 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * <p>OwnedIntervalSequence class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OwnedIntervalSequence extends TimeIntervalSequence {
 
+    /**
+     * <p>Constructor for OwnedIntervalSequence.</p>
+     */
     public OwnedIntervalSequence() {
         super();
     }
 
+    /**
+     * <p>Constructor for OwnedIntervalSequence.</p>
+     *
+     * @param interval a {@link org.opennms.netmgt.config.OwnedInterval} object.
+     */
     public OwnedIntervalSequence(OwnedInterval interval) {
         super(interval);
     }
 
+    /** {@inheritDoc} */
     protected Collection<OwnedInterval> combineIntervals(TimeInterval currInt, TimeInterval newInt) {
         OwnedInterval currInterval = (OwnedInterval) currInt;
         OwnedInterval newInterval = (OwnedInterval) newInt;
@@ -118,14 +133,17 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
         return newIntervals;
     }
 
+    /** {@inheritDoc} */
     protected TimeInterval createInterval(Date start, Date end) {
         return new OwnedInterval(start, end);
     }
 
+    /** {@inheritDoc} */
     protected TimeIntervalSequence createTail(TimeInterval interval) {
         return new OwnedIntervalSequence((OwnedInterval) interval);
     }
 
+    /** {@inheritDoc} */
     protected Collection<OwnedInterval> separateIntervals(TimeInterval origInt, TimeInterval removedInt) {
         OwnedInterval origInterval = (OwnedInterval) origInt;
         OwnedInterval removedInterval = (OwnedInterval) removedInt;

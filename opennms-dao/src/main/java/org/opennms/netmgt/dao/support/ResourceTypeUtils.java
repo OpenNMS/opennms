@@ -56,8 +56,15 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
+/**
+ * <p>ResourceTypeUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ResourceTypeUtils {
 
+    /** Constant <code>DS_PROPERTIES_FILE="ds.properties"</code> */
     public static String DS_PROPERTIES_FILE = "ds.properties";
 
     private static PropertiesCache s_cache = new PropertiesCache();
@@ -68,6 +75,13 @@ public class ResourceTypeUtils {
     private ResourceTypeUtils() {
     }
     
+    /**
+     * <p>getAttributesAtRelativePath</p>
+     *
+     * @param rrdDirectory a {@link java.io.File} object.
+     * @param relativePath a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
     public static Set<OnmsAttribute> getAttributesAtRelativePath(File rrdDirectory, String relativePath) {
         
         Set<OnmsAttribute> attributes =  new HashSet<OnmsAttribute>();
@@ -117,6 +131,12 @@ public class ResourceTypeUtils {
         }
     }
     
+    /**
+     * <p>getDsProperties</p>
+     *
+     * @param directory a {@link java.io.File} object.
+     * @return a {@link java.util.Properties} object.
+     */
     public static Properties getDsProperties(File directory) {
         File propertiesFile = new File(directory, DS_PROPERTIES_FILE);
         try {
@@ -127,6 +147,13 @@ public class ResourceTypeUtils {
         }
     }
     
+    /**
+     * <p>getRrdFileForDs</p>
+     *
+     * @param directory a {@link java.io.File} object.
+     * @param ds a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
     public static File getRrdFileForDs(File directory, String ds) {
         String rrdBaseName = ds;
         if (isStoreByGroup()) {
@@ -140,14 +167,32 @@ public class ResourceTypeUtils {
         return new File(directory, rrdBaseName + RrdUtils.getExtension());
     }
 
+    /**
+     * <p>isStoreByGroup</p>
+     *
+     * @return a boolean.
+     */
     public static boolean isStoreByGroup() {
         return Boolean.getBoolean("org.opennms.rrd.storeByGroup");
     }
 
+    /**
+     * <p>isResponseTime</p>
+     *
+     * @param relativePath a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public static boolean isResponseTime(String relativePath) {
         return Pattern.matches("^" + DefaultResourceDao.RESPONSE_DIRECTORY + ".+$", relativePath);
     }
 
+    /**
+     * <p>getStringProperties</p>
+     *
+     * @param rrdDirectory a {@link java.io.File} object.
+     * @param relativePath a {@link java.lang.String} object.
+     * @return a {@link java.util.Properties} object.
+     */
     public static Properties getStringProperties(File rrdDirectory, String relativePath) {
         Assert.notNull(rrdDirectory, "rrdDirectory argument must not be null");
         Assert.notNull(relativePath, "relativePath argument must not be null");
@@ -162,6 +207,12 @@ public class ResourceTypeUtils {
         return getProperties(new File(resourceDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME));
     }
 
+    /**
+     * <p>getProperties</p>
+     *
+     * @param file a {@link java.io.File} object.
+     * @return a {@link java.util.Properties} object.
+     */
     public static Properties getProperties(File file) {
         try {
             return s_cache.findProperties(file);
@@ -172,14 +223,33 @@ public class ResourceTypeUtils {
         }
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public static Category log() {
         return ThreadCategory.getInstance();
     }
 
+    /**
+     * <p>saveUpdatedProperties</p>
+     *
+     * @param propertiesFile a {@link java.io.File} object.
+     * @param props a {@link java.util.Properties} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     */
     public static void saveUpdatedProperties(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
         s_cache.saveProperties(propertiesFile, props);
     }
 
+    /**
+     * <p>updateDsProperties</p>
+     *
+     * @param resourceDir a {@link java.io.File} object.
+     * @param dsNamesToRrdNames a {@link java.util.Map} object.
+     */
     public static void updateDsProperties(File resourceDir, Map<String, String> dsNamesToRrdNames) {
         try {
             s_cache.updateProperties(new File(resourceDir, DS_PROPERTIES_FILE), dsNamesToRrdNames);
@@ -188,11 +258,27 @@ public class ResourceTypeUtils {
         }
     }
 
+    /**
+     * <p>updateStringProperty</p>
+     *
+     * @param resourceDir a {@link java.io.File} object.
+     * @param attrVal a {@link java.lang.String} object.
+     * @param attrName a {@link java.lang.String} object.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     */
     public static void updateStringProperty(File resourceDir, String attrVal, String attrName) throws FileNotFoundException, IOException {
         File propertiesFile = new File(resourceDir, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME);
         s_cache.setProperty(propertiesFile, attrName, attrVal);
     }
 
+    /**
+     * <p>getStringProperty</p>
+     *
+     * @param directory a {@link java.io.File} object.
+     * @param key a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getStringProperty(File directory, String key) {
         File file = new File(directory, DefaultResourceDao.STRINGS_PROPERTIES_FILE_NAME);
         try {

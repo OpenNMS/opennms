@@ -30,7 +30,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>DefaultServiceMonitorLocator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.config;
 
@@ -40,7 +43,6 @@ import java.util.Map;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -48,11 +50,22 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     String m_serviceName;
     Class<? extends ServiceMonitor> m_serviceClass;
     
+    /**
+     * <p>Constructor for DefaultServiceMonitorLocator.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param serviceClass a {@link java.lang.Class} object.
+     */
     public DefaultServiceMonitorLocator(String serviceName, Class<? extends ServiceMonitor> serviceClass) {
         m_serviceName = serviceName;
         m_serviceClass = serviceClass;
     }
 
+    /**
+     * <p>getServiceMonitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
+     */
     public ServiceMonitor getServiceMonitor() {
         try {
             ServiceMonitor mon = m_serviceClass.newInstance();
@@ -67,10 +80,20 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
         }
     }
 
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_serviceName;
     }
 
+    /**
+     * <p>getServiceLocatorKey</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceLocatorKey() {
         return m_serviceClass.getName();
     }

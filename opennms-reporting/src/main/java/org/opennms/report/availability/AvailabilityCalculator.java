@@ -65,12 +65,12 @@ import org.opennms.netmgt.model.AvailabilityReportLocator;
  * later to retrive the ready run report. The castor generated object created needs a string
  * representation for the month in the year. This is unnecessarily complex for
  * the information that it conveys and should be changed.
- * 
- * TODO: This is still not locale independent. 
- * 
+ *
+ * TODO: This is still not locale independent.
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
-
 public class AvailabilityCalculator {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
@@ -79,6 +79,7 @@ public class AvailabilityCalculator {
 
     // String of Months
 
+    /** Constant <code>months="new String[] { January, February,March,"{trunked}</code> */
     public static String[] months = new String[] { "January", "February",
             "March", "April", "May", "June", "July", "August", "September",
             "October", "November", "December" };
@@ -130,6 +131,9 @@ public class AvailabilityCalculator {
     
     private AvailabilityReportLocatorService m_locatorService;
 
+    /**
+     * <p>Constructor for AvailabilityCalculator.</p>
+     */
     public AvailabilityCalculator() {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -157,6 +161,11 @@ public class AvailabilityCalculator {
 
     }
 
+    /**
+     * <p>calculate</p>
+     *
+     * @throws org.opennms.report.availability.AvailabilityCalculationException if any.
+     */
     public void calculate() throws AvailabilityCalculationException {
 
         log.debug("Calculation Started");
@@ -197,6 +206,11 @@ public class AvailabilityCalculator {
 
     }
 
+   /**
+    * <p>writeXML</p>
+    *
+    * @throws org.opennms.report.availability.AvailabilityCalculationException if any.
+    */
    public void writeXML() throws AvailabilityCalculationException {
         try {
             log.debug("Writing the XML");
@@ -216,6 +230,12 @@ public class AvailabilityCalculator {
         }
     }
    
+   /**
+    * <p>writeXML</p>
+    *
+    * @param outputFileName a {@link java.lang.String} object.
+    * @throws org.opennms.report.availability.AvailabilityCalculationException if any.
+    */
    public void writeXML(String outputFileName) throws AvailabilityCalculationException {
        try {
            log.debug("Writing the XML");
@@ -231,6 +251,11 @@ public class AvailabilityCalculator {
        }
    }
     
+    /**
+     * <p>writeLocateableXML</p>
+     *
+     * @throws org.opennms.report.availability.AvailabilityCalculationException if any.
+     */
     public void writeLocateableXML() throws AvailabilityCalculationException {
         try {
             log.debug("Writing the XML");
@@ -259,6 +284,12 @@ public class AvailabilityCalculator {
         }
     }
 
+    /**
+     * <p>marshal</p>
+     *
+     * @param outputFile a {@link java.io.File} object.
+     * @throws org.opennms.report.availability.AvailabilityCalculationException if any.
+     */
     public void marshal(File outputFile)
             throws AvailabilityCalculationException {
         try {
@@ -281,82 +312,182 @@ public class AvailabilityCalculator {
         }
     }
 
+    /**
+     * <p>getLogoURL</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLogoURL() {
         return m_logoURL;
     }
 
+    /**
+     * <p>setLogoURL</p>
+     *
+     * @param logoURL a {@link java.lang.String} object.
+     */
     public void setLogoURL(String logoURL) {
         this.m_logoURL = logoURL;
     }
 
+    /**
+     * <p>getOutputFileName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOutputFileName() {
         return m_outputFileName;
     }
 
+    /**
+     * <p>setOutputFileName</p>
+     *
+     * @param outputFileName a {@link java.lang.String} object.
+     */
     public void setOutputFileName(String outputFileName) {
         this.m_outputFileName = outputFileName;
     }
 
+    /**
+     * <p>getAuthor</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAuthor() {
         return m_author;
     }
 
+    /**
+     * <p>setAuthor</p>
+     *
+     * @param author a {@link java.lang.String} object.
+     */
     public void setAuthor(String author) {
         this.m_author = author;
     }
 
+    /**
+     * <p>getCategoryName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCategoryName() {
         return m_categoryName;
     }
 
+    /**
+     * <p>setCategoryName</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     */
     public void setCategoryName(String categoryName) {
         this.m_categoryName = categoryName;
     }
 
+    /**
+     * <p>getMonthFormat</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMonthFormat() {
         return m_monthFormat;
     }
 
+    /**
+     * <p>setMonthFormat</p>
+     *
+     * @param monthFormat a {@link java.lang.String} object.
+     */
     public void setMonthFormat(String monthFormat) {
         this.m_monthFormat = monthFormat;
     }
 
+    /**
+     * <p>getReportFormat</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getReportFormat() {
         return m_reportFormat;
     }
 
+    /**
+     * <p>setReportFormat</p>
+     *
+     * @param reportFormat a {@link java.lang.String} object.
+     */
     public void setReportFormat(String reportFormat) {
         this.m_reportFormat = reportFormat;
     }
 
+    /**
+     * <p>getReport</p>
+     *
+     * @return a {@link org.opennms.report.availability.Report} object.
+     */
     public Report getReport() {
         return m_report;
     }
 
+    /**
+     * <p>setCalendar</p>
+     *
+     * @param calendar a {@link java.util.Calendar} object.
+     */
     public void setCalendar(Calendar calendar) {
         this.m_calendar = calendar;
     }
 
+    /**
+     * <p>getPeriodEndDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getPeriodEndDate() {
         return m_periodEndDate;
     }
 
+    /**
+     * <p>setPeriodEndDate</p>
+     *
+     * @param periodEndDate a {@link java.util.Date} object.
+     */
     public void setPeriodEndDate(Date periodEndDate) {
         this.m_periodEndDate = periodEndDate;
     }
 
+    /**
+     * <p>getLocatorService</p>
+     *
+     * @return a {@link org.opennms.report.availability.AvailabilityReportLocatorService} object.
+     */
     public AvailabilityReportLocatorService getLocatorService() {
         return m_locatorService;
     }
 
+    /**
+     * <p>setLocatorService</p>
+     *
+     * @param locatorService a {@link org.opennms.report.availability.AvailabilityReportLocatorService} object.
+     */
     public void setLocatorService(AvailabilityReportLocatorService locatorService) {
         m_locatorService = locatorService;
     }
 
+    /**
+     * <p>getBaseDir</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBaseDir() {
         return m_baseDir;
     }
 
+    /**
+     * <p>setBaseDir</p>
+     *
+     * @param baseDir a {@link java.lang.String} object.
+     */
     public void setBaseDir(String baseDir) {
         m_baseDir = baseDir;
     }

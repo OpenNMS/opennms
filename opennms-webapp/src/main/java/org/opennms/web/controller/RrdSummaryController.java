@@ -52,8 +52,11 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractFormController;
 
 /**
- * 
+ * <p>RrdSummaryController class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class RrdSummaryController extends AbstractFormController implements InitializingBean {
 	
@@ -73,6 +76,9 @@ public class RrdSummaryController extends AbstractFormController implements Init
 	private RrdSummaryService m_rrdSummaryService;
 	
 
+	/**
+	 * <p>Constructor for RrdSummaryController.</p>
+	 */
 	public RrdSummaryController() {
 	    super();
 	    setCommandClass(SummarySpecification.class);
@@ -86,20 +92,32 @@ public class RrdSummaryController extends AbstractFormController implements Init
 	
 
 
+	/**
+	 * <p>afterPropertiesSet</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void afterPropertiesSet() throws Exception {
 		Assert.state(m_rrdSummaryService != null, "rrdSummaryService must be set");
 	}
 
 
+	/**
+	 * <p>setRrdSummaryService</p>
+	 *
+	 * @param rrdSummaryService a {@link org.opennms.web.svclayer.RrdSummaryService} object.
+	 */
 	public void setRrdSummaryService(RrdSummaryService rrdSummaryService) {
 		m_rrdSummaryService = rrdSummaryService;
 	}
 
+    /** {@inheritDoc} */
     @Override
     protected boolean isFormSubmission(HttpServletRequest request) {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView processFormSubmission(HttpServletRequest request,
             HttpServletResponse response, Object command, BindException errors)
@@ -108,6 +126,7 @@ public class RrdSummaryController extends AbstractFormController implements Init
         
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView showForm(HttpServletRequest request,
             HttpServletResponse response, BindException errors)

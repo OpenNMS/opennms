@@ -38,25 +38,77 @@ package org.opennms.dashboard.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
- * 
+ * <p>SurveillanceService interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface SurveillanceService extends RemoteService {
 
+    /**
+     * <p>getSurveillanceData</p>
+     *
+     * @return a {@link org.opennms.dashboard.client.SurveillanceData} object.
+     */
     public SurveillanceData getSurveillanceData();
     
+    /**
+     * <p>getAlarmsForSet</p>
+     *
+     * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
+     * @return an array of {@link org.opennms.dashboard.client.Alarm} objects.
+     */
     public Alarm[] getAlarmsForSet(SurveillanceSet set);
     
+    /**
+     * <p>getNotificationsForSet</p>
+     *
+     * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
+     * @return an array of {@link org.opennms.dashboard.client.Notification} objects.
+     */
     public Notification[] getNotificationsForSet(SurveillanceSet set);
     
+    /**
+     * <p>getNodeNames</p>
+     *
+     * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getNodeNames(SurveillanceSet set);
     
+    /**
+     * <p>getResources</p>
+     *
+     * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[][] getResources(SurveillanceSet set);
     
+    /**
+     * <p>getChildResources</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[][] getChildResources(String resourceId);
     
+    /**
+     * <p>getPrefabGraphs</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[][] getPrefabGraphs(String resourceId);
     
+    /**
+     * <p>getRtcForSet</p>
+     *
+     * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
+     * @return an array of {@link org.opennms.dashboard.client.NodeRtc} objects.
+     */
     public NodeRtc[] getRtcForSet(SurveillanceSet set);
 }

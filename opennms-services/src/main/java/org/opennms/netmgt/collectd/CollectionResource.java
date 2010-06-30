@@ -35,27 +35,51 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>CollectionResource interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface CollectionResource extends ResourceIdentifier {
+    /**
+     * <p>shouldPersist</p>
+     *
+     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @return a boolean.
+     */
     public boolean shouldPersist(ServiceParameters params);
     
+    /**
+     * <p>rescanNeeded</p>
+     *
+     * @return a boolean.
+     */
     public boolean rescanNeeded();
     
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
+     */
     public void visit(CollectionSetVisitor visitor);
     
     /**
      * Returns something like an ifType; is (but not sure if it should be) -1 for non interface type collections, otherwise
      * the SNMP type of the interface. Relates to ifType in datacollection-config.xml
-     * @return
+     *
+     * @return a int.
      */
     public int getType();
     
     /**
-     * Returns a string which indicates what type of resource.  
-     * Will be one of 
+     * Returns a string which indicates what type of resource.
+     * Will be one of
      *          "node" for the node level resource
      *          "if" for network interface resources
      *          "*" for all other resource types defined in the relevant config files, e.g. hrStorage
-     * @return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getResourceTypeName();
     
@@ -64,14 +88,16 @@ public interface CollectionResource extends ResourceIdentifier {
      * Returns the name of the instance this CollectionResource represents.  For node level resources, this will be null
      * to indicate the default instance.   For interface level resources, some label unique to the node (ifIndex probably)
      * For Generic resources (e.g. the SNMP GenericIndexResource), this will be some identifying label, probably the index in the table
-     * @return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getInstance();
 
     /**
      * Returns a unique label for each resource depending on resource type.
      * This label is the same label used when constructing the resource ID.
-     * @Return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getLabel();
 }

@@ -43,13 +43,20 @@ import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration
 import org.opennms.netmgt.config.surveillanceViews.View;
 
 /**
- * 
+ * <p>SurveillanceViewConfig class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class SurveillanceViewConfig {
     private SurveillanceViewConfiguration m_config;
     private Map<String, View> m_viewsMap;
     
+    /**
+     * <p>Constructor for SurveillanceViewConfig.</p>
+     *
+     * @param config a {@link org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration} object.
+     */
     public SurveillanceViewConfig(SurveillanceViewConfiguration config) {
         m_config = config;
         createViewsMap();
@@ -67,10 +74,20 @@ public class SurveillanceViewConfig {
         return m_config.getViews().getViewCollection();
     }
 
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration} object.
+     */
     public SurveillanceViewConfiguration getConfig() {
         return m_config;
     }
 
+    /**
+     * <p>getViewsMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, View> getViewsMap() {
         return m_viewsMap;
     }

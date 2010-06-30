@@ -34,6 +34,13 @@ package org.opennms.web.graph;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+/**
+ * <p>RelativeTimePeriod class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class RelativeTimePeriod {
     private static final RelativeTimePeriod[] s_defaultPeriods;
     
@@ -54,9 +61,20 @@ public class RelativeTimePeriod {
                                        Calendar.DATE, -366) };
     }
 
+    /**
+     * <p>Constructor for RelativeTimePeriod.</p>
+     */
     public RelativeTimePeriod() {
     }
 
+    /**
+     * <p>Constructor for RelativeTimePeriod.</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     * @param offsetField a int.
+     * @param offsetAmount a int.
+     */
     public RelativeTimePeriod(String id, String name, int offsetField,
                               int offsetAmount) {
         m_id = id;
@@ -65,46 +83,105 @@ public class RelativeTimePeriod {
         m_offsetAmount = offsetAmount;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getId() {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     */
     public void setId(String id) {
         m_id = id;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getOffsetField</p>
+     *
+     * @return a int.
+     */
     public int getOffsetField() {
         return m_offsetField;
     }
 
+    /**
+     * <p>setOffsetField</p>
+     *
+     * @param offsetField a int.
+     */
     public void setOffsetField(int offsetField) {
         m_offsetField = offsetField;
     }
 
+    /**
+     * <p>getOffsetAmount</p>
+     *
+     * @return a int.
+     */
     public int getOffsetAmount() {
         return m_offsetAmount;
     }
 
+    /**
+     * <p>setOffsetAmount</p>
+     *
+     * @param offsetAmount a int.
+     */
     public void setOffsetAmount(int offsetAmount) {
         m_offsetAmount = offsetAmount;
     }
 
+    /**
+     * <p>getDefaultPeriods</p>
+     *
+     * @return an array of {@link org.opennms.web.graph.RelativeTimePeriod} objects.
+     */
     public static RelativeTimePeriod[] getDefaultPeriods() {
         return s_defaultPeriods;
     }
     
+    /**
+     * <p>getPeriodByIdOrDefault</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     */
     public static RelativeTimePeriod getPeriodByIdOrDefault(String id) {
         return getPeriodByIdOrDefault(s_defaultPeriods, id,
                                       s_defaultPeriods[0]);
     }
+    /**
+     * <p>getPeriodByIdOrDefault</p>
+     *
+     * @param periods an array of {@link org.opennms.web.graph.RelativeTimePeriod} objects.
+     * @param id a {@link java.lang.String} object.
+     * @param defaultPeriod a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     * @return a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     */
     public static RelativeTimePeriod
         getPeriodByIdOrDefault(RelativeTimePeriod[] periods, String id,
                 RelativeTimePeriod defaultPeriod) {
@@ -121,6 +198,11 @@ public class RelativeTimePeriod {
         return chosenPeriod;
     }
     
+    /**
+     * <p>getStartAndEndTimes</p>
+     *
+     * @return an array of long.
+     */
     public long[] getStartAndEndTimes() {
         Calendar cal = new GregorianCalendar();
         long end = cal.getTime().getTime();

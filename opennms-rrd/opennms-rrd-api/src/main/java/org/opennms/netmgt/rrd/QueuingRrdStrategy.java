@@ -57,19 +57,19 @@ import org.apache.log4j.Logger;
 
 /**
  * Provides queuing implementation of RrdStrategy.
- * 
+ *
  * In order to provide a more scalable collector. We created a queuing
  * RrdStrategy that enabled the system to amortize the high cost of opening an
  * round robin database across multiple updates.
- * 
+ *
  * This RrdStrategy implementation enqueues the create and update operations on
  * a per file basis and maintains a set of threads that process enqueued work
  * file by file.
- * 
+ *
  * If the I/O system can keep up with the collection threads while performing
  * only a single update per file then eventually all the data is processed and
  * the threads sleep until there is more work to do.
- * 
+ *
  * If the I/O system is initially slower than than the collection threads then
  * work will enqueue here and the write threads will get behind. As this happens
  * each file will eventually have more than a single update enqueued and
@@ -78,43 +78,46 @@ import org.apache.log4j.Logger;
  * collection system will balance out. When this happens all data will be
  * collected but will not be output to the rrd files until the next time the
  * file is processed by the write threads.
- * 
+ *
  * As another performance improving strategy. The queue distinguishes between
  * files with significant vs insignificant updates. Files with only insignificant
  * updates are put at the lowest priority and are only written when the highest
  * priority updates have been written
- * 
+ *
  * This implementation delegates all the actual writing to another RrdStrategy
  * implementation.
- * 
+ *
  * System properties effecting the operation:
- * 
+ *
  * org.opennms.rrd.queuing.writethreads: (default 2) The number of rrd write
  * threads that process the queue
- * 
+ *
  * org.opennms.rrd.queuing.queueCreates: (default false) indicates whether rrd
  * file creates should be queued or processed synchronously
- * 
+ *
  * org.opennms.rrd.queuing.maxInsigUpdateSeconds: (default 0) the number of
  * seconds over which all files with significant updates only should be promoted
  * onto the significant less. This is to ensure they don't stay unprocessed
  * forever. Zero means not promotion.
- * 
+ *
  * org.opennms.rrd.queuing.modulus: (default 10000) the number of updates the
  * get enqueued between statistics output
- * 
+ *
  * org.opennms.rrd.queuing.category: (default "OpenNMS.Queued") the log category
  * to place the statistics output in
- * 
- * 
- * 
+ *
+ *
+ *
  * TODO: Promote files when ZeroUpdate operations can't be merged. This may be a
  * collection miss which we want to push thru. It should also help with memory.
- * 
+ *
  * TODO: Set an upper bound on enqueued operations
- * 
+ *
  * TODO: Provide an event that will write data for a particular file... Say
  * right before we try to graph it.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
@@ -419,10 +422,25 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         }
     }
 
+    /**
+     * <p>makeCreateOperation</p>
+     *
+     * @param fileName a {@link java.lang.String} object.
+     * @param rrdDef a {@link java.lang.Object} object.
+     * @return a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
+     */
     public Operation makeCreateOperation(String fileName, Object rrdDef) {
         return new CreateOperation(fileName, rrdDef);
     }
 
+    /**
+     * <p>makeUpdateOperation</p>
+     *
+     * @param fileName a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     * @param update a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
+     */
     public Operation makeUpdateOperation(String fileName, String owner, String update) {
         try {
             int colon = update.indexOf(':');
@@ -447,6 +465,8 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     /**
      * Add an operation to the queue.
+     *
+     * @param op a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
      */
     public void addOperation(Operation op) {
         synchronized (this) {
@@ -504,7 +524,6 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     /**
      * Ensure that we have threads started to process the queue.
-     * 
      */
     public synchronized void ensureThreadsStarted() {
         if (threadsRunning < WRITE_THREADS) {
@@ -516,7 +535,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     /**
      * Get the operations for the next file that should be worked on.
-     * 
+     *
      * @return a linkedList of operations to be processed all for the same file.
      */
     public LinkedList<Operation> getNext() {
@@ -631,6 +650,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     }
     
+    /** {@inheritDoc} */
     public synchronized void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         filesWithSignificantWork.addAll(0, rrdFiles);
     }
@@ -696,10 +716,20 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             reservedFiles.remove(previousAssignment);
     }
 
+    /**
+     * <p>Constructor for QueuingRrdStrategy.</p>
+     *
+     * @param delegate a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public QueuingRrdStrategy(RrdStrategy delegate) {
         m_delegate = delegate;
     }
 
+    /**
+     * <p>getDelegate</p>
+     *
+     * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public RrdStrategy getDelegate() {
         return m_delegate;
     }
@@ -714,6 +744,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#closeFile(java.lang.Object)
      */
+    /** {@inheritDoc} */
     public void closeFile(Object rrd) throws Exception {
         // no need to do anything here
     }
@@ -723,10 +754,26 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#createDefinition(java.lang.String)
      */
+    /**
+     * <p>createDefinition</p>
+     *
+     * @param creator a {@link java.lang.String} object.
+     * @param directory a {@link java.lang.String} object.
+     * @param dsName a {@link java.lang.String} object.
+     * @param step a int.
+     * @param dsType a {@link java.lang.String} object.
+     * @param dsHeartbeat a int.
+     * @param dsMin a {@link java.lang.String} object.
+     * @param dsMax a {@link java.lang.String} object.
+     * @param rraList a {@link java.util.List} object.
+     * @return a {@link java.lang.Object} object.
+     * @throws java.lang.Exception if any.
+     */
     public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List<String> rraList) throws Exception {
         return createDefinition(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
     }
     
+    /** {@inheritDoc} */
     public Object createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
@@ -739,6 +786,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#createFile(java.lang.Object)
      */
+    /** {@inheritDoc} */
     public void createFile(Object op) throws Exception {
         if (QUEUE_CREATES)
             addOperation((Operation) op);
@@ -752,6 +800,11 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see org.opennms.netmgt.rrd.RrdStrategy#initialize()
      */
+    /**
+     * <p>initialize</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void initialize() throws Exception {
         m_delegate.initialize();
     }
@@ -760,6 +813,11 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * (non-Javadoc)
      * 
      * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
+     */
+    /**
+     * <p>graphicsInitialize</p>
+     *
+     * @throws java.lang.Exception if any.
      */
     public void graphicsInitialize() throws Exception {
         m_delegate.graphicsInitialize();
@@ -770,6 +828,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#openFile(java.lang.String)
      */
+    /** {@inheritDoc} */
     public Object openFile(String fileName) throws Exception {
         return fileName;
     }
@@ -779,10 +838,12 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      * @see RrdStrategy#updateFile(java.lang.Object, java.lang.String, java.lang.String)
      */
+    /** {@inheritDoc} */
     public void updateFile(Object rrdFile, String owner, String data) throws Exception {
         addOperation(makeUpdateOperation((String) rrdFile, owner, data));
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException {
         // TODO: handle queued values with fetch. Fetch could pull values off
         // the queue or force
@@ -790,6 +851,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return m_delegate.fetchLastValue(rrdFile, ds, interval);
     }
     
+    /** {@inheritDoc} */
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException, RrdException {
         // TODO: handle queued values with fetch. Fetch could pull values off
         // the queue or force
@@ -797,6 +859,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return m_delegate.fetchLastValue(rrdFile, ds, consolidationFunction, interval);
     }
     
+    /** {@inheritDoc} */
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         // TODO: handle queued values with fetch. Fetch could pull values off
         // the queue or force
@@ -804,6 +867,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return m_delegate.fetchLastValueInRange(rrdFile, ds, interval, range);
     }
 
+    /** {@inheritDoc} */
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         return m_delegate.createGraph(command, workDir);
     }
@@ -812,6 +876,9 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
     // These methods are run by the write threads the process the queues.
     //
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
         try {
 
@@ -892,6 +959,8 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     /**
      * Print queue statistics.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getStats() {
         long now = System.currentTimeMillis();
@@ -944,6 +1013,9 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return stats;
     }
 
+    /**
+     * <p>logStats</p>
+     */
     public void logStats() {
         logLapTime(getStats());
     }
@@ -956,6 +1028,11 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         log().debug(message + " " + getLapTime(), t);
     }
 
+    /**
+     * <p>getLapTime</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLapTime() {
         long newLap = System.currentTimeMillis();
         double seconds = (newLap - lastLap) / 1000.0;
@@ -963,22 +1040,43 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return "[" + seconds + " sec]";
     }
 
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphLeftOffset() {
         return m_delegate.getGraphLeftOffset();
     }
 
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphRightOffset() {
         return m_delegate.getGraphRightOffset();
     }
 
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
     public int getGraphTopOffsetWithText() {
         return m_delegate.getGraphTopOffsetWithText();
     }
 
+    /**
+     * <p>getDefaultFileExtension</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDefaultFileExtension() {
         return m_delegate.getDefaultFileExtension();
     }
 
+    /** {@inheritDoc} */
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException {
         return m_delegate.createGraphReturnDetails(command, workDir);
     }

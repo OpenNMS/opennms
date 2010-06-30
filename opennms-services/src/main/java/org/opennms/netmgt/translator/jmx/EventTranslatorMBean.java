@@ -34,16 +34,32 @@
 package org.opennms.netmgt.translator.jmx;
 
 /**
- * 
+ * <p>EventTranslatorMBean interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface EventTranslatorMBean {
+    /**
+     * <p>init</p>
+     */
     public void init();
 
+    /**
+     * <p>start</p>
+     */
     public void start();
 
+    /**
+     * <p>stop</p>
+     */
     public void stop();
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status();
 
 }

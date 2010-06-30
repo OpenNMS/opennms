@@ -50,14 +50,17 @@ import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * Provides access to the default javamail configuration data.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class JavaMailerConfig {
     
     /**
      * This loads the configuration file.
-     * 
+     *
      * @return a Properties object representing the configuration properties
-     * @throws IOException
+     * @throws java.io.IOException if any.
      */
     public static synchronized Properties getProperties() throws IOException {
         log().debug("Loading javamail properties.");

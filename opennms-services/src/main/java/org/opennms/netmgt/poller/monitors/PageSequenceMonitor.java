@@ -89,6 +89,9 @@ import org.opennms.core.utils.ParameterMap;
  * This class is designed to be used by the service poller framework to test the availability
  * of the HTTP service on remote interfaces. The class implements the ServiceMonitor interface
  * that allows it to be used along with other plug-ins by the service poller framework.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 @Distributable
 public class PageSequenceMonitor extends IPv4Monitor {
@@ -559,6 +562,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
         }
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public PollStatus poll(MonitoredService svc, Map parameterMap) {
         PollStatus serviceStatus = PollStatus.unavailable("");

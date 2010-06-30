@@ -16,8 +16,16 @@ import org.opennms.web.WebSecurityUtils;
 
 
 class GeneralSettingsLoader {
+	/** Constant <code>log</code> */
 	protected static Category log = ThreadCategory.getInstance("WEB");
 	
+	/**
+	 * <p>load</p>
+	 *
+	 * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+	 * @param config a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
+	 * @return a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
+	 */
 	public static DiscoveryConfiguration load(HttpServletRequest request, DiscoveryConfiguration config){
 		String initSTStr = request.getParameter("initialsleeptime");
 		String restartSTStr = request.getParameter("restartsleeptime");

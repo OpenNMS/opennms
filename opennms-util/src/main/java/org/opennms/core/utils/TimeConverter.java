@@ -42,12 +42,12 @@ package org.opennms.core.utils;
  * This class contains static functions used to convert time related string
  * values into numeric values to be used in computations.
  * </P>
- * 
+ *
  * @author <A HREF="mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version CVS 1.1.1.1
- * 
  */
 public class TimeConverter {
     /**
@@ -56,7 +56,7 @@ public class TimeConverter {
      * milliseconds. The following extension are considered when converting the
      * string:
      * </P>
-     * 
+     *
      * <TABLE BORDER=0>
      * <TR>
      * <TH>Extension</TH>
@@ -87,20 +87,18 @@ public class TimeConverter {
      * <TD>Days</TD>
      * </TR>
      * </TABLE>
-     * 
+     *
      * <P>
      * A number entered with out any units is considered to be in milliseconds.
      * </P>
-     * 
+     *
      * @param valueToConvert
      *            The string to convert to milliseconds.
-     * 
      * @return Returns the string converted to a millisecond value.
-     * 
      * @exception java.lang.NumberFormatException
      *                Thrown if the string is malformed and a number cannot be
      *                extracted from the value.
-     * 
+     * @throws java.lang.NumberFormatException if any.
      */
     public static long convertToMillis(String valueToConvert) throws NumberFormatException {
         valueToConvert = valueToConvert.trim();

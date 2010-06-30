@@ -49,12 +49,18 @@ class NotificationView extends PageableTableView {
         super(dashlet, 8, new String[] { "Node", "Service", "Message", "Sent Time", "Responder", "Response Time" });
     }
 
+    /**
+     * <p>setNotifications</p>
+     *
+     * @param notifications an array of {@link org.opennms.dashboard.client.Notification} objects.
+     */
     public void setNotifications(Notification[] notifications) {
         m_notifications = notifications;
         refresh();
         
     }
     
+	/** {@inheritDoc} */
 	protected void setRow(FlexTable table, int row, int elementIndex) {
 		Notification notif = m_notifications[elementIndex];
         table.setText(row, 0, notif.getNodeLabel());
@@ -66,6 +72,11 @@ class NotificationView extends PageableTableView {
         table.getRowFormatter().setStyleName(row, notif.getSeverity());
     }
     
+    /**
+     * <p>getElementCount</p>
+     *
+     * @return a int.
+     */
     public int getElementCount() {
         return (m_notifications == null ? 0 : m_notifications.length);
     }

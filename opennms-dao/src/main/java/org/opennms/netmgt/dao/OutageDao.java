@@ -37,14 +37,43 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 
 
+/**
+ * <p>OutageDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OutageDao extends OnmsDao<OnmsOutage, Integer> {
 
+    /**
+     * <p>currentOutageCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public abstract Integer currentOutageCount();
 
+    /**
+     * <p>currentOutages</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsOutage> currentOutages();
     
+    /**
+     * <p>matchingCurrentOutages</p>
+     *
+     * @param selector a {@link org.opennms.netmgt.model.ServiceSelector} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector);
     
+    /**
+     * <p>findAll</p>
+     *
+     * @param offset a {@link java.lang.Integer} object.
+     * @param limit a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsOutage> findAll(Integer offset, Integer limit);
 
 

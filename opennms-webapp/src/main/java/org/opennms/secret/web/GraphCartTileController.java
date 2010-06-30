@@ -52,6 +52,13 @@ import org.opennms.secret.service.DataSourceService;
 import org.springframework.web.servlet.view.tiles.ComponentControllerSupport;
 
 
+/**
+ * <p>GraphCartTileController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class GraphCartTileController extends ComponentControllerSupport {
 
 //    private static final String s_graphSessionAttribute = "graph";
@@ -63,6 +70,7 @@ public class GraphCartTileController extends ComponentControllerSupport {
     
     private DataSourceService m_dataSourceService;
 
+    /** {@inheritDoc} */
     protected void doPerform(ComponentContext componentContext, HttpServletRequest request, HttpServletResponse response) throws Exception {
         // XXX  Bleh.  We shouldn't be doing it this way.  It should be wired up like other services.
         m_dataSourceService = (DataSourceService) getApplicationContext().getBean("dataSourceService");
@@ -281,6 +289,11 @@ public class GraphCartTileController extends ComponentControllerSupport {
         return (request.getParameter("clear") != null);
     }
     
+    /**
+     * <p>setDataSourceService</p>
+     *
+     * @param dataSourceService a {@link org.opennms.secret.service.DataSourceService} object.
+     */
     public void setDataSourceService(DataSourceService dataSourceService) {
         m_dataSourceService = dataSourceService;
     }

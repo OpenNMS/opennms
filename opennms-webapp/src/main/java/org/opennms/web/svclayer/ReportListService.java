@@ -39,11 +39,19 @@ import java.util.List;
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
 /**
- * 
+ * <p>ReportListService interface.</p>
+ *
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface ReportListService {
 
+    /**
+     * <p>getAllReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     List<AvailabilityReportLocator> getAllReports();
 
 }

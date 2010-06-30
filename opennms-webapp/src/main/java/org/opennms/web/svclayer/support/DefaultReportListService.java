@@ -41,21 +41,39 @@ import org.opennms.netmgt.model.AvailabilityReportLocator;
 import org.opennms.web.svclayer.ReportListService;
 
 /**
- * 
+ * <p>DefaultReportListService class.</p>
+ *
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultReportListService implements ReportListService {
 
     AvailabilityReportLocatorDao m_reportLocatorDao;
 
+    /**
+     * <p>getAllReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<AvailabilityReportLocator> getAllReports() {
         return m_reportLocatorDao.findAll();
     }
 
+    /**
+     * <p>getReportLocatorDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.AvailabilityReportLocatorDao} object.
+     */
     public AvailabilityReportLocatorDao getReportLocatorDao() {
         return m_reportLocatorDao;
     }
 
+    /**
+     * <p>setReportLocatorDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.AvailabilityReportLocatorDao} object.
+     */
     public void setReportLocatorDao(AvailabilityReportLocatorDao dao) {
         m_reportLocatorDao = dao;
     }

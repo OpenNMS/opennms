@@ -42,26 +42,46 @@ import org.opennms.core.utils.IteratorIterator;
  * IPAddressSet
  *
  * @author brozow
+ * @version $Id: $
  */
 public class IPAddressSet implements Iterable<IPAddress> {
     
     private IPAddressRange m_firstRange;
     private IPAddressSet m_remainingRanges;
     
+    /** Constant <code>EMPTY</code> */
     public static final IPAddressSet EMPTY = new IPAddressSet();
     
+    /**
+     * <p>Constructor for IPAddressSet.</p>
+     */
     public IPAddressSet() {
         this((IPAddressRange)null, (IPAddressSet)null);
     }
     
+    /**
+     * <p>Constructor for IPAddressSet.</p>
+     *
+     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     */
     public IPAddressSet(IPAddress addr) {
     	this(new IPAddressRange(addr, addr), null);
     }
     
+    /**
+     * <p>Constructor for IPAddressSet.</p>
+     *
+     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     */
     public IPAddressSet(IPAddressRange range) {
     	this(range, null);
     }
     
+    /**
+     * <p>Constructor for IPAddressSet.</p>
+     *
+     * @param set a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet(IPAddressSet set) {
         this(set.m_firstRange, set.m_remainingRanges);
     }
@@ -71,14 +91,32 @@ public class IPAddressSet implements Iterable<IPAddress> {
 		m_remainingRanges = remainingRanges;
 	}
 
+    /**
+     * <p>Constructor for IPAddressSet.</p>
+     *
+     * @param begin a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @param end a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     */
     public IPAddressSet(IPAddress begin, IPAddress end) {
         this(end.isLessThan(begin) ? null : new IPAddressRange(begin, end), null);
     }
 
+    /**
+     * <p>union</p>
+     *
+     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet union(IPAddress addr) {
         return union(new IPAddressRange(addr, addr));
     }
 
+    /**
+     * <p>union</p>
+     *
+     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet union(IPAddressRange range) {
         if (isEmpty()) {
             // 0. if current set is empty just make a new set containing the range
@@ -103,6 +141,12 @@ public class IPAddressSet implements Iterable<IPAddress> {
         return new IPAddressRange(newBegin, newEnd);
     }
 
+    /**
+     * <p>union</p>
+     *
+     * @param set a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet union(IPAddressSet set) {
         if (isEmpty()) {
             return set;
@@ -113,6 +157,12 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
 
+    /**
+     * <p>contains</p>
+     *
+     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a boolean.
+     */
     public boolean contains(IPAddress addr) {
         if (m_firstRange == null) {
             return false;
@@ -125,14 +175,30 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
 
+    /**
+     * <p>containsAll</p>
+     *
+     * @param c a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     * @return a boolean.
+     */
     public boolean containsAll(IPAddressSet c) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
+    /**
+     * <p>isEmpty</p>
+     *
+     * @return a boolean.
+     */
     public boolean isEmpty() {
         return (m_firstRange == null);
     }
 
+    /**
+     * <p>iterator</p>
+     *
+     * @return a {@link java.util.Iterator} object.
+     */
     @SuppressWarnings("unchecked")
     public Iterator<IPAddress> iterator() {
         if (isEmpty()) {
@@ -144,10 +210,22 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
 
+    /**
+     * <p>minus</p>
+     *
+     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet minus(IPAddress addr) {
         return minus(new IPAddressRange(addr, addr));
     }
     
+    /**
+     * <p>minus</p>
+     *
+     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet minus(IPAddressRange range) {
         if (isEmpty()) {
             return this;
@@ -166,6 +244,12 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
     
+    /**
+     * <p>minus</p>
+     *
+     * @param set a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet minus(IPAddressSet set) {
         if (set.isEmpty()) {
             return this;
@@ -176,6 +260,12 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
     
+    /**
+     * <p>intersect</p>
+     *
+     * @param range a {@link org.opennms.netmgt.model.discovery.IPAddressRange} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet intersect(IPAddressRange range) {
         if (isEmpty()) {
             return this;
@@ -193,6 +283,12 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
 
+    /**
+     * <p>intersect</p>
+     *
+     * @param set a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddressSet} object.
+     */
     public IPAddressSet intersect(IPAddressSet set) {
         if (set.isEmpty()) {
             return this;
@@ -203,6 +299,11 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
 
+    /**
+     * <p>size</p>
+     *
+     * @return a long.
+     */
     public long size() {
         if (m_firstRange == null) {
             return 0;
@@ -213,6 +314,11 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
     
+    /**
+     * <p>getRangeCount</p>
+     *
+     * @return a int.
+     */
     public int getRangeCount() {
         if (m_firstRange == null) {
             return 0;
@@ -223,6 +329,11 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
     
+    /**
+     * <p>getRanges</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.model.discovery.IPAddressRange} objects.
+     */
     public IPAddressRange[] getRanges() {
         List<IPAddressRange> accumulator = new LinkedList<IPAddressRange>();
         computeRanges(accumulator);
@@ -238,6 +349,7 @@ public class IPAddressSet implements Iterable<IPAddress> {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "{" + toStringHelper(new StringBuilder(), false) + "}";

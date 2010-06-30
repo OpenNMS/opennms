@@ -32,29 +32,59 @@
 
 package org.opennms.netmgt.vulnscand.jmx;
 
+/**
+ * <p>Vulnscand class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Vulnscand implements VulnscandMBean {
 	
+	/**
+	 * <p>init</p>
+	 */
 	public void init() {
         org.opennms.netmgt.vulnscand.Vulnscand.getInstance().init();
     }
 
 	
+    /**
+     * <p>start</p>
+     */
     public void start() {
         org.opennms.netmgt.vulnscand.Vulnscand.getInstance().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         org.opennms.netmgt.vulnscand.Vulnscand.getInstance().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return org.opennms.netmgt.vulnscand.Vulnscand.getInstance().getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

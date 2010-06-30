@@ -41,9 +41,12 @@ import java.net.URL;
  * Class containing the information for the HTTP POST operations - this gets
  * constructed when each time a subscribe event is received and is basically
  * immutable(except for error count)
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class HttpPostInfo extends Object {
     /**
@@ -73,6 +76,11 @@ public class HttpPostInfo extends Object {
 
     /**
      * Constructor
+     *
+     * @param hurl a {@link java.net.URL} object.
+     * @param clabel a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param passwd a {@link java.lang.String} object.
      */
     public HttpPostInfo(URL hurl, String clabel, String user, String passwd) {
         m_url = hurl;
@@ -84,9 +92,14 @@ public class HttpPostInfo extends Object {
 
     /**
      * Constructor
-     * 
+     *
      * @exception MalformedURLException
      *                thrown if the string url passed is not a valid url
+     * @param hurl a {@link java.lang.String} object.
+     * @param clabel a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param passwd a {@link java.lang.String} object.
+     * @throws java.net.MalformedURLException if any.
      */
     public HttpPostInfo(String hurl, String clabel, String user, String passwd) throws MalformedURLException {
         m_url = new URL(hurl);
@@ -113,7 +126,7 @@ public class HttpPostInfo extends Object {
 
     /**
      * Return the URL
-     * 
+     *
      * @return the URL
      */
     public URL getURL() {
@@ -122,7 +135,7 @@ public class HttpPostInfo extends Object {
 
     /**
      * Return the URL as a string
-     * 
+     *
      * @return the URL as a string
      */
     public String getURLString() {
@@ -131,7 +144,7 @@ public class HttpPostInfo extends Object {
 
     /**
      * Return the category label
-     * 
+     *
      * @return the category label
      */
     public String getCategory() {
@@ -140,7 +153,7 @@ public class HttpPostInfo extends Object {
 
     /**
      * Return the user
-     * 
+     *
      * @return the user
      */
     public String getUser() {
@@ -149,7 +162,7 @@ public class HttpPostInfo extends Object {
 
     /**
      * Return the passwd
-     * 
+     *
      * @return the passwd
      */
     public String getPassword() {
@@ -158,13 +171,14 @@ public class HttpPostInfo extends Object {
 
     /**
      * Return the number of errors
-     * 
+     *
      * @return the number of errors
      */
     public int getErrors() {
         return m_errors;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -177,6 +191,7 @@ public class HttpPostInfo extends Object {
         return result;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

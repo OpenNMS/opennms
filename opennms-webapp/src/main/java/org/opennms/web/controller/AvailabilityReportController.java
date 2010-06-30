@@ -57,12 +57,22 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * <p>AvailabilityReportController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class AvailabilityReportController extends SimpleFormController {
 
     private AvailabilityReportService m_reportService;
 
     private CategoryConfigService m_categoryConfigService;
 
+    /**
+     * <p>Constructor for AvailabilityReportController.</p>
+     */
     public AvailabilityReportController() {
         setCommandName("availabilityReportCriteria");
         setCommandClass(AvailabilityReportCriteria.class);
@@ -70,6 +80,7 @@ public class AvailabilityReportController extends SimpleFormController {
         setSuccessView("availability/running");
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Map referenceData(HttpServletRequest req) throws Exception {
         Map<String, List<String>> data = new HashMap<String, List<String>>();
@@ -84,6 +95,7 @@ public class AvailabilityReportController extends SimpleFormController {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void initBinder(HttpServletRequest req,
             ServletRequestDataBinder binder) throws Exception {
@@ -95,6 +107,7 @@ public class AvailabilityReportController extends SimpleFormController {
                                                          true));
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Object formBackingObject(HttpServletRequest request)
             throws Exception {
@@ -116,6 +129,7 @@ public class AvailabilityReportController extends SimpleFormController {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
         AvailabilityReportCriteria criteria = (AvailabilityReportCriteria) command;
@@ -125,11 +139,21 @@ public class AvailabilityReportController extends SimpleFormController {
         return mav;
     }
 
+    /**
+     * <p>setAvailabilityReportService</p>
+     *
+     * @param reportService a {@link org.opennms.report.availability.svclayer.AvailabilityReportService} object.
+     */
     public void setAvailabilityReportService(
             AvailabilityReportService reportService) {
         this.m_reportService = reportService;
     }
 
+    /**
+     * <p>setCategoryConfigService</p>
+     *
+     * @param configService a {@link org.opennms.web.svclayer.CategoryConfigService} object.
+     */
     public void setCategoryConfigService(CategoryConfigService configService) {
         m_categoryConfigService = configService;
     }

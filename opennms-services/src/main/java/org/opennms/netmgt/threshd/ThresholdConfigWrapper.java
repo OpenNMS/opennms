@@ -41,11 +41,22 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.threshd.Threshold;
 
+/**
+ * <p>ThresholdConfigWrapper class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ThresholdConfigWrapper extends BaseThresholdDefConfigWrapper {
 
     private Threshold m_threshold;
     private Collection<String> m_dataSources;
     
+    /**
+     * <p>Constructor for ThresholdConfigWrapper.</p>
+     *
+     * @param threshold a {@link org.opennms.netmgt.config.threshd.Threshold} object.
+     */
     public ThresholdConfigWrapper(Threshold threshold) {
         super(threshold);
         m_threshold=threshold;
@@ -53,17 +64,20 @@ public class ThresholdConfigWrapper extends BaseThresholdDefConfigWrapper {
         m_dataSources.add(m_threshold.getDsName());
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getDatasourceExpression() {
         return m_threshold.getDsName();
         
     }
 
+    /** {@inheritDoc} */
     @Override
     public Collection<String> getRequiredDatasources() {
         return m_dataSources;
     }
 
+    /** {@inheritDoc} */
     @Override
     public double evaluate(Map<String, Double> values)  throws ThresholdExpressionException {
         Double result=values.get(m_threshold.getDsName());

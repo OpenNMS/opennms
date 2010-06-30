@@ -56,20 +56,28 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.StringUtils;
 
 /**
+ * <p>NodeDaoHibernate class.</p>
+ *
  * @author Ted Kazmark
  * @author David Hustace
+ * @version $Id: $
  */
 public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         implements NodeDao {
 
+    /**
+     * <p>Constructor for NodeDaoHibernate.</p>
+     */
     public NodeDaoHibernate() {
         super(OnmsNode.class);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
         return find("from OnmsNode where distPoller = ?", distPoller);
     }
 
+    /** {@inheritDoc} */
     public OnmsNode getHierarchy(Integer id) {
         OnmsNode node = findUnique(
                           "select distinct n from OnmsNode as n "
@@ -90,16 +98,19 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
 
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findByLabel(String label) {
         return find("from OnmsNode as n where n.label = ?", label);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findAllByVarCharAssetColumn(
             String columnName, String columnValue) {
         return find("from OnmsNode as n where n.assetRecord." + columnName
                 + " = ?", columnValue);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(
             String columnName, String columnValue,
             Collection<OnmsCategory> categories) {
@@ -115,6 +126,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 + "and c.name in ("+categoryListToNameList(categories)+")", columnValue);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findByCategory(OnmsCategory category) {
         return find("select distinct n from OnmsNode as n "
                     + "join n.categories c "
@@ -137,6 +149,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         
         
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findAllByCategoryList(
             Collection<OnmsCategory> categories) {
         return find("select distinct n from OnmsNode as n "
@@ -150,6 +163,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 + "and n.type != 'D'");
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> findAllByCategoryLists( Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
     	
     	HashSet<OnmsNode> rowNodes = new HashSet<OnmsNode>(findAllByCategoryList(rowCatNames));
@@ -161,6 +175,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     	return results;
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
         List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
@@ -171,14 +186,21 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         return foreignIdMap;
     }
 
+    /** {@inheritDoc} */
     public OnmsNode findByForeignId(String foreignSource, String foreignId) {
         return findUnique("from OnmsNode n where n.foreignSource = ? and n.foreignId = ?", foreignSource, foreignId);
     }
 
+    /** {@inheritDoc} */
     public int getNodeCountForForeignSource(String foreignSource) {
         return queryInt("select count(*) from OnmsNode as n where n.foreignSource = ?", foreignSource);
     }
     
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsNode> findAll() {
         return find("from OnmsNode order by label");
     }

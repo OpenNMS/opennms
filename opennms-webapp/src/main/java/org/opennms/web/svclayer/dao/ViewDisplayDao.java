@@ -37,11 +37,19 @@ package org.opennms.web.svclayer.dao;
 import org.opennms.netmgt.config.viewsdisplay.View;
 
 /**
- * 
+ * <p>ViewDisplayDao interface.</p>
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface ViewDisplayDao {
 
+	/**
+	 * <p>getView</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.config.viewsdisplay.View} object.
+	 */
 	View getView();
 
 }

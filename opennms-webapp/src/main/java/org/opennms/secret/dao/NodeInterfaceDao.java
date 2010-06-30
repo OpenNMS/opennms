@@ -39,20 +39,51 @@ import org.opennms.secret.model.Node;
 import org.opennms.secret.model.NodeInterface;
 
 /**
+ * <p>NodeInterfaceDao interface.</p>
+ *
  * @author Ted Kazmark
  * @author David Hustace
- *
+ * @version $Id: $
+ * @since 1.6.12
  */
 public interface NodeInterfaceDao {
     
+    /**
+     * <p>initialize</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     */
     public abstract void initialize(Object obj);
     
+    /**
+     * <p>getNodeInterface</p>
+     *
+     * @param interfaceId a {@link java.lang.Long} object.
+     * @return a {@link org.opennms.secret.model.NodeInterface} object.
+     */
     public abstract NodeInterface getNodeInterface(Long interfaceId);
     
+    /**
+     * <p>getNodeInterfaces</p>
+     *
+     * @param node a {@link org.opennms.secret.model.Node} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection getNodeInterfaces(Node node);
     
+    /**
+     * <p>createInterface</p>
+     *
+     * @param iface a {@link org.opennms.secret.model.NodeInterface} object.
+     */
     public abstract void createInterface(NodeInterface iface);
 
+    /**
+     * <p>getServiceCollection</p>
+     *
+     * @param ni a {@link org.opennms.secret.model.NodeInterface} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection getServiceCollection(NodeInterface ni);
 
 

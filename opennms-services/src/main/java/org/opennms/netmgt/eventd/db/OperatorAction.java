@@ -47,17 +47,19 @@ import org.opennms.netmgt.xml.event.Operaction;
  * be inserted into the 'events' table. This class only uses the operator action
  * and operator state information - the operator menu goes into a separate
  * database field
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class OperatorAction {
     /**
      * Format each operator action entry
-     * 
+     *
      * @param opact
      *            the entry
-     * 
      * @return the formatted string
      */
     public static String format(Operaction opact) {
@@ -70,13 +72,12 @@ public class OperatorAction {
 
     /**
      * Format the list of operator action entries of the event
-     * 
+     *
      * @param opacts
      *            the list
      * @param sz
      *            the size to which the formatted string is to be limited
      *            to(usually the size of the column in the database)
-     * 
      * @return the formatted string
      */
     public static String format(List<Operaction> opacts, int sz) {

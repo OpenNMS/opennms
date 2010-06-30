@@ -53,27 +53,37 @@ import org.opennms.web.event.filter.Filter;
 /**
  * A servlet that handles querying the event table by using filters to create an
  * event list and and then forwards that event list to a JSP for display.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class EventFilterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** Constant <code>DEFAULT_LIMIT=10</code> */
     public static final int DEFAULT_LIMIT = 10;
 
+    /** Constant <code>DEFAULT_MULTIPLE=0</code> */
     public static final int DEFAULT_MULTIPLE = 0;
 
+    /** Constant <code>DEFAULT_SORT_STYLE</code> */
     public static final EventFactory.SortStyle DEFAULT_SORT_STYLE = EventFactory.SortStyle.ID;
 
+    /** Constant <code>DEFAULT_ACKNOWLEDGE_TYPE</code> */
     public static final EventFactory.AcknowledgeType DEFAULT_ACKNOWLEDGE_TYPE = EventFactory.AcknowledgeType.UNACKNOWLEDGED;
 
     /**
+     * {@inheritDoc}
+     *
      * Parses the query string to determine what types of event filters to use
      * (for example, what to filter on or sort by), then does the database query
      * (through the EventFactory) and then forwards the results to a JSP for
      * display.
-     * 
+     *
      * <p>
      * Sets the <em>events</em> and <em>parms</em> request attributes for
      * the forwardee JSP (or whatever gets called).

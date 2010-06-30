@@ -36,6 +36,12 @@
 //
 package org.opennms.netmgt.snmp;
 
+/**
+ * <p>ColumnTracker class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ColumnTracker extends CollectionTracker {
     
     private SnmpObjId m_base;
@@ -43,25 +49,43 @@ public class ColumnTracker extends CollectionTracker {
     private boolean m_finished = false;
     private int m_maxRepetitions;
 
+    /**
+     * <p>Constructor for ColumnTracker.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     */
     public ColumnTracker(SnmpObjId base) {
         this(base, 2);
     }
     
+    /**
+     * <p>Constructor for ColumnTracker.</p>
+     *
+     * @param base a {@link org.opennms.netmgt.snmp.SnmpObjId} object.
+     * @param maxRepititions a int.
+     */
     public ColumnTracker(SnmpObjId base, int maxRepititions) {
         m_base = base;
         m_last = base;
         m_maxRepetitions = maxRepititions; 
     }
     
+    /** {@inheritDoc} */
     @Override
     public void setMaxRepititions(int maxRepititions) {
         m_maxRepetitions = maxRepititions;
     }
 
+    /**
+     * <p>isFinished</p>
+     *
+     * @return a boolean.
+     */
     public boolean isFinished() {
         return m_finished || !m_base.isPrefixOf(m_last);
     }
 
+    /** {@inheritDoc} */
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
@@ -109,18 +133,34 @@ public class ColumnTracker extends CollectionTracker {
         return rp;
     }
 
+    /**
+     * <p>getMaxRepetitions</p>
+     *
+     * @return a int.
+     */
     public int getMaxRepetitions() {
         return m_maxRepetitions;
     }
     
+    /**
+     * <p>setMaxRepetitions</p>
+     *
+     * @param maxRepetitions a int.
+     */
     public void setMaxRepetitions(int maxRepetitions) {
         m_maxRepetitions = maxRepetitions;
     }
 
+    /**
+     * <p>receivedEndOfMib</p>
+     */
     protected void receivedEndOfMib() {
         m_finished = true;
     }
 
+    /**
+     * <p>errorOccurred</p>
+     */
     protected void errorOccurred() {
         m_finished = true;
     }

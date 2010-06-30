@@ -49,6 +49,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.opennms.web.MissingParameterException;
 import org.springframework.util.Assert;
 
+/**
+ * <p>ElementUtil class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ElementUtil extends Object {
     /**
      * Do not use directly. Call {@link #getNodeStatusMap 
@@ -68,7 +75,11 @@ public class ElementUtil extends Object {
      */
     private static Map<Character, String> m_serviceStatusMap;
 
-    /** Returns the interface status map, initializing a new one if necessary. */
+    /**
+     * Returns the interface status map, initializing a new one if necessary.
+     *
+     * @return a java$util$Map object.
+     */
     protected static Map<Character, String> getNodeStatusMap() {
         if (m_nodeStatusMap == null) {
             initNodeStatusMap();
@@ -86,7 +97,12 @@ public class ElementUtil extends Object {
         m_nodeStatusMap = map;
     }
 
-    /** Return the human-readable name for a node's status, may be null. */
+    /**
+     * Return the human-readable name for a node's status, may be null.
+     *
+     * @param node a {@link org.opennms.web.element.Node} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getNodeStatusString(Node node) {
         Assert.notNull(node, "node argument cannot be null");
 
@@ -96,12 +112,19 @@ public class ElementUtil extends Object {
     /**
      * Return the human-readable name for a interface status character, may be
      * null.
+     *
+     * @param c a char.
+     * @return a {@link java.lang.String} object.
      */
     public static String getNodeStatusString(char c) {
         return getNodeStatusMap().get(new Character(c));
     }
     
-    /** Returns the interface status map, initializing a new one if necessary. */
+    /**
+     * Returns the interface status map, initializing a new one if necessary.
+     *
+     * @return a java$util$Map object.
+     */
     protected static Map<Character, String> getInterfaceStatusMap() {
         if (m_interfaceStatusMap == null) {
             initInterfaceStatusMap();
@@ -121,7 +144,12 @@ public class ElementUtil extends Object {
         m_interfaceStatusMap = map;
     }
 
-    /** Return the human-readable name for a interface's status, may be null. */
+    /**
+     * Return the human-readable name for a interface's status, may be null.
+     *
+     * @param intf a {@link org.opennms.web.element.Interface} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getInterfaceStatusString(Interface intf) {
         Assert.notNull(intf, "intf argument cannot be null");
 
@@ -131,13 +159,20 @@ public class ElementUtil extends Object {
     /**
      * Return the human-readable name for a interface status character, may be
      * null.
+     *
+     * @param c a char.
+     * @return a {@link java.lang.String} object.
      */
     public static String getInterfaceStatusString(char c) {
         Map<Character, String> statusMap = getInterfaceStatusMap();
         return statusMap.get(new Character(c));
     }
 
-    /** Returns the service status map, initializing a new one if necessary. */
+    /**
+     * Returns the service status map, initializing a new one if necessary.
+     *
+     * @return a java$util$Map object.
+     */
     protected static Map<Character, String> getServiceStatusMap() {
         if (m_serviceStatusMap == null) {
             initServiceStatusMap();
@@ -161,7 +196,12 @@ public class ElementUtil extends Object {
         m_serviceStatusMap = map;
     }
 
-    /** Return the human-readable name for a service's status, may be null. */
+    /**
+     * Return the human-readable name for a service's status, may be null.
+     *
+     * @param svc a {@link org.opennms.web.element.Service} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getServiceStatusString(Service svc) {
         Assert.notNull(svc, "svc argument cannot be null");
 
@@ -171,12 +211,21 @@ public class ElementUtil extends Object {
     /**
      * Return the human-readable name for a service status character, may be
      * null.
+     *
+     * @param c a char.
+     * @return a {@link java.lang.String} object.
      */
     public static String getServiceStatusString(char c) {
         Map<Character, String> statusMap = getServiceStatusMap();
         return statusMap.get(new Character(c));
     }
     
+    /**
+     * <p>hasLocallyMonitoredServices</p>
+     *
+     * @param svcs an array of {@link org.opennms.web.element.Service} objects.
+     * @return a boolean.
+     */
     public static boolean hasLocallyMonitoredServices(Service[] svcs) {
         for(Service svc : svcs) {
             char status = svc.getStatus();
@@ -187,12 +236,26 @@ public class ElementUtil extends Object {
         return false;
     }
 
+    /** Constant <code>DEFAULT_TRUNCATE_THRESHOLD=28</code> */
     public static final int DEFAULT_TRUNCATE_THRESHOLD = 28;
 
+    /**
+     * <p>truncateLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String truncateLabel(String label) {
         return truncateLabel(label, DEFAULT_TRUNCATE_THRESHOLD);
     }
 
+    /**
+     * <p>truncateLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param truncateThreshold a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String truncateLabel(String label, int truncateThreshold) {
         Assert.notNull(label, "label argument cannot be null");
         Assert.isTrue(truncateThreshold >= 3, "Cannot take a truncate position less than 3 (truncateThreshold is " + truncateThreshold + ")");
@@ -207,11 +270,28 @@ public class ElementUtil extends Object {
     }
     
 
+    /**
+     * <p>getNodeByParams</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.element.Node} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.sql.SQLException if any.
+     */
     public static Node getNodeByParams(HttpServletRequest request)
             throws ServletException, SQLException {
         return getNodeByParams(request, "node");
     }
     
+    /**
+     * <p>getNodeByParams</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param nodeIdParam a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.element.Node} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.sql.SQLException if any.
+     */
     public static Node getNodeByParams(HttpServletRequest request,
             String nodeIdParam) throws ServletException, SQLException {
         if (request.getParameter(nodeIdParam) == null) {
@@ -241,12 +321,32 @@ public class ElementUtil extends Object {
 }
 
     
+    /**
+     * <p>getInterfaceByParams</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.element.Interface} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface getInterfaceByParams(HttpServletRequest request)
             throws ServletException, SQLException {
         return getInterfaceByParams(request, "ipinterfaceid", "node", "intf",
                                     "ifindex");
     }
     
+    /**
+     * <p>getInterfaceByParams</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param ipInterfaceIdParam a {@link java.lang.String} object.
+     * @param nodeIdParam a {@link java.lang.String} object.
+     * @param ipAddrParam a {@link java.lang.String} object.
+     * @param ifIndexParam a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.element.Interface} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.sql.SQLException if any.
+     */
     public static Interface getInterfaceByParams(HttpServletRequest request,
                                                  String ipInterfaceIdParam,
                                                  String nodeIdParam,
@@ -327,12 +427,32 @@ public class ElementUtil extends Object {
     }
 
     
+    /**
+     * <p>getServiceByParams</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.element.Service} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.sql.SQLException if any.
+     */
     public static Service getServiceByParams(HttpServletRequest request)
             throws ServletException, SQLException {
         return getServiceByParams(request, "ifserviceid", "node", "intf",
                                   "service");
     }
     
+    /**
+     * <p>getServiceByParams</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param ifServiceIdParam a {@link java.lang.String} object.
+     * @param nodeIdParam a {@link java.lang.String} object.
+     * @param ipAddrParam a {@link java.lang.String} object.
+     * @param serviceIdParam a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.element.Service} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.sql.SQLException if any.
+     */
     public static Service getServiceByParams(HttpServletRequest request,
                                              String ifServiceIdParam,
                                              String nodeIdParam,
@@ -412,6 +532,14 @@ public class ElementUtil extends Object {
         return service;
     }
     
+    /**
+     * <p>getServicesOnNodeByParams</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.element.Service} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Service[] getServicesOnNodeByParams(HttpServletRequest request, int serviceId) throws SQLException {
     	Service[] services;
     	int nodeId;
@@ -426,6 +554,13 @@ public class ElementUtil extends Object {
     	return services;
     }
     
+    /**
+     * <p>isRouteInfoNodeByParams</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public static boolean isRouteInfoNodeByParams(HttpServletRequest request) throws SQLException {
     	int nodeId;
     	

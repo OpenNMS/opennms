@@ -43,8 +43,11 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 
 /**
- * 
+ * <p>Abstract Dashlet class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public abstract class Dashlet extends Composite {
     
@@ -85,37 +88,73 @@ public abstract class Dashlet extends Composite {
     private DashletLoader m_loader;
     private Dashboard m_dashboard;
 
+    /**
+     * <p>Constructor for Dashlet.</p>
+     *
+     * @param dashboard a {@link org.opennms.dashboard.client.Dashboard} object.
+     * @param title a {@link java.lang.String} object.
+     */
     public Dashlet(Dashboard dashboard, String title) {
         m_title = title;
         m_dashboard = dashboard;
         initWidget(m_panel);
     }
 
+    /**
+     * <p>setView</p>
+     *
+     * @param view a {@link org.opennms.dashboard.client.DashletView} object.
+     */
     protected void setView(DashletView view) {
         m_view = view;
     }
     
+    /**
+     * <p>setView</p>
+     *
+     * @param view a {@link com.google.gwt.user.client.ui.Widget} object.
+     */
     protected void setView(Widget view) {
         setView(new DashletView(this, view));
     }
     
+    /**
+     * <p>getTitle</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle() {
         return m_title;
     }
     
+    /** {@inheritDoc} */
     public void setTitle(String title) {
         m_title = title;
         m_titleWidget.setTitle(m_title);
     }
     
+    /**
+     * <p>addToTitleBar</p>
+     *
+     * @param widget a {@link com.google.gwt.user.client.ui.Widget} object.
+     * @param constraint a {@link com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant} object.
+     */
     public void addToTitleBar(Widget widget, DockLayoutConstant constraint) {
         m_titleWidget.add(widget, constraint);
     }
     
+    /**
+     * <p>setLoader</p>
+     *
+     * @param loader a {@link org.opennms.dashboard.client.DashletLoader} object.
+     */
     public void setLoader(DashletLoader loader) {
         m_loader = loader;
     }
 
+    /**
+     * <p>onLoad</p>
+     */
     protected void onLoad() {
         if (m_loader == null) {
             m_loader = new DashletLoader();
@@ -131,15 +170,30 @@ public abstract class Dashlet extends Composite {
         
     }
     
+    /**
+     * <p>error</p>
+     *
+     * @param caught a {@link java.lang.Throwable} object.
+     */
     protected void error(Throwable caught) {
         m_dashboard.error(caught);
     }
 
+    /**
+     * <p>error</p>
+     *
+     * @param err a {@link java.lang.String} object.
+     */
     public void error(String err) {
         m_dashboard.error(err);
     }
     
 
+	/**
+	 * <p>setSurveillanceSet</p>
+	 *
+	 * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
+	 */
 	public void setSurveillanceSet(SurveillanceSet set) {
 		// TODO Auto-generated method stub
 		

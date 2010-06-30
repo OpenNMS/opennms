@@ -36,12 +36,32 @@ package org.opennms.netmgt.vmmgr;
 
 import java.util.List;
 
+/**
+ * <p>ManagerMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ManagerMBean {
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List status();
 
+    /**
+     * <p>stop</p>
+     */
     public void stop();
 
+    /**
+     * <p>doSystemExit</p>
+     */
     public void doSystemExit();
     
+    /**
+     * <p>doTestLoadLibraries</p>
+     */
     public void doTestLoadLibraries();
 }

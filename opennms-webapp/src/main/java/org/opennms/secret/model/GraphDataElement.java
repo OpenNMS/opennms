@@ -33,8 +33,12 @@ package org.opennms.secret.model;
 
 
 /**
+ * <p>GraphDataElement class.</p>
+ *
  * @author mhuot cgallen
  * Contains the description of the data to be displayed on a graph
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class GraphDataElement {
 	
@@ -46,28 +50,56 @@ public class GraphDataElement {
 	
 	String legend; // legend for data element
 	
+	/**
+	 * <p>Getter for the field <code>uniqueID</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getUniqueID() {
 		return uniqueID;
 	}
 
+	/**
+	 * <p>Constructor for GraphDataElement.</p>
+	 */
 	public GraphDataElement() {
 		ID++;
 	    uniqueID= "GraphDataElement_"+ ID;
 	    legend = "legend";
 	}
 
+	/**
+	 * <p>Getter for the field <code>legend</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLegend() {
 		return legend;
 	}
 
+	/**
+	 * <p>Setter for the field <code>legend</code>.</p>
+	 *
+	 * @param legend a {@link java.lang.String} object.
+	 */
 	public void setLegend(java.lang.String legend) {
 		this.legend = legend;
 	}
 
+	/**
+	 * <p>Getter for the field <code>dataSource</code>.</p>
+	 *
+	 * @return a {@link org.opennms.secret.model.DataSource} object.
+	 */
 	public DataSource getDataSource() {
 		return dataSource;
 	}
 
+	/**
+	 * <p>Setter for the field <code>dataSource</code>.</p>
+	 *
+	 * @param dataSource a {@link org.opennms.secret.model.DataSource} object.
+	 */
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}

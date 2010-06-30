@@ -33,45 +33,89 @@ package org.opennms.web.event.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-/** Encapsulates all node filtering functionality. */
+/**
+ * Encapsulates all node filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class AlarmIDFilter extends Object implements Filter {
+    /** Constant <code>TYPE="alarm"</code> */
     public static final String TYPE = "alarm";
 
     protected int alarmId;
 
+    /**
+     * <p>Constructor for AlarmIDFilter.</p>
+     *
+     * @param alarmId a int.
+     */
     public AlarmIDFilter(int alarmId) {
         this.alarmId = alarmId;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" ALARMID=" + this.alarmId);
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" ALARMID=?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setInt(parameterIndex, this.alarmId);
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.alarmId);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("event reduced by alarmID: " + this.alarmId);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<EventFactory.AlarmIDFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>Getter for the field <code>alarmId</code>.</p>
+     *
+     * @return a int.
+     */
     public int getAlarmId() {
         return (this.alarmId);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

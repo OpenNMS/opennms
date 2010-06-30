@@ -38,11 +38,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * <p>Node class.</p>
+ *
  * @author Ted Kazmarak
  * @author David Hustace
- * 
  * @hibernate.class table="node"
- *
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class Node {
 	
@@ -67,14 +69,17 @@ public class Node {
 	
 	
 	/**
+	 * <p>Getter for the field <code>dpName</code>.</p>
+	 *
 	 * @return Returns the dbName.
-	 * @hibernate.property
 	 */
 	public String getDpName() {
 		return dpName;
 	}
 	
 	/**
+	 * <p>Setter for the field <code>dpName</code>.</p>
+	 *
 	 * @param dbName The dbName to set.
 	 */
 	public void setDpName(String dbName) {
@@ -82,14 +87,17 @@ public class Node {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>lastCapsdPoll</code>.</p>
+	 *
 	 * @return Returns the lastCapsdPoll.
-	 * @hibernate.property
 	 */
 	public Date getLastCapsdPoll() {
 		return lastCapsdPoll;
 	}
 	
 	/**
+	 * <p>Setter for the field <code>lastCapsdPoll</code>.</p>
+	 *
 	 * @param lastCapsdPoll The lastCapsdPoll to set.
 	 */
 	public void setLastCapsdPoll(Date lastCapsdPoll) {
@@ -97,14 +105,17 @@ public class Node {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>nodeCreateTime</code>.</p>
+	 *
 	 * @return Returns the nodeCreateTime.
-	 * @hibernate.property
 	 */
 	public Date getNodeCreateTime() {
 		return nodeCreateTime;
 	}
 	
 	/**
+	 * <p>Setter for the field <code>nodeCreateTime</code>.</p>
+	 *
 	 * @param nodeCreateTime The nodeCreateTime to set.
 	 */
 	public void setNodeCreateTime(Date nodeCreateTime) {
@@ -112,14 +123,17 @@ public class Node {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>nodeDomainName</code>.</p>
+	 *
 	 * @return Returns the nodeDomainName.
-	 * @hibernate.property
 	 */
 	public String getNodeDomainName() {
 		return nodeDomainName;
 	}
 	
 	/**
+	 * <p>Setter for the field <code>nodeDomainName</code>.</p>
+	 *
 	 * @param nodeDomainName The nodeDomainName to set.
 	 */
 	public void setNodeDomainName(String nodeDomainName) {
@@ -127,27 +141,36 @@ public class Node {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>nodeId</code>.</p>
+	 *
 	 * @return Returns the nodeId.
 	 * @hibernate.id generator-class="native"
 	 */
-	
 	public Long getNodeId() {
 		return nodeId;
 	}
     
+    /**
+     * <p>Setter for the field <code>nodeId</code>.</p>
+     *
+     * @param nodeId a {@link java.lang.Long} object.
+     */
     public void setNodeId(Long nodeId) {
         this.nodeId = nodeId;
     }
 
-	/**
-	 * @return Returns the nodeLabel.
-     * @hibernate.property
-	 */
+    /**
+     * <p>Getter for the field <code>nodeLabel</code>.</p>
+     *
+     * @return Returns the nodeLabel.
+     */
     public String getNodeLabel() {
 		return nodeLabel;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeLabel</code>.</p>
+	 *
 	 * @param nodeLabel The nodeLabel to set.
 	 */
 	public void setNodeLabel(String nodeLabel) {
@@ -155,14 +178,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeLabelSource</code>.</p>
+	 *
 	 * @return Returns the nodeLabelSource.
-     * @hibernate.property
 	 */
 	public String getNodeLabelSource() {
 		return nodeLabelSource;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeLabelSource</code>.</p>
+	 *
 	 * @param nodeLabelSource The nodeLabelSource to set.
 	 */
 	public void setNodeLabelSource(String nodeLabelSource) {
@@ -170,14 +196,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeNetBiosName</code>.</p>
+	 *
 	 * @return Returns the nodeNetBiosName.
-     * @hibernate.property
 	 */
 	public String getNodeNetBiosName() {
 		return nodeNetBiosName;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeNetBiosName</code>.</p>
+	 *
 	 * @param nodeNetBiosName The nodeNetBiosName to set.
 	 */
 	public void setNodeNetBiosName(String nodeNetBiosName) {
@@ -185,14 +214,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeParentId</code>.</p>
+	 *
 	 * @return Returns the nodeParentId.
-     * @hibernate.property
 	 */
 	public Long getNodeParentId() {
 		return nodeParentId;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeParentId</code>.</p>
+	 *
 	 * @param nodeParentId The nodeParentId to set.
 	 */
 	public void setNodeParentId(Long nodeParentId) {
@@ -200,14 +232,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeSysContact</code>.</p>
+	 *
 	 * @return Returns the nodeSysContact.
-     * @hibernate.property
 	 */
 	public String getNodeSysContact() {
 		return nodeSysContact;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeSysContact</code>.</p>
+	 *
 	 * @param nodeSysContact The nodeSysContact to set.
 	 */
 	public void setNodeSysContact(String nodeSysContact) {
@@ -215,14 +250,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeSysDescription</code>.</p>
+	 *
 	 * @return Returns the nodeSysDescription.
-     * @hibernate.property
 	 */
 	public String getNodeSysDescription() {
 		return nodeSysDescription;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeSysDescription</code>.</p>
+	 *
 	 * @param nodeSysDescription The nodeSysDescription to set.
 	 */
 	public void setNodeSysDescription(String nodeSysDescription) {
@@ -230,14 +268,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeSysLocation</code>.</p>
+	 *
 	 * @return Returns the nodeSysLocation.
-     * @hibernate.property
 	 */
 	public String getNodeSysLocation() {
 		return nodeSysLocation;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeSysLocation</code>.</p>
+	 *
 	 * @param nodeSysLocation The nodeSysLocation to set.
 	 */
 	public void setNodeSysLocation(String nodeSysLocation) {
@@ -245,14 +286,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeSysName</code>.</p>
+	 *
 	 * @return Returns the nodeSysName.
-     * @hibernate.property
 	 */
 	public String getNodeSysName() {
 		return nodeSysName;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeSysName</code>.</p>
+	 *
 	 * @param nodeSysName The nodeSysName to set.
 	 */
 	public void setNodeSysName(String nodeSysName) {
@@ -260,6 +304,8 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeSysOid</code>.</p>
+	 *
 	 * @return Returns the nodeSysOid.
 	 */
 	public String getNodeSysOid() {
@@ -267,6 +313,8 @@ public class Node {
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeSysOid</code>.</p>
+	 *
 	 * @param nodeSysOid The nodeSysOid to set.
 	 */
 	public void setNodeSysOid(String nodeSysOid) {
@@ -274,14 +322,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>nodeType</code>.</p>
+	 *
 	 * @return Returns the nodeType.
-     * @hibernate.property
 	 */
 	public String getNodeType() {
 		return nodeType;
 	}
     
 	/**
+	 * <p>Setter for the field <code>nodeType</code>.</p>
+	 *
 	 * @param nodeType The nodeType to set.
 	 */
 	public void setNodeType(String nodeType) {
@@ -289,15 +340,17 @@ public class Node {
 	}
     
 	/**
+	 * <p>Getter for the field <code>operatingSystem</code>.</p>
+	 *
 	 * @return Returns the operatingSystem.
-     * @hibernate.property
 	 */
-    
 	public String getOperatingSystem() {
 		return operatingSystem;
 	}
     
 	/**
+	 * <p>Setter for the field <code>operatingSystem</code>.</p>
+	 *
 	 * @param operatingSystem The operatingSystem to set.
 	 */
 	public void setOperatingSystem(String operatingSystem) {
@@ -305,6 +358,11 @@ public class Node {
 	}
     
     
+    /**
+     * <p>hasPerformanceDataSource</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasPerformanceDataSource() {
         return true;
         

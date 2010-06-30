@@ -59,17 +59,30 @@ import org.opennms.web.outage.filter.RegainedServiceDateAfterFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
 import org.opennms.web.outage.filter.ServiceFilter;
 
+/**
+ * <p>Abstract OutageUtil class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public abstract class OutageUtil extends Object {
+    /** Constant <code>sortStyles</code> */
     protected static final Map<OutageFactory.SortStyle, String> sortStyles;
     
+    /** Constant <code>sortStylesString</code> */
     protected static final Map<String, OutageFactory.SortStyle> sortStylesString;
 
+    /** Constant <code>outTypes</code> */
     protected static final Map<OutageFactory.OutageType, String> outTypes;
     
+    /** Constant <code>outTypesString</code> */
     protected static final Map<String, OutageFactory.OutageType> outTypesString;
 
+    /** Constant <code>DOWN_COLOR="red"</code> */
     protected static final String DOWN_COLOR = "red";
 
+    /** Constant <code>FILTER_SERVLET_URL_BASE="outage/list"</code> */
     public static final String FILTER_SERVLET_URL_BASE = "outage/list";
 
     static {
@@ -117,6 +130,12 @@ public abstract class OutageUtil extends Object {
         outTypes.put(OutageFactory.OutageType.BOTH, Integer.toString(OutageFactory.OutageType._BOTH));
     }
 
+    /**
+     * <p>getSortStyle</p>
+     *
+     * @param sortStyleString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.outage.OutageFactory.SortStyle} object.
+     */
     public static OutageFactory.SortStyle getSortStyle(String sortStyleString) {
         if (sortStyleString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -125,6 +144,12 @@ public abstract class OutageUtil extends Object {
         return sortStylesString.get(sortStyleString.toLowerCase());
     }
 
+    /**
+     * <p>getSortStyleString</p>
+     *
+     * @param sortStyle a {@link org.opennms.web.outage.OutageFactory.SortStyle} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getSortStyleString(OutageFactory.SortStyle sortStyle) {
         if (sortStyle == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -133,6 +158,12 @@ public abstract class OutageUtil extends Object {
         return sortStyles.get(sortStyle);
     }
 
+    /**
+     * <p>getOutageType</p>
+     *
+     * @param outTypeString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.outage.OutageFactory.OutageType} object.
+     */
     public static OutageFactory.OutageType getOutageType(String outTypeString) {
         if (outTypeString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -141,6 +172,12 @@ public abstract class OutageUtil extends Object {
         return outTypesString.get(outTypeString.toLowerCase());
     }
 
+    /**
+     * <p>getOutageTypeString</p>
+     *
+     * @param outType a {@link org.opennms.web.outage.OutageFactory.OutageType} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getOutageTypeString(OutageFactory.OutageType outType) {
         if (outType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -149,6 +186,12 @@ public abstract class OutageUtil extends Object {
         return outTypes.get(outType);
     }
 
+    /**
+     * <p>getFilter</p>
+     *
+     * @param filterString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.outage.filter.Filter} object.
+     */
     public static Filter getFilter(String filterString) {
         if (filterString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -187,6 +230,12 @@ public abstract class OutageUtil extends Object {
         return filter;
     }
 
+    /**
+     * <p>getFilterString</p>
+     *
+     * @param filter a {@link org.opennms.web.outage.filter.Filter} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getFilterString(Filter filter) {
         if (filter == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -195,7 +244,12 @@ public abstract class OutageUtil extends Object {
         return filter.getDescription();
     }
 
-    /** Returns the color to use for an outage, if no color then it returns null. */
+    /**
+     * Returns the color to use for an outage, if no color then it returns null.
+     *
+     * @param outage a {@link org.opennms.web.outage.Outage} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getStatusColor(Outage outage) {
         if (outage == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -210,7 +264,12 @@ public abstract class OutageUtil extends Object {
         return color;
     }
 
-    /** Returns the icon to use for an outage, if no icon then it returns null. */
+    /**
+     * Returns the icon to use for an outage, if no icon then it returns null.
+     *
+     * @param outage a {@link org.opennms.web.outage.Outage} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getStatusLabel(Outage outage) {
         if (outage == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -225,8 +284,19 @@ public abstract class OutageUtil extends Object {
         return label;
     }
 
+    /** Constant <code>LINK_IGNORES="new String[] { sortby, outtype, limit, "{trunked}</code> */
     protected static final String[] LINK_IGNORES = new String[] { "sortby", "outtype", "limit", "multiple", "filter" };
 
+    /**
+     * <p>makeLink</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param sortStyle a {@link org.opennms.web.outage.OutageFactory.SortStyle} object.
+     * @param outageType a {@link org.opennms.web.outage.OutageFactory.OutageType} object.
+     * @param filters a {@link java.util.List} object.
+     * @param limit a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeLink(HttpServletRequest request, OutageFactory.SortStyle sortStyle, OutageFactory.OutageType outageType, List<Filter> filters, int limit) {
         if (request == null || sortStyle == null || outageType == null || filters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -254,6 +324,13 @@ public abstract class OutageUtil extends Object {
         return FILTER_SERVLET_URL_BASE + "?" + Util.makeQueryString(request, additions, LINK_IGNORES, Util.IgnoreType.REQUEST_ONLY);
     }
 
+    /**
+     * <p>makeLink</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeLink(HttpServletRequest request, OutageQueryParms parms) {
         if (request == null || parms == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -262,6 +339,14 @@ public abstract class OutageUtil extends Object {
         return makeLink(request, parms.sortStyle, parms.outageType, parms.filters, parms.limit);
     }
 
+    /**
+     * <p>makeLink</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @param sortStyle a {@link org.opennms.web.outage.OutageFactory.SortStyle} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeLink(HttpServletRequest request, OutageQueryParms parms, OutageFactory.SortStyle sortStyle) {
         if (request == null || parms == null || sortStyle == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -270,6 +355,14 @@ public abstract class OutageUtil extends Object {
         return makeLink(request, sortStyle, parms.outageType, parms.filters, parms.limit);
     }
 
+    /**
+     * <p>makeLink</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @param outageType a {@link org.opennms.web.outage.OutageFactory.OutageType} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeLink(HttpServletRequest request, OutageQueryParms parms, OutageFactory.OutageType outageType) {
         if (request == null || parms == null || outageType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -278,6 +371,14 @@ public abstract class OutageUtil extends Object {
         return makeLink(request, parms.sortStyle, outageType, parms.filters, parms.limit);
     }
 
+    /**
+     * <p>makeLink</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @param filters a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeLink(HttpServletRequest request, OutageQueryParms parms, List<Filter> filters) {
         if (request == null || parms == null || filters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -286,6 +387,15 @@ public abstract class OutageUtil extends Object {
         return makeLink(request, parms.sortStyle, parms.outageType, filters, parms.limit);
     }
 
+    /**
+     * <p>makeLink</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @param filter a {@link org.opennms.web.outage.filter.Filter} object.
+     * @param add a boolean.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeLink(HttpServletRequest request, OutageQueryParms parms, Filter filter, boolean add) {
         if (request == null || parms == null || filter == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -302,6 +412,16 @@ public abstract class OutageUtil extends Object {
         return makeLink(request, parms.sortStyle, parms.outageType, newList, parms.limit);
     }
 
+    /**
+     * <p>makeHiddenTags</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param sortStyle a {@link org.opennms.web.outage.OutageFactory.SortStyle} object.
+     * @param outageType a {@link org.opennms.web.outage.OutageFactory.OutageType} object.
+     * @param filters a {@link java.util.List} object.
+     * @param limit a int.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeHiddenTags(HttpServletRequest request, OutageFactory.SortStyle sortStyle, OutageFactory.OutageType outageType, List<Filter> filters, int limit) {
         if (request == null || sortStyle == null || outageType == null || filters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -329,6 +449,13 @@ public abstract class OutageUtil extends Object {
         return Util.makeHiddenTags(request, additions, LINK_IGNORES, Util.IgnoreType.REQUEST_ONLY);
     }
 
+    /**
+     * <p>makeHiddenTags</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms) {
         if (request == null || parms == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -337,6 +464,14 @@ public abstract class OutageUtil extends Object {
         return makeHiddenTags(request, parms.sortStyle, parms.outageType, parms.filters, parms.limit);
     }
 
+    /**
+     * <p>makeHiddenTags</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @param sortStyle a {@link org.opennms.web.outage.OutageFactory.SortStyle} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms, OutageFactory.SortStyle sortStyle) {
         if (request == null || parms == null || sortStyle == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -345,6 +480,14 @@ public abstract class OutageUtil extends Object {
         return makeHiddenTags(request, sortStyle, parms.outageType, parms.filters, parms.limit);
     }
 
+    /**
+     * <p>makeHiddenTags</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @param outageType a {@link org.opennms.web.outage.OutageFactory.OutageType} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms, OutageFactory.OutageType outageType) {
         if (request == null || parms == null || outageType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -353,6 +496,14 @@ public abstract class OutageUtil extends Object {
         return makeHiddenTags(request, parms.sortStyle, outageType, parms.filters, parms.limit);
     }
 
+    /**
+     * <p>makeHiddenTags</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @param filters a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms, List<Filter> filters) {
         if (request == null || parms == null || filters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -361,6 +512,15 @@ public abstract class OutageUtil extends Object {
         return makeHiddenTags(request, parms.sortStyle, parms.outageType, filters, parms.limit);
     }
 
+    /**
+     * <p>makeHiddenTags</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param parms a {@link org.opennms.web.outage.OutageQueryParms} object.
+     * @param filter a {@link org.opennms.web.outage.filter.Filter} object.
+     * @param add a boolean.
+     * @return a {@link java.lang.String} object.
+     */
     public static String makeHiddenTags(HttpServletRequest request, OutageQueryParms parms, Filter filter, boolean add) {
         if (request == null || parms == null || filter == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");

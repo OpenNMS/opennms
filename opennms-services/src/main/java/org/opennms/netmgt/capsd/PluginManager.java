@@ -59,6 +59,12 @@ import org.opennms.netmgt.config.common.Range;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+/**
+ * <p>PluginManager class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PluginManager implements InitializingBean {
     private CapsdConfig m_capsdConfig;
 
@@ -71,6 +77,9 @@ public class PluginManager implements InitializingBean {
      */
     private Map<String, Plugin> m_pluginsByClass = new TreeMap<String, Plugin>();
 
+    /**
+     * <p>Constructor for PluginManager.</p>
+     */
     public PluginManager() {
         super();
     }
@@ -115,12 +124,10 @@ public class PluginManager implements InitializingBean {
      * named address. The currently loaded configuration is used to find, build,
      * and return the protocol information. The returns information has all the
      * necessary element to check the address for capabilities.
-     * 
+     *
      * @param address
      *            The address to get protocol information for.
-     * 
      * @return The array of protocol information instances for the address.
-     * 
      */
     public CapsdProtocolInfo[] getProtocolSpecification(InetAddress address) {
         /*
@@ -257,14 +264,29 @@ public class PluginManager implements InitializingBean {
         }
     }
 
+    /**
+     * <p>getCapsdConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.CapsdConfig} object.
+     */
     public CapsdConfig getCapsdConfig() {
         return m_capsdConfig;
     }
 
+    /**
+     * <p>setCapsdConfig</p>
+     *
+     * @param capsdConfig a {@link org.opennms.netmgt.config.CapsdConfig} object.
+     */
     public void setCapsdConfig(CapsdConfig capsdConfig) {
         m_capsdConfig = capsdConfig;
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public void afterPropertiesSet() throws ValidationException {
         Assert.state(m_capsdConfig != null, "property capsdConfig must be set to a non-null value");
         

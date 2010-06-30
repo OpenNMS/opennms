@@ -101,11 +101,22 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+/**
+ * <p>Collectd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Collectd extends AbstractServiceDaemon implements
         EventListener {
     
     private static CollectdInstrumentation s_instrumentation = null;
     
+    /**
+     * <p>instrumentation</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectdInstrumentation} object.
+     */
     public static CollectdInstrumentation instrumentation() {
         if (s_instrumentation == null) {
             String className = System.getProperty("org.opennms.collectd.instrumentationClass", DefaultCollectdInstrumentation.class.getName());
@@ -177,6 +188,9 @@ public class Collectd extends AbstractServiceDaemon implements
         m_collectableServices = Collections.synchronizedList(new LinkedList<CollectableService>());
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
         Assert.notNull(m_collectorConfigDao, "collectorConfigDao must not be null");
         Assert.notNull(m_eventIpcManager, "eventIpcManager must not be null");
@@ -238,10 +252,20 @@ public class Collectd extends AbstractServiceDaemon implements
         getEventIpcManager().addEventListener(this, ueiList);
     }
 
+    /**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
 
+    /**
+     * <p>getEventIpcManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
     }
@@ -287,6 +311,7 @@ public class Collectd extends AbstractServiceDaemon implements
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onStart() {
         // start the scheduler
@@ -300,6 +325,7 @@ public class Collectd extends AbstractServiceDaemon implements
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onStop() {
         getScheduler().stop();
@@ -308,11 +334,13 @@ public class Collectd extends AbstractServiceDaemon implements
         setScheduler(null);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onPause() {
         getScheduler().pause();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onResume() {
         getScheduler().resume();
@@ -523,6 +551,13 @@ public class Collectd extends AbstractServiceDaemon implements
         }
     }
 
+    /**
+     * <p>getSpecificationsForInterface</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
         Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
 
@@ -649,16 +684,13 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the JMS topic session when a new event is
      * available for processing. Currently only text based messages are
      * processed by this callback. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each
      * UEI.
-     * 
-     * @param event
-     *            The event message.
-     * @param processor
-     *            TODO
      */
     public void onEvent(final Event event) {
 
@@ -707,6 +739,11 @@ public class Collectd extends AbstractServiceDaemon implements
         }
     }
 
+    /**
+     * <p>handleInsufficientInfo</p>
+     *
+     * @param e a {@link org.opennms.netmgt.capsd.InsufficientInformationException} object.
+     */
     protected void handleInsufficientInfo(InsufficientInformationException e) {
         log().info(e.getMessage());
     }
@@ -1323,6 +1360,11 @@ public class Collectd extends AbstractServiceDaemon implements
                     + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
     }
 
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     */
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }
@@ -1334,6 +1376,11 @@ public class Collectd extends AbstractServiceDaemon implements
         return m_scheduler;
     }
 
+    /**
+     * <p>setCollectorConfigDao</p>
+     *
+     * @param collectorConfigDao a {@link org.opennms.netmgt.dao.CollectorConfigDao} object.
+     */
     public void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
         m_collectorConfigDao = collectorConfigDao;
     }
@@ -1342,6 +1389,11 @@ public class Collectd extends AbstractServiceDaemon implements
         return m_collectorConfigDao;
     }
 
+    /**
+     * <p>setIpInterfaceDao</p>
+     *
+     * @param ifSvcDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     */
     public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
         m_ifaceDao = ifSvcDao;
     }
@@ -1350,23 +1402,50 @@ public class Collectd extends AbstractServiceDaemon implements
         return m_ifaceDao;
     }
 
+    /**
+     * <p>setTransactionTemplate</p>
+     *
+     * @param transTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public void setTransactionTemplate(TransactionTemplate transTemplate) {
         m_transTemplate = transTemplate;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
 
+    /**
+     * <p>setServiceCollector</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @param collector a {@link org.opennms.netmgt.collectd.ServiceCollector} object.
+     */
     public void setServiceCollector(String svcName, ServiceCollector collector) {
         m_collectors.put(svcName, collector);
     }
 
+    /**
+     * <p>getServiceCollector</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.collectd.ServiceCollector} object.
+     */
     public ServiceCollector getServiceCollector(String svcName) {
         return m_collectors.get(svcName);
     }
 
+    /**
+     * <p>getCollectorNames</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> getCollectorNames() {
         return m_collectors.keySet();
     }

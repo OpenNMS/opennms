@@ -37,45 +37,89 @@ import java.sql.SQLException;
 
 import org.opennms.web.alarm.AlarmUtil;
 
-/** Encapsulates severity filtering functionality. */
+/**
+ * Encapsulates severity filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class SeverityFilter extends Object implements Filter {
+    /** Constant <code>TYPE="severity"</code> */
     public static final String TYPE = "severity";
 
     protected int severity;
 
+    /**
+     * <p>Constructor for SeverityFilter.</p>
+     *
+     * @param severity a int.
+     */
     public SeverityFilter(int severity) {
         this.severity = severity;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" SEVERITY=" + this.severity);
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" SEVERITY=?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setInt(parameterIndex, this.severity);
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.severity);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return (TYPE + "=" + AlarmUtil.getSeverityLabel(this.severity));
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.SeverityFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>Getter for the field <code>severity</code>.</p>
+     *
+     * @return a int.
+     */
     public int getSeverity() {
         return (this.severity);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

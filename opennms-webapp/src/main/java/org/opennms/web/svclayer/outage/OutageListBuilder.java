@@ -50,13 +50,28 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 
 /**
- * 
+ * <p>OutageListBuilder class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class OutageListBuilder {
 
+    /**
+     * <p>theTable</p>
+     *
+     * @param foundOutages a {@link java.util.Collection} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<Map<String, Object>> theTable(Collection<OnmsOutage> foundOutages) {
         List<Map<String, Object>> theTable = new ArrayList<Map<String, Object>>();
 

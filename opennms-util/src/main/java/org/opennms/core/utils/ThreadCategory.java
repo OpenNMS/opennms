@@ -49,9 +49,12 @@ import org.apache.log4j.Logger;
  * to the same location. This is particularly useful when messages from share
  * common code should be associated with a higher level <EM>service</EM> or
  * <EM>application</EM>.
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class ThreadCategory extends Category {
     private static final String DEFAULT_CATEGORY = "UNCATEGORIZED";
@@ -68,26 +71,21 @@ public class ThreadCategory extends Category {
      * This constructor created a new Category instance and sets its name. It is
      * intended to be used by sub-classes only. You should not create categories
      * directly.
-     * 
+     *
      * @param name
      *            The name of the category
-     * 
      */
     protected ThreadCategory(String name) {
         super(name);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is used to get the category instance associated with the
      * thread. If the category for the thread has not been set then the passed
      * class is used to find the appropriate category. If a category is found
      * for the thread group then it is returned to the caller.
-     * 
-     * @param c
-     *            The class used to find the category if it was not set.
-     * 
-     * @return The instance for the thread.
-     * 
      * @see java.lang.InheritableThreadLocal
      */
     public static Category getInstance(Class c) {
@@ -105,12 +103,10 @@ public class ThreadCategory extends Category {
      * thread. If the category for the thread has not been set then the passed
      * name is used to find the appropriate category. If a category is found for
      * the thread group then it is returned to the caller.
-     * 
+     *
      * @param cname
      *            The name used to find the category if it was not set.
-     * 
      * @return The instance for the thread.
-     * 
      * @see java.lang.InheritableThreadLocal
      */
     public static Category getInstance(String cname) {
@@ -127,9 +123,8 @@ public class ThreadCategory extends Category {
      * This method is used to get the category instance associated with the
      * thread. If the instance has not been set then a default category is
      * returned to the caller.
-     * 
+     *
      * @return The instance for the thread, null if it is not set.
-     * 
      * @see java.lang.InheritableThreadLocal
      */
     public static Category getInstance() {
@@ -154,6 +149,8 @@ public class ThreadCategory extends Category {
      * regardless of the package or class name of the class that generated the
      * log message. Please restrict the usage of this function to only the
      * highest level threads.
+     *
+     * @param prefix a {@link java.lang.String} object.
      */
     public static void setPrefix(String prefix) {
         s_threadCategory.set(prefix);
@@ -164,7 +161,7 @@ public class ThreadCategory extends Category {
      * the calling thread. This is needed by many dyanmic threading classes like
      * the <code>RunnableConsumerThreadPool</code> to ensure that all the
      * internal threads run in the same category.
-     * 
+     *
      * @return The prefix string as inherieted by the calling thread.
      */
     public static String getPrefix() {

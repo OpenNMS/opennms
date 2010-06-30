@@ -50,9 +50,12 @@ import java.util.Map;
  * The RTCHashMap has either a nodeid or a nodeid/ip as key and provides
  * convenience methods to add and remove 'RTCNodes' with these values - each key
  * points to a list of 'RTCNode's
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class RTCHashMap {
 	
@@ -67,6 +70,8 @@ public class RTCHashMap {
 
     /**
      * constructor
+     *
+     * @param initialCapacity a int.
      */
     public RTCHashMap(int initialCapacity) {
         m_map = new HashMap(initialCapacity);
@@ -74,6 +79,9 @@ public class RTCHashMap {
 
     /**
      * constructor
+     *
+     * @param initialCapacity a int.
+     * @param loadFactor a float.
      */
     public RTCHashMap(int initialCapacity, float loadFactor) {
     	m_map = new HashMap(initialCapacity, loadFactor);
@@ -157,7 +165,7 @@ public class RTCHashMap {
     
     /**
      * Add an rtc node
-     * 
+     *
      * @param rtcN the rtcNode to add
      */
     public void add(RTCNode rtcN) {
@@ -166,6 +174,11 @@ public class RTCHashMap {
     	add(rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), rtcN);
     }
     
+    /**
+     * <p>delete</p>
+     *
+     * @param rtcN a {@link org.opennms.netmgt.rtc.datablock.RTCNode} object.
+     */
     public void delete(RTCNode rtcN) {
     	delete(rtcN.getNodeID(), rtcN);
     	delete(rtcN.getNodeID(), rtcN.getIP(), rtcN);
@@ -216,14 +229,13 @@ public class RTCHashMap {
 
     /**
      * Check if this IP has already been validated for this category
-     * 
+     *
      * @param nodeid
      *            the node id whose interface is to be validated
      * @param ip
      *            the ip to be validated
      * @param catLabel
      *            the category whose rule this ip is to pass
-     * 
      * @return true if ip has already been validated, false otherwise
      */
     public boolean isIpValidated(long nodeid, String ip, String catLabel) {
@@ -243,14 +255,13 @@ public class RTCHashMap {
     /**
      * Get the value (uptime) for a category in the last 'rollingWindow'
      * starting at current time
-     * 
+     *
      * @param catLabel
      *            the category to which the node should belong to
      * @param curTime
      *            the current time
      * @param rollingWindow
      *            the window for which value is to be calculated
-     * 
      * @return the value(uptime) for the node
      */
     public double getValue(String catLabel, long curTime, long rollingWindow) {
@@ -311,7 +322,7 @@ public class RTCHashMap {
     /**
      * Get the value (uptime) for the a node that belongs to the category in the
      * last 'rollingWindow' starting at current time
-     * 
+     *
      * @param nodeid
      *            the node for which value is to be calculated
      * @param catLabel
@@ -320,7 +331,6 @@ public class RTCHashMap {
      *            the current time
      * @param rollingWindow
      *            the window for which value is to be calculated
-     * 
      * @return the value(uptime) for the node
      */
     public double getValue(long nodeid, String catLabel, long curTime, long rollingWindow) {
@@ -374,12 +384,11 @@ public class RTCHashMap {
     /**
      * Get the count of services for a node in the context of the the specified
      * category
-     * 
+     *
      * @param nodeid
      *            the node for which servicecount is needed
      * @param catLabel
      *            the category to which the node should belong to
-     * 
      * @return the service count for the nodeid in the context of the specfied
      *         category
      */
@@ -404,12 +413,11 @@ public class RTCHashMap {
     /**
      * Get the count of services currently down for a node in the context of the
      * the specified category
-     * 
+     *
      * @param nodeid
      *            the node for which servicecount is needed
      * @param catLabel
      *            the category to which the node should belong to
-     * 
      * @return the service down count for the nodeid in the context of the
      *         specfied category
      */
@@ -431,14 +439,34 @@ public class RTCHashMap {
         return count;
     }
 
+	/**
+	 * <p>getRTCNode</p>
+	 *
+	 * @param key a {@link org.opennms.netmgt.rtc.datablock.RTCNodeKey} object.
+	 * @return a {@link org.opennms.netmgt.rtc.datablock.RTCNode} object.
+	 */
 	public RTCNode getRTCNode(RTCNodeKey key) {
 		return (RTCNode)get(key);
 	}
 	
+	/**
+	 * <p>getRTCNode</p>
+	 *
+	 * @param nodeid a long.
+	 * @param ipaddr a {@link java.lang.String} object.
+	 * @param svcname a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.rtc.datablock.RTCNode} object.
+	 */
 	public RTCNode getRTCNode(long nodeid, String ipaddr, String svcname) {
 		return getRTCNode(new RTCNodeKey(nodeid, ipaddr, svcname));
 	}
 	
+	/**
+	 * <p>getRTCNodes</p>
+	 *
+	 * @param nodeid a long.
+	 * @return a {@link java.util.List} object.
+	 */
 	public List getRTCNodes(long nodeid) {
 		Long key = new Long(nodeid);
 		List nodes = (List)get(key);
@@ -446,6 +474,13 @@ public class RTCHashMap {
 		return Collections.unmodifiableList(nodes); 
 	}
 	
+	/**
+	 * <p>getRTCNodes</p>
+	 *
+	 * @param nodeid a long.
+	 * @param ip a {@link java.lang.String} object.
+	 * @return a {@link java.util.List} object.
+	 */
 	public List getRTCNodes(long nodeid, String ip) {
 		String key = Long.toString(nodeid)+ip;
 		List nodes = (List)get(key);
@@ -453,6 +488,11 @@ public class RTCHashMap {
 		return Collections.unmodifiableList(nodes);
 	}
 
+	/**
+	 * <p>deleteNode</p>
+	 *
+	 * @param nodeid a long.
+	 */
 	public void deleteNode(long nodeid) {
 		List nodeList = new ArrayList(getRTCNodes(nodeid));
 		for (Iterator it = nodeList.iterator(); it.hasNext();) {

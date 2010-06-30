@@ -65,8 +65,10 @@ import org.opennms.netmgt.linkd.SnmpCollection;
 import org.opennms.protocols.snmp.SnmpObjectId;
 
 /**
- * 
+ * <p>Abstract LinkdConfigManager class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 abstract public class LinkdConfigManager implements LinkdConfig {
 
@@ -94,26 +96,40 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 	private static HashMap<String,String> m_oidMask2className;
 
     /**
+     * <p>Constructor for LinkdConfigManager.</p>
+     *
      * @author <a href="mailto:david@opennms.org">David Hustace</a>
-     * @param reader
-     * @param localServer
-     * @param verifyServer
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
+     * @param reader a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     public LinkdConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         reloadXML(reader);
     }
 
+    /**
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public abstract void update() throws IOException, MarshalException, ValidationException;
 
+    /**
+     * <p>saveXml</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     protected abstract void saveXml(String xml) throws IOException;
 
     private Category log() {
         return ThreadCategory.getInstance(this.getClass());
     }
 
+	/** {@inheritDoc} */
 	public synchronized org.opennms.netmgt.config.linkd.Package getPackage(String name) 
 		{
         
@@ -178,6 +194,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         }
     }
 
+    /** {@inheritDoc} */
     public List<String> getIpList(Package pkg) {
         StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
         
@@ -187,6 +204,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return ipList;
     }
 
+	/**
+	 * <p>useIpRouteDiscovery</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean useIpRouteDiscovery() {
 
 		boolean discoveryUsingRoutes = true;
@@ -198,6 +220,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return discoveryUsingRoutes;
 	}
 
+	/**
+	 * <p>saveRouteTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean saveRouteTable() {
 
 		boolean downloadRoutes = true;
@@ -209,6 +236,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return downloadRoutes;
 	}
 
+	/**
+	 * <p>useCdpDiscovery</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean useCdpDiscovery() {
 
 		boolean discoveryUsingCdp = true;
@@ -220,6 +252,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return discoveryUsingCdp;
 	}
 	
+	/**
+	 * <p>useBridgeDiscovery</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean useBridgeDiscovery() {
 
 		boolean discoveryUsingBridge = true;
@@ -231,6 +268,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return discoveryUsingBridge;
 	}
 
+	/**
+	 * <p>saveStpNodeTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean saveStpNodeTable() {
 
 		boolean download = true;
@@ -242,6 +284,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return download;
 	}
 	
+	/**
+	 * <p>enableDiscoveryDownload</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean enableDiscoveryDownload() {
 		boolean enable=false;
 		if (m_config.hasEnableDiscoveryDownload()) 
@@ -249,6 +296,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return enable;
 	}	
 	
+	/**
+	 * <p>saveStpInterfaceTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean saveStpInterfaceTable() {
 
 		boolean download = true;
@@ -260,6 +312,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return download;
 	}
 
+	/**
+	 * <p>getInitialSleepTime</p>
+	 *
+	 * @return a long.
+	 */
 	public long getInitialSleepTime() {
 
 
@@ -272,6 +329,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return initialSleepTime;
 	}
 
+	/**
+	 * <p>getSnmpPollInterval</p>
+	 *
+	 * @return a long.
+	 */
 	public long getSnmpPollInterval() {
 
 		long snmppollinterval = 900000;
@@ -283,6 +345,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return snmppollinterval;
 	}
 
+	/**
+	 * <p>getDiscoveryLinkInterval</p>
+	 *
+	 * @return a long.
+	 */
 	public long getDiscoveryLinkInterval() {
 
 		long discoverylinkinterval = 3600000;
@@ -295,6 +362,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return discoverylinkinterval;
 	}
 
+	/**
+	 * <p>getThreads</p>
+	 *
+	 * @return a int.
+	 */
 	public int getThreads() {
 
 		int threads = 5;
@@ -308,16 +380,18 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
     /**
      * Return the linkd configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
      */
     public synchronized LinkdConfiguration getConfiguration() {
         return m_config;
     }
 
-    /**
-	 * 
+	/**
+	 * <p>autoDiscovery</p>
+	 *
 	 * @return boolean auto-discovery
 	 */
-
 	public boolean autoDiscovery() {
 
 		boolean autodiscovery = false; 
@@ -329,10 +403,10 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 	}
 
 	/**
-	 * 
+	 * <p>enableVlanDiscovery</p>
+	 *
 	 * @return boolean enable-vlan-discovery
 	 */
-
 	public boolean enableVlanDiscovery() {
 
 		boolean vlandiscovery = true; 
@@ -428,6 +502,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 	}
 
 	
+	/** {@inheritDoc} */
 	public String getClassName(String sysoid) {
 
 		String defaultClassName = null;
@@ -444,6 +519,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
 	}
 
+	/** {@inheritDoc} */
 	public boolean hasClassName(String sysoid) {
 
 		Set ks = m_oidMask2className.keySet();
@@ -473,15 +549,14 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * the passed package definition. If the interface belongs to the package
      * then a value of true is returned. If the interface does not belong to the
      * package a false value is returned.
-     * 
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
-     * 
+     *
      * @param iface
      *            The interface to test against the package.
      * @param pkg
      *            The package to check for the inclusion of the interface.
-     * 
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
@@ -504,6 +579,13 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return interfaceInPackageRange(iface, pkg);
     }
     
+    /**
+     * <p>interfaceInPackageRange</p>
+     *
+     * @param iface a {@link java.lang.String} object.
+     * @param pkg a org$opennms$netmgt$config$linkd$Package object.
+     * @return a boolean.
+     */
     public synchronized boolean interfaceInPackageRange(String iface, org.opennms.netmgt.config.linkd.Package pkg) {
     
         //
@@ -602,6 +684,14 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return bRet;
     }
     
+    /**
+     * <p>reloadXML</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
         m_config = (LinkdConfiguration) Unmarshaller.unmarshal(LinkdConfiguration.class, reader);
         createUrlIpMap();
@@ -612,6 +702,10 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
     /**
      * Saves the current in-memory configuration to disk and reloads
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void save() throws MarshalException, IOException, ValidationException {
     
@@ -625,6 +719,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         update();
     }
 
+    /** {@inheritDoc} */
     public List<SnmpCollection> getSnmpCollections(String ipaddr, String sysoid) {
 	
     	List<SnmpCollection> snmpcolls = new ArrayList<SnmpCollection>();
@@ -638,6 +733,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     	return snmpcolls;
     }
 
+    /** {@inheritDoc} */
     public SnmpCollection getSnmpCollection(String ipaddr, String sysoid,String pkgName) {
     	
     	Iterator<String> ite = getAllPackageMatches(ipaddr).iterator();
@@ -728,15 +824,12 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
     
     /**
+     * {@inheritDoc}
+     *
      * Returns the first package that the ip belongs to, null if none.
-     * 
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
-     * 
-     * @param ipaddr
-     *            the interface to check
-     * 
-     * @return the first package that the ip belongs to, null if none
      */
     public synchronized org.opennms.netmgt.config.linkd.Package getFirstPackageMatch(String ipaddr) {
         Enumeration pkgEnum = m_config.enumeratePackage();
@@ -752,15 +845,12 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns a list of package names that the ip belongs to, null if none.
-     *                
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
-     *
-     * @param ipaddr
-     *            the interface to check
-     *
-     * @return a list of package names that the ip belongs to, null if none
      */
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
     
@@ -778,10 +868,16 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return matchingPkgs;
     }
 
+    /**
+     * <p>enumeratePackage</p>
+     *
+     * @return a {@link java.util.Enumeration} object.
+     */
     public Enumeration enumeratePackage() {
         return getConfiguration().enumeratePackage();
     }
     
+    /** {@inheritDoc} */
     public DiscoveryLink getDiscoveryLink(String pkgName) {
 		DiscoveryLink discoveryLink = new DiscoveryLink();
 

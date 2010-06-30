@@ -39,13 +39,18 @@ import org.extremecomponents.table.core.TableModel;
 import org.extremecomponents.table.interceptor.RowInterceptor;
 
 /**
- * 
+ * <p>RedRow class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class RedRow implements RowInterceptor {
+    /** {@inheritDoc} */
     public void addRowAttributes(TableModel tableModel, Row row) {
     } 
 
+    /** {@inheritDoc} */
     public void modifyRowAttributes(TableModel model, Row row) {
         //Map outage = (Map) model.getCurrentRowBean();
         //String outagetime = (String) outage.get("up");

@@ -49,8 +49,10 @@ import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>Correlator class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class Correlator extends AbstractServiceDaemon implements CorrelationEngineRegistrar {
 
@@ -79,10 +81,14 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		
 	}
 
+	/**
+	 * <p>Constructor for Correlator.</p>
+	 */
 	protected Correlator() {
 		super("OpenNMS.Correlator");
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	protected void onInit() {
 		Assert.notNull(m_eventIpcManager, "property eventIpcManager must be set");
@@ -99,10 +105,20 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		
 	}
 
+	/**
+	 * <p>setCorrelationEngines</p>
+	 *
+	 * @param engines a {@link java.util.List} object.
+	 */
 	public void setCorrelationEngines(List<CorrelationEngine> engines) {
 		m_engines = engines;
 	}
 
+	/**
+	 * <p>setEventIpcManager</p>
+	 *
+	 * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 */
 	public void setEventIpcManager(EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;
 	}
@@ -110,6 +126,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
     /* (non-Javadoc)
      * @see org.opennms.netmgt.correlation.CorrelationEngineRegistrar#addCorrelationEngine(org.opennms.netmgt.correlation.CorrelationEngine)
      */
+    /** {@inheritDoc} */
     public void addCorrelationEngine(CorrelationEngine engine) {
         m_engines.add(engine);
         if (m_initialized) {
@@ -117,6 +134,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
         }
     }
 
+    /** {@inheritDoc} */
     public CorrelationEngine findEngineByName(String name) {
         for (CorrelationEngine engine : m_engines) {
             if (name.equals(engine.getName())) {
@@ -126,10 +144,20 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
         return null;
     }
 
+    /**
+     * <p>getEngines</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<CorrelationEngine> getEngines() {
         return m_engines;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.apache.log4j.Category} object.
+     */
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }

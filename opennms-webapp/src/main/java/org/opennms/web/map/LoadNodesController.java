@@ -55,11 +55,14 @@ import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
+ * <p>LoadNodesController class.</p>
+ *
  * @author mmigliore
- * 
- * this class provides to create, manage and delete 
+ *
+ * this class provides to create, manage and delete
  * proper session objects to use when working with maps
- * 
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class LoadNodesController implements Controller {
 	Category log;
@@ -67,14 +70,25 @@ public class LoadNodesController implements Controller {
 	private Manager manager;
 	
 	
+	/**
+	 * <p>Getter for the field <code>manager</code>.</p>
+	 *
+	 * @return a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public Manager getManager() {
 		return manager;
 	}
 
+	/**
+	 * <p>Setter for the field <code>manager</code>.</p>
+	 *
+	 * @param manager a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public void setManager(Manager manager) {
 		this.manager = manager;
 	}
 
+	/** {@inheritDoc} */
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);

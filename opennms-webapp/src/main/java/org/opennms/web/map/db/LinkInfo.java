@@ -36,8 +36,11 @@ package org.opennms.web.map.db;
 
 
 /**
- * 
+ * <p>LinkInfo class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class LinkInfo {
 	int nodeid;
@@ -61,6 +64,7 @@ public class LinkInfo {
 		this.snmpifoperstatus = snmpifoperstatus;
 	}
 	
+	/** {@inheritDoc} */
 	public boolean equals(Object obj) {
 		if (obj instanceof LinkInfo ) {
 			LinkInfo ol = (LinkInfo) obj;
@@ -77,6 +81,11 @@ public class LinkInfo {
 		return false;
 	}
 	
+	/**
+	 * <p>hashCode</p>
+	 *
+	 * @return a int.
+	 */
 	public int hashCode() {
 		return (3*nodeid)+(5*ifindex)+(7*nodeparentid)+(11*parentifindex)+(13*snmpiftype)+(17*snmpifoperstatus);
 	}

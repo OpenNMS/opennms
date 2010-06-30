@@ -34,9 +34,18 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 
+/**
+ * <p>EventDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer>
 		implements EventDao {
 
+	/**
+	 * <p>Constructor for EventDaoHibernate.</p>
+	 */
 	public EventDaoHibernate() {
 		super(OnmsEvent.class);
 	}

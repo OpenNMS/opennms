@@ -39,9 +39,12 @@ package org.opennms.protocols.snmp;
  * The SNMP handler used to receive responses from individual sessions. When a
  * response is received that matches a system object identifier request the
  * session is notified.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class SnmpResponseHandler implements SnmpHandler {
     
@@ -53,14 +56,9 @@ public final class SnmpResponseHandler implements SnmpHandler {
     private SnmpPduPacket m_response = null;
 
     /**
+     * {@inheritDoc}
+     *
      * The method that handles a returned packet from the remote agent.
-     * 
-     * @param sess
-     *            The snmp session that received the result.
-     * @param command
-     *            The snmp command.
-     * @param pkt
-     *            The snmp packet that was received.
      */
     public void snmpReceivedPdu(SnmpSession sess, int command, SnmpPduPacket pkt) {
         if (pkt.getCommand() == SnmpPduPacket.RESPONSE) {
@@ -75,14 +73,9 @@ public final class SnmpResponseHandler implements SnmpHandler {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked when an internal error occurs on the SNMP session.
-     * 
-     * @param sess
-     *            The snmp session that received the result.
-     * @param err
-     *            The err.
-     * @param obj
-     *            The syntax object.
      */
     public void snmpInternalError(SnmpSession sess, int err, SnmpSyntax obj) {
         synchronized (this) {
@@ -91,13 +84,10 @@ public final class SnmpResponseHandler implements SnmpHandler {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked when the session fails to receive a response to a
      * particular packet.
-     * 
-     * @param sess
-     *            The snmp session that received the result.
-     * @param pkt
-     *            The snmp packet that was received.
      */
     public void snmpTimeoutError(SnmpSession sess, SnmpSyntax pkt) {
         synchronized (this) {
@@ -105,6 +95,11 @@ public final class SnmpResponseHandler implements SnmpHandler {
         }
     }
     
+    /**
+     * <p>getResponse</p>
+     *
+     * @return a {@link org.opennms.protocols.snmp.SnmpPduPacket} object.
+     */
     public SnmpPduPacket getResponse() {
         return m_response;
     }
@@ -112,33 +107,67 @@ public final class SnmpResponseHandler implements SnmpHandler {
     /**
      * Returns the recovered snmp system object identifier, if any. If one was
      * not returned then a null value is returned to the caller.
-     * 
+     *
+     * @return a {@link org.opennms.protocols.snmp.SnmpVarBind} object.
      */
     public SnmpVarBind getFirstResponseVarBind() {
         return getResponseVarBind(0);
     }
     
+    /**
+     * <p>getFirstResponseValue</p>
+     *
+     * @return a {@link org.opennms.protocols.snmp.SnmpSyntax} object.
+     */
     public SnmpSyntax getFirstResponseValue() {
         return getResponseValue(0);
     }
     
+    /**
+     * <p>getFirstResponseString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFirstResponseString() {
         return getResponseString(0);
     }
     
+    /**
+     * <p>getResponseValue</p>
+     *
+     * @param index a int.
+     * @return a {@link org.opennms.protocols.snmp.SnmpSyntax} object.
+     */
     public SnmpSyntax getResponseValue(int index) {
         return getResponseVarBind(index).getValue();
     }
     
+    /**
+     * <p>getResponseString</p>
+     *
+     * @param index a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getResponseString(int index) {
         SnmpSyntax val = getResponseValue(index);
         return (val == null ? null : val.toString());
     }
     
+    /**
+     * <p>getResponseVarBind</p>
+     *
+     * @param index a int.
+     * @return a {@link org.opennms.protocols.snmp.SnmpVarBind} object.
+     */
     public SnmpVarBind getResponseVarBind(int index) {
         return (getResponse() == null ? null : getResponse().getVarBindAt(index));
     }
     
+    /**
+     * <p>getResponseVarBindCount</p>
+     *
+     * @return a int.
+     */
     public int getResponseVarBindCount() {
         return (getResponse() == null ? 0 : getResponse().getLength());
     }

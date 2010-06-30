@@ -35,11 +35,24 @@ package org.opennms.web.event.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+ * <p>DescriptionSubstringFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class DescriptionSubstringFilter extends Object implements Filter {
+    /** Constant <code>TYPE="descsub"</code> */
     public static final String TYPE = "descsub";
 
     protected String substring;
 
+    /**
+     * <p>Constructor for DescriptionSubstringFilter.</p>
+     *
+     * @param substring a {@link java.lang.String} object.
+     */
     public DescriptionSubstringFilter(String substring) {
         if (substring == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -48,35 +61,67 @@ public class DescriptionSubstringFilter extends Object implements Filter {
         this.substring = substring;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" UPPER(EVENTDESCR) LIKE '%" + this.substring.toUpperCase() + "%'");
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" UPPER(EVENTDESCR) LIKE ?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setString(parameterIndex, "%"+this.substring.toUpperCase()+"%");
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.substring);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("description containing \"" + this.substring + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<DescriptionSubstringFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>Getter for the field <code>substring</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSubstring() {
         return (this.substring);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

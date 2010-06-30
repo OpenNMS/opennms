@@ -54,9 +54,14 @@ import org.opennms.web.map.MapsConstants;
 
 
 /**
- * 
+ * <p>ServerDataSource class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ServerDataSource implements DataSourceInterface {
 
@@ -81,6 +86,11 @@ public class ServerDataSource implements DataSourceInterface {
 	static Connection externalConn = null;
 
 	
+	/**
+	 * <p>Constructor for ServerDataSource.</p>
+	 *
+	 * @param params a java$util$Map object.
+	 */
 	public ServerDataSource(Map params){
 		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());
@@ -130,6 +140,11 @@ public class ServerDataSource implements DataSourceInterface {
 		return false;
 	}
 
+	/**
+	 * <p>finalize</p>
+	 *
+	 * @throws java.lang.Throwable if any.
+	 */
 	protected void finalize() throws Throwable {
 		log.debug("Finalizing...closing db connections");
 		super.finalize();
@@ -142,6 +157,7 @@ public class ServerDataSource implements DataSourceInterface {
 	}
 	
 
+	/** {@inheritDoc} */
 	public String getSeverity(Object id){
 
 		String result = "-1";
@@ -230,6 +246,7 @@ public class ServerDataSource implements DataSourceInterface {
 	}
 
 	
+	/** {@inheritDoc} */
 	public String getStatus(Object id){
 
 		String result = "-1";
@@ -304,6 +321,7 @@ public class ServerDataSource implements DataSourceInterface {
 		return value;
 	}
 	
+	/** {@inheritDoc} */
 	public double getAvailability(Object id) {
 		// not implemented
 		return -1;

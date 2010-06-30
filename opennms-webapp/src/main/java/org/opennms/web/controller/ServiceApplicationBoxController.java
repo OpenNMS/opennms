@@ -48,9 +48,17 @@ import org.opennms.web.svclayer.AdminApplicationService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>ServiceApplicationBoxController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ServiceApplicationBoxController extends AbstractController {
     private AdminApplicationService m_adminApplicationService; 
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Service service = ElementUtil.getServiceByParams(request);
@@ -67,10 +75,20 @@ public class ServiceApplicationBoxController extends AbstractController {
         return modelAndView;
     }
 
+    /**
+     * <p>getAdminApplicationService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.AdminApplicationService} object.
+     */
     public AdminApplicationService getAdminApplicationService() {
         return m_adminApplicationService;
     }
 
+    /**
+     * <p>setAdminApplicationService</p>
+     *
+     * @param adminApplicationService a {@link org.opennms.web.svclayer.AdminApplicationService} object.
+     */
     public void setAdminApplicationService(AdminApplicationService adminApplicationService) {
         m_adminApplicationService = adminApplicationService;
     }

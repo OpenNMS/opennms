@@ -43,11 +43,15 @@ import javax.xml.transform.Source;
 import org.springframework.web.servlet.view.xslt.AbstractXsltView;
 
 /**
- * 
+ * <p>AvailabilityReportView class.</p>
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class AvailabilityReportView extends AbstractXsltView {
 
+    /** {@inheritDoc} */
     protected Source createXsltSource(Map model, String root,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {

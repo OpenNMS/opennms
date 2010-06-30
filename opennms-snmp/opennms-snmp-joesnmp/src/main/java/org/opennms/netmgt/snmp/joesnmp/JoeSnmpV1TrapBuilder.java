@@ -42,38 +42,52 @@ import org.opennms.protocols.snmp.SnmpPduTrap;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
+/**
+ * <p>JoeSnmpV1TrapBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JoeSnmpV1TrapBuilder implements SnmpV1TrapBuilder {
     
     SnmpPduTrap trap = new SnmpPduTrap();
 
+    /** {@inheritDoc} */
     public void setEnterprise(SnmpObjId enterpriseId) {
         trap.setEnterprise(new SnmpObjectId(enterpriseId.getIds()));
     }
 
+    /** {@inheritDoc} */
     public void setAgentAddress(InetAddress agentAddress) {
         trap.setAgentAddress(new SnmpIPAddress(agentAddress));
     }
 
+    /** {@inheritDoc} */
     public void setGeneric(int generic) {
         trap.setGeneric(generic);
     }
 
+    /** {@inheritDoc} */
     public void setSpecific(int specific) {
         trap.setSpecific(specific);
     }
 
+    /** {@inheritDoc} */
     public void setTimeStamp(long timeStamp) {
         trap.setTimeStamp(timeStamp);
     }
 
+    /** {@inheritDoc} */
     public void send(String destAddr, int destPort, String community) throws Exception {
         JoeSnmpStrategy.send(destAddr, destPort, community, trap);
     }
 
+    /** {@inheritDoc} */
     public void sendTest(String destAddr, int destPort, String community) throws Exception {
         JoeSnmpStrategy.sendTest(destAddr, destPort, community, trap);
     }
 
+    /** {@inheritDoc} */
     public void addVarBind(SnmpObjId name, SnmpValue value) {
         SnmpSyntax val = ((JoeSnmpValue) value).getSnmpSyntax();
         trap.addVarBind(new SnmpVarBind(new SnmpObjectId(name.getIds()), val));

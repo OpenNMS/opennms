@@ -52,11 +52,17 @@ import org.springframework.util.Assert;
 /**
  * This class represents a singular instance that is used to map trap IP
  * addresses to known nodes.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     private DataSource m_dataSource;
@@ -81,6 +87,9 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#dataSourceSync()
      */
+    /**
+     * <p>dataSourceSync</p>
+     */
     public synchronized void dataSourceSync() {
         m_knownips.clear();
 
@@ -94,6 +103,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#getNodeId(java.lang.String)
      */
+    /** {@inheritDoc} */
     public synchronized long getNodeId(String addr) {
         if (addr == null) {
             return -1;
@@ -104,6 +114,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#setNodeId(java.lang.String, long)
      */
+    /** {@inheritDoc} */
     public synchronized long setNodeId(String addr, long nodeid) {
         if (addr == null || nodeid == -1) {
             return -1;
@@ -115,6 +126,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#removeNodeId(java.lang.String)
      */
+    /** {@inheritDoc} */
     public synchronized long removeNodeId(String addr) {
         if (addr == null) {
             return -1;
@@ -125,6 +137,9 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#clearKnownIpsMap()
      */
+    /**
+     * <p>clearKnownIpsMap</p>
+     */
     public synchronized void clearKnownIpsMap() {
         m_knownips.clear();
     }
@@ -133,14 +148,29 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         return (result == null ? -1 : result.longValue());
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
 
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_dataSource != null, "property dataSource must be set");
     }

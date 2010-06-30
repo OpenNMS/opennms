@@ -44,13 +44,35 @@ import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.xml.event.Event;
 
+/**
+ * <p>InsertOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class InsertOperation extends AbstractSaveOrUpdateOperation {
     
+    /**
+     * <p>Constructor for InsertOperation.</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     * @param city a {@link java.lang.String} object.
+     * @param nonIpInterfaces a {@link java.lang.Boolean} object.
+     * @param nonIpSnmpPrimary a {@link java.lang.String} object.
+     */
     public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city,
             Boolean nonIpInterfaces, String nonIpSnmpPrimary) {
 		super(foreignSource, foreignId, nodeLabel, building, city, nonIpInterfaces, nonIpSnmpPrimary);
 	}
 
+	/**
+	 * <p>doPersist</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<Event> doPersist() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         getNode().setDistPoller(distPoller);
@@ -65,6 +87,11 @@ public class InsertOperation extends AbstractSaveOrUpdateOperation {
     	return events;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
 	return "INSERT: Node: "+getNode().getLabel();
     }

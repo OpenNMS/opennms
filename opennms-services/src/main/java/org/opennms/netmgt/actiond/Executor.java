@@ -377,7 +377,6 @@ final class Executor implements Runnable, PausableFiber {
      * commands. If the thread is interrupted or the status changes to
      * <code>STOP_PENDING</code> then the method will return as quickly as
      * possible.
-     * 
      */
     public void run() {
         Category log = ThreadCategory.getInstance(Executor.class);
@@ -493,10 +492,9 @@ final class Executor implements Runnable, PausableFiber {
      * RUNNING</code>
      * when the fiber finishes initializing and begins processing the
      * encapsulaed queue.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
-     * 
      */
     public synchronized void start() {
         if (m_worker != null) {
@@ -518,10 +516,9 @@ final class Executor implements Runnable, PausableFiber {
      * Stops a currently running fiber. If the fiber has already been stopped
      * then the command is silently ignored. If the fiber was never started then
      * an exception is generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber was never started.
-     * 
      */
     public synchronized void stop() {
         if (m_worker == null) {
@@ -547,10 +544,9 @@ final class Executor implements Runnable, PausableFiber {
      * Pauses a currently running fiber. If the fiber was not in a running or
      * resuming state then the command is silently discarded. If the fiber is
      * not running or has terminated then an exception is generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
-     * 
      */
     public synchronized void pause() {
         if (m_worker == null || !m_worker.isAlive()) {
@@ -567,10 +563,9 @@ final class Executor implements Runnable, PausableFiber {
      * Resumes the fiber if it is paused. If the fiber was not in a paused or
      * pause pending state then the request is discarded. If the fiber has not
      * been started or has already stopped then an exception is generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is stopped or has never run.
-     * 
      */
     public synchronized void resume() {
         if (m_worker == null || !m_worker.isAlive()) {
@@ -585,7 +580,7 @@ final class Executor implements Runnable, PausableFiber {
 
     /**
      * Returns the name of this fiber.
-     * 
+     *
      * @return The name of the fiber.
      */
     public String getName() {
@@ -594,9 +589,8 @@ final class Executor implements Runnable, PausableFiber {
 
     /**
      * Returns the current status of the pausable fiber.
-     * 
+     *
      * @return The current status of the fiber.
-     * 
      * @see org.opennms.core.fiber.PausableFiber
      * @see org.opennms.core.fiber.Fiber
      */

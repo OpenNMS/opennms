@@ -46,32 +46,50 @@ import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
 
 /**
- * 
+ * <p>DefaultTroubleTicketProxy class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
 
     private AlarmDao m_alarmDao;
     private EventProxy m_eventProxy;
 
+    /**
+     * <p>setAlarmDao</p>
+     *
+     * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     */
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
     
+    /**
+     * <p>setEventProxy</p>
+     *
+     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
     
+    /** {@inheritDoc} */
     public void closeTicket(Integer alarmId) {
         changeTicket(alarmId, TroubleTicketState.CLOSE_PENDING, EventConstants.TROUBLETICKET_CLOSE_UEI);
     }
 
+    /** {@inheritDoc} */
     public void createTicket(Integer alarmId) {
         changeTicket(alarmId, TroubleTicketState.CREATE_PENDING, EventConstants.TROUBLETICKET_CREATE_UEI);
     }
 
 
+    /** {@inheritDoc} */
     public void updateTicket(Integer alarmId) {
         changeTicket(alarmId, TroubleTicketState.UPDATE_PENDING, EventConstants.TROUBLETICKET_UPDATE_UEI);
     }

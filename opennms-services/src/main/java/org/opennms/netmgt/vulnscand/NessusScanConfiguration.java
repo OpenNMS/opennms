@@ -123,6 +123,11 @@ final class NessusScanConfiguration implements ScheduleTrigger {
     /* (non-Javadoc)
 	 * @see org.opennms.netmgt.vulnscand.ScheduleTrigger#isScheduled()
 	 */
+    /**
+     * <p>isScheduled</p>
+     *
+     * @return a boolean.
+     */
     public boolean isScheduled() {
         return scheduled;
     }
@@ -142,6 +147,7 @@ final class NessusScanConfiguration implements ScheduleTrigger {
     /* (non-Javadoc)
 	 * @see org.opennms.netmgt.vulnscand.ScheduleTrigger#setScheduled(boolean)
 	 */
+    /** {@inheritDoc} */
     public void setScheduled(boolean newScheduled) {
         scheduled = newScheduled;
     }
@@ -157,6 +163,11 @@ final class NessusScanConfiguration implements ScheduleTrigger {
     /* (non-Javadoc)
 	 * @see org.opennms.netmgt.vulnscand.ScheduleTrigger#isTimeForRescan()
 	 */
+    /**
+     * <p>isTimeForRescan</p>
+     *
+     * @return a boolean.
+     */
     public boolean isTimeForRescan() {
         if (System.currentTimeMillis() >= (lastScan.getTime() + interval))
             return true;
@@ -166,6 +177,8 @@ final class NessusScanConfiguration implements ScheduleTrigger {
 
     /**
      * Validation function.
+     *
+     * @return a boolean.
      */
     public boolean isValid() {
         // Category log = ThreadCategory.getInstance(getClass());
@@ -177,10 +190,16 @@ final class NessusScanConfiguration implements ScheduleTrigger {
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.vulnscand.ScheduleTrigger#getJob()
 	 */
+	/**
+	 * <p>getJob</p>
+	 *
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object getJob() {
 		return new NessusScan(this);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return getAddress().toString();

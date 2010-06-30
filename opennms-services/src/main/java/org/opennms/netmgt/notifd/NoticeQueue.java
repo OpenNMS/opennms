@@ -39,12 +39,12 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * This is a data class designed to hold NotificationTasks in an ordered map
  * that can handle collisions.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
  */
 public class NoticeQueue extends DuplicateTreeMap<Long, NotificationTask> {
     /**
@@ -52,6 +52,7 @@ public class NoticeQueue extends DuplicateTreeMap<Long, NotificationTask> {
      */
     private static final long serialVersionUID = 7463770974135218140L;
 
+    /** {@inheritDoc} */
     @Override
     public NotificationTask putItem(Long key, NotificationTask value) {
         NotificationTask ret = super.putItem(key, value);

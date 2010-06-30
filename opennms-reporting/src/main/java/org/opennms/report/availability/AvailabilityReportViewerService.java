@@ -42,6 +42,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.opennms.netmgt.model.AvailabilityReportLocator;
 
+/**
+ * <p>AvailabilityReportViewerService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AvailabilityReportViewerService {
 
     private AvailabilityReportLocatorService m_reportLocatorService;
@@ -50,6 +56,12 @@ public class AvailabilityReportViewerService {
 
     private String m_baseDir;
 
+    /**
+     * <p>createSource</p>
+     *
+     * @return a {@link javax.xml.transform.Source} object.
+     * @throws org.opennms.report.availability.AvailabilityReportException if any.
+     */
     public Source createSource() throws AvailabilityReportException {
 
         AvailabilityReportLocator locator = m_reportLocatorService.locateReport(m_reportId);
@@ -74,27 +86,57 @@ public class AvailabilityReportViewerService {
 
     }
 
+    /**
+     * <p>getReportLocatorService</p>
+     *
+     * @return a {@link org.opennms.report.availability.AvailabilityReportLocatorService} object.
+     */
     public AvailabilityReportLocatorService getReportLocatorService() {
         return m_reportLocatorService;
     }
 
+    /**
+     * <p>setReportLocatorService</p>
+     *
+     * @param locator a {@link org.opennms.report.availability.AvailabilityReportLocatorService} object.
+     */
     public void setReportLocatorService(
             AvailabilityReportLocatorService locator) {
         m_reportLocatorService = locator;
     }
 
+    /**
+     * <p>getReportId</p>
+     *
+     * @return a int.
+     */
     public int getReportId() {
         return m_reportId;
     }
 
+    /**
+     * <p>setReportId</p>
+     *
+     * @param id a int.
+     */
     public void setReportId(int id) {
         m_reportId = id;
     }
 
+    /**
+     * <p>getBaseDir</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBaseDir() {
         return m_baseDir;
     }
 
+    /**
+     * <p>setBaseDir</p>
+     *
+     * @param dir a {@link java.lang.String} object.
+     */
     public void setBaseDir(String dir) {
         m_baseDir = dir;
     }

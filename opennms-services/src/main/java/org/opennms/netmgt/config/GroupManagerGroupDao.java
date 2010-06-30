@@ -51,17 +51,23 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>GroupManagerGroupDao class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     private static final GroupManagerCastorExceptionTranslator CASTOR_EXCEPTION_TRANSLATOR = new GroupManagerCastorExceptionTranslator();
     
     private GroupManager m_groupManager;
     
+    /**
+     * <p>Constructor for GroupManagerGroupDao.</p>
+     */
     public GroupManagerGroupDao() {
     }
 
+    /** {@inheritDoc} */
     public void deleteGroup(String name) {
         try {
             m_groupManager.deleteGroup(name);
@@ -70,6 +76,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public void deleteRole(String name) {
         try {
             m_groupManager.deleteRole(name);
@@ -78,6 +85,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public void deleteUser(String name) {
         try {
             m_groupManager.deleteUser(name);
@@ -86,10 +94,12 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public List<Group> findGroupsForUser(String user) {
         return m_groupManager.findGroupsForUser(user);
     }
 
+    /** {@inheritDoc} */
     public Group getGroup(String name) {
         try {
             return m_groupManager.getGroup(name);
@@ -98,6 +108,11 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /**
+     * <p>getGroupNames</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getGroupNames() {
         try {
             return m_groupManager.getGroupNames();
@@ -106,6 +121,11 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Group> getGroups() {
         try {
             return m_groupManager.getGroups();
@@ -114,6 +134,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public Role getRole(String name) {
         try {
             return m_groupManager.getRole(name);
@@ -122,10 +143,16 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /**
+     * <p>getRoleNames</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getRoleNames() {
         return m_groupManager.getRoleNames();
     }
 
+    /** {@inheritDoc} */
     public OwnedIntervalSequence getRoleScheduleEntries(String role, Date start, Date end) {
         try {
             return m_groupManager.getRoleScheduleEntries(role, start, end);
@@ -134,6 +161,11 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /**
+     * <p>getRoles</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection getRoles() {
         try {
             return m_groupManager.getRoles();
@@ -142,6 +174,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public List<Schedule> getSchedulesForRoleAt(String role, Date time) {
         try {
             return m_groupManager.getSchedulesForRoleAt(role, time);
@@ -150,6 +183,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public List getUserSchedulesForRole(String user, String role) {
         try {
             return m_groupManager.getUserSchedulesForRole(user, role);
@@ -158,6 +192,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public long groupNextOnDuty(String group, Calendar time) {
         try {
             return m_groupManager.groupNextOnDuty(group, time);
@@ -166,6 +201,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean hasGroup(String name) {
         try {
             return m_groupManager.hasGroup(name);
@@ -174,6 +210,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean isGroupOnDuty(String group, Calendar time) {
         try {
             return m_groupManager.isGroupOnDuty(group, time);
@@ -182,6 +219,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean isUserScheduledForRole(String user, String role, Date time) {
         try {
             return m_groupManager.isUserScheduledForRole(user, role, time);
@@ -190,6 +228,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public void renameGroup(String oldName, String newName) {
         try {
             m_groupManager.renameGroup(oldName, newName);
@@ -198,6 +237,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public void renameUser(String oldName, String newName) {
         try {
             m_groupManager.renameUser(oldName, newName);
@@ -206,6 +246,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public void saveGroup(String name, Group details) {
         try {
             m_groupManager.saveGroup(name, details);
@@ -214,6 +255,9 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /**
+     * <p>saveGroups</p>
+     */
     public void saveGroups() {
         try {
             m_groupManager.saveGroups();
@@ -222,6 +266,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public void saveRole(Role name) {
         try {
             m_groupManager.saveRole(name);
@@ -230,10 +275,12 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public void setGroups(Map<String, Group> groups) {
         m_groupManager.setGroups(groups);
     }
 
+    /** {@inheritDoc} */
     public boolean userHasRole(String user, String role) {
         try {
             return m_groupManager.userHasRole(user, role);
@@ -242,14 +289,27 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         }
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_groupManager != null, "groupManager property must be set and be non-null");
     }
 
+    /**
+     * <p>getGroupManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.GroupManager} object.
+     */
     public GroupManager getGroupManager() {
         return m_groupManager;
     }
 
+    /**
+     * <p>setGroupManager</p>
+     *
+     * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
+     */
     public void setGroupManager(GroupManager groupManager) {
         m_groupManager = groupManager;
     }

@@ -37,17 +37,73 @@ import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
 
+/**
+ * <p>ImportVisitor interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ImportVisitor {
     
+    /**
+     * <p>visitModelImport</p>
+     *
+     * @param mi a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     public void visitModelImport(ModelImport mi);
+    /**
+     * <p>completeModelImport</p>
+     *
+     * @param modelImport a {@link org.opennms.netmgt.config.modelimport.ModelImport} object.
+     */
     public void completeModelImport(ModelImport modelImport);
+    /**
+     * <p>visitNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.config.modelimport.Node} object.
+     */
     public void visitNode(Node node);
+    /**
+     * <p>completeNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.config.modelimport.Node} object.
+     */
     public void completeNode(Node node);
+    /**
+     * <p>visitInterface</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.config.modelimport.Interface} object.
+     */
     public void visitInterface(Interface iface);
+    /**
+     * <p>completeInterface</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.config.modelimport.Interface} object.
+     */
     public void completeInterface(Interface iface);
+    /**
+     * <p>visitMonitoredService</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.config.modelimport.MonitoredService} object.
+     */
     public void visitMonitoredService(MonitoredService svc);
+    /**
+     * <p>completeMonitoredService</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.config.modelimport.MonitoredService} object.
+     */
     public void completeMonitoredService(MonitoredService svc);
+    /**
+     * <p>visitCategory</p>
+     *
+     * @param category a {@link org.opennms.netmgt.config.modelimport.Category} object.
+     */
     public void visitCategory(Category category);
+    /**
+     * <p>completeCategory</p>
+     *
+     * @param category a {@link org.opennms.netmgt.config.modelimport.Category} object.
+     */
     public void completeCategory(Category category);
     
 

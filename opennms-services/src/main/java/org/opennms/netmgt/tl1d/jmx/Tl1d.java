@@ -37,12 +37,20 @@ package org.opennms.netmgt.tl1d.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>Tl1d class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Tl1d extends AbstractSpringContextJmxServiceDaemon implements Tl1dMBean {
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Tl1d";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "tl1DaemonContext";       

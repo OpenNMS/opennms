@@ -55,13 +55,21 @@ import org.springframework.util.Assert;
 
 
 /**
- * 
+ * <p>DefaultRtcService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultRtcService implements RtcService, InitializingBean {
     private MonitoredServiceDao m_monitoredServiceDao;
     private OutageDao m_outageDao;
 
+    /**
+     * <p>getNodeList</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.support.RtcNodeModel} object.
+     */
     public RtcNodeModel getNodeList() {
         OnmsCriteria serviceCriteria = createServiceCriteria();
         OnmsCriteria outageCriteria = createOutageCriteria();
@@ -69,6 +77,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         return getNodeListForCriteria(serviceCriteria, outageCriteria);
     }
     
+    /** {@inheritDoc} */
     public RtcNodeModel getNodeListForCriteria(OnmsCriteria serviceCriteria, OnmsCriteria outageCriteria) {
         serviceCriteria.addOrder(Order.asc("node.label"));
         serviceCriteria.addOrder(Order.asc("node.id"));
@@ -130,6 +139,11 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         return model;
     }
 
+    /**
+     * <p>createOutageCriteria</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria createOutageCriteria() {
         OnmsCriteria outageCriteria = new OnmsCriteria(OnmsOutage.class, "outage");
 
@@ -143,6 +157,11 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         return outageCriteria;
     }
 
+    /**
+     * <p>createServiceCriteria</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria createServiceCriteria() {
         OnmsCriteria serviceCriteria = new OnmsCriteria(OnmsMonitoredService.class, "monitoredService");
 
@@ -191,20 +210,43 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         return ((double) upMillis / (double) (serviceCount * (24 * 60 * 60 * 1000)));
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_monitoredServiceDao != null, "property monitoredServiceDao must be set and non-null");
         Assert.state(m_outageDao != null, "property outageDao must be set and non-null");
     }
     
+    /**
+     * <p>getMonitoredServiceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public MonitoredServiceDao getMonitoredServiceDao() {
         return m_monitoredServiceDao;
     }
+    /**
+     * <p>setMonitoredServiceDao</p>
+     *
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
     }
+    /**
+     * <p>getOutageDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.OutageDao} object.
+     */
     public OutageDao getOutageDao() {
         return m_outageDao;
     }
+    /**
+     * <p>setOutageDao</p>
+     *
+     * @param outageDao a {@link org.opennms.netmgt.dao.OutageDao} object.
+     */
     public void setOutageDao(OutageDao outageDao) {
         m_outageDao = outageDao;
     }

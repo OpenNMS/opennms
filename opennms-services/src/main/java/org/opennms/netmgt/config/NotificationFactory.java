@@ -60,6 +60,10 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 
 /**
+ * <p>NotificationFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class NotificationFactory extends NotificationManager {
     /**
@@ -95,7 +99,9 @@ public class NotificationFactory extends NotificationManager {
     }
 
     /**
-     * 
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.NotificationFactory} object.
      */
     static synchronized public NotificationFactory getInstance() {
         if (!initialized)
@@ -105,7 +111,15 @@ public class NotificationFactory extends NotificationManager {
     }
 
     /**
-     * 
+     * <p>init</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.sql.SQLException if any.
+     * @throws java.beans.PropertyVetoException if any.
      */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (!initialized) {
@@ -117,7 +131,11 @@ public class NotificationFactory extends NotificationManager {
     }
 
     /**
-     * 
+     * <p>reload</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_noticeConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFICATIONS_CONF_FILE_NAME);
@@ -129,10 +147,7 @@ public class NotificationFactory extends NotificationManager {
         parseXML(reader);
     }
 
-    /**
-     * @param xmlString
-     * @throws IOException
-     */
+    /** {@inheritDoc} */
     protected void saveXML(String xmlString) throws IOException {
         if (xmlString != null) {
             FileWriter fileWriter = new FileWriter(m_noticeConfFile);
@@ -143,7 +158,11 @@ public class NotificationFactory extends NotificationManager {
     }
 
     /**
-     * 
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     protected void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_noticeConfFile.lastModified()) {

@@ -112,11 +112,13 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  * cut down on the amount of work necessary to define what to save.</li>
  * </ol>
  * </p>
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Jamison</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @author <a href="mailto:mike@opennms.org">Mike Jamison</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @version $Id: $
  */
-
 public abstract class JMXCollector implements ServiceCollector {
 
     /**
@@ -162,18 +164,25 @@ public abstract class JMXCollector implements ServiceCollector {
      * <p>
      * Returns the name of the service that the plug-in collects ("JMX").
      * </p>
-     * 
+     *
      * @return The service that the plug-in collects.
      */
     public String serviceName() {
         return serviceName.toUpperCase();
     }
 
+    /**
+     * <p>Setter for the field <code>serviceName</code>.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setServiceName(String name) {
         serviceName = name;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <p>
      * Initialize the service collector.
      * </p>
@@ -184,14 +193,10 @@ public abstract class JMXCollector implements ServiceCollector {
      * library - Determines if JMX to be stored for only the node'sprimary
      * interface or for all interfaces.
      * </p>
-     * 
-     * @param parameters
-     *            Not currently used.
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents
      *                the plug-in from functioning.
      */
-
     public void initialize(Map parameters) {
         // Log4j category
         Category log = ThreadCategory.getInstance(getClass());
@@ -262,22 +267,16 @@ public abstract class JMXCollector implements ServiceCollector {
     /**
      * Responsible for freeing up any resources held by the collector.
      */
-
     public void release() {
         // Nothing to release...
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for performing all necessary initialization for the
      * specified interface in preparation for data collection.
-     * 
-     * @param agent
-     *            Network interface to be prepped for collection.
-     * @param parameters
-     *            Key/value pairs associated with the package to which the
-     *            interface belongs..
      */
-
     public void initialize(CollectionAgent agent, Map parameters) {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipAddr = (InetAddress) agent.getAddress();
@@ -358,32 +357,30 @@ public abstract class JMXCollector implements ServiceCollector {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for releasing any resources associated with the specified
      * interface.
-     * 
-     * @param agent
-     *            Network interface to be released.
      */
-
     public void release(CollectionAgent agent) {
         // Nothing to release...
     }
 
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param parameterMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper} object.
+     */
     public abstract ConnectionWrapper getMBeanServerConnection(
             Map parameterMap, InetAddress address);
 
     /**
+     * {@inheritDoc}
+     *
      * Perform data collection.
-     * 
-     * @param agent
-     *            Network interface to be data collected
-     * @param eproxy
-     *            Eventy proxy for sending events.
-     * @param parameters
-     *            Key/value pairs from the package to which the interface
-     *            belongs.
      */
-
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> map) {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipaddr = (InetAddress) agent.getAddress();
@@ -608,12 +605,13 @@ public abstract class JMXCollector implements ServiceCollector {
     }
 
     /**
+     * <p>getRRDValue_isthis_used_</p>
+     *
      * @param ds
-     * @param collectorEntry
-     * @param
      * @param dsVal
-     * @return
-     * @throws Exception
+     * @param collectorEntry a {@link org.opennms.netmgt.collectd.JMXCollectorEntry} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     * @return a {@link java.lang.String} object.
      */
     public String getRRDValue_isthis_used_(JMXDataSource ds,
             JMXCollectorEntry collectorEntry) throws IllegalArgumentException {
@@ -761,7 +759,9 @@ public abstract class JMXCollector implements ServiceCollector {
      }
 
     /**
-     * @param useFriedlyName The useFriedlyName to set.
+     * <p>Setter for the field <code>useFriendlyName</code>.</p>
+     *
+     * @param useFriendlyName a boolean.
      */
     public void setUseFriendlyName(boolean useFriendlyName) {
         this.useFriendlyName = useFriendlyName;
@@ -927,6 +927,7 @@ public abstract class JMXCollector implements ServiceCollector {
     
     }
     
+    /** {@inheritDoc} */
     public RrdRepository getRrdRepository(String collectionName) {
         return JMXDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

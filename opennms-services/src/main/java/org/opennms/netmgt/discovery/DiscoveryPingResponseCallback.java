@@ -47,13 +47,15 @@ import org.opennms.netmgt.ping.PingResponseCallback;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 /**
- * 
+ * <p>DiscoveryPingResponseCallback class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @version $Id: $
  */
-
 public class DiscoveryPingResponseCallback implements PingResponseCallback {
     final static String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
 
+    /** {@inheritDoc} */
     public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
         EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, EVENT_SOURCE_VALUE);
         eb.setInterface(address.getHostAddress());
@@ -79,10 +81,12 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
 
     }
 
+    /** {@inheritDoc} */
     public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
         log().debug("request timed out: " + address);
     }
 
+    /** {@inheritDoc} */
     public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
         log().debug("an error occurred pinging " + address, t);
     }

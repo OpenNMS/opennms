@@ -48,16 +48,34 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 /**
- * 
+ * <p>EventTranslator class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @version $Id: $
  */
 public class EventTranslator implements EventTranslatorMBean {
 
+    /** Constant <code>LOG4J_CATEGORY="OpenNMS.EventTranslator"</code> */
     public final static String LOG4J_CATEGORY = "OpenNMS.EventTranslator";
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -97,6 +115,9 @@ public class EventTranslator implements EventTranslatorMBean {
         keeper.init();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -104,6 +125,9 @@ public class EventTranslator implements EventTranslatorMBean {
         getEventTranslator().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -111,6 +135,11 @@ public class EventTranslator implements EventTranslatorMBean {
         getEventTranslator().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -118,6 +147,11 @@ public class EventTranslator implements EventTranslatorMBean {
         return getEventTranslator().getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -125,6 +159,11 @@ public class EventTranslator implements EventTranslatorMBean {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);

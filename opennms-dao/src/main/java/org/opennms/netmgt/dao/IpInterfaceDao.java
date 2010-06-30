@@ -43,23 +43,52 @@ import org.opennms.netmgt.model.OnmsNode;
 
 
 /**
+ * <p>IpInterfaceDao interface.</p>
+ *
  * @author Ted Kazmark
  * @author David Hustace
  * @author Matt Brozowski
- *
+ * @version $Id: $
  */
 public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
 
+    /**
+     * <p>get</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     */
     public abstract OnmsIpInterface get(OnmsNode node, String ipAddress);
 
+    /**
+     * <p>findByIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsIpInterface> findByIpAddress(String ipAddress);
 
+    /**
+     * <p>findByServiceType</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsIpInterface> findByServiceType(String svcName);
 
+    /**
+     * <p>findHierarchyByServiceType</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public abstract Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName);
 
     /**
      * Returns a map of all IP to node ID mappings in the database.
+     *
+     * @return a {@link java.util.Map} object.
      */
     public abstract Map<String, Integer> getInterfacesForNodes();
 }

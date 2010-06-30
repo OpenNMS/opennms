@@ -37,18 +37,32 @@ import org.opennms.netmgt.config.StorageStrategy;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
+/**
+ * <p>GenericIndexResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GenericIndexResource extends SnmpCollectionResource {
 
     private SnmpInstId m_inst;
     private String m_name;
     private String m_resourceLabel;
 
+    /**
+     * <p>Constructor for GenericIndexResource.</p>
+     *
+     * @param def a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     * @param name a {@link java.lang.String} object.
+     * @param inst a {@link org.opennms.netmgt.snmp.SnmpInstId} object.
+     */
     public GenericIndexResource(ResourceType def, String name, SnmpInstId inst) {
         super(def);
         m_name = name;
         m_inst = inst;
     }
 
+    /** {@inheritDoc} */
     @Override
     public File getResourceDir(RrdRepository repository) {
         String resourcePath = getStrategy().getRelativePathForAttribute(getParent(), getLabel(), null);
@@ -57,25 +71,42 @@ public class GenericIndexResource extends SnmpCollectionResource {
         return resourceDir;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "node["+getCollectionAgent().getNodeId() + "]." + getResourceTypeName() + "[" + getLabel() + "]";
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public int getType() {
         return -1;	// XXX is this right?
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean shouldPersist(ServiceParameters params) {
         return true;// XXX should be based on the persistanceSelectorStrategy
     }
 
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeName() {
         return m_name;
     }
     
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInstance() {
         return m_inst.toString();
     }
@@ -91,6 +122,11 @@ public class GenericIndexResource extends SnmpCollectionResource {
     /*
      * Because call getResourceNameFromIndex could be expensive.
      * This class save the returned value from Strategy on a local variable.
+     */
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getLabel() {
         if (m_resourceLabel == null) {

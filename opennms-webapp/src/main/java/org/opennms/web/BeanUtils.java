@@ -33,8 +33,24 @@ package org.opennms.web;
 
 import org.springframework.beans.BeanWrapperImpl;
 
+/**
+ * <p>BeanUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class BeanUtils {
 
+    /**
+     * <p>getPathValue</p>
+     *
+     * @param bean a {@link java.lang.Object} object.
+     * @param path a {@link java.lang.String} object.
+     * @param expectedClass a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     @SuppressWarnings("unchecked")
     public static <T> T getPathValue(Object bean, String path, Class<T> expectedClass) {
         BeanWrapperImpl wrapper = new BeanWrapperImpl(bean);

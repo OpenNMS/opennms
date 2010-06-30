@@ -53,9 +53,11 @@ import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
+ * <p>Abstract NotificationCommandManager class.</p>
+ *
  * @author David Hustace <david@opennms.org>
+ * @version $Id: $
  */
-
 public abstract class NotificationCommandManager {
     /**
      * List of all configuration notification commands.  parseXml must be called to populate this.
@@ -69,10 +71,10 @@ public abstract class NotificationCommandManager {
 
     /**
      * Populate the internal list of notification commands from an XML file.
-     *  
+     *
      * @param reader contains the XML file to be parsed
-     * @throws MarshalException
-     * @throws ValidationException
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     protected void parseXML(Reader reader) throws MarshalException, ValidationException {
         NotificationCommands config = getXML(reader);
@@ -109,6 +111,9 @@ public abstract class NotificationCommandManager {
 
     /**
      * Gets a notification command for a particular command name.
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.notificationCommands.Command} object.
      */
     public Command getCommand(String name) {
         return m_commands.get(name);
@@ -116,6 +121,8 @@ public abstract class NotificationCommandManager {
 
     /**
      * Gets all configured notification commands.
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, Command> getCommands() {
         return m_commands;

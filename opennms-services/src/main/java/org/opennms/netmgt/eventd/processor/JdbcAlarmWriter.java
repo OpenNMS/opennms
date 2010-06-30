@@ -71,22 +71,22 @@ import org.springframework.util.Assert;
  * AlarmWriter writes events classified as alarms to the database.
  * Alarms are deduplicated using:
  * Uei, dpname, nodeid, serviceid, reductionKey
- * 
+ *
  * The reductionKey is a string attribute created by the user
  * for a UEI defined in eventConf.  Can be a literal or more likely
- * a tokenized string such as %interface%. 
- *  
+ * a tokenized string such as %interface%.
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public final class JdbcAlarmWriter extends AbstractJdbcPersister implements EventProcessor, InitializingBean {
     /**
+     * {@inheritDoc}
+     *
      * The method that inserts the event into the database
-     * 
-     * @param eventHeader
-     *            the event header
-     * @param event
-     *            the actual event to be inserted
      */
     public void process(Header eventHeader, Event event) throws SQLException {
         if (!checkEventSanityAndDoWeProcess(event, "JdbcAlarmWriter")) {

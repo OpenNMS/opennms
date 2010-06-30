@@ -64,10 +64,12 @@ import org.xml.sax.InputSource;
  * PDFWriter is a XML to PDF generator. It uses apache's fop api for conversion.
  * The conversion is a 2 step process that takes 1) XML + XSL to FOT (Formatting
  * Object Tree) 2) FOT is converted to PDF using the FOP api's
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">oculan.com </A>
- * 
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">oculan.com </A>
+ * @version $Id: $
  */
 public class PDFWriter extends Object {
     /**
@@ -87,6 +89,8 @@ public class PDFWriter extends Object {
 
     /**
      * Default Constructor
+     *
+     * @param xslSource a {@link java.lang.String} object.
      */
     public PDFWriter(String xslSource) {
         m_xslSource = xslSource;
@@ -94,6 +98,13 @@ public class PDFWriter extends Object {
 
     /**
      * This converts the outage report from xml to pdf format using fop.
+     *
+     * @param xml a {@link java.io.FileReader} object.
+     * @param fotFileName a {@link java.io.OutputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
      */
     public void generateHTML(FileReader xml, OutputStream fotFileName) throws MarshalException, ValidationException, IOException, Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -125,6 +136,14 @@ public class PDFWriter extends Object {
 
     /**
      * This converts the outage report from xml to pdf format using fop.
+     *
+     * @param xml a {@link java.io.FileReader} object.
+     * @param pdfWriter a {@link java.io.OutputStream} object.
+     * @param fotFileName a {@link java.lang.String} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
      */
     public void generatePDF(FileReader xml, OutputStream pdfWriter, String fotFileName) throws MarshalException, ValidationException, IOException, Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);

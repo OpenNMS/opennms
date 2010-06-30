@@ -37,6 +37,10 @@ import java.util.Date;
 /**
  * NoticeSentTo Bean, containing data from the usersNotified table for a single
  * user/notice pair.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class NoticeSentTo {
     /**
@@ -66,21 +70,27 @@ public class NoticeSentTo {
     }
 
     /**
-     * 
+     * <p>setUserId</p>
+     *
+     * @param userid a {@link java.lang.String} object.
      */
     public void setUserId(String userid) {
         m_userId = userid;
     }
 
     /**
-     * 
+     * <p>getUserId</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getUserId() {
         return m_userId;
     }
 
     /**
-     * 
+     * <p>setTime</p>
+     *
+     * @param time a long.
      */
     public void setTime(long time) // no see!
     {
@@ -88,35 +98,45 @@ public class NoticeSentTo {
     }
 
     /**
-     * 
+     * <p>getTime</p>
+     *
+     * @return a {@link java.util.Date} object.
      */
     public Date getTime() {
         return new Date(m_time);
     }
 
     /**
-     * 
+     * <p>setMedia</p>
+     *
+     * @param media a {@link java.lang.String} object.
      */
     public void setMedia(String media) {
         m_media = media;
     }
 
     /**
-     * 
+     * <p>getMedia</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getMedia() {
         return m_media;
     }
 
     /**
-     * 
+     * <p>setContactInfo</p>
+     *
+     * @param contact a {@link java.lang.String} object.
      */
     public void setContactInfo(String contact) {
         m_contactInfo = contact;
     }
 
     /**
-     * 
+     * <p>getContactInfo</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getContactInfo() {
         return m_contactInfo;

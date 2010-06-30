@@ -38,10 +38,19 @@ package org.opennms.netmgt.daemon;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * 
+ * <p>SpringServiceDaemon interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface SpringServiceDaemon extends InitializingBean {
+    /**
+     * <p>start</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void start() throws Exception;
 }

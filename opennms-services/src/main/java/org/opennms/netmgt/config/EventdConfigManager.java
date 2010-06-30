@@ -44,8 +44,10 @@ import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
- * @author david
+ * <p>EventdConfigManager class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 public class EventdConfigManager {
 
@@ -56,9 +58,11 @@ public class EventdConfigManager {
 
     /**
      * Constructor
-     * @throws ValidationException 
-     * @throws MarshalException 
-     * @throws IOException 
+     *
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @param reader a {@link java.io.Reader} object.
      */
     protected EventdConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(EventdConfiguration.class, reader);
@@ -68,7 +72,7 @@ public class EventdConfigManager {
     
     /**
      * Return the IP address on which eventd listens for TCP connections.
-     * 
+     *
      * @return the IP address on which eventd listens for TCP connections
      */
     public synchronized String getTCPIpAddress() {
@@ -77,7 +81,7 @@ public class EventdConfigManager {
     
     /**
      * Return the port on which eventd listens for TCP connections.
-     * 
+     *
      * @return the port on which eventd listens for TCP connections
      */
     public synchronized int getTCPPort() {
@@ -86,7 +90,7 @@ public class EventdConfigManager {
 
     /**
      * Return the IP address on which eventd listens for UDP packets.
-     * 
+     *
      * @return the IP address on which eventd listens for UDP packets
      */
     public synchronized String getUDPIpAddress() {
@@ -95,7 +99,7 @@ public class EventdConfigManager {
 
     /**
      * Return the port on which eventd listens for UDP data.
-     * 
+     *
      * @return the port on which eventd listens for UDP data
      */
     public synchronized int getUDPPort() {
@@ -104,7 +108,7 @@ public class EventdConfigManager {
 
     /**
      * Return the number of event receivers to be started.
-     * 
+     *
      * @return the number of event receivers to be started
      */
     public synchronized int getReceivers() {
@@ -113,7 +117,7 @@ public class EventdConfigManager {
 
     /**
      * Return string indicating if timeout is to be set on the socket.
-     * 
+     *
      * @return string indicating if timeout is to be set on the socket
      */
     public synchronized String getSocketSoTimeoutRequired() {
@@ -122,7 +126,7 @@ public class EventdConfigManager {
 
     /**
      * Return timeout to be set on the socket.
-     * 
+     *
      * @return timeout is to be set on the socket
      */
     public synchronized int getSocketSoTimeoutPeriod() {
@@ -131,7 +135,7 @@ public class EventdConfigManager {
 
     /**
      * Return flag indicating if timeout to be set on the socket is specified.
-     * 
+     *
      * @return flag indicating if timeout to be set on the socket is specified <
      */
     public synchronized boolean hasSocketSoTimeoutPeriod() {
@@ -140,13 +144,18 @@ public class EventdConfigManager {
 
     /**
      * Return the SQL statemet to get the next event ID.
-     * 
+     *
      * @return the SQL statemet to get the next event ID
      */
     public synchronized String getGetNextEventID() {
         return m_config.getGetNextEventID();
     }
 
+    /**
+     * <p>getGetNextAlarmID</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public synchronized String getGetNextAlarmID() {
         return m_config.getGetNextAlarmID();
     }

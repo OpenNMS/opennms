@@ -57,40 +57,51 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
- * 
+ *
  * <p>
  * Once loaded or create, the class tracks any changes and will write those
  * changes to the database whenever the <code>store</code> method is invoked.
  * If a database conneciton is not passed to the store method, then a temporary
  * one is allocated to write the results.
  * </p>
- * 
+ *
  * <p>
  * NOTE: if the connection is passed in and is not in auto commit mode, then the
  * caller must call <code>commit</code> to inform the database that the
  * transaction is complete.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class DbIfServiceEntry {
+    /** Constant <code>STATUS_UNMANAGED='U'</code> */
     public final static char STATUS_UNMANAGED = 'U';
 
+    /** Constant <code>STATUS_ACTIVE='A'</code> */
     public final static char STATUS_ACTIVE = 'A';
 
+    /** Constant <code>STATUS_DELETED='D'</code> */
     public final static char STATUS_DELETED = 'D';
 
+    /** Constant <code>STATUS_FORCED='F'</code> */
     public final static char STATUS_FORCED = 'F';
 
+    /** Constant <code>STATUS_NOT_POLLED='N'</code> */
     public final static char STATUS_NOT_POLLED = 'N';
 
+    /** Constant <code>STATUS_UNKNOWN=' '</code> */
     public final static char STATUS_UNKNOWN = ' ';
 
+    /** Constant <code>STATUS_SUSPEND='S'</code> */
     public final static char STATUS_SUSPEND = 'S';
 
+    /** Constant <code>STATUS_RESUME='R'</code> */
     public final static char STATUS_RESUME = 'R';
 
+    /** Constant <code>STATUS_REMOTE='X'</code> */
     public final static char STATUS_REMOTE = 'X';
 
     final static char SOURCE_PLUGIN = 'P';
@@ -1009,7 +1020,8 @@ public final class DbIfServiceEntry {
     /**
      * Creates a string that displays the internal contents of the record. This
      * is mainly just used for debug output since the format is ad-hoc.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         String sep = System.getProperty("line.separator");
@@ -1031,6 +1043,8 @@ public final class DbIfServiceEntry {
 
     /**
      * For debugging only
+     *
+     * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
         try {

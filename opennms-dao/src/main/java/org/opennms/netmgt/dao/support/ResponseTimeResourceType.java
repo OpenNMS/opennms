@@ -55,28 +55,52 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
+/**
+ * <p>ResponseTimeResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ResponseTimeResourceType implements OnmsResourceType {
     private ResourceDao m_resourceDao;
     private NodeDao m_nodeDao;
     
+    /**
+     * <p>Constructor for ResponseTimeResourceType.</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public ResponseTimeResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
         m_resourceDao = resourceDao;
         m_nodeDao = nodeDao;
     }
     
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return "Response Time";
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "responseTime";
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<OnmsResource> getResourcesForDomain(String domain) {
         return Collections.EMPTY_LIST;
     }
     
+    /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         LinkedList<OnmsResource> resources = new LinkedList<OnmsResource>();
         
@@ -125,10 +149,12 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     }
 
 
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
     }
 
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnNode(int nodeId) {
         return getResourcesForNode(nodeId).size() > 0;
     }
@@ -151,6 +177,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
         }
     }
 
+    /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
         return "element/interface.jsp?node=" + resource.getParent().getName() + "&intf=" + resource.getName();
     }

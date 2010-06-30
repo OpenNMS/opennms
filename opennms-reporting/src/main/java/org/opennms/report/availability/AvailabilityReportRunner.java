@@ -48,10 +48,10 @@ import org.opennms.report.availability.render.ReportRenderer;
 
 /**
  * Send an availability report to the intended recipient.
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
-
 public class AvailabilityReportRunner implements Runnable {
 
     private String m_logo;
@@ -86,6 +86,9 @@ public class AvailabilityReportRunner implements Runnable {
 
     private static final String PDF_FORMAT = "PDF";
 
+    /**
+     * <p>Constructor for AvailabilityReportRunner.</p>
+     */
     public AvailabilityReportRunner() {
 
         // TODO: sorto out logo bits here
@@ -104,6 +107,9 @@ public class AvailabilityReportRunner implements Runnable {
 
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
 
         ReportRenderer renderer;
@@ -161,46 +167,101 @@ public class AvailabilityReportRunner implements Runnable {
 
     }
 
+    /**
+     * <p>setCalendarCalculator</p>
+     *
+     * @param calculator a {@link org.opennms.report.availability.AvailabilityCalculator} object.
+     */
     public void setCalendarCalculator(AvailabilityCalculator calculator) {
         m_calendarCalculator = calculator;
     }
 
+    /**
+     * <p>setClassicCalculator</p>
+     *
+     * @param calulator a {@link org.opennms.report.availability.AvailabilityCalculator} object.
+     */
     public void setClassicCalculator(AvailabilityCalculator calulator) {
         m_classicCalculator = calulator;
     }
 
+    /**
+     * <p>setHtmlReportRenderer</p>
+     *
+     * @param reportRenderer a {@link org.opennms.report.availability.render.ReportRenderer} object.
+     */
     public void setHtmlReportRenderer(ReportRenderer reportRenderer) {
         m_htmlReportRenderer = reportRenderer;
     }
 
+    /**
+     * <p>setPdfReportRenderer</p>
+     *
+     * @param reportRenderer a {@link org.opennms.report.availability.render.ReportRenderer} object.
+     */
     public void setPdfReportRenderer(ReportRenderer reportRenderer) {
         m_pdfReportRenderer = reportRenderer;
     }
 
+    /**
+     * <p>setSvgReportRenderer</p>
+     *
+     * @param reportRenderer a {@link org.opennms.report.availability.render.ReportRenderer} object.
+     */
     public void setSvgReportRenderer(ReportRenderer reportRenderer) {
         m_svgReportRenderer = reportRenderer;
     }
 
+    /**
+     * <p>setCategoryName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setCategoryName(String name) {
         m_categoryName = name;
     }
 
+    /**
+     * <p>setEmail</p>
+     *
+     * @param m_email a {@link java.lang.String} object.
+     */
     public void setEmail(String m_email) {
         this.m_email = m_email;
     }
 
+    /**
+     * <p>setFormat</p>
+     *
+     * @param m_format a {@link java.lang.String} object.
+     */
     public void setFormat(String m_format) {
         this.m_format = m_format;
     }
 
+    /**
+     * <p>setLogo</p>
+     *
+     * @param m_logo a {@link java.lang.String} object.
+     */
     public void setLogo(String m_logo) {
         this.m_logo = m_logo;
     }
 
+    /**
+     * <p>setMonthFormat</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     */
     public void setMonthFormat(String format) {
         m_monthFormat = format;
     }
 
+    /**
+     * <p>setPeriodEndDate</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     */
     public void setPeriodEndDate(Date date) {
         m_periodEndDate = date;
     }

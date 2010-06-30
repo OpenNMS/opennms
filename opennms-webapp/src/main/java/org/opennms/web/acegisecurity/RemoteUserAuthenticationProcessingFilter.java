@@ -33,10 +33,15 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.ui.AbstractProcessingFilter;
 
 /**
+ * <p>RemoteUserAuthenticationProcessingFilter class.</p>
+ *
  * @author Timothy Nowaczyk, tan7f@virginia.edu
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class RemoteUserAuthenticationProcessingFilter extends AbstractProcessingFilter {
 
+  /** {@inheritDoc} */
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
     String username = (String)request.getAttribute("REMOTE_USER");
@@ -54,6 +59,7 @@ public class RemoteUserAuthenticationProcessingFilter extends AbstractProcessing
     return this.getAuthenticationManager().authenticate(authRequest);
   }
 
+  /** {@inheritDoc} */
   @Override
   public String getDefaultFilterProcessesUrl() {
     return "/j_acegi_security_check";

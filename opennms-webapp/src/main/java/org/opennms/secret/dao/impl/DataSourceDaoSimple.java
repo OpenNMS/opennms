@@ -44,12 +44,21 @@ import org.opennms.secret.model.InterfaceService;
 import org.opennms.secret.model.Node;
 import org.opennms.secret.model.NodeInterface;
 
+/**
+ * <p>DataSourceDaoSimple class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class DataSourceDaoSimple implements DataSourceDao {
     private HashMap<String, DataSource> m_dataSources = new HashMap<String, DataSource>();
 
+	/** {@inheritDoc} */
 	public void inititalize(Object obj) {
 	}
 
+	/** {@inheritDoc} */
 	public List<DataSource> getDataSourcesByInterface(NodeInterface iface) {
 		List<DataSource> dataSources = new LinkedList<DataSource>();
 		DataSource a = new DataSource();
@@ -84,6 +93,7 @@ public class DataSourceDaoSimple implements DataSourceDao {
 		return dataSources;
 	}
 
+	/** {@inheritDoc} */
 	public DataSource getDataSourceByService(InterfaceService service) {
         DataSource a = new DataSource();
         
@@ -115,6 +125,7 @@ public class DataSourceDaoSimple implements DataSourceDao {
 		return a;
 	}
 
+	/** {@inheritDoc} */
 	public List<DataSource> getDataSourcesByNode(Node node) {
 		List<DataSource> dataSources = new LinkedList<DataSource>();
 		DataSource a = new DataSource();
@@ -142,6 +153,7 @@ public class DataSourceDaoSimple implements DataSourceDao {
 		return dataSources;
 	}
 
+	/** {@inheritDoc} */
 	public DataSource getDataSourceById(String id) {
         return (DataSource) m_dataSources.get(id);
 	}

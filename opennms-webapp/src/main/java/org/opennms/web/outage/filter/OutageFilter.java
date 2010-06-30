@@ -35,45 +35,89 @@ package org.opennms.web.outage.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-/** Encapsulates all node filtering functionality. */
+/**
+ * Encapsulates all node filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class OutageFilter extends Object implements Filter {
+    /** Constant <code>TYPE="outage"</code> */
     public static final String TYPE = "outage";
 
     protected int outageId;
 
+    /**
+     * <p>Constructor for OutageFilter.</p>
+     *
+     * @param outageId a int.
+     */
     public OutageFilter(int outageId) {
         this.outageId = outageId;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return (" OUTAGEID= " + this.outageId);
     }
     
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         return (" OUTAGEID=?");
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
     	ps.setInt(parameterIndex, this.outageId);
     	return 1;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return (TYPE + "=" + this.outageId);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return (TYPE + " is " + this.outageId);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<OutageFactory.OutageFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getOutage</p>
+     *
+     * @return a int.
+     */
     public int getOutage() {
         return (this.outageId);
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

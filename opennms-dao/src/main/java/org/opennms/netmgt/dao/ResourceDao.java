@@ -41,28 +41,97 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 
+/**
+ * <p>ResourceDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ResourceDao {
     
+    /**
+     * <p>getRrdDirectory</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public File getRrdDirectory();
     
+    /**
+     * <p>getRrdDirectory</p>
+     *
+     * @param verify a boolean.
+     * @return a {@link java.io.File} object.
+     */
     public File getRrdDirectory(boolean verify);
 
+    /**
+     * <p>getResourceTypes</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<OnmsResourceType> getResourceTypes();
     
+    /**
+     * <p>getResourceById</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResourceById(String id);
     
+    /**
+     * <p>getResourceById</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @param ignoreErrors a boolean.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResourceById(String id, boolean ignoreErrors);
     
+    /**
+     * <p>findNodeResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsResource> findNodeResources();
 
+    /**
+     * <p>findDomainResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsResource> findDomainResources();
     
+    /**
+     * <p>findTopLevelResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsResource> findTopLevelResources();
 
+    /**
+     * <p>getResourceForNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResourceForNode(OnmsNode node);
 
+    /**
+     * <p>getResourceForIpInterface</p>
+     *
+     * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface);
     
+    /**
+     * <p>getResourceForIpInterface</p>
+     *
+     * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locationMonitor);
 
 }

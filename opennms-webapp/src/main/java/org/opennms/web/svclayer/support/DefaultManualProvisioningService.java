@@ -71,9 +71,14 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultManualProvisioningService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultManualProvisioningService implements
         ManualProvisioningService {
@@ -83,22 +88,43 @@ public class DefaultManualProvisioningService implements
     private CategoryDao m_categoryDao;
     private ServiceTypeDao m_serviceTypeDao;
     
+    /**
+     * <p>setProvisioningDao</p>
+     *
+     * @param provisioningDao a {@link org.opennms.web.svclayer.dao.ManualProvisioningDao} object.
+     */
     public void setProvisioningDao(ManualProvisioningDao provisioningDao) {
         m_provisioningDao = provisioningDao;
     }
     
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
     
+    /**
+     * <p>setServiceTypeDao</p>
+     *
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
 
+    /** {@inheritDoc} */
     public ModelImport addCategoryToNode(String groupName, String pathToNode, String categoryName) {
         
         ModelImport group = m_provisioningDao.get(groupName);
@@ -114,6 +140,7 @@ public class DefaultManualProvisioningService implements
         return m_provisioningDao.get(groupName);
     }
 
+    /** {@inheritDoc} */
     public ModelImport addInterfaceToNode(String groupName, String pathToNode,
             String ipAddr) {
         ModelImport group = m_provisioningDao.get(groupName);
@@ -140,6 +167,7 @@ public class DefaultManualProvisioningService implements
         return iface;
     }
 
+    /** {@inheritDoc} */
     public ModelImport addNewNodeToGroup(String groupName, String nodeLabel) {
         ModelImport group = m_provisioningDao.get(groupName);
         
@@ -159,6 +187,7 @@ public class DefaultManualProvisioningService implements
         return node;
     }
 
+    /** {@inheritDoc} */
     public ModelImport addServiceToInterface(String groupName, String pathToInterface, String serviceName) {
         ModelImport group = m_provisioningDao.get(groupName);
         
@@ -173,19 +202,27 @@ public class DefaultManualProvisioningService implements
         return m_provisioningDao.get(groupName);
     }
 
+    /** {@inheritDoc} */
     public ModelImport getProvisioningGroup(String name) {
         return m_provisioningDao.get(name);
     }
     
+    /** {@inheritDoc} */
     public ModelImport saveProvisioningGroup(String groupName, ModelImport group) {
         m_provisioningDao.save(groupName, group);
         return m_provisioningDao.get(groupName);
     }
 
+    /**
+     * <p>getProvisioningGroupNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getProvisioningGroupNames() {
         return m_provisioningDao.getProvisioningGroupNames();
     }
     
+    /** {@inheritDoc} */
     public ModelImport createProvisioningGroup(String name) {
         ModelImport group = new ModelImport();
         group.setForeignSource(name);
@@ -201,6 +238,7 @@ public class DefaultManualProvisioningService implements
     }
 
 
+    /** {@inheritDoc} */
     public void importProvisioningGroup(String groupName) {
 
         // first we update the import timestamp
@@ -288,6 +326,7 @@ public class DefaultManualProvisioningService implements
         
     }
     
+    /** {@inheritDoc} */
     public ModelImport deletePath(String groupName, String pathToDelete) {
         ModelImport group = m_provisioningDao.get(groupName);
 
@@ -316,6 +355,11 @@ public class DefaultManualProvisioningService implements
         return m_provisioningDao.get(groupName);
     }
 
+    /**
+     * <p>getAllGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<ModelImport> getAllGroups() {
         Collection<ModelImport> groups = new LinkedList<ModelImport>();
         
@@ -326,16 +370,23 @@ public class DefaultManualProvisioningService implements
         return groups;
     }
 
+    /** {@inheritDoc} */
     public void deleteProvisioningGroup(String groupName) {
         m_provisioningDao.delete(groupName);
     }
 
+    /** {@inheritDoc} */
     public void deleteAllNodes(String groupName) {
         ModelImport group = m_provisioningDao.get(groupName);
         group.removeAllNode();
         m_provisioningDao.save(groupName, group);
     }
 
+    /**
+     * <p>getGroupDbNodeCounts</p>
+     *
+     * @return a java$util$Map object.
+     */
     public Map<String, Integer> getGroupDbNodeCounts() {
         Map<String, Integer> counts = new HashMap<String, Integer>();
         
@@ -347,6 +398,11 @@ public class DefaultManualProvisioningService implements
         
     }
 
+    /**
+     * <p>getNodeCategoryNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getNodeCategoryNames() {
         Collection<String> names = new LinkedList<String>();
         for (OnmsCategory category : m_categoryDao.findAll()) {
@@ -355,6 +411,11 @@ public class DefaultManualProvisioningService implements
         return names;
     }
 
+    /**
+     * <p>getServiceTypeNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getServiceTypeNames() {
         Collection<String> names = new LinkedList<String>();
         for(OnmsServiceType svcType : m_serviceTypeDao.findAll()) {

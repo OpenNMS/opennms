@@ -40,33 +40,70 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>AttributeGroup class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AttributeGroup {
     
     private CollectionResource m_resource;
     private AttributeGroupType m_groupType;
     private Set<CollectionAttribute> m_attributes = new HashSet<CollectionAttribute>();
     
+    /**
+     * <p>Constructor for AttributeGroup.</p>
+     *
+     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     */
     public AttributeGroup(CollectionResource resource, AttributeGroupType groupType) {
         m_resource = resource;
         m_groupType = groupType;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_groupType.getName();
     }
     
+    /**
+     * <p>getResource</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     */
     public CollectionResource getResource() {
         return m_resource;
     }
     
+    /**
+     * <p>getAttributes</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<CollectionAttribute> getAttributes() {
         return m_attributes;
     }
     
+    /**
+     * <p>addAttribute</p>
+     *
+     * @param attr a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     */
     public void addAttribute(CollectionAttribute attr) {
         m_attributes.add(attr);
     }
 
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
+     */
     public void visit(CollectionSetVisitor visitor) {
         if (log().isDebugEnabled()) {
             log().debug("Visiting Group "+this);
@@ -80,6 +117,12 @@ public class AttributeGroup {
         visitor.completeGroup(this);
     }
     
+    /**
+     * <p>shouldPersist</p>
+     *
+     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @return a boolean.
+     */
     public boolean shouldPersist(ServiceParameters params) {
         boolean shouldPersist = doShouldPersist();
         if (log().isDebugEnabled()) {
@@ -114,10 +157,20 @@ public class AttributeGroup {
         return m_groupType.getIfType();
     }
 
+    /**
+     * <p>getGroupType</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     */
     public AttributeGroupType getGroupType() {
         return m_groupType;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return m_groupType + " for " + m_resource;
     }

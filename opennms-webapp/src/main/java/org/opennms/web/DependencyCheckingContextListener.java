@@ -44,16 +44,21 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * 
+ * <p>DependencyCheckingContextListener class.</p>
+ *
  * @author <a href="dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DependencyCheckingContextListener implements ServletContextListener {
     private static final String IGNORE_ERRORS_PROPERTY = "dontBlameOpenNMS";
     private static final String IGNORE_ERRORS_MESSAGE = "but don't blame OpenNMS for any errors that occur without switching back to a supported JVM and setting the property back to 'false', first.";
     
+    /** {@inheritDoc} */
     public void contextDestroyed(ServletContextEvent event) {
     }
 
+    /** {@inheritDoc} */
     public void contextInitialized(ServletContextEvent event) {
         Boolean skipJvm = new Boolean(System.getProperty("opennms.skipjvmcheck"));
         if (!skipJvm) {

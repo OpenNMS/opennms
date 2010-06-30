@@ -51,20 +51,22 @@ import org.opennms.netmgt.xml.event.Value;
 import org.springframework.util.Assert;
 
 /**
- * This works similar to <tt>absoluteChange</tt>; however, the <tt>trigger</tt> value 
+ * This works similar to <tt>absoluteChange</tt>; however, the <tt>trigger</tt> value
  * is used to re-arm the event after so many iterations with an unchanged delta.
- * 
- * @author bdymek
  *
+ * @author bdymek
+ * @version $Id: $
  */
 public class ThresholdEvaluatorRearmingAbsoluteChange implements ThresholdEvaluator {
     
     private static final String TYPE = "rearmingAbsoluteChange";
 
+    /** {@inheritDoc} */
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateRearmingAbsoluteChange(threshold);
     }
 
+    /** {@inheritDoc} */
     public boolean supportsType(String type) {
         return TYPE.equals(type);
     }

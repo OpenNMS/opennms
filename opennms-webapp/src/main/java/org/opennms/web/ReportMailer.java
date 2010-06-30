@@ -54,8 +54,14 @@ import org.opennms.netmgt.utils.JavaMailerException;
 import org.opennms.report.availability.AvailabilityReport;
 
 /**
+ * <p>ReportMailer class.</p>
+ *
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class ReportMailer extends Object implements Runnable {
     /**
@@ -97,11 +103,31 @@ public class ReportMailer extends Object implements Runnable {
 
     Category log;
 
+    /**
+     * <p>Constructor for ReportMailer.</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public ReportMailer() throws ServletException {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(this.getClass());
     }
 
+    /**
+     * <p>initialise</p>
+     *
+     * @param fileName a {@link java.lang.String} object.
+     * @param userName a {@link java.lang.String} object.
+     * @param generateReport a {@link java.lang.String} object.
+     * @param mailReport a {@link java.lang.String} object.
+     * @param parms a {@link java.lang.String} object.
+     * @param fmt a {@link java.lang.String} object.
+     * @param monthFmt a {@link java.lang.String} object.
+     * @param startMonth a {@link java.lang.String} object.
+     * @param startDate a {@link java.lang.String} object.
+     * @param startYear a {@link java.lang.String} object.
+     * @throws javax.servlet.ServletException if any.
+     */
     public void initialise(String fileName, String userName, String generateReport, String mailReport, String parms, String fmt, String monthFmt, String startMonth, String startDate, String startYear) throws ServletException {
 
         filename = fileName;
@@ -163,10 +189,18 @@ public class ReportMailer extends Object implements Runnable {
         }
     }
 
+    /**
+     * <p>getEmailAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getEmailAddress() {
         return finalEmailAddr;
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
 
         if (log.isInfoEnabled())
@@ -204,7 +238,15 @@ public class ReportMailer extends Object implements Runnable {
         }
     }
 
-    /** returns null if no email address is configured for the user */
+    /**
+     * returns null if no email address is configured for the user
+     *
+     * @param username a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     protected String getEmailAddress(String username) throws IOException, MarshalException, ValidationException {
         if (username == null) {
             throw new IllegalArgumentException("Cannot take null paramters.");
@@ -213,7 +255,13 @@ public class ReportMailer extends Object implements Runnable {
         return this.userFactory.getEmail(username);
     }
 
-    /** returns the fully-qualified filename of the generated PDF report */
+    /**
+     * returns the fully-qualified filename of the generated PDF report
+     *
+     * @param shellScript a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.InterruptedException if any.
+     */
     protected void generateFile(String shellScript) throws IOException, InterruptedException {
         if (shellScript == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -266,6 +314,14 @@ public class ReportMailer extends Object implements Runnable {
 
     }
 
+    /**
+     * <p>mailFileToUser</p>
+     *
+     * @param mailScript a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @param emailAddr a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     protected void mailFileToUser(String mailScript, String filename, String emailAddr) throws IOException {
         if (mailScript == null || filename == null || emailAddr == null) {
             throw new IllegalArgumentException("Cannot take null paramters.");
@@ -291,6 +347,13 @@ public class ReportMailer extends Object implements Runnable {
         }
     }
 
+    /**
+     * <p>mailFileToUser</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @param emailAddr a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     protected void mailFileToUser(String filename, String emailAddr) throws IOException {
         if (filename == null || emailAddr == null) {
             throw new IllegalArgumentException("Cannot take null paramters.");
@@ -310,6 +373,8 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
+     * <p>isUseScript</p>
+     *
      * @return Returns the useScript value.
      */
     public boolean isUseScript() {
@@ -317,6 +382,8 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
+     * <p>Setter for the field <code>useScript</code>.</p>
+     *
      * @param useScript
      *            Set this to use the script specified.
      */
@@ -327,6 +394,8 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
+     * <p>Getter for the field <code>logoUrl</code>.</p>
+     *
      * @return Returns the logo.
      */
     public String getLogoUrl() {
@@ -334,6 +403,8 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
+     * <p>Setter for the field <code>logoUrl</code>.</p>
+     *
      * @param logo
      *            The logo to set.
      */
@@ -342,6 +413,8 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
+     * <p>Getter for the field <code>categoryName</code>.</p>
+     *
      * @return Returns the categoryName.
      */
     public String getCategoryName() {
@@ -349,6 +422,8 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
+     * <p>Setter for the field <code>categoryName</code>.</p>
+     *
      * @param categoryName
      *            The categoryName to set.
      */
@@ -356,7 +431,9 @@ public class ReportMailer extends Object implements Runnable {
         this.categoryName = categoryName;
     }
 
-	/**
+    /**
+     * <p>Getter for the field <code>monthFormat</code>.</p>
+     *
      * @return Returns the monthFormat.
      */
     public String getMonthFormat() {
@@ -364,13 +441,16 @@ public class ReportMailer extends Object implements Runnable {
     }
 	
     /**
-     * @param format
-     *            The format to set.
+     * <p>Setter for the field <code>monthFormat</code>.</p>
+     *
+     * @param monthFormat a {@link java.lang.String} object.
      */
     public void setMonthFormat(String monthFormat) {
         this.monthFormat = monthFormat;
     }
     /**
+     * <p>Getter for the field <code>format</code>.</p>
+     *
      * @return Returns the format.
      */
     public String getFormat() {
@@ -378,6 +458,8 @@ public class ReportMailer extends Object implements Runnable {
     }
 	
     /**
+     * <p>Setter for the field <code>format</code>.</p>
+     *
      * @param format
      *            The format to set.
      */
@@ -386,6 +468,8 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
+     * <p>Getter for the field <code>startMonth</code>.</p>
+     *
      * @return Returns the startMonth.
      */
     public String getStartMonth() {
@@ -393,14 +477,17 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
-     * @param format
-     *            The startMonth to set.
+     * <p>Setter for the field <code>startMonth</code>.</p>
+     *
+     * @param startMonth a {@link java.lang.String} object.
      */
     public void setStartMonth(String startMonth) {
         this.startMonth = startMonth;
     }
 
     /**
+     * <p>Getter for the field <code>startDate</code>.</p>
+     *
      * @return Returns the startDate.
      */
     public String getStartDate() {
@@ -408,14 +495,17 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
-     * @param format
-     *            The startDate to set.
+     * <p>Setter for the field <code>startDate</code>.</p>
+     *
+     * @param startDate a {@link java.lang.String} object.
      */
     public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
     /**
+     * <p>Getter for the field <code>startYear</code>.</p>
+     *
      * @return Returns the startYear.
      */
     public String getStartYear() {
@@ -423,8 +513,9 @@ public class ReportMailer extends Object implements Runnable {
     }
 
     /**
-     * @param format
-     *            The startYear to set.
+     * <p>Setter for the field <code>startYear</code>.</p>
+     *
+     * @param startYear a {@link java.lang.String} object.
      */
     public void setStartYear(String startYear) {
         this.startYear = startYear;

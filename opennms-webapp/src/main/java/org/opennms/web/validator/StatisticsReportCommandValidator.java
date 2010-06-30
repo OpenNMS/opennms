@@ -44,17 +44,21 @@ import org.springframework.validation.Validator;
 
 /**
  * Command validator for StatisticsReportCommand.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see StatisticsReportCommand
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class StatisticsReportCommandValidator implements Validator, InitializingBean {
     private StatisticsReportDao m_statisticsReportDao;
 
+    /** {@inheritDoc} */
     public boolean supports(Class clazz) {
         return clazz.equals(StatisticsReportCommand.class);
     }
 
+    /** {@inheritDoc} */
     public void validate(Object obj, Errors errors) {
         StatisticsReportCommand cmd = (StatisticsReportCommand) obj;
         
@@ -75,16 +79,29 @@ public class StatisticsReportCommandValidator implements Validator, Initializing
         }
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         if (m_statisticsReportDao == null) {
             throw new IllegalStateException("statisticsReportDao property not set");
         }
     }
 
+    /**
+     * <p>getStatisticsReportDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.StatisticsReportDao} object.
+     */
     public StatisticsReportDao getStatisticsReportDao() {
         return m_statisticsReportDao;
     }
 
+    /**
+     * <p>setStatisticsReportDao</p>
+     *
+     * @param statisticsReportDao a {@link org.opennms.netmgt.dao.StatisticsReportDao} object.
+     */
     public void setStatisticsReportDao(StatisticsReportDao statisticsReportDao) {
         m_statisticsReportDao = statisticsReportDao;
     }

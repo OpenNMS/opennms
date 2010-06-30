@@ -44,6 +44,12 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
+/**
+ * <p>OnmsLocationSpecificStatus class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name="location_specific_status_changes")
 public class OnmsLocationSpecificStatus {
 
@@ -52,16 +58,31 @@ public class OnmsLocationSpecificStatus {
     private OnmsMonitoredService m_monitoredService;
     private PollStatus m_pollResult;
 
+    /**
+     * <p>Constructor for OnmsLocationSpecificStatus.</p>
+     */
     public OnmsLocationSpecificStatus() {
         // this is used by hibernate to construct an object from the db
     }
 
+    /**
+     * <p>Constructor for OnmsLocationSpecificStatus.</p>
+     *
+     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param monitoredService a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     * @param pollResult a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public OnmsLocationSpecificStatus(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monitoredService, PollStatus pollResult) {
         m_locationMonitor = locationMonitor;
         m_monitoredService = monitoredService;
         m_pollResult = pollResult;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")
@@ -69,39 +90,79 @@ public class OnmsLocationSpecificStatus {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * <p>getLocationMonitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     */
     @ManyToOne(optional=false, fetch=FetchType.EAGER)
     @JoinColumn(name="locationMonitorId")
     public OnmsLocationMonitor getLocationMonitor() {
         return m_locationMonitor;
     }
 
+    /**
+     * <p>setLocationMonitor</p>
+     *
+     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     */
     public void setLocationMonitor(OnmsLocationMonitor locationMonitor) {
         m_locationMonitor = locationMonitor;
     }
 
+    /**
+     * <p>getMonitoredService</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
     @ManyToOne(optional=false, fetch=FetchType.EAGER)
     @JoinColumn(name="ifServiceId")
     public OnmsMonitoredService getMonitoredService() {
         return m_monitoredService;
     }
 
+    /**
+     * <p>setMonitoredService</p>
+     *
+     * @param monitoredService a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
     public void setMonitoredService(OnmsMonitoredService monitoredService) {
         m_monitoredService = monitoredService;
     }
 
+    /**
+     * <p>getPollResult</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     @Embedded
     public PollStatus getPollResult() {
         return m_pollResult;
     }
 
+    /**
+     * <p>setPollResult</p>
+     *
+     * @param newStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public void setPollResult(PollStatus newStatus) {
         m_pollResult = newStatus;
     }
 
+    /**
+     * <p>getStatusCode</p>
+     *
+     * @return a int.
+     */
     @Transient
     public int getStatusCode() {
         return m_pollResult.getStatusCode();

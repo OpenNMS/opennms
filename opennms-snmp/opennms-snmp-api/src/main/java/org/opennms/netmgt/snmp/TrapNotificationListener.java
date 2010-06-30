@@ -31,10 +31,27 @@
 //
 package org.opennms.netmgt.snmp;
 
+/**
+ * <p>TrapNotificationListener interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TrapNotificationListener {
 
+    /**
+     * <p>trapReceived</p>
+     *
+     * @param trapNotification a {@link org.opennms.netmgt.snmp.TrapNotification} object.
+     */
     public abstract void trapReceived(TrapNotification trapNotification);
     
+    /**
+     * <p>trapError</p>
+     *
+     * @param error a int.
+     * @param msg a {@link java.lang.String} object.
+     */
     public abstract void trapError(int error, String msg);
 
 

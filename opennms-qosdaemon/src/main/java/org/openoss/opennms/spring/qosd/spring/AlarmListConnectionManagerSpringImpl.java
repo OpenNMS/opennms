@@ -38,8 +38,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 /**
- * @author openoss
+ * <p>AlarmListConnectionManagerSpringImpl class.</p>
  *
+ * @author openoss
+ * @version $Id: $
  */
 public class AlarmListConnectionManagerSpringImpl implements AlarmListConnectionManager {
 
@@ -54,6 +56,8 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	AlarmMonitorDao alarmMonitorDao; // j2ee alarmMonitorDao - to be encapsulated in spring
 
 	/**
+	 * <p>Setter for the field <code>alarmMonitorDao</code>.</p>
+	 *
 	 * @param alarmMonitorDao the alarmMonitorDao to set
 	 */
 	public void setAlarmMonitorDao(AlarmMonitorDao alarmMonitorDao) {
@@ -66,8 +70,9 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	private ClassPathXmlApplicationContext m_context=null; // used to passapplication context to OssBeans
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by jmx mbean QoSD to pass in Spring Application context
-	 * @param m_context - application conext for this bean to use
 	 */
 	public  void setapplicationcontext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
@@ -87,6 +92,11 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#getStatus()
 	 */
+	/**
+	 * <p>Getter for the field <code>status</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getStatus() {
 		
 		return status;
@@ -95,6 +105,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#init(org.openoss.opennms.spring.qosd.PropertiesLoader, java.util.Properties)
 	 */
+	/** {@inheritDoc} */
 	public void init(PropertiesLoader props, Properties env) {
 		log = (Logger) QoSDimpl2.getLog();	//Get a reference to the QoSD logger
 
@@ -116,6 +127,9 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#kill()
 	 */
+	/**
+	 * <p>kill</p>
+	 */
 	public void kill() {
 		try {
 			//alarmMonitorDao.ejbRemove(); TODO - NEED TO CLOSE BEAN PROPERLY
@@ -129,12 +143,18 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#reset_list(java.lang.String)
 	 */
+	/** {@inheritDoc} */
 	public void reset_list(String _rebuilt_message) {
 		this.alarmMonitorDao.rebuildAlarmList(_rebuilt_message );
 	}
 
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#run()
+	 */
+	/**
+	 * <p>run</p>
+	 *
+	 * @throws java.lang.IllegalStateException if any.
 	 */
 	public void run() throws IllegalStateException {
 		if(!init)
@@ -145,12 +165,16 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#send(java.util.Hashtable)
 	 */
+	/** {@inheritDoc} */
 	public void send(Hashtable alarmList) {
 		this.alarmMonitorDao.updateAlarmList(alarmList);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.qosd.AlarmListConnectionManager#start()
+	 */
+	/**
+	 * <p>start</p>
 	 */
 	public void start() {
 		this.run();
@@ -160,6 +184,8 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	/**
 	 * Makes a new empty alarm value object
 	 * NOTE THIS IS A PATCH to proxy for JVTAlarmMonitorSession.makeAlarmValue()
+	 *
+	 * @return a {@link javax.oss.fm.monitor.AlarmValue} object.
 	 */
 	public  javax.oss.fm.monitor.AlarmValue makeAlarmValue(){
 		return new OOSSAlarmValue();
@@ -167,8 +193,10 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 
 	/**
 	 * Makes a new alarm value object pre-populated with internal objects
-	 * which have been made from a local invarient specification. 
+	 * which have been made from a local invarient specification.
 	 * NOTE THIS IS A PATCH to proxy for JVTAlarmMonitorSession
+	 *
+	 * @return a {@link javax.oss.fm.monitor.AlarmValue} object.
 	 */
 	public javax.oss.fm.monitor.AlarmValue makeAlarmValueFromSpec() {
 		javax.oss.fm.monitor.AlarmValue alarmValueSpecification = (javax.oss.fm.monitor.AlarmValue)m_context.getBean("alarmValueSpecification");

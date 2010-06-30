@@ -73,18 +73,20 @@ import org.opennms.netmgt.xml.event.Value;
 import org.springframework.dao.DataAccessException;
 
 /**
- * Implements CollectionSetVisitor to implement thresholding.  
- * Works by simply recording all the attributes that come in via visitAttribute 
- * into an internal data structure, per resource, and then on "completeResource", does 
- * threshold checking against that in memory structure.  
+ * Implements CollectionSetVisitor to implement thresholding.
+ * Works by simply recording all the attributes that come in via visitAttribute
+ * into an internal data structure, per resource, and then on "completeResource", does
+ * threshold checking against that in memory structure.
  *
  * Suggested usage is one per CollectableService; this object holds the current state of thresholds
- * for this interface/service combination 
+ * for this interface/service combination
  * (so perhaps needs a better name than ThresholdingVisitor)
- * 
+ *
  * @author <a href="mailto:craig@opennms.org>Craig Miskell</a>
  * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
- *
+ * @author <a href="mailto:craig@opennms.org>Craig Miskell</a>
+ * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @version $Id: $
  */
 public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     private static ThresholdsDao s_thresholdsDao;
@@ -93,6 +95,9 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         initThresholdsDao();
     }
     
+    /**
+     * <p>initThresholdsDao</p>
+     */
     protected static void initThresholdsDao() {
         DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
         
@@ -114,6 +119,9 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         s_threshdConfig = ThreshdConfigFactory.getInstance();            
     }
     
+    /**
+     * <p>handleThresholdConfigChanged</p>
+     */
     public static void handleThresholdConfigChanged() {
     	initThresholdsDao();
     }
@@ -156,6 +164,17 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     //Holds the IfInfo of the currently processed resource if it is an interface.
     private Map<String,String> m_currentIfInfo;
 
+    /**
+     * <p>createThresholdingVisitor</p>
+     *
+     * @param nodeId a int.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param repo a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param params a {@link java.util.Map} object.
+     * @param interval a long.
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdingVisitor} object.
+     */
     public static ThresholdingVisitor createThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, final RrdRepository repo, Map<String,String> params, long interval) {
         Category log = ThreadCategory.getInstance(ThresholdingVisitor.class);
         
@@ -230,6 +249,16 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         return new ThresholdingVisitor(nodeId, hostAddress, serviceName, repo, groupNameList, interval);
     }
     
+    /**
+     * <p>Constructor for ThresholdingVisitor.</p>
+     *
+     * @param nodeId a int.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param repo a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param groupNameList a {@link java.util.List} object.
+     * @param interval a long.
+     */
     protected ThresholdingVisitor(int nodeId, final String hostAddress, final String serviceName, RrdRepository repo, List<String> groupNameList, long interval) { 
         m_interval=interval/1000; // Store interval in seconds
         m_groupNameList=groupNameList;
@@ -245,7 +274,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     
     /**
      * Causes a new set of ThresholdEntity instances (i.e. threshold states) to be obtained for this visitor, at some appropraite
-     * point in the near future 
+     * point in the near future
      * Can be called when thresholding configuration has changed and we need to refresh the threshold state
      */
     public void initThresholdState() {
@@ -256,6 +285,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
     
     /**
+     * {@inheritDoc}
+     *
      * When called, we're starting a new resource.  Clears out any stored attribute values from previous resource visits
      */
     public void visitResource(CollectionResource resource) {
@@ -312,6 +343,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * Stores the attribute locally so that on completion we can do thresholding
      * @see org.opennms.netmgt.collectd.AbstractCollectionSetVisitor#visitAttribute(org.opennms.netmgt.collectd.CollectionAttribute)
      */
+    /** {@inheritDoc} */
     public void visitAttribute(CollectionAttribute attribute) {
         //Store the value away until we hit completeResource
         String numValue=attribute.getNumericValue();
@@ -331,6 +363,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         }
     }
     
+    /** {@inheritDoc} */
     public void completeResource(CollectionResource resource) {
         Date date=new Date();
         List<Event> eventsList=new ArrayList<Event>();
@@ -732,6 +765,11 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
     }
 
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "ThresholdingVisitor for node "+m_nodeId+"("+m_hostAddress+"), thresholding groups: "+m_groupNameList+", on service "+m_serviceName;
     }

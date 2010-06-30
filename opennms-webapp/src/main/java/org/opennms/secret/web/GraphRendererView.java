@@ -48,12 +48,20 @@ import org.opennms.secret.model.GraphDefinition;
 import org.opennms.secret.service.GraphRenderer;
 import org.springframework.web.servlet.View;
 
+/**
+ * <p>GraphRendererView class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class GraphRendererView implements View {
 
     private GraphRenderer m_renderer;
 
     private static final String s_contentType = "image/png";
 
+    /** {@inheritDoc} */
     public void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType(s_contentType);
         response.setHeader("Cache-control", "no-cache");
@@ -93,10 +101,20 @@ public class GraphRendererView implements View {
         return out;
     }
 
+    /**
+     * <p>setGraphRenderer</p>
+     *
+     * @param renderer a {@link org.opennms.secret.service.GraphRenderer} object.
+     */
     public void setGraphRenderer(GraphRenderer renderer) {
         m_renderer = renderer;
     }
 
+    /**
+     * <p>getContentType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getContentType() {
         return s_contentType;
     }

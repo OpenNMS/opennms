@@ -39,15 +39,22 @@ import org.extremecomponents.table.core.TableModel;
 import org.extremecomponents.table.interceptor.ColumnInterceptor;
 
 /**
- * 
+ * <p>RedColumnInterceptor class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class RedColumnInterceptor implements ColumnInterceptor {
+    /** {@inheritDoc} */
     public void addColumnAttributes(TableModel tableModel, Column column) {
         //do nothing
     }
 
+    /** {@inheritDoc} */
     public void modifyColumnAttributes(TableModel tableModel, Column column) {
         if (column.getPropertyValue() == null) {
             column.setStyle("background: red;");

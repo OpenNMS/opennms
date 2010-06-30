@@ -70,6 +70,12 @@ import org.opennms.netmgt.config.views.View;
 import org.opennms.netmgt.config.views.Viewinfo;
 import org.opennms.netmgt.config.views.Views;
 
+/**
+ * <p>ViewFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ViewFactory {
     /**
      * The static singleton instance of the ViewFactory
@@ -104,6 +110,13 @@ public class ViewFactory {
     ViewFactory() {
     }
 
+    /**
+     * <p>init</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (!initialized) {
             reload();
@@ -113,7 +126,7 @@ public class ViewFactory {
     /**
      * Singleton static call to get the only instance that should exist for the
      * ViewFactory
-     * 
+     *
      * @return the single view factory instance
      */
     static synchronized public ViewFactory getInstance() {
@@ -129,6 +142,10 @@ public class ViewFactory {
 
     /**
      * Parses the views.xml via the Castor classes
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VIEWS_CONF_FILE_NAME));
@@ -147,6 +164,10 @@ public class ViewFactory {
 
     /**
      * Adds a new user and overwrites the "users.xml"
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param details a {@link org.opennms.netmgt.config.views.View} object.
+     * @throws java.lang.Exception if any.
      */
     public synchronized void saveView(String name, View details) throws Exception {
         if (name == null || details == null) {
@@ -165,6 +186,9 @@ public class ViewFactory {
     /**
      * Removes the user from the list of users. Then overwrites to the
      * "users.xml"
+     *
+     * @param name a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public synchronized void deleteUser(String name) throws Exception {
         // Check if the user exists
@@ -208,6 +232,10 @@ public class ViewFactory {
     /**
      * When this method is called users name is changed, so also is the username
      * belonging to the group and the view. Also overwrites the "users.xml" file
+     *
+     * @param oldName a {@link java.lang.String} object.
+     * @param newName a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public synchronized void renameUser(String oldName, String newName) throws Exception {
         // Get the old data
@@ -298,6 +326,10 @@ public class ViewFactory {
     /**
      * When this method is called views name is changed. Also overwrites the
      * "views.xml" file
+     *
+     * @param oldName a {@link java.lang.String} object.
+     * @param newName a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public synchronized void renameView(String oldName, String newName) throws Exception {
         View view;
@@ -327,6 +359,9 @@ public class ViewFactory {
     /**
      * When this method is called view is to be deleted. Also overwrites the
      * "views.xml" file
+     *
+     * @param name a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public synchronized void deleteView(String name) throws Exception {
         // Check if the view exists
@@ -345,6 +380,12 @@ public class ViewFactory {
     }
 
     /**
+     * <p>saveViews</p>
+     *
+     * @param views a {@link org.opennms.netmgt.config.views.Views} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void saveViews(Views views) throws IOException, MarshalException, ValidationException {
         // make a backup and save to xml
@@ -381,6 +422,11 @@ public class ViewFactory {
     }
 
     /**
+     * <p>getCategoryComments</p>
+     *
+     * @param viewName a {@link java.lang.String} object.
+     * @param categoryName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getCategoryComments(String viewName, String categoryName) {
         View view = m_views.get(viewName);
@@ -427,6 +473,9 @@ public class ViewFactory {
 
     /**
      * Return a <code>Map</code> of usernames to user instances.
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.views.View} object.
      */
     public View getView(String name) {
         return m_views.get(name);
@@ -434,6 +483,8 @@ public class ViewFactory {
 
     /**
      * Return a <code>Map</code> of usernames to user instances.
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, View> getViews() {
         return m_views;

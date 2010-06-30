@@ -35,9 +35,33 @@ import java.util.Set;
 
 import org.opennms.secret.model.Node;
 
+/**
+ * <p>NodeService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public interface NodeService {
     	
+    /**
+     * <p>getNodeById</p>
+     *
+     * @param id a {@link java.lang.Long} object.
+     * @return a {@link org.opennms.secret.model.Node} object.
+     */
     public abstract Node getNodeById(Long id);
+    /**
+     * <p>findAll</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public abstract Set findAll();
+    /**
+     * <p>findWithMatchingLabel</p>
+     *
+     * @param searchKey a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
     public abstract Set findWithMatchingLabel(String searchKey);
 }

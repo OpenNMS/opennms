@@ -45,14 +45,30 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
+/**
+ * <p>ServiceParameters class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ServiceParameters {
     
     Map<String, String> m_parameters;
 
+    /**
+     * <p>Constructor for ServiceParameters.</p>
+     *
+     * @param parameters a {@link java.util.Map} object.
+     */
     public ServiceParameters(Map<String, String> parameters) {
         m_parameters = parameters;
     }
     
+    /**
+     * <p>getParameters</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, String> getParameters() {
         return m_parameters;
     }

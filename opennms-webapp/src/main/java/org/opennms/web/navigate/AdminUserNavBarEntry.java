@@ -39,7 +39,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.web.acegisecurity.Authentication;
 
+/**
+ * <p>AdminUserNavBarEntry class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class AdminUserNavBarEntry extends LocationBasedNavBarEntry {
+    /** {@inheritDoc} */
     @Override
     public DisplayStatus evaluate(HttpServletRequest request) {
         if (request.isUserInRole(Authentication.ADMIN_ROLE)) {

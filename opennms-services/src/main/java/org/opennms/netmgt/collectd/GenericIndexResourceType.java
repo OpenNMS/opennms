@@ -45,6 +45,12 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 
+/**
+ * <p>GenericIndexResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GenericIndexResourceType extends ResourceType {
     private String m_name;
 //  private String m_persistenceSelectorStrategy;
@@ -52,6 +58,13 @@ public class GenericIndexResourceType extends ResourceType {
 
     private Map<SnmpInstId, GenericIndexResource> m_resourceMap = new HashMap<SnmpInstId, GenericIndexResource>();
 
+    /**
+     * <p>Constructor for GenericIndexResourceType.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
+     * @param resourceType a {@link org.opennms.netmgt.config.datacollection.ResourceType} object.
+     */
     public GenericIndexResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, org.opennms.netmgt.config.datacollection.ResourceType resourceType) {
         super(agent, snmpCollection);
 
@@ -90,6 +103,7 @@ public class GenericIndexResourceType extends ResourceType {
             m_storageStrategy.setStorageStrategyService(getAgent());
     }
 
+    /** {@inheritDoc} */
     @Override
     public SnmpCollectionResource findResource(SnmpInstId inst) {
         if (!m_resourceMap.containsKey(inst)) {
@@ -98,6 +112,7 @@ public class GenericIndexResourceType extends ResourceType {
         return m_resourceMap.get(inst);
     }
 
+    /** {@inheritDoc} */
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         // This is here for completeness but it should not get called from here.
         // findResource should be called instead
@@ -105,20 +120,32 @@ public class GenericIndexResourceType extends ResourceType {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getIndexedAttributeTypesForResourceType(getAgent(), this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Collection<GenericIndexResource> getResources() {
         return m_resourceMap.values();
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>getStorageStrategy</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.StorageStrategy} object.
+     */
     public StorageStrategy getStorageStrategy() {
         return m_storageStrategy;
     }

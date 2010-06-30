@@ -41,21 +41,39 @@ import org.opennms.web.svclayer.CategoryConfigService;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 
 /**
- * 
+ * <p>DefaultCategoryConfigService class.</p>
+ *
  * @author <a href="mailto:johnathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class DefaultCategoryConfigService implements CategoryConfigService {
 
     private CategoryConfigDao m_categoryConfigDao;
 
+    /**
+     * <p>getCategories</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<Category> getCategories() {
         return m_categoryConfigDao.findAll();
     }
 
+    /**
+     * <p>getCategoryConfigDao</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.dao.CategoryConfigDao} object.
+     */
     public CategoryConfigDao getCategoryConfigDao() {
         return m_categoryConfigDao;
     }
 
+    /**
+     * <p>setCategoryConfigDao</p>
+     *
+     * @param categoryConfigDao a {@link org.opennms.web.svclayer.dao.CategoryConfigDao} object.
+     */
     public void setCategoryConfigDao(CategoryConfigDao categoryConfigDao) {
         m_categoryConfigDao = categoryConfigDao;
     }

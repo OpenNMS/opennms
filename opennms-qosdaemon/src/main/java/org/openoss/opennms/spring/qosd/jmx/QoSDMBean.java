@@ -37,14 +37,42 @@
 package org.openoss.opennms.spring.qosd.jmx;
 
 /**
+ * <p>QoSDMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public interface QoSDMBean {
     
+    /**
+     * <p>init</p>
+     */
     public void init();
+    /**
+     * <p>start</p>
+     */
     public void start();
+    /**
+     * <p>stop</p>
+     */
     public void stop();
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus();
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status();
+	/**
+	 * <p>getStats</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getStats();
 
 }

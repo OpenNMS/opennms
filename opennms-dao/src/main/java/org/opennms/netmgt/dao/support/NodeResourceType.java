@@ -50,42 +50,74 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsNode;
 
+/**
+ * <p>NodeResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NodeResourceType implements OnmsResourceType {
     private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
     private ResourceDao m_resourceDao;
 
+    /**
+     * <p>Constructor for NodeResourceType.</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public NodeResourceType(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
     
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return "Node";
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "node";
     }
 
+    /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForDomain(String domain) {
         throw new UnsupportedOperationException("method not implemented");
     }
 
+    /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         throw new UnsupportedOperationException("method not implemented");
     }
 
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
     }
 
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnNode(int nodeId) {
         return false;
     }
 
+    /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
         return "element/node.jsp?node=" + resource.getName();
     }
     
+    /**
+     * <p>createChildResource</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource createChildResource(OnmsNode node) {
         NodeChildResourceLoader loader = new NodeChildResourceLoader(node.getId());
         OnmsResource r = new OnmsResource(node.getId().toString(), node.getLabel(), this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader));

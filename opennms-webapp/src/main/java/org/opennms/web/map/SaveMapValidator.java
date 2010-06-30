@@ -40,15 +40,22 @@ import org.opennms.web.WebSecurityUtils;
 import org.springframework.validation.Errors;
 
 /**
- * 
+ * <p>SaveMapValidator class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class SaveMapValidator extends MapApplianceValidator {
+	/** {@inheritDoc} */
 	public boolean supports(Class aClass) {
 		return aClass.equals(HttpServletRequest.class);
 	}
 
+	/** {@inheritDoc} */
 	public void validate(Object o, Errors errors) {
 		
 		super.validate(o, errors);

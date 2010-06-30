@@ -45,30 +45,52 @@ import org.opennms.secret.service.GraphRenderer;
 
 
 /**
- * This is an implimentation of the GraphRender which uses jrobin 
+ * This is an implimentation of the GraphRender which uses jrobin
  * to generate the PNG file from the supplied graph definition
- * @author mhuot
  *
+ * @author mhuot
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class GraphRendererImpl implements GraphRenderer {
 	
 	
+	/** Constant <code>GIF=1</code> */
 	public static final int GIF=1;
+	/** Constant <code>JPG=2</code> */
 	public static final int JPG=2;
+	/** Constant <code>PNG=3</code> */
 	public static final int PNG=3;
 	
 	//   public static String tmpDir="/tmp/";    // path must end with slash
 	
+	/** {@inheritDoc} */
 	public ByteArrayInputStream getPNG(GraphDefinition gdef) throws IOException, RrdException {
 		RrdGraph graph = getRrdGraph(gdef, "PNG");
 		return new ByteArrayInputStream(graph.getRrdGraphInfo().getBytes());
 	}
 
+	/**
+	 * <p>getJPEG</p>
+	 *
+	 * @param gdef a {@link org.opennms.secret.model.GraphDefinition} object.
+	 * @return a {@link java.io.ByteArrayInputStream} object.
+	 * @throws java.io.IOException if any.
+	 * @throws org.jrobin.core.RrdException if any.
+	 */
 	public ByteArrayInputStream getJPEG(GraphDefinition gdef) throws IOException, RrdException {
 		RrdGraph graph = getRrdGraph(gdef, "JPEG");
 		return new ByteArrayInputStream(graph.getRrdGraphInfo().getBytes());
 	}
 
+	/**
+	 * <p>getGIF</p>
+	 *
+	 * @param gdef a {@link org.opennms.secret.model.GraphDefinition} object.
+	 * @return a {@link java.io.ByteArrayInputStream} object.
+	 * @throws java.io.IOException if any.
+	 * @throws org.jrobin.core.RrdException if any.
+	 */
 	public ByteArrayInputStream getGIF(GraphDefinition gdef) throws IOException, RrdException {
 		RrdGraph graph = getRrdGraph(gdef, "GIF");
 		return new ByteArrayInputStream(graph.getRrdGraphInfo().getBytes());
@@ -91,6 +113,12 @@ public class GraphRendererImpl implements GraphRenderer {
 	
 	
 	
+	/**
+	 * <p>getGraphImage</p>
+	 *
+	 * @param gdef a {@link org.opennms.secret.model.GraphDefinition} object.
+	 * @return a {@link java.io.ByteArrayInputStream} object.
+	 */
 	public ByteArrayInputStream getGraphImage( GraphDefinition gdef ) {
 		// TODO geneneralise the graph definition to RDD graphdefinition
 		/*String reportname,

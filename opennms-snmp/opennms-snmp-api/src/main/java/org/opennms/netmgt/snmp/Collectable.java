@@ -31,6 +31,17 @@
 //
 package org.opennms.netmgt.snmp;
 
+/**
+ * <p>Collectable interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface Collectable {
+    /**
+     * <p>getCollectionTracker</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     CollectionTracker getCollectionTracker();
 }

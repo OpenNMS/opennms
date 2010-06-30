@@ -42,11 +42,22 @@ import java.util.StringTokenizer;
 
 import org.opennms.web.WebSecurityUtils;
 
+/**
+ * <p>Abstract NoticeUtil class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public abstract class NoticeUtil extends Object {
+    /** Constant <code>sortStylesString</code> */
     protected static final Map<String, NoticeFactory.SortStyle> sortStylesString;
+    /** Constant <code>sortStyles</code> */
     protected static final Map<NoticeFactory.SortStyle, String> sortStyles;
 
+    /** Constant <code>ackTypesString</code> */
     protected static final Map<String, NoticeFactory.AcknowledgeType> ackTypesString;
+    /** Constant <code>ackTypes</code> */
     protected static final Map<NoticeFactory.AcknowledgeType, String> ackTypes;
 
     static {
@@ -95,6 +106,12 @@ public abstract class NoticeUtil extends Object {
         ackTypes.put(NoticeFactory.AcknowledgeType.UNACKNOWLEDGED, "unack");
     }
 
+    /**
+     * <p>getSortStyle</p>
+     *
+     * @param sortStyleString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.notification.NoticeFactory.SortStyle} object.
+     */
     public static NoticeFactory.SortStyle getSortStyle(String sortStyleString) {
         if (sortStyleString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -103,6 +120,12 @@ public abstract class NoticeUtil extends Object {
         return sortStylesString.get(sortStyleString.toLowerCase());
     }
 
+    /**
+     * <p>getSortStyleString</p>
+     *
+     * @param sortStyle a {@link org.opennms.web.notification.NoticeFactory.SortStyle} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getSortStyleString(NoticeFactory.SortStyle sortStyle) {
         if (sortStyle == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -111,6 +134,12 @@ public abstract class NoticeUtil extends Object {
         return sortStyles.get(sortStyle);
     }
 
+    /**
+     * <p>getAcknowledgeType</p>
+     *
+     * @param ackTypeString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.notification.NoticeFactory.AcknowledgeType} object.
+     */
     public static NoticeFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
         if (ackTypeString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -119,6 +148,12 @@ public abstract class NoticeUtil extends Object {
         return ackTypesString.get(ackTypeString.toLowerCase());
     }
 
+    /**
+     * <p>getAcknowledgeTypeString</p>
+     *
+     * @param ackType a {@link org.opennms.web.notification.NoticeFactory.AcknowledgeType} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getAcknowledgeTypeString(NoticeFactory.AcknowledgeType ackType) {
         if (ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -127,6 +162,12 @@ public abstract class NoticeUtil extends Object {
         return ackTypes.get(ackType);
     }
 
+    /**
+     * <p>getFilter</p>
+     *
+     * @param filterString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.notification.NoticeFactory.Filter} object.
+     */
     public static NoticeFactory.Filter getFilter(String filterString) {
         if (filterString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -153,6 +194,12 @@ public abstract class NoticeUtil extends Object {
         return filter;
     }
 
+    /**
+     * <p>getFilterString</p>
+     *
+     * @param filter a {@link org.opennms.web.notification.NoticeFactory.Filter} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getFilterString(NoticeFactory.Filter filter) {
         if (filter == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");

@@ -83,11 +83,11 @@ package org.opennms.protocols.snmp;
  * The SnmpPduRequest defines the SNMPv1 and SNMPv2 Protocol Data Unit (PDU) for
  * certian message types. The types include: GetRequest, GetNextRequest,
  * SetRequest, SNMPv2-Trap, InformRequest, and Response.
- * 
+ *
  * By default the class is constructed as a SNMP GetRequest, but can be defined
  * to any of the accepted types. For more information see [Stallings99] page
  * 368.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @version 1.1.1.1
  */
@@ -102,10 +102,9 @@ public class SnmpPduRequest extends SnmpPduPacket {
     /**
      * Class copy constructor. Constructs a new object that is an identical to
      * the passed object.
-     * 
+     *
      * @param second
      *            The object to make a duplicate of.
-     * 
      */
     public SnmpPduRequest(SnmpPduRequest second) {
         super(second);
@@ -113,10 +112,51 @@ public class SnmpPduRequest extends SnmpPduPacket {
 
     /**
      * Constructs a new PDU Request with the specified command.
-     * 
+     *
      * @param command
      *            The type of PDU to construct
-     * 
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
      * @see SnmpPduPacket#GET
      * @see SnmpPduPacket#GETNEXT
      * @see SnmpPduPacket#SET
@@ -131,12 +171,53 @@ public class SnmpPduRequest extends SnmpPduPacket {
 
     /**
      * Constructs the PDU with the specified command and the passed variables.
-     * 
+     *
      * @param command
      *            The type of PDU to construct
      * @param vars
      *            The SNMP variables for the PDU.
-     * 
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
+     * @see SnmpPduPacket#GET
+     * @see SnmpPduPacket#GETNEXT
+     * @see SnmpPduPacket#SET
+     * @see SnmpPduPacket#RESPONSE
+     * @see SnmpPduPacket#INFORM
+     * @see SnmpPduPacket#V2TRAP
+     * @see SnmpPduPacket#REPORT
      * @see SnmpPduPacket#GET
      * @see SnmpPduPacket#GETNEXT
      * @see SnmpPduPacket#SET
@@ -153,9 +234,8 @@ public class SnmpPduRequest extends SnmpPduPacket {
      * Returns the error status for the request. This is only value on RESPONSE
      * pdu's. Otherwise the value should be equal to zero. For information on
      * error conditions see the SnmpPduPacket class.
-     * 
+     *
      * @return The error status of the pdu
-     * 
      * @see SnmpPduPacket
      */
     public int getErrorStatus() {
@@ -165,7 +245,7 @@ public class SnmpPduRequest extends SnmpPduPacket {
     /**
      * Used to set the value of the error status member. This should normally be
      * equal to zero, except for RESPONSE pdu's
-     * 
+     *
      * @param status
      *            The new error status for the pdu.
      */
@@ -178,7 +258,7 @@ public class SnmpPduRequest extends SnmpPduPacket {
      * non-zero. The index is base one, not zero. Thus an error index equal to
      * one is the first variable in the PDU. An index equal to zero is not
      * valid.
-     * 
+     *
      * @return The index of the bad variable.
      */
     public int getErrorIndex() {
@@ -189,7 +269,7 @@ public class SnmpPduRequest extends SnmpPduPacket {
      * Sets the current error index in the PDU. the index must be in the range
      * (0..#variables] unless there is no error. If there is no error then the
      * index should be equal to zero.
-     * 
+     *
      * @param ndx
      *            The new error index.
      */
@@ -201,7 +281,6 @@ public class SnmpPduRequest extends SnmpPduPacket {
      * Fixes a PDU in error. If the error index and error status is non-zero
      * then the variable in error is removed from the PDU. Once the variable is
      * removed the error index and error status are reset to zero.
-     * 
      */
     public void fix() {
         if (super.m_errStatus != 0 && super.m_errIndex != 0) {
@@ -214,7 +293,7 @@ public class SnmpPduRequest extends SnmpPduPacket {
     /**
      * Used to get a duplicate of self. The duplicate is identical to self but
      * shares no common data.
-     * 
+     *
      * @return A newly created copy of self.
      */
     public SnmpSyntax duplicate() {
@@ -224,7 +303,7 @@ public class SnmpPduRequest extends SnmpPduPacket {
     /**
      * Used to get a duplicate of self. The duplicate is identical to self but
      * shares no common data.
-     * 
+     *
      * @return A newly created copy of self.
      */
     public Object clone() {

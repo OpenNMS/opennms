@@ -35,9 +35,13 @@
  */
 
 /**
- * 
+ * <p>Linkd class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 package org.opennms.netmgt.linkd.jmx;
 /*
@@ -90,17 +94,17 @@ public class Linkd implements LinkdMBean {
 	        throw new UndeclaredThrowableException(sqle);
 	    }
 
-	    
+
 	    EventIpcManagerFactory.init();
         EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
-        
+
         org.opennms.netmgt.linkd.Linkd linkd = getLinkd();
 
         linkd.setEventMgr(mgr);
         linkd.setDbConnectionFactory(DataSourceFactory.getInstance());
         linkd.setLinkdConfig(LinkdConfigFactory.getInstance());
         linkd.setQueryManager(new DbEventWriter(DataSourceFactory.getDataSource()));
-        
+
 	    linkd.init();
 	}
 	public void start() {
@@ -122,7 +126,7 @@ public class Linkd implements LinkdMBean {
 	private Category log() {
 	        return ThreadCategory.getInstance();
 	}
-	
+
 	private org.opennms.netmgt.linkd.Linkd getLinkd() {
 	        // Set the category prefix
 	        ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -133,14 +137,15 @@ public class Linkd implements LinkdMBean {
 
 */
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
-
 public class Linkd extends AbstractSpringContextJmxServiceDaemon implements LinkdMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Linkd";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "linkdContext";

@@ -54,33 +54,45 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * to receive notifications when a reply is received/error occurs in the
  * SnmpSession used to send requests /recieve replies.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public final class SystemGroup extends AggregateTracker {
 
     //
     // Lookup strings for specific table entries
     //
+    /** Constant <code>SYS_OBJECTID_ALIAS="sysObjectID"</code> */
     public final static String SYS_OBJECTID_ALIAS = "sysObjectID";
     private static final String SYS_OBJECTID = ".1.3.6.1.2.1.1.2";
 
+    /** Constant <code>SYS_UPTIME_ALIAS="sysUptime"</code> */
     public final static String SYS_UPTIME_ALIAS = "sysUptime";
     private static final String SYS_UPTIME = ".1.3.6.1.2.1.1.3";
 
+    /** Constant <code>SYS_NAME_ALIAS="sysName"</code> */
     public final static String SYS_NAME_ALIAS = "sysName";
     private static final String SYS_NAME = ".1.3.6.1.2.1.1.5";
 
+    /** Constant <code>SYS_DESCR_ALIAS="sysDescr"</code> */
     public final static String SYS_DESCR_ALIAS = "sysDescr";
     private static final String SYS_DESCR = ".1.3.6.1.2.1.1.1";
 
+    /** Constant <code>SYS_LOCATION_ALIAS="sysLocation"</code> */
     public final static String SYS_LOCATION_ALIAS = "sysLocation";
     private static final String SYS_LOCATION = ".1.3.6.1.2.1.1.6";
 
+    /** Constant <code>SYS_CONTACT_ALIAS="sysContact"</code> */
     public final static String SYS_CONTACT_ALIAS = "sysContact";
     private static final String SYS_CONTACT = ".1.3.6.1.2.1.1.4";
     
@@ -211,8 +223,8 @@ public final class SystemGroup extends AggregateTracker {
      * store by the object. When all the data has been collected the passed
      * signaler object is <EM>notified</em> using the notifyAll() method.
      * </P>
+     *
      * @param address TODO
-     * 
      */
     public SystemGroup(InetAddress address) {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));
@@ -220,34 +232,62 @@ public final class SystemGroup extends AggregateTracker {
         m_store = new SnmpStore(ms_elemList); 
     }
     
+    /**
+     * <p>getSysName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSysName() {
         return m_store.getDisplayString(SYS_NAME);
     }
 
+    /**
+     * <p>getSysObjectID</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSysObjectID() {
         return m_store.getObjectID(SYS_OBJECTID);
     }
 
+    /**
+     * <p>getSysDescr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSysDescr() {
         return m_store.getDisplayString(SYS_DESCR);
     }
 
+    /**
+     * <p>getSysLocation</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSysLocation() {
         return m_store.getDisplayString(SYS_LOCATION);
     }
 
+    /**
+     * <p>getSysContact</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSysContact() {
         return m_store.getDisplayString(SYS_CONTACT);
     }
 
+    /** {@inheritDoc} */
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         m_store.storeResult(base, inst, val);
     }
 
+    /** {@inheritDoc} */
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
+    /** {@inheritDoc} */
     protected void reportNoSuchNameErr(String msg) {
         log().info("Error retrieving systemGroup from "+m_address+". "+msg);
     }

@@ -52,8 +52,9 @@ import org.springframework.beans.factory.InitializingBean;
 
 /**
  * OpenNMS TL1 Daemon!
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class Tl1d extends AbstractServiceDaemon implements PausableFiber, InitializingBean, EventListener {
 
@@ -68,19 +69,35 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     private final BlockingQueue<Tl1AutonomousMessage> m_tl1Queue = new LinkedBlockingQueue<Tl1AutonomousMessage>();
     private final List<Tl1Client> m_tl1Clients = new ArrayList<Tl1Client>();
 
+    /**
+     * <p>Constructor for Tl1d.</p>
+     */
     public Tl1d() {
         super("OpenNMS.Tl1d");
     }
 	
+	/**
+	 * <p>setConfigurationDao</p>
+	 *
+	 * @param configurationDao a {@link org.opennms.netmgt.dao.Tl1ConfigurationDao} object.
+	 */
 	public void setConfigurationDao(Tl1ConfigurationDao configurationDao) {
 	    m_configurationDao = configurationDao;
 	}
 
 
+    /**
+     * <p>setEventManager</p>
+     *
+     * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
     }
 
+    /**
+     * <p>onInit</p>
+     */
     public synchronized void onInit() {
         log().info("onInit: Initializing Tl1d connections." );
     
@@ -110,6 +127,9 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         log().info("onInit: Finished Initializing Tl1d connections.");  
     }
 
+    /**
+     * <p>onStart</p>
+     */
     public synchronized void onStart() {
         log().info("onStart: Initializing Tl1d message processing." );
         m_tl1MesssageProcessor = new Thread("Tl1-Message-Processor") {
@@ -126,6 +146,9 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         log().info("onStart: Finished Initializing Tl1d connections.");
     }
 
+	/**
+	 * <p>onStop</p>
+	 */
 	public synchronized void onStop() {
 		for (Tl1Client client : m_tl1Clients) {
 			client.stop();
@@ -157,15 +180,21 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     }
 
 
+    /**
+     * <p>onPause</p>
+     */
     public void onPause() {
     }
 
+    /**
+     * <p>onResume</p>
+     */
     public void onResume() {
     }
 
     /**
      * Returns the current status of the service.
-     * 
+     *
      * @return The service's status.
      */
     public synchronized int getStatus() {
@@ -186,6 +215,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         log().debug("doMessageProcessing: Exiting processing messages.");
     }
 
+    /** {@inheritDoc} */
     public void onEvent(Event e) {
     }
 

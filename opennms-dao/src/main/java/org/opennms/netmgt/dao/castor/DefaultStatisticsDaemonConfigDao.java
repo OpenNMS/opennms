@@ -49,15 +49,20 @@ import org.opennms.netmgt.dao.castor.statsd.StatsdPackage;
  * statsd.  The Castor objects are translated into a more friendly
  * set of objects that are exposed through the DAO.  The Castor
  * objects are <i>not</i> exposed.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see StatsdConfig
+ * @version $Id: $
  */
 public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<StatisticsDaemonConfiguration, StatsdConfig> implements StatisticsDaemonConfigDao {
+    /**
+     * <p>Constructor for DefaultStatisticsDaemonConfigDao.</p>
+     */
     public DefaultStatisticsDaemonConfigDao() {
         super(StatisticsDaemonConfiguration.class, "statistics daemon configuration");
     }
     
+    /** {@inheritDoc} */
     @Override
     public StatsdConfig translateConfig(StatisticsDaemonConfiguration castorConfig) {
         return new StatsdConfig(castorConfig);
@@ -67,10 +72,20 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractCastorConfigDao<St
         return getContainer().getObject();
     }
 
+    /**
+     * <p>getReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Report> getReports() {
         return getConfig().getReports();
     }
     
+    /**
+     * <p>getPackages</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<StatsdPackage> getPackages() {
         return getConfig().getPackages();
     }

@@ -68,9 +68,13 @@ import org.opennms.web.event.filter.SeverityFilter;
  * This servlet takes a large and specific request parameter set and maps it to
  * the more robust "filter" parameter set of the
  * {@link EventFilterServlet EventFilterServlet}via a redirect.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.6.12
  */
 public class EventQueryServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -88,6 +92,11 @@ public class EventQueryServlet extends HttpServlet {
      */
     protected String redirectUrl = "filter";
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
 
@@ -97,6 +106,8 @@ public class EventQueryServlet extends HttpServlet {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Extracts the key parameters from the parameter set, translates them into
      * filter-based parameters, and then passes the modified parameter set to
      * the {@link EventFilterServlet EventFilterServlet}.
@@ -196,16 +207,36 @@ public class EventQueryServlet extends HttpServlet {
         response.sendRedirect(this.redirectUrl + "?" + queryString);
     }
 
+    /**
+     * <p>getBeforeDateFilter</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.event.filter.BeforeDateFilter} object.
+     */
     protected BeforeDateFilter getBeforeDateFilter(HttpServletRequest request) {
         Date beforeDate = this.getDateFromRequest(request, "before");
         return (new BeforeDateFilter(beforeDate));
     }
 
+    /**
+     * <p>getAfterDateFilter</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.web.event.filter.AfterDateFilter} object.
+     */
     protected AfterDateFilter getAfterDateFilter(HttpServletRequest request) {
         Date afterDate = this.getDateFromRequest(request, "after");
         return (new AfterDateFilter(afterDate));
     }
 
+    /**
+     * <p>getDateFromRequest</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param prefix a {@link java.lang.String} object.
+     * @return a {@link java.util.Date} object.
+     * @throws org.opennms.web.MissingParameterException if any.
+     */
     protected Date getDateFromRequest(HttpServletRequest request, String prefix) throws MissingParameterException {
         if (request == null || prefix == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -274,6 +305,12 @@ public class EventQueryServlet extends HttpServlet {
         return cal.getTime();
     }
 
+    /**
+     * <p>getRequiredDateFields</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
+     * @return an array of {@link java.lang.String} objects.
+     */
     protected String[] getRequiredDateFields(String prefix) {
         return new String[] { prefix + "hour", prefix + "minute", prefix + "ampm", prefix + "date", prefix + "month", prefix + "year" };
     }

@@ -37,19 +37,42 @@ import org.opennms.secret.service.MemberService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.throwaway.ThrowawayController;
 
+/**
+ * <p>CompleterController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class CompleterController implements ThrowawayController {
     
     private String m_searchKey = "";
     private MemberService m_memberService;
     
+    /**
+     * <p>setSearchKey</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     */
     public void setSearchKey(String key) {
         m_searchKey = key;
     }
     
+    /**
+     * <p>setMemberService</p>
+     *
+     * @param memberService a {@link org.opennms.secret.service.MemberService} object.
+     */
     public void setMemberService(MemberService memberService) {
         m_memberService = memberService;
     }
 
+    /**
+     * <p>execute</p>
+     *
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     * @throws java.lang.Exception if any.
+     */
     public ModelAndView execute() throws Exception {
         Set matches = m_memberService.findMatching(m_searchKey);
         return new ModelAndView("completions", "matches", matches);

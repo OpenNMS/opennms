@@ -33,10 +33,28 @@ package org.opennms.web.admin.roles;
 
 import java.util.Collection;
 
+/**
+ * <p>WebGroupManager interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public interface WebGroupManager {
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection getGroups();
 
+    /**
+     * <p>getGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.admin.roles.WebGroup} object.
+     */
     public WebGroup getGroup(String groupName);
 
 }

@@ -128,6 +128,13 @@ final class Scheduler implements Runnable, PausableFiber {
     	unschedule(address);
     }
 
+    /**
+     * <p>toInetAddress</p>
+     *
+     * @param address a long.
+     * @return a {@link java.net.InetAddress} object.
+     * @throws java.net.UnknownHostException if any.
+     */
     public static InetAddress toInetAddress(long address) throws UnknownHostException {
         StringBuffer buf = new StringBuffer();
         buf.append((int) ((address >>> 24) & 0xff)).append('.');
@@ -139,7 +146,7 @@ final class Scheduler implements Runnable, PausableFiber {
 
     /**
      * Starts the fiber.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber is already running.
      */
@@ -157,7 +164,7 @@ final class Scheduler implements Runnable, PausableFiber {
     /**
      * Stops the fiber. If the fiber has never been run then an exception is
      * generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Throws if the fiber has never been started.
      */
@@ -174,7 +181,7 @@ final class Scheduler implements Runnable, PausableFiber {
     /**
      * Pauses the scheduler if it is current running. If the fiber has not been
      * run or has already stopped then an exception is generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Throws if the operation could not be completed due to the
      *             fiber's state.
@@ -196,7 +203,7 @@ final class Scheduler implements Runnable, PausableFiber {
     /**
      * Resumes the scheduler if it has been paused. If the fiber has not been
      * run or has already stopped then an exception is generated.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Throws if the operation could not be completed due to the
      *             fiber's state.
@@ -217,7 +224,7 @@ final class Scheduler implements Runnable, PausableFiber {
 
     /**
      * Returns the current of this fiber.
-     * 
+     *
      * @return The current status.
      */
     public synchronized int getStatus() {
@@ -228,7 +235,8 @@ final class Scheduler implements Runnable, PausableFiber {
 
     /**
      * Returns the name of this fiber.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return FIBER_NAME;
@@ -238,7 +246,6 @@ final class Scheduler implements Runnable, PausableFiber {
      * The main method of the scheduler. This method is responsible for checking
      * the runnable queues for ready objects and then enqueuing them into the
      * thread pool for execution.
-     * 
      */
     public void run() {
         synchronized (this) {

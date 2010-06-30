@@ -72,11 +72,17 @@ import org.opennms.netmgt.utils.ParameterMap;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 
 @Distributable
@@ -99,10 +105,12 @@ final public class Pop3Monitor extends IPv4Monitor {
     private static final int DEFAULT_TIMEOUT = 3000;
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Poll the specified address for POP3 service availability.
      * </P>
-     * 
+     *
      * <P>
      * During the poll an attempt is made to connect on the specified port (by
      * default TCP port 110). If the connection request is successful, the
@@ -112,14 +120,6 @@ final public class Pop3Monitor extends IPv4Monitor {
      * verified. Provided that the interface's response is valid we set the
      * service status to SERVICE_AVAILABLE and return.
      * </P>
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
-     * 
      */
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();

@@ -44,10 +44,18 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 
+/**
+ * <p>ChooseResourceController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class ChooseResourceController extends AbstractController implements InitializingBean {
     private ChooseResourceService m_chooseResourceService;
     private String m_defaultEndUrl;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String[] requiredParameters = new String[] { "parentResourceId or", "parentResourceType and parentResource" };
@@ -81,6 +89,9 @@ public class ChooseResourceController extends AbstractController implements Init
                                 model);
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         if (m_chooseResourceService == null) {
             throw new IllegalStateException("chooseResourceService property not set");
@@ -91,19 +102,39 @@ public class ChooseResourceController extends AbstractController implements Init
         }
     }
 
+    /**
+     * <p>getChooseResourceService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.ChooseResourceService} object.
+     */
     public ChooseResourceService getChooseResourceService() {
         return m_chooseResourceService;
     }
 
+    /**
+     * <p>setChooseResourceService</p>
+     *
+     * @param chooseResourceService a {@link org.opennms.web.svclayer.ChooseResourceService} object.
+     */
     public void setChooseResourceService(
             ChooseResourceService chooseResourceService) {
         m_chooseResourceService = chooseResourceService;
     }
 
+    /**
+     * <p>getDefaultEndUrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDefaultEndUrl() {
         return m_defaultEndUrl;
     }
 
+    /**
+     * <p>setDefaultEndUrl</p>
+     *
+     * @param defaultEndUrl a {@link java.lang.String} object.
+     */
     public void setDefaultEndUrl(String defaultEndUrl) {
         m_defaultEndUrl = defaultEndUrl;
     }

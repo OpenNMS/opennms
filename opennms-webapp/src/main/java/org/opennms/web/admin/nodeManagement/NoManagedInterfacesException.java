@@ -36,14 +36,31 @@
 
 package org.opennms.web.admin.nodeManagement;
 
+/**
+ * <p>NoManagedInterfacesException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.6.12
+ */
 public class NoManagedInterfacesException extends RuntimeException {
 	private String m_nodeListUri;
 	
+	/**
+	 * <p>Constructor for NoManagedInterfacesException.</p>
+	 *
+	 * @param nodeListUri a {@link java.lang.String} object.
+	 */
 	public NoManagedInterfacesException(String nodeListUri) {
 		super();
 		m_nodeListUri = nodeListUri;
 	}
 	
+	/**
+	 * <p>getNodeListUri</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getNodeListUri() {
 		return m_nodeListUri;
 	}

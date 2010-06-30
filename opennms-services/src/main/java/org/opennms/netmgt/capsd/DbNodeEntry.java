@@ -2019,7 +2019,8 @@ final class DbNodeEntry {
     /**
      * Creates a string that displays the internal contents of the record. This
      * is mainly just used for debug output since the format is ad-hoc.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         String sep = System.getProperty("line.separator");
@@ -2047,6 +2048,10 @@ final class DbNodeEntry {
 
     /**
      * Creates a null entry for a nodeid into the assets table
+     *
+     * @param conn a {@link java.sql.Connection} object.
+     * @param nodeid a int.
+     * @throws java.sql.SQLException if any.
      */
     public void createAssetNodeEntry(Connection conn, int nodeid) throws SQLException {
 

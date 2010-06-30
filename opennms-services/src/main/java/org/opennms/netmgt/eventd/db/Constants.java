@@ -46,9 +46,12 @@ import org.opennms.netmgt.EventConstants;
 /**
  * This class contains the constants and methods related to inserting events
  * into the database
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class Constants extends EventConstants {
     /**
@@ -83,22 +86,21 @@ public class Constants extends EventConstants {
      */
     final static String VALUE_TRUNCATE_INDICATOR = "...";
 
-    /**
-     * This method is used to escape required values from strings that may
-     * contain those values. If the passed string contains the passed value then
-     * the character is reformatted into its <EM>%dd</EM> format.
-     * 
-     * 
-     * @param inStr
-     *            string that might contain the delimiter
-     * @param delimchar
-     *            delimiter to escape
-     * 
-     * @return The string with the delimiter escaped as in URLs
-     * 
-     * @see #DB_ATTRIB_DELIM
-     * @see #MULTIPLE_VAL_DELIM
-     */
+  /**
+   * This method is used to escape required values from strings that may
+   * contain those values. If the passed string contains the passed value then
+   * the character is reformatted into its <EM>%dd</EM> format.
+   *
+   * @param inStr
+   *            string that might contain the delimiter
+   * @param delimchar
+   *            delimiter to escape
+   * @return The string with the delimiter escaped as in URLs
+   * @see #DB_ATTRIB_DELIM
+   * @see #MULTIPLE_VAL_DELIM
+   * @see #DB_ATTRIB_DELIM
+   * @see #MULTIPLE_VAL_DELIM
+   */
   public static String escape(String inStr, char delimchar) {
         
         StringBuilder buf = new StringBuilder(inStr.length()+16);
@@ -118,18 +120,15 @@ public class Constants extends EventConstants {
     /**
      * This method is passed a list of strings and a maximum string size that
      * must not be exceeded by the composite string.
-     * 
+     *
      * @param strings
      *            The list of String objects.
      * @param maxlen
      *            The maximum length of the composite string
-     * 
      * @return The composite string.
-     * 
      * @exception java.lang.ClassCastException
      *                Thrown if any processed item in the list is not a string
      *                object.
-     * 
      */
     public static String format(List<String> strings, int maxlen) {
         if (strings == null) {
@@ -160,18 +159,15 @@ public class Constants extends EventConstants {
     /**
      * This method is passed an array of strings and a maximum string size that
      * must not be exceeded by the composite string.
-     * 
+     *
      * @param strings
      *            The list of String objects.
      * @param maxlen
      *            The maximum length of the composite string
-     * 
      * @return The composite string.
-     * 
      * @exception java.lang.ClassCastException
      *                Thrown if any processed item in the list is not a string
      *                object.
-     * 
      */
     public static String format(String[] strings, int maxlen) {
         if (strings == null || strings.length <= 0)
@@ -199,14 +195,11 @@ public class Constants extends EventConstants {
     /**
      * This method is passed a string to be truncated to the maximum string size
      * passed.
-     * 
-     * @param string
-     *            The string object.
+     *
      * @param maxlen
      *            The maximum length of the composite string
-     * 
      * @return The string(truncated if necessary).
-     * 
+     * @param origString a {@link java.lang.String} object.
      */
     public static String format(String origString, int maxlen) {
         if (origString == null)
