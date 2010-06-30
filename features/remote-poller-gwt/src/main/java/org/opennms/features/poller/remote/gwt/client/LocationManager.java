@@ -16,6 +16,7 @@ public interface LocationManager {
 	public void initialize();
 	public void createOrUpdateLocation(final LocationInfo info);
 	public void createOrUpdateApplication(final ApplicationInfo info);
+	public void removeApplication(final String applicationName);
 	public LocationInfo getLocation(String locationName);
 	public Set<String> getAllLocationNames();
 	public List<LocationInfo> getVisibleLocations();

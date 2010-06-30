@@ -94,7 +94,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Register for all relevant events thrown by the UI components
         m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this);
-        m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this);
         m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this);
         m_eventBus.addHandler(FiltersChangedEvent.TYPE, this);
         m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
@@ -328,22 +327,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /**
-     * Refresh the list of locations whenever they are m_updated.
-     */
-    public void onLocationsUpdated(final LocationsUpdatedEvent e) {
-        // make sure each location's marker is up-to-date
-        updateAllMarkerStates();
-
-        // Update the contents of the tag panel
-        m_locationPanel.clearTagPanel();
-        m_locationPanel.addAllTags(getAllTags());
-        m_locationPanel.selectTag(m_selectedTag);
-
-        m_locationPanel.updateApplicationNames(getAllApplicationNames());
-        m_locationPanel.updateLocationList(getVisibleLocations());
-    }
-
-    /**
      * Invoked by the {@link LocationUpdatedRemoteEvent} and
      * {@link LocationsUpdatedRemoteEvent} events.
      */
@@ -366,6 +349,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Update the icon/caption in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());
+
+        m_eventBus.fireEvent(new LocationsUpdatedEvent());
     }
 
     /**
@@ -401,6 +386,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
                 m_mapPanel.placeMarker(m);
             }
         }
+
+        m_eventBus.fireEvent(new LocationsUpdatedEvent());
     }
 
     private void updateApplicationList() {
@@ -418,6 +405,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             m_applications.remove(applicationName);
             updateApplicationList();
         }
+
+        m_eventBus.fireEvent(new LocationsUpdatedEvent());
     }
 
     /**
