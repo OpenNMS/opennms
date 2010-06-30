@@ -1,0 +1,13 @@
+RS ENVIR SWITCHING FABRIC FAILOVER
+
+SYMPTOMS:
+
+"A backup switching fabric that was in standby mode has taken over 
+	  for a failed primary switching fabric. The object entPhysicalDescr 
+	  identifies the now active switching fabric. This would be sent 
+	  after sending rsEnvirSwitchingFabricFailure."
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

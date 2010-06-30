@@ -1,0 +1,14 @@
+{d "%w- %d %m-, %Y - %T"} - A "alertCriticalNotification" event has occurred, from {t} device, named {m}.
+
+"The NMS-Agent sends an alertCriticalNotification to the manager indicating that an
+				alert of 'Critical' severity 	has been raised on a MO"
+
+sequenceNum = {I 1}
+alertentity = {S 2}
+alertownerName = {S 3}
+alertcategory = {S 4}
+alertDescription = {I 5}
+alertTimeStamp = {S 6}
+alertNotificationId = {I 7}
+alertExtraProperties = {S 8}
+(event [{e}])

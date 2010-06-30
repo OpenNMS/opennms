@@ -1,0 +1,18 @@
+{d "%w- %d %m-, %Y - %T"} - A "ttRepUpdateFailedTrap" event has occurred, from {t} device, named {m}.
+
+"A replication insert, update or delete operation failed."
+
+ttTimeStamp = {S 1}
+ttPid = {I 2}
+ttUid = {S 3}
+ttVersion = {S 4}
+ttMesg = {S 5}
+ttRepPeerStoreID = {S 6}
+ttRepName = {S 7}
+ttDSName = {S 8}
+ttRepReason = {S 9}
+ttRepTable = {S 10}
+ttRepAction = {S 11}
+ttRepPeerName = {S 12}
+ttRepConflictKey = {S 13}
+(event [{e}])

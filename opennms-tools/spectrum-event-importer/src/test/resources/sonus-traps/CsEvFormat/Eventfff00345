@@ -1,0 +1,6 @@
+{d "%w- %d %m-, %Y - %T"} - A "processDown" event has occurred, from {t} device, named {m}.
+
+"system: report that a process has gone down"
+
+processDownProcess = {T processDownProcess 1}
+(event [{e}])

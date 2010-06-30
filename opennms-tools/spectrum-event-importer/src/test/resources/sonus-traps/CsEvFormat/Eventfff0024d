@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySccMgcpError" event has occurred, from {t} device, named {m}.
+
+" SCC MGCP error."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

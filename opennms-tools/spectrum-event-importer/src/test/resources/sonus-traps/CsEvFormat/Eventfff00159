@@ -1,0 +1,12 @@
+{d "%w- %d %m-, %Y - %T"} - A "ttRepAgentDiedTrap" event has occurred, from {t} device, named {m}.
+
+"Replication agent died abnormally."
+
+ttTimeStamp = {S 1}
+ttPid = {I 2}
+ttUid = {S 3}
+ttVersion = {S 4}
+ttMesg = {S 5}
+ttDSName = {S 6}
+ttRepPid = {I 7}
+(event [{e}])

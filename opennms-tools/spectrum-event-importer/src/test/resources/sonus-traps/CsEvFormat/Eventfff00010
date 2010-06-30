@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "empMGCP5xxErrorsAboveEvent" event has occurred, from {t} device, named {m}.
+
+"Event generated when one of the MGCP 500s error
+            values goes above the range specified for
+            that particular object"
+
+empMGCP5xxErrorsEventInfo = {S 1}
+(event [{e}])

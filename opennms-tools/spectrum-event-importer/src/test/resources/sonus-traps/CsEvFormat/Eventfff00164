@@ -1,0 +1,13 @@
+{d "%w- %d %m-, %Y - %T"} - A "ttOraValidationAbortedTrap" event has occurred, from {t} device, named {m}.
+
+"TimesTen Oracle Connect aborted self validation."
+
+ttTimeStamp = {S 1}
+ttPid = {I 2}
+ttUid = {S 3}
+ttVersion = {S 4}
+ttMesg = {S 5}
+ttOraAgentPid = {I 6}
+ttOraAgentName = {S 7}
+ttOraDSName = {S 8}
+(event [{e}])

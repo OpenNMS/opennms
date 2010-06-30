@@ -1,0 +1,10 @@
+L B CONFIGURED AS BOTH
+
+SYMPTOMS:
+
+"lb: An interface has been configured as both a head-end and a backing, and therefore SIP load-balancing will not function"
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

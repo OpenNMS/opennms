@@ -1,17 +1,31 @@
 package org.opennms.netmgt.tools.spectrum;
 
+import java.util.regex.Pattern;
+
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 
 public class OidMapping {
-    public String m_oid;
-
-    public int m_eventVarNum;
-
-    public int m_indexLength;
+    private String m_oid;
+    private int m_eventVarNum;
+    private int m_indexLength;
+    
+    private static final String s_oidExpr = "^\\.?([0-9]+\\.){3,}[0-9]+$";
+    
+    public OidMapping(String oid) {
+        if (! oid.matches(s_oidExpr)) {
+            throw new IllegalArgumentException("The OID must be of the form .1.3.6.1 or 1.3.6.1 and must be at least three octets in length");
+        }
+        m_oid = oid;
+        m_eventVarNum = -1;
+        m_indexLength = -1;
+    }
 
     public OidMapping(String oid, int eventVarNum, int indexLength) {
+        if (! oid.matches(s_oidExpr)) {
+            throw new IllegalArgumentException("The OID must be of the form .1.3.6.1 or 1.3.6.1 and must be at least three octets in length");
+        }
         m_oid = oid;
         m_eventVarNum = eventVarNum;
         m_indexLength = indexLength;
@@ -25,7 +39,7 @@ public class OidMapping {
         if (oid == null) {
             throw new IllegalArgumentException("The OID must not be null");
         }
-        if (! oid.matches("^\\.?([0-9]+\\.){3,}[0-9]+$")) {
+        if (! oid.matches(s_oidExpr)) {
             throw new IllegalArgumentException("The OID must be of the form .1.3.6.1 or 1.3.6.1 and must be at least three octets in length");
         }
         m_oid = oid;

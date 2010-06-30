@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "apEnvMonStatusChangeNotification" event has occurred, from {t} device, named {m}.
+
+"A apEnvStatusChangeNotification is sent if any entry of
+                above table change in the state of a device being monitored"
+
+apEnvMonTrapInstance = {o 1}
+apEnvMonTrapPreviousState = {T apEnvMonTrapPreviousState 2}
+apEnvMonTrapCurrentState = {T apEnvMonTrapCurrentState 3}
+(event [{e}])

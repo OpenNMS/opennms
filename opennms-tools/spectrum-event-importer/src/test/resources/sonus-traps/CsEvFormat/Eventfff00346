@@ -1,0 +1,6 @@
+{d "%w- %d %m-, %Y - %T"} - A "raidEventTrap" event has occurred, from {t} device, named {m}.
+
+"system: Indicates the RAID controller has generated an event"
+
+raidEventTrapLog = {S 1}
+(event [{e}])

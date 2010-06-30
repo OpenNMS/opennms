@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "dosUrlPolicyTrap" event has occurred, from {t} device, named {m}.
+
+"dos: Indicates that a dynamic policy rule is instituted in response to a URL Policy threshold being crossed"
+
+dosUrlPolicyTrapDosPolicyName = {S 1}
+dosUrlPolicyTrapMissive = {S 2}
+(event [{e}])

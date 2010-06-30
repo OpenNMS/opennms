@@ -1,0 +1,11 @@
+{d "%w- %d %m-, %Y - %T"} - A "thresholdNotification" event has occurred, from {t} device, named {m}.
+
+"This notification is generated for the threshold objects
+				which return a string value, when they exceed or fall below
+				a particular threshold value."
+
+thresholdObjectName = {S 1}
+thresholdKind = {S 2}
+thresholdMessage = {S 3}
+thresholdSeverity = {I 4}
+(event [{e}])

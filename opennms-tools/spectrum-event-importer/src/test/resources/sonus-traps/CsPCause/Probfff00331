@@ -1,0 +1,10 @@
+CERT EXPIRING
+
+SYMPTOMS:
+
+"tls: Indicates that a certificate file specified in a certificate configuration will expire shortly (within the next 7 days), as specified in the certificate's 'notAfter' extension"
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

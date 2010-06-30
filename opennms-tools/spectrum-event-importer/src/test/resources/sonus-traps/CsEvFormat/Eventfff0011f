@@ -1,0 +1,14 @@
+{d "%w- %d %m-, %Y - %T"} - A "bwNSSCRPInconsistentList" event has occurred, from {t} device, named {m}.
+
+"For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data."
+
+identifier = {I 1}
+timeStamp = {S 2}
+alarmName = {S 3}
+systemName = {S 4}
+severity = {T severity 5}
+component = {T component 6}
+subcomponent = {T subcomponent 7}
+problemText = {S 8}
+recommendedActionsText = {S 9}
+(event [{e}])

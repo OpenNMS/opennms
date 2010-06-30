@@ -1,0 +1,12 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtExpDOSTrap" event has occurred, from {t} device, named {m}.
+
+"This trap is generated when an IP is placed on a deny list due
+	      to denial-of-service attempts, and provides the ip address that
+	      has been demoted, the realm-id of that IP, and (if available) 
+	      the URI portion of the SIP From header of the message that
+	      caused the demotion."
+
+apSysMgmtDOSIpAddress = {O 1}
+apSysMgmtDOSRealmID = {S 2}
+apSysMgmtDOSFromUri = {S 3}
+(event [{e}])

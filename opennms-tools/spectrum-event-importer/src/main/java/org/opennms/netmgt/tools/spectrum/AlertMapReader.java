@@ -1,52 +1,126 @@
 package org.opennms.netmgt.tools.spectrum;
 
-import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.CharBuffer;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.springframework.core.io.FileSystemResource;
+import org.opennms.core.utils.LogUtils;
+
+import org.springframework.core.io.Resource;
 
 public class AlertMapReader {
-    FileSystemResource m_resource;
+    private Resource m_resource;
+    private Reader m_reader;
+    private StreamTokenizer m_tokenizer;
     
-    public AlertMapReader(FileSystemResource rsrc) throws IOException {
+    private static final String oidExpr = "^\\.?(\\d+\\.){2,}\\d+$";
+    private static final String eventCodeExpr = "^0[Xx][0-9A-Fa-f]{1,8}$";
+    
+    /**
+     * Alert Code               Event Code  OID Mappings
+     * 1.3.6.1.4.1.9.9.13.3.6.5 0x180000    1.3.6.1.4.1.9.9.13.1.5.1.2(1,2) \ 
+     *                                      1.3.6.1.4.1.9.9.13.1.5.1.3(3,0)
+     */
+    
+    public AlertMapReader(Resource rsrc) throws IOException {
         m_resource = rsrc;
+        m_reader = new BufferedReader(new InputStreamReader(m_resource.getInputStream()));
+        m_tokenizer = new StreamTokenizer(m_reader);
+        m_tokenizer.resetSyntax();
+        m_tokenizer.commentChar('#');
+        m_tokenizer.eolIsSignificant(false);
+        m_tokenizer.whitespaceChars(' ', ' ');
+        m_tokenizer.whitespaceChars('\t', '\t');
+        m_tokenizer.whitespaceChars('\n', '\n');
+        m_tokenizer.whitespaceChars('\r', '\r');
+        m_tokenizer.wordChars('.', '.');
+        m_tokenizer.wordChars('0', '9');
+        m_tokenizer.wordChars('a', 'z');
+        m_tokenizer.wordChars('A', 'Z');
     }
     
     public List<AlertMapping> getAlertMaps() throws IOException {
         List<AlertMapping> alertMappings = new ArrayList<AlertMapping>();
-        Pattern p = Pattern.compile("(?s)^(\\.?([0-9]+\\.){3,}[0-9]+)\\s+(0x[0-9A-Fa-f]+)\\s+(((\\.?([0-9]+\\.){3,}[0-9]+)\\([0-9]+,\\s*[0-9]+\\)(\\s*\\\\\\s*)$\\s*#.*?$)+)");
-        Matcher m = p.matcher(getContents());
-        while (m.find()) {
-            String trapOid = m.group(1);
-            String eventId = m.group(2);
-            String oidMappings = m.group(4);
-            Pattern omp = Pattern.compile("(?s)(\\s*((\\.?([0-9]+\\.){3,}[0-9]+)\\(\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*)\\)(\\s*\\\\\\s*)$)+)");
-            Matcher omm = omp.matcher(oidMappings);
-            List<OidMapping> oidMappingList = new ArrayList<OidMapping>();
-            while (omm.find()) {
-                String oid = omm.group(2);
-                int varNum = Integer.valueOf(omm.group(4));
-                int indexLen = Integer.valueOf(omm.group(5));
-                oidMappingList.add(new OidMapping(oid, varNum, indexLen));
+        AlertMapping thisAlertMapping = null;
+        OidMapping thisOidMapping = null;
+        
+        int lastEventCodeLine = -1;
+        
+        while (m_tokenizer.nextToken() != StreamTokenizer.TT_EOF) {
+            //System.err.println(m_tokenizer);
+            
+            if (m_tokenizer.ttype == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches(oidExpr)) {
+                String observedOid = m_tokenizer.sval;
+                LogUtils.debugf(this, "Found an OID: %s on line %d; what to do with it...", observedOid, m_tokenizer.lineno());
+                if (m_tokenizer.nextToken() == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches(eventCodeExpr)) {
+                    thisAlertMapping = new AlertMapping(observedOid);
+                    thisAlertMapping.setEventCode(m_tokenizer.sval);
+                    lastEventCodeLine = m_tokenizer.lineno();
+                    LogUtils.infof(this, "Created a new alert mapping with alert code %s and event code %s (on line %d)", thisAlertMapping.getAlertCode(), thisAlertMapping.getEventCode(), m_tokenizer.lineno());
+                    if (m_tokenizer.nextToken() != '(' && m_tokenizer.lineno() > lastEventCodeLine && lastEventCodeLine > -1) {
+                        LogUtils.debugf(this, "Alert mapping for alert code %s to event code %s on line %d looks to have no OID mappings, putting it on the completed pile", thisAlertMapping.getAlertCode(), thisAlertMapping.getEventCode(), m_tokenizer.lineno());
+                        alertMappings.add(thisAlertMapping);
+                    }
+                    m_tokenizer.pushBack();
+                } else if (m_tokenizer.ttype == '(') {
+                    LogUtils.debugf(this, "Peeking ahead I see an open-parenthesis on line %d, opening a new OID mapping for OID %s and pushing back the open-paren", m_tokenizer.lineno(), observedOid);
+                    thisOidMapping = new OidMapping(observedOid);
+                    m_tokenizer.pushBack();
+                } else if (lastEventCodeLine < m_tokenizer.lineno()) {
+                    LogUtils.debugf(this, "Found an OID %s on line %d not followed by an open-paren, and last set an event code on line %d, so adding alert mapping for event code %s to the completed pile", observedOid, m_tokenizer.lineno(), lastEventCodeLine, thisAlertMapping.getEventCode());
+                    m_tokenizer.pushBack();
+                } else {
+                    LogUtils.errorf(this, "Uhh, what do I do with token with type %d, string [%s], numeric [%d] on line %d?", m_tokenizer.ttype, m_tokenizer.nval, m_tokenizer.sval);
+                    m_tokenizer.pushBack();
+                }
             }
-            alertMappings.add(new AlertMapping(trapOid, eventId, oidMappingList));
+            
+            else if (m_tokenizer.ttype == '(') {
+                if (m_tokenizer.nextToken() == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches("^\\d+$")) {
+                    LogUtils.debugf(this, "Encountered an open-paren on line %d; next token is a word %s that looks like a whole number so using it as the event variable number", m_tokenizer.lineno(), m_tokenizer.sval);
+                    thisOidMapping.setEventVarNum(Integer.valueOf(m_tokenizer.sval));
+                } else {
+                    LogUtils.errorf(this, "Encountered what appears to be a malformed OID mapping on line %d of %s while expecting an event variable number", m_tokenizer.lineno(), m_resource);
+                    throw new IllegalArgumentException("An apparent OID mapping went wrong while expecting event variable number on line " + m_tokenizer.lineno() + " of " + m_resource);
+                }
+            }
+            
+            else if (m_tokenizer.ttype == ',') {
+                if (m_tokenizer.nextToken() == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches("^\\d+$")) {
+                    LogUtils.debugf(this, "Encountered a comma on line %d; next token is a word %s that looks like a whole number so using it as the index length", m_tokenizer.lineno(), m_tokenizer.sval);
+                    thisOidMapping.setIndexLength(Integer.valueOf(m_tokenizer.sval));
+                    thisAlertMapping.addOidMapping(thisOidMapping);
+                } else {
+                    LogUtils.errorf(this, "Encountered what appears to be a malformed OID mapping on line %d of %s while expecting an index length", m_tokenizer.lineno(), m_resource);
+                    throw new IllegalArgumentException("An apparent OID mapping went wrong while expecting index length on line " + m_tokenizer.lineno() + " of " + m_resource);
+                }
+            }
+            
+            else if (m_tokenizer.ttype == ')') {
+                if (m_tokenizer.nextToken() == '\\') {
+                    LogUtils.debugf(this, "Found a close-paren followed by a backslash; continuing to process OID mappings for event code %s (on line %d)", thisAlertMapping.getEventCode(), m_tokenizer.lineno());
+                } else {
+                    LogUtils.debugf(this, "Found a close-paren NOT followed by a backslash; adding alert mapping for event code %s to the completed pile (on line %d)", thisAlertMapping.getEventCode(), m_tokenizer.lineno());
+                    alertMappings.add(thisAlertMapping);
+                    m_tokenizer.pushBack();
+                }
+            }
         }
         return alertMappings;
     }
     
     private String getContents() throws IOException {
-        FileReader rdr = new FileReader(m_resource.getFile());
-        CharBuffer buf = CharBuffer.allocate(65535);
+        FileInputStream fis = new FileInputStream(m_resource.getFile());
         StringBuilder contents = new StringBuilder(""); 
-        while (rdr.read(buf) > -1) {
-            contents.append(buf.toString());
-            buf.clear();
+        while (fis.available() > -1) {
+            contents.append(fis.read());
         }
         return contents.toString();
     }
+    
 }

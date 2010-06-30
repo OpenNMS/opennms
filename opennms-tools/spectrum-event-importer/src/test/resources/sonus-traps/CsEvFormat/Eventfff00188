@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtDOSTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will generated if IP address and realm ID is denied of service."
+
+apSysMgmtDOSIpAddress = {O 1}
+apSysMgmtDOSRealmID = {S 2}
+(event [{e}])
