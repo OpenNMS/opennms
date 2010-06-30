@@ -57,8 +57,8 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -444,7 +444,7 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_SHORT_TIME)) {
 			String eventTime = event.getTime(); //This will be in GMT
 			try {
-				Date actualDate = EventConstants.parseToDate(eventTime);
+				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
 								DateFormat.SHORT);
 				retParmVal = df.format(actualDate);
