@@ -48,16 +48,281 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>TransactionAwareEventForwarder class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class TransactionAwareEventForwarder implements EventForwarder,
         InitializingBean {
 
+    /**
+     * <p>Constructor for TransactionAwareEventForwarder.</p>
+     */
     public TransactionAwareEventForwarder() {
     }
 
+    /**
+     * <p>Constructor for TransactionAwareEventForwarder.</p>
+     *
+     * @param forwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @throws java.lang.Exception if any.
+     */
     public TransactionAwareEventForwarder(EventForwarder forwarder)
             throws Exception {
         setEventForwarder(forwarder);
@@ -133,15 +398,26 @@ public class TransactionAwareEventForwarder implements EventForwarder,
 
     private EventForwarder m_eventForwarder;
 
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_eventForwarder != null,
                 "eventForwarder property must be set");
     }
 
+    /** {@inheritDoc} */
     public void sendNow(Event event) {
         Log eventLog = new Log();
         Events events = new Events();
@@ -150,6 +426,11 @@ public class TransactionAwareEventForwarder implements EventForwarder,
         sendNow(eventLog);
     }
 
+    /**
+     * <p>sendNow</p>
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
+     */
     public void sendNow(Log eventLog) {
         List<Log> pendingEvents = requestPendingEventsList();
 
@@ -158,6 +439,11 @@ public class TransactionAwareEventForwarder implements EventForwarder,
         releasePendingEventsList(pendingEvents);
     }
 
+    /**
+     * <p>requestPendingEventsList</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Log> requestPendingEventsList() {
         PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager
                 .getResource(m_eventForwarder);
@@ -194,6 +480,11 @@ public class TransactionAwareEventForwarder implements EventForwarder,
         return pendingEvents;
     }
 
+    /**
+     * <p>releasePendingEventsList</p>
+     *
+     * @param pendingEvents a {@link java.util.List} object.
+     */
     public void releasePendingEventsList(List<Log> pendingEvents) {
         if (pendingEvents == null) {
             return;

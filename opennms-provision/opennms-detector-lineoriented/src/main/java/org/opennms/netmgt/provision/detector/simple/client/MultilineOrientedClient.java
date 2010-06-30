@@ -44,8 +44,10 @@ import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedRe
 import org.opennms.netmgt.provision.support.Client;
 
 /**
- * @author Donald Desloge
+ * <p>MultilineOrientedClient class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class MultilineOrientedClient implements Client<LineOrientedRequest, MultilineOrientedResponse> {
     
@@ -53,6 +55,9 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
     private OutputStream m_out;
     private BufferedReader m_in;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         LogUtils.infof(this, "Closing Socket");
         Socket socket = m_socket;
@@ -65,6 +70,7 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
         }       
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException {
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(address, port), timeout);
@@ -74,10 +80,23 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
         m_socket = socket;
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse} object.
+     * @throws java.io.IOException if any.
+     */
     public MultilineOrientedResponse receiveBanner() throws IOException {
         return receiveResponse();
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse} object.
+     * @throws java.io.IOException if any.
+     */
     public MultilineOrientedResponse sendRequest(LineOrientedRequest request) throws IOException {
         request.send(getOutput());
         return receiveResponse();
@@ -93,18 +112,38 @@ public class MultilineOrientedClient implements Client<LineOrientedRequest, Mult
         return response;
     }
 
+    /**
+     * <p>setInput</p>
+     *
+     * @param in a {@link java.io.BufferedReader} object.
+     */
     public void setInput(BufferedReader in) {
         m_in = in;
     }
 
+    /**
+     * <p>getInput</p>
+     *
+     * @return a {@link java.io.BufferedReader} object.
+     */
     public BufferedReader getInput() {
         return m_in;
     }
 
+    /**
+     * <p>setOutput</p>
+     *
+     * @param out a {@link java.io.OutputStream} object.
+     */
     public void setOutput(OutputStream out) {
         m_out = out;
     }
 
+    /**
+     * <p>getOutput</p>
+     *
+     * @return a {@link java.io.OutputStream} object.
+     */
     public OutputStream getOutput() {
         return m_out;
     }

@@ -44,25 +44,43 @@ import org.springframework.dao.DataAccessException;
  * AbstractCachingDaoHibernate
  *
  * @author brozow
+ * @version $Id: $
  */
 public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable, CacheKey> extends AbstractDaoHibernate<T, DbKey> {
 
     private final ThreadLocal<HashMap<CacheKey, T>> m_cache = new ThreadLocal<HashMap<CacheKey, T>>();
     private final boolean m_dbKeyMatchesCacheKey;
 
+    /**
+     * <p>Constructor for AbstractCachingDaoHibernate.</p>
+     *
+     * @param entityClass a {@link java.lang.Class} object.
+     * @param dbKeyMatchesCacheKey a boolean.
+     * @param <T> a T object.
+     * @param <CacheKey> a CacheKey object.
+     * @param <DbKey> a DbKey object.
+     */
     public AbstractCachingDaoHibernate(Class<T> entityClass, boolean dbKeyMatchesCacheKey) {
         super(entityClass);
         m_dbKeyMatchesCacheKey = dbKeyMatchesCacheKey;
     }
     
+    /**
+     * <p>getKey</p>
+     *
+     * @param t a T object.
+     * @return a CacheKey object.
+     */
     abstract protected CacheKey getKey(T t);
 
+    /** {@inheritDoc} */
     @Override
     public void clear() {
         m_cache.remove();
         super.clear();
     }
     
+    /** {@inheritDoc} */
     @Override
     public void deleteAll(Collection<T> entities) throws DataAccessException {
         List<CacheKey> ids = Collections.emptyList();
@@ -82,6 +100,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void delete(T entity) throws DataAccessException {
         CacheKey id = getKey(entity);
@@ -91,6 +110,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<T> findAll() throws DataAccessException {
         List<T> entities = super.findAll();
@@ -104,6 +124,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
         return entities;
     }
 
+    /** {@inheritDoc} */
     @Override
     public T get(DbKey id) throws DataAccessException {
         
@@ -128,6 +149,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
         
     }
 
+    /** {@inheritDoc} */
     @Override
     public T load(DbKey id) throws DataAccessException {
         if (m_cache.get() == null) {
@@ -151,6 +173,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public void merge(T entity) {
         super.merge(entity);
@@ -159,6 +182,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void save(T entity) throws DataAccessException {
         super.save(entity);
@@ -167,6 +191,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void saveOrUpdate(T entity) throws DataAccessException {
         super.saveOrUpdate(entity);
@@ -175,6 +200,7 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void update(T entity) throws DataAccessException {
         super.update(entity);
@@ -183,6 +209,13 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
         }
     }
     
+    /**
+     * <p>findByCacheKey</p>
+     *
+     * @param queryString a {@link java.lang.String} object.
+     * @param key a CacheKey object.
+     * @return a T object.
+     */
     protected T findByCacheKey(String queryString, CacheKey key) {
         T t = null;
         if (m_cache.get() != null) {

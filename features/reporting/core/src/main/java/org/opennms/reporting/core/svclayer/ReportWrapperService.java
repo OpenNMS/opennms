@@ -43,19 +43,19 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.DeliveryOptions;
 
 /**
- * Interface that finds and executes individual reportServices. 
- * Always run a report service via this wrapper as the implementation will find 
+ * Interface that finds and executes individual reportServices.
+ * Always run a report service via this wrapper as the implementation will find
  * the correct service for the reportId and wrap it as necessary.
- * 
- * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  *
+ * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
 public interface ReportWrapperService {
 
     /**
      * This method validates that the map of report parameters matches the report
      * parameters accepted by the report. Used by the web interface.
-     * 
+     *
      * @param parameters runtime report parameters
      * @param reportId reportId as defined in database-reports.xml
      * @return true if the reportParms supplied match those in the report definition.
@@ -65,7 +65,7 @@ public interface ReportWrapperService {
     
     /**
      * This method runs the report
-     * 
+     *
      * @param parameters runtime report parameters
      * @param deliveryOptions delivery options for the report
      * @param reportId reportId as defined in database-reports.xml
@@ -75,10 +75,10 @@ public interface ReportWrapperService {
     
     /**
      * This method returns the delivery options for the report. Providing a userID will
-     * allow the report service to pre-populate the destination address 
-     * 
-     * @param userId
-     * @param reportId
+     * allow the report service to pre-populate the destination address
+     *
+     * @param userId a {@link java.lang.String} object.
+     * @param reportId a {@link java.lang.String} object.
      * @return a delivery options object containing information that describes how the report might
      *         be delivered.
      */
@@ -86,7 +86,7 @@ public interface ReportWrapperService {
     
     /**
      * This method provides a list of formats supported by the report
-     * 
+     *
      * @param reportId reportId as defined in database-reports.xml
      * @return a list of supported formats
      */
@@ -103,7 +103,7 @@ public interface ReportWrapperService {
     
     /**
      * This method renders the report into a given output stream.
-     * 
+     *
      * @param ReportId reportId as defined in database-reports.xml
      * @param location location of the report on disk
      * @param format format to render the report
@@ -114,17 +114,17 @@ public interface ReportWrapperService {
     
     /**
      * This method is used to determine whether the report takes any parameters
-     * 
-     *  @param reportId
+     *
      *  @return true if the report takes parameters, false if not.
+     * @param ReportId a {@link java.lang.String} object.
      */
     public abstract Boolean hasParameters(String ReportId);
     
     /**
      * This method retrieves the runtime parameters taken by the report
-     * 
-     * @param reportId
+     *
      * @return a ReportParameters object containing the parameters taken by the report
+     * @param ReportId a {@link java.lang.String} object.
      */
     public abstract ReportParameters getParameters(String ReportId);
     

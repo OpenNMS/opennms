@@ -48,16 +48,28 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
+/**
+ * <p>Notifd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
     /**
      * Logging category for log4j
      */
     private static String LOG4J_CATEGORY = "OpenNMS.Notifd";
 
+    /**
+     * <p>Constructor for Notifd.</p>
+     */
     public Notifd() {
         super(LOG4J_CATEGORY);
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
         EventIpcManagerFactory.init();
 
@@ -136,17 +148,25 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
         return org.opennms.netmgt.notifd.Notifd.getInstance();
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         getNotifd().start();
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         getNotifd().stop();
     }
 
     /**
      * Override {@link AbstractServiceDaemon#getStatus()} to use the status of
-     * the {@link org.opennms.netmgt.notifd.Notifd} instance. 
+     * the {@link org.opennms.netmgt.notifd.Notifd} instance.
+     *
+     * @return a int.
      */
     public int getStatus() {
         return getNotifd().getStatus();

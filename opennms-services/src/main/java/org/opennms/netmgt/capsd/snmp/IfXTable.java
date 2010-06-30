@@ -54,13 +54,17 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * interface table at once. The number of SNMP packets should not exceed the
  * number of interface + 1, assuming no lost packets or error conditions occur.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc2233.txt">RFC2233 </A>
  */
 public final class IfXTable extends SnmpTable<IfXTableEntry> {
@@ -72,6 +76,7 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
+     *
      * @param address TODO
      * @see IfXTableEntry
      */
@@ -79,10 +84,17 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
         super(address, "ifXTable", IfXTableEntry.ms_elemList);
     }
 
+    /** {@inheritDoc} */
     protected IfXTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IfXTableEntry(inst.toInt());
     }
     
+    /**
+     * <p>getEntry</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link org.opennms.netmgt.capsd.snmp.IfXTableEntry} object.
+     */
     public IfXTableEntry getEntry(int ifIndex) {
         if (getEntries() == null) {
             return null;
@@ -98,6 +110,12 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
         return null;
     }
     
+    /**
+     * <p>getIfName</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfName(int ifIndex) {
     
         // Find ifXTable entry with matching ifIndex
@@ -119,6 +137,12 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
         return null;
     }
 
+    /**
+     * <p>getIfAlias</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfAlias(int ifIndex) {
         // Find ifXTable entry with matching ifIndex
 
@@ -139,6 +163,12 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
         return null;
     }
 
+    /**
+     * <p>getIfHighSpeed</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getIfHighSpeed(int ifIndex) {
         for(IfXTableEntry ifXEntry : getEntries()) {
             

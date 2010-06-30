@@ -49,8 +49,20 @@ import org.opennms.acl.model.AuthorityView;
  * @since jdk 1.5.0
  */
 /* This class retrieve the nodes that an authority can view */
+/* This class retrieve the nodes that an authority can view */
+/* This class retrieve the nodes that an authority can view */
+/* This class retrieve the nodes that an authority can view */
+/* This class retrieve the nodes that an authority can view */
+/* This class retrieve the nodes that an authority can view */
+/* This class retrieve the nodes that an authority can view */
+/* This class retrieve the nodes that an authority can view */
 class AuthoritiesNodeHelper {
 
+	/**
+	 * <p>Constructor for AuthoritiesNodeHelper.</p>
+	 *
+	 * @param authorities a {@link java.util.List} object.
+	 */
 	public AuthoritiesNodeHelper(List<AuthorityDTO> authorities) {
 
 		authItemsMap = new HashMap<String, Set<Integer>>();
@@ -64,10 +76,22 @@ class AuthoritiesNodeHelper {
 		}
 	}
 
+	/**
+	 * <p>deleteAuthority</p>
+	 *
+	 * @param authority a {@link java.lang.String} object.
+	 * @return a {@link java.lang.Boolean} object.
+	 */
 	public Boolean deleteAuthority(String authority) {
 		return authItemsMap.remove(authority) != null;
 	}
 
+	/**
+	 * <p>deleteItem</p>
+	 *
+	 * @param id a {@link java.lang.Integer} object.
+	 * @return a {@link java.lang.Boolean} object.
+	 */
 	public synchronized Boolean deleteItem(Integer id) {
 
 		Set<String> keys = authItemsMap.keySet();
@@ -77,11 +101,22 @@ class AuthoritiesNodeHelper {
 		return itemsSet.remove(id);
 	}
 
+	/**
+	 * <p>getAuthorities</p>
+	 *
+	 * @return a {@link java.util.Set} object.
+	 */
 	public Set<String> getAuthorities() {
 		return Collections.unmodifiableSet(authItemsMap.keySet());
 	}
 
 	// TODO put in a cache
+	/**
+	 * <p>getAuthoritiesItems</p>
+	 *
+	 * @param authorities a {@link java.util.Set} object.
+	 * @return a {@link java.util.Set} object.
+	 */
 	public Set<Integer> getAuthoritiesItems(Set<AuthorityView> authorities) {
 		Set<Integer> authItems = new HashSet<Integer>();
 		for (AuthorityView auth : authorities) {
@@ -93,6 +128,11 @@ class AuthoritiesNodeHelper {
 		return authItems;
 	}
 
+	/**
+	 * <p>addAuthorityWithNodes</p>
+	 *
+	 * @param authority a {@link org.opennms.acl.model.AuthorityDTO} object.
+	 */
 	@SuppressWarnings("unchecked")
 	public void addAuthorityWithNodes(AuthorityDTO authority) {
 

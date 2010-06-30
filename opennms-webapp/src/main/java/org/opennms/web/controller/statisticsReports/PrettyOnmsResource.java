@@ -38,16 +38,29 @@ package org.opennms.web.controller.statisticsReports;
 import org.opennms.netmgt.model.OnmsResource;
 
 /**
+ * <p>PrettyOnmsResource class.</p>
+ *
  * @author jeffg
  * This class extends OnmsResource and overrides the toString() method, providing
  * a more human-readable description of the resource.
- *
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class PrettyOnmsResource extends OnmsResource {
+    /**
+     * <p>Constructor for PrettyOnmsResource.</p>
+     *
+     * @param rs a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public PrettyOnmsResource(OnmsResource rs) {
         super(rs.getName(), rs.getLabel(), rs.getResourceType(), rs.getAttributes(), rs.getChildResources());
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return this.getResourceType().getLabel() + ": " + this.getLabel();
     }

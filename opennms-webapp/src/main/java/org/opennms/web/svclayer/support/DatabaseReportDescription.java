@@ -35,27 +35,64 @@
 //
 package org.opennms.web.svclayer.support;
 
+/**
+ * <p>DatabaseReportDescription class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DatabaseReportDescription {
     
     private String m_id;
     private String m_displayName;
     private String m_description;
     
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getId() {
         return m_id;
     }
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     */
     public void setId(String id) {
         m_id = id;
     }
+    /**
+     * <p>getDisplayName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayName() {
         return m_displayName;
     }
+    /**
+     * <p>setDisplayName</p>
+     *
+     * @param displayName a {@link java.lang.String} object.
+     */
     public void setDisplayName(String displayName) {
         m_displayName = displayName;
     }
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return m_description;
     }
+    /**
+     * <p>setDescription</p>
+     *
+     * @param description a {@link java.lang.String} object.
+     */
     public void setDescription(String description) {
         m_description = description;
     }

@@ -39,9 +39,11 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
  * DetectorBeanNameGenerator
  *
  * @author brozow
+ * @version $Id: $
  */
 public class DetectorBeanNameGenerator implements BeanNameGenerator {
 
+    /** {@inheritDoc} */
     public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
         return definition.getBeanClassName();
     }

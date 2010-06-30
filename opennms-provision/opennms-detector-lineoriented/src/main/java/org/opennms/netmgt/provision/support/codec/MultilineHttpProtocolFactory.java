@@ -38,24 +38,40 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
+/**
+ * <p>MultilineHttpProtocolFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MultilineHttpProtocolFactory implements ProtocolCodecFactory {
     
     private LineOrientedEncoder m_encoder;
     private MultilineHttpStatusResponseDecoder m_decoder;
     
+    /**
+     * <p>Constructor for MultilineHttpProtocolFactory.</p>
+     */
     public MultilineHttpProtocolFactory() {
         this(Charset.defaultCharset());
     }
     
+    /**
+     * <p>Constructor for MultilineHttpProtocolFactory.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public MultilineHttpProtocolFactory(Charset charset) {
         m_encoder = new LineOrientedEncoder(charset);
         m_decoder = new MultilineHttpStatusResponseDecoder(charset);
     }
     
+    /** {@inheritDoc} */
     public ProtocolDecoder getDecoder(IoSession session) throws Exception {
         return m_decoder;
     }
 
+    /** {@inheritDoc} */
     public ProtocolEncoder getEncoder(IoSession session) throws Exception {
         return m_encoder;
     }

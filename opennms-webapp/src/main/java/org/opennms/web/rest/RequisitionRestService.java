@@ -82,51 +82,53 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 /**
-<p>RESTful service to the OpenNMS Provisioning Groups.  In this API, these "groups" of nodes 
-are aptly named and treated as requisitions.</p>
-<p>This current implementation supports CRUD operations for managing provisioning requisitions.  Requisitions
-are first POSTed and no provisioning (import) operations are taken.  This is done so that a) the XML can be
-verified and b) so that the operations can happen at a later time.  They are moved to the deployed state
-(put in the active requisition repository) when an import is run.
-<ul>
-<li>GET/PUT/POST pending requisitions</li>
-<li>GET pending and deployed count</li>
-</ul>
-</p>
-<p>Example 1: Create a new requisition <i>Note: The foreign-source attribute typically has a 1 to 1 
-relationship to a provisioning group and to the name used in this requisition.  The relationship is 
-implied by name and it is best practice to use the same for all three.  If a foreign source definition
-exists with the same name, it will be used during the provisioning (import) operations in lieu of the
-default foreign source</i></p>
-<pre>
-curl -X POST \
-     -H "Content-Type: application/xml" \
-     -d "&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-         &lt;model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" 
-             date-stamp="2009-03-07T17:56:53.123-05:00"
-             last-import="2009-03-07T17:56:53.117-05:00" foreign-source="site1"&gt;
-           &lt;node node-label="p-brane" foreign-id="1" &gt;
-             &lt;interface ip-addr="10.0.1.3" descr="en1" status="1" snmp-primary="P"&gt;
-               &lt;monitored-service service-name="ICMP"/&gt;
-               &lt;monitored-service service-name="SNMP"/&gt;
-             &lt;/interface&gt;
-             &lt;category name="Production"/&gt;
-             &lt;category name="Routers"/&gt;
-           &lt;/node&gt;
-         &lt;/model-import&gt;" \
-     -u admin:admin \
-     http://localhost:8980/opennms/rest/requisitions
-</pre>
-<p>Example 2: Query all deployed requisitions</p>
-<pre>
-curl -X GET \
-     -H "Content-Type: application/xml" \
-     -u admin:admin \
-        http://localhost:8980/opennms/rest/requisitions/deployed \
-        2>/dev/null \
-        |xmllint --format -</pre>
+ *<p>RESTful service to the OpenNMS Provisioning Groups.  In this API, these "groups" of nodes
+ *are aptly named and treated as requisitions.</p>
+ *<p>This current implementation supports CRUD operations for managing provisioning requisitions.  Requisitions
+ *are first POSTed and no provisioning (import) operations are taken.  This is done so that a) the XML can be
+ *verified and b) so that the operations can happen at a later time.  They are moved to the deployed state
+ *(put in the active requisition repository) when an import is run.
+ *<ul>
+ *<li>GET/PUT/POST pending requisitions</li>
+ *<li>GET pending and deployed count</li>
+ *</ul>
+ *</p>
+ *<p>Example 1: Create a new requisition <i>Note: The foreign-source attribute typically has a 1 to 1
+ *relationship to a provisioning group and to the name used in this requisition.  The relationship is
+ *implied by name and it is best practice to use the same for all three.  If a foreign source definition
+ *exists with the same name, it will be used during the provisioning (import) operations in lieu of the
+ *default foreign source</i></p>
+ *<pre>
+ *curl -X POST \
+ *     -H "Content-Type: application/xml" \
+ *     -d "&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+ *         &lt;model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import"
+ *             date-stamp="2009-03-07T17:56:53.123-05:00"
+ *             last-import="2009-03-07T17:56:53.117-05:00" foreign-source="site1"&gt;
+ *           &lt;node node-label="p-brane" foreign-id="1" &gt;
+ *             &lt;interface ip-addr="10.0.1.3" descr="en1" status="1" snmp-primary="P"&gt;
+ *               &lt;monitored-service service-name="ICMP"/&gt;
+ *               &lt;monitored-service service-name="SNMP"/&gt;
+ *             &lt;/interface&gt;
+ *             &lt;category name="Production"/&gt;
+ *             &lt;category name="Routers"/&gt;
+ *           &lt;/node&gt;
+ *         &lt;/model-import&gt;" \
+ *     -u admin:admin \
+ *     http://localhost:8980/opennms/rest/requisitions
+ *</pre>
+ *<p>Example 2: Query all deployed requisitions</p>
+ *<pre>
+ *curl -X GET \
+ *     -H "Content-Type: application/xml" \
+ *     -u admin:admin \
+ *        http://localhost:8980/opennms/rest/requisitions/deployed \
+ *        2>/dev/null \
+ *        |xmllint --format -</pre>
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Component
 @PerRequest
@@ -156,7 +158,8 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * get a plain text numeric string of the number of deployed requisitions
-     * @return
+     *
+     * @return a int.
      */
     @GET
     @Path("deployed/count")
@@ -167,6 +170,9 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Get all the deployed requisitions
+     *
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCollection} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("deployed")
@@ -177,6 +183,9 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Get all the pending requisitions
+     *
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCollection} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -193,7 +202,8 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * get a plain text numeric string of the number of pending requisitions
-     * @return
+     *
+     * @return a int.
      */
     @GET
     @Path("count")
@@ -202,6 +212,12 @@ public class RequisitionRestService extends OnmsRestService {
         return m_pendingForeignSourceRepository.getRequisitions().size();
     }
 
+    /**
+     * <p>getRequisition</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     @GET
     @Path("{foreignSource}")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -211,6 +227,10 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Returns all nodes for a given requisition
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollection} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes")
@@ -225,6 +245,11 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Returns the node with the foreign ID specified for the given foreign source
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}")
@@ -239,6 +264,11 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Returns a collection of interfaces for a given node in the specified foreign source
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces")
@@ -253,6 +283,12 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Returns the interface with the given foreign source/foreignid/ipaddress combination.
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
@@ -267,6 +303,12 @@ public class RequisitionRestService extends OnmsRestService {
     
     /**
      * Returns a collection of services for a given foreignSource/foreignId/interface combination.
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServiceCollection} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
@@ -281,6 +323,13 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Returns a service for a given foreignSource/foreignId/interface/service-name combination.
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param service a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
@@ -295,6 +344,11 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Returns a collection of categories for a given node in the specified foreign source
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategoryCollection} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories")
@@ -312,6 +366,12 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Returns the requested category for a given node in the specified foreign source
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param category a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
@@ -329,6 +389,11 @@ public class RequisitionRestService extends OnmsRestService {
     
     /**
      * Returns a collection of assets for a given node in the specified foreign source
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/assets")
@@ -346,6 +411,12 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Returns the requested category for a given node in the specified foreign source
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param parameter a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("{foreignSource}/nodes/{foreignId}/assets/{parameter}")
@@ -362,7 +433,10 @@ public class RequisitionRestService extends OnmsRestService {
     }
     
     /**
-     * Updates or adds a complete requisition with foreign source "foreignSource" 
+     * Updates or adds a complete requisition with foreign source "foreignSource"
+     *
+     * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
@@ -374,7 +448,11 @@ public class RequisitionRestService extends OnmsRestService {
     }
 
     /**
-     * Updates or adds a node to a requisition 
+     * Updates or adds a node to a requisition
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @POST
     @Path("{foreignSource}/nodes")
@@ -393,6 +471,11 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Updates or adds an interface to a node
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @POST
     @Path("{foreignSource}/nodes/{foreignId}/interfaces")
@@ -414,6 +497,12 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Updates or adds a service to an interface
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param service a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @POST
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
@@ -438,6 +527,11 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Updates or adds a category to a node
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @POST
     @Path("{foreignSource}/nodes/{foreignId}/categories")
@@ -459,6 +553,11 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Updates or adds an asset parameter to a node
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param asset a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @POST
     @Path("{foreignSource}/nodes/{foreignId}/assets")
@@ -478,6 +577,12 @@ public class RequisitionRestService extends OnmsRestService {
         return Response.notModified().build();
     }
 
+    /**
+     * <p>importRequisition</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
@@ -500,6 +605,10 @@ public class RequisitionRestService extends OnmsRestService {
     
     /**
      * Updates the requisition with foreign source "foreignSource"
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @PUT
     @Path("{foreignSource}")
@@ -519,6 +628,11 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Updates the node with foreign id "foreignId" in foreign source "foreignSource"
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @PUT
     @Path("{foreignSource}/nodes/{foreignId}")
@@ -541,6 +655,12 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Updates a specific interface
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @PUT
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
@@ -566,8 +686,9 @@ public class RequisitionRestService extends OnmsRestService {
 
     /**
      * Deletes the pending requisition with foreign source "foreignSource"
-     * @param foreignSource
-     * @return
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @DELETE
     @Path("{foreignSource}")
@@ -581,8 +702,9 @@ public class RequisitionRestService extends OnmsRestService {
     
     /**
      * Deletes the deployed requisition with foreign source "foreignSource"
-     * @param foreignSource
-     * @return
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @DELETE
     @Path("deployed/{foreignSource}")
@@ -596,6 +718,10 @@ public class RequisitionRestService extends OnmsRestService {
     
     /**
      * Delete the node with the given foreign ID for the specified foreign source
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
      */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}")
@@ -610,6 +736,14 @@ public class RequisitionRestService extends OnmsRestService {
         return null;
     }
     
+    /**
+     * <p>deleteInterface</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Transactional
@@ -626,6 +760,15 @@ public class RequisitionRestService extends OnmsRestService {
         return null;
     }
 
+    /**
+     * <p>deleteInterfaceService</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param service a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
     @Transactional
@@ -645,6 +788,14 @@ public class RequisitionRestService extends OnmsRestService {
         return null;
     }
 
+    /**
+     * <p>deleteCategory</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param category a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
     @Transactional
@@ -661,6 +812,14 @@ public class RequisitionRestService extends OnmsRestService {
         return null;
     }
 
+    /**
+     * <p>deleteAssetParameter</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param parameter a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{foreignSource}/nodes/{foreignId}/assets/{parameter}")
     @Transactional

@@ -50,16 +50,19 @@ import java.util.Map;
  *  While the names are maskelement names,
  *  - if the event is a 'org.opennms.netmgt.xml.eventconf.Event',
  *    the maskvalue list is taken as the value
- *  - if the event is an 'org.opennms.netmgt.xml.event.Event', 
+ *  - if the event is an 'org.opennms.netmgt.xml.event.Event',
  *    the value in the event for the mask element is used as the value.
- * 
+ *
  *  This hashtable is pretty much constant once constructed - so the hashcode
  *  is evaluated once at construction and reused(if new values are added or
  *  values changed, hashcode is re-evaluated)
  * </pre>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class EventKey extends LinkedHashMap<String, Object> implements Serializable, Comparable<EventKey> {
     /**
@@ -137,8 +140,9 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Constructor for this class
-     * 
+     *
      * @see java.util.Hashtable#Hashtable(int)
+     * @param initCapacity a int.
      */
     public EventKey(int initCapacity) {
         super(initCapacity);
@@ -147,8 +151,10 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Constructor for this class
-     * 
+     *
      * @see java.util.Hashtable#Hashtable(int, float)
+     * @param initCapacity a int.
+     * @param loadFactor a float.
      */
     public EventKey(int initCapacity, float loadFactor) {
         super(initCapacity, loadFactor);
@@ -157,7 +163,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Constructor for this class
-     * 
+     *
      * @param maskelements
      *            the maskelements that should form this key
      */
@@ -172,7 +178,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Constructor for this class
-     * 
+     *
      * @param event
      *            the config event that this will be the key for
      */
@@ -218,7 +224,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Constructor for this class
-     * 
+     *
      * @param event
      *            the event that this will be the key for
      */
@@ -249,7 +255,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Override to re-evaluate hashcode
-     * 
+     *
      * @see java.util.Hashtable#clear()
      */
     public void clear() {
@@ -258,8 +264,9 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Override to re-evaluate hashcode
-     * 
      * @see java.util.Hashtable#put(Object, Object)
      */
     public Object put(String key, Object value) {
@@ -269,8 +276,9 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Override to re-evaluate hashcode
-     * 
      * @see java.util.Hashtable#putAll(Map)
      */
     public void putAll(Map<? extends String, ? extends Object> m) {
@@ -279,8 +287,9 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Override to re-evaluate hashcode
-     * 
      * @see java.util.Hashtable#remove(Object)
      */
     public Object remove(Object key) {
@@ -326,8 +335,10 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Implementation for the Comparable interface
-     * 
+     *
      * @see java.lang.Comparable#compareTo(Object)
+     * @param obj a {@link org.opennms.netmgt.eventd.datablock.EventKey} object.
+     * @return a int.
      */
     public int compareTo(EventKey obj) {
         return (hashCode() - obj.hashCode());
@@ -335,7 +346,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Overrides the 'hashCode()' method in the superclass
-     * 
+     *
      * @return a hash code for this object
      */
     public int hashCode() {
@@ -348,7 +359,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
     /**
      * Returns a String equivalent of this object
-     * 
+     *
      * @return a String equivalent of this object
      */
     public String toString() {
@@ -366,16 +377,17 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
     /**
      * <pre>
      * Get the value of the mask element for this event.
-     *  
+     *
      * <em>
      * Note:
      * </em>
      *  The only event elements that can occur to
      *  uniquely identify an event are -
      *  uei, source, host, snmphost, nodeid, interface, service, id(SNMP EID), specific, generic, community
-     * 
+     *
      *  @return value of the event element
-     * 
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param mename a {@link java.lang.String} object.
      */
     public static String getMaskElementValue(org.opennms.netmgt.xml.event.Event event, String mename) {
         String retParmVal = null;

@@ -3,12 +3,24 @@ package org.opennms.web.notification.filter;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
-/** Encapsulates all node filtering functionality. */
+/**
+ * Encapsulates all node filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NodeFilter extends EqualsFilter<Integer> {
+    /** Constant <code>TYPE="node"</code> */
     public static final String TYPE = "node";
 
     //protected int nodeId;
 
+    /**
+     * <p>Constructor for NodeFilter.</p>
+     *
+     * @param nodeId a int.
+     */
     public NodeFilter(int nodeId) {
         super(TYPE, SQLType.INT, "NODEID", "node.id", nodeId);
         //this.nodeId = nodeId;

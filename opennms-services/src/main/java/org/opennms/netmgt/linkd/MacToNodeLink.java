@@ -37,8 +37,10 @@
 package org.opennms.netmgt.linkd;
 
 /**
- * 
+ * <p>MacToNodeLink class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class MacToNodeLink {
 
@@ -52,10 +54,20 @@ public class MacToNodeLink {
 		throw new UnsupportedOperationException("default constructor not supported");
 	}
 
+	/**
+	 * <p>Constructor for MacToNodeLink.</p>
+	 *
+	 * @param macAddress a {@link java.lang.String} object.
+	 */
 	public MacToNodeLink(String macAddress) {
 		this.macAddress = macAddress;
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		StringBuffer str = new StringBuffer("Mac Address = " + macAddress + "\n");
 		str.append("Node ParentId = " + nodeparentid + "\n");
@@ -64,30 +76,40 @@ public class MacToNodeLink {
 	}
 
 	/**
+	 * <p>Getter for the field <code>nodeparentid</code>.</p>
+	 *
 	 * @return Returns the nodeparentid.
 	 */
 	public int getNodeparentid() {
 		return nodeparentid;
 	}
 	/**
+	 * <p>Setter for the field <code>nodeparentid</code>.</p>
+	 *
 	 * @param nodeparentid The nodeparentid to set.
 	 */
 	public void setNodeparentid(int nodeparentid) {
 		this.nodeparentid = nodeparentid;
 	}
 	/**
+	 * <p>Getter for the field <code>parentifindex</code>.</p>
+	 *
 	 * @return Returns the parentifindex.
 	 */
 	public int getParentifindex() {
 		return parentifindex;
 	}
 	/**
+	 * <p>Setter for the field <code>parentifindex</code>.</p>
+	 *
 	 * @param parentifindex The parentifindex to set.
 	 */
 	public void setParentifindex(int parentifindex) {
 		this.parentifindex = parentifindex;
 	}
 	/**
+	 * <p>Getter for the field <code>macAddress</code>.</p>
+	 *
 	 * @return Returns the ifindex.
 	 */
 	public String getMacAddress() {

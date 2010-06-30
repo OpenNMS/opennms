@@ -24,6 +24,7 @@ final class EventServiceInitializer extends InitializationCommand.DataLoader {
         m_locationManager = locationManager;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void load() {
         LocationListener locationListener = new DefaultLocationListener(m_locationManager);

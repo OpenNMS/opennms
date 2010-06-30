@@ -48,12 +48,34 @@ import org.opennms.netmgt.config.NotificationManager;
  * XMPP message protocol.
  * 
 /**
- * 
+ *
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
  * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy</A>
+ * @version $Id: $
  */
 public class XMPPNotificationStrategy implements NotificationStrategy {
 
@@ -94,7 +116,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 	}
 
 	/**
-	 * 
+	 * <p>Constructor for XMPPNotificationStrategy.</p>
 	 */
 	public XMPPNotificationStrategy() {
 	}
@@ -104,6 +126,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 	 * 
 	 * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
 	 */
+	/** {@inheritDoc} */
 	public int send(List<Argument> arguments) {
 
 		try {

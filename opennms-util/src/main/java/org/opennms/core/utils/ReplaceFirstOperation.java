@@ -36,12 +36,24 @@
 //
 package org.opennms.core.utils;
 
+/**
+ * <p>ReplaceFirstOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReplaceFirstOperation extends StringReplaceOperation {
 
+    /**
+     * <p>Constructor for ReplaceFirstOperation.</p>
+     *
+     * @param spec a {@link java.lang.String} object.
+     */
     public ReplaceFirstOperation(String spec) {
         super(spec);
     }
     
+    /** {@inheritDoc} */
     @Override
     public String replace(String input) {
         return input.replaceFirst(m_pattern, m_replacement);

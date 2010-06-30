@@ -36,28 +36,61 @@ import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator
 import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
 
 
+/**
+ * <p>Abstract JMXDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class JMXDetector extends BasicDetector<ConnectionWrapper, Integer>{
 
+    /**
+     * <p>Constructor for JMXDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     protected JMXDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
+    /**
+     * <p>Constructor for JMXDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
+     */
     protected JMXDetector(String serviceName, int port, int timeout, int retries) {
         super(serviceName, port, timeout, retries);
     }
 
     
+    /** {@inheritDoc} */
     @Override
     protected abstract JMXClient getClient();
 
     
+    /** {@inheritDoc} */
     @Override
     protected abstract void onInit();
     
+    /**
+     * <p>expectBeanCount</p>
+     *
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     protected void expectBeanCount(ResponseValidator<Integer> bannerValidator) {
         getConversation().expectBanner(bannerValidator);
     }
     
+    /**
+     * <p>greatThan</p>
+     *
+     * @param count a int.
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     protected ResponseValidator<Integer> greatThan(final int count){
         return new ResponseValidator<Integer>() {
 

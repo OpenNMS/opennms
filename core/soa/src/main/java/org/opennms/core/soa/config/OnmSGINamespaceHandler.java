@@ -35,9 +35,13 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * OnmSGINamespaceHandler
  *
  * @author brozow
+ * @version $Id: $
  */
 public class OnmSGINamespaceHandler extends NamespaceHandlerSupport {
     
+    /**
+     * <p>init</p>
+     */
     public void init() {
         registerBeanDefinitionParser("default-registry", new DefaultRegistryDefinitionParser());
         registerBeanDefinitionParser("service", new ServiceBeanDefinitionParser());

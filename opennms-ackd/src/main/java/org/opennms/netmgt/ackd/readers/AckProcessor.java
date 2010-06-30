@@ -41,11 +41,14 @@ import org.springframework.beans.factory.InitializingBean;
  * This class uses the JavaMail API to connect to a mail store and retrieve messages, using
  * the configured host and user details, and detects replies to notifications that have
  * an acknowledgment action: acknowledge, unacknowledge, clear, escalate.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public interface AckProcessor extends Runnable, InitializingBean {
 
+    /**
+     * <p>reloadConfigs</p>
+     */
     public void reloadConfigs();
 }

@@ -35,26 +35,49 @@
 package org.opennms.web.svclayer;
 
 /**
- * 
+ * <p>SiteStatusViewError class.</p>
+ *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SiteStatusViewError {
 	
 	private String m_shortDescr;
 	private String m_longDescr;
 
+	/**
+	 * <p>getShortDescr</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getShortDescr() {
 		return m_shortDescr;
 	}
 
+	/**
+	 * <p>setShortDescr</p>
+	 *
+	 * @param shortDescr a {@link java.lang.String} object.
+	 */
 	public void setShortDescr(String shortDescr) {
 		m_shortDescr = shortDescr;
 	}
 	
+	/**
+	 * <p>getLongDescr</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLongDescr() {
 		return m_longDescr;
 	}
 
+	/**
+	 * <p>setLongDescr</p>
+	 *
+	 * @param longDescr a {@link java.lang.String} object.
+	 */
 	public void setLongDescr(String longDescr) {
 		m_longDescr = longDescr;
 	}

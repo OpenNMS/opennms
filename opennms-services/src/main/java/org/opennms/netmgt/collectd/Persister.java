@@ -32,10 +32,26 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>Persister interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface Persister {
 
+    /**
+     * <p>persistNumericAttribute</p>
+     *
+     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     */
     public abstract void persistNumericAttribute(CollectionAttribute attribute);
 
+    /**
+     * <p>persistStringAttribute</p>
+     *
+     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     */
     public abstract void persistStringAttribute(CollectionAttribute attribute);
 
 }

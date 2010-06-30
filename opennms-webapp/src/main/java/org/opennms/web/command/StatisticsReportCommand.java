@@ -37,16 +37,28 @@ package org.opennms.web.command;
 
 /**
  * Command object for listing a specific statistics report.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class StatisticsReportCommand {
     private Integer m_id;
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getId() {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }

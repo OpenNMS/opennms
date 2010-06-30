@@ -1,6 +1,12 @@
 package org.opennms.netmgt.config;
 
 
+/**
+ * <p>RancidAdapterConfig interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface RancidAdapterConfig {
     
     /**
@@ -8,6 +14,7 @@ public interface RancidAdapterConfig {
      * the delay time is the time in msec that represents
      * a delay in the execution of a RancidAdapter
      * execution
+     *
      * @param ipaddress
      *          the ipaddress of the node
      * @return the delay time
@@ -17,9 +24,10 @@ public interface RancidAdapterConfig {
     /**
      * return the number of retries in case of failure
      * for the specified address
+     *
      * @param ipaddress
      *          the ipaddress of the node
-     * @return the number of retries 
+     * @return the number of retries
      */
     public abstract int getRetries(String ipaddress);
     
@@ -35,9 +43,10 @@ public interface RancidAdapterConfig {
 //    public abstract long getRetryDelay(String ipaddress);
        
     /**
-     * return if is to be used the opennms categories to get 
+     * return if is to be used the opennms categories to get
      * rancid device type
-     * @param ipaddress 
+     *
+     * @param ipaddress
      *          the ipaddress of the node
      * @return true if use opennms category
      */
@@ -45,7 +54,8 @@ public interface RancidAdapterConfig {
 
     /**
      * return the Rancid Type String
-     * @param sysoid 
+     *
+     * @param sysoid
      *          the system OID identifier of the node
      * @return RancidType String
      */
@@ -53,10 +63,9 @@ public interface RancidAdapterConfig {
 
     /**
      * Return if current time is ready to be scheduled.
-     * 
+     *
      * @param ipaddress
      *          the ipaddress of the node
-     * 
      * @return true if current time is in a schedules under policy manage
      */
     public abstract boolean isCurTimeInSchedule(String ipaddress);     

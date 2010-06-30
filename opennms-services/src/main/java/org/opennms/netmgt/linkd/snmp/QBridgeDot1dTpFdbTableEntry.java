@@ -42,7 +42,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 
 /**
  *<P>The QbridgeDot1dTpFdbTableEntry class is designed to hold all the MIB-II
- * information for one entry in the MIB II dot1dBridge.dot1dTp.dot1dTpFdbTable. 
+ * information for one entry in the MIB II dot1dBridge.dot1dTp.dot1dTpFdbTable.
  * The table effectively contains a list of these entries, each entry having information
  * about bridge forwarding table.</P>
  *
@@ -55,21 +55,40 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
- * @see Dot1dTpFdbTable  
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @see Dot1dTpFdbTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 	// Lookup strings for specific table entries
 	//
 
+	/** Constant <code>FDB_ADDRESS="dot1dTpFdbAddress"</code> */
 	public final static String FDB_ADDRESS = "dot1dTpFdbAddress";
 
+	/** Constant <code>FDB_ADDRESS_OID=".1.3.6.1.2.1.17.7.1.2.2.1.1"</code> */
 	public final static String FDB_ADDRESS_OID = ".1.3.6.1.2.1.17.7.1.2.2.1.1";
 
+	/** Constant <code>FDB_PORT="dot1dTpFdbPort"</code> */
 	public final static String FDB_PORT = "dot1dTpFdbPort";
 
+	/** Constant <code>FDB_STATUS="dot1dTpFdbStatus"</code> */
 	public final static String FDB_STATUS = "dot1dTpFdbStatus";
 
 	private boolean hasFdbAddressFromBase = false;
@@ -157,10 +176,14 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 	public static final String TABLE_OID = ".1.3.6.1.2.1.17.7.1.2.2"; // start of table (GETNEXT)
 
 
+	/**
+	 * <p>Constructor for QBridgeDot1dTpFdbTableEntry.</p>
+	 */
 	public QBridgeDot1dTpFdbTableEntry() {
 		super(ms_elemList);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void storeResult(SnmpResult res) {
 		super.storeResult(res);
@@ -180,6 +203,11 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 		}
 	}
 	
+	/**
+	 * <p>getQBridgeDot1dTpFdbAddress</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getQBridgeDot1dTpFdbAddress() {
 		if (hasFdbAddressFromBase) {
             return getDisplayString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
@@ -187,6 +215,11 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 		return getHexString(QBridgeDot1dTpFdbTableEntry.FDB_ADDRESS);
 	}
 
+	/**
+	 * <p>getQBridgeDot1dTpFdbPort</p>
+	 *
+	 * @return a int.
+	 */
 	public int getQBridgeDot1dTpFdbPort() {
 		Integer val = getInt32(QBridgeDot1dTpFdbTableEntry.FDB_PORT);
 		if (val == null) {
@@ -195,6 +228,11 @@ public final class QBridgeDot1dTpFdbTableEntry extends SnmpTableEntry {
 		return val;
 	}
 
+	/**
+	 * <p>getQBridgeDot1dTpFdbStatus</p>
+	 *
+	 * @return a int.
+	 */
 	public int getQBridgeDot1dTpFdbStatus() {
 		Integer val = getInt32(QBridgeDot1dTpFdbTableEntry.FDB_STATUS);
 		if (val == null) {

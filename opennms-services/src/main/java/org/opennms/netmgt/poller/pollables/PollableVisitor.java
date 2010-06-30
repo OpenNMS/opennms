@@ -36,39 +36,52 @@
 package org.opennms.netmgt.poller.pollables;
 
 /**
- * Represents a PollableVisitor 
+ * Represents a PollableVisitor
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface PollableVisitor {
 
     /**
-     * @param service
+     * <p>visitService</p>
+     *
+     * @param service a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
     void visitService(PollableService service);
 
     /**
-     * @param interface1
+     * <p>visitInterface</p>
+     *
+     * @param interface1 a {@link org.opennms.netmgt.poller.pollables.PollableInterface} object.
      */
     void visitInterface(PollableInterface interface1);
 
     /**
-     * @param node
+     * <p>visitNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
      */
     void visitNode(PollableNode node);
 
     /**
-     * @param network
+     * <p>visitNetwork</p>
+     *
+     * @param network a {@link org.opennms.netmgt.poller.pollables.PollableNetwork} object.
      */
     void visitNetwork(PollableNetwork network);
 
     /**
-     * @param container
+     * <p>visitContainer</p>
+     *
+     * @param container a {@link org.opennms.netmgt.poller.pollables.PollableContainer} object.
      */
     void visitContainer(PollableContainer container);
 
     /**
-     * @param element
+     * <p>visitElement</p>
+     *
+     * @param element a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
     void visitElement(PollableElement element);
 

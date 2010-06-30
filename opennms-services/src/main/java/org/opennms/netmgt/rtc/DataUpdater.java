@@ -503,6 +503,8 @@ final class DataUpdater implements Runnable {
 
     /**
      * Constructs the DataUpdater object
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public DataUpdater(Event event) {
         m_event = event;

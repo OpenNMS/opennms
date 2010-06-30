@@ -42,14 +42,19 @@ import org.springframework.util.Assert;
 
 /**
  * Wrapper object for the doImport method of the Provisioner
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class ImportJob implements Job {
     
     private Provisioner m_provisioner;
 
+    /** Constant <code>KEY="url"</code> */
     protected static final String KEY = "url";
     
     
+    /** {@inheritDoc} */
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
         try {
@@ -63,6 +68,11 @@ public class ImportJob implements Job {
         }
     }
     
+    /**
+     * <p>setProvisioner</p>
+     *
+     * @param provisioner a {@link org.opennms.netmgt.provision.service.Provisioner} object.
+     */
     public void setProvisioner(Provisioner provisioner) {
         m_provisioner = provisioner;
     }

@@ -31,6 +31,13 @@ package org.opennms.web.inventory;
 
 import java.util.Date;
 
+/**
+ * <p>InventoryWrapper class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class InventoryWrapper {
     
     private String version;
@@ -39,6 +46,14 @@ public class InventoryWrapper {
     private String urlViewVC;
     
     
+    /**
+     * <p>Constructor for InventoryWrapper.</p>
+     *
+     * @param version a {@link java.lang.String} object.
+     * @param date a java$util$Date object.
+     * @param group a {@link java.lang.String} object.
+     * @param urlViewVC a {@link java.lang.String} object.
+     */
     public InventoryWrapper(String version, Date date, String group, String urlViewVC){
         this.version = version;
         this.date = date;
@@ -46,15 +61,35 @@ public class InventoryWrapper {
         this.urlViewVC = urlViewVC;
     }
 
+    /**
+     * <p>Getter for the field <code>version</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getVersion(){
         return version;
     }
+    /**
+     * <p>Getter for the field <code>date</code>.</p>
+     *
+     * @return a java$util$Date object.
+     */
     public Date getDate() {
         return date;
     }
+    /**
+     * <p>Getter for the field <code>group</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGroup(){
         return group;
     }
+    /**
+     * <p>Getter for the field <code>urlViewVC</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrlViewVC(){
         return urlViewVC;
     }

@@ -53,17 +53,31 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * <p>DefaultRrdDao class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class DefaultRrdDao implements RrdDao, InitializingBean {
     private RrdStrategy m_rrdStrategy;
     private File m_rrdBaseDirectory;
     private String m_rrdBinaryPath;
 
+    /** {@inheritDoc} */
     public double getPrintValue(OnmsAttribute attribute, String cf, long start, long end) {
         return getPrintValues(attribute, cf, start, end)[0];
     }
 
+    /**
+     * <p>getPrintValues</p>
+     *
+     * @param attribute a {@link org.opennms.netmgt.model.OnmsAttribute} object.
+     * @param rraConsolidationFunction a {@link java.lang.String} object.
+     * @param startTimeInMillis a long.
+     * @param endTimeInMillis a long.
+     * @param printFunctions a {@link java.lang.String} object.
+     * @return an array of double.
+     */
     public double[] getPrintValues(OnmsAttribute attribute, String rraConsolidationFunction, long startTimeInMillis, long endTimeInMillis, String... printFunctions) {
         Assert.notNull(attribute, "attribute argument must not be null");
         Assert.notNull(rraConsolidationFunction, "rraConsolicationFunction argument must not be null");
@@ -128,41 +142,76 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         return values;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_rrdStrategy != null, "property rrdStrategy must be set and be non-null");
         Assert.state(m_rrdBaseDirectory != null, "property rrdBaseDirectory must be set and be non-null");
         Assert.state(m_rrdBinaryPath != null, "property rrdBinaryPath must be set and be non-null");
     }
 
+    /**
+     * <p>getRrdStrategy</p>
+     *
+     * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public RrdStrategy getRrdStrategy() {
         return m_rrdStrategy;
     }
 
+    /**
+     * <p>setRrdStrategy</p>
+     *
+     * @param rrdStrategy a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public void setRrdStrategy(RrdStrategy rrdStrategy) {
         m_rrdStrategy = rrdStrategy;
     }
 
+    /**
+     * <p>getRrdBaseDirectory</p>
+     *
+     * @return a {@link java.io.File} object.
+     */
     public File getRrdBaseDirectory() {
         return m_rrdBaseDirectory;
     }
 
+    /**
+     * <p>setRrdBaseDirectory</p>
+     *
+     * @param rrdBaseDirectory a {@link java.io.File} object.
+     */
     public void setRrdBaseDirectory(File rrdBaseDirectory) {
         m_rrdBaseDirectory = rrdBaseDirectory;
     }
 
+    /**
+     * <p>getRrdBinaryPath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRrdBinaryPath() {
         return m_rrdBinaryPath;
     }
 
+    /**
+     * <p>setRrdBinaryPath</p>
+     *
+     * @param rrdBinaryPath a {@link java.lang.String} object.
+     */
     public void setRrdBinaryPath(String rrdBinaryPath) {
         m_rrdBinaryPath = rrdBinaryPath;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Create an RRD graph.
-     * 
      * @see org.opennms.netmgt.dao.RrdDao#createGraph(java.lang.String, java.io.File)
-     * @throws DataRetrievalFailureException if the graph could not be created
      */
     public InputStream createGraph(String command, File workDir) throws DataRetrievalFailureException {
        try {
@@ -173,26 +222,36 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     }
 
     /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
      * @see org.opennms.netmgt.dao.RrdDao#getGraphTopOffsetWithText()
+     * @return a int.
      */
     public int getGraphTopOffsetWithText() {
         return m_rrdStrategy.getGraphTopOffsetWithText();
     }
 
     /**
+     * <p>getGraphLeftOffset</p>
+     *
      * @see org.opennms.netmgt.dao.RrdDao#getGraphLeftOffset()
+     * @return a int.
      */
     public int getGraphLeftOffset() {
         return m_rrdStrategy.getGraphLeftOffset();
     }
 
     /**
+     * <p>getGraphRightOffset</p>
+     *
      * @see org.opennms.netmgt.dao.RrdDao#getGraphRightOffset()
+     * @return a int.
      */
     public int getGraphRightOffset() {
         return m_rrdStrategy.getGraphRightOffset();
     }
 
+    /** {@inheritDoc} */
     public Double getLastFetchValue(OnmsAttribute attribute, int interval) throws DataAccessResourceFailureException {
         Assert.notNull(attribute, "attribute argument must not be null");
         Assert.isTrue(interval > 0, "interval argument must be greater than zero");
@@ -208,6 +267,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public Double getLastFetchValue(OnmsAttribute attribute, int interval, int range) throws DataAccessResourceFailureException {
         Assert.notNull(attribute, "attribute argument must not be null");
         Assert.isTrue(interval > 0, "interval argument must be greater than zero");

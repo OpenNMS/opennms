@@ -37,11 +37,11 @@ import java.util.Set;
 /**
  * Really a container class for persisting arrangements of status definitions
  * created by the user.
- * 
- * Perhaps a new package called model.config is in order.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * Perhaps a new package called model.config is in order.
+ *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class AggregateStatusView {
     
@@ -52,56 +52,118 @@ public class AggregateStatusView {
     private String m_columnValue;
     private Set<AggregateStatusDefinition> m_statusDefinitions;
     
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getId() {
         return m_id;
     }
     
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getTableName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTableName() {
         return m_tableName;
     }
 
+    /**
+     * <p>setTableName</p>
+     *
+     * @param tableName a {@link java.lang.String} object.
+     */
     public void setTableName(String tableName) {
         m_tableName = tableName;
     }
     
+    /**
+     * <p>getColumnName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getColumnName() {
         return m_columnName;
     }
     
+    /**
+     * <p>setColumnName</p>
+     *
+     * @param columnName a {@link java.lang.String} object.
+     */
     public void setColumnName(String columnName) {
         m_columnName = columnName;
     }
     
+    /**
+     * <p>getColumnValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getColumnValue() {
         return m_columnValue;
     }
     
+    /**
+     * <p>setColumnValue</p>
+     *
+     * @param columnValue a {@link java.lang.String} object.
+     */
     public void setColumnValue(String columnValue) {
         m_columnValue = columnValue;
     }
     
+    /**
+     * <p>getStatusDefinitions</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<AggregateStatusDefinition> getStatusDefinitions() {
         return m_statusDefinitions;
     }
+    /**
+     * <p>setStatusDefinitions</p>
+     *
+     * @param statusDefinitions a {@link java.util.Set} object.
+     */
     public void setStatusDefinitions(Set<AggregateStatusDefinition> statusDefinitions) {
         m_statusDefinitions = statusDefinitions;
     }
     
-    /**
-     * Good for debug logs and viewing in a debugger.
-     */
+	/**
+	 * Good for debug logs and viewing in a debugger.
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		StringBuffer result = new StringBuffer(50);
 		result.append("AggregateStatusView { id: ");

@@ -43,37 +43,57 @@ import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 /**
- * 
+ * <p>ParallelPingResponseCallback class.</p>
+ *
  * @author <a href="ranger@opennms.org">Ben Reed</a>
+ * @version $Id: $
  */
 public class ParallelPingResponseCallback implements PingResponseCallback {
     BarrierSignaler bs;
     Number[] m_responseTimes;
 
+    /**
+     * <p>Constructor for ParallelPingResponseCallback.</p>
+     *
+     * @param count a int.
+     */
     public ParallelPingResponseCallback(int count) {
         bs = new BarrierSignaler(count);
         m_responseTimes = new Number[count];
     }
 
+    /** {@inheritDoc} */
     public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
         m_responseTimes[packet.getSequenceId()] = null;
         bs.signalAll();
     }
 
+    /** {@inheritDoc} */
     public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
         m_responseTimes[packet.getSequenceId()] = packet.getPingRTT();
         bs.signalAll();
     }
 
+    /** {@inheritDoc} */
     public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
         m_responseTimes[packet.getSequenceId()] = null;
         bs.signalAll();
     }
 
+    /**
+     * <p>waitFor</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public void waitFor() throws InterruptedException {
         bs.waitFor();
     }
     
+    /**
+     * <p>getResponseTimes</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Number> getResponseTimes() {
         return Arrays.asList(m_responseTimes);
     }

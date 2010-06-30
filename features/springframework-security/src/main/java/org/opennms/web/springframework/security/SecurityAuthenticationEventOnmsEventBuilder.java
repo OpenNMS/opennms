@@ -56,12 +56,21 @@ import org.springframework.security.ui.WebAuthenticationDetails;
 import org.springframework.util.Assert;
 import org.springframework.web.context.support.ServletRequestHandledEvent;
 
+/**
+ * <p>SecurityAuthenticationEventOnmsEventBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationListener, InitializingBean {
+    /** Constant <code>SUCCESS_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
+    /** Constant <code>FAILURE_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String FAILURE_UEI = "uei.opennms.org/internal/authentication/failure";
 
     private EventProxy m_eventProxy;
     
+    /** {@inheritDoc} */
     public void onApplicationEvent(ApplicationEvent event) {
         log().debug("Received ApplicationEvent " + event.getClass().toString());
         if (event instanceof AuthenticationSuccessEvent) {
@@ -130,10 +139,18 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         }
     }
     
+    /**
+     * <p>setEventProxy</p>
+     *
+     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.notNull(m_eventProxy, "property eventProxy must be set");
     }

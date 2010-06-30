@@ -32,8 +32,17 @@
  */
 package org.opennms.netmgt.provision.server;
 
+/**
+ * <p>Pop3Server class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Pop3Server extends SimpleServer {
     
+    /**
+     * <p>onInit</p>
+     */
     public void onInit(){
         setTimeout(3000);
         setBanner("+OK");

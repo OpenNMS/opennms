@@ -40,19 +40,32 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>IcmpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class IcmpDetector extends AbstractDetector {
     
+    /**
+     * <p>Constructor for IcmpDetector.</p>
+     */
     @SuppressWarnings("deprecation")
     public IcmpDetector() {
         init();
     }
     
+    /**
+     * <p>init</p>
+     */
     public void init() {
         setTimeout(PingConstants.DEFAULT_TIMEOUT);
         setRetries(PingConstants.DEFAULT_RETRIES);
     }
     
+    /** {@inheritDoc} */
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
         StringBuffer sb = new StringBuffer();
 
@@ -119,11 +132,13 @@ public class IcmpDetector extends AbstractDetector {
     }
 
     
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         
     }
 
+    /** {@inheritDoc} */
     @Override
     public void dispose() {
         // TODO Auto-generated method stub

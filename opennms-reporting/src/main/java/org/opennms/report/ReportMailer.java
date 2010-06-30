@@ -43,8 +43,10 @@ import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
 
 /**
- * 
+ * <p>ReportMailer class.</p>
+ *
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
 public class ReportMailer {
 	
@@ -58,12 +60,22 @@ public class ReportMailer {
 
 	private String m_subject;
 	
+	/**
+	 * <p>Constructor for ReportMailer.</p>
+	 */
 	public ReportMailer() {
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ReportMailer.class);
 	}
 	
 	
+	/**
+	 * <p>Constructor for ReportMailer.</p>
+	 *
+	 * @param address a {@link java.lang.String} object.
+	 * @param filename a {@link java.lang.String} object.
+	 * @param subject a {@link java.lang.String} object.
+	 */
 	public ReportMailer(String address, String filename, String subject) {
 		this.m_address = address;
 		this.m_filename = filename;
@@ -72,6 +84,11 @@ public class ReportMailer {
 		log = ThreadCategory.getInstance(ReportMailer.class);
 	}
 	
+	/**
+	 * <p>send</p>
+	 *
+	 * @throws java.io.IOException if any.
+	 */
 	public void send() throws IOException {
         if (m_filename == null || m_address == null) {
             throw new IllegalArgumentException("Cannot take null paramters.");
@@ -90,18 +107,38 @@ public class ReportMailer {
         }
     }
 
+	/**
+	 * <p>getAddress</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getAddress() {
 		return m_address;
 	}
 
+	/**
+	 * <p>setAddress</p>
+	 *
+	 * @param address a {@link java.lang.String} object.
+	 */
 	public void setAddress(String address) {
 		this.m_address = address;
 	}
 
+	/**
+	 * <p>getFilename</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getFilename() {
 		return m_filename;
 	}
 
+	/**
+	 * <p>setFilename</p>
+	 *
+	 * @param filename a {@link java.lang.String} object.
+	 */
 	public void setFilename(String filename) {
 		this.m_filename = filename;
 	}

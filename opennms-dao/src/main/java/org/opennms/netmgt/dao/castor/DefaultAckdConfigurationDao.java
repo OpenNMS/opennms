@@ -50,39 +50,53 @@ import org.springframework.dao.DataAccessResourceFailureException;
 /**
  * Default implementation of <code>AckdConfiguration</code> containing utility methods for manipulating
  * the <code>Ackd</code> and <code>AckdReader</code>s.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdConfiguration, AckdConfiguration> implements AckdConfigurationDao {
 
+    /**
+     * <p>Constructor for DefaultAckdConfigurationDao.</p>
+     */
     public DefaultAckdConfigurationDao() {
         super(AckdConfiguration.class, "Ackd Configuration");
     }
     
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.ackd.AckdConfiguration} object.
+     */
     public AckdConfiguration getConfig() {
         return getContainer().getObject();
     }
 
+    /** {@inheritDoc} */
     @Override
     public AckdConfiguration translateConfig(AckdConfiguration castorConfig) {
         return castorConfig;
     }
 
+    /** {@inheritDoc} */
     public Boolean acknowledgmentMatch(List<String> messageText) {
         String expression = getConfig().getAckExpression();
         return matcher(messageText, expression);
     }
 
+    /** {@inheritDoc} */
     public Boolean clearMatch(List<String> messageText) {
         String expression = getConfig().getClearExpression();
         return matcher(messageText, expression);
     }
 
+    /** {@inheritDoc} */
     public Boolean escalationMatch(List<String> messageText) {
         String expression = getConfig().getEscalateExpression();
         return matcher(messageText, expression);
     }
 
+    /** {@inheritDoc} */
     public Boolean unAcknowledgmentMatch(List<String> messageText) {
         String expression = getConfig().getUnackExpression();
         return matcher(messageText, expression);
@@ -111,6 +125,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
         return matches;
     }
 
+    /** {@inheritDoc} */
     public Reader getReader(String readerName) {
         Reader readerByName = null;
         List<Reader> readers = getConfig().getReaders().getReaderCollection();
@@ -122,6 +137,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
         return readerByName;
     }
     
+    /** {@inheritDoc} */
     public ReaderSchedule getReaderSchedule(String readerName) {
         ReaderSchedule schedule = null;
         Reader reader = getReader(readerName);
@@ -131,6 +147,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
         return schedule;
     }
     
+    /** {@inheritDoc} */
     public boolean isReaderEnabled(String readerName) {
         boolean enabled = false;
         Reader reader = getReader(readerName);
@@ -143,12 +160,18 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
     /**
      * The exception boils up from the container class  The container class should
      * indicate this.
-     * 
+     *
+     * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
     }
 
+    /**
+     * <p>getEnabledReaderCount</p>
+     *
+     * @return a int.
+     */
     public int getEnabledReaderCount() {
         int cnt = 0;
         Iterator<Reader> it = getConfig().getReaders().getReaderCollection().iterator();
@@ -162,6 +185,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
         return cnt;
     }
 
+    /** {@inheritDoc} */
     public List<Parameter> getParametersForReader(String name) {
         return getReader(name).getParameterCollection();
     }

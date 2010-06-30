@@ -42,31 +42,285 @@ import org.opennms.netmgt.xml.event.Log;
  * typically used by the poller framework plugins that perform service
  * monitoring to send out aprropriate events. Can also be used by capsd,
  * discovery etc.
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public interface EventProxy {
     /**
      * This method is called to send the event out
-     * 
+     *
      * @param event
      *            the event to be sent out
-     * 
      * @exception EventProxyException
      *                thrown if the send fails for any reason
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
     public void send(Event event) throws EventProxyException;
 
     /**
      * This method is called to send an event log containing multiple events out
-     * 
+     *
      * @param eventLog
      *            the events to be sent out
-     * 
      * @exception EventProxyException
      *                thrown if the send fails for any reason
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
     public void send(Log eventLog) throws EventProxyException;
 }

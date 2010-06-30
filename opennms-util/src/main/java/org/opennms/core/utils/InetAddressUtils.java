@@ -39,11 +39,19 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * 
+ * <p>Abstract InetAddressUtils class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 abstract public class InetAddressUtils {
 
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @param ipAddrOctets an array of byte.
+     * @return a {@link java.net.InetAddress} object.
+     */
     public static InetAddress getInetAddress(byte[] ipAddrOctets) {
         try {
             return InetAddress.getByAddress(ipAddrOctets);
@@ -53,6 +61,12 @@ abstract public class InetAddressUtils {
         
     }
 
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @param dottedNotation a {@link java.lang.String} object.
+     * @return a {@link java.net.InetAddress} object.
+     */
     public static InetAddress getInetAddress(String dottedNotation) {
         try {
             return InetAddress.getByName(dottedNotation);
@@ -61,10 +75,22 @@ abstract public class InetAddressUtils {
         }
     }
 
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @param ipAddrAs32bitNumber a long.
+     * @return a {@link java.net.InetAddress} object.
+     */
     public static InetAddress getInetAddress(long ipAddrAs32bitNumber) {
         return getInetAddress(toIpAddrBytes(ipAddrAs32bitNumber));
     }
     
+    /**
+     * <p>toIpAddrBytes</p>
+     *
+     * @param address a long.
+     * @return an array of byte.
+     */
     public static byte[] toIpAddrBytes(long address) {
     
         byte[] octets = new byte[4];
@@ -76,14 +102,32 @@ abstract public class InetAddressUtils {
         return octets;
     }
     
+    /**
+     * <p>toIpAddrBytes</p>
+     *
+     * @param dottedNotation a {@link java.lang.String} object.
+     * @return an array of byte.
+     */
     public static byte[] toIpAddrBytes(String dottedNotation) {
         return getInetAddress(dottedNotation).getAddress();
     }
 
+    /**
+     * <p>toIpAddrBytes</p>
+     *
+     * @param addr a {@link java.net.InetAddress} object.
+     * @return an array of byte.
+     */
     public static byte[] toIpAddrBytes(InetAddress addr) {
         return addr.getAddress();
     }
     
+    /**
+     * <p>toIpAddrLong</p>
+     *
+     * @param address an array of byte.
+     * @return a long.
+     */
     public static long toIpAddrLong(byte[] address) {
         if (address.length != 4) {
             throw new IllegalArgumentException("address "+address+" has the wrong length "+address.length);
@@ -103,10 +147,22 @@ abstract public class InetAddressUtils {
         
     }
     
+    /**
+     * <p>toIpAddrLong</p>
+     *
+     * @param dottedNotation a {@link java.lang.String} object.
+     * @return a long.
+     */
     public static long toIpAddrLong(String dottedNotation) {
         return toIpAddrLong(toIpAddrBytes(dottedNotation));
     }
     
+    /**
+     * <p>toIpAddrLong</p>
+     *
+     * @param addr a {@link java.net.InetAddress} object.
+     * @return a long.
+     */
     public static long toIpAddrLong(InetAddress addr) {
         return toIpAddrLong(addr.getAddress());
     }
@@ -116,10 +172,22 @@ abstract public class InetAddressUtils {
         return b < 0 ? ((long)b)+256 : ((long)b);
     }
 
+    /**
+     * <p>toIpAddrString</p>
+     *
+     * @param ipAddr a long.
+     * @return a {@link java.lang.String} object.
+     */
     public static String toIpAddrString(long ipAddr) {
         return getInetAddress(ipAddr).getHostAddress();
     }
     
+    /**
+     * <p>toIpAddrString</p>
+     *
+     * @param addr an array of byte.
+     * @return a {@link java.lang.String} object.
+     */
     public static String toIpAddrString(byte[] addr) {
         return getInetAddress(addr).getHostAddress();
     }

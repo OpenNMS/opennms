@@ -36,9 +36,17 @@ import java.net.InetAddress;
  * ServiceDetector
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface SyncServiceDetector extends ServiceDetector {
     
+    /**
+     * <p>isServiceDetected</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param detectMonitor a {@link org.opennms.netmgt.provision.DetectorMonitor} object.
+     * @return a boolean.
+     */
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor);
 
 }

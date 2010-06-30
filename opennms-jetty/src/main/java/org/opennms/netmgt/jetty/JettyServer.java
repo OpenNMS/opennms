@@ -52,10 +52,12 @@ import org.opennms.serviceregistration.ServiceRegistrationStrategy;
 
 /**
  * Implements Web Application within OpenNMS as a Service Daemon.
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class JettyServer extends AbstractServiceDaemon implements SpringServiceDaemon {
     
@@ -64,10 +66,14 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     private Server m_server;
     private Hashtable<String,ServiceRegistrationStrategy> services = new Hashtable<String,ServiceRegistrationStrategy>();
     
+    /**
+     * <p>Constructor for JettyServer.</p>
+     */
     protected JettyServer() {
         super("OpenNMS.JettyServer");
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         Properties p = System.getProperties();
@@ -140,6 +146,13 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         m_server.setStopAtShutdown(true);
     }
 
+    /**
+     * <p>addContext</p>
+     *
+     * @param handlers a {@link org.mortbay.jetty.handler.HandlerCollection} object.
+     * @param name a {@link java.io.File} object.
+     * @param contextPath a {@link java.lang.String} object.
+     */
     protected void addContext(HandlerCollection handlers, File name, String contextPath) {
         log().warn("adding context: " + contextPath + " -> " + name.getAbsolutePath());
         WebAppContext wac = new WebAppContext();
@@ -148,6 +161,12 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         handlers.addHandler(wac);
     }
 
+    /**
+     * <p>registerService</p>
+     *
+     * @param port a {@link java.lang.Integer} object.
+     * @param contextPath a {@link java.lang.String} object.
+     */
     protected void registerService(Integer port, String contextPath) {
         String contextName = contextPath.replace("/", "");
 
@@ -164,6 +183,11 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         }
     }
 
+    /**
+     * <p>excludeCipherSuites</p>
+     *
+     * @param sslConnector a {@link org.mortbay.jetty.security.SslSocketConnector} object.
+     */
     protected void excludeCipherSuites(SslSocketConnector sslConnector) {
         String[] defaultExclSuites = {
                 "SSL_DHE_DSS_WITH_DES_CBC_SHA",
@@ -195,6 +219,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onStart() {
         try {
@@ -214,6 +239,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onStop() {
         for (String key: services.keySet()) {

@@ -12,6 +12,12 @@ import org.opennms.netmgt.model.PollStatus;
 
 
 
+/**
+ * <p>JDBCQueryMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public final class JDBCQueryMonitor extends JDBCMonitor {
 
     private static final int OPERATOR_MAP_EQUALS = 0;
@@ -29,6 +35,13 @@ public final class JDBCQueryMonitor extends JDBCMonitor {
     private static  Map <String,Integer>operatorMap = new HashMap<String, Integer>();
     private static  Map<String, Integer> actionMap = new HashMap<String, Integer>();
 
+    /**
+     * <p>Constructor for JDBCQueryMonitor.</p>
+     *
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.lang.InstantiationException if any.
+     * @throws java.lang.IllegalAccessException if any.
+     */
     public JDBCQueryMonitor() throws ClassNotFoundException,
             InstantiationException, IllegalAccessException {
         
@@ -48,6 +61,7 @@ public final class JDBCQueryMonitor extends JDBCMonitor {
                
     }
     
+    /** {@inheritDoc} */
     public PollStatus checkDatabaseStatus(Connection con, Map<String, Object> parameters) {
         PollStatus ps = PollStatus.unavailable();
         Statement st = null; 

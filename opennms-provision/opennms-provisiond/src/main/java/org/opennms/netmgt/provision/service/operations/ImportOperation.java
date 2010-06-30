@@ -35,31 +35,58 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.service.ProvisionService;
 
 
+/**
+ * <p>Abstract ImportOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class ImportOperation {
     
     final private ProvisionService m_provisionService;
     
+    /**
+     * <p>Constructor for ImportOperation.</p>
+     *
+     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     */
     public ImportOperation(ProvisionService provisionService) {
         m_provisionService = provisionService;
     }
 
 
+    /**
+     * <p>scan</p>
+     */
     abstract public void scan();
 
     /**
+     * <p>getProvisionService</p>
+     *
      * @return the provisionService
      */
     protected ProvisionService getProvisionService() {
         return m_provisionService;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>doPersist</p>
+     */
     protected abstract void doPersist();
 
 
+    /**
+     * <p>persist</p>
+     */
     public void persist() {
     
         final ImportOperation oper = this;

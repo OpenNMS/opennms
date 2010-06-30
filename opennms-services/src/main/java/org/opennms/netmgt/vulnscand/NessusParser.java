@@ -40,6 +40,12 @@ import org.apache.regexp.RE;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 
+/**
+ * <p>NessusParser class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NessusParser {
     private static NessusParser instance;
 
@@ -165,6 +171,11 @@ public class NessusParser {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link org.opennms.netmgt.vulnscand.NessusParser} object.
+     */
     public static NessusParser getInstance() {
         if (instance == null) {
             instance = new NessusParser();
@@ -173,6 +184,11 @@ public class NessusParser {
         return instance;
     }
 
+    /**
+     * <p>main</p>
+     *
+     * @param argv an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] argv) {
         // Little tester function used to parse events
         NessusParser myParser = NessusParser.getInstance();
@@ -180,6 +196,13 @@ public class NessusParser {
         System.out.println(myParser.parseDescr(argv[0]));
     }
 
+    /**
+     * <p>parsePort</p>
+     *
+     * @param portString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.vulnscand.PortValues} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     */
     public PortValues parsePort(String portString) throws IllegalArgumentException {
         PortValues retval = new PortValues();
 
@@ -206,6 +229,13 @@ public class NessusParser {
             throw new IllegalArgumentException("String could not be parsed into a PortValues object");
     }
 
+    /**
+     * <p>parseDescr</p>
+     *
+     * @param descr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.vulnscand.DescrValues} object.
+     * @throws java.lang.IllegalArgumentException if any.
+     */
     public DescrValues parseDescr(String descr) throws IllegalArgumentException {
         // Specific fields to be parsed out of the descr
         // Descr construction helpers
@@ -342,12 +372,22 @@ public class NessusParser {
             throw new IllegalArgumentException("String could not be parsed into a DescrValues object");
     }
 
+    /**
+     * <p>getDefaultDescrValues</p>
+     *
+     * @return a {@link org.opennms.netmgt.vulnscand.DescrValues} object.
+     */
     public static DescrValues getDefaultDescrValues() {
         DescrValues retval = new DescrValues();
         retval.useDefaults();
         return retval;
     }
 
+    /**
+     * <p>getDefaultPortValues</p>
+     *
+     * @return a {@link org.opennms.netmgt.vulnscand.PortValues} object.
+     */
     public static PortValues getDefaultPortValues() {
         PortValues retval = new PortValues();
         retval.useDefaults();

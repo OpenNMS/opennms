@@ -66,20 +66,21 @@ import org.opennms.javamail.JavaMailerException;
 /**
  * This <code>ServiceMonitor</code> is designed to monitor the transport of
  * SMTP email.
- * 
+ *
  * Use cases:
- * 
- * a) Class will test that it can successfully send an email. 
+ *
+ * a) Class will test that it can successfully send an email.
  * b) Class will test that it can successfully connect to a mail server and get mailbox contents.
  * c) Class will test that it can successfully read a new email message from a mail server.
  * d) Class will test that it can send an email and read that same email from a mail server.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * 
+ * @version $Id: $
  */
 @Distributable
 public class MailTransportMonitor extends IPv4Monitor {
 
+    /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         ThreadCategory log = ThreadCategory.getInstance();

@@ -59,6 +59,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 @Component
+/**
+ * <p>OnmsMapRestService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Path("maps")
@@ -75,6 +82,11 @@ public class OnmsMapRestService extends OnmsRestService {
     @Context
     ResourceContext m_context;
 
+    /**
+     * <p>getMaps</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsMapList} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMapList getMaps() {
@@ -82,6 +94,12 @@ public class OnmsMapRestService extends OnmsRestService {
         return new OnmsMapList(m_mapDao.findMatching(criteria));
     }
 
+    /**
+     * <p>getMap</p>
+     *
+     * @param mapId a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsMap} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{mapId}")
@@ -89,6 +107,12 @@ public class OnmsMapRestService extends OnmsRestService {
         return m_mapDao.get(mapId);
     }
 
+    /**
+     * <p>addMap</p>
+     *
+     * @param map a {@link org.opennms.netmgt.model.OnmsMap} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addMap(OnmsMap map) {
@@ -97,6 +121,12 @@ public class OnmsMapRestService extends OnmsRestService {
         return Response.ok(map).build();
     }
 
+    /**
+     * <p>deleteMap</p>
+     *
+     * @param mapId a int.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{mapId}")
     public Response deleteMap(@PathParam("mapId") int mapId) {
@@ -108,6 +138,13 @@ public class OnmsMapRestService extends OnmsRestService {
         return Response.ok().build();
     }
 
+    /**
+     * <p>updateMap</p>
+     *
+     * @param mapId a int.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{mapId}")
@@ -129,6 +166,11 @@ public class OnmsMapRestService extends OnmsRestService {
         return Response.ok(map).build();
     }
 
+    /**
+     * <p>getMapElementResource</p>
+     *
+     * @return a {@link org.opennms.web.rest.OnmsMapElementResource} object.
+     */
     @Path("{mapId}/mapElements")
     public OnmsMapElementResource getMapElementResource() {
         return m_context.getResource(OnmsMapElementResource.class);

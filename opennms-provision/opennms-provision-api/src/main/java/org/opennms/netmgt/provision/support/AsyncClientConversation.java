@@ -36,8 +36,10 @@ import java.util.List;
 
 
 /**
- * @author Donald Desloge
+ * <p>AsyncClientConversation class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class AsyncClientConversation<Request, Response> {
     
@@ -87,38 +89,56 @@ public class AsyncClientConversation<Request, Response> {
     private boolean m_hasBanner = false;
     
     /**
-     * 
+     * <p>addExchange</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchange} object.
      */
     public void addExchange(AsyncExchange<Request, Response> request) {
         m_conversation.add(request);
     }
     
+    /**
+     * <p>setHasBanner</p>
+     *
+     * @param hasBanner a boolean.
+     */
     public void setHasBanner(boolean hasBanner){
         m_hasBanner = hasBanner;
     }
     
+    /**
+     * <p>hasBanner</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasBanner(){
         return m_hasBanner;
     }
 
 
     /**
-     * @return
+     * <p>hasExchanges</p>
+     *
+     * @return a boolean.
      */
     public boolean hasExchanges() {
         return !m_conversation.isEmpty();
     }
 
     /**
-     * @return
+     * <p>isComplete</p>
+     *
+     * @return a boolean.
      */
     public boolean isComplete() {
         return m_isComplete;
     }
 
     /**
-     * @param message
-     * @return
+     * <p>validate</p>
+     *
+     * @param message a Response object.
+     * @return a boolean.
      */
     public boolean validate(Response message) {
         AsyncExchange<Request, Response> ex = m_conversation.remove(0);
@@ -131,7 +151,9 @@ public class AsyncClientConversation<Request, Response> {
     }
 
     /**
-     * @return
+     * <p>getRequest</p>
+     *
+     * @return a Request object.
      */
     public Request getRequest() {
         return extracted();

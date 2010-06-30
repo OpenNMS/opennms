@@ -40,17 +40,19 @@ package org.opennms.netmgt.scriptd.helper;
  * exception associated with the JoeSNMP library), that exception will be
  * included as the "cause". The getMessage and printStackTrace methods are
  * overridden, in order to describe the "cause" exception, where present.
- * 
+ *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * 
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @version $Id: $
  */
 public class SnmpTrapHelperException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /**
      * Construct an SnmpTrapHelperException with the specified message.
-     * 
+     *
      * @param message
      *            The message to be associated with the exception.
      */
@@ -61,7 +63,7 @@ public class SnmpTrapHelperException extends Exception {
     /**
      * Construct an SnmpTrapHelperException with the specified message and
      * cause.
-     * 
+     *
      * @param message
      *            The message to be associated with the exception.
      * @param cause
@@ -75,7 +77,7 @@ public class SnmpTrapHelperException extends Exception {
      * Get the message associated with this exception. If this exception has an
      * associated cause exception, the message associated with the cause
      * exception is appended.
-     * 
+     *
      * @return The message associated with this exception.
      */
     public String getMessage() {
@@ -89,12 +91,11 @@ public class SnmpTrapHelperException extends Exception {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Print the stack trace associated with this exception to the specified
      * print stream. If this exception has an associated cause exception, the
      * stack trace associated with the cause exception is printed.
-     * 
-     * @param ps
-     *            The print steam to which the stack trace should be printed.
      */
     public void printStackTrace(java.io.PrintStream ps) {
         Throwable cause = getCause();
@@ -122,7 +123,7 @@ public class SnmpTrapHelperException extends Exception {
      * Print the stack trace associated with this exception to the specified
      * print writer. If this exception has an associated cause exception, the
      * stack trace associated with the cause exception is printed.
-     * 
+     *
      * @param pw
      *            The print writer to which the stack trace should be printed.
      */

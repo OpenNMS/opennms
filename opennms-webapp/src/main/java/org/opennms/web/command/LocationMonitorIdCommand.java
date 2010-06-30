@@ -36,15 +36,28 @@
 package org.opennms.web.command;
 
 /**
- * 
+ * <p>LocationMonitorIdCommand class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class LocationMonitorIdCommand {
     private Integer m_monitorId;
     
+    /**
+     * <p>getMonitorId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getMonitorId() {
         return m_monitorId;
     }
+    /**
+     * <p>setMonitorId</p>
+     *
+     * @param monitorId a {@link java.lang.Integer} object.
+     */
     public void setMonitorId(Integer monitorId) {
         m_monitorId = monitorId;
     }

@@ -43,19 +43,29 @@ import org.springframework.dao.DataAccessResourceFailureException;
 /**
  * Default implementation of <code>MicroblogConfiguration</code> containing utility methods for manipulating
  * the <code>MicroblogNotificationStrategy</code> and companion classes.
- * 
+ *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
  */
 public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<MicroblogConfiguration, MicroblogConfiguration> implements MicroblogConfigurationDao {
 
+    /**
+     * <p>Constructor for DefaultMicroblogConfigurationDao.</p>
+     */
     public DefaultMicroblogConfigurationDao() {
         super(MicroblogConfiguration.class, "Microblog Configuration");
     }
     
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.microblog.MicroblogConfiguration} object.
+     */
     public MicroblogConfiguration getConfig() {
         return getContainer().getObject();
     }
 
+    /** {@inheritDoc} */
     @Override
     public MicroblogConfiguration translateConfig(MicroblogConfiguration castorConfig) {
         return castorConfig;
@@ -64,18 +74,25 @@ public class DefaultMicroblogConfigurationDao extends AbstractCastorConfigDao<Mi
     /**
      * The exception boils up from the container class  The container class should
      * indicate this.
-     * 
+     *
+     * @throws org.springframework.dao.DataAccessResourceFailureException if any.
      */
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
     }
 
+    /**
+     * <p>getDefaultProfile</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.microblog.MicroblogProfile} object.
+     */
     public MicroblogProfile getDefaultProfile() {
         String defaultProfileName = getContainer().getObject().getDefaultMicroblogProfileName();
         log().debug("Requesting default microblog, which is called '" + defaultProfileName + "'");
         return getProfile(defaultProfileName);
     }
 
+    /** {@inheritDoc} */
     public MicroblogProfile getProfile(String name) {
         if (name == null)
             return null;

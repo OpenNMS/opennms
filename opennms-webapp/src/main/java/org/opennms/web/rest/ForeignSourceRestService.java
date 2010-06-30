@@ -76,61 +76,63 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 /**
-<p>RESTful service to the OpenNMS Provisioning Foreign Source definitions.  Foreign source
-definitions are used to control the scanning (service detection) of services for SLA monitoring
-as well as the data collection settings for physical interfaces (resources).</p>
-<p>This API supports CRUD operations for managing the Provisioner's foreign source definitions. Foreign
-source definitions are POSTed and will be deployed when the corresponding requisition (provisioning group)
-gets imported by provisiond.
-<ul>
-<li>GET/PUT/POST pending foreign sources</li>
-<li>GET pending and deployed count</li>
-</ul>
-</p>
-<p>Example 1: Create a new foreign source<i>Note: The foreign-source attribute typically has a 1 to 1 
-relationship to a provisioning group (a.k.a. requisition).  The relationship is only 
-implied by name and it is a best practice to use the same name for all three.  If a requisition exists with 
-the same name as a foreign source, it will be used during the provisioning (import) operations in lieu
-of the default foreign source.</i></p>
-<pre>
-curl -X POST \
-     -H "Content-Type: application/xml" \
-     -d &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
-         &lt;foreign-source date-stamp="2009-03-07T20:22:45.625-05:00" name="Cisco"
-           xmlns:ns2="http://xmlns.opennms.org/xsd/config/model-import" 
-           xmlns="http://xmlns.opennms.org/xsd/config/foreign-source"&gt;
-           &lt;scan-interval&gt;1d&lt;/scan-interval&gt;
-           &lt;detectors&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" name="DHCP"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" name="DNS"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.simple.FtpDetector" name="FTP"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.simple.HttpDetector" name="HTTP"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.simple.HttpsDetector" name="HTTPS"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" name="ICMP"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.simple.LdapDetector" name="LDAP"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.radius.RadiusDetector" name="Radius"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" name="SNMP"/&gt;
-             &lt;detector class="org.opennms.netmgt.provision.detector.ssh.SshDetector" name="SSH"/&gt;
-           &lt;/detectors&gt;
-           &lt;policies&gt;
-             &lt;policy class="org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy" name="policy1"&gt;
-               &lt;parameter value="~10\.*\.*\.*" key="ipAddress"/&gt;
-             &lt;/policy&gt;
-           &lt;/policies&gt;
-         &lt;/foreign-source&gt; \
-     -u admin:admin \
-     http://localhost:8980/opennms/rest/foreignSources
-</pre>
-<p>Example 2: Query SNMP community string.</p>
-<pre>
-curl -X GET \
-     -H "Content-Type: application/xml" \
-     -u admin:admin \
-        http://localhost:8980/opennms/rest/foreignSources/deployed \
-        2>/dev/null \
-        |xmllint --format -</pre>
+ *<p>RESTful service to the OpenNMS Provisioning Foreign Source definitions.  Foreign source
+ *definitions are used to control the scanning (service detection) of services for SLA monitoring
+ *as well as the data collection settings for physical interfaces (resources).</p>
+ *<p>This API supports CRUD operations for managing the Provisioner's foreign source definitions. Foreign
+ *source definitions are POSTed and will be deployed when the corresponding requisition (provisioning group)
+ *gets imported by provisiond.
+ *<ul>
+ *<li>GET/PUT/POST pending foreign sources</li>
+ *<li>GET pending and deployed count</li>
+ *</ul>
+ *</p>
+ *<p>Example 1: Create a new foreign source<i>Note: The foreign-source attribute typically has a 1 to 1
+ *relationship to a provisioning group (a.k.a. requisition).  The relationship is only
+ *implied by name and it is a best practice to use the same name for all three.  If a requisition exists with
+ *the same name as a foreign source, it will be used during the provisioning (import) operations in lieu
+ *of the default foreign source.</i></p>
+ *<pre>
+ *curl -X POST \
+ *     -H "Content-Type: application/xml" \
+ *     -d &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+ *         &lt;foreign-source date-stamp="2009-03-07T20:22:45.625-05:00" name="Cisco"
+ *           xmlns:ns2="http://xmlns.opennms.org/xsd/config/model-import"
+ *           xmlns="http://xmlns.opennms.org/xsd/config/foreign-source"&gt;
+ *           &lt;scan-interval&gt;1d&lt;/scan-interval&gt;
+ *           &lt;detectors&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector" name="DHCP"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" name="DNS"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.simple.FtpDetector" name="FTP"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.simple.HttpDetector" name="HTTP"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.simple.HttpsDetector" name="HTTPS"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" name="ICMP"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.simple.LdapDetector" name="LDAP"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.radius.RadiusDetector" name="Radius"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" name="SNMP"/&gt;
+ *             &lt;detector class="org.opennms.netmgt.provision.detector.ssh.SshDetector" name="SSH"/&gt;
+ *           &lt;/detectors&gt;
+ *           &lt;policies&gt;
+ *             &lt;policy class="org.opennms.netmgt.provision.persist.policies.MatchingInterfacePolicy" name="policy1"&gt;
+ *               &lt;parameter value="~10\.*\.*\.*" key="ipAddress"/&gt;
+ *             &lt;/policy&gt;
+ *           &lt;/policies&gt;
+ *         &lt;/foreign-source&gt; \
+ *     -u admin:admin \
+ *     http://localhost:8980/opennms/rest/foreignSources
+ *</pre>
+ *<p>Example 2: Query SNMP community string.</p>
+ *<pre>
+ *curl -X GET \
+ *     -H "Content-Type: application/xml" \
+ *     -u admin:admin \
+ *        http://localhost:8980/opennms/rest/foreignSources/deployed \
+ *        2>/dev/null \
+ *        |xmllint --format -</pre>
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Component
 @PerRequest
@@ -155,6 +157,12 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Context
     SecurityContext m_securityContext;
 
+    /**
+     * <p>getDefaultForeignSource</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
+     * @throws java.text.ParseException if any.
+     */
     @GET
     @Path("default")
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -164,9 +172,9 @@ public class ForeignSourceRestService extends OnmsRestService {
 
     /**
      * Returns all the deployed foreign sources
-     * 
+     *
      * @return Collection of OnmsForeignSources (ready to be XML-ified)
-     * @throws ParseException
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("deployed")
@@ -176,7 +184,8 @@ public class ForeignSourceRestService extends OnmsRestService {
 
     /**
      * returns a plaintext string being the number of pending foreign sources
-     * @return
+     *
+     * @return a int.
      */
     @GET
     @Path("deployed/count")
@@ -187,9 +196,9 @@ public class ForeignSourceRestService extends OnmsRestService {
 
     /**
      * Returns the union of deployed and pending foreign sources
-     * 
+     *
      * @return Collection of OnmsForeignSources (ready to be XML-ified)
-     * @throws ParseException
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -203,7 +212,9 @@ public class ForeignSourceRestService extends OnmsRestService {
     
     /**
      * returns a plaintext string being the number of pending foreign sources
-     * @return
+     *
+     * @return a int.
+     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("count")
@@ -214,6 +225,7 @@ public class ForeignSourceRestService extends OnmsRestService {
 
     /**
      * Returns the requested {@link ForeignSource}
+     *
      * @param foreignSource the foreign source name
      * @return the foreign source
      */
@@ -224,6 +236,12 @@ public class ForeignSourceRestService extends OnmsRestService {
         return getActiveForeignSource(foreignSource);
     }
 
+    /**
+     * <p>getDetectors</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.DetectorCollection} object.
+     */
     @GET
     @Path("{foreignSource}/detectors")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -231,6 +249,13 @@ public class ForeignSourceRestService extends OnmsRestService {
         return new DetectorCollection(getActiveForeignSource(foreignSource).getDetectors());
     }
 
+    /**
+     * <p>getDetector</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param detector a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.DetectorWrapper} object.
+     */
     @GET
     @Path("{foreignSource}/detectors/{detector}")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -243,6 +268,12 @@ public class ForeignSourceRestService extends OnmsRestService {
         return null;
     }
 
+    /**
+     * <p>getPolicies</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.PolicyCollection} object.
+     */
     @GET
     @Path("{foreignSource}/policies")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -250,6 +281,13 @@ public class ForeignSourceRestService extends OnmsRestService {
         return new PolicyCollection(getActiveForeignSource(foreignSource).getPolicies());
     }
 
+    /**
+     * <p>getPolicy</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param policy a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.PolicyWrapper} object.
+     */
     @GET
     @Path("{foreignSource}/policies/{policy}")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -262,6 +300,12 @@ public class ForeignSourceRestService extends OnmsRestService {
         return null;
     }
 
+    /**
+     * <p>addForeignSource</p>
+     *
+     * @param foreignSource a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Transactional
@@ -271,6 +315,13 @@ public class ForeignSourceRestService extends OnmsRestService {
         return Response.ok(foreignSource).build();
     }
 
+    /**
+     * <p>addDetector</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param detector a {@link org.opennms.netmgt.provision.persist.foreignsource.DetectorWrapper} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Path("{foreignSource}/detectors")
     @Consumes(MediaType.APPLICATION_XML)
@@ -283,6 +334,13 @@ public class ForeignSourceRestService extends OnmsRestService {
         return Response.ok(detector).build();
     }
 
+    /**
+     * <p>addPolicy</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param policy a {@link org.opennms.netmgt.provision.persist.foreignsource.PolicyWrapper} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Path("{foreignSource}/policies")
     @Consumes(MediaType.APPLICATION_XML)
@@ -295,6 +353,13 @@ public class ForeignSourceRestService extends OnmsRestService {
         return Response.ok(policy).build();
     }
 
+    /**
+     * <p>updateForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Path("{foreignSource}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -317,6 +382,12 @@ public class ForeignSourceRestService extends OnmsRestService {
         return Response.ok(fs).build();
     }
 
+    /**
+     * <p>deletePendingForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{foreignSource}")
     @Transactional
@@ -327,6 +398,12 @@ public class ForeignSourceRestService extends OnmsRestService {
         return Response.ok(fs).build();
     }
 
+    /**
+     * <p>deleteDeployedForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("deployed/{foreignSource}")
     @Transactional
@@ -337,6 +414,13 @@ public class ForeignSourceRestService extends OnmsRestService {
         return Response.ok(fs).build();
     }
 
+    /**
+     * <p>deleteDetector</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param detector a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{foreignSource}/detectors/{detector}")
     @Transactional
@@ -352,6 +436,13 @@ public class ForeignSourceRestService extends OnmsRestService {
         return Response.notModified().build();
     }
 
+    /**
+     * <p>deletePolicy</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param policy a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{foreignSource}/policies/{policy}")
     @Transactional

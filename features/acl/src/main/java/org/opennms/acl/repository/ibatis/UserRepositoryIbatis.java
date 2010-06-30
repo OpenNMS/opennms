@@ -59,55 +59,73 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapExecutor;
 
 /**
+ * <p>UserRepositoryIbatis class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Repository("userRepository")
 public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRepository {
 
+    /** {@inheritDoc} */
     public UserDTO getUserCredentials(String id) {
         return (UserDTO) queryForObject("getUserCredentials", new Long(id));
     }
 
+    /** {@inheritDoc} */
     @Autowired
     @Override
     public void setSqlMapClient(@Qualifier("sqlMapClient") SqlMapClient sqlMapClient) {
         super.setSqlMapClient(sqlMapClient);
     }
 
+    /** {@inheritDoc} */
     public Long insertUser(UserDTO user) {
         user.setPassword(Cripto.stringToSHA(user.getPassword()));
         return (Long) insert("insertUser", user);
     }
 
+    /** {@inheritDoc} */
     public Integer updatePassword(UserDTO user) {
         return update("updateUserPassword", user);
     }
 
+    /** {@inheritDoc} */
     public UserAuthoritiesDTO getUserWithAuthorities(String username) {
         return (UserAuthoritiesDTO) queryForObject("getUserWithAuthorities", username);
     }
 
+    /** {@inheritDoc} */
     public UserAuthoritiesDTO getUserWithAuthoritiesByID(Integer sid) {
         return (UserAuthoritiesDTO) queryForObject("getUserWithAuthoritiesById", sid);
     }
 
+    /** {@inheritDoc} */
     public UserView getUser(String id) {
         return (UserView) queryForObject("getUser", Integer.valueOf(id));
     }
 
+    /**
+     * <p>getUsersNumber</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getUsersNumber() {
         return (Integer) queryForObject("getUsersNumber");
     }
 
+    /** {@inheritDoc} */
     public Boolean disableUser(String id) {
         return update("disableUser", new Long(id)) == 1 ? true : false;
     }
 
+    /** {@inheritDoc} */
     public Object getIdUser(String username) {
         return queryForObject("getIdUser", username);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<UserDTOLight> getDisabledUsers(Pager pager) {
         Map params = new HashMap();
@@ -116,6 +134,7 @@ public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRe
         return queryForList("getDisabledUsers", params);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<UserDTOLight> getEnabledUsers(Pager pager) {
         Map params = new HashMap();
@@ -124,6 +143,7 @@ public class UserRepositoryIbatis extends SqlMapClientTemplate implements UserRe
         return queryForList("getEnabledUsers", params);
     }
 
+    /** {@inheritDoc} */
     public Boolean save(UserAuthoritiesDTO user) {
         return user.isNew() ? insert(user) : update(user);
     }

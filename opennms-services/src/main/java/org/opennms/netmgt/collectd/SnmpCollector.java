@@ -63,9 +63,12 @@ import org.opennms.netmgt.model.events.EventProxy;
  * <P>
  * The SnmpCollector class ...
  * </P>
- * 
+ *
  * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class SnmpCollector implements ServiceCollector {
     /**
@@ -194,7 +197,7 @@ public class SnmpCollector implements ServiceCollector {
 
     /**
      * Returns the name of the service that the plug-in collects ("SNMP").
-     * 
+     *
      * @return The service that the plug-in collects.
      */
     public String serviceName() {
@@ -202,6 +205,8 @@ public class SnmpCollector implements ServiceCollector {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Initialize the service collector. During initialization the SNMP
      * collector:
      * <ul>
@@ -212,9 +217,6 @@ public class SnmpCollector implements ServiceCollector {
      * <li>Determines if SNMP to be stored for only the node's primary
      * interface or for all interfaces.</li>
      * </ul>
-     * 
-     * @param parameters
-     *            Not currently used.
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
@@ -317,14 +319,10 @@ public class SnmpCollector implements ServiceCollector {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for data collection.
-     * 
-     * @param agent
-     *            Network interface to be prepped for collection.
-     * @param parameters
-     *            Key/value pairs associated with the package to which the
-     *            interface belongs..
      */
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         agent.validateAgent();
@@ -337,26 +335,19 @@ public class SnmpCollector implements ServiceCollector {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for releasing any resources associated with the specified
      * interface.
-     * 
-     * @param agent
-     *            Network interface to be released.
      */
     public void release(CollectionAgent agent) {
         agent.setAttribute("SNMP_COLLECTION", null);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Perform data collection.
-     * 
-     * @param agent
-     *            Network interface to be data collected.
-     * @param eventProxy
-     *            Eventy proxy for sending events.
-     * @param parameters
-     *            Key/value pairs from the package to which the interface
-     *            belongs.
      */
     public CollectionSet collect(CollectionAgent agent, EventProxy eventProxy, Map<String, String> parameters) throws CollectionException {
         try {
@@ -444,6 +435,7 @@ public class SnmpCollector implements ServiceCollector {
 //        return ServiceCollector.COLLECTION_FAILED;
 //    }
 
+    /** {@inheritDoc} */
     public RrdRepository getRrdRepository(String collectionName) {
         return DataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

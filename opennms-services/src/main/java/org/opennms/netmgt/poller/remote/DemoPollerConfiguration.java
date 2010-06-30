@@ -48,8 +48,10 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 
 /**
- * 
+ * <p>DemoPollerConfiguration class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class DemoPollerConfiguration implements PollerConfiguration {
     
@@ -82,10 +84,20 @@ public class DemoPollerConfiguration implements PollerConfiguration {
         this(new Date());
     }
 	
+    /**
+     * <p>getConfigurationTimestamp</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getConfigurationTimestamp() {
         return m_timestamp;
     }
 
+    /**
+     * <p>getPolledServices</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.poller.remote.PolledService} objects.
+     */
     public PolledService[] getPolledServices() {
         return m_polledServices;
     }
@@ -95,10 +107,20 @@ public class DemoPollerConfiguration implements PollerConfiguration {
         return new PolledService(service, monitorConfiguration, new OnmsPollModel(interval));
     }
     
+    /**
+     * <p>getFirstId</p>
+     *
+     * @return a int.
+     */
     public int getFirstId() {
         return getFirstService().getServiceId();
     }
 
+    /**
+     * <p>getFirstService</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.remote.PolledService} object.
+     */
     public PolledService getFirstService() {
         return m_polledServices[0];
     }

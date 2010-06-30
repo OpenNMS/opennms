@@ -70,10 +70,17 @@ import org.opennms.netmgt.xml.event.Value;
  * EventUtil is used primarily for the event parm expansion - has methods used
  * by all the event components to send in the event and the element to expanded
  * and have the 'expanded' value sent back
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class EventUtil {
 	/**
@@ -312,6 +319,9 @@ public final class EventUtil {
 
 	/**
 	 * Converts the value of a parm ('Value') of the instance to a string
+	 *
+	 * @param pvalue a {@link org.opennms.netmgt.xml.event.Value} object.
+	 * @return a {@link java.lang.String} object.
 	 */
 	public static String getValueAsString(Value pvalue) {
 		if (pvalue == null)
@@ -343,15 +353,12 @@ public final class EventUtil {
 	 * contain those values. If the passed string contains the passed value then
 	 * the character is reformatted into its <EM>%dd</EM> format.
 	 * </P>
-	 * 
-	 * 
+	 *
 	 * @param inStr
 	 *            string that might contain the delimiter
 	 * @param delimchar
 	 *            delimiter to escape
-	 * 
 	 * @return The string with the delimiter escaped as in URLs
-	 * 
 	 * @see #ATTRIB_DELIM
 	 */
 	public static String escape(String inStr, char delimchar) {
@@ -380,12 +387,11 @@ public final class EventUtil {
 
 	/**
 	 * Get the value of the parm for the event
-	 * 
+	 *
 	 * @param parm
 	 *            the parm for which value is needed from the event
 	 * @param event
 	 *            the event whose parm value is required
-	 * 
 	 * @return value of the event parm/element
 	 */
 	public static String getValueOfParm(String parm, Event event) {
@@ -444,7 +450,7 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_SHORT_TIME)) {
 			String eventTime = event.getTime(); //This will be in GMT
 			try {
-				Date actualDate = EventConstants.parseToDate(eventTime);
+				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
 								DateFormat.SHORT);
 				retParmVal = df.format(actualDate);
@@ -877,9 +883,9 @@ public final class EventUtil {
 
     /**
      * Helper method.
-     * 
-     * @param parm
-     * @param event
+     *
+     * @param parm a {@link java.lang.String} object.
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      * @return A parameter's value as a String using the parameter's name..
      */
     public static String getNamedParmValue(String parm, Event event) {
@@ -921,12 +927,12 @@ public final class EventUtil {
      * parameter named 'name', if present - %parm[# <num>]% is replaced by the
      * value of the parameter number 'num', if present - %parm[##]% is replaced
      * by the number of parameters
-     * 
+     *
      * @param inp
      *            the input string in which parm values are to be expanded
-     * 
      * @return expanded value if the value had any parameter to expand, null
      *         otherwise
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static String expandParms(String inp, Event event) {
         return EventUtil.expandParms(inp, event, null);
@@ -943,14 +949,14 @@ public final class EventUtil {
      * parameter named 'name', if present - %parm[# <num>]% is replaced by the
      * value of the parameter number 'num', if present - %parm[##]% is replaced
      * by the number of parameters
-     * 
+     *
      * @param inp
      *            the input string in which parm values are to be expanded
-     * @param decode 
+     * @param decode
      *            the varbind decode for this
-     * 
      * @return expanded value if the value had any parameter to expand, null
      *         otherwise
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static String expandParms(String inp, Event event, Map<String, Map<String, String>> decode) {
         int index1 = -1;
@@ -1136,6 +1142,12 @@ public final class EventUtil {
 		return ifAlias;
 	}
 
+	/**
+	 * <p>cloneEvent</p>
+	 *
+	 * @param orig a {@link org.opennms.netmgt.xml.event.Event} object.
+	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+	 */
 	public static Event cloneEvent(Event orig) {
 	       Event copy = null;
 	        try {

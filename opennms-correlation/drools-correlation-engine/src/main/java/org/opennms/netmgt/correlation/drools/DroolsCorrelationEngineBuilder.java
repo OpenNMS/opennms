@@ -64,9 +64,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>DroolsCorrelationEngineBuilder class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySupport implements InitializingBean, ApplicationListener<ApplicationEvent> {
     // injected
@@ -78,14 +79,28 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     private List<RuleSetConfiguration> m_ruleSets;
     private CorrelationEngineRegistrar m_correlator;
     
+    /**
+     * <p>Constructor for DroolsCorrelationEngineBuilder.</p>
+     */
     public DroolsCorrelationEngineBuilder() {
         registerDefaultEditors();
     }
 
+    /**
+     * <p>assertSet</p>
+     *
+     * @param obj a {@link java.lang.Object} object.
+     * @param name a {@link java.lang.String} object.
+     */
     public void assertSet(Object obj, String name) {
         Assert.state(obj != null, name+" required for DroolsEngineFactoryBean");
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         assertSet(m_configResource, "configurationResource");
         assertSet(m_eventIpcManager, "eventIpcManager");
@@ -104,14 +119,29 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         }
     }
 
+    /**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
 
+    /**
+     * <p>setConfigurationResource</p>
+     *
+     * @param configResource a {@link org.springframework.core.io.Resource} object.
+     */
     public void setConfigurationResource(Resource configResource) {
         m_configResource = configResource;
     }
     
+    /**
+     * <p>setCorrelationEngineRegistrar</p>
+     *
+     * @param correlator a {@link org.opennms.netmgt.correlation.CorrelationEngineRegistrar} object.
+     */
     public void setCorrelationEngineRegistrar(CorrelationEngineRegistrar correlator) {
         m_correlator = correlator;
     }
@@ -303,6 +333,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         }
     }
 
+    /** {@inheritDoc} */
     public void onApplicationEvent(ApplicationEvent appEvent) {
         if (appEvent instanceof ContextRefreshedEvent) {
             ApplicationContext appContext = ((ContextRefreshedEvent)appEvent).getApplicationContext();

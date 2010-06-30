@@ -53,13 +53,18 @@ import org.opennms.web.springframework.security.Authentication;
 
 /**
  * A servlet that handles saving the user stored in the web user's HTTP session.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SaveUserServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(false);
 

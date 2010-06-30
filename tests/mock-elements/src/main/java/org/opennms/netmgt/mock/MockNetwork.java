@@ -45,21 +45,41 @@ import org.opennms.netmgt.xml.event.Event;
 
 /**
  * A test network configuration
- * 
+ *
  * @author brozow
- * 
+ * @version $Id: $
  */
 public class MockNetwork extends MockContainer {
 
+    /**
+     * <p>createDownEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createDownEvent() {
         throw new UnsupportedOperationException("Cannot generate down event for the network");
     }
+    /**
+     * <p>createUpEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createUpEvent() {
         throw new UnsupportedOperationException("Cannot generate up event for the network");
     }
+    /**
+     * <p>createNewEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createNewEvent() {
         throw new UnsupportedOperationException("Cannot generate new event for the network");
     }
+    /**
+     * <p>createDeleteEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createDeleteEvent() {
         throw new UnsupportedOperationException("Cannot generate delete event for the network");
     }
@@ -79,51 +99,108 @@ public class MockNetwork extends MockContainer {
 
     private int m_nextServiceId = 1;
 
+    /**
+     * <p>Constructor for MockNetwork.</p>
+     */
     public MockNetwork() {
         super(null);
         m_criticalService = "ICMP";
     }
     
+    /**
+     * <p>getCriticalService</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCriticalService() {
         return m_criticalService;
     }
     
+    /**
+     * <p>setCriticalService</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     */
     public void setCriticalService(String svcName) {
         m_criticalService = svcName;
     }
     
+    /**
+     * <p>getIfAlias</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfAlias() {
         return m_ifAlias;
     }
     
+    /**
+     * <p>setIfAlias</p>
+     *
+     * @param ifAlias a {@link java.lang.String} object.
+     */
     public void setIfAlias(String ifAlias) {
         m_currentInterface.setIfAlias(ifAlias);
     }
 
     // model
+    /**
+     * <p>addInterface</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public MockInterface addInterface(int nodeId, String ipAddr) {
         return getNode(nodeId).addInterface(ipAddr);
     }
 
     // model
+    /**
+     * <p>addInterface</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public MockInterface addInterface(String ipAddr) {
         m_currentInterface = m_currentNode.addInterface(ipAddr);
         return m_currentInterface;
     }
 
     // model
+    /**
+     * <p>addNode</p>
+     *
+     * @param nodeid a int.
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockNode} object.
+     */
     public MockNode addNode(int nodeid, String label) {
         m_currentNode = (MockNode) addMember(new MockNode(this, nodeid, label));
         return m_currentNode;
     }
 
     // model 
+    /**
+     * <p>addService</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockService} object.
+     */
     public MockService addService(int nodeId, String ipAddr, String svcName) {
         int serviceId = getServiceId(svcName);
         return getInterface(nodeId, ipAddr).addService(svcName, serviceId);
     }
 
     // model
+    /**
+     * <p>addService</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockService} object.
+     */
     public MockService addService(String svcName) {
         int serviceId = getServiceId(svcName);
         return m_currentInterface.addService(svcName, serviceId);
@@ -131,17 +208,34 @@ public class MockNetwork extends MockContainer {
     }
 
     // model
+    /**
+     * <p>getIdToNameMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<Integer, String> getIdToNameMap() {
         return Collections.unmodifiableMap(m_idToNameMap);
     }
 
     // model
+    /**
+     * <p>getInterface</p>
+     *
+     * @param nodeid a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public MockInterface getInterface(int nodeid, String ipAddr) {
         MockNode node = getNode(nodeid);
         return (node == null ? null : node.getInterface(ipAddr));
     }
 
     // stats
+    /**
+     * <p>getInvalidPollCount</p>
+     *
+     * @return a int.
+     */
     public int getInvalidPollCount() {
         return m_invalidPollCount;
     }
@@ -152,16 +246,33 @@ public class MockNetwork extends MockContainer {
     }
 
     // model
+    /**
+     * <p>getNameToIdMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Integer> getNameToIdMap() {
         return Collections.unmodifiableMap(m_nameToIdMap);
     }
 
     // model
+    /**
+     * <p>getNode</p>
+     *
+     * @param i a int.
+     * @return a {@link org.opennms.netmgt.mock.MockNode} object.
+     */
     public MockNode getNode(int i) {
         return (MockNode) getMember(new Integer(i));
     }
 
     // model
+    /**
+     * <p>getNodeIdForInterface</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a int.
+     */
     public int getNodeIdForInterface(final String ipAddr) {
         class NodeFinder extends MockVisitorAdapter {
             MockNode node;
@@ -184,6 +295,14 @@ public class MockNetwork extends MockContainer {
     }
 
     // model
+    /**
+     * <p>getService</p>
+     *
+     * @param nodeid a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.mock.MockService} object.
+     */
     public MockService getService(int nodeid, String ipAddr, String svcName) {
         MockInterface iface = getInterface(nodeid, ipAddr);
         return (iface == null ? null : iface.getService(svcName));
@@ -204,43 +323,78 @@ public class MockNetwork extends MockContainer {
     }
 
     // stats
+    /**
+     * <p>receivedInvalidPoll</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     */
     public void receivedInvalidPoll(String ipAddr, String svcName) {
         m_invalidPollCount++;
     }
 
     // model
+    /**
+     * <p>removeElement</p>
+     *
+     * @param element a {@link org.opennms.netmgt.mock.MockElement} object.
+     */
     public synchronized void removeElement(MockElement element) {
         MockContainer parent = element.getParent();
         parent.removeMember(element);
     }
 
     // model
+    /**
+     * <p>removeInterface</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public void removeInterface(MockInterface iface) {
         removeElement(iface);
     }
 
     // model
+    /**
+     * <p>removeNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.mock.MockNode} object.
+     */
     public void removeNode(MockNode node) {
         removeElement(node);
     }
 
     // model
+    /**
+     * <p>removeService</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.mock.MockService} object.
+     */
     public void removeService(MockService svc) {
         removeElement(svc);
     }
 
     // stats
+    /**
+     * <p>resetInvalidPollCount</p>
+     */
     public void resetInvalidPollCount() {
         m_invalidPollCount = 0;
     }
 
     // impl
+    /** {@inheritDoc} */
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitNetwork(this);
         visitMembers(v);
     }
     
+    /**
+     * <p>getNodeCount</p>
+     *
+     * @return a int.
+     */
     public int getNodeCount() {
         class NodeCounter extends MockVisitorAdapter {
             int count = 0;
@@ -256,6 +410,11 @@ public class MockNetwork extends MockContainer {
         return counter.getCount();
     }
 
+    /**
+     * <p>getInterfaceCount</p>
+     *
+     * @return a int.
+     */
     public int getInterfaceCount() {
         class InterfaceCounter extends MockVisitorAdapter {
             int count = 0;
@@ -271,6 +430,11 @@ public class MockNetwork extends MockContainer {
         return counter.getCount();
     }
 
+    /**
+     * <p>getServiceCount</p>
+     *
+     * @return a int.
+     */
     public int getServiceCount() {
         class ServiceCounter extends MockVisitorAdapter {
             int count = 0;
@@ -286,6 +450,9 @@ public class MockNetwork extends MockContainer {
         return counter.getCount();
     }
 
+    /**
+     * <p>createStandardNetwork</p>
+     */
     public void createStandardNetwork() {
         setCriticalService("ICMP");
         addNode(1, "Router");

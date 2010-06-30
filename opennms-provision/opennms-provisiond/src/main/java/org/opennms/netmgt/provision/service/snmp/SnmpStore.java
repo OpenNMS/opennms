@@ -45,6 +45,12 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueType;
 
+/**
+ * <p>SnmpStore class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpStore extends AbstractSnmpStore {
     
     /**
@@ -57,6 +63,11 @@ public class SnmpStore extends AbstractSnmpStore {
      */
     protected NamedSnmpVar[] ms_elemList = null;
 
+    /**
+     * <p>Constructor for SnmpStore.</p>
+     *
+     * @param list an array of {@link org.opennms.netmgt.provision.service.snmp.NamedSnmpVar} objects.
+     */
     public SnmpStore(NamedSnmpVar[] list) {
         super();
         ms_elemList = list;
@@ -66,19 +77,32 @@ public class SnmpStore extends AbstractSnmpStore {
      * <P>
      * Returns the number of entries in the MIB-II ifTable element list.
      * </P>
+     *
+     * @return a int.
      */
     public int getElementListSize() {
         return ms_elemList.length;
     }
 
+    /**
+     * <p>getElements</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.provision.service.snmp.NamedSnmpVar} objects.
+     */
     public NamedSnmpVar[] getElements() {
         return ms_elemList;
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /** {@inheritDoc} */
     public void storeResult(SnmpResult res) {
         putValue(res.getBase().toString(), res.getValue());
         for (NamedSnmpVar var : ms_elemList) {

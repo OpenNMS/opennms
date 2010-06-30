@@ -39,19 +39,50 @@ import java.util.Collection;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 /**
- * 
+ * <p>ManualProvisioningDao interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public interface ManualProvisioningDao {
 
+    /**
+     * <p>getProvisioningGroupNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<String> getProvisioningGroupNames();
 
+    /**
+     * <p>get</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition get(String name);
 
+    /**
+     * <p>save</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param group a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     void save(String groupName, Requisition group);
 
+    /**
+     * <p>getUrlForGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     String getUrlForGroup(String groupName);
 
+    /**
+     * <p>delete</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     */
     void delete(String groupName);
 
 }

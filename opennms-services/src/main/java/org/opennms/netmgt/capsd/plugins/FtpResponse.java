@@ -47,6 +47,7 @@ import org.springframework.util.StringUtils;
  * Represents an FTP command response.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class FtpResponse {
     private int m_code;
@@ -107,7 +108,7 @@ public class FtpResponse {
     /**
      * Search for a text string in each line of the response result.
      * Note that each line is tested individually.
-     * 
+     *
      * @param contain text to search for (using String.contains(contain))
      * @return true if the search string is found, false otherwise
      */
@@ -189,10 +190,10 @@ public class FtpResponse {
 
     /**
      * Helper method to send commands to the remote server.
-     * 
+     *
      * @param socket connection to the server
      * @param command command to send, without trailing EOL (CRLF, \r\n).
-     * @throws IOException if we can't write() to the OutputStream for the Socket
+     * @throws java.io.IOException if we can't write() to the OutputStream for the Socket
      */
     public static void sendCommand(Socket socket, String command) throws IOException {
         socket.getOutputStream().write((command + "\r\n").getBytes());
@@ -203,6 +204,7 @@ public class FtpResponse {
      *
      * @param in input reader
      * @return response from server
+     * @throws java.io.IOException if any.
      */
     public static FtpResponse readResponse(BufferedReader in) throws IOException {
         int code;

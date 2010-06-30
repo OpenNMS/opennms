@@ -34,8 +34,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Donald Desloge
+ * <p>Jsr160Detector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 @Component
 @Scope("prototype")
@@ -51,6 +53,7 @@ public class Jsr160Detector extends AbstractJsr160Detector{
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public void onInit() {
         expectBeanCount(greatThan(0));

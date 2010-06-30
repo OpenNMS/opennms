@@ -40,12 +40,34 @@ import java.util.List;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.web.svclayer.support.DatabaseReportDescription;
 
+/**
+ * <p>DatabaseReportListService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public interface DatabaseReportListService {
     
+    /**
+     * <p>getAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     List<DatabaseReportDescription> getAll();
     
+    /**
+     * <p>getAllOnline</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     List<DatabaseReportDescription> getAllOnline();
     
+    /**
+     * <p>setDatabaseReportConfigDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.DatabaseReportConfigDao} object.
+     */
     void setDatabaseReportConfigDao(DatabaseReportConfigDao dao);
 
 }

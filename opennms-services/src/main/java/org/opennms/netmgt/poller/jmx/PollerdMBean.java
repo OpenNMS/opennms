@@ -38,5 +38,11 @@ package org.opennms.netmgt.poller.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>PollerdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface PollerdMBean extends BaseOnmsMBean {
 }

@@ -44,12 +44,25 @@ import org.opennms.acl.service.GroupService;
 
 /**
  * This entity is a ACL group.
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class Group {
 
+    /**
+     * <p>Constructor for Group.</p>
+     *
+     * @param group a {@link org.opennms.acl.model.GroupDTO} object.
+     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
+     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
+     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
+     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
+     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
+     */
     public Group(GroupDTO group, AuthorityService authorityService, GroupService groupService) {
         super();
         this.group = group;
@@ -58,13 +71,18 @@ public class Group {
         this.group.setEmptyUsers(groupService.hasUsers(group.getId()));
     }
 
+    /**
+     * <p>getAuthorities</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<?> getAuthorities() {
         return authorityService.getGroupAuthorities(group.getId());
     }
 
     /**
      * Return a list of all items manageable by authorities
-     * 
+     *
      * @return all items
      */
     public List<?> getAllGroups() {
@@ -73,9 +91,9 @@ public class Group {
 
     /**
      * Return a paginated list of anemic group
-     * 
-     * @param pager
-     * @return
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
+     * @return a {@link java.util.List} object.
      */
     public List<GroupDTO> getGroups(Pager pager) {
         return groupService.getGroups(pager);
@@ -83,7 +101,7 @@ public class Group {
 
     /**
      * Return a read only Group
-     * 
+     *
      * @return authority
      */
     public GroupView getGroupView() {
@@ -91,6 +109,8 @@ public class Group {
     }
 
     /**
+     * <p>hasAuthorities</p>
+     *
      * @return hasAuthorities
      */
     public boolean hasAuthorities() {
@@ -98,6 +118,8 @@ public class Group {
     }
 
     /**
+     * <p>hasUser</p>
+     *
      * @return hasUsers
      */
     public boolean hasUser() {
@@ -113,6 +135,8 @@ public class Group {
 
     /**
      * Overwrite the authorities assigned to this Group
+     *
+     * @param items a {@link java.util.List} object.
      */
     public void setNewAuthorities(List<?> items) {
         group.setAuthorities(items);
@@ -120,6 +144,8 @@ public class Group {
 
     /**
      * Remove this Group
+     *
+     * @return a boolean.
      */
     public boolean remove() {
         return groupService.removeGroup(group.getId());
@@ -127,7 +153,7 @@ public class Group {
 
     /**
      * Return the human readable description of this Group
-     * 
+     *
      * @return description
      */
     public String getName() {
@@ -136,13 +162,18 @@ public class Group {
 
     /**
      * Group unique identifier
-     * 
+     *
      * @return group's identifier
      */
     public Integer getId() {
         return group.getId();
     }
 
+    /**
+     * <p>getFreeAuthorities</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<?> getFreeAuthorities() {
         return authorityService.getFreeAuthoritiesForGroup();
     }

@@ -24,6 +24,13 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * <p>TagPanel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class TagPanel extends Composite implements Collection<String> {
 
     private final List<String> m_delegate = new ArrayList<String>();
@@ -118,15 +125,28 @@ public class TagPanel extends Composite implements Collection<String> {
         
     }
 
+    /**
+     * <p>Constructor for TagPanel.</p>
+     */
     public TagPanel() {
         super();
         initWidget(BINDER.createAndBindUi(this));
     }
 
+    /**
+     * <p>setEventBus</p>
+     *
+     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     */
     public void setEventBus(final HandlerManager eventBus) {
         m_eventBus = eventBus;
     }
 
+    /**
+     * <p>onClearTagsClick</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     */
     @UiHandler("clearTags")
     public void onClearTagsClick(ClickEvent event) {
         // Remove the "selected" style from all tags
@@ -136,12 +156,19 @@ public class TagPanel extends Composite implements Collection<String> {
         m_eventBus.fireEvent(new TagClearedEvent());
     }
 
+    /**
+     * <p>add</p>
+     *
+     * @param e a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean add(String e) {
         boolean retval = m_delegate.add(e);
         updatePanel();
         return retval;
     }
 
+    /** {@inheritDoc} */
     public boolean addAll(Collection<? extends String> c) {
         boolean retval = m_delegate.addAll(c);
         updatePanel();
@@ -149,57 +176,97 @@ public class TagPanel extends Composite implements Collection<String> {
         return retval;
     }
 
+    /**
+     * <p>clear</p>
+     */
     public void clear() {
         m_delegate.clear();
         updatePanel();
     }
 
+    /** {@inheritDoc} */
     public boolean contains(Object o) {
         return m_delegate.contains(o);
     }
 
+    /** {@inheritDoc} */
     public boolean containsAll(Collection<?> c) {
         return m_delegate.containsAll(c);
     }
 
+    /**
+     * <p>isEmpty</p>
+     *
+     * @return a boolean.
+     */
     public boolean isEmpty() {
         return m_delegate.isEmpty();
     }
 
+    /**
+     * <p>iterator</p>
+     *
+     * @return a {@link java.util.Iterator} object.
+     */
     public Iterator<String> iterator() {
         return m_delegate.iterator();
     }
 
+    /** {@inheritDoc} */
     public boolean remove(Object o) {
         boolean retval = m_delegate.remove(o);
         updatePanel();
         return retval;
     }
 
+    /** {@inheritDoc} */
     public boolean removeAll(Collection<?> c) {
         boolean retval = m_delegate.removeAll(c);
         updatePanel();
         return retval;
     }
 
+    /** {@inheritDoc} */
     public boolean retainAll(Collection<?> c) {
         boolean retval = m_delegate.retainAll(c);
         updatePanel();
         return retval;
     }
 
+    /**
+     * <p>size</p>
+     *
+     * @return a int.
+     */
     public int size() {
         return m_delegate.size();
     }
 
+    /**
+     * <p>toArray</p>
+     *
+     * @return an array of {@link java.lang.Object} objects.
+     */
     public Object[] toArray() {
         return m_delegate.toArray();
     }
 
+    /**
+     * <p>toArray</p>
+     *
+     * @param a an array of T objects.
+     * @param <T> a T object.
+     * @return an array of T objects.
+     */
     public <T> T[] toArray(T[] a) {
         return m_delegate.toArray(a);
     }
 
+    /**
+     * <p>selectTag</p>
+     *
+     * @param tag a {@link java.lang.String} object.
+     */
     public void selectTag(String tag) {
         for (Widget widget : tagPanel) {
             if (widget instanceof Anchor) {

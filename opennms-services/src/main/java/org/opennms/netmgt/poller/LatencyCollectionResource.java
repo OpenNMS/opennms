@@ -38,63 +38,115 @@ import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * <p>LatencyCollectionResource class.</p>
  *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
 public class LatencyCollectionResource implements CollectionResource {
     
     private String m_serviceName;
     private String m_ipAddress;
 
+    /**
+     * <p>Constructor for LatencyCollectionResource.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public LatencyCollectionResource(String serviceName, String ipAddress) {
         super();
         m_serviceName = serviceName;
         m_ipAddress = ipAddress;
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInstance() {
         return m_ipAddress + "[" + m_serviceName + "]";
     }
     
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_serviceName;
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return m_ipAddress;
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_serviceName;
     }
 
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeName() {
         return "if";
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() {
         return 0;
     }
 
+    /**
+     * <p>rescanNeeded</p>
+     *
+     * @return a boolean.
+     */
     public boolean rescanNeeded() {
         return false;
     }
 
+    /** {@inheritDoc} */
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
 
+    /** {@inheritDoc} */
     public void visit(CollectionSetVisitor visitor) {
     }
 
+    /**
+     * <p>getOwnerName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOwnerName() {
         return m_ipAddress;
     }
 
+    /** {@inheritDoc} */
     public File getResourceDir(RrdRepository repository) {
         return new File(repository.getRrdBaseDir(), m_ipAddress);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return m_serviceName + "@" + m_ipAddress;

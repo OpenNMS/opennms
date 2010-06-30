@@ -34,8 +34,9 @@ package org.opennms.netmgt.poller.nsclient;
 /**
  * This class contains the parameters used to perform and validate checks
  * against the NSClient daemon.
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @version $Id: $
  */
 public class NsclientCheckParams {
     /**
@@ -55,7 +56,7 @@ public class NsclientCheckParams {
 
     /**
      * Constructor, sets the critical threshold.
-     * 
+     *
      * @param critPerc
      *            the value to be used for the critical threshold.
      */
@@ -65,7 +66,7 @@ public class NsclientCheckParams {
 
     /**
      * Constructor, sets the critical and warning thresholds.
-     * 
+     *
      * @param critPerc
      *            the value to be used for the critical threshold.
      * @param warnPerc
@@ -79,7 +80,7 @@ public class NsclientCheckParams {
     /**
      * Constructor, sets the critical and warning thresholds and the parameter
      * strings.
-     * 
+     *
      * @param critPerc
      *            the value to be used for the critical threshold.
      * @param warnPerc
@@ -96,7 +97,7 @@ public class NsclientCheckParams {
     /**
      * Constructor, sets the parameter string used when creating check
      * requests.
-     * 
+     *
      * @param params
      *            the parameter string used for creating check requests.
      */
@@ -106,7 +107,7 @@ public class NsclientCheckParams {
 
     /**
      * Returns the warning threshold value.
-     * 
+     *
      * @return the warning threshold value.
      */
     public int getWarningPercent() {
@@ -115,7 +116,7 @@ public class NsclientCheckParams {
 
     /**
      * Returns the critical threshold value.
-     * 
+     *
      * @return the critical threshold value.
      */
     public int getCriticalPercent() {
@@ -125,7 +126,7 @@ public class NsclientCheckParams {
     /**
      * Returns the string containing the parameters for creating check
      * requests.
-     * 
+     *
      * @return the string containing the parameters for creating check
      *         requests.
      */

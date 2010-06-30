@@ -44,22 +44,45 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>IncludeBoxController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class IncludeBoxController extends AbstractController implements InitializingBean {
     private KscReportService m_kscReportService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return new ModelAndView("KSC/include-box", "reports", getKscReportService().getReportList());
     }
     
+    /**
+     * <p>getKscReportService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public KscReportService getKscReportService() {
         return m_kscReportService;
     }
 
+    /**
+     * <p>setKscReportService</p>
+     *
+     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_kscReportService != null, "property kscReportService must be set");
     }

@@ -60,6 +60,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * <p>DefaultNodeProvisionService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultNodeProvisionService implements NodeProvisionService {
 
     private EventForwarder m_eventForwarder;
@@ -72,6 +78,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
+    /** {@inheritDoc} */
     public ModelAndView getModelAndView(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("foreignSources", m_foreignSourceRepository.getForeignSources());
@@ -82,6 +89,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         return modelAndView;
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public boolean provisionNode(final String user, String foreignSource, String foreignId, String nodeLabel, String ipAddress,
             String[] categories, String snmpCommunity, String snmpVersion,
@@ -162,10 +170,21 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         return true;
     }
     
+    /**
+     * <p>setForeignSourceRepository</p>
+     *
+     * @param repository a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
+     */
     public void setForeignSourceRepository(ForeignSourceRepository repository) {
         m_foreignSourceRepository = repository;
     }
 
+    /**
+     * <p>setEventProxy</p>
+     *
+     * @param proxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @throws java.lang.Exception if any.
+     */
     public void setEventProxy(final EventProxy proxy) throws Exception {
         EventForwarder proxyForwarder = new EventForwarder() {
             public void sendNow(Event event) {
@@ -188,6 +207,11 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         m_eventForwarder = new TransactionAwareEventForwarder(proxyForwarder);
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

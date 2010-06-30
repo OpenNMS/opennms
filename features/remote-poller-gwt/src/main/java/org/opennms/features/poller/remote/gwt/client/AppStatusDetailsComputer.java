@@ -46,6 +46,8 @@ import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
  * ComputeStatusDetails
  *
  * @author brozow
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AppStatusDetailsComputer {
     
@@ -55,6 +57,15 @@ public class AppStatusDetailsComputer {
     final Collection<GWTMonitoredService> m_services;
     final Collection<GWTLocationSpecificStatus> m_statuses; 
     
+    /**
+     * <p>Constructor for AppStatusDetailsComputer.</p>
+     *
+     * @param startTime a {@link java.util.Date} object.
+     * @param endTime a {@link java.util.Date} object.
+     * @param monitors a {@link java.util.Collection} object.
+     * @param services a {@link java.util.Collection} object.
+     * @param statuses a {@link java.util.Collection} object.
+     */
     public AppStatusDetailsComputer(Date startTime, Date endTime, Collection<GWTLocationMonitor> monitors, Collection<GWTMonitoredService> services, Collection<GWTLocationSpecificStatus> statuses) {
         m_monitors = monitors;
         m_services = services;
@@ -63,6 +74,11 @@ public class AppStatusDetailsComputer {
         m_endTime = endTime;
     }
 
+    /**
+     * <p>compute</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
     public StatusDetails compute() {
         if (m_statuses == null || m_statuses.size() == 0) {
             return StatusDetails.unknown("No locations have reported status updates.");

@@ -67,10 +67,12 @@ import org.opennms.netmgt.config.CapsdProtocolInfo;
  * information is preformed. If any node has multiple interfaces in it then
  * addition probes of those interfaces are performed. The SNMP/SMB collections
  * are preformed only once though.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public final class IfCollector implements Runnable {
     private PluginManager m_pluginManager;
@@ -339,7 +341,6 @@ public final class IfCollector implements Runnable {
     /**
      * The main collection routine of the class. This method is used to poll the
      * address, and any additional interfaces discovered via SNMP.
-     * 
      */
     public void run() {
         if (log().isDebugEnabled()) {

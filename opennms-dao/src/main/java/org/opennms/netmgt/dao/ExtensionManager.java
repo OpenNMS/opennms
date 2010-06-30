@@ -38,13 +38,33 @@ package org.opennms.netmgt.dao;
 import java.util.Collection;
 
 /**
- * @author brozow
+ * <p>ExtensionManager interface.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public interface ExtensionManager {
     
+    /**
+     * <p>registerExtension</p>
+     *
+     * @param extension a {@link java.lang.Object} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     */
     public void registerExtension(Object extension, Class<?>... extensionPoints);
     
+    /**
+     * <p>findExtensions</p>
+     *
+     * @param extensionPoint a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @return a {@link java.util.Collection} object.
+     */
     public <T> Collection<T> findExtensions(Class<T> extensionPoint);
     
 }

@@ -86,12 +86,20 @@ import org.opennms.netmgt.dao.db.columnchanges.RowHasBogusDataReplacement;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+/**
+ * <p>InstallerDb class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class InstallerDb {
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
+    /** Constant <code>POSTGRES_MIN_VERSION=7.4f</code> */
     public static final float POSTGRES_MIN_VERSION = 7.4f;
     
+    /** Constant <code>POSTGRES_MAX_VERSION_PLUS_ONE=9.1f</code> */
     public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.1f;
 
     private static final int s_fetch_size = 1024;
@@ -163,14 +171,28 @@ public class InstallerDb {
     
     private boolean m_no_revert = false;
 
+    /**
+     * <p>Constructor for InstallerDb.</p>
+     */
     public InstallerDb() {
         
     }
     
+    /**
+     * <p>readTables</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void readTables() throws Exception {
         readTables(new InputStreamReader(new FileInputStream(m_createSqlLocation), "UTF-8"));
     }
 
+    /**
+     * <p>readTables</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @throws java.lang.Exception if any.
+     */
     public void readTables(Reader reader) throws Exception {
         BufferedReader r = new BufferedReader(reader);
         String line;
@@ -314,6 +336,12 @@ public class InstallerDb {
     }
     
 
+    /**
+     * <p>cleanText</p>
+     *
+     * @param list a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String cleanText(List<String> list) {
         StringBuffer s = new StringBuffer();
 
@@ -328,6 +356,11 @@ public class InstallerDb {
     }
     
 
+    /**
+     * <p>createSequences</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void createSequences() throws Exception {
         assertUserSet();
         
@@ -367,6 +400,11 @@ public class InstallerDb {
         m_out.println("- creating sequences... DONE");
     }
     
+    /**
+     * <p>updatePlPgsql</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void updatePlPgsql() throws Exception {
         Statement st = getConnection().createStatement();
         ResultSet rs;
@@ -399,6 +437,11 @@ public class InstallerDb {
         }
     }
     
+    /**
+     * <p>isIpLikeUsable</p>
+     *
+     * @return a boolean.
+     */
     public boolean isIpLikeUsable() {
         Statement st = null;
         try {            
@@ -415,6 +458,11 @@ public class InstallerDb {
         }
     }
     
+    /**
+     * <p>updateIplike</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void updateIplike() throws Exception {
 
         boolean insert_iplike = !isIpLikeUsable();
@@ -502,6 +550,11 @@ public class InstallerDb {
         }
     }
 
+    /**
+     * <p>setupPlPgsqlIplike</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void setupPlPgsqlIplike() throws Exception {
         InputStream sqlfile = null;
         Statement st = null;
@@ -556,6 +609,11 @@ public class InstallerDb {
         }
     }
 
+    /**
+     * <p>addStoredProcedures</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void addStoredProcedures() throws Exception {
         m_triggerDao.reset();
 
@@ -644,6 +702,15 @@ public class InstallerDb {
     }
 
 
+    /**
+     * <p>functionExists</p>
+     *
+     * @param function a {@link java.lang.String} object.
+     * @param columns a {@link java.lang.String} object.
+     * @param returnType a {@link java.lang.String} object.
+     * @return a boolean.
+     * @throws java.lang.Exception if any.
+     */
     public boolean functionExists(String function, String columns,
             String returnType) throws Exception {
         Map<String, Integer> types = getTypesFromDB();
@@ -672,6 +739,15 @@ public class InstallerDb {
         return functionExists(function, columnTypes, retType);
     }
 
+    /**
+     * <p>functionExists</p>
+     *
+     * @param function a {@link java.lang.String} object.
+     * @param columnTypes an array of int.
+     * @param retType a int.
+     * @return a boolean.
+     * @throws java.lang.Exception if any.
+     */
     public boolean functionExists(String function, int[] columnTypes,
             int retType) throws Exception {
         Statement st = getConnection().createStatement();
@@ -690,6 +766,12 @@ public class InstallerDb {
         return rs.next();
     }
     
+    /**
+     * <p>getTypesFromDB</p>
+     *
+     * @return a {@link java.util.Map} object.
+     * @throws java.sql.SQLException if any.
+     */
     public Map<String, Integer> getTypesFromDB() throws SQLException {
         if (m_dbtypes != null) {
             return m_dbtypes;
@@ -715,6 +797,12 @@ public class InstallerDb {
         return m_dbtypes;
     }
     
+    /**
+     * <p>addTriggersForTable</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void addTriggersForTable(String table) throws SQLException {
         List<Trigger> triggers =
             m_triggerDao.getTriggersForTable(table.toLowerCase());
@@ -728,6 +816,11 @@ public class InstallerDb {
         }
     }
 
+    /**
+     * <p>createTables</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void createTables() throws Exception {
         assertUserSet();
         
@@ -805,6 +898,13 @@ public class InstallerDb {
     }
     
 
+    /**
+     * <p>getTableFromSQL</p>
+     *
+     * @param tableName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.dao.db.Table} object.
+     * @throws java.lang.Exception if any.
+     */
     public Table getTableFromSQL(String tableName) throws Exception {
         Table table = new Table();
 
@@ -884,6 +984,22 @@ public class InstallerDb {
     }
 
 
+    /**
+     * <p>getXFromSQL</p>
+     *
+     * @param item a {@link java.lang.String} object.
+     * @param itemGroup a int.
+     * @param itemGroup a int.
+     * @param itemGroup a int.
+     * @param itemGroup a int.
+     * @param regex a {@link java.lang.String} object.
+     * @param itemGroup a int.
+     * @param itemGroup a int.
+     * @param returnGroup a int.
+     * @param description a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String getXFromSQL(String item, String regex, int itemGroup,
             int returnGroup, String description) throws Exception {
 
@@ -901,6 +1017,18 @@ public class InstallerDb {
     }
     
 
+    /**
+     * <p>findColumn</p>
+     *
+     * @param columns a {@link java.util.List} object.
+     * @param columns a {@link java.util.List} object.
+     * @param columns a {@link java.util.List} object.
+     * @param columns a {@link java.util.List} object.
+     * @param columns a {@link java.util.List} object.
+     * @param columns a {@link java.util.List} object.
+     * @param column a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.dao.db.Column} object.
+     */
     public Column findColumn(List<Column> columns, String column) {
         for (Column c : columns) {
             if (c.getName().equals(column.toLowerCase())) {
@@ -911,11 +1039,26 @@ public class InstallerDb {
         return null;
     }
     
+    /**
+     * <p>tableColumnExists</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param column a {@link java.lang.String} object.
+     * @return a boolean.
+     * @throws java.lang.Exception if any.
+     */
     public boolean tableColumnExists(String table, String column)
             throws Exception {
         return (findColumn(getTableColumnsFromDB(table), column) != null);
     }
     
+    /**
+     * <p>getTableColumnsFromDB</p>
+     *
+     * @param tableName a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws java.lang.Exception if any.
+     */
     public List<Column> getTableColumnsFromDB(String tableName)
             throws Exception {
         Table table = getTableFromDB(tableName);
@@ -926,6 +1069,13 @@ public class InstallerDb {
     }
     
 
+    /**
+     * <p>getTableFromDB</p>
+     *
+     * @param tableName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.dao.db.Table} object.
+     * @throws java.lang.Exception if any.
+     */
     public Table getTableFromDB(String tableName) throws Exception {
         if (!tableExists(tableName)) {
             return null;
@@ -944,6 +1094,13 @@ public class InstallerDb {
     }
     
 
+    /**
+     * <p>tableExists</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public boolean tableExists(String table) throws SQLException {
         Statement st = getConnection().createStatement();
         ResultSet rs;
@@ -953,6 +1110,13 @@ public class InstallerDb {
         return rs.next();
     }
 
+    /**
+     * <p>getColumnsFromDB</p>
+     *
+     * @param tableName a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws java.lang.Exception if any.
+     */
     public List<Column> getColumnsFromDB(String tableName) throws Exception {
         LinkedList<Column> columns = new LinkedList<Column>();
 
@@ -1042,6 +1206,14 @@ public class InstallerDb {
     }
 
 
+    /**
+     * <p>getConstraintsFromDB</p>
+     *
+     * @param tableName a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws java.sql.SQLException if any.
+     * @throws java.lang.Exception if any.
+     */
     public List<Constraint> getConstraintsFromDB(String tableName)
             throws SQLException, Exception {
         Statement st = getConnection().createStatement();
@@ -1142,6 +1314,14 @@ public class InstallerDb {
         return columns;
     }
 
+    /**
+     * <p>changeTable</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param oldTable a {@link org.opennms.netmgt.dao.db.Table} object.
+     * @param newTable a {@link org.opennms.netmgt.dao.db.Table} object.
+     * @throws java.lang.Exception if any.
+     */
     public void changeTable(String table, Table oldTable, Table newTable)
             throws Exception {
         assertUserSet();
@@ -1327,6 +1507,17 @@ public class InstallerDb {
      * selected rows (for using in ResultSet.getXXX()) and prepared rows
      * (PreparedStatement.setObject()).
      * Monkey.  Make monkey dance.
+     */
+    /**
+     * <p>transformData</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param oldTable a {@link java.lang.String} object.
+     * @param columnChanges a {@link java.util.TreeMap} object.
+     * @param oldColumnNames an array of {@link java.lang.String} objects.
+     * @throws java.sql.SQLException if any.
+     * @throws java.text.ParseException if any.
+     * @throws java.lang.Exception if any.
      */
     public void transformData(String table, String oldTable,
             TreeMap<String, ColumnChange> columnChanges,
@@ -1525,6 +1716,12 @@ public class InstallerDb {
                 + "DONE           ");
     }
 
+    /**
+     * <p>checkOldTables</p>
+     *
+     * @throws java.sql.SQLException if any.
+     * @throws org.opennms.netmgt.dao.db.BackupTablesFoundException if any.
+     */
     public void checkOldTables() throws SQLException,
             BackupTablesFoundException {
         Statement st = getConnection().createStatement();
@@ -1550,6 +1747,12 @@ public class InstallerDb {
         throw new BackupTablesFoundException(oldTables);
     }
 
+    /**
+     * <p>getForeignKeyConstraints</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws java.lang.Exception if any.
+     */
     public List<Constraint> getForeignKeyConstraints() throws Exception {
         LinkedList<Constraint> constraints = new LinkedList<Constraint>();
 
@@ -1565,6 +1768,11 @@ public class InstallerDb {
         return constraints;
     }
 
+    /**
+     * <p>checkConstraints</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void checkConstraints() throws Exception {
         List<Constraint> constraints = getForeignKeyConstraints();
 
@@ -1580,6 +1788,12 @@ public class InstallerDb {
         m_out.println("- checking for rows that violate constraints... DONE");
     }
     
+    /**
+     * <p>checkConstraint</p>
+     *
+     * @param constraint a {@link org.opennms.netmgt.dao.db.Constraint} object.
+     * @throws java.lang.Exception if any.
+     */
     public void checkConstraint(Constraint constraint) throws Exception {
         String name = constraint.getName();
         String table = constraint.getTable();
@@ -1676,6 +1890,16 @@ public class InstallerDb {
         return partialQuery;
     }
 
+    /**
+     * <p>getForeignConstraintWhere</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param columns a {@link java.util.List} object.
+     * @param ftable a {@link java.lang.String} object.
+     * @param fcolumns a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String getForeignConstraintWhere(String table, List<String> columns,
             String ftable, List<String> fcolumns) throws Exception {
         String notNulls = notNullWhereClause(table, columns);
@@ -1696,6 +1920,13 @@ public class InstallerDb {
             + " FROM " + ftable + ")";
     }
 
+    /**
+     * <p>notNullWhereClause</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param columns a {@link java.util.List} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String notNullWhereClause(String table, List<String> columns) {
         List<String> isNotNulls = new ArrayList<String>(columns.size());
         
@@ -1706,6 +1937,13 @@ public class InstallerDb {
         return StringUtils.collectionToDelimitedString(isNotNulls, " AND ");
     }
     
+    /**
+     * <p>tableColumnList</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param columns a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<String> tableColumnList(String table, List<String> columns) {
         List<String> tableColumns = new ArrayList<String>(columns.size());
         
@@ -1717,6 +1955,13 @@ public class InstallerDb {
     }
 
 
+    /**
+     * <p>fixConstraint</p>
+     *
+     * @param constraintName a {@link java.lang.String} object.
+     * @param removeRows a boolean.
+     * @throws java.lang.Exception if any.
+     */
     public void fixConstraint(String constraintName, boolean removeRows)
             throws Exception {
         List<Constraint> constraints = getForeignKeyConstraints();
@@ -1735,6 +1980,14 @@ public class InstallerDb {
                             + constraintName + " in the database.");
     }
     
+    /**
+     * <p>fixConstraint</p>
+     *
+     * @param constraint a {@link org.opennms.netmgt.dao.db.Constraint} object.
+     * @param removeRows a boolean.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String fixConstraint(Constraint constraint, boolean removeRows)
             throws Exception {
         String table = constraint.getTable();
@@ -1798,6 +2051,12 @@ public class InstallerDb {
         return change_text + " " + num + (num == 1 ? " ROW" : " ROWS");
     }
 
+    /**
+     * <p>databaseUserExists</p>
+     *
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public boolean databaseUserExists() throws SQLException {
         assertUserSet();
 
@@ -1815,6 +2074,11 @@ public class InstallerDb {
         return exists;
     }
 
+    /**
+     * <p>databaseSetUser</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void databaseSetUser() throws SQLException {
         ResultSet rs = getAdminConnection().getMetaData().getTables(null, "public", "%", null);
         HashSet<String> objects = new HashSet<String>();
@@ -1830,6 +2094,11 @@ public class InstallerDb {
         st.close();
     }
 
+    /**
+     * <p>databaseAddUser</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     @Deprecated
     public void databaseAddUser() throws SQLException {
         assertUserSet();
@@ -1838,6 +2107,12 @@ public class InstallerDb {
         st.execute("CREATE USER " + m_user + " WITH PASSWORD '" + m_pass + "' CREATEDB CREATEUSER");
     }
 
+    /**
+     * <p>databaseDBExists</p>
+     *
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public boolean databaseDBExists() throws SQLException {
         boolean exists;
 
@@ -1853,6 +2128,11 @@ public class InstallerDb {
         return exists;
     }
 
+    /**
+     * <p>databaseAddDB</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @Deprecated
     public void databaseAddDB() throws Exception {
         assertUserSet();
@@ -1865,6 +2145,11 @@ public class InstallerDb {
         m_out.print("DONE");
     }
     
+    /**
+     * <p>databaseRemoveDB</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void databaseRemoveDB() throws SQLException {
         assertUserSet();
 
@@ -1875,6 +2160,12 @@ public class InstallerDb {
         m_out.print("DONE");
     }
 
+    /**
+     * <p>addIndexesForTable</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void addIndexesForTable(String table) throws SQLException {
         List<Index> indexes =
             getIndexDao().getIndexesForTable(table.toLowerCase());
@@ -1889,6 +2180,13 @@ public class InstallerDb {
 
     }
 
+    /**
+     * <p>grantAccessToObject</p>
+     *
+     * @param object a {@link java.lang.String} object.
+     * @param indent a int.
+     * @throws java.sql.SQLException if any.
+     */
     public void grantAccessToObject(String object, int indent) throws SQLException {
         assertUserSet();
         
@@ -1909,6 +2207,11 @@ public class InstallerDb {
         m_out.println("DONE");
     }
 
+    /**
+     * <p>fixData</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void fixData() throws Exception {
         Statement st = getConnection().createStatement();
 
@@ -1921,6 +2224,11 @@ public class InstallerDb {
 
     // XXX This causes the following Postgres error:
     // ERROR: duplicate key violates unique constraint "pk_dpname"
+    /**
+     * <p>insertData</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void insertData() throws Exception {
 
         for (String table : getInserts().keySet()) {
@@ -1946,6 +2254,11 @@ public class InstallerDb {
         }
     }
 
+    /**
+     * <p>checkUnicode</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void checkUnicode() throws Exception {
         assertUserSet();
 
@@ -1985,6 +2298,11 @@ public class InstallerDb {
     }
 
 
+    /**
+     * <p>checkIndexUniqueness</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void checkIndexUniqueness() throws Exception {
         Collection<Index> indexes = getIndexDao().getAllIndexes();
 
@@ -2039,28 +2357,63 @@ public class InstallerDb {
     }
 
     
+    /**
+     * <p>getTableColumnsFromSQL</p>
+     *
+     * @param tableName a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws java.lang.Exception if any.
+     */
     public List<Column> getTableColumnsFromSQL(String tableName)
             throws Exception {
         return getTableFromSQL(tableName).getColumns();
     }
 
 
+    /**
+     * <p>getTableCreateFromSQL</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String getTableCreateFromSQL(String table) throws Exception {
         return getXFromSQL(table, "(?i)\\bcreate table\\s+['\"]?(\\S+)['\"]?"
                 + "\\s+\\((.+?)\\);", 1, 2, "table");
     }
 
+    /**
+     * <p>getIndexFromSQL</p>
+     *
+     * @param index a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String getIndexFromSQL(String index) throws Exception {
         return getXFromSQL(index, "(?i)\\b(create (?:unique )?index\\s+"
                 + "['\"]?(\\S+)['\"]?\\s+.+?);", 2, 1, "index");
     }
 
+    /**
+     * <p>getFunctionFromSQL</p>
+     *
+     * @param function a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String getFunctionFromSQL(String function) throws Exception {
         return getXFromSQL(function, "(?is)\\bcreate function\\s+"
                 + "['\"]?(\\S+)['\"]?\\s+"
                 + "(.+? language ['\"]?\\w+['\"]?);", 1, 2, "function");
     }
 
+    /**
+     * <p>getLanguageFromSQL</p>
+     *
+     * @param language a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String getLanguageFromSQL(String language) throws Exception {
         return getXFromSQL(language, "(?is)\\bcreate trusted procedural "
                 + "language\\s+['\"]?(\\S+)['\"]?\\s+(.+?);", 1, 2,
@@ -2089,6 +2442,11 @@ public class InstallerDb {
         }
     }
     
+    /**
+     * <p>closeConnection</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void closeConnection() throws SQLException {
         if (m_connection == null) {
             return;
@@ -2114,6 +2472,11 @@ public class InstallerDb {
         }
     }
     
+    /**
+     * <p>closeAdminConnection</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void closeAdminConnection() throws SQLException {
         if (m_adminConnection == null) {
             return;
@@ -2124,7 +2487,8 @@ public class InstallerDb {
 
     /**
      * Close all connections to the database.
-     * @throws SQLException
+     *
+     * @throws java.sql.SQLException if any.
      */
     public void disconnect() throws SQLException {
         this.closeColumnReplacements();
@@ -2138,130 +2502,293 @@ public class InstallerDb {
         throw newE;
     }
 
+    /**
+     * <p>setCreateSqlLocation</p>
+     *
+     * @param createSqlLocation a {@link java.lang.String} object.
+     */
     public void setCreateSqlLocation(String createSqlLocation) {
         m_createSqlLocation = createSqlLocation;
     }
 
+    /**
+     * <p>getCreateSqlLocation</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCreateSqlLocation() {
         return m_createSqlLocation;
     }
 
+    /**
+     * <p>getTableNames</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getTableNames() {
         return m_tables;
     }
 
+    /**
+     * <p>getSequenceNames</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getSequenceNames() {
         return m_sequences;
     }
 
+    /**
+     * <p>getSequenceMapping</p>
+     *
+     * @param sequence a {@link java.lang.String} object.
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getSequenceMapping(String sequence) {
         return m_seqmapping.get(sequence);
     }
 
+    /**
+     * <p>getIndexDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.db.IndexDao} object.
+     */
     public IndexDao getIndexDao() {
         return m_indexDao;
     }
 
+    /**
+     * <p>getInserts</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, List<Insert>> getInserts() {
         return m_inserts;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return m_sql;
     }
 
+    /**
+     * <p>hasTableChanged</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean hasTableChanged(String table) {
         return m_changed.contains(table);
     }
 
+    /**
+     * <p>tableChanged</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     */
     public void tableChanged(String table) {
         m_changed.add(table);
     }
 
+    /**
+     * <p>setOutputStream</p>
+     *
+     * @param out a {@link java.io.PrintStream} object.
+     */
     public void setOutputStream(PrintStream out) {
         m_out = out;
     }
 
+    /**
+     * <p>getTriggerDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.db.TriggerDao} object.
+     */
     public TriggerDao getTriggerDao() {
         return m_triggerDao;
     }
 
+    /**
+     * <p>setStoredProcedureDirectory</p>
+     *
+     * @param directory a {@link java.lang.String} object.
+     */
     public void setStoredProcedureDirectory(String directory) {
         m_storedProcedureDirectory = directory;
     }
 
+    /**
+     * <p>getStoredProcedureDirectory</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStoredProcedureDirectory() {
         return m_storedProcedureDirectory;
     }
 
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
     
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
 
+    /**
+     * <p>setAdminDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setAdminDataSource(DataSource dataSource) {
         m_adminDataSource = dataSource;
     }
     
+    /**
+     * <p>getAdminDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getAdminDataSource() {
         return m_adminDataSource;
     }
 
+    /**
+     * <p>setForce</p>
+     *
+     * @param force a boolean.
+     */
     public void setForce(boolean force) {
         m_force = force;
     }
 
+    /**
+     * <p>getForce</p>
+     *
+     * @return a boolean.
+     */
     public boolean getForce() {
         return m_force;
     }
 
+    /**
+     * <p>setDebug</p>
+     *
+     * @param debug a boolean.
+     */
     public void setDebug(boolean debug) {
         m_debug = debug;
     }
     
+    /**
+     * <p>getDebug</p>
+     *
+     * @return a boolean.
+     */
     public boolean getDebug() {
         return m_debug;
     }
 
+    /**
+     * <p>addColumnReplacement</p>
+     *
+     * @param tableColumn a {@link java.lang.String} object.
+     * @param replacement a {@link org.opennms.netmgt.dao.db.ColumnChangeReplacement} object.
+     */
     public void addColumnReplacement(String tableColumn, ColumnChangeReplacement replacement) {
         m_columnReplacements.put(tableColumn, replacement);
     }
 
+    /**
+     * <p>setIgnoreNotNull</p>
+     *
+     * @param ignoreNotNull a boolean.
+     */
     public void setIgnoreNotNull(boolean ignoreNotNull) {
         m_ignore_notnull = ignoreNotNull;
     }
 
+    /**
+     * <p>getDatabaseName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDatabaseName() {
         return m_databaseName;
     }
 
+    /**
+     * <p>setDatabaseName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setDatabaseName(String name) {
         m_databaseName = name;
     }
 
+    /**
+     * <p>setNoRevert</p>
+     *
+     * @param noRevert a boolean.
+     */
     public void setNoRevert(boolean noRevert) {
         m_no_revert = noRevert;
     }
 
+    /**
+     * <p>setPostgresOpennmsUser</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public void setPostgresOpennmsUser(String user) {
         m_user = user;
     }
 
+    /**
+     * <p>getPostgresOpennmsUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPostgresOpennmsUser() {
         return m_user;
     }
 
+    /**
+     * <p>setPostgresOpennmsPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPostgresOpennmsPassword(String password) {
         m_pass = password;
     }
 
+    /**
+     * <p>getPostgresOpennmsPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPostgresOpennmsPassword() {
         return m_pass;
     }
     
+    /**
+     * <p>setPostgresIpLikeLocation</p>
+     *
+     * @param location a {@link java.lang.String} object.
+     */
     public void setPostgresIpLikeLocation(String location) {
         if (location != null) {
             File iplike = new File(location);
@@ -2273,10 +2800,20 @@ public class InstallerDb {
         m_pg_iplike = location;
     }
 
+    /**
+     * <p>getPgIpLikeLocation</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPgIpLikeLocation() {
         return m_pg_iplike;
     }
     
+    /**
+     * <p>setPostgresPlPgsqlLocation</p>
+     *
+     * @param location a {@link java.lang.String} object.
+     */
     public void setPostgresPlPgsqlLocation(String location) {
         if (location != null) {
             File plpgsql = new File(location);
@@ -2288,10 +2825,20 @@ public class InstallerDb {
         m_pg_plpgsql = location;
     }
     
+    /**
+     * <p>getPgPlPgsqlLocation</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPgPlPgsqlLocation() {
         return m_pg_plpgsql;
     }
     
+    /**
+     * <p>isPgPlPgsqlLibPresent</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPgPlPgsqlLibPresent() {
         if (m_pg_plpgsql == null)
             return false;
@@ -2303,6 +2850,11 @@ public class InstallerDb {
         return false;
     }
     
+    /**
+     * <p>addColumnReplacements</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void addColumnReplacements() throws SQLException {
         /*
          * The DEFAULT value for these columns will take care of these primary keys
@@ -2368,6 +2920,11 @@ public class InstallerDb {
 
     }
     
+    /**
+     * <p>closeColumnReplacements</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void closeColumnReplacements() throws SQLException {
         for (ColumnChangeReplacement r : m_columnReplacements.values()) {
             r.close();
@@ -2477,6 +3034,12 @@ public class InstallerDb {
 
     }
 
+    /**
+     * <p>vacuumDatabase</p>
+     *
+     * @param full a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public void vacuumDatabase(boolean full) throws SQLException {
         Statement st = getConnection().createStatement();
         m_out.print("- optimizing database (VACUUM ANALYZE)... ");

@@ -60,11 +60,16 @@ import org.springframework.web.servlet.mvc.AbstractController;
 /**
  * A controller that handles querying the event table by using filters to create an
  * event list and and then forwards that event list to a JSP for display.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class EventFilterController extends AbstractController implements InitializingBean {
+    /** Constant <code>DEFAULT_MULTIPLE=0</code> */
     public static final int DEFAULT_MULTIPLE = 0;
 
     private String m_successView;
@@ -81,16 +86,21 @@ public class EventFilterController extends AbstractController implements Initial
     
     private boolean m_showEventCount = false;
 
+    /**
+     * <p>Constructor for EventFilterController.</p>
+     */
     public EventFilterController() {
         super();
         m_showEventCount = Boolean.getBoolean("opennms.eventlist.showCount");
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Parses the query string to determine what types of event filters to use
      * (for example, what to filter on or sort by), then does the database query
      * and then forwards the results to a JSP for display.
-     * 
+     *
      * <p>
      * Sets the <em>events</em> and <em>parms</em> request attributes for
      * the forwardee JSP (or whatever gets called).
@@ -196,6 +206,11 @@ public class EventFilterController extends AbstractController implements Initial
         return m_defaultShortLimit;
     }
 
+    /**
+     * <p>setDefaultShortLimit</p>
+     *
+     * @param limit a {@link java.lang.Integer} object.
+     */
     public void setDefaultShortLimit(Integer limit) {
         m_defaultShortLimit = limit;
     }
@@ -204,6 +219,11 @@ public class EventFilterController extends AbstractController implements Initial
         return m_defaultLongLimit;
     }
 
+    /**
+     * <p>setDefaultLongLimit</p>
+     *
+     * @param limit a {@link java.lang.Integer} object.
+     */
     public void setDefaultLongLimit(Integer limit) {
         m_defaultLongLimit = limit;
     }
@@ -212,14 +232,27 @@ public class EventFilterController extends AbstractController implements Initial
         return m_successView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
     
+    /**
+     * <p>setWebEventRepository</p>
+     *
+     * @param webEventRepository a {@link org.opennms.web.event.WebEventRepository} object.
+     */
     public void setWebEventRepository(WebEventRepository webEventRepository) {
         m_webEventRepository = webEventRepository;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.notNull(m_defaultShortLimit, "property defaultShortLimit must be set to a value greater than 0");
         Assert.isTrue(m_defaultShortLimit > 0, "property defaultShortLimit must be set to a value greater than 0");
@@ -229,18 +262,38 @@ public class EventFilterController extends AbstractController implements Initial
         Assert.notNull(m_webEventRepository, "webEventRepository must be set");
     }
 
+    /**
+     * <p>getDefaultAcknowledgeType</p>
+     *
+     * @return a {@link org.opennms.web.event.AcknowledgeType} object.
+     */
     public AcknowledgeType getDefaultAcknowledgeType() {
         return m_defaultEventType;
     }
 
+    /**
+     * <p>setDefaultAcknowledgeType</p>
+     *
+     * @param defaultAcknowledgeType a {@link org.opennms.web.event.AcknowledgeType} object.
+     */
     public void setDefaultAcknowledgeType(AcknowledgeType defaultAcknowledgeType) {
         m_defaultEventType = defaultAcknowledgeType;
     }
 
+    /**
+     * <p>getDefaultSortStyle</p>
+     *
+     * @return a {@link org.opennms.web.event.SortStyle} object.
+     */
     public SortStyle getDefaultSortStyle() {
         return m_defaultSortStyle;
     }
 
+    /**
+     * <p>setDefaultSortStyle</p>
+     *
+     * @param defaultSortStyle a {@link org.opennms.web.event.SortStyle} object.
+     */
     public void setDefaultSortStyle(SortStyle defaultSortStyle) {
         m_defaultSortStyle = defaultSortStyle;
     }

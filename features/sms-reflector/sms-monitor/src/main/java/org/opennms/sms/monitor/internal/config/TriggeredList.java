@@ -33,20 +33,29 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <p>TriggeredList class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class TriggeredList<T> extends AbstractList<T> {
     List<T> m_backingList = new ArrayList<T>();
 
+    /** {@inheritDoc} */
     @Override
     public T get(int index) {
         return m_backingList.get(index);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int size() {
         int size = m_backingList.size();
         return size;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void add(int index, T element) {
         m_backingList.add(index, element);
@@ -55,6 +64,7 @@ public class TriggeredList<T> extends AbstractList<T> {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public T remove(int index) {
         T element = m_backingList.remove(index);
@@ -64,6 +74,7 @@ public class TriggeredList<T> extends AbstractList<T> {
         return element;
     }
 
+    /** {@inheritDoc} */
     @Override
     public T set(int index, T element) {
         T old = m_backingList.set(index, element);
@@ -71,6 +82,13 @@ public class TriggeredList<T> extends AbstractList<T> {
         return old;
     }
     
+    /**
+     * <p>onSet</p>
+     *
+     * @param index a int.
+     * @param oldElem a T object.
+     * @param newElem a T object.
+     */
     protected void onSet(int index, T oldElem, T newElem) {
         if (oldElem != null) {
             onRemove(index, oldElem);
@@ -80,9 +98,21 @@ public class TriggeredList<T> extends AbstractList<T> {
         }
     }
 
+    /**
+     * <p>onAdd</p>
+     *
+     * @param index a int.
+     * @param element a T object.
+     */
     protected void onAdd(int index, T element) {
     }
 
+    /**
+     * <p>onRemove</p>
+     *
+     * @param index a int.
+     * @param element a T object.
+     */
     protected void onRemove(int index, T element) {
     }
 

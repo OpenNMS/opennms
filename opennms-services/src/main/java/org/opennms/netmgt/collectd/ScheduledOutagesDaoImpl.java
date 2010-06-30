@@ -41,8 +41,17 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 
+/**
+ * <p>ScheduledOutagesDaoImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
 	
+	/**
+	 * <p>Constructor for ScheduledOutagesDaoImpl.</p>
+	 */
 	public ScheduledOutagesDaoImpl() {
 		loadScheduledOutagesConfigFactory();
 	}
@@ -67,6 +76,7 @@ public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
 	    }
 	}
 
+	/** {@inheritDoc} */
 	public OnmsOutageCalendar get(String outageName) {
 		return new OnmsOutageCalendar();
 	}

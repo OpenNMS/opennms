@@ -7,6 +7,9 @@ import org.osgi.framework.ServiceRegistration;
 
 /**
  * Extension of the default OSGi bundle activator
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public final class Activator
     implements BundleActivator
@@ -16,6 +19,8 @@ public final class Activator
 	RxtxCommands m_commands;
 	
     /**
+     * {@inheritDoc}
+     *
      * Called whenever the OSGi framework starts our bundle
      */
     public void start( BundleContext bc )
@@ -29,6 +34,8 @@ public final class Activator
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Called whenever the OSGi framework stops our bundle
      */
     public void stop( BundleContext bc )

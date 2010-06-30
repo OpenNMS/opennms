@@ -27,6 +27,10 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class Application implements EntryPoint, LocationsUpdatedEventHandler {
     interface Binder extends UiBinder<DockLayoutPanel, Application> {
@@ -105,6 +109,11 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
 		return Window.getClientHeight() - extraHeight;
     }
 
+    /**
+     * <p>onLocationClick</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     */
     @UiHandler("locationLink")
     public void onLocationClick(ClickEvent event) {
         if (locationLink.getStyleName().contains(linkStyles.activeLink())) {
@@ -119,6 +128,11 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
         }
     }
 
+    /**
+     * <p>onApplicationClick</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     */
     @UiHandler("applicationLink")
     public void onApplicationClick(ClickEvent event) {
         if (applicationLink.getStyleName().contains(linkStyles.activeLink())) {
@@ -148,14 +162,23 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
         return mapPanel;
     }
 
+    /**
+     * <p>getMapImplementationType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public native String getMapImplementationType() /*-{
         return $wnd.mapImplementation;
     }-*/;
 
+    /** {@inheritDoc} */
     public void onLocationsUpdated(LocationsUpdatedEvent e) {
         updateTimestamp();
     }
     
+    /**
+     * <p>updateTimestamp</p>
+     */
     public void updateTimestamp() {
         updateTimestamp.setText("Last update: " + UPDATE_TIMESTAMP_FORMAT.format(new Date()));
     }

@@ -34,11 +34,30 @@ package org.opennms.netmgt.provision.detector.simple.response;
 import java.util.regex.Pattern;
 
 
+/**
+ * <p>MultilineHttpResponse class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MultilineHttpResponse extends MultilineOrientedResponse {
     
     
+    /**
+     * <p>Constructor for MultilineHttpResponse.</p>
+     */
     public MultilineHttpResponse(){}
     
+    /**
+     * <p>validateResponse</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param isCheckCode a boolean.
+     * @param maxRetCode a int.
+     * @return a boolean.
+     * @throws java.lang.Exception if any.
+     */
     public boolean validateResponse(String pattern, String url, boolean isCheckCode, int maxRetCode) throws Exception {
         String codeStr = Integer.toString(maxRetCode);
         String[] codeArray = codeStr.split("");
@@ -60,6 +79,11 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
         return false;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getResponseList().isEmpty() ? "MultilineHttpResponse" : String.format("Response: %s", getResponseListAsString(getResponseList().toArray()));
     }
@@ -72,6 +96,11 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
         return retVal.toString();
     }
 
+    /**
+     * <p>getResponse</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected String getResponse(){
         return getResponseList().toArray().toString();
     }

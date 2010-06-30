@@ -33,10 +33,22 @@ package org.opennms.netmgt.dao.jmx;
 
 import org.springframework.dao.UncategorizedDataAccessException;
 
+/**
+ * <p>JmxObjectNameException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JmxObjectNameException extends UncategorizedDataAccessException {
 
 	private static final long serialVersionUID = -7210917837913419033L;
 
+	/**
+	 * <p>Constructor for JmxObjectNameException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 * @param nestedException a {@link java.lang.Throwable} object.
+	 */
 	public JmxObjectNameException(String message, Throwable nestedException) {
 		super(message, nestedException);
 	}

@@ -47,13 +47,18 @@ import org.opennms.netmgt.config.NotificationManager;
 
 /**
  * Send notifications to an IRCcat bot.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class IrcCatNotificationStrategy implements NotificationStrategy {
+    /**
+     * <p>Constructor for IrcCatNotificationStrategy.</p>
+     */
     public IrcCatNotificationStrategy() {
     }
 
+    /** {@inheritDoc} */
     public int send(List<Argument> arguments) {
         try {
             String message = buildMessage(arguments);

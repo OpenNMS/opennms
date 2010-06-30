@@ -33,6 +33,12 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.OnmsDistPoller;
 
+/**
+ * <p>DistPollerDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface DistPollerDao extends OnmsDao<OnmsDistPoller, String> {
     
 }

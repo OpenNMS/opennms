@@ -37,28 +37,50 @@ package org.opennms.netmgt.model;
 
 
 /**
- * 
+ * <p>AttributeStatistic class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class AttributeStatistic implements Comparable<AttributeStatistic> {
     private OnmsAttribute m_attribute;
     private Double m_statistic;
     
+    /**
+     * <p>Constructor for AttributeStatistic.</p>
+     *
+     * @param attribute a {@link org.opennms.netmgt.model.OnmsAttribute} object.
+     * @param statistic a {@link java.lang.Double} object.
+     */
     public AttributeStatistic(OnmsAttribute attribute, Double statistic) {
         m_attribute = attribute;
         m_statistic = statistic;
     }
     
+    /**
+     * <p>getAttribute</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsAttribute} object.
+     */
     public OnmsAttribute getAttribute() {
         return m_attribute;
     }
     
+    /**
+     * <p>getStatistic</p>
+     *
+     * @return a {@link java.lang.Double} object.
+     */
     public Double getStatistic() {
         return m_statistic;
     }
 
     /**
+     * <p>compareTo</p>
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
+     * @param o a {@link org.opennms.netmgt.model.AttributeStatistic} object.
+     * @return a int.
      */
     public int compareTo(AttributeStatistic o) {
         int diff;

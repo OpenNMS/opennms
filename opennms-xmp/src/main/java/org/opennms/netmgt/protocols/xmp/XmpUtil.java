@@ -47,16 +47,25 @@ import org.krupczak.Xmp.XmpVar;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * @author jeffg
+ * <p>XmpUtil class.</p>
  *
+ * @author jeffg
+ * @version $Id: $
  */
 public class XmpUtil {
+    /** Constant <code>LESS_THAN="<"</code> */
     public static final String LESS_THAN = "<";
+    /** Constant <code>GREATER_THAN=">"</code> */
     public static final String GREATER_THAN = ">";
+    /** Constant <code>LESS_THAN_EQUALS="<="</code> */
     public static final String LESS_THAN_EQUALS = "<=";
+    /** Constant <code>GREATER_THAN_EQUALS=">="</code> */
     public static final String GREATER_THAN_EQUALS = ">=";
+    /** Constant <code>EQUALS="="</code> */
     public static final String EQUALS = "=";
+    /** Constant <code>NOT_EQUAL="!="</code> */
     public static final String NOT_EQUAL = "!=";
+    /** Constant <code>MATCHES="~"</code> */
     public static final String MATCHES = "~";
     
     private static boolean valueMeetsCriteria(XmpVar replyVar, 
@@ -182,6 +191,19 @@ public class XmpUtil {
         return false;
     }
 
+    /**
+     * <p>handleScalarQuery</p>
+     *
+     * @param session a {@link org.krupczak.Xmp.XmpSession} object.
+     * @param mib a {@link java.lang.String} object.
+     * @param object a {@link java.lang.String} object.
+     * @param valueOperator a {@link java.lang.String} object.
+     * @param valueOperand a {@link java.lang.String} object.
+     * @param log a {@link org.opennms.core.utils.ThreadCategory} object.
+     * @param caseSensitive a boolean.
+     * @return a boolean.
+     * @throws org.opennms.netmgt.protocols.xmp.XmpUtilException if any.
+     */
     public static boolean handleScalarQuery(XmpSession session, String mib,
             String object, String valueOperator, String valueOperand, ThreadCategory log, boolean caseSensitive) throws XmpUtilException {
         XmpMessage reply;
@@ -211,6 +233,25 @@ public class XmpUtil {
         }
     }
 
+    /**
+     * <p>handleTableQuery</p>
+     *
+     * @param session a {@link org.krupczak.Xmp.XmpSession} object.
+     * @param mib a {@link java.lang.String} object.
+     * @param table a {@link java.lang.String} object.
+     * @param object a {@link java.lang.String} object.
+     * @param instance a {@link java.lang.String} object.
+     * @param instanceRegex a {@link org.apache.regexp.RE} object.
+     * @param valueOperator a {@link java.lang.String} object.
+     * @param valueOperand a {@link java.lang.String} object.
+     * @param minMatches a int.
+     * @param maxMatches a int.
+     * @param maxMatchesUnbounded a boolean.
+     * @param log a {@link org.opennms.core.utils.ThreadCategory} object.
+     * @param caseSensitive a boolean.
+     * @return a boolean.
+     * @throws org.opennms.netmgt.protocols.xmp.XmpUtilException if any.
+     */
     public static boolean handleTableQuery(XmpSession session, String mib,
             String table, String object, String instance, RE instanceRegex, 
             String valueOperator, String valueOperand, int minMatches,

@@ -41,6 +41,9 @@ import java.util.EnumSet;
  * Date: Oct 21, 2008
  * Time: 6:45:47 AM
  * To change this template use File | Settings | File Templates.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public enum OnmsWbemFlagReturnEnum {
    
@@ -51,6 +54,7 @@ public enum OnmsWbemFlagReturnEnum {
     wbemQueryFlagPrototype(2, "wbemQueryFlagPrototype"),
     wbemFlagUseAmendedQualifiers(131072, "wbemFlagUseAmendedQualifiers");
 
+    /** Constant <code>lookup</code> */
     private static final Map<Integer, OnmsWbemFlagReturnEnum> lookup = new HashMap<Integer, OnmsWbemFlagReturnEnum>();
     private int returnFlagValue;
     private String returnFlagName;
@@ -65,9 +69,25 @@ public enum OnmsWbemFlagReturnEnum {
         this.returnFlagName = returnFlagName;
     }
 
+    /**
+     * <p>Getter for the field <code>returnFlagValue</code>.</p>
+     *
+     * @return a int.
+     */
     public int getReturnFlagValue() { return returnFlagValue; }
+    /**
+     * <p>Getter for the field <code>returnFlagName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getReturnFlagName() { return returnFlagName; }
 
+    /**
+     * <p>get</p>
+     *
+     * @param returnFlagValue a int.
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemFlagReturnEnum} object.
+     */
     public static OnmsWbemFlagReturnEnum get(int returnFlagValue) {
           return lookup.get(returnFlagValue);
      }

@@ -62,6 +62,7 @@ import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpVar;
 import org.opennms.core.utils.ThreadCategory;
 
+
 class XmpCollectionAttributeType implements CollectionAttributeType 
 {
     /* class variables and methods *********************** */
@@ -84,8 +85,14 @@ class XmpCollectionAttributeType implements CollectionAttributeType
     }
 
     /* public methods ************************************ */
+    /**
+     * <p>Getter for the field <code>groupType</code>.</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     */
     public AttributeGroupType getGroupType() { return groupType; }
 
+    /** {@inheritDoc} */
     public void storeAttribute(CollectionAttribute attrib, Persister persister)
     {
         log().debug("XmpCollectionAttributeType: store "+attrib);
@@ -129,9 +136,24 @@ class XmpCollectionAttributeType implements CollectionAttributeType
 
     } /* storeAttribute() */
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() { return aVar.getObjName(); }
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getType() { return Xmp.syntaxToString(aVar.getSyntax()); }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() { return "XmpCollectionAttributeType "+Xmp.syntaxToString(aVar.getSyntax()); }
 
 } /* class XmpCollectionAttributeType */

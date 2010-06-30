@@ -41,6 +41,12 @@ import org.opennms.netmgt.provision.detector.dhcp.response.DhcpResponse;
 import org.opennms.netmgt.provision.support.Client;
 
 
+/**
+ * <p>DhcpClient class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     
     private int m_retries;
@@ -48,16 +54,27 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
     private InetAddress m_address;
     private long m_responseTime;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_address = address;
         m_timeout = timeout;
         
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.detector.dhcp.response.DhcpResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public DhcpResponse receiveBanner() throws IOException, Exception {
         m_responseTime = Dhcpd.isServer(m_address, m_timeout, getRetries());
         ThreadCategory.getInstance(DhcpClient.class).debug("got a response from the server: " + m_responseTime);
@@ -65,14 +82,32 @@ public class DhcpClient implements Client<DhcpRequest, DhcpResponse> {
         return response;
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.dhcp.request.DhcpRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.dhcp.response.DhcpResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public DhcpResponse sendRequest(DhcpRequest request) throws IOException, Exception {
         return null;
     }
     
+    /**
+     * <p>setRetries</p>
+     *
+     * @param retries a int.
+     */
     public void setRetries(int retries) {
         m_retries = retries;
     }
 
+    /**
+     * <p>getRetries</p>
+     *
+     * @return a int.
+     */
     public int getRetries() {
         return m_retries;
     }

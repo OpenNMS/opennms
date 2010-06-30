@@ -26,35 +26,75 @@ import org.opennms.web.element.ElementUtil;
 import org.opennms.web.inventory.*;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * <p>InventoryService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class InventoryService implements InitializingBean {
     RWSConfig m_rwsConfig;
     NodeDao m_nodeDao;
     ConnectionProperties m_cp;
     
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
             RWSClientApi.init();
             m_cp = m_rwsConfig.getBase();
     }
     
     
+    /**
+     * <p>Constructor for InventoryService.</p>
+     */
     public InventoryService() {
         super();
     }
     
+    /**
+     * <p>getRwsConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.RWSConfig} object.
+     */
     public RWSConfig getRwsConfig() {
         return m_rwsConfig;
     }
+    /**
+     * <p>setRwsConfig</p>
+     *
+     * @param rwsConfig a {@link org.opennms.netmgt.config.RWSConfig} object.
+     */
     public void setRwsConfig(RWSConfig rwsConfig) {
         m_rwsConfig = rwsConfig;
     }
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
+    /**
+     * <p>checkRWSAlive</p>
+     *
+     * @return a boolean.
+     */
     public boolean checkRWSAlive(){
         try {
             RWSResourceList rl = RWSClientApi.getRWSResourceServicesList(m_cp);
@@ -67,6 +107,12 @@ public class InventoryService implements InitializingBean {
         }
     }
     
+    /**
+     * <p>checkRancidNode</p>
+     *
+     * @param deviceName a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean checkRancidNode(String deviceName){
         
         log().debug("checkRancidNode start " + deviceName);
@@ -105,6 +151,12 @@ public class InventoryService implements InitializingBean {
     /*
      * getRancidNodeBase get 
      * data from nodeDao 
+     */
+    /**
+     * <p>getRancidNodeBase</p>
+     *
+     * @param nodeid a int.
+     * @return a java$util$Map object.
      */
     public Map<String, Object> getRancidNodeBase(int nodeid) {
         
@@ -150,6 +202,12 @@ public class InventoryService implements InitializingBean {
     /*
      * getRancidNode will filter any exception, the page will show an empty table
      * in case of node not in DB or device name not in RWS 
+     */
+    /**
+     * <p>getRancidNode</p>
+     *
+     * @param nodeid a int.
+     * @return a java$util$Map object.
      */
     public Map<String, Object> getRancidNode(int nodeid) {
         
@@ -230,6 +288,12 @@ public class InventoryService implements InitializingBean {
         return nodeModel;
     }
 
+    /**
+     * <p>getBuckets</p>
+     *
+     * @param nodeid a int.
+     * @return a java$util$Map object.
+     */
     public Map<String, Object> getBuckets(int nodeid) {
         log().debug("getBuckets start: nodeid: " + nodeid);
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
@@ -254,6 +318,12 @@ public class InventoryService implements InitializingBean {
         return nodeModel;        
     }
     
+    /**
+     * <p>getRancidNodeList</p>
+     *
+     * @param nodeid a int.
+     * @return a java$util$Map object.
+     */
     public Map<String, Object> getRancidNodeList(int nodeid) {
         log().debug("getRancidNodelist start: nodeid: " + nodeid);
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
@@ -317,6 +387,13 @@ public class InventoryService implements InitializingBean {
         
     }
 
+    /**
+     * <p>getRancidNodeList</p>
+     *
+     * @param nodeid a int.
+     * @param group a {@link java.lang.String} object.
+     * @return a java$util$Map object.
+     */
     public Map<String, Object> getRancidNodeList(int nodeid, String group) {
         log().debug("getRancidlist start: nodeid: " + nodeid + " group: " + group);
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
@@ -368,6 +445,14 @@ public class InventoryService implements InitializingBean {
         
     }
 
+    /**
+     * <p>getInventory</p>
+     *
+     * @param nodeid a int.
+     * @param group a {@link java.lang.String} object.
+     * @param version a {@link java.lang.String} object.
+     * @return a java$util$Map object.
+     */
     public Map<String, Object> getInventory(int nodeid,
                                                 String group, String version) {
         log().debug("getInventoryNode start: nodeid: " + nodeid + " group: " + group + " version: " + version);
@@ -414,6 +499,14 @@ public class InventoryService implements InitializingBean {
     }
 
 
+    /**
+     * <p>getRancidNodeWithCLoginForGroup</p>
+     *
+     * @param nodeid a int.
+     * @param group a {@link java.lang.String} object.
+     * @param adminRole a boolean.
+     * @return a java$util$Map object.
+     */
     public Map<String, Object> getRancidNodeWithCLoginForGroup(int nodeid,String group, boolean adminRole) {
         log().debug("getRancidNodeWithCloginFroGroup start: group: " + group);
         Map<String, Object> nodeModel = getRancidNodeBase(nodeid);
@@ -492,6 +585,13 @@ public class InventoryService implements InitializingBean {
     /*
      * getRancidNodeWithClogin will filter any exception, the page will show an empty table
      * in case of node not in DB or device name not in RWS 
+     */
+    /**
+     * <p>getRancidNodeWithCLogin</p>
+     *
+     * @param nodeid a int.
+     * @param adminRole a boolean.
+     * @return a java$util$Map object.
      */
     public Map<String, Object> getRancidNodeWithCLogin(int nodeid, boolean adminRole) {
         
@@ -576,6 +676,13 @@ public class InventoryService implements InitializingBean {
         return nodeModel;
     }
 
+    /**
+     * <p>switchStatus</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param deviceName a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean switchStatus(String groupName, String deviceName){
         
       log().debug("InventoryService switchStatus " + groupName+"/"+deviceName);
@@ -598,6 +705,13 @@ public class InventoryService implements InitializingBean {
       return true;
     }
 
+    /**
+     * <p>deleteNodeOnRouterDb</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param deviceName a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean deleteNodeOnRouterDb(String groupName, String deviceName){
         
         log().debug("InventoryService deleteNodeOnRouterDb: " + groupName+"/"+deviceName);
@@ -613,6 +727,16 @@ public class InventoryService implements InitializingBean {
         return true;
       }
 
+    /**
+     * <p>updateNodeOnRouterDb</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param deviceName a {@link java.lang.String} object.
+     * @param deviceType a {@link java.lang.String} object.
+     * @param status a {@link java.lang.String} object.
+     * @param comment a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean updateNodeOnRouterDb(String groupName, String deviceName, String deviceType, String status, String comment ){
         
         log().debug("InventoryService updateNodeOnRouterDb: " + groupName+"->"+deviceName+":"+ deviceType+":"+ status + ":" + comment);
@@ -635,6 +759,16 @@ public class InventoryService implements InitializingBean {
         return true;
     }
 
+    /**
+     * <p>createNodeOnRouterDb</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param deviceName a {@link java.lang.String} object.
+     * @param deviceType a {@link java.lang.String} object.
+     * @param status a {@link java.lang.String} object.
+     * @param comment a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean createNodeOnRouterDb(String groupName, String deviceName, String deviceType, String status,String comment ){
         
         log().debug("InventoryService createNodeOnRouterDb: " + groupName+"->"+deviceName+":"+ deviceType+":"+ status + ":" + comment);
@@ -657,6 +791,18 @@ public class InventoryService implements InitializingBean {
         return true;
    }
 
+    /**
+     * <p>updateClogin</p>
+     *
+     * @param deviceName a {@link java.lang.String} object.
+     * @param groupName a {@link java.lang.String} object.
+     * @param userID a {@link java.lang.String} object.
+     * @param pass a {@link java.lang.String} object.
+     * @param enPass a {@link java.lang.String} object.
+     * @param loginM a {@link java.lang.String} object.
+     * @param autoE a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean updateClogin(String deviceName, String groupName, String userID, String pass, String enPass, String loginM, String autoE){
         log().debug("InventoryService updateClogin for following changes"+
                     "userID ["+ userID +"] "+
@@ -689,6 +835,12 @@ public class InventoryService implements InitializingBean {
 
     }
 
+    /**
+     * <p>deleteClogin</p>
+     *
+     * @param deviceName a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean deleteClogin(String deviceName){
         log().debug("InventoryService deleteClogin deviceName [" + deviceName + "] "); 
         try {
@@ -705,6 +857,13 @@ public class InventoryService implements InitializingBean {
 
     }
 
+    /**
+     * <p>deleteBucketItem</p>
+     *
+     * @param bucket a {@link java.lang.String} object.
+     * @param filename a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean deleteBucketItem(String bucket, String filename ){
         log().debug("InventoryService deleteBucketItem for bucket/filename [" + bucket + "]/ " + "[" + filename + "]"); 
         try {
@@ -718,6 +877,12 @@ public class InventoryService implements InitializingBean {
         return true;
     }
 
+    /**
+     * <p>deleteBucket</p>
+     *
+     * @param bucket a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean deleteBucket(String bucket){
         log().debug("InventoryService deleteBucket for bucket [" + bucket + "]/ "); 
         try {
@@ -731,6 +896,12 @@ public class InventoryService implements InitializingBean {
         return true;
     }
 
+    /**
+     * <p>createBucket</p>
+     *
+     * @param bucket a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean createBucket(String bucket){
         log().debug("InventoryService createBucket for bucket [" + bucket + "]/ "); 
         try {

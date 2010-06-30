@@ -46,17 +46,24 @@ import org.springframework.util.Assert;
 
 /**
  * This entity represent a user managed by Acl application.
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class GenericUser implements Serializable {
 
     /**
      * Constructor
-     * 
-     * @param user
-     * @param authorityService
+     *
+     * @param user a {@link org.opennms.acl.model.UserAuthoritiesDTO} object.
+     * @param userService a {@link org.opennms.acl.service.UserService} object.
+     * @param userService a {@link org.opennms.acl.service.UserService} object.
+     * @param userService a {@link org.opennms.acl.service.UserService} object.
+     * @param userService a {@link org.opennms.acl.service.UserService} object.
+     * @param userService a {@link org.opennms.acl.service.UserService} object.
+     * @param userService a {@link org.opennms.acl.service.UserService} object.
+     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
      */
     public GenericUser(UserAuthoritiesDTO user, UserService userService, GroupService groupService) {
         Assert.notNull(user);
@@ -75,9 +82,8 @@ public class GenericUser implements Serializable {
 
     /**
      * Add a list of groups to this GenericUser
-     * 
-     * @param authorities
-     * @return result of the operation
+     *
+     * @param groups a {@link java.util.List} object.
      */
     public void setNewGroups(List<Integer> groups) {
         user.setItems(groups);
@@ -85,21 +91,26 @@ public class GenericUser implements Serializable {
 
     /**
      * Return a list of groups that this GenericUser don't have
-     * 
+     *
      * @return free groups
      */
     public List<GroupDTO> getFreeGroups() {
         return groupService.getFreeGroups(user.getUsername());
     }
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<GroupDTO> getGroups() {
         return groupService.getUserGroups(user.getUsername());
     }
 
     /**
      * Return a read only GenericUser
-     * 
-     * @return
+     *
+     * @return a {@link org.opennms.acl.model.UserView} object.
      */
     public UserView getUserView() {
         return user;
@@ -107,8 +118,8 @@ public class GenericUser implements Serializable {
 
     /**
      * Return the GenericUser unique identifier
-     * 
-     * @return
+     *
+     * @return a {@link java.lang.Long} object.
      */
     public Long getId() {
         return user.getId();
@@ -116,8 +127,8 @@ public class GenericUser implements Serializable {
 
     /**
      * Return the username of this GenericUser
-     * 
-     * @return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getUsername() {
         return user.getUsername();
@@ -125,8 +136,8 @@ public class GenericUser implements Serializable {
 
     /**
      * Return a list of authorities of this GenericUser
-     * 
-     * @return
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<?> getAuthorities() {
         return user.getAuthorities();

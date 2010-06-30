@@ -34,13 +34,21 @@ package org.opennms.netmgt.poller.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>Pollerd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.poller.Poller> implements PollerdMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Pollers";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "pollerdContext";

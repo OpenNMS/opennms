@@ -46,25 +46,45 @@ import org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
 /**
- * 
- * @author <a href=mailto:desloge@opennms.com>Donald Desloge</a>
+ * <p>Abstract BasicDetector class.</p>
  *
+ * @author <a href=mailto:desloge@opennms.com>Donald Desloge</a>
+ * @version $Id: $
  */
-
 public abstract class BasicDetector<Request, Response> extends AbstractDetector implements SyncServiceDetector {
     
     private ClientConversation<Request, Response> m_conversation = new ClientConversation<Request, Response>();
     
+    /**
+     * <p>Constructor for BasicDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
+     * @param <Request> a Request object.
+     * @param <Response> a Response object.
+     */
     protected BasicDetector(String serviceName, int port, int timeout, int retries) {
         super(serviceName, port, timeout, retries);
     }
     
+    /**
+     * <p>Constructor for BasicDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     protected BasicDetector(String serviceName, int port) {
         super(serviceName, port);
     }
 
+    /**
+     * <p>onInit</p>
+     */
     abstract protected void onInit();
     
+    /** {@inheritDoc} */
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
         String ipAddr = address.getHostAddress();
         int port = getPort();
@@ -108,12 +128,17 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
         return false;
     }
     
+    /**
+     * <p>dispose</p>
+     */
     public void dispose(){
         
     }
 
     /**
-     * @return
+     * <p>getClient</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.support.Client} object.
      */
     abstract protected Client<Request, Response> getClient();
 
@@ -121,17 +146,39 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
         return getConversation().attemptConversation(client);
     }
     
+    /**
+     * <p>expectBanner</p>
+     *
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     protected void expectBanner(ResponseValidator<Response> bannerValidator) {
         getConversation().expectBanner(bannerValidator);
     }
     
+    /**
+     * <p>send</p>
+     *
+     * @param requestBuilder a {@link org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder} object.
+     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     protected void send(RequestBuilder<Request> requestBuilder, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(requestBuilder, responseValidator);
     }
+    /**
+     * <p>send</p>
+     *
+     * @param request a Request object.
+     * @param responseValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     protected void send(Request request, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(request, responseValidator);
     }
     
+    /**
+     * <p>getConversation</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation} object.
+     */
     protected ClientConversation<Request, Response> getConversation() {
         return m_conversation;
     }

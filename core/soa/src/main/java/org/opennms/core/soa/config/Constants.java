@@ -33,9 +33,11 @@ package org.opennms.core.soa.config;
  * Constants
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface Constants {
     
+    /** Constant <code>SERVICE_REGISTRY_BEAN_NAME="serviceRegistry"</code> */
     public static final String SERVICE_REGISTRY_BEAN_NAME = "serviceRegistry";
     
 }

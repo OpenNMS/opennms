@@ -53,6 +53,7 @@ import org.springframework.util.Assert;
  * PatternBasedAuthenticationEntryPointWrapper
  *
  * @author brozow
+ * @version $Id: $
  */
 public class AntPatternBasedAuthenticationEntryPointChain implements AuthenticationEntryPoint, InitializingBean {
 
@@ -64,6 +65,8 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
     
     
     /**
+     * <p>setPatterns</p>
+     *
      * @param patterns the patterns to set
      */
     public void setPatterns(List<String> patterns) {
@@ -71,6 +74,8 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
     }
 
     /**
+     * <p>setMatchingEntryPoint</p>
+     *
      * @param matchedEntryPoint the matchedEntryPoint to set
      */
     public void setMatchingEntryPoint(AuthenticationEntryPoint matchedEntryPoint) {
@@ -78,6 +83,8 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
     }
 
     /**
+     * <p>setNonMatchingEntryPoint</p>
+     *
      * @param unmatchedEntryPoint the unmatchedEntryPoint to set
      */
     public void setNonMatchingEntryPoint(AuthenticationEntryPoint unmatchedEntryPoint) {
@@ -85,16 +92,27 @@ public class AntPatternBasedAuthenticationEntryPointChain implements Authenticat
     }
     
     
+    /**
+     * <p>setRequiresLowerCaseUrl</p>
+     *
+     * @param requiresLowerCaseUrl a boolean.
+     */
     public void setRequiresLowerCaseUrl(boolean requiresLowerCaseUrl) {
         m_urlPathMatcher.setRequiresLowerCaseUrl(requiresLowerCaseUrl);
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nonMatchingEntryPoint, "nonMatchingEntryPoint may not be null");
         Assert.notNull(m_matchingEntryPoint, "matchingEntryPoint may not be null");
         Assert.notNull(m_patterns, "patterns may not be null");
     }
 
+    /** {@inheritDoc} */
     public void commence(ServletRequest request, ServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         
         String url = getUrl(request);

@@ -64,18 +64,18 @@ import org.springframework.util.Assert;
  * Eventd listens for events from the discovery, capsd, trapd processes and
  * sends events to the Master Station when queried for.
  * </p>
- * 
+ *
  * <p>
  * Eventd receives events sent in as XML, looks up the event.conf and adds
  * information to these events and stores them to the db. It also reconverts
  * them back to XML to be sent to other processes like 'actiond'
  * </p>
- * 
+ *
  * <p>
  * Process like trapd, capsd etc. that are local to the distributed poller send
  * events to the eventd. Events can also be sent via TCP or UDP to eventd.
  * </p>
- * 
+ *
  * <p>
  * Eventd listens for incoming events, loads info from the 'event.conf', adds
  * events to the database and sends the events added to the database to
@@ -83,14 +83,17 @@ import org.springframework.util.Assert;
  * from the services table so as to prevent a database lookup for each incoming
  * event
  * </P>
- * 
+ *
  * <P>
  * The number of threads that processes events is configurable via the eventd
  * configuration xml
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public final class Eventd extends AbstractServiceDaemon {
     /**
@@ -121,6 +124,9 @@ public final class Eventd extends AbstractServiceDaemon {
         super("OpenNMS.Eventd");
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
         Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
         Assert.state(m_eventReceivers != null, "property eventReceivers must be set");
@@ -129,6 +135,9 @@ public final class Eventd extends AbstractServiceDaemon {
         m_eventdServiceManager.dataSourceSync();
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         for (EventReceiver eventReceiver : m_eventReceivers) {
             eventReceiver.start();
@@ -139,6 +148,9 @@ public final class Eventd extends AbstractServiceDaemon {
         log().debug("Eventd running");
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         log().debug("calling shutdown on tcp/udp listener threads");
 
@@ -154,26 +166,56 @@ public final class Eventd extends AbstractServiceDaemon {
         log().debug("shutdown on tcp/udp listener threads returned");
     }
 
+    /**
+     * <p>getEventdServiceManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventdServiceManager} object.
+     */
     public EventdServiceManager getEventdServiceManager() {
         return m_eventdServiceManager;
     }
 
+    /**
+     * <p>setEventdServiceManager</p>
+     *
+     * @param eventdServiceManager a {@link org.opennms.netmgt.eventd.EventdServiceManager} object.
+     */
     public void setEventdServiceManager(EventdServiceManager eventdServiceManager) {
         m_eventdServiceManager = eventdServiceManager;
     }
 
+    /**
+     * <p>getReceiver</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.BroadcastEventProcessor} object.
+     */
     public BroadcastEventProcessor getReceiver() {
         return m_receiver;
     }
 
+    /**
+     * <p>setReceiver</p>
+     *
+     * @param receiver a {@link org.opennms.netmgt.eventd.BroadcastEventProcessor} object.
+     */
     public void setReceiver(BroadcastEventProcessor receiver) {
         m_receiver = receiver;
     }
 
+    /**
+     * <p>getEventReceivers</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<EventReceiver> getEventReceivers() {
         return m_eventReceivers;
     }
 
+    /**
+     * <p>setEventReceivers</p>
+     *
+     * @param eventReceivers a {@link java.util.Collection} object.
+     */
     public void setEventReceivers(Collection<EventReceiver> eventReceivers) {
         m_eventReceivers = eventReceivers;
     }

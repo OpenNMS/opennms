@@ -52,15 +52,32 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * <p>ProvisioningGroupsController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ProvisioningGroupsController extends SimpleFormController {
 
     private ManualProvisioningService m_provisioningService;
     private ForeignSourceService m_foreignSourceService;
 
+    /**
+     * <p>setProvisioningService</p>
+     *
+     * @param provisioningService a {@link org.opennms.web.svclayer.ManualProvisioningService} object.
+     */
     public void setProvisioningService(ManualProvisioningService provisioningService) {
         m_provisioningService = provisioningService;
     }
     
+    /**
+     * <p>setForeignSourceService</p>
+     *
+     * @param fss a {@link org.opennms.netmgt.provision.persist.ForeignSourceService} object.
+     */
     public void setForeignSourceService(ForeignSourceService fss) {
         m_foreignSourceService = fss;
     }
@@ -91,10 +108,14 @@ public class ProvisioningGroupsController extends SimpleFormController {
         }
     }
     
+    /**
+     * <p>Constructor for ProvisioningGroupsController.</p>
+     */
     public ProvisioningGroupsController() {
         setCommandClass(GroupAction.class);
     }
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object cmd, BindException errors) throws Exception {
         GroupAction command = (GroupAction)cmd;
@@ -162,6 +183,7 @@ public class ProvisioningGroupsController extends SimpleFormController {
         return showForm(request, response, errors);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {

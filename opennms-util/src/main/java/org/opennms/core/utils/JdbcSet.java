@@ -38,20 +38,40 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 
+/**
+ * <p>JdbcSet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JdbcSet<E> extends AbstractSet<E> {
     
     LinkedHashSet<E> m_added = new LinkedHashSet<E>();
     LinkedHashSet<E> m_entries = new LinkedHashSet<E>();
     LinkedHashSet<E> m_removed = new LinkedHashSet<E>();
     
+    /**
+     * <p>Constructor for JdbcSet.</p>
+     *
+     * @param c a {@link java.util.Collection} object.
+     * @param <E> a E object.
+     */
     public JdbcSet(Collection<E> c) {
         m_entries.addAll(c);
     }
     
+    /**
+     * <p>Constructor for JdbcSet.</p>
+     */
     public JdbcSet() {
     	
     }
     
+    /**
+     * <p>setElements</p>
+     *
+     * @param c a {@link java.util.Collection} object.
+     */
     protected void setElements(Collection<E> c) {
     	m_entries.addAll(c);
     }
@@ -77,14 +97,30 @@ public class JdbcSet<E> extends AbstractSet<E> {
         
     }
     
+    /**
+     * <p>iterator</p>
+     *
+     * @return a {@link java.util.Iterator} object.
+     */
     public Iterator<E> iterator() {
         return new JdbcSetIterator(m_entries.iterator(), m_added.iterator());
     }
 
+    /**
+     * <p>size</p>
+     *
+     * @return a int.
+     */
     public int size() {
         return m_added.size() + m_entries.size();
     }
 
+    /**
+     * <p>add</p>
+     *
+     * @param o a E object.
+     * @return a boolean.
+     */
     public boolean add(E o) {
         if (contains(o)) {
             return false;
@@ -93,18 +129,36 @@ public class JdbcSet<E> extends AbstractSet<E> {
         return true;
     }
     
+    /**
+     * <p>getRemoved</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<E> getRemoved() {
         return m_removed;
     }
     
+    /**
+     * <p>getAdded</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<E> getAdded() {
         return m_added;
     }
     
+    /**
+     * <p>getRemaining</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<E> getRemaining() {
         return m_entries;
     }
     
+    /**
+     * <p>reset</p>
+     */
     public void reset() {
         m_entries.addAll(m_added);
         m_added.clear();

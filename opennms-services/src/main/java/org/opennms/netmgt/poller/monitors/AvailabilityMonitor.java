@@ -44,8 +44,9 @@ import org.opennms.netmgt.poller.MonitoredService;
  * This class uses the Java 5 isReachable method to determine up/down and is
  * currently considered "experimental".  Please give it a try and let us
  * know.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 @Distributable
 public class AvailabilityMonitor extends IPv4Monitor {
@@ -55,12 +56,19 @@ public class AvailabilityMonitor extends IPv4Monitor {
     private static final int DEFAULT_RETRY = 3;
     private static final int DEFAULT_TIMEOUT = 3000;
 
+    /** {@inheritDoc} */
     public void initialize(Map<String, Object> parameters) {
     }
 
+    /**
+     * <p>initialize</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
+     */
     public void initialize(MonitoredService svc) {
     }
 
+    /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         
         TimeoutTracker timeoutTracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
@@ -79,9 +87,13 @@ public class AvailabilityMonitor extends IPv4Monitor {
         return logDown(Level.INFO, svc+" failed to respond");
     }
 
+    /**
+     * <p>release</p>
+     */
     public void release() {
     }
 
+    /** {@inheritDoc} */
     public void release(MonitoredService svc) {
     }
 

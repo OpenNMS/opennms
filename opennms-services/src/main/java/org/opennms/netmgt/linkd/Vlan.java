@@ -36,8 +36,10 @@
 package org.opennms.netmgt.linkd;
 
 /**
- * 
+ * <p>Vlan class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class Vlan {
 
@@ -63,18 +65,38 @@ public class Vlan {
 
 		}
 
+		/**
+		 * <p>Getter for the field <code>vlanIndex</code>.</p>
+		 *
+		 * @return a int.
+		 */
 		public int getVlanIndex() {
 			return vlanIndex;
 		}
 
+		/**
+		 * <p>Getter for the field <code>vlanName</code>.</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String getVlanName() {
 			return vlanName;
 		}
 
+		/**
+		 * <p>Getter for the field <code>vlanStatus</code>.</p>
+		 *
+		 * @return a int.
+		 */
 		public int getVlanStatus() {
 			return vlanStatus;
 		}
 
+		/**
+		 * <p>Getter for the field <code>vlanType</code>.</p>
+		 *
+		 * @return a int.
+		 */
 		public int getVlanType() {
 			return vlanType;
 		}

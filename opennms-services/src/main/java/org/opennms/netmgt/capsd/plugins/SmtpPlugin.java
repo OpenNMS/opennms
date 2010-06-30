@@ -69,12 +69,17 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * Plugin interface that allows it to be used along with other plugins by the
  * daemon.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * 
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class SmtpPlugin extends AbstractPlugin {
 
@@ -300,7 +305,7 @@ public final class SmtpPlugin extends AbstractPlugin {
     /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.
-     * 
+     *
      * @return The protocol name for this plugin.
      */
     public String getProtocolName() {
@@ -308,31 +313,23 @@ public final class SmtpPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
-     * 
-     * @param address
-     *            The address to check for support.
-     * 
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address) {
         return isServer(address, DEFAULT_PORT, DEFAULT_RETRY, DEFAULT_TIMEOUT);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      * The qualifier map passed to the method is used by the plugin to return
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
-     * 
-     * @param address
-     *            The address to check for support.
-     * @param qualifiers
-     *            The map where qualification are set by the plugin.
-     * 
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;

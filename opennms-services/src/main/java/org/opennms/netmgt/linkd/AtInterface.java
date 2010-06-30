@@ -37,8 +37,10 @@
 package org.opennms.netmgt.linkd;
 
 /**
- * 
+ * <p>AtInterface class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class AtInterface {
 
@@ -53,6 +55,13 @@ public class AtInterface {
 		"default constructor not supported");
 	}
 
+	/**
+	 * <p>Constructor for AtInterface.</p>
+	 *
+	 * @param nodeid a int.
+	 * @param ipAddress a {@link java.lang.String} object.
+	 * @param macAddress a {@link java.lang.String} object.
+	 */
 	public AtInterface(int nodeid, String ipAddress, String macAddress) {
 		this.nodeid = nodeid;
 		this.macAddress = macAddress;
@@ -60,6 +69,12 @@ public class AtInterface {
 		this.ifindex=-1;
 	}
 
+	/**
+	 * <p>Constructor for AtInterface.</p>
+	 *
+	 * @param nodeid a int.
+	 * @param ipAddress a {@link java.lang.String} object.
+	 */
 	public AtInterface(int nodeid, String ipAddress) {
 		this.nodeid = nodeid;
 		this.macAddress = "";
@@ -67,6 +82,11 @@ public class AtInterface {
 		this.ifindex=-1;
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		StringBuffer str = new StringBuffer("Mac Address = " + macAddress + "\n");
 		str.append("Node Id = " + nodeid + "\n");
@@ -76,12 +96,16 @@ public class AtInterface {
 	}
 
 	/**
+	 * <p>getNodeId</p>
+	 *
 	 * @return Returns the nodeparentid.
 	 */
 	public int getNodeId() {
 		return nodeid;
 	}
 	/**
+	 * <p>Getter for the field <code>macAddress</code>.</p>
+	 *
 	 * @return Returns the ifindex.
 	 */
 	public String getMacAddress() {
@@ -89,20 +113,37 @@ public class AtInterface {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>ipAddress</code>.</p>
+	 *
 	 * @return Returns the ifindex.
 	 */
 	public String getIpAddress() {
 		return ipAddress;
 	}
 
+	/**
+	 * <p>Getter for the field <code>ifindex</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIfindex() {
 		return ifindex;
 	}
 
+	/**
+	 * <p>Setter for the field <code>ifindex</code>.</p>
+	 *
+	 * @param ifindex a int.
+	 */
 	public void setIfindex(int ifindex) {
 		this.ifindex = ifindex;
 	}
 
+	/**
+	 * <p>Setter for the field <code>macAddress</code>.</p>
+	 *
+	 * @param macAddress a {@link java.lang.String} object.
+	 */
 	public void setMacAddress(String macAddress) {
 		this.macAddress = macAddress;
 	}

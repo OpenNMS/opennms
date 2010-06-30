@@ -35,6 +35,13 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * <p>GoogleMapsPanel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class GoogleMapsPanel extends Composite implements MapPanel {
 
     private static GoogleMapsPanelUiBinder uiBinder = GWT.create(GoogleMapsPanelUiBinder.class);
@@ -48,6 +55,11 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
     private Map<String, GWTMarkerState> m_markerStates = new HashMap<String,GWTMarkerState>();
     private HandlerManager m_eventBus;
 
+    /**
+     * <p>Constructor for GoogleMapsPanel.</p>
+     *
+     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     */
     public GoogleMapsPanel(final HandlerManager eventBus) {
         m_eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
@@ -65,6 +77,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         return m_mapWidget;
     }
 
+    /** {@inheritDoc} */
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
         final Marker m = m_markers.get(name);
 
@@ -83,10 +96,16 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         }
     }
 
+    /**
+     * <p>getBounds</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
+     */
     public GWTBounds getBounds() {
         return toGWTBounds(getMapWidget().getBounds());
     }
 
+    /** {@inheritDoc} */
     public void setBounds(GWTBounds b) {
         LatLngBounds bounds = toLatLngBounds(b);
     	getMapWidget().setCenter(bounds.getCenter(), getMapWidget().getBoundsZoomLevel(bounds));
@@ -130,6 +149,7 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         return m;
     }
 
+    /** {@inheritDoc} */
     public void placeMarker(final GWTMarkerState marker) {
     	m_markerStates.put(marker.getName(), marker);
 
@@ -161,6 +181,11 @@ public class GoogleMapsPanel extends Composite implements MapPanel {
         }
     }
 
+    /**
+     * <p>getWidget</p>
+     *
+     * @return a {@link com.google.gwt.user.client.ui.Widget} object.
+     */
     public Widget getWidget() {
         return this;
     }

@@ -76,9 +76,12 @@ import org.springframework.util.StringUtils;
 /**
  * An implementation of the EventIpcManager interface that can be used to
  * communicate between services in the same JVM
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
     /**
@@ -218,22 +221,34 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
     }
 
+    /**
+     * <p>Constructor for EventIpcManagerDefaultImpl.</p>
+     */
     public EventIpcManagerDefaultImpl() {
     }
     
     
 
+    /** {@inheritDoc} */
     public void send(Event event) throws EventProxyException {
         sendNow(event);
     }
 
 
 
+    /**
+     * <p>send</p>
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     */
     public void send(Log eventLog) throws EventProxyException {
         sendNow(eventLog);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Called by a service to send an event to other listeners.
      */
     public synchronized void sendNow(Event event) {
@@ -252,6 +267,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * Called by a service to send a set of events to other listeners.
      * Creates a new event handler for the event log and queues it to the
      * event handler thread pool.
+     *
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      */
     public synchronized void sendNow(Log eventLog) {
         Assert.notNull(eventLog, "eventLog argument cannot be null");
@@ -272,6 +289,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventIpcBroadcaster#broadcastNow(org.opennms.netmgt.xml.event.Event)
      */
+    /** {@inheritDoc} */
     public synchronized void broadcastNow(Event event) {
         if (log().isDebugEnabled()) {
             log().debug("Event ID " + event.getDbid() + " to be broadcasted: " + event.getUei());
@@ -331,6 +349,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Register an event listener that is interested in all events.
      * Removes this listener from any UEI-specific matches.
      */
@@ -348,6 +368,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Register an event listener interested in the UEIs in the passed list.
      */
     public synchronized void addEventListener(EventListener listener, Collection<String> ueis) {
@@ -375,6 +397,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
     /**
      * Register an event listener interested in the passed UEI.
+     *
+     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param uei a {@link java.lang.String} object.
      */
     public synchronized void addEventListener(EventListener listener, String uei) {
         Assert.notNull(listener, "listener argument cannot be null");
@@ -384,9 +409,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Removes a registered event listener. The UEI list indicates the list of
      * events the listener is no more interested in.
-     * 
+     *
      * <strong>Note: </strong>The listener thread for this listener is not
      * stopped until the 'removeEventListener(EventListener listener)' method is
      * called.
@@ -403,10 +430,13 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * Removes a registered event listener. The UEI indicates one the listener
      * is no more interested in.
-     * 
+     *
      * <strong>Note: </strong>The listener thread for this listener is not
      * stopped until the 'removeEventListener(EventListener listener)' method is
      * called.
+     *
+     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param uei a {@link java.lang.String} object.
      */
     public synchronized void removeEventListener(EventListener listener, String uei) {
         Assert.notNull(listener, "listener argument cannot be null");
@@ -416,8 +446,10 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Removes a registered event listener.
-     * 
+     *
      * <strong>Note: </strong>Only this method stops the listener thread for the
      * listener passed.
      */
@@ -495,6 +527,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public synchronized void afterPropertiesSet() {
         Assert.state(m_eventHandlerPool == null, "afterPropertiesSet() has already been called");
         
@@ -510,28 +545,58 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
     }
 
+    /**
+     * <p>getEventHandler</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventHandler} object.
+     */
     public EventHandler getEventHandler() {
         return m_eventHandler;
     }
 
+    /**
+     * <p>setEventHandler</p>
+     *
+     * @param eventHandler a {@link org.opennms.netmgt.eventd.EventHandler} object.
+     */
     public void setEventHandler(EventHandler eventHandler) {
         m_eventHandler = eventHandler;
     }
 
+    /**
+     * <p>getHandlerPoolSize</p>
+     *
+     * @return a int.
+     */
     public int getHandlerPoolSize() {
         return m_handlerPoolSize;
     }
 
+    /**
+     * <p>setHandlerPoolSize</p>
+     *
+     * @param handlerPoolSize a int.
+     */
     public void setHandlerPoolSize(int handlerPoolSize) {
         Assert.state(m_eventHandlerPool == null, "handlerPoolSize property cannot be set after afterPropertiesSet() is called");
         
         m_handlerPoolSize = handlerPoolSize;
     }
 
+    /**
+     * <p>getEventIpcManagerProxy</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManagerProxy} object.
+     */
     public EventIpcManagerProxy getEventIpcManagerProxy() {
         return m_eventIpcManagerProxy;
     }
 
+    /**
+     * <p>setEventIpcManagerProxy</p>
+     *
+     * @param eventIpcManagerProxy a {@link org.opennms.netmgt.eventd.EventIpcManagerProxy} object.
+     */
     public void setEventIpcManagerProxy(EventIpcManagerProxy eventIpcManagerProxy) {
         m_eventIpcManagerProxy = eventIpcManagerProxy;
     }

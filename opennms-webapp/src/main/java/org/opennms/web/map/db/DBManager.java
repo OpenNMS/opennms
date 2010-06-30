@@ -52,12 +52,21 @@ import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VMapInfo;
 
 /**
+ * <p>DBManager class.</p>
+ *
  * @author maumig
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a> The class manages
  *         maps stored on DB. It uses the constructor parameters for the
  *         connection. If default constructor is called, it uses default
  *         OpenNMS db connector (Vault)
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a> The class manages
+ *         maps stored on DB. It uses the constructor parameters for the
+ *         connection. If default constructor is called, it uses default
+ *         OpenNMS db connector (Vault)
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DBManager extends Manager {
 
@@ -75,6 +84,11 @@ public class DBManager extends Manager {
 
     private DbConnectionFactory m_factory = null;
 
+    /**
+     * <p>Constructor for DBManager.</p>
+     *
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public DBManager() throws MapsException {
         ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(this.getClass());
@@ -82,6 +96,12 @@ public class DBManager extends Manager {
             log.debug("Instantiating DBManager (using Vault)");
     }
 
+    /**
+     * <p>Constructor for DBManager.</p>
+     *
+     * @param params a java$util$Map object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public DBManager(java.util.Map<String, String> params)
             throws MapsException {
         ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
@@ -142,6 +162,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>finalize</p>
+     *
+     * @param conn a {@link java.sql.Connection} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public void finalize(Connection conn) throws MapsException {
         log.debug("finalizing...");
         try {
@@ -187,6 +213,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public synchronized int saveMap(DbMap m, Collection<DbElement> e) throws MapsException {
         log.debug("saving map...");
         Connection conn = startSession();
@@ -336,6 +363,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>saveElement</p>
+     *
+     * @param e a {@link org.opennms.web.map.db.DbElement} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public synchronized void saveElement(DbElement e) throws MapsException {
         log.debug("saving element");
         Connection conn = startSession();
@@ -394,6 +427,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>deleteElements</p>
+     *
+     * @param elems an array of {@link org.opennms.web.map.db.DbElement} objects.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public synchronized void deleteElements(DbElement[] elems)
             throws MapsException {
         log.debug("deleting elements...");
@@ -415,6 +454,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>deleteElement</p>
+     *
+     * @param e a {@link org.opennms.web.map.db.DbElement} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public synchronized void deleteElement(DbElement e) throws MapsException {
         log.debug("deleting element...");
         if (e != null) {
@@ -446,6 +491,14 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>deleteElement</p>
+     *
+     * @param id a int.
+     * @param mapid a int.
+     * @param type a {@link java.lang.String} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public synchronized void deleteElement(int id, int mapid, String type)
             throws MapsException {
         log.debug("deleting element...");
@@ -487,6 +540,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public synchronized int deleteMap(int id) throws MapsException {
         log.debug("deleting map...");
         Connection conn = startSession();
@@ -509,6 +563,11 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>deleteNodeTypeElementsFromAllMaps</p>
+     *
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public synchronized void deleteNodeTypeElementsFromAllMaps()
             throws MapsException {
         log.debug("deleting all node elements...");
@@ -531,6 +590,11 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>deleteMapTypeElementsFromAllMaps</p>
+     *
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public synchronized void deleteMapTypeElementsFromAllMaps()
             throws MapsException {
         log.debug("deleting all map elements...");
@@ -552,6 +616,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbElement getElement(int id, int mapId, String type)
             throws MapsException {
         Connection conn = createConnection();
@@ -580,6 +645,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbElement newElement(int id, int mapId, String type)
             throws MapsException {
         DbElement e = new DbElement(mapId, id, type, null, null, 0, 0);
@@ -634,6 +700,12 @@ public class DBManager extends Manager {
         return e;
     }
 
+    /**
+     * <p>getAllElements</p>
+     *
+     * @return an array of {@link org.opennms.web.map.db.DbElement} objects.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public DbElement[] getAllElements() throws MapsException {
         Connection conn = createConnection();
         try {
@@ -658,6 +730,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbElement[] getElementsOfMap(int mapid) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -685,6 +758,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbElement[] getNodeElementsOfMap(int mapid) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -711,6 +785,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbElement[] getMapElementsOfMap(int mapid) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -738,6 +813,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbElement[] getElementsLike(String elementLabel)
             throws MapsException {
         Connection conn = createConnection();
@@ -764,6 +840,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>getMapsStructure</p>
+     *
+     * @return a java$util$Map object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public java.util.Map<Integer, Set<Integer>> getMapsStructure()
             throws MapsException {
         Connection conn = createConnection();
@@ -798,6 +880,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public int countMaps(int mapId) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -822,6 +905,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbMap getMap(int id) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -843,6 +927,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbMap[] getMaps(String mapname, String maptype) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -870,6 +955,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>getAllMaps</p>
+     *
+     * @return an array of {@link org.opennms.web.map.db.DbMap} objects.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public DbMap[] getAllMaps() throws MapsException {
         Connection conn = createConnection();
         try {
@@ -894,6 +985,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbMap[] getMapsLike(String mapLabel) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -923,6 +1015,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbMap[] getMapsByName(String mapLabel) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -951,6 +1044,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public DbMap[] getContainerMaps(int id, String type) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -979,6 +1073,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>getAllMapMenus</p>
+     *
+     * @return an array of {@link org.opennms.web.map.view.VMapInfo} objects.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public VMapInfo[] getAllMapMenus() throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1006,6 +1106,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public VMapInfo getMapMenu(int mapId) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1030,6 +1131,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public VMapInfo[] getMapsMenuByName(String mapLabel) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1058,6 +1160,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public VMapInfo[] getMapsMenuByOwner(String owner) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1087,6 +1190,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public VMapInfo[] getMapsMenuByGroup(String group) throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1116,6 +1220,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>getMapsMenuByOther</p>
+     *
+     * @return an array of {@link org.opennms.web.map.view.VMapInfo} objects.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public VMapInfo[] getMapsMenuByOther() throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1144,6 +1254,7 @@ public class DBManager extends Manager {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean isElementInMap(int elementId, int mapId, String type)
             throws MapsException {
         try {
@@ -1155,6 +1266,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>getAllElementInfo</p>
+     *
+     * @return a {@link java.util.Vector} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public Vector<VElementInfo> getAllElementInfo() throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1183,6 +1300,12 @@ public class DBManager extends Manager {
         }
     }
 
+    /**
+     * <p>getAlarmedElements</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public List<VElementInfo> getAlarmedElements() throws MapsException {
         Connection conn = createConnection();
         try {
@@ -1211,6 +1334,13 @@ public class DBManager extends Manager {
 
     }
 
+    /**
+     * <p>getAvails</p>
+     *
+     * @param mapElements an array of {@link org.opennms.web.map.db.DbElement} objects.
+     * @return a java$util$Map object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public java.util.Map<Integer, Double> getAvails(DbElement[] mapElements)
             throws MapsException {
         // get avails for all nodes in map and its submaps
@@ -1332,8 +1462,9 @@ public class DBManager extends Manager {
 
     /**
      * gets a Vector containing the nodeids of all deleted nodes
-     * 
+     *
      * @return Vector of Integer containing all deleted nodes' ids
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public Vector<Integer> getDeletedNodes() throws MapsException {
         Connection conn = createConnection();
@@ -1360,6 +1491,8 @@ public class DBManager extends Manager {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * recursively gets all nodes contained by elem and its submaps (if elem
      * is a map)
      */
@@ -1508,6 +1641,7 @@ public class DBManager extends Manager {
         return vecElem;
     }
 
+    /** {@inheritDoc} */
     public Set<LinkInfo> getLinksOnElements(Set<Integer> allnodes)
             throws MapsException {
         log.debug("getLinksOnElements " + allnodes);
@@ -1804,6 +1938,7 @@ public class DBManager extends Manager {
 
     }
 
+    /** {@inheritDoc} */
     public Set<Integer> getNodeIdsBySource(String query) throws MapsException {
         if (query == null) {
             return getAllNodes();
@@ -1853,6 +1988,7 @@ public class DBManager extends Manager {
         return nodes;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isElementNotDeleted(int elementId, String type)
             throws MapsException {

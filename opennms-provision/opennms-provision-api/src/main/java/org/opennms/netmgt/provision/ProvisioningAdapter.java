@@ -38,47 +38,58 @@ package org.opennms.netmgt.provision;
 /**
  * This class provides an API for implementing provider "extensions" to the OpenNMS
  * Provisioning daemon.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public interface ProvisioningAdapter {
 
     /**
-     * This method is called by the Provisioner when a new node is provisioned. 
-     * @throws ProvisioningAdapterException
+     * This method is called by the Provisioner when a new node is provisioned.
+     *
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
+     * @param nodeId a int.
      */
     void addNode(int nodeId) throws ProvisioningAdapterException;
     
     /**
-     * This method is called by the Provisioner when a node is updated through provisioning. 
-     * @throws ProvisioningAdapterException
+     * This method is called by the Provisioner when a node is updated through provisioning.
+     *
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
+     * @param nodeId a int.
      */
     void updateNode(int nodeId) throws ProvisioningAdapterException;
     
     /**
-     * This method is called by the Provisioner when a node is deleted through provisioning. 
-     * @throws ProvisioningAdapterException
+     * This method is called by the Provisioner when a node is deleted through provisioning.
+     *
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
+     * @param nodeId a int.
      */
     void deleteNode(int nodeId) throws ProvisioningAdapterException;
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     String getName();
 
     /**
      * This method is called when a configuration change event has occurred from any source.  Typically,
      * Traps sent from a device are converted to an event and that event is then identified for translation
      * and translated into a generic configuration changed event.
-     * 
-     * @param nodeid
-     * @throws ProvisioningAdapterException
+     *
+     * @param nodeid a int.
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      */
     void nodeConfigChanged(int nodeid) throws ProvisioningAdapterException;
     
     /**
-     * This method is called in case the adapter needs to perform some initialization prior to 
+     * This method is called in case the adapter needs to perform some initialization prior to
      * receiving calls from the AdapterManager.
-     * 
-     * @throws ProvisioningAdapterException
+     *
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      */
     void init() throws ProvisioningAdapterException;
     

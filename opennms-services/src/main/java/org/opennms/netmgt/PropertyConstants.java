@@ -35,9 +35,8 @@ package org.opennms.netmgt;
 /**
  * This class holds all OpenNMS related constants - has the property names to be
  * read from the config files, the various config file names etc.
- * 
+ *
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
  * @version 1.1.1.1
  */
 public final class PropertyConstants {
@@ -76,12 +75,10 @@ public final class PropertyConstants {
      * to the {@link java.lang.System System}class. This method may be modified
      * in the furture to search additional property locations for the properties
      * defined in this class.
-     * 
+     *
      * @param property
      *            The property key used to lookup the result.
-     * 
      * @return The value that is mapped by the passed property key.
-     * 
      */
     public static String lookup(String property) {
         return System.getProperty(property);

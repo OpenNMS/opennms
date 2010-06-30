@@ -43,9 +43,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * 
+ * <p>Pager class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class Pager extends Composite {
     
@@ -78,6 +83,11 @@ public class Pager extends Composite {
     private Label m_label = new Label();
     private Pageable m_pageable;
     
+    /**
+     * <p>Constructor for Pager.</p>
+     *
+     * @param pageable a {@link org.opennms.dashboard.client.Pageable} object.
+     */
     public Pager(Pageable pageable) {
         
         m_pageable = pageable;
@@ -149,6 +159,9 @@ public class Pager extends Composite {
 
     }
 
+    /**
+     * <p>update</p>
+     */
     public void update() {
         updateLabel();
     }

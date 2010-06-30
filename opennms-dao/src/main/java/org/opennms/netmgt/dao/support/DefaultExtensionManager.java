@@ -42,8 +42,10 @@ import org.apache.commons.collections.map.MultiValueMap;
 import org.opennms.netmgt.dao.ExtensionManager;
 
 /**
- * @author brozow
+ * <p>DefaultExtensionManager class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class DefaultExtensionManager implements ExtensionManager {
     
@@ -52,6 +54,7 @@ public class DefaultExtensionManager implements ExtensionManager {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.ExtensionManager#findExtensions(java.lang.Class)
      */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public <T> Collection<T> findExtensions(Class<T> extensionPoint) {
         Collection collection = m_extensions.getCollection(extensionPoint);
@@ -60,6 +63,17 @@ public class DefaultExtensionManager implements ExtensionManager {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.ExtensionManager#registerExtension(java.lang.Object, java.lang.Class<? super T>[])
+     */
+    /**
+     * <p>registerExtension</p>
+     *
+     * @param extension a {@link java.lang.Object} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
+     * @param extensionPoints a {@link java.lang.Class} object.
      */
     public void registerExtension(Object extension, Class<?>... extensionPoints) {
         for(Class<?> extensionPoint : extensionPoints) {

@@ -31,6 +31,18 @@
 //
 package org.opennms.web.springframework.security;
 
+/**
+ * <p>UserDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface UserDao {
+	/**
+	 * <p>getByUsername</p>
+	 *
+	 * @param username a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.web.springframework.security.User} object.
+	 */
 	public User getByUsername(String username);
 }

@@ -42,18 +42,50 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 /**
- * 
+ * <p>DistributedStatusService interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Transactional(readOnly=true)
 public interface DistributedStatusService {
+    /**
+     * <p>createStatusTable</p>
+     *
+     * @param command a {@link org.opennms.web.command.DistributedStatusDetailsCommand} object.
+     * @param errors a {@link org.springframework.validation.Errors} object.
+     * @return a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     */
     public SimpleWebTable createStatusTable(DistributedStatusDetailsCommand command, Errors errors); 
     
+    /**
+     * <p>createFacilityStatusTable</p>
+     *
+     * @param startDate a java$util$Date object.
+     * @param endDate a java$util$Date object.
+     * @return a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     */
     public SimpleWebTable createFacilityStatusTable(Date startDate, Date endDate);
 
+    /**
+     * <p>createHistoryModel</p>
+     *
+     * @param locationName a {@link java.lang.String} object.
+     * @param monitorId a {@link java.lang.String} object.
+     * @param applicationName a {@link java.lang.String} object.
+     * @param timeSpan a {@link java.lang.String} object.
+     * @param previousLocation a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.svclayer.support.DistributedStatusHistoryModel} object.
+     */
     public DistributedStatusHistoryModel createHistoryModel(String locationName,
             String monitorId, String applicationName, String timeSpan,
             String previousLocation);
 
+    /**
+     * <p>getApplicationCount</p>
+     *
+     * @return a int.
+     */
     public int getApplicationCount();
 }

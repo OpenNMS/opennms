@@ -40,6 +40,8 @@ import org.opennms.web.filter.Filter;
  * AlarmCritiera
  *
  * @author brozow
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AlarmCriteria {
     
@@ -63,14 +65,34 @@ public class AlarmCriteria {
     int m_limit = -1;
     int m_offset = -1;
     
+    /**
+     * <p>Constructor for AlarmCriteria.</p>
+     *
+     * @param filters a org$opennms$web$filter$Filter object.
+     */
     public AlarmCriteria(Filter... filters) {
         this(filters, null, null, -1, -1);
     }
     
+    /**
+     * <p>Constructor for AlarmCriteria.</p>
+     *
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     */
     public AlarmCriteria(AcknowledgeType ackType, Filter[] filters) {
         this(filters, null, ackType, -1, -1);
     }
     
+    /**
+     * <p>Constructor for AlarmCriteria.</p>
+     *
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @param limit a int.
+     * @param offset a int.
+     */
     public AlarmCriteria(Filter[] filters, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset) {
         m_filters = filters;
         m_sortStyle = sortStyle;
@@ -80,6 +102,13 @@ public class AlarmCriteria {
     }
     
     
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor} object.
+     * @param <E> a E object.
+     * @throws E if any.
+     */
     public <E extends Exception> void visit(AlarmCriteriaVisitor<E> visitor) throws E {
         if (m_ackType != null) {
             visitor.visitAckType(m_ackType);

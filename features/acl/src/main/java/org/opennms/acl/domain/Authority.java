@@ -45,18 +45,60 @@ import org.opennms.acl.service.AuthorityService;
 
 /**
  * This entity class represent s an Authority (permission/authority/group/category/other...)
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class Authority implements Serializable {
 
     /**
      * Constructor used by AuthorityFactory
-     * 
+     *
      * @param authority
      * @param authorityService
-     * @param aclItemService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param authorityService
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     * @param aclItemService a {@link org.opennms.acl.service.AclItemService} object.
      */
     public Authority(AuthorityDTO authority, AuthorityService authorityService, AclItemService aclItemService) {
         this.authority = authority;
@@ -66,9 +108,9 @@ public class Authority implements Serializable {
 
     /**
      * Return a paginated list of anemic authorities
-     * 
-     * @param pager
-     * @return
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
+     * @return a {@link java.util.List} object.
      */
     public List<AuthorityDTO> getAuthorities(Pager pager) {
         return authorityService.getAuthorities(pager);
@@ -76,7 +118,7 @@ public class Authority implements Serializable {
 
     /**
      * Return a read only Autority
-     * 
+     *
      * @return authority
      */
     public AuthorityView getAuthorityView() {
@@ -84,6 +126,8 @@ public class Authority implements Serializable {
     }
 
     /**
+     * <p>hasItems</p>
+     *
      * @return hasItems
      */
     public boolean hasItems() {
@@ -99,6 +143,8 @@ public class Authority implements Serializable {
 
     /**
      * Overwrite the items assigned to this Autority
+     *
+     * @param items a {@link java.util.List} object.
      */
     public void setNewItems(List<?> items) {
         authority.setItems(items);
@@ -106,6 +152,8 @@ public class Authority implements Serializable {
 
     /**
      * Remove this Autority
+     *
+     * @return a boolean.
      */
     public boolean remove() {
         return authorityService.removeAuthority(authority.getId());
@@ -113,7 +161,7 @@ public class Authority implements Serializable {
 
     /**
      * Return the human readable description of this Authority
-     * 
+     *
      * @return description
      */
     public String getDescription() {
@@ -122,7 +170,7 @@ public class Authority implements Serializable {
 
     /**
      * Authority unique identifier
-     * 
+     *
      * @return authority's identifier
      */
     public Integer getId() {
@@ -131,20 +179,25 @@ public class Authority implements Serializable {
 
     /**
      * Return a list of all items manageable by authorities
-     * 
+     *
      * @return all items
      */
     public List<?> getAllItems() {
         return aclItemService.getItems();
     }
 
+    /**
+     * <p>getFreeItems</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<?> getFreeItems() {
         return aclItemService.getFreeItems(authorityService.getIdItemsAuthority(authority.getId()));
     }
 
     /**
      * Return a list of all items managed by this Authority
-     * 
+     *
      * @return authority items
      */
     public List<?> getItems() {
@@ -154,7 +207,7 @@ public class Authority implements Serializable {
 
     /**
      * Return the name of the Authority
-     * 
+     *
      * @return name
      */
     public String getName() {

@@ -1,5 +1,9 @@
+
 /**
- * 
+ * <p>LinkEventCorrelator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.provision.adapters.link;
 
@@ -24,16 +28,35 @@ public class LinkEventCorrelator {
     private NodeLinkService m_nodeLinkService;
     private EndPointConfigurationDao m_endPointConfigDao;
 
+    /**
+     * <p>Constructor for LinkEventCorrelator.</p>
+     */
     public LinkEventCorrelator() {}
     
+    /**
+     * <p>isLinkUp</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
+     */
     public boolean isLinkUp(Event e) {
         return false;
     }
     
+    /**
+     * <p>logEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public void logEvent(Event e) {
         debugf(this, "Correlating Event %s/%d/%s/%s", e.getUei(), e.getNodeid(), e.getInterface(), e.getService());
     }
     
+    /**
+     * <p>handleNodeDown</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.NODE_DOWN_EVENT_UEI)
     public void handleNodeDown(Event e) {
@@ -50,6 +73,11 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>handleNodeUp</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.NODE_UP_EVENT_UEI)
     public void handleNodeUp(Event e) {
@@ -66,6 +94,11 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>handleInterfaceDown</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.INTERFACE_DOWN_EVENT_UEI)
     public void handleInterfaceDown(Event e) {
@@ -85,6 +118,11 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>handleInterfaceUp</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.INTERFACE_UP_EVENT_UEI)
     public void handleInterfaceUp(Event e) {
@@ -104,6 +142,11 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>handleServiceUnresponsive</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI)
     public void handleServiceUnresponsive(Event e) {
@@ -127,6 +170,11 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>handleServiceResponsive</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.SERVICE_RESPONSIVE_EVENT_UEI)
     public void handleServiceResponsive(Event e) {
@@ -150,6 +198,11 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>handleNodeGainedService</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
     public void handleNodeGainedService(Event e) {
@@ -172,6 +225,11 @@ public class LinkEventCorrelator {
        }
     }
     
+    /**
+     * <p>handleNodeLostService</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
     public void handleNodeLostService(Event e) {
@@ -200,6 +258,11 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>handleNodeRegainedService</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
     public void handleNodeRegainedService(Event e) {
@@ -223,6 +286,11 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>handleServiceUnmanaged</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei = EventConstants.SERVICE_UNMANAGED_EVENT_UEI)
     public void handleServiceUnmanaged(Event e) {
@@ -246,6 +314,11 @@ public class LinkEventCorrelator {
        }
     }
     
+    /**
+     * <p>handleServiceDeleted</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @Transactional
     @EventHandler(uei=EventConstants.SERVICE_DELETED_EVENT_UEI)
     public void handleServiceDeleted(Event e){
@@ -366,6 +439,13 @@ public class LinkEventCorrelator {
         }
     }
     
+    /**
+     * <p>isSnmpPrimary</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean isSnmpPrimary(int nodeId, String ipAddr) {
         String primaryAddress = m_nodeLinkService.getPrimaryAddress(nodeId);
         if(primaryAddress != null) {
@@ -374,22 +454,48 @@ public class LinkEventCorrelator {
         return false;
     }
 
+    /**
+     * <p>nodeHasEndPointService</p>
+     *
+     * @param nodeId a int.
+     * @return a boolean.
+     */
     public boolean nodeHasEndPointService(int nodeId) {
         return m_nodeLinkService.nodeHasEndPointService(nodeId);
     }
 
+    /**
+     * <p>updateLinkStatus</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public void updateLinkStatus(Event e) {
         throw new UnsupportedOperationException("boo!");
     }
 
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param forwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder forwarder) {
         m_forwarder = forwarder;
     }
 
+    /**
+     * <p>setNodeLinkService</p>
+     *
+     * @param nodeLinkService a {@link org.opennms.netmgt.provision.adapters.link.NodeLinkService} object.
+     */
     public void setNodeLinkService(NodeLinkService nodeLinkService) {
         m_nodeLinkService = nodeLinkService;
     }
 
+    /**
+     * <p>setEndPointConfigDao</p>
+     *
+     * @param endPointConfigDao a {@link org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao} object.
+     */
     public void setEndPointConfigDao(EndPointConfigurationDao endPointConfigDao) {
         m_endPointConfigDao = endPointConfigDao;
     }

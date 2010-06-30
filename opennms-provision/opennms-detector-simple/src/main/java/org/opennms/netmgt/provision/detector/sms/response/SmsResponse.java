@@ -42,14 +42,21 @@ import org.opennms.sms.phonebook.PropertyPhonebook;
 
 /**
  * Response handler for the <code>SmsDetector</code>  Uses the
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class SmsResponse {
     
     //do this for now.
     private Phonebook m_smsDirectory = new PropertyPhonebook();
 
+    /**
+     * <p>isSms</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean isSms(String ipAddr) {
         
         try {

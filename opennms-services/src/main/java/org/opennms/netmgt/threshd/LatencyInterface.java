@@ -47,16 +47,33 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
+/**
+ * <p>LatencyInterface class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LatencyInterface {
 
 	private NetworkInterface m_iface;
 	private String m_serviceName;
 
+	/**
+	 * <p>Constructor for LatencyInterface.</p>
+	 *
+	 * @param iface a {@link org.opennms.netmgt.poller.NetworkInterface} object.
+	 * @param serviceName a {@link java.lang.String} object.
+	 */
 	public LatencyInterface(NetworkInterface iface, String serviceName) {
 		m_iface = iface;
 		m_serviceName = serviceName;
 	}
 
+	/**
+	 * <p>getNetworkInterface</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
+	 */
 	public NetworkInterface getNetworkInterface() {
 		return m_iface;
 	}
@@ -76,6 +93,11 @@ public class LatencyInterface {
 	    return ipAddr;
 	}
 
+	/**
+	 * <p>getServiceName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getServiceName() {
 		// TODO Auto-generated method stub
 		return m_serviceName;
@@ -94,6 +116,11 @@ public class LatencyInterface {
 	    return nodeId;
 	}
 
+	/**
+	 * <p>getHostName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getHostName() {
 		return getInetAddress().getHostAddress();
 	}

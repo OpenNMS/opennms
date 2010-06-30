@@ -74,6 +74,12 @@ import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.Updater;
 
+/**
+ * <p>Poller class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Poller extends AbstractServiceDaemon {
 
     private final static Poller m_singleton = new Poller();
@@ -96,71 +102,152 @@ public class Poller extends AbstractServiceDaemon {
 
     private DataSource m_dataSource;
 
+    /**
+     * <p>Constructor for Poller.</p>
+     */
     public Poller() {
     	super("OpenNMS.Poller");
     }
 
     /* Getters/Setters used for dependency injection */
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
 
+    /**
+     * <p>getEventManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
 
+    /**
+     * <p>setEventManager</p>
+     *
+     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
 
+    /**
+     * <p>getEventProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.PollerEventProcessor} object.
+     */
     public PollerEventProcessor getEventProcessor() {
         return m_eventProcessor;
     }
 
+    /**
+     * <p>setEventProcessor</p>
+     *
+     * @param eventProcessor a {@link org.opennms.netmgt.poller.PollerEventProcessor} object.
+     */
     public void setEventProcessor(PollerEventProcessor eventProcessor) {
         m_eventProcessor = eventProcessor;
     }
 
+    /**
+     * <p>getNetwork</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableNetwork} object.
+     */
     public PollableNetwork getNetwork() {
         return m_network;
     }
 
+    /**
+     * <p>setNetwork</p>
+     *
+     * @param network a {@link org.opennms.netmgt.poller.pollables.PollableNetwork} object.
+     */
     public void setNetwork(PollableNetwork network) {
         m_network = network;
     }
     
+    /**
+     * <p>setQueryManager</p>
+     *
+     * @param queryManager a {@link org.opennms.netmgt.poller.QueryManager} object.
+     */
     public void setQueryManager(QueryManager queryManager) {
         m_queryManager = queryManager;
     }
 
+    /**
+     * <p>getQueryManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.QueryManager} object.
+     */
     public QueryManager getQueryManager() {
         return m_queryManager;
     }
     
+    /**
+     * <p>getPollerConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.PollerConfig} object.
+     */
     public PollerConfig getPollerConfig() {
         return m_pollerConfig;
     }
 
+    /**
+     * <p>setPollerConfig</p>
+     *
+     * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
+     */
     public void setPollerConfig(PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
     }
 
+    /**
+     * <p>getPollOutagesConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
+     */
     public PollOutagesConfig getPollOutagesConfig() {
         return m_pollOutagesConfig;
     }
 
+    /**
+     * <p>setPollOutagesConfig</p>
+     *
+     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
+     */
     public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
         m_pollOutagesConfig = pollOutagesConfig;
     }
 
+    /**
+     * <p>getScheduler</p>
+     *
+     * @return a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     */
     public Scheduler getScheduler() {
         return m_scheduler;
     }
 
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link org.opennms.netmgt.scheduler.LegacyScheduler} object.
+     */
     public void setScheduler(LegacyScheduler scheduler) {
         m_scheduler = scheduler;
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
         
         // serviceUnresponsive behavior enabled/disabled?
@@ -223,6 +310,13 @@ public class Poller extends AbstractServiceDaemon {
 
     }
     
+    /**
+     * <p>closeOutagesForNode</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     */
     public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_NODE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND (outages.ifregainedservice IS NULL)";
@@ -230,6 +324,14 @@ public class Poller extends AbstractServiceDaemon {
         svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId));
     }
     
+    /**
+     * <p>closeOutagesForInterface</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     */
     public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_IFACE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND outages.ipAddr = ? AND (outages.ifregainedservice IS NULL)";
@@ -237,6 +339,15 @@ public class Poller extends AbstractServiceDaemon {
         svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId), ipAddr);
     }
     
+    /**
+     * <p>closeOutagesForService</p>
+     *
+     * @param closeDate a {@link java.util.Date} object.
+     * @param eventId a int.
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     */
     public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
         Timestamp closeTime = new Timestamp(closeDate.getTime());
         final String DB_CLOSE_OUTAGES_FOR_SERVICE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outageid in (select outages.outageid from outages, service where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ? AND outages.ifregainedservice IS NULL)";
@@ -259,6 +370,9 @@ public class Poller extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
 		// get the category logger
         // start the scheduler
@@ -275,6 +389,9 @@ public class Poller extends AbstractServiceDaemon {
         }
 	}
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         if(getScheduler()!=null) {
             getScheduler().stop();
@@ -291,18 +408,35 @@ public class Poller extends AbstractServiceDaemon {
 		getPollerConfig().releaseAllServiceMonitors();
 	}
 
+	/**
+	 * <p>onPause</p>
+	 */
 	protected void onPause() {
 		getScheduler().pause();
 	}
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
 		getScheduler().resume();
 	}
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.Poller} object.
+     */
     public static Poller getInstance() {
         return m_singleton;
     }
 
+    /**
+     * <p>getServiceMonitor</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
+     */
     public ServiceMonitor getServiceMonitor(String svcName) {
         return getPollerConfig().getServiceMonitor(svcName);
     }
@@ -327,6 +461,14 @@ public class Poller extends AbstractServiceDaemon {
 
     }
     
+    /**
+     * <p>scheduleService</p>
+     *
+     * @param nodeId a int.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     */
     public void scheduleService(final int nodeId, final String nodeLabel, final String ipAddr, final String svcName) {
         final ThreadCategory log = ThreadCategory.getInstance(getClass());
         try {
@@ -480,6 +622,14 @@ public class Poller extends AbstractServiceDaemon {
         return lastPkg;
     }
     
+    /**
+     * <p>pollableServiceInPackage</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
+     * @return a boolean.
+     */
     protected boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
         
         if (pkg.getRemote()) {
@@ -501,6 +651,14 @@ public class Poller extends AbstractServiceDaemon {
         return false;
     }
     
+    /**
+     * <p>packageIncludesIfAndSvc</p>
+     *
+     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
@@ -530,6 +688,9 @@ public class Poller extends AbstractServiceDaemon {
         return true;
     }
 
+    /**
+     * <p>refreshServicePackages</p>
+     */
     public void refreshServicePackages() {
         PollableVisitor visitor = new PollableVisitorAdaptor() {
             public void visitService(PollableService service) {
@@ -539,6 +700,9 @@ public class Poller extends AbstractServiceDaemon {
         getNetwork().visit(visitor);
     }
 
+    /**
+     * <p>refreshServiceThresholds</p>
+     */
     public void refreshServiceThresholds() {
         PollableVisitor visitor = new PollableVisitorAdaptor() {
             public void visitService(PollableService service) {

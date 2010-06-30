@@ -36,11 +36,12 @@ import java.io.Serializable;
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="servicemap"
- *     
-*/
+/**
+ * <p>OnmsServiceMap class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsServiceMap extends OnmsEntity implements Serializable {
 
     /**
@@ -56,59 +57,85 @@ public class OnmsServiceMap extends OnmsEntity implements Serializable {
     /** identifier field */
     private String m_serviceMapName;
 
-    /** full constructor */
+    /**
+     * full constructor
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param serviceMapName a {@link java.lang.String} object.
+     */
     public OnmsServiceMap(String ipAddr, String serviceMapName) {
         this.m_ipAddr = ipAddr;
         this.m_serviceMapName = serviceMapName;
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsServiceMap() {
     }
     
 
-    /**
-     * 
-     * @hibernate.id generator-class="native" column="id"
-     * @hibernate.generator-param name="sequence" value="svcMapNxtId"
-     *         
-     */
+/**
+ * <p>getId</p>
+ *
+ * @hibernate.id generator-class="native" column="id"
+ * @hibernate.generator-param name="sequence" value="svcMapNxtId"
+ * @return a {@link java.lang.Integer} object.
+ */
 public Integer getId() {
         return m_id;
     }
     
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         this.m_id = id;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="ipAddr"
-     *                 length="16"
-     *             
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getIpAddr() {
         return this.m_ipAddr;
     }
 
+    /**
+     * <p>setIpAddr</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     */
     public void setIpAddr(String ipAddr) {
         this.m_ipAddr = ipAddr;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="serviceMapName"
-     *                 length="32"
-     *             
+    /**
+     * <p>getServiceMapName</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getServiceMapName() {
         return this.m_serviceMapName;
     }
 
+    /**
+     * <p>setServiceMapName</p>
+     *
+     * @param serviceMapName a {@link java.lang.String} object.
+     */
     public void setServiceMapName(String serviceMapName) {
         this.m_serviceMapName = serviceMapName;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("ipAddr", getIpAddr())
@@ -116,6 +143,7 @@ public Integer getId() {
             .toString();
     }
 
+	/** {@inheritDoc} */
 	public void visit(EntityVisitor visitor) {
 		// TODO Auto-generated method stub
 		throw new RuntimeException("visitor method not implemented");

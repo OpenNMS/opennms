@@ -42,17 +42,25 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 
 /**
- * @author Donald Desloge
+ * <p>LineOrientedEncoder class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class LineOrientedEncoder extends ProtocolEncoderAdapter {
     private final AttributeKey ENCODER = new AttributeKey(getClass(), "encoder");
     private final Charset m_charset;
     
+    /**
+     * <p>Constructor for LineOrientedEncoder.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public LineOrientedEncoder(Charset charset) {
         m_charset = charset;
     }
     
+    /** {@inheritDoc} */
     public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
         LineOrientedRequest request = (LineOrientedRequest) message;
         

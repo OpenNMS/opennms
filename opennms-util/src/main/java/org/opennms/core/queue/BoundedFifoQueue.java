@@ -45,21 +45,275 @@ package org.opennms.core.queue;
  * interface is used to mark an implementation as having a maximum size in the
  * number of elements that can be added to the queue.
  * </p>
- * 
+ *
  * <p>
  * Once the maximum size is reached it is up to the implementation to determine
  * if it should block the adding thread, or generate an exception.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public interface BoundedFifoQueue extends FifoQueue {
     /**
      * Returns the maximum number of elements that can be contained in the FIFO
      * queue.
-     * 
+     *
      * @return The maximum number of elements storable in the queue.
      */
     public int maxSize();
@@ -67,7 +321,7 @@ public interface BoundedFifoQueue extends FifoQueue {
     /**
      * Returns true if the queue has reached the maximum number of elements it
      * can hold.
-     * 
+     *
      * @return True if the queue is at maximum capacity.
      */
     public boolean isFull();

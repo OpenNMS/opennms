@@ -44,6 +44,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>NtpClient class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class NtpClient implements Client<NtpMessage, DatagramPacket> {
 
@@ -51,10 +57,14 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
     private int m_port;
     private InetAddress m_address;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         m_socket.close();
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         if (log().isDebugEnabled()) {
             log().debug("Address: " + address + ", port: " + port + ", timeout: " + timeout);
@@ -65,10 +75,25 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
         setPort(port);
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link java.net.DatagramPacket} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public DatagramPacket receiveBanner() throws IOException, Exception {
         throw new UnsupportedOperationException("Client<NtpMessage,DatagramPacket>.receiveBanner is not yet implemented");
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.support.ntp.NtpMessage} object.
+     * @return a {@link java.net.DatagramPacket} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public DatagramPacket sendRequest(NtpMessage request) throws IOException, Exception {
         
         byte[] buf = new NtpMessage().toByteArray();
@@ -83,18 +108,38 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
         return response;
     }
 
+    /**
+     * <p>setAddress</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     */
     protected void setAddress(InetAddress address) {
         m_address = address;
     }
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     protected InetAddress getAddress() {
         return m_address;
     }
 
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a int.
+     */
     protected void setPort(int port) {
         m_port = port;
     }
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
+     */
     protected int getPort() {
         return m_port;
     }

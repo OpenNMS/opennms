@@ -39,7 +39,11 @@ import java.util.ArrayList;
 
 
 /**
+ * <p>StatusCategory class.</p>
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class StatusCategory {
 
@@ -52,18 +56,31 @@ public class StatusCategory {
 	private Collection<StatusNode> m_nodelist;
 	
 	
+	/**
+	 * <p>Constructor for StatusCategory.</p>
+	 */
 	public StatusCategory(){
 	
 		m_nodelist = new ArrayList<StatusNode>();
 	
 	}
 	
+	/**
+	 * <p>getFilter</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getFilter() {
 		
 		return m_filter;
 		
 	}
 	
+	/**
+	 * <p>setFilter</p>
+	 *
+	 * @param filter a {@link java.lang.String} object.
+	 */
 	public void setFilter(String filter) {
 		
 		m_filter = filter;
@@ -73,6 +90,11 @@ public class StatusCategory {
 	
 	
 	
+	/**
+	 * <p>getNodes</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<StatusNode> getNodes() {
 	
 		return m_nodelist;
@@ -80,6 +102,11 @@ public class StatusCategory {
 	}
 	
 	
+	/**
+	 * <p>addNode</p>
+	 *
+	 * @param NewNode a {@link org.opennms.web.svclayer.catstatus.model.StatusNode} object.
+	 */
 	public void addNode(StatusNode NewNode){
 		
 		m_nodelist.add(NewNode);
@@ -87,49 +114,99 @@ public class StatusCategory {
 	}
 	
 
+	/**
+	 * <p>getOutageStatus</p>
+	 *
+	 * @return a {@link java.lang.Boolean} object.
+	 */
 	public Boolean getOutageStatus() {
 		return m_outagestatus;
 	}
 
+	/**
+	 * <p>setOutageStatus</p>
+	 *
+	 * @param OutageStatus a {@link java.lang.Boolean} object.
+	 */
 	public void setOutageStatus(Boolean OutageStatus) {
 		m_outagestatus = OutageStatus;
 	}
 	
+	/**
+	 * <p>getComment</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getComment() {
 		return m_comment;
 	}
 
 
+	/**
+	 * <p>setComment</p>
+	 *
+	 * @param m_comment a {@link java.lang.String} object.
+	 */
 	public void setComment(String m_comment) {
 		this.m_comment = m_comment;
 	}
 
 
+	/**
+	 * <p>getLabel</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLabel() {
 		return m_label;
 	}
 
 
+	/**
+	 * <p>setLabel</p>
+	 *
+	 * @param m_label a {@link java.lang.String} object.
+	 */
 	public void setLabel(String m_label) {
 		this.m_label = m_label;
 	}
 
 
+	/**
+	 * <p>getNormal</p>
+	 *
+	 * @return a {@link java.lang.Float} object.
+	 */
 	public Float getNormal() {
 		return m_normal;
 	}
 
 
+	/**
+	 * <p>setNormal</p>
+	 *
+	 * @param m_normal a {@link java.lang.Float} object.
+	 */
 	public void setNormal(Float m_normal) {
 		this.m_normal = m_normal;
 	}
 
 
+	/**
+	 * <p>getWarning</p>
+	 *
+	 * @return a {@link java.lang.Integer} object.
+	 */
 	public Integer getWarning() {
 		return m_warning;
 	}
 
 
+	/**
+	 * <p>setWarning</p>
+	 *
+	 * @param m_warning a {@link java.lang.Integer} object.
+	 */
 	public void setWarning(Integer m_warning) {
 		this.m_warning = m_warning;
 	}

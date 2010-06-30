@@ -8,19 +8,28 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.protocols.jmx.connectors.JMXSecureConnectionFactory;
 
+/**
+ * <p>JMXSecurePlugin class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JMXSecurePlugin extends JMXPlugin
 {
 
+	/** {@inheritDoc} */
 	public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address)
 	{
 		return JMXSecureConnectionFactory.getMBeanServerConnection(parameterMap, address);
 	}
 
+	/** {@inheritDoc} */
 	public String getProtocolName(Map map)
 	{
 		return ParameterMap.getKeyedString(map, "friendly-name", "ssl-jmxmp");
 	}
 
+	/** {@inheritDoc} */
 	public boolean isProtocolSupported(InetAddress address)
 	{
 		HashMap<String, Object> map = new HashMap<String, Object>();

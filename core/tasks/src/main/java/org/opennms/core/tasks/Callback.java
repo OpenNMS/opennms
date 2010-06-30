@@ -35,10 +35,22 @@ package org.opennms.core.tasks;
  * Callback
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface Callback<T> {
     
+    /**
+     * <p>complete</p>
+     *
+     * @param t a T object.
+     * @param <T> a T object.
+     */
     public void complete(T t);
+    /**
+     * <p>handleException</p>
+     *
+     * @param t a {@link java.lang.Throwable} object.
+     */
     public void handleException(Throwable t);
 
 }

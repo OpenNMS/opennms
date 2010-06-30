@@ -42,9 +42,13 @@ package org.opennms.netmgt.eventd;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>EventIpcManagerFactory class.</p>
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class EventIpcManagerFactory {
 	/**
@@ -66,12 +70,19 @@ public class EventIpcManagerFactory {
 
     /**
      * Returns an implementation of the default EventIpcManager class
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
      */
     public static EventIpcManager getIpcManager() {
         Assert.state(m_ipcManager != null, "this factory has not been initialized");
         return m_ipcManager;
     }
 
+    /**
+     * <p>setIpcManager</p>
+     *
+     * @param ipcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public static void setIpcManager(EventIpcManager ipcManager) {
         Assert.notNull(ipcManager, "argument ipcManager must not be null");
         m_ipcManager = ipcManager;

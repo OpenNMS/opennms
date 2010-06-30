@@ -47,6 +47,7 @@ import org.opennms.sms.reflector.smsservice.MobileMsgResponseHandler;
  * MobileTransactionExecution
  *
  * @author brozow
+ * @version $Id: $
  */
 public class MobileTransactionExecution {
     
@@ -122,6 +123,11 @@ public class MobileTransactionExecution {
     private Throwable m_error;
     
 
+    /**
+     * <p>Constructor for MobileTransactionExecution.</p>
+     *
+     * @param transaction a {@link org.opennms.sms.monitor.internal.config.MobileSequenceTransaction} object.
+     */
     public MobileTransactionExecution(MobileSequenceTransaction transaction) {
         m_transaction = transaction;
     }
@@ -135,6 +141,8 @@ public class MobileTransactionExecution {
     }
     
     /**
+     * <p>getLatency</p>
+     *
      * @return the latency
      */
     public Long getLatency() {
@@ -143,6 +151,8 @@ public class MobileTransactionExecution {
 
 
     /**
+     * <p>getError</p>
+     *
      * @return the error
      */
     public Throwable getError() {
@@ -150,12 +160,19 @@ public class MobileTransactionExecution {
     }
 
     /**
+     * <p>setError</p>
+     *
      * @param error the error to set
      */
     public void setError(Throwable error) {
         m_error = error;
     }
 
+    /**
+     * <p>getTransaction</p>
+     *
+     * @return a {@link org.opennms.sms.monitor.internal.config.MobileSequenceTransaction} object.
+     */
     public MobileSequenceTransaction getTransaction() {
         return m_transaction;
     }

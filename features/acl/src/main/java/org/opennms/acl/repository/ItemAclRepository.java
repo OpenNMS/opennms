@@ -38,26 +38,33 @@ import java.util.List;
 
 /**
  * Contract that provides the items for the ACL system. This items can be anything
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface ItemAclRepository {
 
     /**
+     * <p>getItems</p>
+     *
      * @return a list of items to put under acl control
      */
     public List<?> getItems();
 
     /**
-     * @param items
-     * @return
+     * <p>getAuthorityItems</p>
+     *
+     * @param items a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     public List<?> getAuthorityItems(List<Integer> items);
 
     /**
-     * @param items
-     * @return
+     * <p>getFreeItems</p>
+     *
+     * @param items a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
      */
     public List<?> getFreeItems(List<Integer> items);
 }

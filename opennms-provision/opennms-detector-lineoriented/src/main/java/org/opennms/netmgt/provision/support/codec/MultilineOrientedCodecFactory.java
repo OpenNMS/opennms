@@ -38,27 +38,40 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
- * @author thedesloge
+ * <p>MultilineOrientedCodecFactory class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class MultilineOrientedCodecFactory implements ProtocolCodecFactory {
     
     private LineOrientedEncoder m_encoder;
     private MultiLineDecoder m_decoder;
     
+    /**
+     * <p>Constructor for MultilineOrientedCodecFactory.</p>
+     */
     public MultilineOrientedCodecFactory() {
         this(Charset.defaultCharset(), "-");
     }
     
+    /**
+     * <p>Constructor for MultilineOrientedCodecFactory.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     * @param multipleLineIndicator a {@link java.lang.String} object.
+     */
     public MultilineOrientedCodecFactory(Charset charset, String multipleLineIndicator) {
         m_encoder = new LineOrientedEncoder(charset);
         m_decoder = new MultiLineDecoder(charset, multipleLineIndicator);
     }
     
+    /** {@inheritDoc} */
     public ProtocolDecoder getDecoder(IoSession session) throws Exception {
         return m_decoder;
     }
 
+    /** {@inheritDoc} */
     public ProtocolEncoder getEncoder(IoSession session) throws Exception {
         return m_encoder;
     }

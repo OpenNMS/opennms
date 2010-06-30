@@ -35,4 +35,10 @@
  */
 package org.opennms.api.reporting;
 
+/**
+ * <p>ReportFormat class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public enum ReportFormat { HTML, SVG, PDF }

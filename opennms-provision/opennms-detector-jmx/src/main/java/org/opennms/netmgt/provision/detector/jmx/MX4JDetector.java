@@ -36,15 +36,25 @@ import org.springframework.stereotype.Component;
 
 
 @Component
+/**
+ * <p>MX4JDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class MX4JDetector extends AbstractJsr160Detector {
     
+    /**
+     * <p>Constructor for MX4JDetector.</p>
+     */
     public MX4JDetector(){
         super("MX4J", 9004);
         setFriendlyName("mx4j");
         setFactory("STANDARD");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onInit() {
         expectBeanCount(greatThan(0));

@@ -36,28 +36,52 @@ package org.opennms.acl.model;
 
 /**
  * Class to manage user information including password
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class UserDTO extends UserDTOLight {
 
+    /**
+     * <p>Constructor for UserDTO.</p>
+     */
     public UserDTO() {
         super();
     }
 
+    /**
+     * <p>Getter for the field <code>password</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * <p>Setter for the field <code>password</code>.</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * <p>Getter for the field <code>oldPassword</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOldPassword() {
         return oldPassword;
     }
 
+    /**
+     * <p>Setter for the field <code>oldPassword</code>.</p>
+     *
+     * @param oldPassword a {@link java.lang.String} object.
+     */
     public void setOldPassword(String oldPassword) {
         this.oldPassword = oldPassword;
     }

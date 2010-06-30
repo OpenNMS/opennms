@@ -45,7 +45,10 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
+ * <p>SiblingColumnStorageStrategy class.</p>
+ *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
  */
 public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     private static final String PARAM_SIBLING_COLUMN_OID = "sibling-column-oid";
@@ -55,11 +58,15 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
     private static final String PARAM_REPLACE_ALL = "replace-all";
     private List<StringReplaceOperation> m_replaceOps;
 
+    /**
+     * <p>Constructor for SiblingColumnStorageStrategy.</p>
+     */
     public SiblingColumnStorageStrategy() {
         super();
         m_replaceOps = new ArrayList<StringReplaceOperation>();
     }
     
+    /** {@inheritDoc} */
     @Override
     public String getResourceNameFromIndex(String resourceParent, String resourceIndex) {
         SnmpObjId oid = SnmpObjId.get(m_siblingColumnOid + "." + resourceIndex);
@@ -79,6 +86,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
         return ("".equals(name) ? resourceIndex : name);
     }
     
+    /** {@inheritDoc} */
     @Override
     public void setParameters(List<Parameter> parameterCollection) {
         if (parameterCollection == null) {

@@ -49,8 +49,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * @author brozow
+ * <p>DnsDetector class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 
 @Component
@@ -72,14 +74,17 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public DnsDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
+    /**
+     * <p>onInit</p>
+     */
     public void onInit() {
         DNSAddressRequest req;
         send(encode(req = addrRequest(getLookup())), verifyResponse(req));
@@ -134,12 +139,15 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.BasicDetector#getClient()
      */
+    /** {@inheritDoc} */
     @Override
     protected Client<DatagramPacket, DatagramPacket> getClient() {
         return new DatagramClient();
     }
 
     /**
+     * <p>setLookup</p>
+     *
      * @param lookup the lookup to set
      */
     public void setLookup(String lookup) {
@@ -147,6 +155,8 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     }
 
     /**
+     * <p>getLookup</p>
+     *
      * @return the lookup
      */
     public String getLookup() {

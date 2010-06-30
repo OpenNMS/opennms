@@ -1,12 +1,16 @@
+
 /**
- * 
+ * <p>Status class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-
 public enum Status implements Serializable, IsSerializable {
 	UP,
 	MARGINAL,
@@ -14,6 +18,11 @@ public enum Status implements Serializable, IsSerializable {
 	UNKNOWN,
 	UNINITIALIZED;
 
+	/**
+	 * <p>getColor</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getColor() {
 		String color;
 		if (this.equals(Status.UP)){
@@ -30,6 +39,11 @@ public enum Status implements Serializable, IsSerializable {
 		return color;
 	}
 
+	/**
+	 * <p>getStyle</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getStyle() {
 		String cssClass;
 		if (this.equals(Status.UP)) {

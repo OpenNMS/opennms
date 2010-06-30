@@ -15,18 +15,36 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
+/**
+ * <p>AdminRancidUpdateController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AdminRancidUpdateController extends SimpleFormController {
 
     InventoryService m_inventoryService;
         
+    /**
+     * <p>getInventoryService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.inventory.InventoryService} object.
+     */
     public InventoryService getInventoryService() {
         return m_inventoryService;
     }
 
+    /**
+     * <p>setInventoryService</p>
+     *
+     * @param inventoryService a {@link org.opennms.web.svclayer.inventory.InventoryService} object.
+     */
     public void setInventoryService(InventoryService inventoryService) {
         m_inventoryService = inventoryService;
     }
 
+    /** {@inheritDoc} */
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
@@ -47,6 +65,7 @@ public class AdminRancidUpdateController extends SimpleFormController {
         return super.onSubmit(request, response, command, errors);
     }
 
+    /** {@inheritDoc} */
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
         throws ServletException {
         log().debug("AdminRancidUpdateController initBinder");

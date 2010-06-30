@@ -9,10 +9,20 @@ import java.util.List;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
+/**
+ * <p>GoogleMapsGeocoder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class GoogleMapsGeocoder implements Geocoder {
 	private static final long DEFAULT_RATE = 10;
 	private final GeoAddressStandardizer m_standardizer;
 
+	/**
+	 * <p>Constructor for GoogleMapsGeocoder.</p>
+	 */
 	public GoogleMapsGeocoder() {
 		final String apiKey = System.getProperty("gwt.apikey");
 		String rate = System.getProperty("gwt.geocoder.rate");
@@ -24,6 +34,7 @@ public class GoogleMapsGeocoder implements Geocoder {
 
 	}
 
+	/** {@inheritDoc} */
 	public GWTLatLng geocode(String geolocation) throws GeocoderException {
 		try {
 			List<GeoAddress> addresses = m_standardizer.standardizeToGeoAddresses(geolocation);

@@ -35,6 +35,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
+/**
+ * <p>OnmsMonitoredServiceResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Transactional
@@ -55,6 +62,13 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Autowired
     private EventProxy m_eventProxy;
 
+    /**
+     * <p>getServices</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredServiceList} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMonitoredServiceList getServices(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress) {
@@ -62,6 +76,14 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         return new OnmsMonitoredServiceList(node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServices());
     }
 
+    /**
+     * <p>getService</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param service a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{service}")
@@ -70,6 +92,14 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         return node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServiceByServiceType(service);
     }
     
+    /**
+     * <p>addService</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param service a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, OnmsMonitoredService service) {
@@ -112,6 +142,15 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         return Response.ok().build();
     }
     
+    /**
+     * <p>updateService</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{service}")
@@ -143,6 +182,14 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         return Response.ok().build();
     }
 
+    /**
+     * <p>deleteService</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{service}")
     public Response deleteService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName) {

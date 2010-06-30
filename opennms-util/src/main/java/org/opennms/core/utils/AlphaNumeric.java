@@ -36,26 +36,280 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Convenience classes for parsing and manipulating Strings.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public class AlphaNumeric extends Object {
 
     /**
      * Any character in the passed string which does not match one of the
      * following values is replaced by the specified replacement character.
-     * 
+     *
      * Ascii chars: 0 - 9 (Decimal 48 - 57) A - Z (Decimal 65 - 90) a - z
      * (Decimal 97 - 122)
-     * 
+     *
      * For example: 'Ethernet 10/100' is converted to 'Ethernet_10_100'
-     * 
+     *
      * @param str
      *            string to be converted
      * @param replacement
      *            replacement character
-     * 
      * @return Converted value which can be used in a file name.
      */
     public static String parseAndReplace(String str, char replacement) {
@@ -66,19 +320,18 @@ public class AlphaNumeric extends Object {
      * Any character in the passed string which does not match one of the
      * following values is replaced by the specified replacement character,
      * unless it is contained in the exception string.
-     * 
+     *
      * Ascii chars: 0 - 9 (Decimal 48 - 57) A - Z (Decimal 65 - 90) a - z
      * (Decimal 97 - 122)
-     * 
+     *
      * For example: 'Ethernet 10/100' is converted to 'Ethernet_10_100'
-     * 
+     *
      * @param str
      *            string to be converted
      * @param replacement
      *            replacement character
      * @param except
      *            string containing exception characters
-     * 
      * @return Converted value which can be used in a file name.
      */
     public static String parseAndReplaceExcept(String str, char replacement, String except) {
@@ -119,13 +372,12 @@ public class AlphaNumeric extends Object {
      * Any character in the passed string which does not match one of the
      * following values is replaced by an Ascii space and then trimmed from the
      * resulting string.
-     * 
+     *
      * Ascii chars: 0 - 9 (Decimal 48 - 57) A - Z (Decimal 65 - 90) a - z
      * (Decimal 97 - 122)
-     * 
+     *
      * @param str
      *            string to be converted
-     * 
      * @return Converted value.
      */
     public static String parseAndTrim(String str) {

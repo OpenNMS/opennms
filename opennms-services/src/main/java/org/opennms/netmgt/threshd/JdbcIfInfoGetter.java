@@ -41,22 +41,27 @@ import java.util.Map;
 import org.opennms.netmgt.utils.IfLabel;
 
 /**
- * 
+ * <p>JdbcIfInfoGetter class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
-
 public class JdbcIfInfoGetter implements IfInfoGetter {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.threshd.IfInfoGetter#getIfInfoForNodeAndLabel(int, java.lang.String)
      */
+    /** {@inheritDoc} */
     public Map<String, String> getIfInfoForNodeAndLabel(int nodeId, String ifLabel) {
         Map<String, String> ifInfo = new HashMap<String, String>();
         ifInfo = IfLabel.getInterfaceInfoFromIfLabel(nodeId, ifLabel);
         return ifInfo;
     }
 
+    /** {@inheritDoc} */
     public String getIfLabel(int nodeId, String ipAddress) {
         return IfLabel.getIfLabel(nodeId, ipAddress);
     }

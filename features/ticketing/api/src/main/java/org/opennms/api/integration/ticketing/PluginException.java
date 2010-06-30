@@ -38,25 +38,43 @@ package org.opennms.api.integration.ticketing;
  * when updating a remote trouble ticket system
  *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
- *
+ * @version $Id: $
  */
-
 public class PluginException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * <p>Constructor for PluginException.</p>
+	 */
 	public PluginException() {
 		super();
 	}
 
+	/**
+	 * <p>Constructor for PluginException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 */
 	public PluginException(String message) {
 		super(message);
 	}
 
+	/**
+	 * <p>Constructor for PluginException.</p>
+	 *
+	 * @param cause a {@link java.lang.Throwable} object.
+	 */
 	public PluginException(Throwable cause) {
 		super(cause);
 	}
 
+	/**
+	 * <p>Constructor for PluginException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 * @param cause a {@link java.lang.Throwable} object.
+	 */
 	public PluginException(String message, Throwable cause) {
 		super(message, cause);
 	}

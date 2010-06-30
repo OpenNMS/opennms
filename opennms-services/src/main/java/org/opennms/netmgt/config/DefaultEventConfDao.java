@@ -79,6 +79,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * <p>DefaultEventConfDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventConfiguration> implements EventConfDao, InitializingBean {
     private static final String DEFAULT_PROGRAMMATIC_STORE_RELATIVE_URL = "events/programmatic.events.xml";
@@ -104,10 +108,14 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
         }
     }
 
+    /**
+     * <p>Constructor for DefaultEventConfDao.</p>
+     */
     public DefaultEventConfDao() {
         super(Events.class, "event configuration");
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String createLoadedLogMessage(EventConfiguration translatedConfig, long diffTime) {
         return "Loaded " + getDescription() + " with " + translatedConfig.getEventCount() + " events from " + translatedConfig.getEventFiles().size() + " files in " + diffTime + "ms";
@@ -116,10 +124,16 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#reload()
      */
+    /**
+     * <p>reload</p>
+     *
+     * @throws org.springframework.dao.DataAccessException if any.
+     */
     public void reload() throws DataAccessException {
         getContainer().reload();
     }
     
+    /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() throws DataAccessException {
         /**
@@ -132,6 +146,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
         super.afterPropertiesSet();
     }
     
+    /** {@inheritDoc} */
     @Override
     public EventConfiguration translateConfig(Events events) throws DataAccessException {
         EventConfiguration eventConfiguration = new EventConfiguration();
@@ -198,6 +213,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#getEvents(java.lang.String)
      */
+    /** {@inheritDoc} */
     public List<Event> getEvents(String uei) {
         List<Event> events = new ArrayList<Event>();
 
@@ -219,6 +235,11 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#getEventUEIs()
      */
+    /**
+     * <p>getEventUEIs</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getEventUEIs() {
         List<String> eventUEIs = new ArrayList<String>();
         for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
@@ -231,6 +252,11 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#getEventLabels()
+     */
+    /**
+     * <p>getEventLabels</p>
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getEventLabels() {
         Map<String, String> eventLabels = new TreeMap<String, String>();
@@ -246,6 +272,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#getEventLabel(java.lang.String)
      */
+    /** {@inheritDoc} */
     public String getEventLabel(String uei) {
         for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
             for (Event event : fileEvents.getEventCollection()) {
@@ -259,6 +286,9 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#saveCurrent()
+     */
+    /**
+     * <p>saveCurrent</p>
      */
     public synchronized void saveCurrent() {
         for (Entry<Resource, Events> entry : getEventConfiguration().getEventFiles().entrySet()) {
@@ -329,6 +359,11 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#getEventsByLabel()
      */
+    /**
+     * <p>getEventsByLabel</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Event> getEventsByLabel() {
         List<Event> list = new ArrayList<Event>();
         for (Events fileEvents : getEventConfiguration().getEventFiles().values()) {
@@ -341,6 +376,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#addEvent(org.opennms.netmgt.xml.eventconf.Event)
      */
+    /** {@inheritDoc} */
     public void addEvent(Event event) {
         Events events = getRootEvents();
         events.addEvent(event);
@@ -349,6 +385,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#addEventToProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
      */
+    /** {@inheritDoc} */
     public void addEventToProgrammaticStore(Event event) {
         // Check for, and possibly add the programmatic store to the in-memory structure
         if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
@@ -377,6 +414,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#removeEventFromProgrammaticStore(org.opennms.netmgt.xml.eventconf.Event)
      */   
+    /** {@inheritDoc} */
     public boolean removeEventFromProgrammaticStore(Event event) {
         if (!getEventConfiguration().getEventFiles().containsKey(getProgrammaticStoreConfigResource())) {
             return false; // Oops, doesn't exist
@@ -394,6 +432,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#isSecureTag(java.lang.String)
      */
+    /** {@inheritDoc} */
     public boolean isSecureTag(String tag) {
         return getEventConfiguration().getSecureTags().contains(tag);
     }
@@ -401,6 +440,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#findByUei(java.lang.String)
      */
+    /** {@inheritDoc} */
     public Event findByUei(String uei) {
         return getEventConfiguration().getEventConfData().getEventByUEI(uei);
     }
@@ -408,6 +448,7 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.EventConfDao#findByEvent(org.opennms.netmgt.xml.event.Event)
      */
+    /** {@inheritDoc} */
     public Event findByEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
         return getEventConfiguration().getEventConfData().getEvent(matchingEvent);
     }
@@ -425,10 +466,20 @@ public class DefaultEventConfDao extends AbstractCastorConfigDao<Events, EventCo
         return m_programmaticStoreConfigResource;
     }
 
+    /**
+     * <p>getProgrammaticStoreRelativeUrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getProgrammaticStoreRelativeUrl() {
         return m_programmaticStoreRelativeUrl;
     }
 
+    /**
+     * <p>setProgrammaticStoreRelativeUrl</p>
+     *
+     * @param programmaticStoreRelativeUrl a {@link java.lang.String} object.
+     */
     public void setProgrammaticStoreRelativeUrl(String programmaticStoreRelativeUrl) {
         m_programmaticStoreRelativeUrl = programmaticStoreRelativeUrl;
     }

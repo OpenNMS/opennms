@@ -60,8 +60,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * This class is used to monitor if a particular Cisco IP-SLA runs within
  * thresholds and has no timeouts. The configured IP-SLA is monitored by the
  * specified "ip sla tag"
- * 
+ *
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
+ * @version $Id: $
  */
 
 // this does snmp and there relies on the snmp configuration so it is not
@@ -170,7 +171,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
      * Returns the name of the service that the plug-in monitors
      * ("Cisco IP-SLA monitor").
      * </P>
-     * 
+     *
      * @return The service that the plug-in monitors.
      */
     public String serviceName() {
@@ -178,12 +179,11 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Initialize the service monitor.
      * </P>
-     * 
-     * @param parameters
-     *            Not currently used.
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents
      *                the plug-in from functioning.
@@ -213,10 +213,11 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
      * scheduler. Here we perform any necessary initialization to prepare the
      * NetworkInterface object for polling.
      * </P>
-     * 
+     *
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents
      *                the interface from being monitored.
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
@@ -224,18 +225,12 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * The poll() method is responsible for polling the specified address for
      * SNMP service availability.
      * </P>
-     * 
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used
-     *            for this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availability of the interface and if a transition event
-     *         should be supressed.
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */

@@ -37,9 +37,12 @@ package org.opennms.netmgt.rtc.datablock;
 /**
  * This contains a service lost/regained set/pair for the node - i.e each
  * service lost time and the corresponding service regained time
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class RTCNodeSvcTime extends Object {
     /**
@@ -62,7 +65,7 @@ public class RTCNodeSvcTime extends Object {
 
     /**
      * Creates a time with the lost time
-     * 
+     *
      * @param lostt
      *            the time at which service was lost
      */
@@ -73,7 +76,7 @@ public class RTCNodeSvcTime extends Object {
 
     /**
      * Creates the service time with both the lost and regained times
-     * 
+     *
      * @param lostt
      *            the time at which service was lost
      * @param regainedt
@@ -90,7 +93,7 @@ public class RTCNodeSvcTime extends Object {
 
     /**
      * Set the service lost time
-     * 
+     *
      * @param t
      *            the time at which service was lost
      */
@@ -100,7 +103,7 @@ public class RTCNodeSvcTime extends Object {
 
     /**
      * Set the service regained time
-     * 
+     *
      * @param t
      *            the time at which service was regained
      */
@@ -113,7 +116,7 @@ public class RTCNodeSvcTime extends Object {
 
     /**
      * Return the service lost time
-     * 
+     *
      * @return the service lost time
      */
     public long getLostTime() {
@@ -122,7 +125,7 @@ public class RTCNodeSvcTime extends Object {
 
     /**
      * Return the service regained time
-     * 
+     *
      * @return the service regained time
      */
     public long getRegainedTime() {
@@ -131,8 +134,9 @@ public class RTCNodeSvcTime extends Object {
 
     /**
      * Return if this outages has expired
-     * 
+     *
      * @return if this outages has expired
+     * @param startOfRollingWindow a long.
      */
     public boolean hasExpired(long startOfRollingWindow) {
         if (m_svcRegainedTime == -1) {
@@ -150,9 +154,11 @@ public class RTCNodeSvcTime extends Object {
     /**
      * Return the downtime (difference between the regained and lost times) in
      * the last rolling window
-     * 
+     *
      * @return the downtime (difference between the regained and lost times) in
      *         the last rolling window
+     * @param curTime a long.
+     * @param rollingWindow a long.
      */
     public long getDownTime(long curTime, long rollingWindow) {
         long downTime = 0;

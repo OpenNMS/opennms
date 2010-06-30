@@ -46,6 +46,12 @@ import org.springframework.stereotype.Component;
 import antlr.StringUtils;
 
 @Component
+/**
+ * <p>HostResourceSWRunDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class HostResourceSWRunDetector extends SnmpDetector {
     
@@ -68,24 +74,22 @@ public class HostResourceSWRunDetector extends SnmpDetector {
     private String m_serviceToDetect;
     
     private String m_serviceNameOid;
+    /**
+     * <p>Constructor for HostResourceSWRunDetector.</p>
+     */
     public HostResourceSWRunDetector(){
         setServiceName(PROTOCOL_NAME);
         setServiceNameOid(HOSTRESOURCE_SW_NAME_OID);
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      * The qualifier map passed to the method is used by the plugin to return
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
-     * 
-     * @param address
-     *            The address to check for support.
-     * @param qualifiers
-     *            The map where qualification are set by the plugin.
-     * 
-     * @return True if the protocol is supported by the address.
      */
     @Override
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
@@ -155,18 +159,38 @@ public class HostResourceSWRunDetector extends SnmpDetector {
         return retString;
     }
 
+    /**
+     * <p>setServiceNameOid</p>
+     *
+     * @param serviceNameOid a {@link java.lang.String} object.
+     */
     public void setServiceNameOid(String serviceNameOid) {
         m_serviceNameOid = serviceNameOid;
     }
 
+    /**
+     * <p>getServiceNameOid</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceNameOid() {
         return m_serviceNameOid;
     }
 
+    /**
+     * <p>setServiceToDetect</p>
+     *
+     * @param hostService a {@link java.lang.String} object.
+     */
     public void setServiceToDetect(String hostService) {
         m_serviceToDetect = hostService;
     }
 
+    /**
+     * <p>getServiceToDetect</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceToDetect() {
         return m_serviceToDetect;
     }

@@ -40,31 +40,325 @@ import java.util.Date;
 /**
  * Entities that have the capability of being acknowledge should implement this interface for
  * Ackd acknowledgment behavior.
- * 
+ *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public interface Acknowledgeable {
     
+    /**
+     * <p>acknowledge</p>
+     *
+     * @param ackUser a {@link java.lang.String} object.
+     */
     void acknowledge(String ackUser);
+    /**
+     * <p>unacknowledge</p>
+     *
+     * @param ackUser a {@link java.lang.String} object.
+     */
     void unacknowledge(String ackUser);
+    /**
+     * <p>clear</p>
+     *
+     * @param ackUser a {@link java.lang.String} object.
+     */
     void clear(String ackUser);
+    /**
+     * <p>escalate</p>
+     *
+     * @param ackUser a {@link java.lang.String} object.
+     */
     void escalate(String ackUser);
     
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.AckType} object.
+     */
     AckType getType();
 
+    /**
+     * <p>getAckId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     Integer getAckId();
 
+    /**
+     * <p>getAckUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     String getAckUser();
 
+    /**
+     * <p>getAckTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     Date getAckTime();
     
     /**
      * Might be null but probably supported already by most implementations, but still, here for convenience.  Also
      * guarantees that this is available in this API if the model changes where the node is not directly related and de-facto
      * support is removed.
-     * 
+     *
      * @return the related OnmsNode, null if non available or doesn't make sense
      */
     OnmsNode getNode();

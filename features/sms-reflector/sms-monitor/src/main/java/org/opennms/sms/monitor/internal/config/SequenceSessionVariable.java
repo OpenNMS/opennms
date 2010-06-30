@@ -21,6 +21,12 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.sms.monitor.session.SessionVariableGenerator;
 
+/**
+ * <p>SequenceSessionVariable class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="SequenceSessionVariableType", propOrder={"m_name", "m_className", "m_parameters"})
 @XmlRootElement(name="session-variable")
@@ -38,28 +44,63 @@ public class SequenceSessionVariable {
 	@XmlTransient
     private SessionVariableGenerator m_generator;
 	
+	/**
+	 * <p>Constructor for SequenceSessionVariable.</p>
+	 */
 	public SequenceSessionVariable() {
 	}
 
+	/**
+	 * <p>Constructor for SequenceSessionVariable.</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 * @param className a {@link java.lang.String} object.
+	 */
 	public SequenceSessionVariable(String name, String className) {
 		setName(name);
 		setClassName(className);
 	}
 	
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_name;
 	}
+	/**
+	 * <p>setName</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public void setName(String name) {
 		m_name = name;
 	}
 	
+	/**
+	 * <p>getClassName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getClassName() {
 		return m_className;
 	}
+	/**
+	 * <p>setClassName</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public void setClassName(String name) {
 		m_className = name;
 	}
 
+	/**
+	 * <p>addParameter</p>
+	 *
+	 * @param key a {@link java.lang.String} object.
+	 * @param value a {@link java.lang.String} object.
+	 */
 	public void addParameter(String key, String value) {
 		if (m_parameters == null) {
 			m_parameters = Collections.synchronizedList(new ArrayList<SequenceParameter>());
@@ -67,10 +108,20 @@ public class SequenceSessionVariable {
 		m_parameters.add(new SequenceParameter(key, value));
 	}
 	
+	/**
+	 * <p>getParameters</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<SequenceParameter> getParameters() {
 		return m_parameters;
 	}
 
+	/**
+	 * <p>getParametersAsMap</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map<String,String> getParametersAsMap() {
 		Map<String,String> m = new HashMap<String,String>();
 		if (m_parameters != null) {
@@ -81,10 +132,20 @@ public class SequenceSessionVariable {
 		return m;
 	}
 	
+	/**
+	 * <p>setParameters</p>
+	 *
+	 * @param parameters a {@link java.util.List} object.
+	 */
 	public void setParameters(List<SequenceParameter> parameters) {
 		m_parameters = parameters;
 	}
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("name", getName())
@@ -93,6 +154,14 @@ public class SequenceSessionVariable {
 			.toString();
 	}
 
+    /**
+     * <p>getGenerator</p>
+     *
+     * @return a {@link org.opennms.sms.monitor.session.SessionVariableGenerator} object.
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.lang.InstantiationException if any.
+     * @throws java.lang.IllegalAccessException if any.
+     */
     public SessionVariableGenerator getGenerator() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         
         if (m_generator == null) {
@@ -109,6 +178,14 @@ public class SequenceSessionVariable {
         return m_generator;
     }
 
+    /**
+     * <p>checkOut</p>
+     *
+     * @param properties a {@link java.util.Properties} object.
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.lang.InstantiationException if any.
+     * @throws java.lang.IllegalAccessException if any.
+     */
     public void checkOut(Properties properties) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         
         SessionVariableGenerator generator = getGenerator();
@@ -123,6 +200,11 @@ public class SequenceSessionVariable {
         }
     }
 
+    /**
+     * <p>checkIn</p>
+     *
+     * @param properties a {@link java.util.Properties} object.
+     */
     public void checkIn(Properties properties) {
         SessionVariableGenerator generator = m_generator;
         if (generator != null) {

@@ -40,10 +40,264 @@ import java.util.Map;
 /**
  * OpenNMS Trouble Ticket Model class used to contain common ticket data
  * by implementations of <code>TicketerPlugin</code> API.
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class Ticket {
     
@@ -76,6 +330,8 @@ public class Ticket {
     private Map<String, String> m_attributes;
     
     /**
+     * <p>getAttributes</p>
+     *
      * @return a Map of free from attributes of the ticket.  Typically,
      * from OnmsAlarm attributes.
      */
@@ -86,8 +342,8 @@ public class Ticket {
     /**
      * Store a list of free form attributes in the Ticket.  Typically, from
      * the OnmsAlarm attributes.
-     * 
-     * @param attributes
+     *
+     * @param attributes a {@link java.util.Map} object.
      */
     public void setAttributes(Map<String, String> attributes) {
         m_attributes = attributes;
@@ -95,9 +351,9 @@ public class Ticket {
     
     /**
      * Adds a single free form attribute to the Ticket.
-     * 
-     * @param key
-     * @param value
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
      */
     public void addAttribute(String key, String value) {
         if (m_attributes == null) {
@@ -108,9 +364,9 @@ public class Ticket {
     
     /**
      * Gets a single free form attribute from a Ticket.
-     * 
-     * @param key
-     * @return
+     *
+     * @param key a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public String getAttribute(String key) {
         if (m_attributes == null) {
@@ -122,7 +378,7 @@ public class Ticket {
     /**
      * Returns a simple high level summary about the ticket that is generated
      * from the Alarm logmsg.
-     * 
+     *
      * @return A string containing the summary of the ticket.
      */
     public String getSummary() {
@@ -131,8 +387,8 @@ public class Ticket {
     
     /**
      * Set a summary into the ticket.  Typically the alarm's logmsg.
-     * 
-     * @param summary
+     *
+     * @param summary a {@link java.lang.String} object.
      */
     public void setSummary(String summary) {
         m_summary = summary;
@@ -140,7 +396,7 @@ public class Ticket {
     
     /**
      * TODO: This should probably turn into a collection of comments.
-     * 
+     *
      * @return A string of details about the Ticket.
      */
     public String getDetails() {
@@ -148,7 +404,8 @@ public class Ticket {
     }
     /**
      * TODO: This should probably turn into a collection of comments or some such thing.
-     * @param details
+     *
+     * @param details a {@link java.lang.String} object.
      */
     public void setDetails(String details) {
         m_details = details;
@@ -156,7 +413,8 @@ public class Ticket {
     
     /**
      * This should be the ticket ID assigned by the HelpDesk system.
-     * @return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getId() {
         return m_id;
@@ -164,7 +422,8 @@ public class Ticket {
     
     /**
      * The TicketerPlugin should set the ID.
-     * @param id
+     *
+     * @param id a {@link java.lang.String} object.
      */
     public void setId(String id) {
         m_id = id;
@@ -173,7 +432,7 @@ public class Ticket {
     /**
      * User name owning/createing the ticket.  Will be set initially to
      * the user name set in the parameter of the create ticket event.
-     * 
+     *
      * @return a String containing the user name that owns the ticket.
      */
     public String getUser() {
@@ -183,8 +442,8 @@ public class Ticket {
     /**
      * Set the user name owning the ticket.  Typically set by the TicketerServiceLayer
      * implemenation as the user name parameter from the create ticket event.
-     * 
-     * @param user
+     *
+     * @param user a {@link java.lang.String} object.
      */
     public void setUser(String user) {
         m_user = user;
@@ -192,7 +451,7 @@ public class Ticket {
     
     /**
      * Returns the current <code>Ticket.State</code>
-     * 
+     *
      * @return the ticket state enum.
      */
     public State getState() {
@@ -201,8 +460,8 @@ public class Ticket {
     
     /**
      * Sets the Ticket state to one of the <code>Ticket.State</code> Enums.
-     * 
-     * @param state
+     *
+     * @param state a {@link org.opennms.api.integration.ticketing.Ticket.State} object.
      */
     public void setState(State state) {
         m_state = state;
@@ -210,12 +469,18 @@ public class Ticket {
 
     /**
      * A timestamp to be used for optimistic locking with the trouble ticketing system
-     * @return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getModificationTimestamp() {
         return m_modificationTimestamp;
     }
 
+    /**
+     * <p>setModificationTimestamp</p>
+     *
+     * @param modificationTimestamp a {@link java.lang.String} object.
+     */
     public void setModificationTimestamp(String modificationTimestamp) {
         m_modificationTimestamp = modificationTimestamp;
     }

@@ -59,11 +59,12 @@ import org.opennms.netmgt.poller.MonitoredService;
  * availability of the Memcached service on remote interfaces. The class implements
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
- * 
+ *
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * 
- * 
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
  */
 @Distributable
 final public class MemcachedMonitor extends IPv4Monitor {
@@ -93,14 +94,9 @@ final public class MemcachedMonitor extends IPv4Monitor {
     };
     
     /**
+     * {@inheritDoc}
+     *
      * Poll the specified address for Memcached service availability.
-     * 
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availability of the interface and if a transition event should be suppressed.
-     * 
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 

@@ -36,35 +36,70 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
+/**
+ * <p>PropertySettingTestSuite class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PropertySettingTestSuite extends TestSuite {
     
     String m_propertyName;
     String m_propertyValue;
     
+    /**
+     * <p>Constructor for PropertySettingTestSuite.</p>
+     *
+     * @param propertyName a {@link java.lang.String} object.
+     * @param propertyValue a {@link java.lang.String} object.
+     */
     public PropertySettingTestSuite(String propertyName, String propertyValue) {
         super();
         m_propertyName = propertyName;
         m_propertyValue = propertyValue;
     }
     
+    /**
+     * <p>Constructor for PropertySettingTestSuite.</p>
+     *
+     * @param theClass a {@link java.lang.Class} object.
+     * @param name a {@link java.lang.String} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @param propertyValue a {@link java.lang.String} object.
+     */
     public PropertySettingTestSuite(Class<? extends TestCase> theClass, String name, String propertyName, String propertyValue) {
         super(theClass, name);
         m_propertyName = propertyName;
         m_propertyValue = propertyValue;
     }
 
+    /**
+     * <p>Constructor for PropertySettingTestSuite.</p>
+     *
+     * @param theClass a {@link java.lang.Class} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @param propertyValue a {@link java.lang.String} object.
+     */
     public PropertySettingTestSuite(Class<? extends TestCase> theClass, String propertyName, String propertyValue) {
         super(theClass);
         m_propertyName = propertyName;
         m_propertyValue = propertyValue;
     }
 
+    /**
+     * <p>Constructor for PropertySettingTestSuite.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @param propertyValue a {@link java.lang.String} object.
+     */
     public PropertySettingTestSuite(String name, String propertyName, String propertyValue) {
         super(name);
         m_propertyName = propertyName;
         m_propertyValue = propertyValue;
     }
     
+    /** {@inheritDoc} */
     public void runTest(Test test, TestResult result) {
         setProperty();
         super.runTest(test, result);

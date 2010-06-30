@@ -103,14 +103,19 @@ class NessusScan implements Runnable {
 
     private static final int PORTSCAN_PLUGIN_ID = 0;
 
+    /** Constant <code>SCAN_SUCCESS=0</code> */
     public static final int SCAN_SUCCESS = 0;
 
+    /** Constant <code>SCAN_HOST_DOWN=1</code> */
     public static final int SCAN_HOST_DOWN = 1;
 
+    /** Constant <code>SCAN_FATAL_ERROR=2</code> */
     public static final int SCAN_FATAL_ERROR = 2;
 
+    /** Constant <code>SCAN_NON_FATAL_ERROR=4</code> */
     public static final int SCAN_NON_FATAL_ERROR = 4;
 
+    /** Constant <code>SCAN_COMPLETE=8</code> */
     public static final int SCAN_COMPLETE = 8;
 
     /**
@@ -200,6 +205,9 @@ class NessusScan implements Runnable {
     /**
      * Create a new scan that will scan the target specified in the
      * configuration and insert the results of the scan into the database.
+     *
+     * @param newConfig a {@link org.opennms.netmgt.vulnscand.NessusScanConfiguration} object.
+     * @throws java.lang.IllegalArgumentException if any.
      */
     public NessusScan(NessusScanConfiguration newConfig) throws IllegalArgumentException {
         if (newConfig.isValid()) {
@@ -225,6 +233,9 @@ class NessusScan implements Runnable {
         totalPlugins = -1;
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
@@ -1025,6 +1036,12 @@ class NessusScan implements Runnable {
         }
     }
 
+    /**
+     * <p>readLines</p>
+     *
+     * @param in a {@link java.io.InputStream} object.
+     * @return a {@link org.opennms.core.queue.FifoQueue} object.
+     */
     public FifoQueue<String> readLines(InputStream in) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         String EOL = "\n";

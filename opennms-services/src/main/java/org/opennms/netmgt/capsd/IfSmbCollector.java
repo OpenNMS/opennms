@@ -259,7 +259,6 @@ final class IfSmbCollector implements Runnable {
     /**
      * The main execution method used to collect the SMB information for the
      * collector.
-     * 
      */
     public void run() {
         ThreadCategory log = ThreadCategory.getInstance(getClass());

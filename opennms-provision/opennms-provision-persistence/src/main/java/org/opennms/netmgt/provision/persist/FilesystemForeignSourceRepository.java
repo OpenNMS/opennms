@@ -18,15 +18,31 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
+/**
+ * <p>FilesystemForeignSourceRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository {
     private String m_requisitionPath;
     private String m_foreignSourcePath;
     private boolean m_updateDateStamps = true;
     
+    /**
+     * <p>Constructor for FilesystemForeignSourceRepository.</p>
+     *
+     * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
+     */
     public FilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
         super();
     }
 
+    /**
+     * <p>getActiveForeignSourceNames</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> getActiveForeignSourceNames() {
         Set<String> fsNames = new TreeSet<String>();
         File directory = new File(m_foreignSourcePath);
@@ -48,14 +64,31 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return fsNames;
     }
 
+    /**
+     * <p>setUpdateDateStamps</p>
+     *
+     * @param update a boolean.
+     */
     public void setUpdateDateStamps(boolean update) {
         m_updateDateStamps = update;
     }
     
+    /**
+     * <p>getForeignSourceCount</p>
+     *
+     * @return a int.
+     * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
+     */
     public int getForeignSourceCount() throws ForeignSourceRepositoryException {
         return getForeignSources().size();
     }
  
+    /**
+     * <p>getForeignSources</p>
+     *
+     * @return a {@link java.util.Set} object.
+     * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
+     */
     public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         File directory = new File(m_foreignSourcePath);
         TreeSet<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
@@ -69,6 +102,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return foreignSources;
     }
 
+    /** {@inheritDoc} */
     public ForeignSource getForeignSource(String foreignSourceName) throws ForeignSourceRepositoryException {
         if (foreignSourceName == null) {
             throw new ForeignSourceRepositoryException("can't get a foreign source with a null name!");
@@ -83,6 +117,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
+    /** {@inheritDoc} */
     public synchronized void save(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
@@ -106,6 +141,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
+    /** {@inheritDoc} */
     public void delete(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         File deleteFile = getOutputFileForForeignSource(foreignSource);
         if (deleteFile.exists()) {
@@ -115,6 +151,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
     
+    /**
+     * <p>getRequisitions</p>
+     *
+     * @return a {@link java.util.Set} object.
+     * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
+     */
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
         File directory = new File(m_requisitionPath);
         TreeSet<Requisition> requisitions = new TreeSet<Requisition>();
@@ -133,6 +175,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return requisitions;
     }
     
+    /** {@inheritDoc} */
     public Requisition getRequisition(String foreignSourceName) throws ForeignSourceRepositoryException {
         if (foreignSourceName == null) {
             throw new ForeignSourceRepositoryException("can't get a requisition with a null foreign source name!");
@@ -144,6 +187,13 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return null;
     }
 
+    /**
+     * <p>getRequisition</p>
+     *
+     * @param foreignSource a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
+     */
     public Requisition getRequisition(ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't get a requisition with a null foreign source name!");
@@ -151,6 +201,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return getRequisition(foreignSource.getName());
     }
 
+    /**
+     * <p>save</p>
+     *
+     * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
+     */
     public synchronized void save(Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
@@ -170,6 +226,12 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
 
+    /**
+     * <p>delete</p>
+     *
+     * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
+     */
     public void delete(Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't delete a null requisition!");
@@ -182,9 +244,19 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         }
     }
     
+    /**
+     * <p>setRequisitionPath</p>
+     *
+     * @param path a {@link java.lang.String} object.
+     */
     public void setRequisitionPath(String path) {
         m_requisitionPath = path;
     }
+    /**
+     * <p>setForeignSourcePath</p>
+     *
+     * @param path a {@link java.lang.String} object.
+     */
     public void setForeignSourcePath(String path) {
         m_foreignSourcePath = path;
     }
@@ -236,6 +308,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         return outputFile;
     }
 
+    /** {@inheritDoc} */
     public URL getRequisitionURL(String foreignSource) throws ForeignSourceRepositoryException {
         try {
             return getOutputFileForRequisition(getRequisition(foreignSource)).toURL();

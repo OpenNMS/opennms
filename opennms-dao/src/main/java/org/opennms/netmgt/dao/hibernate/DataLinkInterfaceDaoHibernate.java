@@ -40,11 +40,21 @@ import org.hibernate.HibernateException;
 import java.util.Collection;
 import java.sql.SQLException;
 
+/**
+ * <p>DataLinkInterfaceDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLinkInterface, Integer> implements DataLinkInterfaceDao {
+    /**
+     * <p>Constructor for DataLinkInterfaceDaoHibernate.</p>
+     */
     public DataLinkInterfaceDaoHibernate() {
         super(DataLinkInterface.class);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Collection<DataLinkInterface> findAll(final Integer offset, final Integer limit) {
         return (Collection<DataLinkInterface>)getHibernateTemplate().execute(new HibernateCallback() {
@@ -58,14 +68,17 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
         });
     }
 
+    /** {@inheritDoc} */
     public DataLinkInterface findById(Integer id) {
         return findUnique("from DataLinkInterface as dli where dli.id = ?", id);
     }
 
+    /** {@inheritDoc} */
     public Collection<DataLinkInterface> findByNodeId(Integer nodeId) {
         return find("from DataLinkInterface as dli where dli.nodeId = ?", nodeId);
     }
 
+    /** {@inheritDoc} */
     public Collection<DataLinkInterface> findByNodeParentId(Integer nodeParentId) {
         return find("from DataLinkInterface as dli where dli.nodeParentId = ?", nodeParentId);
     }

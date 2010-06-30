@@ -38,11 +38,18 @@ import org.opennms.acl.domain.Group;
 
 /**
  * Contract to retrieve a Group by id
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface GroupFactory {
 
+    /**
+     * <p>getGroup</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.acl.domain.Group} object.
+     */
     public Group getGroup(Integer id);
 }

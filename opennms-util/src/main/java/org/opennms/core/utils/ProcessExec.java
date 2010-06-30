@@ -40,16 +40,36 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+/**
+ * <p>ProcessExec class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ProcessExec {
     PrintStream m_out = null;
 
     PrintStream m_err = null;
 
+    /**
+     * <p>Constructor for ProcessExec.</p>
+     *
+     * @param out a {@link java.io.PrintStream} object.
+     * @param err a {@link java.io.PrintStream} object.
+     */
     public ProcessExec(PrintStream out, PrintStream err) {
         m_out = out;
         m_err = err;
     }
 
+    /**
+     * <p>exec</p>
+     *
+     * @param cmd an array of {@link java.lang.String} objects.
+     * @return a int.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.InterruptedException if any.
+     */
     public int exec(String[] cmd) throws IOException, InterruptedException {
         Process p = Runtime.getRuntime().exec(cmd);
 

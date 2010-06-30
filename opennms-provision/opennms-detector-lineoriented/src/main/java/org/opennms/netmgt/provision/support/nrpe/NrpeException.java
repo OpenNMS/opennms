@@ -31,13 +31,27 @@
 //
 package org.opennms.netmgt.provision.support.nrpe;
 
+/**
+ * <p>NrpeException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NrpeException extends Exception {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * <p>Constructor for NrpeException.</p>
+     */
     public NrpeException() {
 		super();
 	}
 	
+	/**
+	 * <p>Constructor for NrpeException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 */
 	public NrpeException(String message) {
 		super(message);
 	}

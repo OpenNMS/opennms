@@ -52,12 +52,20 @@ import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**
+ * <p>DefaultCategoryConfigDao class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jason.aras@fastsearch.com">Jason Ayers</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jason.aras@fastsearch.com">Jason Ayers</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	
+	/**
+	 * <p>Constructor for DefaultCategoryConfigDao.</p>
+	 */
 	public DefaultCategoryConfigDao() {
 		try {
 			CategoryFactory.init();
@@ -72,10 +80,16 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 		}
 	}
 
+	/** {@inheritDoc} */
 	public Category getCategoryByLabel(String label) {
 		return CategoryFactory.getInstance().getCategory(label);
 	}
 	
+	/**
+	 * <p>findAll</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<Category> findAll() {
 		
 		List<Category> catList = new ArrayList<Category>();

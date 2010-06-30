@@ -34,20 +34,54 @@ package org.opennms.web.filter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+ * <p>StringSqlType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class StringSqlType implements SQLType<String> {
 
+    /**
+     * <p>bindParam</p>
+     *
+     * @param ps a {@link java.sql.PreparedStatement} object.
+     * @param parameterIndex a int.
+     * @param value a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void bindParam(PreparedStatement ps, int parameterIndex, String value) throws SQLException {
         ps.setString(parameterIndex, value);
     }
     
+    /**
+     * <p>getValueAsString</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getValueAsString(String value) {
         return value;
     }
 
+    /**
+     * <p>formatValue</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String formatValue(String value) {
         return "'" + value + "'";
     }
 
+    /**
+     * <p>createArray</p>
+     *
+     * @param value1 a {@link java.lang.String} object.
+     * @param value2 a {@link java.lang.String} object.
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] createArray(String value1, String value2) {
         return new String[] { value1, value2 };
     }

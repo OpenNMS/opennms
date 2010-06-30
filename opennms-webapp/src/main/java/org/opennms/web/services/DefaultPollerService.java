@@ -40,14 +40,27 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 
+/**
+ * <p>DefaultPollerService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DefaultPollerService implements PollerService {
 	
 	private EventProxy m_eventProxy;
 	
+	/**
+	 * <p>setEventProxy</p>
+	 *
+	 * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+	 */
 	public void setEventProxy(EventProxy eventProxy) {
 		m_eventProxy = eventProxy;
 	}
 	
+	/** {@inheritDoc} */
 	public void poll(OnmsMonitoredService monSvc, int pollResultId) {
 		
 		

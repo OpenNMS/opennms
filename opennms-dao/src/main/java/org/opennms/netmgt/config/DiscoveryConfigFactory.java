@@ -75,17 +75,274 @@ import org.springframework.core.io.FileSystemResource;
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
  * Discovery service from the discovery-configuration xml file.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class DiscoveryConfigFactory {
+    /** Constant <code>COMMENT_STR="#"</code> */
     public static final String COMMENT_STR = "#";
 
+    /** Constant <code>COMMENT_CHAR='#'</code> */
     public static final char COMMENT_CHAR = '#';
 
     /**
@@ -120,13 +377,16 @@ public final class DiscoveryConfigFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -155,13 +415,16 @@ public final class DiscoveryConfigFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -172,9 +435,8 @@ public final class DiscoveryConfigFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -187,14 +449,18 @@ public final class DiscoveryConfigFactory {
 
     /**
      * Return the discovery configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
      */
     public synchronized DiscoveryConfiguration getConfiguration() {
         return m_config;
     }
     
     /**
-     * @param xml
-     * @throws IOException
+     * <p>saveXml</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
      */
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
@@ -204,6 +470,14 @@ public final class DiscoveryConfigFactory {
             fileWriter.close();
         }
     }
+    /**
+     * <p>saveConfiguration</p>
+     *
+     * @param configuration a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public synchronized void saveConfiguration(DiscoveryConfiguration configuration) throws MarshalException, ValidationException, IOException {
         // marshall to a string first, then write the string to the file. This
         // way the original config
@@ -224,11 +498,11 @@ public final class DiscoveryConfigFactory {
      *  &lt;IP&gt;
      *  or
      *  #&lt;comments&gt;
-     * 
+     *
      *  Lines starting with a '#' are ignored and so are characters after
      *  a '&lt;space&gt;#' in a line.
      * </pre>
-     * 
+     *
      * @param specifics
      *            the list to add to
      * @param url
@@ -237,6 +511,7 @@ public final class DiscoveryConfigFactory {
      *            the timeout for all entries in this URL
      * @param retries
      *            the retries for all entries in this URL
+     * @return a boolean.
      */
     public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, String url, long timeout, int retries) {
         ThreadCategory log = ThreadCategory.getInstance();
@@ -271,6 +546,16 @@ public final class DiscoveryConfigFactory {
         }
     }
     
+    /**
+     * <p>addToSpecificsFromURL</p>
+     *
+     * @param specifics a {@link java.util.List} object.
+     * @param is a {@link java.io.InputStream} object.
+     * @param timeout a long.
+     * @param retries a int.
+     * @return a boolean.
+     * @throws java.io.IOException if any.
+     */
     public static boolean addToSpecificsFromURL(List<IPPollAddress> specifics, InputStream is, long timeout, int retries) throws IOException {
         ThreadCategory log = ThreadCategory.getInstance();
     
@@ -314,6 +599,11 @@ public final class DiscoveryConfigFactory {
         return bRet;
     }
 
+    /**
+     * <p>getURLSpecifics</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<IPPollAddress> getURLSpecifics() {
         List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
     
@@ -341,6 +631,11 @@ public final class DiscoveryConfigFactory {
         return specifics;
     }
 
+    /**
+     * <p>getRanges</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<IPPollRange> getRanges() {
         List<IPPollRange> includes = new LinkedList<IPPollRange>();
         Enumeration<IncludeRange> includeRangeEntries = getConfiguration().enumerateIncludeRange();
@@ -371,6 +666,11 @@ public final class DiscoveryConfigFactory {
         return includes;
     }
 
+    /**
+     * <p>getSpecifics</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<IPPollAddress> getSpecifics() {
         List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
     
@@ -401,6 +701,12 @@ public final class DiscoveryConfigFactory {
         return specifics;
     }
 
+    /**
+     * <p>isExcluded</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a boolean.
+     */
     public boolean isExcluded(InetAddress address) {
         if (getConfiguration().getExcludeRangeCollection() != null) {
             long laddr = IPSorter.convertToLong(address.getAddress());
@@ -421,10 +727,21 @@ public final class DiscoveryConfigFactory {
         return false;
     }
 
+    /**
+     * <p>getIntraPacketDelay</p>
+     *
+     * @return a int.
+     */
     public int getIntraPacketDelay() {
         return 1000 / getConfiguration().getPacketsPerSecond();
     }
 
+    /**
+     * <p>getExcludingInterator</p>
+     *
+     * @param it a {@link java.util.Iterator} object.
+     * @return a {@link java.util.Iterator} object.
+     */
     public Iterator<IPPollAddress> getExcludingInterator(
             Iterator<IPPollAddress> it) {
         return new FilteringIterator<IPPollAddress>(it) {
@@ -437,6 +754,11 @@ public final class DiscoveryConfigFactory {
         };
     }
 
+    /**
+     * <p>getConfiguredAddresses</p>
+     *
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<IPPollAddress> getConfiguredAddresses() {
         List<IPPollAddress> specifics = getSpecifics();
         specifics.addAll(getURLSpecifics());
@@ -453,10 +775,20 @@ public final class DiscoveryConfigFactory {
         return addrs;
     }
 
+    /**
+     * <p>getRestartSleepTime</p>
+     *
+     * @return a long.
+     */
     public long getRestartSleepTime() {
         return getConfiguration().getRestartSleepTime();
     }
 
+    /**
+     * <p>getInitialSleepTime</p>
+     *
+     * @return a long.
+     */
     public long getInitialSleepTime() {
         return getConfiguration().getInitialSleepTime();
     }

@@ -43,81 +43,98 @@ import org.opennms.acl.model.UserDTOLight;
 import org.opennms.acl.model.UserView;
 
 /**
+ * <p>UserService interface.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface UserService extends PagerService {
 
+    /**
+     * <p>getEnabledUsers</p>
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<UserDTOLight> getEnabledUsers(Pager pager);
 
     /**
      * Retrieve the disabled users
-     * 
-     * @param pager
-     * @return
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
+     * @return a {@link java.util.List} object.
      */
     public List<UserDTOLight> getDisabledUsers(Pager pager);
 
     /**
      * Retrieve the id of user by username
-     * 
-     * @param username
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the unique identifier
      */
     public Object getIdUser(String username);
 
     /**
      * disable a user
-     * 
-     * @param id
+     *
+     * @param id a {@link java.lang.String} object.
      * @return the outcome of disable operation
      */
     public Boolean disableUser(String id);
 
     /**
      * retrieve a user
-     * 
-     * @param id
+     *
+     * @param id a {@link java.lang.String} object.
      * @return a {@link UserView}
      */
     public UserView getUser(String id);
 
     /**
      * retrieve a user with credentials
-     * 
-     * @param id
+     *
+     * @param id a {@link java.lang.String} object.
      * @return a {@link UserView}
      */
     public UserDTO getUserCredentials(String id);
 
     /**
      * retrieve a user with their authorities
-     * 
-     * @param username
+     *
+     * @param username a {@link java.lang.String} object.
      * @return {@link UserAuthoritiesDTO} with their roles
      */
     public UserAuthoritiesDTO getUserWithAuthorities(String username);
 
     /**
      * retrieve a user with their id
-     * 
-     * @param username
+     *
      * @return {@link UserAuthoritiesDTO} with their authorities
+     * @param sid a {@link java.lang.Integer} object.
      */
     public UserAuthoritiesDTO getUserWithAuthoritiesByID(Integer sid);
 
     /**
+     * <p>getUsersNumber</p>
+     *
      * @return user's number
      */
     public Integer getUsersNumber();
 
     /**
      * Method only for admin, insert a user or change the user password
-     * 
-     * @param user
-     * @return
+     *
+     * @param user a {@link org.opennms.acl.model.UserDTO} object.
+     * @return a boolean.
      */
     public boolean save(UserDTO user);
 
+    /**
+     * <p>save</p>
+     *
+     * @param user a {@link org.opennms.acl.model.UserAuthoritiesDTO} object.
+     * @return a boolean.
+     */
     public boolean save(UserAuthoritiesDTO user);
 }

@@ -58,47 +58,65 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
- * 
+ *
  * <p>
  * Once loaded or create, the class tracks any changes and will write those
  * changes to the database whenever the <code>store</code> method is invoked.
  * If a database connection is not passed to the store method, then a temporary
  * one is allocated to write the results.
  * </p>
- * 
+ *
  * <p>
  * NOTE: if the connection is passed in and is not in auto commit mode, then the
  * caller must call <code>commit</code> to inform the database that the
  * transaction is complete.
- * 
+ *
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class DbIpInterfaceEntry {
+    /** Constant <code>SNMP_PRIMARY='P'</code> */
     public final static char SNMP_PRIMARY = 'P';
 
+    /** Constant <code>SNMP_SECONDARY='S'</code> */
     public final static char SNMP_SECONDARY = 'S';
 
+    /** Constant <code>SNMP_NOT_ELIGIBLE='N'</code> */
     public final static char SNMP_NOT_ELIGIBLE = 'N';
 
+    /** Constant <code>SNMP_UNKNOWN=' '</code> */
     public final static char SNMP_UNKNOWN = ' ';
 
+    /** Constant <code>STATE_MANAGED='M'</code> */
     public final static char STATE_MANAGED = 'M';
 
+    /** Constant <code>STATE_UNMANAGED='U'</code> */
     public final static char STATE_UNMANAGED = 'U';
 
+    /** Constant <code>STATE_ALIAS='A'</code> */
     public final static char STATE_ALIAS = 'A';
 
+    /** Constant <code>STATE_DELETED='D'</code> */
     public final static char STATE_DELETED = 'D';
 
+    /** Constant <code>STATE_FORCED='F'</code> */
     public final static char STATE_FORCED = 'F';
 
+    /** Constant <code>STATE_NOT_POLLED='N'</code> */
     public final static char STATE_NOT_POLLED = 'N';
     
+    /** Constant <code>STATE_REMOTE='X'</code> */
     public final static char STATE_REMOTE = 'X';
 
+    /** Constant <code>STATE_UNKNOWN=' '</code> */
     public final static char STATE_UNKNOWN = ' ';
 
     /**
@@ -1108,7 +1126,8 @@ public final class DbIpInterfaceEntry {
     /**
      * Creates a string that displays the internal contents of the record. This
      * is mainly just used for debug output since the format is ad-hoc.
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         String sep = System.getProperty("line.separator");
@@ -1129,6 +1148,8 @@ public final class DbIpInterfaceEntry {
 
     /**
      * For debugging only
+     *
+     * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
         try {

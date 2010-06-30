@@ -54,8 +54,265 @@ import org.snmp4j.smi.VariableBinding;
 import org.springframework.core.io.Resource;
 
 /**
+ * <p>PropertiesBackedManagedObject class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
  */
 public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOLoader, Updatable, MOAccess {
     
@@ -64,6 +321,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     
     private MOScope m_scope = null;
     
+    /** {@inheritDoc} */
     public List<ManagedObject> loadMOs(Resource moFile) {
         Properties props = PropsMockSnmpMOLoaderImpl.loadProperties(moFile);
 
@@ -85,14 +343,17 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         return Collections.singletonList((ManagedObject)this);
     }
     
+    /** {@inheritDoc} */
     public void cleanup(SubRequest request) {
         throw new UnsupportedOperationException("this object read only");
     }
 
+    /** {@inheritDoc} */
     public void commit(SubRequest request) {
         throw new UnsupportedOperationException("this object read only");
     }
 
+    /** {@inheritDoc} */
     public OID find(MOScope range) {
         if (!m_scope.isOverlapping(range)) {
             return null;
@@ -111,6 +372,12 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         return tail.firstKey(); // skip the leading '.'
     }
     
+    /**
+     * <p>findNextOid</p>
+     *
+     * @param given a {@link org.snmp4j.smi.OID} object.
+     * @return a {@link org.snmp4j.smi.OID} object.
+     */
     public OID findNextOid(OID given) {
         
         OID next = given.successor();
@@ -132,6 +399,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         return PropsMockSnmpMOLoaderImpl.getVariableFromValueString(oid.toString(), (String)val);
     }
 
+    /** {@inheritDoc} */
     public void get(SubRequest request) {
         getVariable(request, request.getVariableBinding().getOid());
     }
@@ -144,10 +412,16 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         request.completed();
     }
 
+    /**
+     * <p>getScope</p>
+     *
+     * @return a {@link org.snmp4j.agent.MOScope} object.
+     */
     public MOScope getScope() {
         return m_scope;
     }
 
+    /** {@inheritDoc} */
     public boolean next(SubRequest request) {
         OID nextOid = findNextOid(request.getVariableBinding().getOid());
         if (nextOid == null) {
@@ -157,30 +431,53 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         return true;
     }
 
+    /** {@inheritDoc} */
     public void prepare(SubRequest request) {
         throw new UnsupportedOperationException("this object read only");
     }
 
+    /** {@inheritDoc} */
     public void undo(SubRequest request) {
         throw new UnsupportedOperationException("this object read only");
     }
 
+    /** {@inheritDoc} */
     public void updateValue(OID oid, Variable value) {
         m_vars.put(oid, value);
     }
 
+    /**
+     * <p>isAccessibleForCreate</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAccessibleForCreate() {
         return false;
     }
 
+    /**
+     * <p>isAccessibleForNotify</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAccessibleForNotify() {
         return false;
     }
 
+    /**
+     * <p>isAccessibleForRead</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAccessibleForRead() {
         return true;
     }
 
+    /**
+     * <p>isAccessibleForWrite</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAccessibleForWrite() {
         return false;
     }

@@ -43,11 +43,15 @@ import org.extremecomponents.table.core.TableModel;
 import org.extremecomponents.table.interceptor.ColumnInterceptor;
 
 /**
- * 
+ * <p>FivePercentWidthId class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class FivePercentWidthId implements ColumnInterceptor {
 
+	/** {@inheritDoc} */
 	public void addColumnAttributes(TableModel arg0, Column arg1) {
 		String value = arg1.getPropertyValueAsString();
             
@@ -60,6 +64,7 @@ public class FivePercentWidthId implements ColumnInterceptor {
         
 	}
 
+	/** {@inheritDoc} */
 	public void modifyColumnAttributes(TableModel arg0, Column arg1) {
 		// TODO Auto-generated method stub
 		

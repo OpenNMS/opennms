@@ -32,8 +32,20 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>ScheduledOutagesDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ScheduledOutagesDao {
 
+	/**
+	 * <p>get</p>
+	 *
+	 * @param outageName a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.collectd.OnmsOutageCalendar} object.
+	 */
 	public abstract OnmsOutageCalendar get(String outageName);
 
 }

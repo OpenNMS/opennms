@@ -39,10 +39,13 @@
 package org.opennms.netmgt.capsd;
 
 /**
+ * <p>FailedOperationException class.</p>
+ *
  * @author brozow
- * 
+ *
  * FIXME To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Generation - Code and Comments
+ * @version $Id: $
  */
 public class FailedOperationException extends Exception {
 
@@ -52,7 +55,7 @@ public class FailedOperationException extends Exception {
     private static final long serialVersionUID = 7378694261384243882L;
 
     /**
-     * 
+     * <p>Constructor for FailedOperationException.</p>
      */
     public FailedOperationException() {
         super();
@@ -60,7 +63,9 @@ public class FailedOperationException extends Exception {
     }
 
     /**
-     * @param arg0
+     * <p>Constructor for FailedOperationException.</p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
      */
     public FailedOperationException(String arg0) {
         super(arg0);
@@ -68,8 +73,10 @@ public class FailedOperationException extends Exception {
     }
 
     /**
-     * @param arg0
-     * @param arg1
+     * <p>Constructor for FailedOperationException.</p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
+     * @param arg1 a {@link java.lang.Throwable} object.
      */
     public FailedOperationException(String arg0, Throwable arg1) {
         super(arg0, arg1);
@@ -77,7 +84,9 @@ public class FailedOperationException extends Exception {
     }
 
     /**
-     * @param arg0
+     * <p>Constructor for FailedOperationException.</p>
+     *
+     * @param arg0 a {@link java.lang.Throwable} object.
      */
     public FailedOperationException(Throwable arg0) {
         super(arg0);

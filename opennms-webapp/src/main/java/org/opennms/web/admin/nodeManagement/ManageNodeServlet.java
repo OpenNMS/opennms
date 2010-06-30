@@ -71,9 +71,13 @@ import org.opennms.web.Util;
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
  * node
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class ManageNodeServlet extends HttpServlet {
     /**
@@ -90,15 +94,23 @@ public class ManageNodeServlet extends HttpServlet {
 
     private static final String INCLUDE_FILE_NAME = "include";
 
+    /** Constant <code>GAINED_SERVICE_UEI="uei.opennms.org/nodes/nodeGainedService"</code> */
     public static final String GAINED_SERVICE_UEI = "uei.opennms.org/nodes/nodeGainedService";
 
+    /** Constant <code>GAINED_INTERFACE_UEI="uei.opennms.org/nodes/nodeGainedInterfa"{trunked}</code> */
     public static final String GAINED_INTERFACE_UEI = "uei.opennms.org/nodes/nodeGainedInterface";
 
+    /** Constant <code>NOTICE_NAME="Email-Reporting"</code> */
     public static final String NOTICE_NAME = "Email-Reporting";
 
     // FIXME: Should this be deleted?
     //private static final String NOTICE_COMMAND = "/opt/OpenNMS/bin/notify.sh ";
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
@@ -113,6 +125,7 @@ public class ManageNodeServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
         List<ManagedInterface> allNodes = getManagedInterfacesFromSession(userSession);
@@ -309,6 +322,7 @@ public class ManageNodeServlet extends HttpServlet {
 
     /**
      */
+    // FIXME: This is totally the wrong place to be doing this.
     // FIXME: This is totally the wrong place to be doing this.
     private void writeURLFile(List interfaceList) throws ServletException {
         String path = System.getProperty("opennms.home") + File.separator + "etc" + File.separator;

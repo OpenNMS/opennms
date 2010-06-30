@@ -57,6 +57,13 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+/**
+ * <p>JdbcWebEventRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class JdbcWebEventRepository implements WebEventRepository {
     
     @Autowired
@@ -181,11 +188,13 @@ public class JdbcWebEventRepository implements WebEventRepository {
         
     }
 
+    /** {@inheritDoc} */
     public int countMatchingEvents(EventCriteria criteria) {
         String sql = getSql("SELECT COUNT(EVENTID) as EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
 
+    /** {@inheritDoc} */
     public int[] countMatchingEventsBySeverity(EventCriteria criteria) {
         String selectClause = "SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ";
         String sql = getSql(selectClause, criteria);
@@ -207,6 +216,7 @@ public class JdbcWebEventRepository implements WebEventRepository {
         return alarmCounts;
     }
 
+    /** {@inheritDoc} */
     public Event getEvent(int eventId) {
         Event[] events = getMatchingEvents(new EventCriteria(new EventIdFilter(eventId)));
         if(events.length < 1){
@@ -216,6 +226,7 @@ public class JdbcWebEventRepository implements WebEventRepository {
         }
     }
 
+    /** {@inheritDoc} */
     public Event[] getMatchingEvents(EventCriteria criteria) {
         String sql = getSql("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return getEvents(sql, paramSetter(criteria));
@@ -230,19 +241,25 @@ public class JdbcWebEventRepository implements WebEventRepository {
         acknowledgeMatchingEvents(user, timestamp, new EventCriteria(new EventIdListFilter(eventIds)));
     }
 
+    /** {@inheritDoc} */
     public void acknowledgeAll(String user, Date timestamp) {
         m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
     }
 
+    /** {@inheritDoc} */
     public void acknowledgeMatchingEvents(String user, Date timestamp, EventCriteria criteria) {
         String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? ", criteria);
         jdbc().update(sql, paramSetter(criteria, user, new Timestamp(timestamp.getTime())));
     }
     
+    /**
+     * <p>unacknowledgeAll</p>
+     */
     public void unacknowledgeAll() {
         m_simpleJdbcTemplate.update("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL ");
     }
 
+    /** {@inheritDoc} */
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
         String sql = getSql("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=null ", criteria);
         jdbc().update(sql, paramSetter(criteria));

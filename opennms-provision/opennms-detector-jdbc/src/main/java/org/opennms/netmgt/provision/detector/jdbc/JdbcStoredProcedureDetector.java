@@ -39,6 +39,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>JdbcStoredProcedureDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
     
@@ -48,12 +54,16 @@ public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
     private String m_storedProcedure;
     private String m_schema = "test";
     
+    /**
+     * <p>Constructor for JdbcStoredProcedureDetector.</p>
+     */
     protected JdbcStoredProcedureDetector(){
         super("JdbcStoredProcedureDetector", 3306);
         setSchema(DEFAULT_SCHEMA);
         setStoredProcedure(DEFAULT_STORED_PROCEDURE);
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void onInit(){
         expectBanner(resultSetNotNull());
@@ -90,18 +100,38 @@ public class JdbcStoredProcedureDetector extends AbstractJdbcDetector {
         }
     }
 
+    /**
+     * <p>setStoredProcedure</p>
+     *
+     * @param storedProcedure a {@link java.lang.String} object.
+     */
     public void setStoredProcedure(String storedProcedure) {
         m_storedProcedure = storedProcedure;
     }
 
+    /**
+     * <p>getStoredProcedure</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStoredProcedure() {
         return m_storedProcedure;
     }
 
+    /**
+     * <p>setSchema</p>
+     *
+     * @param schema a {@link java.lang.String} object.
+     */
     public void setSchema(String schema) {
         m_schema = schema;
     }
 
+    /**
+     * <p>getSchema</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSchema() {
         return m_schema;
     }

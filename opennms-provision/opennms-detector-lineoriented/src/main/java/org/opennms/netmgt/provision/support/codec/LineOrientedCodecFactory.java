@@ -38,27 +38,42 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
- * @author Donald Desloge
+ * <p>LineOrientedCodecFactory class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class LineOrientedCodecFactory implements ProtocolCodecFactory {
     
     private final LineOrientedEncoder m_encoder;
     private final LineOrientedDecoder m_decoder;
     
+    /**
+     * <p>Constructor for LineOrientedCodecFactory.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public LineOrientedCodecFactory(Charset charset) {
         this(charset, null);
     }
     
+    /**
+     * <p>Constructor for LineOrientedCodecFactory.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     * @param delimit a {@link java.lang.String} object.
+     */
     public LineOrientedCodecFactory(Charset charset, String delimit) {
         m_encoder = new LineOrientedEncoder(charset);
         m_decoder = new LineOrientedDecoder(charset);
     }
     
+    /** {@inheritDoc} */
     public ProtocolDecoder getDecoder(IoSession session) throws Exception {
         return m_decoder;
     }
 
+    /** {@inheritDoc} */
     public ProtocolEncoder getEncoder(IoSession session) throws Exception {
         return m_encoder;
     }

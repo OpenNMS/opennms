@@ -45,18 +45,36 @@ import org.opennms.web.svclayer.SimpleWebTable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>DistributedStatusSummaryController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DistributedStatusSummaryController extends AbstractController {
     
     private DistributedStatusService m_distributedStatusService;
 
+    /**
+     * <p>getDistributedStatusService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.DistributedStatusService} object.
+     */
     public DistributedStatusService getDistributedStatusService() {
         return m_distributedStatusService;
     }
 
+    /**
+     * <p>setDistributedStatusService</p>
+     *
+     * @param statusService a {@link org.opennms.web.svclayer.DistributedStatusService} object.
+     */
     public void setDistributedStatusService(DistributedStatusService statusService) {
         m_distributedStatusService = statusService;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         

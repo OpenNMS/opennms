@@ -61,7 +61,7 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * href="http://www.opennms.org/users/docs/docs/html/devref.html">OpenNMS
  * developer site </a>
  * </p>
- * 
+ *
  * @author Jose Vicente Nunez Zuleta (josevnz@users.sourceforge.net) - RHCE,
  *         SJCD, SJCP
  * @version 0.1 - 07/22/2002
@@ -91,6 +91,11 @@ public class JDBCPlugin extends AbstractPlugin {
         log().info("JDBCPlugin class loaded");
     }
 
+	/**
+	 * <p>log</p>
+	 *
+	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+	 */
 	protected ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
@@ -167,6 +172,13 @@ public class JDBCPlugin extends AbstractPlugin {
         return status;
     }
     
+    /**
+     * <p>checkStatus</p>
+     *
+     * @param con a {@link java.sql.Connection} object.
+     * @param qualifiers a {@link java.util.Map} object.
+     * @return a boolean.
+     */
     public boolean checkStatus(Connection con, Map<String, Object> qualifiers )
     {
     	boolean status = false;
@@ -208,6 +220,11 @@ public class JDBCPlugin extends AbstractPlugin {
 		}
 	}
 
+	/**
+	 * <p>closeStmt</p>
+	 *
+	 * @param statement a {@link java.sql.Statement} object.
+	 */
 	protected void closeStmt(Statement statement) {
 		if (statement != null) {
 		    try {
@@ -228,7 +245,7 @@ public class JDBCPlugin extends AbstractPlugin {
 
     /**
      * Returns the default protocol name
-     * 
+     *
      * @return String Protocol Name
      */
     public String getProtocolName() {
@@ -236,14 +253,12 @@ public class JDBCPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Default checking method, asuming all the parameters by default. This
      * method is likely to skip some machines because the default password is
      * empty. is recomended to use the parametric method instead (unless your
      * DBA is dummy enugh to leave a JDBC server with no password!!!).
-     * 
-     * @param address
-     *            Address of the JDBC server to poll
-     * @return True if a JDBC server is running on this server, false otherwise
      */
     public boolean isProtocolSupported(InetAddress address) {
         boolean status = false;
@@ -257,6 +272,8 @@ public class JDBCPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Checking method, receives all the parameters as a Map. Currently
      * supported:
      * <ul>
@@ -269,14 +286,6 @@ public class JDBCPlugin extends AbstractPlugin {
      * <li><b>timeout </b>- Timeout
      * <li><b>retry </b>- How many times will try to check for the service
      * </ul>
-     * 
-     * @param address
-     *            Address of the JDBC server to poll
-     * @param qualifiers
-     *            Set of properties to be passed to the JDBC driver.
-     * @throws NullPointerException
-     *             if the properties or the address are not defined
-     * @return True if a JDBC server is running on this server, false otherwise
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         boolean status = false;

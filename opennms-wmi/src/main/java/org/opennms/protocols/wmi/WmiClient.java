@@ -65,6 +65,9 @@ import org.opennms.protocols.wmi.wbem.jinterop.OnmsWbemObjectSetImpl;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class WmiClient implements IWmiClient {
 
@@ -78,12 +81,19 @@ public class WmiClient implements IWmiClient {
     private static final String WMI_CLSID = "76A6415B-CB41-11d1-8B02-00600806D9B6";
     private static final String WMI_PROGID = "WbemScripting.SWbemLocator";
 
+    /**
+     * <p>Constructor for WmiClient.</p>
+     *
+     * @param address a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public WmiClient(String address) throws WmiException {
         JISystem.setAutoRegisteration(true);
         JISystem.getLogger().setLevel(Level.OFF);
         m_Address = address;
     }
 
+    /** {@inheritDoc} */
     public OnmsWbemObjectSet performInstanceOf(String wmiClass) throws WmiException {
         try {
             // Execute the InstancesOf method on the remote SWbemServices object.
@@ -99,10 +109,12 @@ public class WmiClient implements IWmiClient {
         }
     }
 
+    /** {@inheritDoc} */
     public OnmsWbemObjectSet performExecQuery(String strQuery) throws WmiException {
         return performExecQuery(strQuery, "WQL", OnmsWbemFlagReturnEnum.wbemFlagReturnImmediately.getReturnFlagValue());
     }
     
+    /** {@inheritDoc} */
     public OnmsWbemObjectSet performExecQuery(String strQuery,
                                               String strQueryLanguage,
                                               Integer flags) throws WmiException {
@@ -116,6 +128,13 @@ public class WmiClient implements IWmiClient {
         }
     }
 
+    /**
+     * <p>performWmiGet</p>
+     *
+     * @param strObjectPath a {@link java.lang.String} object.
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemObject} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public OnmsWbemObject performWmiGet(String strObjectPath) throws WmiException {
         try {
             JIVariant results[] = m_WbemServices.callMethodA("Get", new Object[]{new JIString(strObjectPath), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
@@ -127,6 +146,13 @@ public class WmiClient implements IWmiClient {
         }
     }
 
+    /**
+     * <p>performSubclassOf</p>
+     *
+     * @param strSuperClass a {@link java.lang.String} object.
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public OnmsWbemObjectSet performSubclassOf(String strSuperClass) throws WmiException {
         try {
             JIVariant results[] = m_WbemServices.callMethodA("SubclassesOf", new Object[]{new JIString(strSuperClass), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
@@ -138,6 +164,12 @@ public class WmiClient implements IWmiClient {
         }
     }
 
+    /**
+     * <p>performSubclassOf</p>
+     *
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public OnmsWbemObjectSet performSubclassOf() throws WmiException {
         try {
             JIVariant results[] = m_WbemServices.callMethodA("SubclassesOf", new Object[]{ JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
@@ -149,6 +181,13 @@ public class WmiClient implements IWmiClient {
         }
     }
 
+    /**
+     * <p>convertToNativeType</p>
+     *
+     * @param type a {@link org.jinterop.dcom.core.JIVariant} object.
+     * @return a {@link java.lang.Object} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public static Object convertToNativeType(JIVariant type) throws WmiException {
         try {
             if (type.isArray()) {
@@ -191,6 +230,7 @@ public class WmiClient implements IWmiClient {
         }
     }
 
+    /** {@inheritDoc} */
     public void connect(String domain, String username, String password)
             throws WmiException {
         try {
@@ -222,6 +262,11 @@ public class WmiClient implements IWmiClient {
         }
     }
 
+    /**
+     * <p>disconnect</p>
+     *
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public void disconnect() throws WmiException {
         try {
             JISession.destroySession(m_Session);
@@ -231,6 +276,13 @@ public class WmiClient implements IWmiClient {
         }
     }
 
+    /**
+     * <p>convertWmiDate</p>
+     *
+     * @param dateStr a {@link java.lang.String} object.
+     * @return a {@link java.util.Date} object.
+     * @throws java.text.ParseException if any.
+     */
     public static Date convertWmiDate(String dateStr) throws ParseException {
         DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss.ssssss+000");
 

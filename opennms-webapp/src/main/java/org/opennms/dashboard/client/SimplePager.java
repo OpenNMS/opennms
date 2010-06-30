@@ -43,14 +43,24 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * 
+ * <p>SimplePager class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SimplePager extends Composite {
     private SimplePageable m_pageable;
     private DockPanel m_pager = new DockPanel();
     
+    /**
+     * <p>Constructor for SimplePager.</p>
+     *
+     * @param pageable a {@link org.opennms.dashboard.client.SimplePageable} object.
+     */
     public SimplePager(SimplePageable pageable) {
         m_pageable = pageable;
         

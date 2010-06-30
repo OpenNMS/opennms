@@ -40,34 +40,63 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 
 /**
- * 
+ * <p>DashletView class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DashletView extends Composite {
     
     private Dashlet m_dashlet;
 
+    /**
+     * <p>Constructor for DashletView.</p>
+     *
+     * @param dashlet a {@link org.opennms.dashboard.client.Dashlet} object.
+     */
     protected DashletView(Dashlet dashlet) {
         m_dashlet = dashlet;
     }
 
+    /**
+     * <p>Constructor for DashletView.</p>
+     *
+     * @param dashlet a {@link org.opennms.dashboard.client.Dashlet} object.
+     * @param view a {@link com.google.gwt.user.client.ui.Widget} object.
+     */
     public DashletView(Dashlet dashlet, Widget view) {
         this(dashlet);
         initWidget(view);
     }
     
+    /**
+     * <p>getTitle</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle() {
         return m_dashlet.getTitle();
     }
     
+    /** {@inheritDoc} */
     public void setTitle(String title) {
         m_dashlet.setTitle(title);
     }
     
+    /**
+     * <p>addToTitleBar</p>
+     *
+     * @param widget a {@link com.google.gwt.user.client.ui.Widget} object.
+     * @param constraint a {@link com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant} object.
+     */
     public void addToTitleBar(Widget widget, DockLayoutConstant constraint) {
         m_dashlet.addToTitleBar(widget, constraint);
     }
 
+    /**
+     * <p>onDashLoad</p>
+     */
     public void onDashLoad() {
         
     }

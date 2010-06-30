@@ -51,32 +51,52 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * 
+ * <p>Queued class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
-
 public class Queued extends AbstractServiceDaemon implements EventListener {
     
     private volatile EventIpcManager m_eventMgr; 
     private volatile RrdStrategy m_rrdStrategy;
 
+    /**
+     * <p>Constructor for Queued.</p>
+     */
     public Queued() {
         super("OpenNMS.Queued");
     }
     
+    /**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventIpcManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
     
+    /**
+     * <p>getRrdStrategy</p>
+     *
+     * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public RrdStrategy getRrdStrategy() {
         return m_rrdStrategy;
     }
 
+    /**
+     * <p>setRrdStrategy</p>
+     *
+     * @param rrdStrategy a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public void setRrdStrategy(RrdStrategy rrdStrategy) {
         m_rrdStrategy = rrdStrategy;
     }
     
     
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         Assert.state(m_eventMgr != null, "setEventIpcManager must be set");
@@ -86,6 +106,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
         m_eventMgr.addEventListener(this, EventConstants.PROMOTE_QUEUE_DATA_UEI);
     }
 
+    /** {@inheritDoc} */
     public void onEvent(Event e) {
         String fileList = EventUtils.getParm(e, "filesToPromote");
         Set<String> files = commaDelimitedListToSet(fileList);

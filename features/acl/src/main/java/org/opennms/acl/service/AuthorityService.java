@@ -40,83 +40,105 @@ import org.opennms.acl.model.AuthorityDTO;
 import org.opennms.acl.model.Pager;
 
 /**
+ * <p>AuthorityService interface.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface AuthorityService extends PagerService {
 
     /**
      * store an authority
-     * 
-     * @param authority
+     *
+     * @param authority a {@link org.opennms.acl.model.AuthorityDTO} object.
      * @return outcome of the store action
      */
     public boolean save(AuthorityDTO authority);
 
     /**
-     * @param id
+     * <p>getAuthority</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
      * @return authority
      */
     public AuthorityDTO getAuthority(Integer id);
 
     /**
-     * @param id
+     * <p>removeAuthority</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
      * @return the result of removal
      */
     public boolean removeAuthority(Integer id);
 
     /**
-     * @param pager
+     * <p>getAuthorities</p>
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
      * @return paginated list authorities
      */
     public List<AuthorityDTO> getAuthorities(Pager pager);
 
     /**
+     * <p>getAuthorities</p>
+     *
      * @return list of all authorities
      */
     public List<AuthorityDTO> getAuthorities();
 
     /**
-     * @param username
+     * <p>getUserAuthorities</p>
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the list of user's authorities
      */
     public List<AuthorityDTO> getUserAuthorities(String username);
 
     /**
-     * @param username
+     * <p>getFreeAuthorities</p>
+     *
+     * @param username a {@link java.lang.String} object.
      * @return unallocated authorities
      */
     public List<AuthorityDTO> getFreeAuthorities(String username);
 
     /**
-     * @param username
+     * <p>getFreeAuthoritiesForGroup</p>
+     *
      * @return the list of authorities that Group doesn't have
      */
     public List<AuthorityDTO> getFreeAuthoritiesForGroup();
 
     /**
-     * @param group id
+     * <p>getGroupAuthorities</p>
+     *
      * @return the list of authorities that Group have
+     * @param id a {@link java.lang.Integer} object.
      */
     public List<AuthorityDTO> getGroupAuthorities(Integer id);
 
     /**
-     * @param id
+     * <p>getIdItemsAuthority</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
      * @return list of items id
      */
     public List<Integer> getIdItemsAuthority(Integer id);
 
     /**
+     * <p>getAuthoritiesNumber</p>
+     *
      * @return authorities number
      */
     public Integer getAuthoritiesNumber();
 
     /**
      * Insert a list of authorities assigned to a group
-     * 
-     * @param username
-     * @param authorities
+     *
+     * @param authorities a {@link java.util.List} object.
      * @return result of
+     * @param id a {@link java.lang.Integer} object.
      */
     public boolean insertGroupAuthorities(Integer id, List<Integer> authorities);
 }

@@ -33,16 +33,37 @@ package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.config.MibObject;
 
+/**
+ * <p>StringAttributeType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class StringAttributeType extends SnmpAttributeType {
     
+    /**
+     * <p>supportsType</p>
+     *
+     * @param rawType a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public static boolean supportsType(String rawType) {
         return rawType.toLowerCase().startsWith("string");
     }
     
+    /**
+     * <p>Constructor for StringAttributeType.</p>
+     *
+     * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     * @param collectionName a {@link java.lang.String} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     */
     public StringAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         super(resourceType, collectionName, mibObj, groupType);
     }
 
+    /** {@inheritDoc} */
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistStringAttribute(attribute);
     }

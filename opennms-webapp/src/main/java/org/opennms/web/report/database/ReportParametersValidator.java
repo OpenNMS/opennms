@@ -11,8 +11,21 @@ import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 
+/**
+ * <p>ReportParametersValidator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ReportParametersValidator {
     
+    /**
+     * <p>validateReportParameters</p>
+     *
+     * @param reportCriteria a {@link org.opennms.api.reporting.parameter.ReportParameters} object.
+     * @param context a {@link org.springframework.binding.validation.ValidationContext} object.
+     */
     public void  validateReportParameters(ReportParameters reportCriteria, ValidationContext context) {
         MessageContext messages = context.getMessageContext();
         

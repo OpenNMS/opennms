@@ -36,36 +36,68 @@ package org.opennms.acl.model;
 
 /**
  * Map a OpenNms information
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class NodeONMSDTO {
 
+    /**
+     * <p>Getter for the field <code>dpname</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDpname() {
         return dpname;
     }
 
+    /**
+     * <p>Setter for the field <code>dpname</code>.</p>
+     *
+     * @param dpname a {@link java.lang.String} object.
+     */
     public void setDpname(String dpname) {
         this.dpname = dpname;
     }
 
+    /**
+     * <p>Getter for the field <code>nodelabel</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodelabel() {
         return nodelabel;
     }
 
+    /**
+     * <p>Setter for the field <code>nodelabel</code>.</p>
+     *
+     * @param nodelabel a {@link java.lang.String} object.
+     */
     public void setNodelabel(String nodelabel) {
         this.nodelabel = nodelabel;
     }
 
+    /**
+     * <p>Getter for the field <code>nodeid</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getNodeid() {
         return nodeid;
     }
 
+    /**
+     * <p>Setter for the field <code>nodeid</code>.</p>
+     *
+     * @param nodeid a {@link java.lang.Integer} object.
+     */
     public void setNodeid(Integer nodeid) {
         this.nodeid = nodeid;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
 
@@ -75,6 +107,7 @@ public class NodeONMSDTO {
         return (dpname.equalsIgnoreCase(node.getDpname()) && nodelabel.equalsIgnoreCase(node.getNodelabel()) && nodeid == node.getNodeid());
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int result = hashCode;

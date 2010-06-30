@@ -46,10 +46,17 @@ import org.opennms.netmgt.config.NotificationManager;
 /**
  * Implements NotificationStragey pattern used to send notifications using the
  * XMPP message protocol
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
 public class XMPPGroupNotificationStrategy implements NotificationStrategy {
 
@@ -90,7 +97,7 @@ public class XMPPGroupNotificationStrategy implements NotificationStrategy {
 	}
 
 	/**
-	 * 
+	 * <p>Constructor for XMPPGroupNotificationStrategy.</p>
 	 */
 	public XMPPGroupNotificationStrategy() {
 	}
@@ -100,6 +107,7 @@ public class XMPPGroupNotificationStrategy implements NotificationStrategy {
 	 * 
 	 * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
 	 */
+	/** {@inheritDoc} */
 	public int send(List<Argument> arguments) {
 
 		try {

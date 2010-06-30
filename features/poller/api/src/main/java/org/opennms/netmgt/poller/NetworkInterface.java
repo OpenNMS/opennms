@@ -40,7 +40,7 @@ package org.opennms.netmgt.poller;
  * differences this class provides the basic information that a monitor can use
  * to determine the type of interface and its expected address type.
  * </P>
- * 
+ *
  * <P>
  * In addition to providing typing and address information, the interface allows
  * for the monitor to associate key-value pairs with an interface. This can be
@@ -48,10 +48,264 @@ package org.opennms.netmgt.poller;
  * The attributes may be shared with other monitors concurrently, so a monitor
  * must be careful to choose unique keys to prevent namespace collisions.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public interface NetworkInterface {
     /**
@@ -71,6 +325,8 @@ public interface NetworkInterface {
      * <P>
      * Returns the interface type for the network interface.
      * </P>
+     *
+     * @return a int.
      */
     public int getType();
 
@@ -80,6 +336,8 @@ public interface NetworkInterface {
      * this should be either an InetAddress or an object for specialized address
      * types.
      * </p>
+     *
+     * @return a {@link java.lang.Object} object.
      */
     public Object getAddress();
 
@@ -90,20 +348,17 @@ public interface NetworkInterface {
      * but requires that the lookup be performed using a String name. The object
      * may be of any instance that the monitor previous stored.
      * </P>
-     * 
+     *
      * <P>
      * If there is no matching object for the property key, then a null pointer
      * is returned to the application.
      * </P>
-     * 
+     *
      * @param property
      *            The key for the lookup.
-     * 
      * @return The resulting value for the key, null if no value exist.
-     * 
      * @exception java.lang.IllegalArgumentException
      *                Thrown if the passed key is empty or null.
-     * 
      * @see java.util.Map#get(java.lang.Object)
      */
     public Object getAttribute(String property);
@@ -116,20 +371,16 @@ public interface NetworkInterface {
      * java.util.Map put() method. The only restriction is that the key must be
      * a java string instance.
      * </P>
-     * 
+     *
      * @param property
      *            The key
      * @param value
      *            The value to associate with the key
-     * 
      * @return The object that was previously associated with the key. Null is
      *         returned if there was no previous value associated.
-     * 
      * @exception java.lang.IllegalArgumentException
      *                Thrown if the property name is empty or null.
-     * 
      * @see java.util.Map#put(java.lang.Object, java.lang.Object)
-     * 
      */
     public Object setAttribute(String property, Object value);
 }

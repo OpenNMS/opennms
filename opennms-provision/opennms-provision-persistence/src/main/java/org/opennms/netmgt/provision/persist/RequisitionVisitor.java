@@ -34,21 +34,97 @@ package org.opennms.netmgt.provision.persist;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 
+/**
+ * <p>RequisitionVisitor interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface RequisitionVisitor {
     
+    /**
+     * <p>visitModelImport</p>
+     *
+     * @param req a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     public void visitModelImport(Requisition req);
+    /**
+     * <p>completeModelImport</p>
+     *
+     * @param req a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     public void completeModelImport(Requisition req);
+    /**
+     * <p>visitNode</p>
+     *
+     * @param nodeReq a {@link org.opennms.netmgt.provision.persist.OnmsNodeRequisition} object.
+     */
     public void visitNode(OnmsNodeRequisition nodeReq);
+    /**
+     * <p>completeNode</p>
+     *
+     * @param nodeReq a {@link org.opennms.netmgt.provision.persist.OnmsNodeRequisition} object.
+     */
     public void completeNode(OnmsNodeRequisition nodeReq);
+    /**
+     * <p>visitInterface</p>
+     *
+     * @param ifaceReq a {@link org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition} object.
+     */
     public void visitInterface(OnmsIpInterfaceRequisition ifaceReq);
+    /**
+     * <p>completeInterface</p>
+     *
+     * @param ifaceReq a {@link org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition} object.
+     */
     public void completeInterface(OnmsIpInterfaceRequisition ifaceReq);
+    /**
+     * <p>visitMonitoredService</p>
+     *
+     * @param monSvcReq a {@link org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition} object.
+     */
     public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq);
+    /**
+     * <p>completeMonitoredService</p>
+     *
+     * @param monSvcReq a {@link org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition} object.
+     */
     public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq);
+    /**
+     * <p>visitNodeCategory</p>
+     *
+     * @param catReq a {@link org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition} object.
+     */
     public void visitNodeCategory(OnmsNodeCategoryRequisition catReq);
+    /**
+     * <p>completeNodeCategory</p>
+     *
+     * @param catReq a {@link org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition} object.
+     */
     public void completeNodeCategory(OnmsNodeCategoryRequisition catReq);
+    /**
+     * <p>visitServiceCategory</p>
+     *
+     * @param catReq a {@link org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition} object.
+     */
     public void visitServiceCategory(OnmsServiceCategoryRequisition catReq);
+    /**
+     * <p>completeServiceCategory</p>
+     *
+     * @param catReq a {@link org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition} object.
+     */
     public void completeServiceCategory(OnmsServiceCategoryRequisition catReq);
+    /**
+     * <p>visitAsset</p>
+     *
+     * @param assetReq a {@link org.opennms.netmgt.provision.persist.OnmsAssetRequisition} object.
+     */
     public void visitAsset(OnmsAssetRequisition assetReq);
+    /**
+     * <p>completeAsset</p>
+     *
+     * @param assetReq a {@link org.opennms.netmgt.provision.persist.OnmsAssetRequisition} object.
+     */
     public void completeAsset(OnmsAssetRequisition assetReq);
 
 }

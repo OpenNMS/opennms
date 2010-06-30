@@ -43,9 +43,11 @@ import org.opennms.core.soa.ServiceRegistry;
  * DefaultServiceRegistry
  *
  * @author brozow
+ * @version $Id: $
  */
 public class DefaultServiceRegistry implements ServiceRegistry {
     
+    /** Constant <code>INSTANCE</code> */
     public static final DefaultServiceRegistry INSTANCE = new DefaultServiceRegistry();
     
     private class ServiceRegistration implements Registration {
@@ -102,6 +104,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     private MultivaluedMap<Class<?>, ServiceRegistration> m_registrationMap = MultivaluedMapImpl.synchronizedMultivaluedMap();
     private MultivaluedMap<Class<?>, RegistrationListener<?>> m_listenerMap = MultivaluedMapImpl.synchronizedMultivaluedMap();
     
+    /** {@inheritDoc} */
     public <T> T findProvider(Class<T> serviceInterface) {
         Collection<T> providers = findProviders(serviceInterface);
         for(T provider : providers) {
@@ -110,6 +113,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         return null;
     }
     
+    /** {@inheritDoc} */
     public <T> T findProvider(Class<T> serviceInterface, String filter) {
         Collection<T> providers = findProviders(serviceInterface, filter);
         for(T provider : providers) {
@@ -118,6 +122,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         return null;
     }
     
+    /** {@inheritDoc} */
     public <T> Collection<T> findProviders(Class<T> serviceInterface) {
         
         Set<ServiceRegistration> registrations = getRegistrations(serviceInterface);
@@ -128,14 +133,30 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         return providers;
     }
 
+    /** {@inheritDoc} */
     public <T> Collection<T> findProviders(Class<T> serviceInterface, String filter) {
         throw new UnsupportedOperationException("DefaultServiceRegistry.findProviders with a filter is not yet implemented");
     }
 
+    /**
+     * <p>register</p>
+     *
+     * @param serviceProvider a {@link java.lang.Object} object.
+     * @param services a {@link java.lang.Class} object.
+     * @return a {@link org.opennms.core.soa.Registration} object.
+     */
     public Registration register(Object serviceProvider, Class<?>... services) {
         return register(serviceProvider, (Map<String, String>)null, services);
     }
 
+    /**
+     * <p>register</p>
+     *
+     * @param serviceProvider a {@link java.lang.Object} object.
+     * @param properties a {@link java.util.Map} object.
+     * @param services a {@link java.lang.Class} object.
+     * @return a {@link org.opennms.core.soa.Registration} object.
+     */
     public Registration register(Object serviceProvider, Map<String, String> properties, Class<?>... services) {
         
         ServiceRegistration registration = new ServiceRegistration(serviceProvider, properties, services);
@@ -170,10 +191,12 @@ public class DefaultServiceRegistry implements ServiceRegistry {
 
     }
 
+    /** {@inheritDoc} */
     public <T> void addListener(Class<T> service,  RegistrationListener<T> listener) {
         m_listenerMap.add(service, listener);
     }
 
+    /** {@inheritDoc} */
     public <T> void addListener(Class<T> service,  RegistrationListener<T> listener, boolean notifyForExistingProviders) {
 
         if (notifyForExistingProviders) {
@@ -196,6 +219,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         }
     }
 
+    /** {@inheritDoc} */
     public <T> void removeListener(Class<T> service, RegistrationListener<T> listener) {
         m_listenerMap.remove(service, listener);
     }

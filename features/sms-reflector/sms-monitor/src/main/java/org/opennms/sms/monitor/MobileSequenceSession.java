@@ -18,6 +18,12 @@ import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
 import org.smslib.USSDSessionStatus;
 
+/**
+ * <p>MobileSequenceSession class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MobileSequenceSession {
 	
 	private static final int DEFAULT_RETRIES = 0;
@@ -27,10 +33,22 @@ public class MobileSequenceSession {
 	private MobileMsgTracker m_tracker;
 	
 
+    /**
+     * <p>Constructor for MobileSequenceSession.</p>
+     *
+     * @param tracker a {@link org.opennms.sms.reflector.smsservice.MobileMsgTracker} object.
+     */
     public MobileSequenceSession(MobileMsgTracker tracker) {
         this(new HashMap<String, Object>(), Collections.<SequenceSessionVariable>emptyList(), tracker);
     }
 
+    /**
+     * <p>Constructor for MobileSequenceSession.</p>
+     *
+     * @param parameters a {@link java.util.Map} object.
+     * @param sessionVariables a {@link java.util.List} object.
+     * @param tracker a {@link org.opennms.sms.reflector.smsservice.MobileMsgTracker} object.
+     */
     public MobileSequenceSession(Map<String, Object> parameters, List<SequenceSessionVariable> sessionVariables, MobileMsgTracker tracker) {
         
         m_sessionVariables = sessionVariables; 
@@ -55,10 +73,20 @@ public class MobileSequenceSession {
 	private Properties m_properties = new Properties();
 	private Map<String, SessionVariableGenerator> m_generators = new HashMap<String,SessionVariableGenerator>();
 	
+	/**
+	 * <p>getProperties</p>
+	 *
+	 * @return a {@link java.util.Properties} object.
+	 */
 	public Properties getProperties() {
 		return m_properties;
 	}
 	
+	/**
+	 * <p>getGenerators</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map<String, SessionVariableGenerator> getGenerators() {
 		return m_generators;
 	}
@@ -67,26 +95,58 @@ public class MobileSequenceSession {
 		getProperties().setProperty("recipient", recipient);
 	}
 
+	/**
+	 * <p>getRetries</p>
+	 *
+	 * @return a int.
+	 */
 	public int getRetries() {
 		return Integer.parseInt(getProperties().getProperty("retry", String.valueOf(DEFAULT_RETRIES)));
 	}
 
+	/**
+	 * <p>getTimeout</p>
+	 *
+	 * @return a long.
+	 */
 	public long getTimeout() {
 		return Long.parseLong(getProperties().getProperty("timeout", String.valueOf(DEFAULT_TIMEOUT)));
 	}
 	
+    /**
+     * <p>setTimeout</p>
+     *
+     * @param timeout a long.
+     */
     public void setTimeout(long timeout) {
         getProperties().setProperty("timeout", String.valueOf(timeout));
     }
 
+    /**
+     * <p>setRetries</p>
+     *
+     * @param retries a int.
+     */
     public void setRetries(int retries) {
         getProperties().setProperty("retry", String.valueOf(retries));
     }
 
+    /**
+     * <p>setVariable</p>
+     *
+     * @param varName a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public void setVariable(String varName, String value) {
         getProperties().setProperty(varName, value);
     }
 
+	/**
+	 * <p>substitute</p>
+	 *
+	 * @param string a {@link java.lang.String} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String substitute(String string) {
 		return PropertiesUtils.substitute(string, getProperties());
 	}
@@ -106,14 +166,35 @@ public class MobileSequenceSession {
 		}
 	}
 
+    /**
+     * <p>eqOrMatches</p>
+     *
+     * @param expected a {@link java.lang.String} object.
+     * @param actual a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean eqOrMatches(String expected, String actual) {
 		return MobileMsgResponseMatchers.isAMatch(substitute(expected), actual);
 	}
 
+	/**
+	 * <p>matches</p>
+	 *
+	 * @param expected a {@link java.lang.String} object.
+	 * @param actual a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public boolean matches(String expected, String actual) {
 		return actual == null ? expected == null : actual.matches(substitute(expected));
 	}
 
+	/**
+	 * <p>ussdStatusMatches</p>
+	 *
+	 * @param expected a {@link java.lang.String} object.
+	 * @param actual a {@link org.smslib.USSDSessionStatus} object.
+	 * @return a boolean.
+	 */
 	public boolean ussdStatusMatches(String expected, USSDSessionStatus actual) {
 		USSDSessionStatus status;
 	
@@ -127,6 +208,15 @@ public class MobileSequenceSession {
 		return status.equals(actual);
 	}
 
+    /**
+     * <p>sendSms</p>
+     *
+     * @param gatewayId a {@link java.lang.String} object.
+     * @param recipient a {@link java.lang.String} object.
+     * @param text a {@link java.lang.String} object.
+     * @param validityPeriodInHours a int.
+     * @param responseHandler a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseHandler} object.
+     */
     public void sendSms(String gatewayId, String recipient, String text, int validityPeriodInHours, MobileMsgResponseHandler responseHandler) {
         MobileMsgRequest request = null;
         try {
@@ -139,6 +229,13 @@ public class MobileSequenceSession {
         }
     }
 
+    /**
+     * <p>sendUssd</p>
+     *
+     * @param gatewayId a {@link java.lang.String} object.
+     * @param text a {@link java.lang.String} object.
+     * @param responseHandler a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseHandler} object.
+     */
     public void sendUssd(String gatewayId, String text, MobileMsgResponseHandler responseHandler) {
         MobileMsgRequest request = null;
         try {

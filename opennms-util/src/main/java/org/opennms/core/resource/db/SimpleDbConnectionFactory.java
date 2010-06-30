@@ -48,7 +48,7 @@ import java.util.Properties;
 /**
  * A trivial implementation of <code>DbConnectionFactory</code> that creates a
  * new connection for every request and does no caching or connection sharing.
- * 
+ *
  * <p>
  * Note that no real connection pooling is occurring within this class. This
  * factory will be an inefficient connection management scheme for most
@@ -57,15 +57,270 @@ import java.util.Properties;
  * used. In those cases, caching idle database connections for long periods of
  * time can be wasteful, and this pooling scheme would be appropriate.
  * </p>
- * 
+ *
  * <p>
  * This manager simply initializes the JDBC driver and then stores the database
  * credential information (if any). Then when a connection is requested, a new
  * connection is made with the stored credentials (if any).
  * </p>
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class SimpleDbConnectionFactory extends Object implements DbConnectionFactory {
     protected String url = null;
@@ -77,6 +332,8 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
     protected Properties properties = null;
 
     /**
+     * {@inheritDoc}
+     *
      * Initialize a new database pool with the given database username and
      * password. This method will load the JDBC driver and store the given
      * database credentials. When a connection is requested, a new connection
@@ -110,6 +367,9 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
      * check to ensure that the URL has already been registered as a valid
      * database pool. If any database credentials or properties were registered,
      * those will be used when creating the new connection.
+     *
+     * @return a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
      */
     public Connection getConnection() throws SQLException {
         if (this.url == null) {
@@ -130,6 +390,8 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Close the given connection.
      */
     public void releaseConnection(Connection connection) throws SQLException {

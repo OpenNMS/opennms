@@ -53,8 +53,10 @@ import org.springframework.security.ui.FilterChainOrder;
 import org.springframework.security.ui.SpringSecurityFilter;
 
 /**
- * @author brozow
+ * <p>AuthFilterEnabler class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class AuthFilterEnabler extends SpringSecurityFilter {
     
@@ -62,10 +64,20 @@ public class AuthFilterEnabler extends SpringSecurityFilter {
     
     private GroupDao m_groupDao;
     
+    /**
+     * <p>setFilterManager</p>
+     *
+     * @param filterManager a {@link org.opennms.netmgt.model.FilterManager} object.
+     */
     public void setFilterManager(FilterManager filterManager) {
         m_filterManager = filterManager;
     }
     
+    /**
+     * <p>setGroupDao</p>
+     *
+     * @param groupDao a {@link org.opennms.netmgt.config.GroupDao} object.
+     */
     public void setGroupDao(GroupDao groupDao) {
         m_groupDao = groupDao;
     }
@@ -73,6 +85,7 @@ public class AuthFilterEnabler extends SpringSecurityFilter {
     /* (non-Javadoc)
      * @see org.springframework.security.ui.SpringSecurityFilter#doFilterHttp(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
      */
+    /** {@inheritDoc} */
     @Override
     protected void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -108,6 +121,11 @@ public class AuthFilterEnabler extends SpringSecurityFilter {
 
     /* (non-Javadoc)
      * @see org.springframework.core.Ordered#getOrder()
+     */
+    /**
+     * <p>getOrder</p>
+     *
+     * @return a int.
      */
     public int getOrder() {
         return FilterChainOrder.getOrder("LAST");

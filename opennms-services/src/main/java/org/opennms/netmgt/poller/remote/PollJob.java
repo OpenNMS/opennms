@@ -40,8 +40,10 @@ import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
- * 
+ * <p>PollJob class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class PollJob extends QuartzJobBean {
 	
@@ -49,16 +51,27 @@ public class PollJob extends QuartzJobBean {
 	private PollerFrontEnd m_pollerFrontEnd;
 	
 
+	/** {@inheritDoc} */
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         m_pollerFrontEnd.pollService(m_polledService.getServiceId());
 
 	}
 
+    /**
+     * <p>setPolledService</p>
+     *
+     * @param polledService a {@link org.opennms.netmgt.poller.remote.PolledService} object.
+     */
     public void setPolledService(PolledService polledService) {
 		m_polledService = polledService;
 	}
 
 
+	/**
+	 * <p>setPollerFrontEnd</p>
+	 *
+	 * @param pollerFrontEnd a {@link org.opennms.netmgt.poller.remote.PollerFrontEnd} object.
+	 */
 	public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
 		m_pollerFrontEnd = pollerFrontEnd;
 	}

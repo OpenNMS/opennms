@@ -44,11 +44,18 @@ import org.opennms.protocols.jmx.connectors.JBossConnectionFactory;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+/**
+ * <p>JBossMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JBossMonitor extends JMXMonitor {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.monitors.JMXMonitor#getMBeanServer(java.util.Map)
      */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address) {
         return  JBossConnectionFactory.getMBeanServerConnection(parameterMap, address);

@@ -46,6 +46,8 @@ import org.springframework.transaction.annotation.Transactional;
  * DefaultWebGroupRepository
  *
  * @author brozow
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultWebGroupRepository implements WebGroupRepository {
     
@@ -57,11 +59,13 @@ public class DefaultWebGroupRepository implements WebGroupRepository {
     
     
     
+    /** {@inheritDoc} */
     @Transactional
     public boolean groupExists(String groupName) {
         return m_groupDao.hasGroup(groupName);
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public WebGroup getGroup(String groupName) {
         
@@ -72,6 +76,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository {
         return webGroup;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public void saveGroup(WebGroup webGroup) {
 
@@ -96,6 +101,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository {
         
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void deleteGroup(String groupName) {
         
@@ -105,6 +111,7 @@ public class DefaultWebGroupRepository implements WebGroupRepository {
         
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void renameGroup(String oldName, String newName) {
         

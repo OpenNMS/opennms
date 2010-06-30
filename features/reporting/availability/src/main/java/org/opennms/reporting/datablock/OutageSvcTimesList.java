@@ -37,17 +37,18 @@ import java.util.List;
 
 /**
  * <pre>
- * This contains a list of service lost/regained set/pair. 
- * 
+ * This contains a list of service lost/regained set/pair.
+ *
  *  Also maintains the outage/down time each time it is calculated and the time
  *  from which this was calculated - this is done so when the view outage time for
  *  a window is calculated, the same calculations are not done on the node multiple
  *  times
- * 
+ *
  *  @author 	&lt;A HREF=&quot;mailto:jacinta@oculan.com&quot;&gt;Jacinta Remedios&lt;/A&gt;
  *  @author	&lt;A HREF=&quot;http://www.oculan.com&quot;&gt;oculan.org&lt;/A&gt;
- * 
- * 
+ *  @author 	&lt;A HREF=&quot;mailto:jacinta@oculan.com&quot;&gt;Jacinta Remedios&lt;/A&gt;
+ *  @author	&lt;A HREF=&quot;http://www.oculan.com&quot;&gt;oculan.org&lt;/A&gt;
+ * @version $Id: $
  */
 public class OutageSvcTimesList extends ArrayList<Outage> {
     /**
@@ -74,7 +75,7 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
 
     /**
      * Default constructor
-     * 
+     *
      * @see java.util.ArrayList#ArrayList()
      */
     public OutageSvcTimesList() {
@@ -87,8 +88,9 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
 
     /**
      * Constructor
-     * 
+     *
      * @see java.util.ArrayList#ArrayList(int initCapacity)
+     * @param initialCapacity a int.
      */
     public OutageSvcTimesList(int initialCapacity) {
         super(initialCapacity);
@@ -100,7 +102,7 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
 
     /**
      * Add a new servicetime entry
-     * 
+     *
      * @param losttime
      *            time at which service was lost
      * @param regainedtime
@@ -115,7 +117,7 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
 
     /**
      * Add a new service time entry
-     * 
+     *
      * @param losttime
      *            time at which service was lost
      */
@@ -126,12 +128,11 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
     /**
      * Calculate the total downtime in this list of service times for the last
      * 'rollinWindow' time starting at 'curTime'
-     * 
+     *
      * @param curTime
      *            the current time from which the down time is to be calculated
      * @param rollingWindow
      *            the last window for which the downtime is to be calculated
-     * 
      * @return total down time in service times in this list
      */
     public long getDownTime(long curTime, long rollingWindow) {
@@ -153,12 +154,13 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
     /**
      * Returns a list of outage / out-since pairs for the rolling window
      * specified
-     * 
+     *
      * @param curTime
      *            the current time from which the down time is to be calculated
      * @param rollingWindow
      *            the last window for which the down time is to be calculated
-     * 
+     * @param nodeName a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      */
     public List<OutageSince> getServiceOutages(String nodeName, long curTime, long rollingWindow) {
         if (nodeName == null)
@@ -197,6 +199,11 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
         return retList;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         String retVal = "";
         for(Outage outage : this) {

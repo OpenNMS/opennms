@@ -35,8 +35,11 @@
 package org.opennms.web.element;
 
 /**
- * 
+ * <p>DataLinkInterface class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DataLinkInterface
 {
@@ -73,6 +76,11 @@ public class DataLinkInterface
                 m_status = status;
         }
 
+        /**
+         * <p>toString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String toString()
         {
                 StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n" );
@@ -84,28 +92,36 @@ public class DataLinkInterface
                 return str.toString();
         }
 		/**
-		 * @return
+		 * <p>get_ifindex</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_ifindex() {
 			return m_ifindex;
 		}
 
 	/**
-	 * @return
+	 * <p>get_parentifindex</p>
+	 *
+	 * @return a int.
 	 */
 	public int get_parentifindex() {
 		return m_parentifindex;
 	}
 
 	/**
-	 * @return
+	 * <p>get_ipaddr</p>
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String get_ipaddr() {
 		return m_ipaddress;
 	}
 
 	/**
-	 * @return
+	 * <p>get_parentipaddr</p>
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String get_parentipaddr() {
 		return m_parentipaddress;
@@ -113,33 +129,44 @@ public class DataLinkInterface
 
 
 		/**
-		 * @return
+		 * <p>get_lastPollTime</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String get_lastPollTime() {
 			return m_lastPollTime;
 		}
 
 		/**
-		 * @return
+		 * <p>get_nodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>get_nodeparentid</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeparentid() {
 			return m_nodeparentid;
 		}
 
 		/**
-		 * @return
+		 * <p>get_status</p>
+		 *
+		 * @return a char.
 		 */
 		public char get_status() {
 			return m_status;
 		}
 		
+		/**
+		 * <p>invertNodewithParent</p>
+		 */
 		public void invertNodewithParent() {
 			int nodeid = m_nodeId;
 			String ipaddr = m_ipaddress;

@@ -43,9 +43,17 @@ import org.springframework.beans.factory.InitializingBean;
  * MobileMsgTracker
  *
  * @author brozow
+ * @version $Id: $
  */
 public class MobileMsgTrackerImpl extends RequestTracker<MobileMsgRequest, MobileMsgResponse> implements MobileMsgTracker, InitializingBean {
 
+    /**
+     * <p>Constructor for MobileMsgTrackerImpl.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param messenger a {@link org.opennms.protocols.rt.Messenger} object.
+     * @throws java.io.IOException if any.
+     */
     public MobileMsgTrackerImpl(String name,  Messenger<MobileMsgRequest, MobileMsgResponse> messenger)
             throws IOException {
         super(name, messenger, new MatchingRequestLocator());
@@ -53,12 +61,14 @@ public class MobileMsgTrackerImpl extends RequestTracker<MobileMsgRequest, Mobil
     }
     
     
+    /** {@inheritDoc} */
     public MobileMsgRequest sendSmsRequest(OutboundMessage msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher matcher) throws Exception {
         SmsRequest request = new SmsRequest(msg, timeout, retries, cb, matcher);
         sendRequest(request);
         return request;
     }
 
+    /** {@inheritDoc} */
     public MobileMsgRequest sendUssdRequest(USSDRequest msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher matcher) throws Exception {
         UssdRequest request = new UssdRequest(msg, timeout, retries, cb, matcher);
         sendRequest(request);
@@ -66,6 +76,11 @@ public class MobileMsgTrackerImpl extends RequestTracker<MobileMsgRequest, Mobil
     }
 
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         start();
     }

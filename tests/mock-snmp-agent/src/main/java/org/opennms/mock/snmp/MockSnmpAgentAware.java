@@ -35,9 +35,15 @@ package org.opennms.mock.snmp;
  * MockSnmpAgentAware
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface MockSnmpAgentAware {
     
+    /**
+     * <p>setMockSnmpAgent</p>
+     *
+     * @param agent a {@link org.opennms.mock.snmp.MockSnmpAgent} object.
+     */
     public void setMockSnmpAgent(MockSnmpAgent agent);
 
 }

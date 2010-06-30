@@ -52,10 +52,10 @@ import org.opennms.netmgt.snmpinterfacepoller.SnmpPollInterfaceMonitor;
 
 /**
  * Represents a PollableSnmpInterface
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
-
 public class PollableSnmpInterface implements ReadyRunnable {
 
     private volatile Schedule m_schedule;
@@ -140,10 +140,20 @@ public class PollableSnmpInterface implements ReadyRunnable {
     }
       
     
+    /**
+     * <p>getSnmpinterfaces</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<OnmsSnmpInterface> getSnmpinterfaces() {
         return m_snmpinterfaces.values();
     }
 
+    /**
+     * <p>setSnmpinterfaces</p>
+     *
+     * @param snmpinterfaces a {@link java.util.List} object.
+     */
     public void setSnmpinterfaces(List<OnmsSnmpInterface> snmpinterfaces) {
         for (OnmsSnmpInterface value: snmpinterfaces) {
             m_snmpinterfaces.put(value.getIfIndex(), value);            
@@ -151,6 +161,11 @@ public class PollableSnmpInterface implements ReadyRunnable {
     }
 
     //Constructor
+    /**
+     * <p>Constructor for PollableSnmpInterface.</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface} object.
+     */
     public PollableSnmpInterface(
             PollableInterface parent) {
         m_parent = parent;
@@ -158,43 +173,91 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
     }
     
+    /**
+     * <p>getSchedule</p>
+     *
+     * @return a {@link org.opennms.netmgt.scheduler.Schedule} object.
+     */
     public Schedule getSchedule() {
         return m_schedule;
     }
 
+    /**
+     * <p>setSchedule</p>
+     *
+     * @param schedule a {@link org.opennms.netmgt.scheduler.Schedule} object.
+     */
     public void setSchedule(Schedule schedule) {
         m_schedule = schedule;
     }
 
+    /**
+     * <p>getSnmppollableconfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterfaceConfig} object.
+     */
     public PollableSnmpInterfaceConfig getSnmppollableconfig() {
         return m_snmppollableconfig;
     }
 
+    /**
+     * <p>setSnmppollableconfig</p>
+     *
+     * @param snmppollableconfig a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterfaceConfig} object.
+     */
     public void setSnmppollableconfig(
             PollableSnmpInterfaceConfig snmppollableconfig) {
         m_snmppollableconfig = snmppollableconfig;
     }
 
+    /**
+     * <p>getParent</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface} object.
+     */
     public PollableInterface getParent() {
         return m_parent;
     }
     
+    /**
+     * <p>getContext</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext} object.
+     */
     public PollContext getContext() {
         return getParent().getContext();
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>isReady</p>
+     *
+     * @return a boolean.
+     */
     public boolean isReady() {
         return true;
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {        
         if (getParent().polling()) {
             log().info("run: polling snmp interfaces on package/interface " + getParent().getPackageName()+ "/" + getName() + "on primary address: " + getParent().getIpaddress());
@@ -358,12 +421,18 @@ public class PollableSnmpInterface implements ReadyRunnable {
         return mifaces;
     }
     
+    /**
+     * <p>schedule</p>
+     */
     public void schedule() {
         if (m_schedule == null)
             throw new IllegalStateException("Cannot schedule a service whose schedule is set to null");      
         m_schedule.schedule();
     }
 
+    /**
+     * <p>delete</p>
+     */
     protected void delete() {
         m_schedule.unschedule();
     }
@@ -372,26 +441,56 @@ public class PollableSnmpInterface implements ReadyRunnable {
         return ThreadCategory.getInstance(PollableService.class);
     }
 
+	/**
+	 * <p>getAgentConfig</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+	 */
 	public SnmpAgentConfig getAgentConfig() {
 		return m_agentConfig;
 	}
 
+	/**
+	 * <p>setAgentConfig</p>
+	 *
+	 * @param config a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+	 */
 	public void setAgentConfig(SnmpAgentConfig config) {
 		m_agentConfig = config;
 	}
 
+	/**
+	 * <p>getCriteria</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCriteria() {
 		return m_criteria;
 	}
 
+	/**
+	 * <p>setCriteria</p>
+	 *
+	 * @param m_criteria a {@link java.lang.String} object.
+	 */
 	public void setCriteria(String m_criteria) {
 		this.m_criteria = m_criteria;
 	}
 
+	/**
+	 * <p>Getter for the field <code>maxInterfacePerPdu</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getMaxInterfacePerPdu() {
 		return maxInterfacePerPdu;
 	}
 
+	/**
+	 * <p>Setter for the field <code>maxInterfacePerPdu</code>.</p>
+	 *
+	 * @param maxInterfacePerPdu a int.
+	 */
 	public void setMaxInterfacePerPdu(int maxInterfacePerPdu) {
 		this.maxInterfacePerPdu = maxInterfacePerPdu;
 	}

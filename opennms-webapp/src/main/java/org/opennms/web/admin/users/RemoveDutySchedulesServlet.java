@@ -53,13 +53,18 @@ import org.opennms.web.admin.users.parsers.User;
 
 /**
  * A servlet that handles removing duties from a users notification information
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class RemoveDutySchedulesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(true);
 

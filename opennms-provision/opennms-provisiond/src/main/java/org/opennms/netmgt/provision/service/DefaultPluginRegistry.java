@@ -60,6 +60,7 @@ import org.springframework.util.Assert;
  * DefaultPluginRegistry
  *
  * @author brozow
+ * @version $Id: $
  */
 public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     
@@ -86,6 +87,9 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     private ApplicationContext m_applicationContext;
     
     //@PostConstruct
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.notNull(m_extensionManager, "ExtensionManager must not be null");
         addAllExtensions(m_asyncDetectors, AsyncServiceDetector.class, ServiceDetector.class);
@@ -120,10 +124,12 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         }
     }
     
+    /** {@inheritDoc} */
     public <T> Collection<T> getAllPlugins(Class<T> pluginClass) {
         return beansOfType(pluginClass).values();
     }
     
+    /** {@inheritDoc} */
     public <T> T getPluginInstance(Class<T> pluginClass, PluginConfig pluginConfig) {
         T pluginInstance = beanWithNameOfType(pluginConfig.getPluginClass(), pluginClass);
         if (pluginInstance == null) {

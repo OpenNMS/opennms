@@ -69,39 +69,57 @@ import org.opennms.netmgt.xml.event.Log;
  * typically used by the poller framework plugins that perform service
  * monitoring to send out aprropriate events. Can also be used by capsd,
  * discovery etc.
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class TcpEventProxy implements EventProxy {
+    /** Constant <code>DEFAULT_PORT=5817</code> */
     public static final int DEFAULT_PORT = 5817;
 
+    /** Constant <code>DEFAULT_TIMEOUT=2000</code> */
     public static final int DEFAULT_TIMEOUT = 2000;
 
     private InetSocketAddress m_address;
     
     private int m_timeout = DEFAULT_TIMEOUT;
 
+    /**
+     * <p>Constructor for TcpEventProxy.</p>
+     *
+     * @throws java.net.UnknownHostException if any.
+     */
     public TcpEventProxy() throws UnknownHostException {
         this(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), DEFAULT_PORT));
     }
 
+    /**
+     * <p>Constructor for TcpEventProxy.</p>
+     *
+     * @param address a {@link java.net.InetSocketAddress} object.
+     */
     public TcpEventProxy(InetSocketAddress address) {
         m_address = address;
     }
 
+    /**
+     * <p>Constructor for TcpEventProxy.</p>
+     *
+     * @param address a {@link java.net.InetSocketAddress} object.
+     * @param timeout a int.
+     */
     public TcpEventProxy(InetSocketAddress address, int timeout) {
         this(address);
         m_timeout = timeout;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is called to send the event out
-     * 
-     * @param event
-     *            the event to be sent out
-     * 
      * @exception UndeclaredThrowableException
      *                thrown if the send fails for any reason
      */
@@ -117,12 +135,12 @@ public final class TcpEventProxy implements EventProxy {
     /**
      * This method is called to send an event log containing multiple events
      * out.
-     * 
+     *
      * @param eventLog
      *            the events to be sent out
-     * 
      * @exception UndeclaredThrowableException
      *                thrown if the send fails for any reason
+     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
     public void send(Log eventLog) throws EventProxyException {
         Connection connection = null;

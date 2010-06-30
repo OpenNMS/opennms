@@ -50,6 +50,12 @@ import java.net.DatagramPacket;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
+/**
+ * <p>Ping class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Ping {
 
     public static class Stuff implements Runnable {
@@ -95,6 +101,11 @@ public class Ping {
         }
     }
 
+    /**
+     * <p>main</p>
+     *
+     * @param argv an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] argv) {
     if (argv.length != 1) {
             System.err.println("incorrect number of command-line arguments.");

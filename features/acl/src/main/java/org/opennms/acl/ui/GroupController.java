@@ -53,13 +53,20 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Group Controller
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Controller
 public class GroupController {
 
+    /**
+     * <p>list</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/group.list.page")
     public ModelAndView list(HttpServletRequest req) {
         Pager pager = WebUtils.getPager(req, groupService.getTotalItemsNumber(), 15);
@@ -69,12 +76,24 @@ public class GroupController {
         return mav;
     }
 
+    /**
+     * <p>detail</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/group.detail.page")
     public ModelAndView detail(HttpServletRequest req) {
         Group group = WebUtils.getGroup(req);
         return new ModelAndView("group/detail", Constants.GROUP, group.getGroupView());
     }
 
+    /**
+     * <p>delete</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/group.delete.page")
     public ModelAndView delete(HttpServletRequest req) {
         Group group = WebUtils.getGroup(req);
@@ -83,6 +102,12 @@ public class GroupController {
         return mav;
     }
 
+    /**
+     * <p>confirmDelete</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/group.confirm.page")
     public ModelAndView confirmDelete(HttpServletRequest req) {
         Group group = WebUtils.getGroup(req);
@@ -92,6 +117,12 @@ public class GroupController {
         return mav;
     }
 
+    /**
+     * <p>items</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/group.items.page")
     public ModelAndView items(HttpServletRequest req) {
         Group group = WebUtils.getGroup(req);
@@ -106,6 +137,13 @@ public class GroupController {
         }
     }
 
+    /**
+     * <p>selection</p>
+     *
+     * @param ids a {@link java.lang.String} object.
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/group.selection.page")
     public ModelAndView selection(@RequestParam("includedHidden") String ids, HttpServletRequest req) {
         Group group = WebUtils.getGroup(req);
@@ -118,6 +156,11 @@ public class GroupController {
         return new ModelAndView(new StringBuilder(Constants.REDIRECT_GROUP_LIST).append("?").append(Constants.GROUP_ID).append("=").append(group.getId()).toString());
     }
 
+    /**
+     * <p>Constructor for GroupController.</p>
+     *
+     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
+     */
     @Autowired
     public GroupController(@Qualifier("groupService") GroupService groupService) {
         this.groupService = groupService;
