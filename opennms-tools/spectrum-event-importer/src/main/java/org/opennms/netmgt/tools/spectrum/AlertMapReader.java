@@ -44,7 +44,7 @@ public class AlertMapReader {
         m_tokenizer.wordChars('A', 'Z');
     }
     
-    public List<AlertMapping> getAlertMaps() throws IOException {
+    public List<AlertMapping> getAlertMappings() throws IOException {
         List<AlertMapping> alertMappings = new ArrayList<AlertMapping>();
         AlertMapping thisAlertMapping = null;
         OidMapping thisOidMapping = null;
@@ -95,6 +95,7 @@ public class AlertMapReader {
                     LogUtils.debugf(this, "Encountered a comma on line %d; next token is a word %s that looks like a whole number so using it as the index length", m_tokenizer.lineno(), m_tokenizer.sval);
                     thisOidMapping.setIndexLength(Integer.valueOf(m_tokenizer.sval));
                     thisAlertMapping.addOidMapping(thisOidMapping);
+                    LogUtils.debugf(this, "Alert-mapping for alert code %s to event code %s now has %d OID-mapping(s)", thisAlertMapping.getAlertCode(), thisAlertMapping.getEventCode(), thisAlertMapping.getOidMappings().size());
                 } else {
                     LogUtils.errorf(this, "Encountered what appears to be a malformed OID mapping on line %d of %s while expecting an index length", m_tokenizer.lineno(), m_resource);
                     throw new IllegalArgumentException("An apparent OID mapping went wrong while expecting index length on line " + m_tokenizer.lineno() + " of " + m_resource);
@@ -112,15 +113,6 @@ public class AlertMapReader {
             }
         }
         return alertMappings;
-    }
-    
-    private String getContents() throws IOException {
-        FileInputStream fis = new FileInputStream(m_resource.getFile());
-        StringBuilder contents = new StringBuilder(""); 
-        while (fis.available() > -1) {
-            contents.append(fis.read());
-        }
-        return contents.toString();
     }
     
 }

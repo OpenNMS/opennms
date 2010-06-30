@@ -23,7 +23,11 @@ public class AlertMapping {
         }
         m_alertCode = alertCode;
         m_eventCode = eventCode;
-        m_oidMappings = oidMappings;
+        if (oidMappings != null) {
+            m_oidMappings = oidMappings;
+        } else {
+            m_oidMappings = new ArrayList<OidMapping>();
+        }
     }
     
     public String getAlertCode() {
