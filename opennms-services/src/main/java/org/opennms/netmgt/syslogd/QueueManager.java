@@ -66,12 +66,7 @@ import org.opennms.core.utils.ThreadCategory;
   * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
   * @version $Id: $
   */
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- */public class QueueManager {
+ public class QueueManager {
 
     FifoQueue m_backlogQ = new FifoQueueImpl();
 

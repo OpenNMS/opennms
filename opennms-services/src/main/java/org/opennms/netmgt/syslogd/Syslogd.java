@@ -85,13 +85,7 @@ import java.sql.SQLException;
   * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
   * @version $Id: $
   */
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- */public class Syslogd extends AbstractServiceDaemon {
+ public class Syslogd extends AbstractServiceDaemon {
     /**
      * The name of the logging category for Syslogd.
      */
