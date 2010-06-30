@@ -47,6 +47,8 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
@@ -170,7 +172,12 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
             log().debug("start: Creating the trap session");
         } catch (IOException e) {
-            log().error("Failed to setup SNMP trap port", e);
+            if (e instanceof java.net.BindException) {
+                managerLog().error("Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+                log().error("Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+            } else {
+                log().error("Failed to initialize SNMP trap socket", e);
+            }
             throw new UndeclaredThrowableException(e);
         }
 
@@ -180,6 +187,10 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
             log().error("Failed to open event reader: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
+    }
+
+    private Category managerLog() {
+        return Logger.getLogger("OpenNMS.Manager");
     }
 
     /**
