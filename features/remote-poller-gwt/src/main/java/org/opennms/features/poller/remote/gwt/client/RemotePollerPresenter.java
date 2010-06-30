@@ -8,7 +8,6 @@ import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselecte
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
-import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
@@ -21,7 +20,6 @@ import de.novanic.eventservice.client.event.domain.DomainFactory;
  * It extends several event handlers that the controller logic is expected to respond to.
  */
 public interface RemotePollerPresenter extends MapPanelBoundsChangedEventHandler,
-		LocationsUpdatedEventHandler,
 		LocationPanelSelectEventHandler,
 		FiltersChangedEventHandler,
 		TagSelectedEventHandler,
