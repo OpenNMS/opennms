@@ -303,6 +303,9 @@ class MailAckProcessor implements AckProcessor {
         String alarmRe = m_ackdDao.getConfig().getAlarmidMatchExpression();
         alarmRe = alarmRe.startsWith("~") ? alarmRe.substring(1) : alarmRe;
         
+        Pattern notifPattern = Pattern.compile(notifRe);
+        Pattern alarmPattern = Pattern.compile(alarmRe);
+        
         List<Message> msgs = readMailer.retrieveMessages();
         log().info("retrieveAckMessages: Iterating "+msgs.size()+" messages with notif expression: "+notifRe+
                    " and alarm expression: "+alarmRe);
@@ -312,8 +315,11 @@ class MailAckProcessor implements AckProcessor {
             try {
                 String subject = msg.getSubject();
                 
+                Matcher alarmMatcher = alarmPattern.matcher(subject);
+                Matcher notifMatcher = notifPattern.matcher(subject);
+                
                 log().debug("retrieveAckMessages: comparing the subject: "+subject);
-                if (!(subject.matches(notifRe) || subject.matches(alarmRe))) {
+                if (!(notifMatcher.matches() || alarmMatcher.matches())) {
                     
                     log().debug("retrieveAckMessages: Subject doesn't match either expression.");
                     iterator.remove();
