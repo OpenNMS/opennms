@@ -67,15 +67,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.RrdRepository;
 
 
-package org.opennms.netmgt.collectd;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.model.RrdRepository;
 class XmpCollectionResource extends AbstractCollectionResource 
 {
     /* class variables and methods *********************** */

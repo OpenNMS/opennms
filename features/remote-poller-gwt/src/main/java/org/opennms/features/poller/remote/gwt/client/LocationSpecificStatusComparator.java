@@ -7,11 +7,6 @@ import java.util.Comparator;
 
 import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
 
-package org.opennms.features.poller.remote.gwt.client;
-
-import java.util.Comparator;
-
-import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
 class LocationSpecificStatusComparator implements Comparator<GWTLocationSpecificStatus> {
     /**
      * <p>compare</p>

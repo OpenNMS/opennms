@@ -10,14 +10,6 @@ import org.opennms.core.utils.LogUtils;
 
 import de.novanic.eventservice.service.EventExecutorService;
 
-package org.opennms.features.poller.remote.gwt.server;
-
-import java.util.Date;
-import java.util.TimerTask;
-
-import org.opennms.core.utils.LogUtils;
-
-import de.novanic.eventservice.service.EventExecutorService;
 final class UpdateTask extends TimerTask {
     private final EventExecutorService m_service;
     private final LocationDataManager m_locationDataManager;

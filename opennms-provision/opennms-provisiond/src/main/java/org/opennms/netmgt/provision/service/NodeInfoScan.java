@@ -17,21 +17,6 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
-package org.opennms.netmgt.provision.service;
-
-import java.net.InetAddress;
-import java.util.List;
-
-import org.opennms.core.tasks.BatchTask;
-import org.opennms.core.tasks.RunInBatch;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.service.snmp.SystemGroup;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
-import org.springframework.util.Assert;
 final class NodeInfoScan implements RunInBatch {
 
     private final SnmpAgentConfigFactory m_agentConfigFactory;

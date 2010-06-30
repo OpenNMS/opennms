@@ -63,11 +63,6 @@ import org.krupczak.Xmp.XmpVar;
 import org.opennms.core.utils.ThreadCategory;
 
 
-package org.opennms.netmgt.collectd;
-
-import org.krupczak.Xmp.Xmp;
-import org.krupczak.Xmp.XmpVar;
-import org.opennms.core.utils.ThreadCategory;
 class XmpCollectionAttributeType implements CollectionAttributeType 
 {
     /* class variables and methods *********************** */

@@ -13,17 +13,6 @@ import org.opennms.core.utils.LogUtils;
 import de.novanic.eventservice.service.EventExecutorService;
 import de.novanic.eventservice.service.EventExecutorServiceFactory;
 
-package org.opennms.features.poller.remote.gwt.server;
-
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.opennms.core.utils.LogUtils;
-
-import de.novanic.eventservice.service.EventExecutorService;
-import de.novanic.eventservice.service.EventExecutorServiceFactory;
 final class InitializeTask extends TimerTask {
     /** Constant <code>m_updateTaskScheduled</code> */
     public static AtomicBoolean m_updateTaskScheduled = new AtomicBoolean(false);
