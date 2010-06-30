@@ -57,8 +57,8 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
