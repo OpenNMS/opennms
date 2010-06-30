@@ -44,11 +44,13 @@ import java.lang.annotation.Target;
  * EventHandler
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface EventHandler {
 
+    /** Constant <code>ALL_UEIS="*"</code> */
     public static final String ALL_UEIS = "*";
 
     String uei();

@@ -44,18 +44,40 @@ import org.springframework.dao.DataAccessException;
 
 /**
  * This is modeled after the Spring SQLExceptionTrnaslator.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class CastorExceptionTranslator {
+    /**
+     * <p>translate</p>
+     *
+     * @param task a {@link java.lang.String} object.
+     * @param e a {@link java.io.IOException} object.
+     * @return a {@link org.springframework.dao.DataAccessException} object.
+     */
     public DataAccessException translate(String task, IOException e) {
         return new CastorDataAccessFailureException("Failed to perform IO while " + task + ": " + e, e);
     }
     
+    /**
+     * <p>translate</p>
+     *
+     * @param task a {@link java.lang.String} object.
+     * @param e a {@link org.exolab.castor.xml.ValidationException} object.
+     * @return a {@link org.springframework.dao.DataAccessException} object.
+     */
     public DataAccessException translate(String task, ValidationException e) {
         return new CastorDataAccessFailureException("Failed to validate XML file while " + task + ": " + e, e);
     }
     
+    /**
+     * <p>translate</p>
+     *
+     * @param task a {@link java.lang.String} object.
+     * @param e a {@link org.exolab.castor.xml.MarshalException} object.
+     * @return a {@link org.springframework.dao.DataAccessException} object.
+     */
     public DataAccessException translate(String task, MarshalException e) {
         return new CastorDataAccessFailureException("Failed to marshal/unmarshal XML file while " + task + ": " + e, e);
     }

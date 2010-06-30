@@ -37,7 +37,14 @@ import org.opennms.netmgt.model.OnmsNode;
  * NodePolicy
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface NodePolicy extends OnmsPolicy {
+    /**
+     * <p>apply</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public OnmsNode apply(OnmsNode node);
 }

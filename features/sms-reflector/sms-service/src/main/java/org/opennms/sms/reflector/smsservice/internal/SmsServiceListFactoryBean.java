@@ -13,18 +13,39 @@ import org.smslib.Service.ServiceStatus;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * <p>SmsServiceListFactoryBean class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, InitializingBean {
 	private GatewayGroup[] m_gatewayGroups;
 	private SmsService[] m_services;
 	
+	/**
+	 * <p>setOutboundMessageNotification</p>
+	 *
+	 * @param mOutboundMessageNotification a {@link org.smslib.IOutboundMessageNotification} object.
+	 */
 	public void setOutboundMessageNotification(IOutboundMessageNotification mOutboundMessageNotification) {
 		m_outboundMessageNotification = mOutboundMessageNotification;
 	}
 
+	/**
+	 * <p>setInboundMessageNotification</p>
+	 *
+	 * @param mInboundMessageNotification a {@link org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification} object.
+	 */
 	public void setInboundMessageNotification(OnmsInboundMessageNotification mInboundMessageNotification) {
 		m_inboundMessageNotification = mInboundMessageNotification;
 	}
 
+	/**
+	 * <p>setGatewayStatusNotification</p>
+	 *
+	 * @param mGatewayStatusNotification a {@link org.smslib.IGatewayStatusNotification} object.
+	 */
 	public void setGatewayStatusNotification(IGatewayStatusNotification mGatewayStatusNotification) {
 		m_gatewayStatusNotification = mGatewayStatusNotification;
 	}
@@ -34,14 +55,25 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 	@SuppressWarnings("unused")
 	private IGatewayStatusNotification m_gatewayStatusNotification;
 
+	/**
+	 * <p>Constructor for SmsServiceListFactoryBean.</p>
+	 */
 	public SmsServiceListFactoryBean() {
 		
 	}
 
+	/**
+	 * <p>setGatewayGroupList</p>
+	 *
+	 * @param groupList an array of {@link org.opennms.sms.reflector.smsservice.GatewayGroup} objects.
+	 */
 	public void setGatewayGroupList(GatewayGroup[] groupList) {
 		m_gatewayGroups = groupList;
 	}
 
+	/**
+	 * <p>afterPropertiesSet</p>
+	 */
 	public void afterPropertiesSet() {
 		m_services = new SmsService[m_gatewayGroups.length];
 
@@ -82,14 +114,30 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 		return ThreadCategory.getInstance(getClass());
 	}
 
+	/**
+	 * <p>getObject</p>
+	 *
+	 * @return an array of {@link org.opennms.sms.reflector.smsservice.SmsService} objects.
+	 * @throws java.lang.Exception if any.
+	 */
 	public SmsService[] getObject() throws Exception {
 		return m_services;
 	}
 
+	/**
+	 * <p>getObjectType</p>
+	 *
+	 * @return a {@link java.lang.Class} object.
+	 */
 	public Class<? extends SmsService[]> getObjectType() {
 		return SmsService[].class;
 	}
 
+	/**
+	 * <p>isSingleton</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isSingleton() {
 		return true;
 	}

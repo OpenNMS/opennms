@@ -43,19 +43,30 @@ import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 
+/**
+ * <p>DefaultDatabaseReportConfigDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<DatabaseReports, List<Report>>
         implements DatabaseReportConfigDao {
     
+    /**
+     * <p>Constructor for DefaultDatabaseReportConfigDao.</p>
+     */
     public DefaultDatabaseReportConfigDao() {
         super(DatabaseReports.class, "Database Report Configuration");
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Report> translateConfig(DatabaseReports castorConfig) {
         return Collections.unmodifiableList(castorConfig.getReportCollection());
     }
     
     
+    /** {@inheritDoc} */
     public String getReportService(String name) {
         
         Report report = getReport(name);
@@ -68,6 +79,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         
     }
     
+    /** {@inheritDoc} */
     public String getDisplayName(String name) {
         
         Report report = getReport(name);
@@ -92,12 +104,22 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         
     }
 
+    /**
+     * <p>getReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Report> getReports() {
         
         return getContainer().getObject();
     
     }
     
+    /**
+     * <p>getOnlineReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Report> getOnlineReports() {
         
         List<Report> onlineReports = new ArrayList<Report>();

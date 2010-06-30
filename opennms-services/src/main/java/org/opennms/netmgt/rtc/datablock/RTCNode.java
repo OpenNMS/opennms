@@ -48,17 +48,20 @@ import org.opennms.netmgt.rtc.RTCConstants;
  * 'nodeGainedService' is received - each node maintains its node id, ip
  * address, service name and a list of 'RTCNodeSvcTime's
  * </p>
- * 
+ *
  * <p>
  * Also, each node knows and maintains a list of categories that this tuple
  * belongs to
  * </p>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTime
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTimesList
+ * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTimesList
+ * @version $Id: $
  */
 public class RTCNode {
     /**
@@ -93,13 +96,18 @@ public class RTCNode {
     	this(-1, null, null);
     }
     
+    /**
+     * <p>Constructor for RTCNode.</p>
+     *
+     * @param key a {@link org.opennms.netmgt.rtc.datablock.RTCNodeKey} object.
+     */
     public RTCNode(RTCNodeKey key) {
     	this(key.getNodeID(), key.getIP(), key.getSvcName());
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param nodeid
      *            the node id
      * @param ip
@@ -120,7 +128,7 @@ public class RTCNode {
 
     /**
      * Set the node ID.
-     * 
+     *
      * @param id
      *            the node ID
      */
@@ -130,7 +138,7 @@ public class RTCNode {
 
     /**
      * Set the service name.
-     * 
+     *
      * @param svcName
      *            the service name
      */
@@ -140,7 +148,7 @@ public class RTCNode {
 
     /**
      * Set the IP address.
-     * 
+     *
      * @param ipStr
      *            the ip address
      */
@@ -150,7 +158,7 @@ public class RTCNode {
 
     /**
      * Add a new 'RTCNodeSvcTime' entry for this node.
-     * 
+     *
      * @param losttime
      *            time at which service was lost
      * @param regainedtime
@@ -162,7 +170,7 @@ public class RTCNode {
 
     /**
      * Add to the category list for this node.
-     * 
+     *
      * @param catLabel
      *            category label of the category this node has been added to
      */
@@ -175,7 +183,7 @@ public class RTCNode {
 
     /**
      * Remove a category from the node's context.
-     * 
+     *
      * @param catLabel
      *            category label of the category this node has been added to
      */
@@ -190,7 +198,7 @@ public class RTCNode {
     /**
      * Add a node lost service time. Add a losttime entry to the service times
      * list - create a new service time entry in the list
-     * 
+     *
      * @param t
      *            the time at which service was lost
      */
@@ -219,7 +227,7 @@ public class RTCNode {
      * Add a node regained service time. Add a regained time entry to the
      * service times list - set the regained time in the last serice time entry
      * in the list
-     * 
+     *
      * @param t
      *            the time at which node regained service
      */
@@ -240,7 +248,7 @@ public class RTCNode {
 
     /**
      * Return the node ID.
-     * 
+     *
      * @return the node ID
      */
     public long getNodeID() {
@@ -249,7 +257,7 @@ public class RTCNode {
 
     /**
      * Return the service name.
-     * 
+     *
      * @return the service name
      */
     public String getSvcName() {
@@ -258,7 +266,7 @@ public class RTCNode {
 
     /**
      * Return the IP address.
-     * 
+     *
      * @return the IP address
      */
     public String getIP() {
@@ -267,7 +275,7 @@ public class RTCNode {
 
     /**
      * Return the list of service times for this node.
-     * 
+     *
      * @return the list of service times for this node
      */
     public List<RTCNodeSvcTime> getServiceTimes() {
@@ -276,10 +284,9 @@ public class RTCNode {
 
     /**
      * Check if this node belongs to the category.
-     * 
+     *
      * @param catLabel
      *            category label
-     * 
      * @return true if the node belongs to this category, false otherwise
      */
     public boolean belongsTo(String catLabel) {
@@ -292,7 +299,7 @@ public class RTCNode {
 
     /**
      * Return the list of categories this node belongs to.
-     * 
+     *
      * @return list of categories for the node.
      */
     public List<String> getCategories() {
@@ -302,7 +309,7 @@ public class RTCNode {
     /**
      * Get the down time. Return the total outage time for this node in the
      * 'rollingWindow' milliseconds since 'curTime' for the category
-     * 
+     *
      * @param cat
      *            the category in the context which of which downtime is needed
      * @param curTime
@@ -310,7 +317,6 @@ public class RTCNode {
      *            rollinWindow interval
      * @param rollingWindow
      *            the window for which downtime is required
-     * 
      * @return the total outage time for this node
      */
     public long getDownTime(String cat, long curTime, long rollingWindow) {
@@ -326,7 +332,7 @@ public class RTCNode {
     /**
      * Get the avaialability. Return the total availability for this node in the
      * last 'rollingWindow' milliseconds since 'curTime' for the category
-     * 
+     *
      * @param cat
      *            the category in the context which of which availability is
      *            needed
@@ -335,7 +341,6 @@ public class RTCNode {
      *            rollinWindow interval
      * @param rollingWindow
      *            the window for which availability is required
-     * 
      * @return the value for this node
      */
     public double getValue(String cat, long curTime, long rollingWindow) {
@@ -357,7 +362,7 @@ public class RTCNode {
 
     /**
      * Return if the service is currently up/down.
-     * 
+     *
      * @return if the service is currently up/down
      */
     public boolean isServiceCurrentlyDown() {
@@ -383,6 +388,7 @@ public class RTCNode {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return new HashCodeBuilder(3, 7)
@@ -395,9 +401,9 @@ public class RTCNode {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Compare RTCNodes. Overrides the 'equals()' method in the superclass
-     * 
-     * @return true if all the attributes are equal
      */
     @Override
     public boolean equals(final Object o) {
@@ -415,10 +421,10 @@ public class RTCNode {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * String represenatation. Returns a string representation of this object
      * that has the nodeid/ip/servicename details
-     * 
-     * @return the string representation of this object
      */
     @Override
     public String toString() {

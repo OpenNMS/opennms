@@ -38,19 +38,36 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>IndexDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class IndexDao {
     private Map<String, Index> m_nameMap;
     private Map<String, List<Index>> m_tableMap;
 
+    /**
+     * <p>Constructor for IndexDao.</p>
+     */
     public IndexDao() {
         reset();
     }
     
+    /**
+     * <p>reset</p>
+     */
     public void reset() {
         m_nameMap = new LinkedHashMap<String, Index>();
         m_tableMap = new HashMap<String, List<Index>>();
     }
     
+    /**
+     * <p>add</p>
+     *
+     * @param i a {@link org.opennms.netmgt.dao.db.Index} object.
+     */
     public void add(Index i) {
         String lowerName = i.getName().toLowerCase();
         if (m_nameMap.containsKey(lowerName)) {
@@ -71,6 +88,12 @@ public class IndexDao {
         return m_tableMap.get(table);
     }
     
+    /**
+     * <p>getIndexesForTable</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<Index> getIndexesForTable(String table) {
         String lowerName = table.toLowerCase();
         if (!m_tableMap.containsKey(lowerName)) {
@@ -79,10 +102,20 @@ public class IndexDao {
         return m_tableMap.get(lowerName);
     }
     
+    /**
+     * <p>getAllIndexes</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<Index> getAllIndexes() {
         return m_nameMap.values();
     }
     
+    /**
+     * <p>remove</p>
+     *
+     * @param indexName a {@link java.lang.String} object.
+     */
     public void remove(String indexName) {
         String lowerName = indexName.toLowerCase();
         

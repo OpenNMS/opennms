@@ -31,6 +31,12 @@
  */
 package org.opennms.netmgt.provision.detector.dhcp.request;
 
+/**
+ * <p>DhcpRequest class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DhcpRequest {
 
 }

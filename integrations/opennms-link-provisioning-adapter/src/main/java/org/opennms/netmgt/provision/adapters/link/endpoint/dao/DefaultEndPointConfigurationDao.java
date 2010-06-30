@@ -28,6 +28,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
+/**
+ * <p>DefaultEndPointConfigurationDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<EndPointTypeValidator, EndPointTypeValidator> implements EndPointConfigurationDao {
     private JAXBContext m_context;
     private Marshaller m_marshaller;
@@ -48,19 +54,34 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
         }
     }
     
+    /**
+     * <p>Constructor for DefaultEndPointConfigurationDao.</p>
+     */
     public DefaultEndPointConfigurationDao() {
         super(EndPointTypeValidator.class, "End Point Type Configuration");
     }
     
+    /**
+     * <p>Constructor for DefaultEndPointConfigurationDao.</p>
+     *
+     * @param entityClass a {@link java.lang.Class} object.
+     * @param description a {@link java.lang.String} object.
+     */
     public DefaultEndPointConfigurationDao(Class<EndPointTypeValidator> entityClass, String description) {
         super(entityClass, description);
     }
 
+    /** {@inheritDoc} */
     @Override
     public EndPointTypeValidator translateConfig(EndPointTypeValidator config) {
         return config;
     }
 
+    /**
+     * <p>getXsd</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getXsd() {
         StringResolver resolver = new StringResolver();
         try {
@@ -72,12 +93,18 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
         return resolver.getXml();
     }
 
+    /**
+     * <p>getValidator</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator} object.
+     */
     public EndPointTypeValidator getValidator() {
         Assert.notNull(getContainer(), "no container found!");
         Assert.notNull(getContainer().getObject(), "no configuration loaded!");
         return getContainer().getObject();
     }
 
+    /** {@inheritDoc} */
     public synchronized void save(EndPointTypeValidator validator) {
         Assert.notNull(getContainer(), "no container found!");
         Assert.notNull(getContainer().getObject(), "no configuration loaded!");
@@ -98,6 +125,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected EndPointTypeValidator loadConfig(Resource resource) {
         long startTime = System.currentTimeMillis();
@@ -120,6 +148,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() {
 

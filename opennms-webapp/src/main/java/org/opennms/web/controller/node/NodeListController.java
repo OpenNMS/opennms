@@ -48,15 +48,20 @@ import org.springframework.web.servlet.mvc.AbstractCommandController;
 
 /**
  * Node list controller.
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class NodeListController extends AbstractCommandController implements InitializingBean {
 
     private String m_successView;
     private NodeListService m_nodeListService;
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object cmd, BindException errors) throws Exception {
         NodeListCommand command = (NodeListCommand) cmd;
@@ -67,23 +72,48 @@ public class NodeListController extends AbstractCommandController implements Ini
         return modelAndView;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_successView != null, "successView property cannot be null");
         Assert.state(m_nodeListService != null, "nodeListService property cannot be null");
     }
     
+    /**
+     * <p>getSuccessView</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSuccessView() {
         return m_successView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
 
+    /**
+     * <p>getNodeListService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.NodeListService} object.
+     */
     public NodeListService getNodeListService() {
         return m_nodeListService;
     }
 
+    /**
+     * <p>setNodeListService</p>
+     *
+     * @param nodeListService a {@link org.opennms.web.svclayer.NodeListService} object.
+     */
     public void setNodeListService(NodeListService nodeListService) {
         m_nodeListService = nodeListService;
     }

@@ -29,9 +29,24 @@
  */
 package org.opennms.netmgt.provision;
 
+/**
+ * <p>Scanner interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface Scanner {
 
+    /**
+     * <p>init</p>
+     */
     public void init();
     
+    /**
+     * <p>scan</p>
+     *
+     * @param context a {@link org.opennms.netmgt.provision.ScanContext} object.
+     * @throws java.lang.Exception if any.
+     */
     public void scan(ScanContext context) throws Exception;
 }

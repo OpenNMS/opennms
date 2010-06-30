@@ -63,11 +63,25 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * 
+ * <p>OpenNMSProvisioner class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @version $Id: $
  */
 public class OpenNMSProvisioner implements Provisioner {
     
@@ -310,6 +324,7 @@ public class OpenNMSProvisioner implements Provisioner {
         
 
 
+    /** {@inheritDoc} */
     public boolean addServiceICMP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration) {
 //        System.err.println("Called OpenNMSProvisioner.addServiceICMP("+
 //                           serviceId+", "+
@@ -416,6 +431,13 @@ public class OpenNMSProvisioner implements Provisioner {
         parm.setValue(value);
     }
     
+    /**
+     * <p>findParamterWithKey</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.config.poller.Service} object.
+     * @param key a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.poller.Parameter} object.
+     */
     public Parameter findParamterWithKey(Service svc, String key) {
         Enumeration<Parameter> e = svc.enumerateParameter();
         while(e.hasMoreElements()) {
@@ -456,6 +478,7 @@ public class OpenNMSProvisioner implements Provisioner {
         return pkg;
     }
 
+    /** {@inheritDoc} */
     public boolean addServiceDNS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String lookup) {
 //        System.err.println("Called OpenNMSProvisioner.addServiceDNS("+
 //                           serviceId+", "+
@@ -479,6 +502,7 @@ public class OpenNMSProvisioner implements Provisioner {
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, DNS_MONITOR, DNS_PLUGIN, parm);
     }
 
+    /** {@inheritDoc} */
     public boolean addServiceTCP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String banner) {
 //        System.err.println("Called OpenNMSProvisioner.addServiceTCP("+
 //                           serviceId+", "+
@@ -502,6 +526,7 @@ public class OpenNMSProvisioner implements Provisioner {
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, TCP_MONITOR, TCP_PLUGIN, parm);
     }
 
+    /** {@inheritDoc} */
     public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkHostname(hostName);
@@ -540,6 +565,7 @@ public class OpenNMSProvisioner implements Provisioner {
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, parmList.toArray(new Parm[parmList.size()]));
     }
 
+    /** {@inheritDoc} */
     public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkHostname(hostName);
@@ -577,6 +603,7 @@ public class OpenNMSProvisioner implements Provisioner {
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, HTTPS_PLUGIN, parmList.toArray(new Parm[parmList.size()]));
     }
 
+    /** {@inheritDoc} */
     public boolean addServiceDatabase(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String user, String password, String driver, String url)   {
 //        System.err.println("Called OpenNMSProvisioner.addServiceDatabase("+
 //                           serviceId+", "+
@@ -606,6 +633,7 @@ public class OpenNMSProvisioner implements Provisioner {
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, JDBC_MONITOR, JDBC_PLUGIN, parm);
     }
     
+    /** {@inheritDoc} */
     public Map<String, Object> getServiceConfiguration(String pkgName, String serviceId) {
         if (pkgName == null) {
             throw new NullPointerException("pkgName is null");
@@ -680,12 +708,27 @@ public class OpenNMSProvisioner implements Provisioner {
         return m;
     }
     
+    /**
+     * <p>setCapsdConfig</p>
+     *
+     * @param capsdConfig a {@link org.opennms.netmgt.config.CapsdConfig} object.
+     */
     public void setCapsdConfig(CapsdConfig capsdConfig) {
         m_capsdConfig = capsdConfig;
     }
+    /**
+     * <p>setPollerConfig</p>
+     *
+     * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
+     */
     public void setPollerConfig(PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
     }
+    /**
+     * <p>setEventManager</p>
+     *
+     * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
     }
@@ -694,6 +737,11 @@ public class OpenNMSProvisioner implements Provisioner {
         return m_capsdDbSyncer;
     }
 
+    /**
+     * <p>setCapsdDbSyncer</p>
+     *
+     * @param capsdDbSyncer a {@link org.opennms.netmgt.capsd.CapsdDbSyncer} object.
+     */
     public void setCapsdDbSyncer(CapsdDbSyncer capsdDbSyncer) {
         m_capsdDbSyncer = capsdDbSyncer;
     }

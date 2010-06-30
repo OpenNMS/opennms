@@ -42,6 +42,12 @@ import java.util.Iterator;
 import java.util.List;
 
 // TODO make this implement Collection
+/**
+ * <p>TimeIntervalSequence class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class TimeIntervalSequence {
     
     private static class TimeIntervalSeqIter implements Iterator<TimeInterval> {
@@ -71,10 +77,18 @@ public class TimeIntervalSequence {
     private TimeInterval m_interval;
     private TimeIntervalSequence m_tail;
     
+    /**
+     * <p>Constructor for TimeIntervalSequence.</p>
+     */
     public TimeIntervalSequence() {
         this(null, null);
     }
 
+    /**
+     * <p>Constructor for TimeIntervalSequence.</p>
+     *
+     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     */
     public TimeIntervalSequence(TimeInterval interval) {
         this(interval, null);
     }
@@ -84,6 +98,11 @@ public class TimeIntervalSequence {
         m_tail = tail;
     }
     
+    /**
+     * <p>iterator</p>
+     *
+     * @return a {@link java.util.Iterator} object.
+     */
     public Iterator<? extends TimeInterval> iterator() {
         return new TimeIntervalSeqIter(this);
     }
@@ -96,6 +115,11 @@ public class TimeIntervalSequence {
         return (b.before(a) ? a: b);
     }
 
+    /**
+     * <p>addInterval</p>
+     *
+     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     */
     public void addInterval(TimeInterval interval) {
         if (m_interval == null) {
             m_interval = interval;
@@ -122,6 +146,13 @@ public class TimeIntervalSequence {
         
     }
 
+    /**
+     * <p>combineIntervals</p>
+     *
+     * @param currentInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param newInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @return a {@link java.util.Collection} object.
+     */
     protected Collection<? extends TimeInterval> combineIntervals(TimeInterval currentInterval, TimeInterval newInterval) {
         List<TimeInterval> newIntervals = new ArrayList<TimeInterval>(3);
         
@@ -175,10 +206,23 @@ public class TimeIntervalSequence {
         }
     }
     
+    /**
+     * <p>createInterval</p>
+     *
+     * @param start a {@link java.util.Date} object.
+     * @param end a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.config.TimeInterval} object.
+     */
     protected TimeInterval createInterval(Date start, Date end) {
         return new TimeInterval(start, end);
     }
     
+    /**
+     * <p>createTail</p>
+     *
+     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @return a {@link org.opennms.netmgt.config.TimeIntervalSequence} object.
+     */
     protected TimeIntervalSequence createTail(TimeInterval interval) {
         return new TimeIntervalSequence(interval);
     }
@@ -192,6 +236,11 @@ public class TimeIntervalSequence {
         }
     }
 
+    /**
+     * <p>removeInterval</p>
+     *
+     * @param removedInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     */
     public void removeInterval(TimeInterval removedInterval) {
         if (m_interval == null) {
             return;
@@ -220,6 +269,13 @@ public class TimeIntervalSequence {
         }
     }
 
+    /**
+     * <p>separateIntervals</p>
+     *
+     * @param origInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @param removedInterval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @return a {@link java.util.Collection} object.
+     */
     protected Collection<? extends TimeInterval> separateIntervals(TimeInterval origInterval, TimeInterval removedInterval) {
         List<TimeInterval> newIntervals = new ArrayList<TimeInterval>(2);
         if (removedInterval.getEnd().before(origInterval.getEnd())) {
@@ -244,32 +300,63 @@ public class TimeIntervalSequence {
         }
     }
     
+    /**
+     * <p>bound</p>
+     *
+     * @param start a {@link java.util.Date} object.
+     * @param end a {@link java.util.Date} object.
+     */
     public void bound(Date start, Date end) {
         removeInterval(createInterval(new Date(0), start));
         removeInterval(createInterval(end, new Date(Long.MAX_VALUE)));
     }
 
+    /**
+     * <p>bound</p>
+     *
+     * @param interval a {@link org.opennms.netmgt.config.TimeInterval} object.
+     */
     public void bound(TimeInterval interval) {
         bound(interval.getStart(), interval.getEnd());
     }
     
+    /**
+     * <p>getStart</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getStart() {
         if (m_interval == null) return null;
         return m_interval.getStart();
     }
     
+    /**
+     * <p>getEnd</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getEnd() {
         if (m_interval == null) return null;
         if (m_tail == null) return m_interval.getEnd();
         return m_tail.getEnd();
     }
     
+    /**
+     * <p>getBounds</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.TimeInterval} object.
+     */
     public TimeInterval getBounds() {
         Date start = getStart();
         Date end = getEnd();
         return (start == null || end == null ? null : new TimeInterval(start, end));
     }
 
+    /**
+     * <p>addAll</p>
+     *
+     * @param intervals a {@link org.opennms.netmgt.config.TimeIntervalSequence} object.
+     */
     public void addAll(TimeIntervalSequence intervals) {
         for (Iterator<? extends TimeInterval> it = intervals.iterator(); it.hasNext();) {
             TimeInterval interval = it.next();
@@ -277,6 +364,11 @@ public class TimeIntervalSequence {
         }
     }
     
+    /**
+     * <p>addAll</p>
+     *
+     * @param intervals a {@link java.util.Collection} object.
+     */
     public void addAll(Collection<? extends TimeInterval> intervals) {
         for (Iterator<? extends TimeInterval> it = intervals.iterator(); it.hasNext();) {
             TimeInterval interval = it.next();
@@ -284,6 +376,11 @@ public class TimeIntervalSequence {
         }
     }
     
+    /**
+     * <p>removeAll</p>
+     *
+     * @param intervals a {@link org.opennms.netmgt.config.TimeIntervalSequence} object.
+     */
     public void removeAll(TimeIntervalSequence intervals) {
         for (Iterator<? extends TimeInterval> it = intervals.iterator(); it.hasNext();) {
             TimeInterval interval = it.next();
@@ -291,6 +388,11 @@ public class TimeIntervalSequence {
         }
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer buf = new StringBuffer("[");
         boolean first = true;

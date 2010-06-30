@@ -28,6 +28,9 @@ import org.ops4j.io.*;
 
 /**
  * Internal implementation of our example OSGi service
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public final class RxtxCommands
     implements CommandProvider
@@ -81,6 +84,12 @@ public final class RxtxCommands
 	private Map<String, SerialPort> m_openPorts = new HashMap<String, SerialPort>();
 	private Map<String, Pipe> m_loggingPorts = new HashMap<String, Pipe>();
 	
+	/**
+	 * <p>_rxtxVersion</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxVersion(CommandInterpreter intp) {
 
 		intp.println( "RXTX Version: " + RXTXVersion.getVersion() );
@@ -89,6 +98,12 @@ public final class RxtxCommands
 		return null;
 	}
 	
+	/**
+	 * <p>_rxtxListPorts</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxListPorts(CommandInterpreter intp) {
 		
 		Enumeration<?> en = CommPortIdentifier.getPortIdentifiers();
@@ -103,6 +118,12 @@ public final class RxtxCommands
 		return null;
 	}
 	
+	/**
+	 * <p>_rxtxOpen</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxOpen(CommandInterpreter intp) {
 		String id = intp.nextArgument();
 		String port = intp.nextArgument();
@@ -158,6 +179,12 @@ public final class RxtxCommands
 
 	}
 	
+	/**
+	 * <p>_rxtxClose</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxClose(CommandInterpreter intp) {
 		
 		try
@@ -192,6 +219,12 @@ public final class RxtxCommands
 		return null;
 	}
 	
+	/**
+	 * <p>_rxtxWrite</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxWrite(CommandInterpreter intp) {
 
 		String id = intp.nextArgument();
@@ -250,6 +283,12 @@ public final class RxtxCommands
 		
 	}
 	
+	/**
+	 * <p>_rxtxRead</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxRead(CommandInterpreter intp) {
 		
 		try
@@ -283,6 +322,12 @@ public final class RxtxCommands
 		return null;
 	}
 	
+	/**
+	 * <p>_rxtxLog</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxLog(CommandInterpreter intp) {
 
 		try {
@@ -310,6 +355,12 @@ public final class RxtxCommands
 		return null;
 	}
 	
+	/**
+	 * <p>_rxtxUnlog</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxUnlog(CommandInterpreter intp) {
 		try
 		{
@@ -332,6 +383,12 @@ public final class RxtxCommands
 		return null;
 	}
 	
+	/**
+	 * <p>_rxtxInfo</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public Object _rxtxInfo(CommandInterpreter intp) {
 		
 		try
@@ -393,6 +450,11 @@ public final class RxtxCommands
 		return null;
 	}
 	
+	/**
+	 * <p>_rxtxEnableEvents</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 */
 	public void _rxtxEnableEvents(final CommandInterpreter intp) {
 		try
 		{
@@ -429,6 +491,11 @@ public final class RxtxCommands
 		}
 	}
 	
+	/**
+	 * <p>_rxtxDisableEvents</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 */
 	public void _rxtxDisableEvents(CommandInterpreter intp) {
 		
 		try
@@ -465,6 +532,11 @@ public final class RxtxCommands
 
 	}
 	
+	/**
+	 * <p>_rxtxEventTest</p>
+	 *
+	 * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+	 */
 	public void _rxtxEventTest(CommandInterpreter intp) {
 		try
 		{
@@ -485,6 +557,11 @@ public final class RxtxCommands
 		
 	}
 
+	/**
+	 * <p>getHelp</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getHelp() {
 		StringBuilder buf = new StringBuilder();
 		buf.append("--- RXTX Commands ---")
@@ -505,6 +582,9 @@ public final class RxtxCommands
 		return buf.toString();
 	}
 
+	/**
+	 * <p>stop</p>
+	 */
 	public void stop() {
 		
 		for( Pipe pipe : m_loggingPorts.values() )

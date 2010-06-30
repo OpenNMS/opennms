@@ -44,6 +44,9 @@ import java.util.Set;
 
 /**
  * Provides set functionality for ints.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class IntSet {
     private Set<Integer> m_set = new HashSet<Integer>();
@@ -52,6 +55,12 @@ public class IntSet {
      * (non-Javadoc)
      * 
      * @see java.util.Collection#add(java.lang.Object)
+     */
+    /**
+     * <p>add</p>
+     *
+     * @param n a int.
+     * @return a boolean.
      */
     public boolean add(int n) {
         return m_set.add(new Integer(n));
@@ -62,6 +71,12 @@ public class IntSet {
      * 
      * @see java.util.Collection#addAll(java.util.Collection)
      */
+    /**
+     * <p>addAll</p>
+     *
+     * @param s a {@link org.opennms.core.utils.IntSet} object.
+     * @return a boolean.
+     */
     public boolean addAll(IntSet s) {
         return m_set.addAll(s.m_set);
     }
@@ -70,6 +85,9 @@ public class IntSet {
      * (non-Javadoc)
      * 
      * @see java.util.Collection#clear()
+     */
+    /**
+     * <p>clear</p>
      */
     public void clear() {
         m_set.clear();
@@ -80,6 +98,12 @@ public class IntSet {
      * 
      * @see java.util.Collection#contains(java.lang.Object)
      */
+    /**
+     * <p>contains</p>
+     *
+     * @param n a int.
+     * @return a boolean.
+     */
     public boolean contains(int n) {
         return m_set.contains(new Integer(n));
     }
@@ -88,6 +112,12 @@ public class IntSet {
      * (non-Javadoc)
      * 
      * @see java.util.Collection#containsAll(java.util.Collection)
+     */
+    /**
+     * <p>containsAll</p>
+     *
+     * @param s a {@link org.opennms.core.utils.IntSet} object.
+     * @return a boolean.
      */
     public boolean containsAll(IntSet s) {
         return m_set.containsAll(s.m_set);
@@ -98,6 +128,11 @@ public class IntSet {
      * 
      * @see java.util.Collection#isEmpty()
      */
+    /**
+     * <p>isEmpty</p>
+     *
+     * @return a boolean.
+     */
     public boolean isEmpty() {
         return m_set.isEmpty();
     }
@@ -106,6 +141,11 @@ public class IntSet {
      * (non-Javadoc)
      * 
      * @see java.util.Collection#iterator()
+     */
+    /**
+     * <p>iterator</p>
+     *
+     * @return a {@link java.util.Iterator} object.
      */
     public Iterator<Integer> iterator() {
         return m_set.iterator();
@@ -116,6 +156,12 @@ public class IntSet {
      * 
      * @see java.util.Collection#remove(java.lang.Object)
      */
+    /**
+     * <p>remove</p>
+     *
+     * @param n a int.
+     * @return a boolean.
+     */
     public boolean remove(int n) {
         return m_set.remove(new Integer(n));
     }
@@ -124,6 +170,12 @@ public class IntSet {
      * (non-Javadoc)
      * 
      * @see java.util.Collection#removeAll(java.util.Collection)
+     */
+    /**
+     * <p>removeAll</p>
+     *
+     * @param s a {@link org.opennms.core.utils.IntSet} object.
+     * @return a boolean.
      */
     public boolean removeAll(IntSet s) {
         return m_set.remove(s.m_set);
@@ -134,6 +186,12 @@ public class IntSet {
      * 
      * @see java.util.Collection#retainAll(java.util.Collection)
      */
+    /**
+     * <p>retainAll</p>
+     *
+     * @param s a {@link org.opennms.core.utils.IntSet} object.
+     * @return a boolean.
+     */
     public boolean retainAll(IntSet s) {
         return m_set.retainAll(s.m_set);
     }
@@ -143,6 +201,11 @@ public class IntSet {
      * 
      * @see java.util.Collection#size()
      */
+    /**
+     * <p>size</p>
+     *
+     * @return a int.
+     */
     public int size() {
         return m_set.size();
     }
@@ -151,6 +214,11 @@ public class IntSet {
      * (non-Javadoc)
      * 
      * @see java.util.Collection#toArray()
+     */
+    /**
+     * <p>toArray</p>
+     *
+     * @return an array of int.
      */
     public int[] toArray() {
         int[] array = new int[size()];

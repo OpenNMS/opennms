@@ -13,8 +13,24 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
+/**
+ * <p>Abstract AbstractThresholdEvaluatorState class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class AbstractThresholdEvaluatorState implements ThresholdEvaluatorState {
     
+    /**
+     * <p>createBasicEvent</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     * @param date a {@link java.util.Date} object.
+     * @param dsValue a double.
+     * @param resource a {@link org.opennms.netmgt.threshd.CollectionResourceWrapper} object.
+     * @param additionalParams a {@link java.util.Map} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     protected Event createBasicEvent(String uei, Date date, double dsValue, CollectionResourceWrapper resource, Map<String,String> additionalParams) {
         if (resource == null) { // Still works, mimic old code when instance value is null.
             resource = new CollectionResourceWrapper(0, 0, null, null, null, null, null);
@@ -75,6 +91,12 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         return event;
     }
 
+    /**
+     * <p>formatValue</p>
+     *
+     * @param value a {@link java.lang.Double} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String formatValue(Double value) {
         String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##");
         DecimalFormat valueFormatter = new DecimalFormat(pattern);
@@ -92,6 +114,11 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         }
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected final ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

@@ -31,30 +31,33 @@
 //
 package org.opennms.netmgt.scheduler;
 
+/**
+ * <p>Scheduler interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface Scheduler extends ScheduleTimer {
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * This method is used to schedule a ready runnable in the system. The
 	 * interval is used as the key for determining which queue to add the
 	 * runnable.
-	 * @param interval
-	 *            The queue to add the runnable to.
-	 * @param runnable
-	 *            The element to run when interval expires.
-	 * 
-	 * @throws java.lang.RuntimeException
-	 *             Thrown if an error occurs adding the element to the queue.
 	 */
 	public abstract void schedule(long interval, final ReadyRunnable runnable);
 
 	/**
 	 * This returns the current time for the scheduler
+	 *
+	 * @return a long.
 	 */
 	public abstract long getCurrentTime();
 
 	/**
 	 * Starts the fiber.
-	 * 
+	 *
 	 * @throws java.lang.IllegalStateException
 	 *             Thrown if the fiber is already running.
 	 */
@@ -63,7 +66,7 @@ public interface Scheduler extends ScheduleTimer {
 	/**
 	 * Stops the fiber. If the fiber has never been run then an exception is
 	 * generated.
-	 * 
+	 *
 	 * @throws java.lang.IllegalStateException
 	 *             Throws if the fiber has never been started.
 	 */
@@ -72,7 +75,7 @@ public interface Scheduler extends ScheduleTimer {
 	/**
 	 * Pauses the scheduler if it is current running. If the fiber has not been
 	 * run or has already stopped then an exception is generated.
-	 * 
+	 *
 	 * @throws java.lang.IllegalStateException
 	 *             Throws if the operation could not be completed due to the
 	 *             fiber's state.
@@ -82,7 +85,7 @@ public interface Scheduler extends ScheduleTimer {
 	/**
 	 * Resumes the scheduler if it has been paused. If the fiber has not been
 	 * run or has already stopped then an exception is generated.
-	 * 
+	 *
 	 * @throws java.lang.IllegalStateException
 	 *             Throws if the operation could not be completed due to the
 	 *             fiber's state.
@@ -91,7 +94,7 @@ public interface Scheduler extends ScheduleTimer {
 
 	/**
 	 * Returns the current of this fiber.
-	 * 
+	 *
 	 * @return The current status.
 	 */
 	public abstract int getStatus();

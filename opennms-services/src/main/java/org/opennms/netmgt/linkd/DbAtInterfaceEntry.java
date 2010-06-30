@@ -724,6 +724,11 @@ final class DbAtInterfaceEntry {
 		return entry;
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		String sep = System.getProperty("line.separator");
 		StringBuffer buf = new StringBuffer();

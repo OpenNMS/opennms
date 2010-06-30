@@ -79,11 +79,13 @@ import org.opennms.netmgt.xml.event.Value;
  * <P>
  * The JMXThresholder class ...
  * </P>
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @deprecated No longer used - see ThresholdingVisitor
+ * @version $Id: $
  */
 public abstract class JMXThresholder implements ServiceThresholder {
     /**
@@ -139,6 +141,11 @@ public abstract class JMXThresholder implements ServiceThresholder {
     
     private boolean useFriendlyName = false;
     
+    /**
+     * <p>Setter for the field <code>serviceName</code>.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setServiceName(String name) {
         serviceName = name;
     }
@@ -147,7 +154,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      * <P>
      * Returns the name of the service that the plug-in collects ("SNMP").
      * </P>
-     * 
+     *
      * @return The service that the plug-in collects.
      */
     public String serviceName() {
@@ -155,21 +162,21 @@ public abstract class JMXThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Initialize the service thresholder.
      * </P>
-     * 
-     * @param parameters
-     *            Not currently used.
-     * 
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
-     * 
      */
     public void initialize(Map parameters) {
     }
 
+    /**
+     * <p>reinitialize</p>
+     */
     public void reinitialize() {
         //Nothing to do 
     }
@@ -181,15 +188,10 @@ public abstract class JMXThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for performing all necessary initialization for the specified
      * interface in preparation for thresholding.
-     * 
-     * @param iface
-     *            Network interface to be prepped for thresholding.
-     * @param parameters
-     *            Key/value pairs associated with the package to which the
-     *            interface belongs..
-     * 
      */
     public void initialize(ThresholdNetworkInterface iface, Map parameters) {
         // Get interface address from NetworkInterface
@@ -364,26 +366,19 @@ public abstract class JMXThresholder implements ServiceThresholder {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Responsible for releasing any resources associated with the specified
      * interface.
-     * 
-     * @param iface
-     *            Network interface to be released.
      */
     public void release(ThresholdNetworkInterface iface) {
         // Nothing to release...
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Perform threshold checking.
-     * 
-     * @param iface
-     *            Network interface to be data collected.
-     * @param eproxy
-     *            Eventy proxy for sending events.
-     * @param parameters
-     *            Key/value pairs from the package to which the interface
-     *            belongs.
      */
     public int check(ThresholdNetworkInterface iface, EventProxy eproxy, Map parameters) {
         ThreadCategory log = log();
@@ -726,7 +721,9 @@ public abstract class JMXThresholder implements ServiceThresholder {
     }
 
     /**
-     * @param useFriedlyName The useFriedlyName to set.
+     * <p>Setter for the field <code>useFriendlyName</code>.</p>
+     *
+     * @param useFriendlyName a boolean.
      */
     public void setUseFriendlyName(boolean useFriendlyName) {
         this.useFriendlyName = useFriendlyName;

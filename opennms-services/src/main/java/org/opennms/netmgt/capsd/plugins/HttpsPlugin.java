@@ -58,33 +58,34 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  * existance of an HTTPS server on remote interfaces. The class implements the
  * Plugin interface that allows it to be used along with other plugins by the
  * daemon.
- * 
+ *
  * This plugin generates a HTTP GET request and checks the return code returned
  * by the remote host to determine if it supports the protocol.
- * 
+ *
  * The remote host's response will be deemed valid if the return code falls in
  * the 100 to 599 range (inclusive).
- * 
+ *
  * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
  * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
  * Redirection 4xx: Client error 5xx: Server error
  * </P>
- * 
+ *
  * This plugin generates a HTTP GET request and checks the return code returned
  * by the remote host to determine if it supports the protocol.
- * 
+ *
  * The remote host's response will be deemed valid if the return code falls in
  * the 100 to 599 range (inclusive).
- * 
+ *
  * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
  * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
  * Redirection 4xx: Client error 5xx: Server error
  * </P>
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * 
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class HttpsPlugin extends HttpPlugin {
 
@@ -97,15 +98,13 @@ public class HttpsPlugin extends HttpPlugin {
     private static final int[] DEFAULT_PORTS = { 443 };
 
     /**
-     * @param protocol
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * <p>Constructor for HttpsPlugin.</p>
      */
     public HttpsPlugin() {
         super("HTTPS", true, "GET / HTTP/1.0\r\n\r\n", "HTTP/", DEFAULT_PORTS);
     }
 
+    /** {@inheritDoc} */
     protected Socket wrapSocket(Socket socket, ConnectionConfig config) throws Exception {
         Socket sslSocket;
 

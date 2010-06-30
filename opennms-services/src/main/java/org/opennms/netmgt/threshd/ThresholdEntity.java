@@ -59,6 +59,9 @@ import org.opennms.netmgt.xml.event.Value;
 /**
  * Wraps the castor created org.opennms.netmgt.config.threshd.Threshold class
  * and provides the ability to track threshold exceeded occurrences.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public final class ThresholdEntity implements Cloneable {
     
@@ -85,6 +88,11 @@ public final class ThresholdEntity implements Cloneable {
         m_thresholdEvaluatorStates.put(null, new LinkedList<ThresholdEvaluatorState>());
     }
 
+    /**
+     * <p>getThresholdConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.BaseThresholdDefConfigWrapper} object.
+     */
     public BaseThresholdDefConfigWrapper getThresholdConfig() {
         return m_thresholdEvaluatorStates.get(null).get(0).getThresholdConfig();
     }
@@ -94,6 +102,8 @@ public final class ThresholdEntity implements Cloneable {
     }
     /**
      * Get datasource name
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getDataSourceExpression() {
         if (hasThresholds()) {
@@ -105,6 +115,8 @@ public final class ThresholdEntity implements Cloneable {
 
     /**
      * Get datasource type
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getDatasourceType() {
         if (hasThresholds()) {
@@ -116,6 +128,8 @@ public final class ThresholdEntity implements Cloneable {
 
     /**
      * Get datasource Label
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getDatasourceLabel() {
         if (hasThresholds()) {
@@ -127,8 +141,8 @@ public final class ThresholdEntity implements Cloneable {
 
     /**
      * Returns the names of the dataousrces required to evaluate this threshold entity
-     * 
-     * @return Collection of the names of datasources 
+     *
+     * @return Collection of the names of datasources
      */
     public Collection<String> getRequiredDatasources() {
         if (hasThresholds()) {
@@ -139,13 +153,15 @@ public final class ThresholdEntity implements Cloneable {
     }
     /**
      * Returns a copy of this ThresholdEntity object.
-     * 
+     *
      * NOTE: The m_lowThreshold and m_highThreshold member variables are not
      * actually cloned...the returned ThresholdEntity object will simply contain
      * references to the same castor Threshold objects as the original
      * ThresholdEntity object.
-     * 
+     *
      * All state will be lost, particularly instances, so it's not a true clone by any stretch of the imagination
+     *
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdEntity} object.
      */
     public ThresholdEntity clone() {
         ThresholdEntity clone = new ThresholdEntity();
@@ -160,7 +176,7 @@ public final class ThresholdEntity implements Cloneable {
      * This method is responsible for returning a String object which represents
      * the content of this ThresholdEntity. Primarily used for debugging
      * purposes.
-     * 
+     *
      * @return String which represents the content of this ThresholdEntity
      */
     public String toString() {
@@ -189,7 +205,7 @@ public final class ThresholdEntity implements Cloneable {
     /**
      * Evaluates the threshold in light of the provided datasource value and
      * create any events for thresholds.
-     * 
+     *
      * Semi-deprecated method; only used for old Thresholding code (threshd and friends)
      * Implemented in terms of the other method with the same name and the extra param
      *
@@ -207,14 +223,13 @@ public final class ThresholdEntity implements Cloneable {
      * Evaluates the threshold in light of the provided datasource value, for
      * the named instance (or the generic instance if instance is null) and
      * create any events for thresholds.
-     * 
-     * @param instance
-     *          The name of the instance of this threshold to check (e.g. the index of the GenericIndexResource
+     *
      * @param values
      *          map of values (by datasource name) to evaluate against the threshold (might be an expression)
      * @param date
      *          Date to use in created events
      * @return List of events
+     * @param resource a {@link org.opennms.netmgt.threshd.CollectionResourceWrapper} object.
      */
     public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date) {
         List<Event> events = new LinkedList<Event>();
@@ -250,6 +265,14 @@ public final class ThresholdEntity implements Cloneable {
         return ThreadCategory.getInstance(ThresholdEntity.class);
     }
 
+    /**
+     * <p>fetchLastValue</p>
+     *
+     * @param latIface a {@link org.opennms.netmgt.threshd.LatencyInterface} object.
+     * @param latParms a {@link org.opennms.netmgt.threshd.LatencyParameters} object.
+     * @return a {@link java.lang.Double} object.
+     * @throws org.opennms.netmgt.threshd.ThresholdingException if any.
+     */
     public Double fetchLastValue(LatencyInterface latIface, LatencyParameters latParms) throws ThresholdingException {
         //Assume that this only happens on a simple "Threshold", not an "Expression"
         //If it is an Expression, then we don't yet know what to do - this will likely just fail with some sort of exception.
@@ -297,6 +320,11 @@ public final class ThresholdEntity implements Cloneable {
         return dsValue;
     }
 
+    /**
+     * <p>addThreshold</p>
+     *
+     * @param threshold a {@link org.opennms.netmgt.threshd.BaseThresholdDefConfigWrapper} object.
+     */
     public void addThreshold(BaseThresholdDefConfigWrapper threshold) {
         ThresholdEvaluator evaluator = getEvaluatorForThreshold(threshold);
         //Get the default list of evaluators (the null key)
@@ -325,9 +353,10 @@ public final class ThresholdEntity implements Cloneable {
     }
 
     /**
-     * Returns the evaluator states *for the given instance. 
+     * Returns the evaluator states *for the given instance.
+     *
      * @param instance The key to use to identify the instance to get states for. Can be null to get the default instance
-     * @return
+     * @return a {@link java.util.List} object.
      */
     public List<ThresholdEvaluatorState> getThresholdEvaluatorStates(String instance) {
         List<ThresholdEvaluatorState> result= m_thresholdEvaluatorStates.get(instance);
@@ -349,8 +378,8 @@ public final class ThresholdEntity implements Cloneable {
     
     /**
      * Merges the configuration and update states using parameter entity as a reference.
-     * 
-     * @param entity
+     *
+     * @param entity a {@link org.opennms.netmgt.threshd.ThresholdEntity} object.
      */
     public void merge(ThresholdEntity entity) {
         if (getThresholdConfig().identical(entity.getThresholdConfig()) == false) {
@@ -385,6 +414,11 @@ public final class ThresholdEntity implements Cloneable {
         }
     }
 
+    /**
+     * <p>getThresholdEvaluators</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public static final List<ThresholdEvaluator> getThresholdEvaluators() {
         return s_thresholdEvaluators;
     }

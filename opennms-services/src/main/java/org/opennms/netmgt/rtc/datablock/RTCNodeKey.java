@@ -36,9 +36,12 @@ package org.opennms.netmgt.rtc.datablock;
 
 /**
  * The key used to look up items in the data map
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class RTCNodeKey implements Comparable<RTCNodeKey> {
     /**
@@ -58,7 +61,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * the constructor for this class
-     * 
+     *
      * @param nodeid
      *            the node ID
      * @param ip
@@ -75,7 +78,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Set the node ID
-     * 
+     *
      * @param id
      *            the node ID
      */
@@ -85,7 +88,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Set the IP address
-     * 
+     *
      * @param ipStr
      *            the ip address
      */
@@ -95,7 +98,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Set the service name
-     * 
+     *
      * @param svcName
      *            the service name
      */
@@ -105,7 +108,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Return the node ID
-     * 
+     *
      * @return the node ID
      */
     public long getNodeID() {
@@ -114,7 +117,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Return the service name
-     * 
+     *
      * @return the service name
      */
     public String getSvcName() {
@@ -123,7 +126,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Return the IP address
-     * 
+     *
      * @return the IP address
      */
     public String getIP() {
@@ -132,7 +135,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Overrides the 'hashCode()' method in the 'Object' superclass
-     * 
+     *
      * @return a sum of hashCodes of the inidividual attributes
      */
     public int hashCode() {
@@ -142,9 +145,9 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Overrides the 'equals()' method in the 'Object' superclass
-     * 
-     * @return true if all the attributes are equal
      */
     public boolean equals(Object o) {
         if (!(o instanceof RTCNodeKey)) {
@@ -162,6 +165,9 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Implements java.jang.Comparable since this is a key to a tree map
+     *
+     * @param obj a {@link org.opennms.netmgt.rtc.datablock.RTCNodeKey} object.
+     * @return a int.
      */
     public int compareTo(RTCNodeKey obj) {
         int rc = (int) (m_nodeID - obj.getNodeID());
@@ -179,7 +185,7 @@ public class RTCNodeKey implements Comparable<RTCNodeKey> {
 
     /**
      * Returns a string representation of this key
-     * 
+     *
      * @return a string representation of this key
      */
     public String toString() {

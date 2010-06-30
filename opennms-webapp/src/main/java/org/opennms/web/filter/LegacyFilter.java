@@ -38,12 +38,20 @@ package org.opennms.web.filter;
 import org.hibernate.criterion.Criterion;
 
 /**
- * @author brozow
+ * <p>Abstract LegacyFilter class.</p>
  *
+ * @author brozow
+ * @version $Id: $
+ * @since 1.8.1
  */
 public abstract class LegacyFilter implements Filter {
     /* (non-Javadoc)
      * @see org.opennms.web.filter.Filter#getCriterion()
+     */
+    /**
+     * <p>getCriterion</p>
+     *
+     * @return a {@link org.hibernate.criterion.Criterion} object.
      */
     public Criterion getCriterion() {
         throw new UnsupportedOperationException(

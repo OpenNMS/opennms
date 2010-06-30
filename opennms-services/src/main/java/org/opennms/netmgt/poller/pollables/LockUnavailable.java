@@ -36,15 +36,16 @@
 package org.opennms.netmgt.poller.pollables;
 
 /**
- * Represents a LockUnavailable 
+ * Represents a LockUnavailable
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class LockUnavailable extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     * <p>Constructor for LockUnavailable.</p>
      */
     public LockUnavailable() {
         super();
@@ -52,7 +53,9 @@ public class LockUnavailable extends RuntimeException {
     }
 
     /**
-     * @param message
+     * <p>Constructor for LockUnavailable.</p>
+     *
+     * @param message a {@link java.lang.String} object.
      */
     public LockUnavailable(String message) {
         super(message);
@@ -60,8 +63,10 @@ public class LockUnavailable extends RuntimeException {
     }
 
     /**
-     * @param message
-     * @param cause
+     * <p>Constructor for LockUnavailable.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
      */
     public LockUnavailable(String message, Throwable cause) {
         super(message, cause);
@@ -69,7 +74,9 @@ public class LockUnavailable extends RuntimeException {
     }
 
     /**
-     * @param cause
+     * <p>Constructor for LockUnavailable.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
      */
     public LockUnavailable(Throwable cause) {
         super(cause);

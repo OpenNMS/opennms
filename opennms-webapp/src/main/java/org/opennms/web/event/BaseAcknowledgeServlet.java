@@ -6,6 +6,13 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * <p>Abstract BaseAcknowledgeServlet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public abstract class BaseAcknowledgeServlet extends HttpServlet {
 
 	/**
@@ -13,11 +20,16 @@ public abstract class BaseAcknowledgeServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 4059726823978789453L;
 
+	/** Constant <code>ACKNOWLEDGE_ACTION="1"</code> */
 	public static final String ACKNOWLEDGE_ACTION = "1";
+	/** Constant <code>UNACKNOWLEDGE_ACTION="2"</code> */
 	public static final String UNACKNOWLEDGE_ACTION = "2";
 	/** The URL to redirect the client to in case of success. */
 	protected String redirectSuccess;
 
+	/**
+	 * <p>Constructor for BaseAcknowledgeServlet.</p>
+	 */
 	public BaseAcknowledgeServlet() {
 		super();
 	}
@@ -26,6 +38,8 @@ public abstract class BaseAcknowledgeServlet extends HttpServlet {
 	 * Looks up the <code>dispath.success</code> parameter in the servlet's
 	 * config. If not present, this servlet will throw an exception so it will
 	 * be marked unavailable.
+	 *
+	 * @throws javax.servlet.ServletException if any.
 	 */
 	public void init() throws ServletException {
 	    ServletConfig config = this.getServletConfig();
@@ -40,6 +54,9 @@ public abstract class BaseAcknowledgeServlet extends HttpServlet {
 	/**
 	 * Convenience method for dynamically creating the redirect URL if
 	 * necessary.
+	 *
+	 * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+	 * @return a {@link java.lang.String} object.
 	 */
 	protected String getRedirectString(HttpServletRequest request) {
 	    String redirectValue = request.getParameter("redirect");

@@ -70,9 +70,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * 
+ * <p>DefaultRrdGraphService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultRrdGraphService implements RrdGraphService, InitializingBean {
 //    private static final String s_missingParamsPath = "/images/rrd/missingparams.png";
@@ -84,6 +89,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     
     private RrdDao m_rrdDao;
 
+    /** {@inheritDoc} */
     public InputStream getAdhocGraph(String resourceId, String title,
             String[] dataSources, String[] aggregateFunctions,
             String[] colors, String[] dataSourceTitles, String[] styles,
@@ -136,6 +142,12 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return tempIn;
     }
     
+    /**
+     * <p>returnErrorImage</p>
+     *
+     * @param file a {@link java.lang.String} object.
+     * @return a {@link java.io.InputStream} object.
+     */
     public InputStream returnErrorImage(String file) {
         InputStream is =  getClass().getResourceAsStream(file);
         if (is == null) {
@@ -144,6 +156,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return is;
     }
 
+    /** {@inheritDoc} */
     public InputStream getPrefabGraph(String resourceId,
             String report, long start,
             long end) {
@@ -171,6 +184,21 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return getInputStreamForCommand(command);
     }
     
+    /**
+     * <p>createAdHocCommand</p>
+     *
+     * @param adhocType a {@link org.opennms.netmgt.model.AdhocGraphType} object.
+     * @param resource a {@link org.opennms.netmgt.model.OnmsResource} object.
+     * @param start a long.
+     * @param end a long.
+     * @param graphtitle a {@link java.lang.String} object.
+     * @param dsNames an array of {@link java.lang.String} objects.
+     * @param dsAggregFxns an array of {@link java.lang.String} objects.
+     * @param colors an array of {@link java.lang.String} objects.
+     * @param dsTitles an array of {@link java.lang.String} objects.
+     * @param dsStyles an array of {@link java.lang.String} objects.
+     * @return a {@link java.lang.String} object.
+     */
     protected String createAdHocCommand(AdhocGraphType adhocType,
             OnmsResource resource,
             long start, long end,
@@ -277,6 +305,15 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return translations;
     }
 
+    /**
+     * <p>createPrefabCommand</p>
+     *
+     * @param graph a {@link org.opennms.web.graph.Graph} object.
+     * @param commandPrefix a {@link java.lang.String} object.
+     * @param workDir a {@link java.io.File} object.
+     * @param reportName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String createPrefabCommand(Graph graph,
             String commandPrefix,
             File workDir, String reportName) {
@@ -337,32 +374,65 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return ThreadCategory.getInstance();
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_resourceDao != null, "resourceDao property has not been set");
         Assert.state(m_graphDao != null, "graphDao property has not been set");
         Assert.state(m_rrdDao != null, "rrdDao property has not been set");
     }
 
+    /**
+     * <p>getResourceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
     }
 
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
 
+    /**
+     * <p>getGraphDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.GraphDao} object.
+     */
     public GraphDao getGraphDao() {
         return m_graphDao;
     }
 
+    /**
+     * <p>setGraphDao</p>
+     *
+     * @param graphDao a {@link org.opennms.netmgt.dao.GraphDao} object.
+     */
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
     }
 
+    /**
+     * <p>getRrdDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public RrdDao getRrdDao() {
         return m_rrdDao;
     }
 
+    /**
+     * <p>setRrdDao</p>
+     *
+     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
     }

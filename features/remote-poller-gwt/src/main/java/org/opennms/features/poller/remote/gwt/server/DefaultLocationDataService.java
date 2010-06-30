@@ -52,6 +52,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 
+/**
+ * <p>DefaultLocationDataService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DefaultLocationDataService implements LocationDataService, InitializingBean {
     /**
      * MonitorTracker
@@ -105,18 +112,38 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     @Autowired
     private Geocoder m_geocoder;
 
+    /**
+     * <p>setLocationMonitorDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public void setLocationMonitorDao(final LocationMonitorDao dao) {
         m_locationDao = dao;
     }
 
+    /**
+     * <p>setApplicationDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     */
     public void setApplicationDao(final ApplicationDao dao) {
         m_applicationDao = dao;
     }
 
+    /**
+     * <p>setMonitoredServiceDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public void setMonitoredServiceDao(final MonitoredServiceDao dao) {
         m_monitoredServiceDao = dao;
     }
 
+    /**
+     * <p>setGeocoder</p>
+     *
+     * @param geocoder a {@link org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder} object.
+     */
     public void setGeocoder(final Geocoder geocoder) {
         m_geocoder = geocoder;
     }
@@ -128,13 +155,24 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     // whether to save monitoring-locations.xml changes
     public boolean m_save = true;
 
+    /**
+     * <p>Constructor for DefaultLocationDataService.</p>
+     */
     public DefaultLocationDataService() {
     }
 
+    /**
+     * <p>setSave</p>
+     *
+     * @param save a boolean.
+     */
     public void setSave(final boolean save) {
         m_save = save;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.notNull(m_locationDao);
         Assert.notNull(m_applicationDao);
@@ -144,6 +182,9 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         initialize();
     }
 
+    /**
+     * <p>initialize</p>
+     */
     public void initialize() {
         new InitializationThread().start();
     }
@@ -157,6 +198,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         }
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public LocationInfo getLocationInfo(final String locationName) {
         waitForGeocoding("getLocationInfo");
@@ -169,6 +211,12 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return getLocationInfo(def);
     }
 
+    /**
+     * <p>getLocationInfo</p>
+     *
+     * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
+     */
     @Transactional
     public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def) {
         waitForGeocoding("getLocationInfo");
@@ -210,6 +258,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return locationInfo;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public StatusDetails getStatusDetailsForLocation(final OnmsMonitoringLocationDefinition def) {
         waitForGeocoding("getStatusDetails");
@@ -232,6 +281,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return statusDetails;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public LocationInfo getLocationInfoForMonitor(Integer monitorId) {
         waitForGeocoding("getLocationInfoForMonitor");
@@ -253,6 +303,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return getLocationInfo(def);
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public ApplicationInfo getApplicationInfo(final String applicationName) {
         waitForGeocoding("getApplicationInfo");
@@ -264,6 +315,12 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return getApplicationInfo(app);
     }
 
+    /**
+     * <p>getApplicationInfo</p>
+     *
+     * @param app a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationInfo} object.
+     */
     @Transactional
     public ApplicationInfo getApplicationInfo(final OnmsApplication app) {
         waitForGeocoding("getApplicationInfo");
@@ -278,6 +335,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return info;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public StatusDetails getStatusDetailsForApplication(final OnmsApplication app) {
         waitForGeocoding("getStatusDetailsForApplication");
@@ -306,6 +364,12 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     }
 
 
+    /**
+     * <p>getStatusDetailsForApplicationOld</p>
+     *
+     * @param app a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
     @Transactional
     public StatusDetails getStatusDetailsForApplicationOld(final OnmsApplication app) {
         waitForGeocoding("getStatusDetailsForApplication");
@@ -337,6 +401,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return statusDetails;
     }
 
+    /** {@inheritDoc} */
     @Transactional 
     public ApplicationInfo getApplicationInfo(final OnmsApplication app, final StatusDetails status) {
         waitForGeocoding("getApplicationInfo");
@@ -363,6 +428,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return applicationInfo;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public LocationDetails getLocationDetails(final String locationName) {
         waitForGeocoding("getLocationDetails");
@@ -375,6 +441,12 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return getLocationDetails(def);
     }
 
+    /**
+     * <p>getLocationDetails</p>
+     *
+     * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationDetails} object.
+     */
     @Transactional
     public LocationDetails getLocationDetails(final OnmsMonitoringLocationDefinition def) {
         waitForGeocoding("getLocationDetails");
@@ -421,6 +493,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return ld;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public ApplicationDetails getApplicationDetails(final String applicationName) {
         waitForGeocoding("getApplicationDetails");
@@ -429,6 +502,12 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return getApplicationDetails(app);
     }
 
+    /**
+     * <p>getApplicationDetails</p>
+     *
+     * @param app a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationDetails} object.
+     */
     @Transactional
     public ApplicationDetails getApplicationDetails(final OnmsApplication app) {
         waitForGeocoding("getApplicationDetails");
@@ -456,6 +535,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return details;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public Collection<LocationInfo> getUpdatedLocationsBetween(final Date startDate, final Date endDate) {
         waitForGeocoding("getApplicationDetails");
@@ -490,6 +570,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return locations;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def, boolean x) {
         GWTLatLng latLng = null;
@@ -523,6 +604,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return latLng;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public void handleAllMonitoringLocationDefinitions(final Collection<LocationDefHandler> handlers) {
         waitForGeocoding("handleAllMonitoringLocationDefinitions");
@@ -546,6 +628,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         m_locationDao.saveMonitoringLocationDefinitions(definitions);
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public void handleAllApplications(final Collection<ApplicationHandler> handlers) {
         waitForGeocoding("handleAllApplications");
@@ -564,6 +647,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         }
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public Collection<ApplicationInfo> getApplicationsForLocation(final LocationInfo locationInfo) {
         waitForGeocoding("getApplicationsForLocation");
@@ -591,6 +675,9 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         }
     }
 
+    /**
+     * <p>updateGeolocations</p>
+     */
     public void updateGeolocations() {
         LogUtils.infof(this, "geolocating monitoring location definitions");
         final Collection<OnmsMonitoringLocationDefinition> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
@@ -608,6 +695,9 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         updateGeolocationsComplete();
     }
 
+    /**
+     * <p>updateGeolocationsComplete</p>
+     */
     public void updateGeolocationsComplete() {
         m_initializationLatch.countDown();
     }
@@ -784,10 +874,20 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     }
 
+    /**
+     * <p>getLocationMonitorDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public LocationMonitorDao getLocationMonitorDao() {
              return m_locationDao;
     }
 
+    /**
+     * <p>getInfoForAllLocations</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @Transactional
     public List<LocationInfo> getInfoForAllLocations() {
         waitForGeocoding("getInfoForAllLocations");
@@ -831,6 +931,11 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return statusDetails;
     }
 
+    /**
+     * <p>getInfoForAllApplications</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @Transactional
     public List<ApplicationInfo> getInfoForAllApplications() {
         waitForGeocoding("handleAllApplications");

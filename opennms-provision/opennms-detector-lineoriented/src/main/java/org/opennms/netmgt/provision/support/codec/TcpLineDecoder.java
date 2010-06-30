@@ -40,10 +40,21 @@ import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 
+/**
+ * <p>TcpLineDecoder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class TcpLineDecoder extends CumulativeProtocolDecoder {
 
     private Charset m_charset;
     
+    /**
+     * <p>Constructor for TcpLineDecoder.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public TcpLineDecoder(Charset charset) {
         setCharset(charset);
     }   
@@ -52,6 +63,7 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
         m_charset = charset;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
      // Remember the initial position.
@@ -102,6 +114,12 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
         return false;
     }
     
+    /**
+     * <p>parseCommand</p>
+     *
+     * @param in a {@link org.apache.mina.core.buffer.IoBuffer} object.
+     * @return a {@link java.lang.Object} object.
+     */
     protected Object parseCommand(IoBuffer in) {
         String outputStr = null;
         try{
@@ -124,6 +142,11 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
         return cumulativeStr;
     }
 
+    /**
+     * <p>getCharset</p>
+     *
+     * @return a {@link java.nio.charset.Charset} object.
+     */
     public Charset getCharset() {
         return m_charset;
     }

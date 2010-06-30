@@ -50,6 +50,9 @@ import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * Provides access to the rrd configuration data.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public abstract class RrdConfig {
 
@@ -57,9 +60,9 @@ public abstract class RrdConfig {
 
     /**
      * This loads the configuration file.
-     * 
+     *
      * @return a Properties object representing the configuration properties
-     * @throws IOException
+     * @throws java.io.IOException if any.
      */
     public static Properties getProperties() throws IOException {
         if (m_properties == null) {

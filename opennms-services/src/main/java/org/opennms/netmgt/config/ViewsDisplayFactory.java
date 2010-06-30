@@ -55,6 +55,12 @@ import org.opennms.netmgt.config.viewsdisplay.View;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
+/**
+ * <p>ViewsDisplayFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ViewsDisplayFactory {
     /** The singleton instance. */
     private static ViewsDisplayFactory m_instance;
@@ -85,12 +91,28 @@ public class ViewsDisplayFactory {
         reload();
     }
 
+    /**
+     * <p>Constructor for ViewsDisplayFactory.</p>
+     *
+     * @param file a {@link java.lang.String} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     */
     public ViewsDisplayFactory(String file) throws MarshalException, ValidationException, FileNotFoundException, IOException {
         setViewsDisplayFile(new File(file));
         reload();
     }
 
-    /** Be sure to call this method before calling getInstance(). */
+    /**
+     * Be sure to call this method before calling getInstance().
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (m_instance == null) {
             setInstance(new ViewsDisplayFactory());
@@ -100,9 +122,9 @@ public class ViewsDisplayFactory {
     /**
      * Singleton static call to get the only instance that should exist for the
      * ViewsDisplayFactory
-     * 
+     *
      * @return the single views display factory instance
-     * @throws IllegalStateException
+     * @throws java.lang.IllegalStateException
      *             if init has not been called
      */
     public static synchronized ViewsDisplayFactory getInstance() {
@@ -115,6 +137,11 @@ public class ViewsDisplayFactory {
 
     /**
      * Parses the viewsdisplay.xml via the Castor classes
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         InputStream stream = null;
@@ -150,10 +177,21 @@ public class ViewsDisplayFactory {
         return stream;
     }
 
+    /**
+     * <p>setViewsDisplayFile</p>
+     *
+     * @param viewsDisplayFile a {@link java.io.File} object.
+     */
     public void setViewsDisplayFile(File viewsDisplayFile) {
         m_viewsDisplayFile = viewsDisplayFile;
     }
 
+    /**
+     * <p>getViewsDisplayFile</p>
+     *
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
     public File getViewsDisplayFile() throws IOException {
         if (m_viewsDisplayFile == null) {
             m_viewsDisplayFile = ConfigFileConstants.getFile(ConfigFileConstants.VIEWS_DISPLAY_CONF_FILE_NAME);
@@ -161,7 +199,15 @@ public class ViewsDisplayFactory {
         return m_viewsDisplayFile;
     }
 
-    /** Can be null */
+    /**
+     * Can be null
+     *
+     * @param viewName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.viewsdisplay.View} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public View getView(String viewName) throws IOException, MarshalException, ValidationException {
         if (viewName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -174,6 +220,11 @@ public class ViewsDisplayFactory {
         return view;
     }
     
+    /**
+     * <p>getDefaultView</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.viewsdisplay.View} object.
+     */
     public View getDefaultView() {
         return m_viewsMap.get(m_viewInfo.getDefaultView());
     }
@@ -181,6 +232,10 @@ public class ViewsDisplayFactory {
     /**
      * Reload the viewsdisplay.xml file if it has been changed since we last
      * read it.
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     protected void updateFromFile() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_viewsDisplayFile.lastModified()) {
@@ -188,11 +243,21 @@ public class ViewsDisplayFactory {
         }
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.ViewsDisplayFactory} object.
+     */
     public static void setInstance(ViewsDisplayFactory instance) {
         m_instance = instance;
         m_instance.initialized = true;
     }
 
+    /**
+     * <p>getDisconnectTimeout</p>
+     *
+     * @return a int.
+     */
     public int getDisconnectTimeout() {
         return m_viewInfo.getDisconnectTimeout();
     }

@@ -38,17 +38,36 @@ import java.util.Map;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 
+/**
+ * <p>DefaultLifeCycleRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultLifeCycleRepository implements LifeCycleRepository {
     
     final private Map<String, LifeCycle> m_lifeCycles = new HashMap<String, LifeCycle>();
     
     final private DefaultTaskCoordinator m_coordinator;
     
+    /**
+     * <p>Constructor for DefaultLifeCycleRepository.</p>
+     *
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     */
     public DefaultLifeCycleRepository(DefaultTaskCoordinator coordinator) {
         m_coordinator = coordinator;
     }
 
 
+    /**
+     * <p>createNestedLifeCycleInstance</p>
+     *
+     * @param containingPhase a {@link org.opennms.core.tasks.BatchTask} object.
+     * @param lifeCycleName a {@link java.lang.String} object.
+     * @param providers a {@link java.lang.Object} object.
+     * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
+     */
     public LifeCycleInstance createNestedLifeCycleInstance(BatchTask containingPhase, String lifeCycleName, Object... providers) {
         LifeCycle lifeCycle = getLifeCycle(lifeCycleName);
         
@@ -56,6 +75,13 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
     }
 
 
+    /**
+     * <p>createLifeCycleInstance</p>
+     *
+     * @param lifeCycleName a {@link java.lang.String} object.
+     * @param providers a {@link java.lang.Object} object.
+     * @return a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance} object.
+     */
     public LifeCycleInstance createLifeCycleInstance(String lifeCycleName, Object... providers) {
         LifeCycle lifeCycle = getLifeCycle(lifeCycleName);
         
@@ -72,10 +98,20 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
         return lifeCycle;
     }
     
+    /**
+     * <p>addLifeCycle</p>
+     *
+     * @param lifeCycle a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycle} object.
+     */
     public void addLifeCycle(LifeCycle lifeCycle) {
         m_lifeCycles.put(lifeCycle.getLifeCycleName(), lifeCycle);
     }
 
+    /**
+     * <p>setLifeCycles</p>
+     *
+     * @param lifecycles a {@link java.util.List} object.
+     */
     public void setLifeCycles(List<LifeCycle> lifecycles) {
         m_lifeCycles.clear();
         for (LifeCycle l : lifecycles) {

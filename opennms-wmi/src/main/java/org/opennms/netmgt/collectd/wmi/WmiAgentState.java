@@ -56,6 +56,9 @@ import java.net.InetAddress;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class WmiAgentState {
     private WmiManager m_manager;
@@ -65,6 +68,12 @@ public class WmiAgentState {
     private String m_address;
     private HashMap<String, WmiGroupState> m_groupStates = new HashMap<String, WmiGroupState>();
 
+    /**
+     * <p>Constructor for WmiAgentState.</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param parameters a {@link java.util.Map} object.
+     */
     public WmiAgentState(InetAddress address, Map parameters) {
         m_address = address.getHostAddress();
         m_agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
@@ -78,6 +87,9 @@ public class WmiAgentState {
         }
     }
 
+    /**
+     * <p>connect</p>
+     */
     public void connect() {
         try {
             m_wmiClient.connect(m_agentConfig.getDomain(), m_agentConfig.getUsername(), m_agentConfig.getPassword());
@@ -86,14 +98,30 @@ public class WmiAgentState {
         }
     }
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAddress() {
         return m_address;
     }
 
+    /**
+     * <p>getManager</p>
+     *
+     * @return a {@link org.opennms.protocols.wmi.WmiManager} object.
+     */
     public WmiManager getManager() {
         return m_manager;
     }
 
+    /**
+     * <p>groupIsAvailable</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean groupIsAvailable(String groupName) {
         WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
@@ -103,6 +131,12 @@ public class WmiAgentState {
         return groupState.isAvailable();
     }
 
+    /**
+     * <p>setGroupIsAvailable</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param available a boolean.
+     */
     public void setGroupIsAvailable(String groupName, boolean available) {
         WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
@@ -112,6 +146,13 @@ public class WmiAgentState {
         m_groupStates.put(groupName, groupState);
     }
 
+    /**
+     * <p>shouldCheckAvailability</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param recheckInterval a int.
+     * @return a boolean.
+     */
     public boolean shouldCheckAvailability(String groupName, int recheckInterval) {
         WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
@@ -125,6 +166,11 @@ public class WmiAgentState {
         return (now.getTime() - lastchecked.getTime() > recheckInterval);
     }
 
+    /**
+     * <p>didCheckGroupAvailability</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     */
     public void didCheckGroupAvailability(String groupName) {
         WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
@@ -135,10 +181,20 @@ public class WmiAgentState {
         groupState.setLastChecked(new Date());
     }
 
+    /**
+     * <p>getWmiClient</p>
+     *
+     * @return a {@link org.opennms.protocols.wmi.IWmiClient} object.
+     */
     public IWmiClient getWmiClient() {
         return m_wmiClient;
     }
 
+    /**
+     * <p>setWmiClient</p>
+     *
+     * @param wmiClient a {@link org.opennms.protocols.wmi.IWmiClient} object.
+     */
     public void setWmiClient(IWmiClient wmiClient) {
         this.m_wmiClient = wmiClient;
     }

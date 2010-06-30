@@ -49,12 +49,17 @@ import org.opennms.core.utils.IPSorter;
  * either an Enumeration or Iterator that can be used to cycle through the range
  * of addresses by the object's user.
  * </P>
- * 
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class IPAddrRange implements Iterable<InetAddress> {
     /**
@@ -346,14 +351,15 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * Returns an Iterator object that can be used to step through all the
      * address encapsulated in the object.
      * </P>
-     * 
+     *
      * <P>
      * The iterator returns objects of type
      * {@link java.net.InetAddress InetAddress}or <code>null</code> if the
      * address is unknown.
      * </p>
-     * 
+     *
      * @see java.net.InetAddress
+     * @return a {@link java.util.Iterator} object.
      */
     public Iterator<InetAddress> iterator() {
         return new IPAddressRangeGenerator(m_begin, m_end);
@@ -450,15 +456,12 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * array is of sufficent size the first bytes of the array may be shifted
      * out of the returned long.
      * </P>
-     * 
+     *
      * @param addr
      *            The array to convert to a long.
-     * 
      * @return The created long value.
-     * 
      * @exception IllegalArgumentException
      *                Thrown if the addr parameter is null.
-     * 
      * @deprecated Use org.opennms.netmgt.utils.IPSorter.convertToLong()
      *             instead.
      */

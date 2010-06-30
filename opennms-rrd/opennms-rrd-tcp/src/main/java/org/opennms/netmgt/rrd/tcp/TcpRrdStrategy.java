@@ -55,6 +55,9 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 /**
  * Provides a TCP socket-based implementation of RrdStrategy that pushes update commands
  * out in a simple serialized format.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,TcpRrdStrategy.RrdOutputSocketWithFilename> {
     public static class RrdDefinition {
@@ -92,88 +95,155 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
 
     private String m_host = null;
 
+    /**
+     * <p>getHost</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHost() {
         return m_host;
     }
 
+    /** {@inheritDoc} */
     public void setConfigurationProperties(Properties configurationParameters) {
         // Do nothing
     }
 
+    /**
+     * <p>setHost</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     */
     public void setHost(String host) {
         this.m_host = host;
     }
 
     private int m_port = 0;
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
+     */
     public int getPort() {
         return m_port;
     }
 
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a int.
+     */
     public void setPort(int port) {
         this.m_port = port;
     }
 
+    /**
+     * <p>getDefaultFileExtension</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDefaultFileExtension() {
         return "";
     }
 
+    /** {@inheritDoc} */
     public RrdDefinition createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         return new RrdDefinition(directory, rrdName);
     }
 
+    /**
+     * <p>createFile</p>
+     *
+     * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
+     * @throws java.lang.Exception if any.
+     */
     public void createFile(RrdDefinition rrdDef) throws Exception {
         // Do nothing
     }
 
+    /** {@inheritDoc} */
     public RrdOutputSocketWithFilename openFile(String fileName) throws Exception {
         return new RrdOutputSocketWithFilename(new RrdOutputSocket(m_host, m_port), fileName);
     }
 
+    /** {@inheritDoc} */
     public void updateFile(RrdOutputSocketWithFilename rrd, String owner, String data) throws Exception {
         rrd.getSocket().addData(rrd.getFilename(), owner, data);
     }
 
+    /**
+     * <p>closeFile</p>
+     *
+     * @param rrd a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdOutputSocketWithFilename} object.
+     * @throws java.lang.Exception if any.
+     */
     public void closeFile(RrdOutputSocketWithFilename rrd) throws Exception {
         rrd.getSocket().writeData();
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException {
         return Double.NaN;
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException {
         return Double.NaN;
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException {
         return Double.NaN;
     }
 
+    /** {@inheritDoc} */
     public InputStream createGraph(String command, File workDir) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
 
+    /** {@inheritDoc} */
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
 
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphLeftOffset() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
 
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphRightOffset() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
 
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
     public int getGraphTopOffsetWithText() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
 
+    /**
+     * <p>getStats</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStats() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
     }
 
+    /** {@inheritDoc} */
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         // Do nothing; this implementation simply sends data to an external source and has not control
         // over when data is persisted to disk.

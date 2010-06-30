@@ -62,19 +62,20 @@ import org.opennms.protocols.ip.IPv4Address;
  * interfaces. The 'nodelabelsource' field is a single character flag which
  * indicates what the source for the node label was.
  * </P>
- * 
+ *
  * <PRE>
- * 
+ *
  * Valid values for node label source are: 'U' User defined 'H' Primary
  * interface's IP host name 'S' Node's MIB-II sysName 'A' Primary interface's IP
  * address
- * 
+ *
  * </PRE>
- * 
- * 
+ *
  * @author <A HREF="mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class NodeLabel {
     /**
@@ -118,12 +119,16 @@ public class NodeLabel {
      */
     public final static char SOURCE_USERDEFINED = 'U';
 
+    /** Constant <code>SOURCE_NETBIOS='N'</code> */
     public final static char SOURCE_NETBIOS = 'N';
 
+    /** Constant <code>SOURCE_HOSTNAME='H'</code> */
     public final static char SOURCE_HOSTNAME = 'H';
 
+    /** Constant <code>SOURCE_SYSNAME='S'</code> */
     public final static char SOURCE_SYSNAME = 'S';
 
+    /** Constant <code>SOURCE_ADDRESS='A'</code> */
     public final static char SOURCE_ADDRESS = 'A';
 
     /**
@@ -175,9 +180,11 @@ public class NodeLabel {
 
     /**
      * Constructor
-     * 
+     *
      * @param nodeLabel
      *            Node label
+     * @param nodeLabelSource
+     *            Flag indicating source of node label
      * @param nodeLabelSource
      *            Flag indicating source of node label
      */
@@ -188,7 +195,7 @@ public class NodeLabel {
 
     /**
      * Returns the node label .
-     * 
+     *
      * @return node label
      */
     public String getLabel() {
@@ -197,7 +204,7 @@ public class NodeLabel {
 
     /**
      * Returns the node label source flag .
-     * 
+     *
      * @return node label source flag
      */
     public char getSource() {
@@ -206,7 +213,7 @@ public class NodeLabel {
 
     /**
      * Sets the node label.
-     * 
+     *
      * @param nodeLabel
      *            Node label
      */
@@ -216,7 +223,7 @@ public class NodeLabel {
 
     /**
      * Sets the node label source flag
-     * 
+     *
      * @param nodeLabelSource
      *            Flag indicating source of node label
      */
@@ -228,14 +235,15 @@ public class NodeLabel {
      * This method queries the 'node' table for the value of the 'nodelabel' and
      * 'nodelabelsource' fields for the node with the provided nodeID. A
      * NodeLabel object is returned initialized with the retrieved values.
-     * 
+     *
      * WARNING: A properly instantiated and initialized Vault class object is
      * required prior to calling this method. This method will initially only be
      * called from the WEB UI.
-     * 
+     *
      * @param nodeID
      *            Unique identifier of the node to be updated.
      * @return Object containing label and source values.
+     * @throws java.sql.SQLException if any.
      */
     public static NodeLabel retrieveLabel(int nodeID) throws SQLException {
         NodeLabel label = null;
@@ -254,13 +262,13 @@ public class NodeLabel {
      * This method queries the 'node' table for the value of the 'nodelabel' and
      * 'nodelabelsource' fields for the node with the provided nodeID. A
      * NodeLabel object is returned initialized with the retrieved values.
-     * 
+     *
      * @param nodeID
      *            Unique ID of node whose label info is to be retrieved
      * @param dbConnection
      *            SQL database connection
-     * 
      * @return object initialized with node label & source flag
+     * @throws java.sql.SQLException if any.
      */
     public static NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
         String nodeLabel = null;
@@ -302,15 +310,16 @@ public class NodeLabel {
      * This method updates the 'nodelabel' and 'nodelabelsource' fields of the
      * 'node' table for the specified nodeID. A database connection is retrieved
      * from the Vault.
-     * 
+     *
      * WARNING: A properly instantiated and initialized Vault class object is
      * required prior to calling this method. This method will initially only be
      * called from the WEB UI.
-     * 
+     *
      * @param nodeID
      *            Unique identifier of the node to be updated.
      * @param nodeLabel
      *            Object containing label and source values.
+     * @throws java.sql.SQLException if any.
      */
     public static void assignLabel(int nodeID, NodeLabel nodeLabel) throws SQLException {
         Connection dbConnection = Vault.getDbConnection();
@@ -325,16 +334,17 @@ public class NodeLabel {
     /**
      * This method updates the 'nodelabel' and 'nodelabelsource' fields of the
      * 'node' table for the specified nodeID.
-     * 
+     *
      * If nodeLabel parameter is NULL the method will first call computeLabel()
      * and use the resulting NodeLabel object to update the database.
-     * 
+     *
      * @param nodeID
      *            Unique identifier of the node to be updated.
      * @param nodeLabel
      *            Object containing label and source values.
      * @param dbConnection
      *            SQL database connection
+     * @throws java.sql.SQLException if any.
      */
     public static void assignLabel(int nodeID, NodeLabel nodeLabel, Connection dbConnection) throws SQLException {
         if (nodeLabel == null) {
@@ -381,15 +391,15 @@ public class NodeLabel {
     /**
      * This method determines what label should be associated with a particular
      * node. A database connection is retrieved from the Vault.
-     * 
+     *
      * WARNING: A properly instantiated and initialized Vault class object is
      * required prior to calling this method. This method will initially only be
      * called from the WEB UI.
-     * 
+     *
      * @param nodeID
      *            Unique identifier of the node to be updated.
-     * 
      * @return NodeLabel Object containing label and source values
+     * @throws java.sql.SQLException if any.
      */
     public static NodeLabel computeLabel(int nodeID) throws SQLException {
         Connection dbConnection = Vault.getDbConnection();
@@ -405,7 +415,7 @@ public class NodeLabel {
     /**
      * This method determines what label should be associated with a particular
      * node.
-     * 
+     *
      * Algorithm for determining a node's label is as follows: 1) If node has a
      * NetBIOS name associated with it, the NetBIOS name is used as the node's
      * label. 2) If no NetBIOS name available, retrieve all the 'ipinterface'
@@ -417,17 +427,17 @@ public class NodeLabel {
      * becomes the node's label. ELSE IF the node's MIB-II sysName value is
      * known it becomes the node's label ELSE the primary interface's IP address
      * becomes the node's label.
-     * 
+     *
      * NOTE: If for some reason a node has no "managed" interfaces null is
      * returned for the NodeLabel.
-     * 
+     *
      * @param nodeID
      *            Unique identifier of the node to be updated.
      * @param dbConnection
      *            SQL database connection
-     * 
      * @return NodeLabel Object containing label and source values or null if
      *         node does not have a primary interface.
+     * @throws java.sql.SQLException if any.
      */
     public static NodeLabel computeLabel(int nodeID, Connection dbConnection) throws SQLException {
         // Issue SQL query to retrieve NetBIOS name associated with the node
@@ -676,7 +686,7 @@ public class NodeLabel {
     /**
      * This method is responsible for returning a String object which represents
      * the content of this NodeLabel. Primarily used for debugging purposes.
-     * 
+     *
      * @return String which represents the content of this NodeLabel
      */
     public String toString() {

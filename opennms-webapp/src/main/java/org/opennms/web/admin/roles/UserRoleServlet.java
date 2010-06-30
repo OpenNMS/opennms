@@ -45,16 +45,22 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class for Servlet: RoleServlet
- *
- */
+ /**
+  * Servlet implementation class for Servlet: RoleServlet
+  *
+  * @author ranger
+  * @version $Id: $
+  * @since 1.8.1
+  */
  public class UserRoleServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
     private static final long serialVersionUID = 1L;
     
     private static final String LIST = "/roles/list.jsp";
     private static final String VIEW = "/roles/view.jsp";
     
+    /**
+     * <p>Constructor for UserRoleServlet.</p>
+     */
     public UserRoleServlet() {
 		super();
 	}
@@ -91,6 +97,14 @@ import javax.servlet.http.HttpServletResponse;
         
     }
     
+    /**
+     * <p>doIt</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @throws javax.servlet.ServletException if any.
+     * @throws java.io.IOException if any.
+     */
     protected void doIt(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String reqUrl = request.getServletPath();
         request.setAttribute("reqUrl", reqUrl);
@@ -111,6 +125,7 @@ import javax.servlet.http.HttpServletResponse;
 	/* (non-Java-doc)
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
+	/** {@inheritDoc} */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
 	}  	
@@ -118,10 +133,16 @@ import javax.servlet.http.HttpServletResponse;
 	/* (non-Java-doc)
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	/** {@inheritDoc} */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
 	}
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         super.init();
 

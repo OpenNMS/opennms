@@ -28,48 +28,68 @@ import org.opennms.netmgt.xmlrpcd.TimeoutSecureXmlRpcTransportFactory;
 /**
  * This class was copied from org.apache.xmlrpc.secure.SecureXmlRpcClient with
  * a read timeout added to non https clients.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class TimeoutSecureXmlRpcClient 
     extends XmlRpcClient
 {
     protected int timeout;
 
-    /** 
+    /**
      * Construct a XML-RPC client with this URL, with timeout.
+     *
+     * @param url a {@link java.net.URL} object.
+     * @param timeout a int.
      */
     public TimeoutSecureXmlRpcClient (URL url, int timeout) {
         super(url, new TimeoutSecureXmlRpcTransportFactory(url, timeout));
         this.timeout = timeout;
     }
 
-    /** 
-     * Construct a XML-RPC client for the URL represented by this String, with 
+    /**
+     * Construct a XML-RPC client for the URL represented by this String, with
      * timeout.
+     *
+     * @param url a {@link java.lang.String} object.
+     * @param timeout a int.
+     * @throws java.net.MalformedURLException if any.
      */
     public TimeoutSecureXmlRpcClient (String url, int timeout) throws MalformedURLException {
         super(new URL(url), new TimeoutSecureXmlRpcTransportFactory(new URL(url), timeout));
         this.timeout = timeout;
     }
    
-    /** 
-     * Construct a XML-RPC client for the specified hostname and port, with 
+    /**
+     * Construct a XML-RPC client for the specified hostname and port, with
      * timeout.
+     *
+     * @param hostname a {@link java.lang.String} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @throws java.net.MalformedURLException if any.
      */
     public TimeoutSecureXmlRpcClient (String hostname, int port, int timeout) throws MalformedURLException 
     {
         this("https://" + hostname + ':' + port + "/RPC2", timeout);
     }
     
-    /**
-     * This allows us to setup
-     */
+     /**
+      * This allows us to setup
+      *
+      * @throws java.lang.Exception if any.
+      */
      public void setup() throws Exception
      {
          SecurityTool.setup();    
      }
 
-    /** 
+    /**
      * Just for testing.
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
      */
     public static void main (String args[]) throws Exception
     {

@@ -44,16 +44,21 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * 
+ * <p>LocationMonitorIdValidator class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class LocationMonitorIdValidator implements Validator, InitializingBean {
     private LocationMonitorDao m_locationMonitorDao;
 
+    /** {@inheritDoc} */
     public boolean supports(Class clazz) {
         return clazz.equals(LocationMonitorIdCommand.class);
     }
 
+    /** {@inheritDoc} */
     public void validate(Object obj, Errors errors) {
         LocationMonitorIdCommand cmd = (LocationMonitorIdCommand) obj;
         
@@ -77,16 +82,29 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
         }
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         if (m_locationMonitorDao == null) {
             throw new IllegalStateException("locationMonitorDao property not set");
         }
     }
 
+    /**
+     * <p>getLocationMonitorDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
     }
 
+    /**
+     * <p>setLocationMonitorDao</p>
+     *
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
     }

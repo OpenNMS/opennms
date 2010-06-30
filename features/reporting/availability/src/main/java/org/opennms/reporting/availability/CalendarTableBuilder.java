@@ -43,10 +43,13 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
+ * <p>CalendarTableBuilder class.</p>
+ *
  * @author jsartin
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public class CalendarTableBuilder {
 		
@@ -65,6 +68,11 @@ public class CalendarTableBuilder {
 		 * 
 		 */
 
+		/**
+		 * <p>Constructor for CalendarTableBuilder.</p>
+		 *
+		 * @param endTime a long.
+		 */
 		public CalendarTableBuilder(long endTime) {
 			
 			m_locale = Locale.getDefault();
@@ -83,6 +91,12 @@ public class CalendarTableBuilder {
 		 * 		month for calendar (Jaunary = 0)
 		 */
 		
+		/**
+		 * <p>Constructor for CalendarTableBuilder.</p>
+		 *
+		 * @param year a int.
+		 * @param month a int.
+		 */
 		public CalendarTableBuilder(int year, int month) {
 		
 			m_locale = Locale.getDefault();
@@ -178,6 +192,9 @@ public class CalendarTableBuilder {
 	        
 		}
 	        
+	    /**
+	     * <p>print</p>
+	     */
 	    public void print () {
 	    	
 	    	for (int y = 0; y < 6; y++) {
@@ -196,6 +213,11 @@ public class CalendarTableBuilder {
 		 * Return completed calendar section
 		 */
 	    
+	    /**
+	     * <p>getTable</p>
+	     *
+	     * @return a {@link org.opennms.reporting.availability.CalendarTable} object.
+	     */
 	    public CalendarTable getTable() {
 	    	
 			/* Build CalendarSection here */
@@ -226,6 +248,12 @@ public class CalendarTableBuilder {
 		 * 		value (typically percent availability)
 		 */
 		
+		/**
+		 * <p>setPctValue</p>
+		 *
+		 * @param sDate a int.
+		 * @param value a double.
+		 */
 		public void setPctValue (int sDate, double value) {
 			m_days[sDate + m_firstDay -1].setPctValue(value);
 		}

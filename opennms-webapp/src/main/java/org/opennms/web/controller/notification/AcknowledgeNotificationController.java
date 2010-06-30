@@ -52,6 +52,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * <p>AcknowledgeNotificationController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AcknowledgeNotificationController extends AbstractController implements InitializingBean {
 
     private static final long serialVersionUID = 1L;
@@ -60,20 +67,37 @@ public class AcknowledgeNotificationController extends AbstractController implem
     
     private String m_redirectView;
     
+    /**
+     * <p>setRedirectView</p>
+     *
+     * @param redirectView a {@link java.lang.String} object.
+     */
     public void setRedirectView(String redirectView) {
         m_redirectView = redirectView;
     }
     
+    /**
+     * <p>setWebNotificationRepository</p>
+     *
+     * @param webNotificationRepository a {@link org.opennms.web.notification.WebNotificationRepository} object.
+     */
     public void setWebNotificationRepository(WebNotificationRepository webNotificationRepository) {
         m_webNotificationRepository = webNotificationRepository;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_webNotificationRepository, "webNotificationRepository must be set");
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Acknowledge the notifications specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */

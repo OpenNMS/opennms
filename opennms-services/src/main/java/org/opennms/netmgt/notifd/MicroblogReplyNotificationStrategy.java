@@ -46,21 +46,35 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 /**
- * 
+ * <p>MicroblogReplyNotificationStrategy class.</p>
+ *
  * @author <a href="mailto:jeffg@opennms.org>Jeff Gehlbach</a>
  * @author <a href="http://www.opennms.org/>OpenNMS</a>
- *
+ * @author <a href="mailto:jeffg@opennms.org>Jeff Gehlbach</a>
+ * @author <a href="http://www.opennms.org/>OpenNMS</a>
+ * @version $Id: $
  */
 public class MicroblogReplyNotificationStrategy extends MicroblogNotificationStrategy {
     
+    /**
+     * <p>Constructor for MicroblogReplyNotificationStrategy.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public MicroblogReplyNotificationStrategy() throws IOException {
         super();
     }
     
+    /**
+     * <p>Constructor for MicroblogReplyNotificationStrategy.</p>
+     *
+     * @param configResource a {@link org.springframework.core.io.Resource} object.
+     */
     public MicroblogReplyNotificationStrategy(Resource configResource) {
         super(configResource);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int send(List<Argument> arguments) {
         Twitter svc = buildUblogService(arguments);

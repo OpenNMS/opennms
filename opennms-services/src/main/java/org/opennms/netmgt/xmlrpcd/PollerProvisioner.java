@@ -38,23 +38,75 @@ package org.opennms.netmgt.xmlrpcd;
 import java.util.Map;
 
 /**
- * 
+ * <p>PollerProvisioner interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface PollerProvisioner {
     
+    /**
+     * <p>addMonitor</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @param className a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     boolean addMonitor(String svcName, String className);
     
+    /**
+     * <p>addPackage</p>
+     *
+     * @param packageName a {@link java.lang.String} object.
+     * @param downtimeInterval a int.
+     * @param downtimeDuration a int.
+     * @return a boolean.
+     */
     boolean addPackage(String packageName, int downtimeInterval, int downtimeDuration);
     
+    /**
+     * <p>getDowntimeInterval</p>
+     *
+     * @param packageName a {@link java.lang.String} object.
+     * @return a int.
+     */
     int getDowntimeInterval(String packageName);
     
+    /**
+     * <p>getDowntimeDuration</p>
+     *
+     * @param packageName a {@link java.lang.String} object.
+     * @return a int.
+     */
     int getDowntimeDuration(String packageName);
     
+    /**
+     * <p>addService</p>
+     *
+     * @param packageName a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @param interval a int.
+     * @param parameters a {@link java.util.Map} object.
+     * @return a boolean.
+     */
     boolean addService(String packageName, String svcName, int interval, Map parameters);
     
+    /**
+     * <p>getServiceInterval</p>
+     *
+     * @param packageName a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a int.
+     */
     int getServiceInterval(String packageName, String svcName);
     
+    /**
+     * <p>getServiceParameters</p>
+     *
+     * @param packageName a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     */
     Map getServiceParameters(String packageName, String svcName);
 
 }

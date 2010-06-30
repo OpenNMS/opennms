@@ -49,8 +49,10 @@ import org.opennms.netmgt.provision.support.nrpe.NrpePacket;
 import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 
 /**
- * @author Donald Desloge
+ * <p>NrpeClient class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
     
@@ -65,6 +67,9 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
     private OutputStream m_out;
     private InputStream m_in;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         Socket socket = m_socket;
         m_socket = null;
@@ -80,12 +85,22 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_socket = getWrappedSocket(address, port, timeout);
         setOutput(m_socket.getOutputStream());
         setInput(m_socket.getInputStream());
     }
     
+    /**
+     * <p>getWrappedSocket</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @return a {@link java.net.Socket} object.
+     * @throws java.io.IOException if any.
+     */
     protected Socket getWrappedSocket(InetAddress address, int port, int timeout) throws IOException {
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(address, port), timeout);
@@ -98,6 +113,15 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         }
     }
     
+    /**
+     * <p>wrapSocket</p>
+     *
+     * @param socket a {@link java.net.Socket} object.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param port a int.
+     * @return a {@link java.net.Socket} object.
+     * @throws java.lang.Exception if any.
+     */
     protected Socket wrapSocket(Socket socket, String hostAddress, int port) throws Exception {
         if (! isUseSsl()) {
             return socket;
@@ -121,10 +145,25 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         return wrappedSocket;
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.support.nrpe.NrpePacket} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public NrpePacket receiveBanner() throws IOException, Exception {
         return receiveResponse();
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.simple.request.NrpeRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.support.nrpe.NrpePacket} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public NrpePacket sendRequest(NrpeRequest request) throws IOException, Exception {
         request.send(getOutput());
         return receiveResponse();
@@ -136,34 +175,74 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         return response;
     }
 
+    /**
+     * <p>setPadding</p>
+     *
+     * @param padding a int.
+     */
     public void setPadding(int padding) {
         m_padding = padding;
     }
 
+    /**
+     * <p>getPadding</p>
+     *
+     * @return a int.
+     */
     public int getPadding() {
         return m_padding;
     }
 
+    /**
+     * <p>setUseSsl</p>
+     *
+     * @param useSsl a boolean.
+     */
     public void setUseSsl(boolean useSsl) {
         m_useSsl = useSsl;
     }
 
+    /**
+     * <p>isUseSsl</p>
+     *
+     * @return a boolean.
+     */
     public boolean isUseSsl() {
         return m_useSsl;
     }
 
+    /**
+     * <p>setOutput</p>
+     *
+     * @param out a {@link java.io.OutputStream} object.
+     */
     public void setOutput(OutputStream out) {
         m_out = out;
     }
 
+    /**
+     * <p>getOutput</p>
+     *
+     * @return a {@link java.io.OutputStream} object.
+     */
     public OutputStream getOutput() {
         return m_out;
     }
 
+    /**
+     * <p>setInput</p>
+     *
+     * @param in a {@link java.io.InputStream} object.
+     */
     public void setInput(InputStream in) {
         m_in = in;
     }
 
+    /**
+     * <p>getInput</p>
+     *
+     * @return a {@link java.io.InputStream} object.
+     */
     public InputStream getInput() {
         return m_in;
     }

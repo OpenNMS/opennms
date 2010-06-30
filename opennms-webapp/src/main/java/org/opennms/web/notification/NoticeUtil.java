@@ -49,8 +49,21 @@ import org.opennms.web.notification.filter.ResponderFilter;
 import org.opennms.web.notification.filter.ServiceFilter;
 import org.opennms.web.notification.filter.UserFilter;
 
+/**
+ * <p>Abstract NoticeUtil class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public abstract class NoticeUtil extends Object {
 
+    /**
+     * <p>getFilter</p>
+     *
+     * @param filterString a {@link java.lang.String} object.
+     * @return a org$opennms$web$filter$Filter object.
+     */
     public static org.opennms.web.filter.Filter getFilter(String filterString) {
         Filter filter = null;
 

@@ -69,7 +69,9 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  *
  * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
- *
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @version $Id: $
  */
 public final class ServiceConfigFactory {
     /**
@@ -107,6 +109,13 @@ public final class ServiceConfigFactory {
         cfgStream.close();
     }
     
+    /**
+     * <p>Constructor for ServiceConfigFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     @Deprecated
     public ServiceConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(ServiceConfiguration.class, rdr);
@@ -115,13 +124,16 @@ public final class ServiceConfigFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -142,13 +154,16 @@ public final class ServiceConfigFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -161,12 +176,10 @@ public final class ServiceConfigFactory {
      * Returns the currently defined singleton instance of the factory. There is
      * only one instance of the configuration information, and it will not
      * change unless the <code>reload</code> method is called.
-     * 
+     *
      * @return The singular instance of the factory class.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
-     * 
      */
     public static synchronized ServiceConfigFactory getInstance() {
         if (!m_loaded)
@@ -175,6 +188,11 @@ public final class ServiceConfigFactory {
         return m_singleton;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.ServiceConfigFactory} object.
+     */
     public static synchronized void setInstance(ServiceConfigFactory instance) {
         m_loaded = true;
         m_singleton = instance;
@@ -184,10 +202,9 @@ public final class ServiceConfigFactory {
      * Returns an array of all the defined configuration information for the
      * <em>Services</em>. If there are no defined services an array of length
      * zero is returned to the caller.
-     * 
+     *
      * @return An array holding a reference to all the Service configuration
      *         instances.
-     * 
      */
     public Service[] getServices() {
         int count = m_config.getServiceCount();

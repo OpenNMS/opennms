@@ -48,6 +48,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * <p>ApplicationController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ApplicationController extends AbstractController {
 
     private AdminApplicationService m_adminApplicationService;
@@ -62,6 +69,7 @@ public class ApplicationController extends AbstractController {
     	return null;
     }
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String removeApplicationIdString = getNonEmptyParameter(request, "removeApplicationId");
@@ -156,10 +164,20 @@ public class ApplicationController extends AbstractController {
                                 sortedApplications);
     }
 
+    /**
+     * <p>getAdminApplicationService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.AdminApplicationService} object.
+     */
     public AdminApplicationService getAdminApplicationService() {
         return m_adminApplicationService;
     }
 
+    /**
+     * <p>setAdminApplicationService</p>
+     *
+     * @param adminApplicationService a {@link org.opennms.web.svclayer.AdminApplicationService} object.
+     */
     public void setAdminApplicationService(
             AdminApplicationService adminApplicationService) {
         m_adminApplicationService = adminApplicationService;

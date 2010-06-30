@@ -33,32 +33,73 @@ package org.opennms.netmgt.dao.db;
 
 import java.util.List;
 
+/**
+ * <p>Table class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Table {
 	private String m_name;
 	private List<Column> m_columns;
 	private List<Constraint> m_constraints;
 	
+	/**
+	 * <p>getColumns</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<Column> getColumns() {
 		return m_columns;
 	}
+	/**
+	 * <p>setColumns</p>
+	 *
+	 * @param columns a {@link java.util.List} object.
+	 */
 	public void setColumns(List<Column> columns) {
 		m_columns = columns;
 	}
 	
+	/**
+	 * <p>getConstraints</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<Constraint> getConstraints() {
 		return m_constraints;
 	}
+	/**
+	 * <p>setConstraints</p>
+	 *
+	 * @param constraints a {@link java.util.List} object.
+	 */
 	public void setConstraints(List<Constraint> constraints) {
 		m_constraints = constraints;
 	}
 	
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_name;
 	}
+	/**
+	 * <p>setName</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public void setName(String name) {
 		m_name = name.toLowerCase();
 	}
 	
+	/**
+	 * <p>setNotNullOnPrimaryKeyColumns</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void setNotNullOnPrimaryKeyColumns() throws Exception {
 		for (Constraint constraint : getConstraints()) {
 			if (constraint.isPrimaryKeyConstraint()) {
@@ -79,6 +120,7 @@ public class Table {
 		}
 	}
 	
+	/** {@inheritDoc} */
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof Table)) {
 			return false;

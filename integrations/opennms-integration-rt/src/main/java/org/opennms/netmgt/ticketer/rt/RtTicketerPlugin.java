@@ -52,11 +52,10 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * OpenNMS Trouble Ticket Plugin API implementation for RT
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
- * 
+ * @version $Id: $
  */
-
 public class RtTicketerPlugin implements Plugin {
     
 	private DefaultRtConfigDao m_configDao; 
@@ -65,6 +64,9 @@ public class RtTicketerPlugin implements Plugin {
 	
 	private static final String TAG_REGEX = "<[^>]*>"; 
 	
+	/**
+	 * <p>Constructor for RtTicketerPlugin.</p>
+	 */
 	public RtTicketerPlugin() {
 		
 		m_configDao = new DefaultRtConfigDao();
@@ -73,13 +75,11 @@ public class RtTicketerPlugin implements Plugin {
 		
 	}
     
-    /**
-     * Gets ticket details from the RT trouble ticket system
-     * 
-     * @param   ticketId    a string representation of the RT ticketID
-     * @return  ticket      the ticket details
-     */
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Gets ticket details from the RT trouble ticket system
+	 */
 	public Ticket get(String ticketId) throws PluginException {
 
 		boolean ticketFound = false;
@@ -145,13 +145,12 @@ public class RtTicketerPlugin implements Plugin {
 
 
 	/**
-    * Creates a new ticket (if none exists) or updates an existing ticket in the
-    * RT trouble ticket system. Ticket updates are currently limited to updating
-    * the ticket status only.
-    * 
-    * @param   ticket      the ticket details
-    */
-	
+	 * {@inheritDoc}
+	 *
+	 * Creates a new ticket (if none exists) or updates an existing ticket in the
+	 * RT trouble ticket system. Ticket updates are currently limited to updating
+	 * the ticket status only.
+	 */
 	public void saveOrUpdate(Ticket newTicket) throws PluginException {
 		
 		String newTicketID;
@@ -406,11 +405,21 @@ public class RtTicketerPlugin implements Plugin {
 	    
 	}
 	
+    /**
+     * <p>setUser</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public void setUser(String user) {
         m_user = user;
     }
 
 
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPassword(String password) {
         m_password = password;
     }

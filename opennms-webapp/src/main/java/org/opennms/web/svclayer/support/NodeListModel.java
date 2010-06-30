@@ -43,38 +43,77 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 /**
- * 
+ * <p>NodeListModel class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class NodeListModel {
     private List<NodeModel> m_nodes;
     private int m_interfaceCount;
     
+    /**
+     * <p>Constructor for NodeListModel.</p>
+     *
+     * @param nodes a {@link java.util.List} object.
+     * @param interfaceCount a int.
+     */
     public NodeListModel(List<NodeModel> nodes, int interfaceCount) {
         m_nodes = nodes;
         m_interfaceCount = interfaceCount;
     }
     
+    /**
+     * <p>getNodes</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<NodeModel> getNodes() {
         return m_nodes;
     }
 
+    /**
+     * <p>getNodesLeft</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<NodeModel> getNodesLeft() {
         return m_nodes.subList(0, getLastInLeftColumn());
     }
     
+    /**
+     * <p>getNodesRight</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<NodeModel> getNodesRight() {
         return m_nodes.subList(getLastInLeftColumn(), m_nodes.size());
     }
 
+    /**
+     * <p>getLastInLeftColumn</p>
+     *
+     * @return a int.
+     */
     public int getLastInLeftColumn() {
         return (int) Math.ceil(m_nodes.size()/2.0);
     }
     
+    /**
+     * <p>getNodeCount</p>
+     *
+     * @return a int.
+     */
     public int getNodeCount() {
         return m_nodes.size();
     }
     
+    /**
+     * <p>getInterfaceCount</p>
+     *
+     * @return a int.
+     */
     public int getInterfaceCount() {
         return m_interfaceCount;
     }

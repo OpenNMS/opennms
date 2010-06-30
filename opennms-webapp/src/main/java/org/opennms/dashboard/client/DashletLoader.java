@@ -41,13 +41,19 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
- * 
+ * <p>DashletLoader class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DashletLoader extends Composite {
     
+    /** Constant <code>COMPLETE=0</code> */
     public static final int COMPLETE = 0;
+    /** Constant <code>LOADING=1</code> */
     public static final int LOADING = 1;
+    /** Constant <code>ERROR=2</code> */
     public static final int ERROR = 2;
 
     SimplePanel m_panel = new SimplePanel();
@@ -59,6 +65,12 @@ public class DashletLoader extends Composite {
         initWidget(m_panel);
     }
 
+    /**
+     * <p>setStatus</p>
+     *
+     * @param status a int.
+     * @param description a {@link java.lang.String} object.
+     */
     public void setStatus(int status, String description) {
         switch( status ) {
         case ERROR:
@@ -77,18 +89,34 @@ public class DashletLoader extends Composite {
         }
     }
     
+    /**
+     * <p>loading</p>
+     *
+     * @param msg a {@link java.lang.String} object.
+     */
     public void loading(String msg) {
         setStatus(LOADING, msg);
     }
     
+    /**
+     * <p>loading</p>
+     */
     public void loading() {
         loading("Loading...");
     }
     
+    /**
+     * <p>loadError</p>
+     *
+     * @param caught a {@link java.lang.Throwable} object.
+     */
     public void loadError(Throwable caught) {
         setStatus(ERROR, "Error");
     }
     
+    /**
+     * <p>complete</p>
+     */
     public void complete() {
         setStatus(COMPLETE, "");
     }

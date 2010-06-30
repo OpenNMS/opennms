@@ -37,9 +37,16 @@ package org.opennms.netmgt.model;
 
 import java.util.List;
 
+/**
+ * <p>OnmsResourceType interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsResourceType {
     /**
      * Provides a unique name for this resource type.
+     *
      * @return unique name
      */
     public String getName();
@@ -47,6 +54,7 @@ public interface OnmsResourceType {
     /**
      * Provides a human-friendly label for this resource type.  It is
      * particularly used in the webUI to describe this resource type.
+     *
      * @return human-friendly label
      */
     public String getLabel();
@@ -54,7 +62,7 @@ public interface OnmsResourceType {
     /**
      * Checks whether this resource type is on a specific node.  If possible,
      * this should have less overhead than calling #getResourcesForNode(int).
-     * 
+     *
      * @param nodeId node ID to check
      * @return true if this resource type is on this node, false otherwise
      */
@@ -62,7 +70,7 @@ public interface OnmsResourceType {
     
     /**
      * Gets a list of resources on a specific node.
-     * 
+     *
      * @param nodeId node ID for which to get resources
      * @return list of resources
      */
@@ -71,7 +79,7 @@ public interface OnmsResourceType {
     /**
      * Checks whether this resource type is on a specific domain.  If possible,
      * this should have less overhead than calling #getResourcesForDomain(String).
-     * 
+     *
      * @param domain domain to check
      * @return true if this resource type is on this domain, false otherwise
      */
@@ -79,11 +87,17 @@ public interface OnmsResourceType {
 
     /**
      * Gets a list of resources on a specific domain.
-     * 
+     *
      * @param domain domain for which to get resources
      * @return list of resources
      */
     public List<OnmsResource> getResourcesForDomain(String domain);
 
+    /**
+     * <p>getLinkForResource</p>
+     *
+     * @param resource a {@link org.opennms.netmgt.model.OnmsResource} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getLinkForResource(OnmsResource resource);
 }

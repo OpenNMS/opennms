@@ -75,9 +75,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * A servlet that handles deleting nodes from the database
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DeleteNodesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -88,6 +92,7 @@ public class DeleteNodesServlet extends HttpServlet {
 
     private ResourceService m_resourceService;
 
+    /** {@inheritDoc} */
     @Override
     public void init() throws ServletException {
         try {
@@ -106,6 +111,7 @@ public class DeleteNodesServlet extends HttpServlet {
         log().debug("Response time RRD directory: " + m_rtRrdDirectory);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Integer> nodeList = getList(request.getParameterValues("nodeCheck"));

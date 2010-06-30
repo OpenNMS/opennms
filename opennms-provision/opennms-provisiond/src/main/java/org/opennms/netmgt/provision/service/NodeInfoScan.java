@@ -36,6 +36,7 @@ final class NodeInfoScan implements RunInBatch {
         m_provisionService = provisionService;
     }
 
+    /** {@inheritDoc} */
     public void run(BatchTask phase) {
         
         phase.getBuilder().addSequence(

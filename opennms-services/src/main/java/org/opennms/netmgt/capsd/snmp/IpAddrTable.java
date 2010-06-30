@@ -54,14 +54,34 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * received/error occurs in the SnmpSession used to send requests /recieve
  * replies.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
 
@@ -72,6 +92,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
+     *
      * @param address TODO
      * @see IpAddrTableEntry
      */
@@ -79,10 +100,17 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         super(address, "ipAddrTable", IpAddrTableEntry.ms_elemList);
     }
 
+    /** {@inheritDoc} */
     protected IpAddrTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IpAddrTableEntry();
     }
 
+     /**
+      * <p>getIfAddressAndMask</p>
+      *
+      * @param ifIndex a int.
+      * @return an array of {@link java.net.InetAddress} objects.
+      */
      public InetAddress[] getIfAddressAndMask(int ifIndex) {
         if (getEntries() == null)
             return null;
@@ -103,6 +131,12 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return null;
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a int.
+     */
     public int getIfIndex(InetAddress address) {
         if (getEntries() == null) {
             return -1;
@@ -127,6 +161,11 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return -1;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
@@ -134,14 +173,11 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
     /**
      * Returns all Internet addresses at the corresponding index. If the address
      * cannot be resolved then a null reference is returned.
-     * 
-     * @param ifIndex
-     *            The index to search for.
-     * 
+     *
      * @return list of InetAddress objects representing each of the interfaces
      *         IP addresses.
+     * @param index a int.
      */
-    
     public List<InetAddress> getIpAddresses(int index) {
         if (index == -1 || getEntries() == null) {
             return null;
@@ -166,10 +202,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
     /**
      * Returns all Internet addresses in the ipAddrEntry list. If the address
      * cannot be resolved then a null reference is returned.
-     * 
-     * @param ipAddrEntries
-     *            List of IpAddrTableEntry objects to search
-     * 
+     *
      * @return list of InetAddress objects representing each of the interfaces
      *         IP addresses.
      */

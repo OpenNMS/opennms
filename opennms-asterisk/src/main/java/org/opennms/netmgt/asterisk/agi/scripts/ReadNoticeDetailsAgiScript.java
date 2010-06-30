@@ -42,12 +42,16 @@ import org.asteriskjava.fastagi.AgiRequest;
 /**
  * An AGI script that reads the node ID and service name of
  * an OpenNMS notice to the called party
- * 
+ *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
  */
 public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
 
+    /** {@inheritDoc} */
     public void service(AgiRequest req, AgiChannel chan) throws AgiException {
         authenticateUser();
         sayNode();
@@ -56,6 +60,11 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
         sayIpAddr();
     }
     
+    /**
+     * <p>authenticateUser</p>
+     *
+     * @throws org.asteriskjava.fastagi.AgiException if any.
+     */
     public void authenticateUser() throws AgiException {
         String actualPin = getVariable(VAR_OPENNMS_USER_PIN);
         if (actualPin == null || "".equals(actualPin)) {
@@ -81,6 +90,11 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
         }
     }
     
+    /**
+     * <p>sayNode</p>
+     *
+     * @throws org.asteriskjava.fastagi.AgiException if any.
+     */
     public void sayNode() throws AgiException {
         String nodeID = null;
         String nodeLabel = null;
@@ -106,6 +120,11 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
         }
     }
     
+    /**
+     * <p>sayIpAddr</p>
+     *
+     * @throws org.asteriskjava.fastagi.AgiException if any.
+     */
     public void sayIpAddr() throws AgiException {
         String ipAddr = null;
         ipAddr = getVariable(VAR_OPENNMS_INTERFACE);
@@ -119,6 +138,11 @@ public class ReadNoticeDetailsAgiScript extends BaseOnmsAgiScript {
         }
     }
     
+    /**
+     * <p>sayServiceName</p>
+     *
+     * @throws org.asteriskjava.fastagi.AgiException if any.
+     */
     public void sayServiceName() throws AgiException {
         String svcName = null;
         svcName = getVariable("OPENNMS_SERVICE");

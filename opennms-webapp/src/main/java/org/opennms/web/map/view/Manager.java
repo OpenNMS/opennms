@@ -46,146 +46,210 @@ import org.opennms.web.map.MapsException;
 
 
 /**
+ * <p>Manager interface.</p>
+ *
  * @author maurizio
- * @author antonio 
+ * @author antonio
+ * @version $Id: $
+ * @since 1.8.1
  */
 public interface Manager {
 
     /**
      * Create a new VMap and return it
-     * 
-     * @param name
-     * @param owner
-     * @param userModifies
-     * @param width 
-     * @param height
+     *
+     * @param owner a {@link java.lang.String} object.
+     * @param userModifies a {@link java.lang.String} object.
+     * @param width a int.
+     * @param height a int.
      * @return the new VMap
      */
     public VMap newMap(String owner,String userModifies, int width, int height) ;
 
     /**
      * Close a VMap previusly opened.
-     * 
      */
     public void closeMap();
 
     /**
+     * <p>openMap</p>
+     *
      * @return the default VMap, if exists
-     * @throws MapsException
+     * @throws MapsException if any.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
      */
     public VMap openMap() throws 
             MapNotFoundException;    
 
     /**
      * Take the map with id in input and return it in VMap form.
-     * 
-     * @param id
-     * @param user
+     *
+     * @param id a int.
+     * @param user a {@link java.lang.String} object.
      * @param refreshElems says if refresh the map's elements
      * @return the VMap with identifier id
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
      */
     public VMap openMap(int id, String user, boolean refreshElems) throws MapNotFoundException, MapsException ;    
 
+    /**
+     * <p>clearMap</p>
+     *
+     * @throws org.opennms.web.map.MapNotFoundException if any.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public void clearMap()throws MapNotFoundException, MapsException ;
 
     /**
      * gets all visible maps for user in input
-     * @param user
+     *
+     * @param user a {@link java.lang.String} object.
      * @return a List of MapMenu objects.
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public List<VMapInfo> getVisibleMapsMenu(String user) throws MapsException;
 
     /**
-     * get the default map for specified user in input 
-     * if exists null otherwise 
-     * @param user
+     * get the default map for specified user in input
+     * if exists null otherwise
+     *
+     * @param user a {@link java.lang.String} object.
      * @return a MapMenu object.
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public VMapInfo getDefaultMapsMenu(String user) throws MapsException;
 
 	/**
-     * Create a new (not child) empty Submap with the identifier setted to id.
-     * 
-     * @param elementId
-     * @param type the node type
-     * @throws MapsException
-     */	
+	 * Create a new (not child) empty Submap with the identifier setted to id.
+	 *
+	 * @param elementId a int.
+	 * @param type the node type
+	 * @throws org.opennms.web.map.MapsException if any.
+	 * @param mapid a int.
+	 * @return a {@link org.opennms.web.map.view.VElement} object.
+	 */
 	public VElement newElement(int mapid, int elementId, String type) throws MapsException ;	
 
 	/**
-     * Create a new (not child) empty Submap with the identifier setted to id.
-     * 
-     * @param mapId
-     * @param elementId
-     * @param type the node type
-     * @param iconnname the name of the icon
-     * @param x position on the x axis
-     * @param y position on the y axis
-     * @return the new VElement
-     * @throws MapsException
-     */
+	 * Create a new (not child) empty Submap with the identifier setted to id.
+	 *
+	 * @param mapId a int.
+	 * @param elementId a int.
+	 * @param type the node type
+	 * @param x position on the x axis
+	 * @param y position on the y axis
+	 * @return the new VElement
+	 * @throws org.opennms.web.map.MapsException if any.
+	 * @param iconname a {@link java.lang.String} object.
+	 */
 	public VElement newElement(int mapId, int elementId, String type, String iconname, int x,int y) throws 
             MapsException ;
 	
-	/**
+    /**
      * delete the map current map
-     * @throws MapsException
+     *
+     * @throws org.opennms.web.map.MapsException
      *             if an error occour deleting map, MapNotFoundException if the
      *             map to delete doesn't exist.
-     */ 
+     * @throws org.opennms.web.map.MapNotFoundException if any.
+     */
     public void deleteMap() throws MapsException,
     MapNotFoundException ;
 
     /**
      * save the map in input
-     * 
+     *
      * @param map
      *            to save
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @return a int.
      */
     public int save(VMap map) throws MapsException ;
         
+    /**
+     * <p>refreshMap</p>
+     *
+     * @param map a {@link org.opennms.web.map.view.VMap} object.
+     * @return a {@link org.opennms.web.map.view.VMap} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public VMap refreshMap(VMap map) throws MapsException;
         
     /**
      * Refreshs avail,severity and status of the map in input and its elements
-     * @param map 
+     *
+     * @param map a {@link org.opennms.web.map.view.VMap} object.
      * @return the map refreshed
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public VMap reloadMap(VMap map)throws MapsException;
         
+    /**
+     * <p>foundLoopOnMaps</p>
+     *
+     * @param parentMap a {@link org.opennms.web.map.view.VMap} object.
+     * @param mapId a int.
+     * @return a boolean.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public boolean foundLoopOnMaps(VMap parentMap,int mapId) throws MapsException ;
     
+	/**
+	 * <p>getElementInfo</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 * @throws org.opennms.web.map.MapsException if any.
+	 */
 	public List<VElementInfo> getElementInfo() throws MapsException;
 	
     /**
-     * Get a Map of nodelabel to the 
-     * container mapids. 
-     * @param user
-     * @return
+     * Get a Map of nodelabel to the
+     * container mapids.
+     *
+     * @param user a {@link java.lang.String} object.
+     * @return a java$util$Map object.
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public Map<String,Set<Integer>> getNodeLabelToMaps(String user) throws MapsException;
     
     /**
-     * 
-     * @param name
-     * @param owner
-     * @param userModifies
-     * @param width
-     * @param height
-     * @param velems
-     * @return
-     * @throws MapsException
+     * <p>searchMap</p>
+     *
+     * @param owner a {@link java.lang.String} object.
+     * @param userModifies a {@link java.lang.String} object.
+     * @param width a int.
+     * @param height a int.
+     * @param velems a {@link java.util.List} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     * @return a {@link org.opennms.web.map.view.VMap} object.
      */
     public VMap searchMap(String owner,String userModifies, int width, int height,List<VElement> velems) throws MapsException ;
     
+    /**
+     * <p>getProperties</p>
+     *
+     * @param isUserAdmin a boolean.
+     * @return a {@link org.opennms.web.map.view.VProperties} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public VProperties getProperties(boolean isUserAdmin) throws MapsException;
     
+    /**
+     * <p>addElements</p>
+     *
+     * @param map a {@link org.opennms.web.map.view.VMap} object.
+     * @param velems a {@link java.util.List} object.
+     * @return a {@link org.opennms.web.map.view.VMap} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public VMap addElements(VMap map, List<VElement> velems) throws MapsException;
     
+    /**
+     * <p>reloadConfig</p>
+     *
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public void reloadConfig() throws MapsException;
 
 }

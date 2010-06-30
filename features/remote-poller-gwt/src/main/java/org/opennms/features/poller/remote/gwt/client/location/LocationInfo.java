@@ -14,6 +14,13 @@ import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * <p>LocationInfo class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class LocationInfo implements IsSerializable, Serializable, Comparable<LocationInfo> {
 	private static final long serialVersionUID = 1L;
 
@@ -26,12 +33,32 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	private StatusDetails m_statusDetails;
 	private Set<String> m_tags;
 
+	/**
+	 * <p>Constructor for LocationInfo.</p>
+	 */
 	public LocationInfo() {}
 
+	/**
+	 * <p>Constructor for LocationInfo.</p>
+	 *
+	 * @param info a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
+	 */
 	public LocationInfo(final LocationInfo info) {
 		this(info.getName(), info.getArea(), info.getGeolocation(), info.getCoordinates(), info.getPriority(), info.getMarkerState(), info.getStatusDetails(), info.getTags());
 	}
 
+	/**
+	 * <p>Constructor for LocationInfo.</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 * @param area a {@link java.lang.String} object.
+	 * @param geolocation a {@link java.lang.String} object.
+	 * @param coordinates a {@link java.lang.String} object.
+	 * @param priority a {@link java.lang.Long} object.
+	 * @param marker a {@link org.opennms.features.poller.remote.gwt.client.GWTMarkerState} object.
+	 * @param statusDetails a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+	 * @param tags a {@link java.util.Set} object.
+	 */
 	public LocationInfo(final String name, final String area, final String geolocation, final String coordinates, final Long priority, final GWTMarkerState marker, final StatusDetails statusDetails, final Set<String> tags) {
 		setName(name);
 		setArea(area);
@@ -43,54 +70,119 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
         setTags(tags);
 	}
 
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_name;
 	}
 
+	/**
+	 * <p>setName</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public void setName(final String name) {
 		m_name = name;
 	}
 
+	/**
+	 * <p>getArea</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getArea() {
 		return m_area;
 	}
 
+	/**
+	 * <p>setArea</p>
+	 *
+	 * @param area a {@link java.lang.String} object.
+	 */
 	public void setArea(final String area) {
 		m_area = area;
 	}
 
+	/**
+	 * <p>getGeolocation</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getGeolocation() {
 		return m_geolocation;
 	}
 
+	/**
+	 * <p>setGeolocation</p>
+	 *
+	 * @param geolocation a {@link java.lang.String} object.
+	 */
 	public void setGeolocation(final String geolocation) {
 		m_geolocation = geolocation;
 	}
 
+	/**
+	 * <p>getCoordinates</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCoordinates() {
 		return m_coordinates;
 	}
 
+	/**
+	 * <p>setCoordinates</p>
+	 *
+	 * @param coordinates a {@link java.lang.String} object.
+	 */
 	public void setCoordinates(final String coordinates) {
 		m_coordinates = coordinates;
 	}
 
+	/**
+	 * <p>getPriority</p>
+	 *
+	 * @return a {@link java.lang.Long} object.
+	 */
 	public Long getPriority() {
 		return m_priority;
 	}
 
+	/**
+	 * <p>setPriority</p>
+	 *
+	 * @param priority a {@link java.lang.Long} object.
+	 */
 	public void setPriority(final Long priority) {
 		m_priority = priority;
 	}
 
+	/**
+	 * <p>getTags</p>
+	 *
+	 * @return a {@link java.util.Set} object.
+	 */
 	public Set<String> getTags() {
 		return m_tags;
 	}
 	
+	/**
+	 * <p>setTags</p>
+	 *
+	 * @param tags a {@link java.util.Set} object.
+	 */
 	public void setTags(final Set<String> tags) {
 		m_tags = tags;
 	}
 
+	/**
+	 * <p>getStatusDetails</p>
+	 *
+	 * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+	 */
 	public StatusDetails getStatusDetails() {
 		if (m_statusDetails == null) {
 			return StatusDetails.uninitialized();
@@ -98,6 +190,11 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 		return m_statusDetails;
 	}
 
+	/**
+	 * <p>setStatusDetails</p>
+	 *
+	 * @param status a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+	 */
 	public void setStatusDetails(final StatusDetails status) {
 		m_statusDetails = status;
 		if (m_markerState != null && status != null) {
@@ -105,22 +202,44 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 		}
 	}
 
+	/**
+	 * <p>getMarkerState</p>
+	 *
+	 * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTMarkerState} object.
+	 */
 	public GWTMarkerState getMarkerState() {
 		return m_markerState;
 	}
 
+	/**
+	 * <p>setMarkerState</p>
+	 *
+	 * @param markerState a {@link org.opennms.features.poller.remote.gwt.client.GWTMarkerState} object.
+	 */
 	public void setMarkerState(final GWTMarkerState markerState) {
 		m_markerState = markerState;
 	}
 
+	/**
+	 * <p>getLatLng</p>
+	 *
+	 * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTLatLng} object.
+	 */
 	public GWTLatLng getLatLng() {
 		return GWTLatLng.fromCoordinates(getCoordinates());
 	}
 
+	/**
+	 * <p>isVisible</p>
+	 *
+	 * @param bounds a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
+	 * @return a boolean.
+	 */
 	public boolean isVisible(final GWTBounds bounds) {
 		return bounds.contains(getLatLng());
 	}
 
+	/** {@inheritDoc} */
 	public boolean equals(Object aThat) {
 		if (this == aThat) return true;
 		if (!(aThat instanceof LocationInfo)) return false;
@@ -128,12 +247,23 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 		return EqualsUtil.areEqual(this.getName(), that.getName());
 	}
 
+	/**
+	 * <p>hashCode</p>
+	 *
+	 * @return a int.
+	 */
 	public int hashCode() {
 		return new HashCodeBuilder()
 			.append(this.getName())
 			.toHashcode();
 	}
 
+	/**
+	 * <p>compareTo</p>
+	 *
+	 * @param that a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
+	 * @return a int.
+	 */
 	public int compareTo(final LocationInfo that) {
 		return new CompareToBuilder()
 			.append(this.getStatusDetails(), that.getStatusDetails())
@@ -142,6 +272,11 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 			.toComparison();
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return "LocationInfo[name=" + m_name
 			+ ",area=" + m_area
@@ -154,6 +289,11 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 			+ "]";
 	}
 
+    /**
+     * <p>getMarkerImageURL</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMarkerImageURL() {
     	return m_markerState.getImageURL();
     }

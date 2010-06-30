@@ -54,9 +54,12 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
 /**
- * 
+ * <p>LoadLabelMapController class.</p>
+ *
  * @author mmigliore
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @SuppressWarnings("deprecation")
 public class LoadLabelMapController extends SimpleFormController {
@@ -64,14 +67,25 @@ public class LoadLabelMapController extends SimpleFormController {
 
 	private Manager manager;
 		
+	/**
+	 * <p>Getter for the field <code>manager</code>.</p>
+	 *
+	 * @return a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public Manager getManager() {
 		return manager;
 	}
 
+	/**
+	 * <p>Setter for the field <code>manager</code>.</p>
+	 *
+	 * @param manager a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public void setManager(Manager manager) {
 		this.manager = manager;
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		

@@ -33,5 +33,11 @@ package org.opennms.netmgt.linkd.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>LinkdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface LinkdMBean extends BaseOnmsMBean {
 }

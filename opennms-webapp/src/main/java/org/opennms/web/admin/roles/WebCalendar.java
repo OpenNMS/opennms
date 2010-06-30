@@ -33,14 +33,41 @@ package org.opennms.web.admin.roles;
 
 import java.util.Date;
 
+/**
+ * <p>WebCalendar interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public interface WebCalendar {
     
+    /**
+     * <p>getMonthAndYear</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMonthAndYear(); 
     
+    /**
+     * <p>getPreviousMonth</p>
+     *
+     * @return a java$util$Date object.
+     */
     public Date getPreviousMonth();
     
+    /**
+     * <p>getNextMonth</p>
+     *
+     * @return a java$util$Date object.
+     */
     public Date getNextMonth();
     
+    /**
+     * <p>getWeeks</p>
+     *
+     * @return an array of {@link org.opennms.web.admin.roles.Week} objects.
+     */
     public Week[] getWeeks();
 
 }

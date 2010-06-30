@@ -33,19 +33,46 @@ package org.opennms.netmgt.provision;
 import org.apache.mina.core.future.IoFuture;
 
 /**
- * @author thedesloge
+ * <p>DetectFuture interface.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public interface DetectFuture extends IoFuture {
     
+    /**
+     * <p>getServiceDetector</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
+     */
     public AsyncServiceDetector getServiceDetector();
     
+    /**
+     * <p>isServiceDetected</p>
+     *
+     * @return a boolean.
+     */
     public boolean isServiceDetected();
     
+    /**
+     * <p>getException</p>
+     *
+     * @return a {@link java.lang.Throwable} object.
+     */
     public Throwable getException();
     
+    /**
+     * <p>setServiceDetected</p>
+     *
+     * @param serviceDetected a boolean.
+     */
     public void setServiceDetected(boolean serviceDetected);
     
+    /**
+     * <p>setException</p>
+     *
+     * @param throwable a {@link java.lang.Throwable} object.
+     */
     public void setException(Throwable throwable);
     
 }

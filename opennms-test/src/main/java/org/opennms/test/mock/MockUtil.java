@@ -31,14 +31,27 @@
 //
 package org.opennms.test.mock;
 
+/**
+ * <p>MockUtil class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MockUtil {
 
+    /**
+     * <p>printEnabled</p>
+     *
+     * @return a boolean.
+     */
     public static boolean printEnabled() {
         return "true".equals(System.getProperty("mock.debug", "true"));
     }
 
     /**
-     * @param string
+     * <p>println</p>
+     *
+     * @param string a {@link java.lang.String} object.
      */
     public static void println(String string) {
         if (MockUtil.printEnabled())

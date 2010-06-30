@@ -12,20 +12,44 @@ import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * <p>ApplicationState class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ApplicationState implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private Map<String,ApplicationDetails> m_statuses = new HashMap<String,ApplicationDetails>();
 
 	private StatusDetails m_statusDetails;
 
+	/**
+	 * <p>Constructor for ApplicationState.</p>
+	 */
 	public ApplicationState() {}
 
+	/**
+	 * <p>Constructor for ApplicationState.</p>
+	 *
+	 * @param from a {@link java.util.Date} object.
+	 * @param to a {@link java.util.Date} object.
+	 * @param applications a {@link java.util.Collection} object.
+	 * @param monitors a {@link java.util.List} object.
+	 * @param statuses a {@link java.util.Map} object.
+	 */
 	public ApplicationState(final Date from, final Date to, final Collection<ApplicationInfo> applications, final List<GWTLocationMonitor> monitors, final Map<String, List<GWTLocationSpecificStatus>> statuses) {
 		for (final ApplicationInfo app : applications) {
 			m_statuses.put(app.getName(), new ApplicationDetails(app, from, to, monitors, statuses.get(app.getName())));
 		}
 	}
 
+	/**
+	 * <p>getStatusDetails</p>
+	 *
+	 * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+	 */
 	public StatusDetails getStatusDetails() {
 		if (m_statusDetails == null) {
 			m_statusDetails = getStatusDetailsUncached();

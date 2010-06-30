@@ -52,13 +52,27 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  */
 
 @Distributable
+/**
+ * <p>Abstract JMXMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class JMXMonitor extends IPv4Monitor {
 
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param parameterMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper} object.
+     */
     public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address);
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
+    /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
 
         NetworkInterface iface = svc.getNetInterface();

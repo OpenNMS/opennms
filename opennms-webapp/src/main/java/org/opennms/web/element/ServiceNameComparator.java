@@ -37,10 +37,20 @@ package org.opennms.web.element;
 import java.util.Comparator;
 
 /**
- * 
+ * <p>ServiceNameComparator class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class ServiceNameComparator implements Comparator<Service> {
+    /**
+     * <p>compare</p>
+     *
+     * @param s1 a {@link org.opennms.web.element.Service} object.
+     * @param s2 a {@link org.opennms.web.element.Service} object.
+     * @return a int.
+     */
     public int compare(Service s1, Service s2) {
         return s1.getServiceName().compareTo(s2.getServiceName());
     }

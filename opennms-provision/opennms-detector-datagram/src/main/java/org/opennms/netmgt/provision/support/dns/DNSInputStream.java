@@ -41,17 +41,19 @@ import java.io.IOException;
  * DNSInputStrean extends a ByteArrayInputStream and has methods to decode the
  * data of a DNS response to an address resquest.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class DNSInputStream extends ByteArrayInputStream {
     /**
      * <P>
      * Constructs a new input stream for decoding DNS records.
      * </P>
-     * 
+     *
      * @param data
      *            The array of data to pass to the base class.
      */
@@ -63,7 +65,7 @@ public class DNSInputStream extends ByteArrayInputStream {
      * <P>
      * Constructs a DNSInputStream object from the byte array.
      * </P>
-     * 
+     *
      * @param data
      *            byte array containing the response data
      * @param off
@@ -79,12 +81,12 @@ public class DNSInputStream extends ByteArrayInputStream {
      * <P>
      * Read a byte off the input stream.
      * </P>
-     * 
+     *
      * @return The integer read.
-     * 
      * @exception java.io.IOException
      *                Thrown if the end-of-file is encountered trying to read
      *                the next byte.
+     * @throws java.io.IOException if any.
      */
     public int readByte() throws IOException {
         int rc = read();
@@ -97,12 +99,12 @@ public class DNSInputStream extends ByteArrayInputStream {
      * <P>
      * Read a 'short' off the input stream.
      * </P>
-     * 
+     *
      * @return The short from the input stream.
-     * 
      * @exception java.io.IOException
      *                Thrown if the end-of-file is encountered trying to read
      *                the next short.
+     * @throws java.io.IOException if any.
      */
     public int readShort() throws IOException {
         return (readByte() << 8 | readByte());
@@ -112,11 +114,11 @@ public class DNSInputStream extends ByteArrayInputStream {
      * <P>
      * Read an 'int' off the input stream.
      * </P>
-     * 
+     *
      * @return The int from the input stream.
-     * 
      * @exception java.io.IOException
      *                Thrown if there is an error while read.
+     * @throws java.io.IOException if any.
      */
     public long readInt() throws IOException {
         long rc = 0;
@@ -129,11 +131,11 @@ public class DNSInputStream extends ByteArrayInputStream {
      * <P>
      * Read a 'string' off the input stream.
      * </P>
-     * 
+     *
      * @return the string from the input stream
-     * 
      * @exception java.io.IOException
      *                Thrown if there is an error while read
+     * @throws java.io.IOException if any.
      */
     public String readString() throws IOException {
         int len = readByte();
@@ -156,12 +158,12 @@ public class DNSInputStream extends ByteArrayInputStream {
      * substrings, each substring in the record is separated by a '.'(dot). For
      * more information see the RFC for the distributed name service.
      * </P>
-     * 
+     *
      * @return The domain name string.
-     * 
      * @exception java.io.IOException
      *                Thrown if an error occurs decoding the string from the
      *                stream.
+     * @throws java.io.IOException if any.
      */
     public String readDomainName() throws IOException {
         //
@@ -225,11 +227,11 @@ public class DNSInputStream extends ByteArrayInputStream {
      * <P>
      * Reads the resource record from the input stream.
      * </P>
-     * 
+     *
      * @return The DNSAddressRR that is in response to the address request.
-     * 
      * @exception java.io.IOException
      *                Thrown if data does not decode to a DNSAddressRRl.
+     * @throws java.io.IOException if any.
      */
     public DNSAddressRR readRR() throws IOException {
         String rrName = readDomainName();

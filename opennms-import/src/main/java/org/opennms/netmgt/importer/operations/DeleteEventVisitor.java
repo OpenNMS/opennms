@@ -34,7 +34,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>DeleteEventVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.importer.operations;
 
@@ -46,7 +49,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
-
 public final class DeleteEventVisitor extends AbstractEntityVisitor {
 	private final List<Event> m_events;
 
@@ -54,14 +56,17 @@ public final class DeleteEventVisitor extends AbstractEntityVisitor {
 		m_events = events;
 	}
 
+	/** {@inheritDoc} */
 	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc) {
 		m_events.add(EventUtils.createServiceDeletedEvent("ModelImporter", monSvc.getNodeId().longValue(), monSvc.getIpAddress(), monSvc.getServiceType().getName(), -1L));
 	}
 
+	/** {@inheritDoc} */
 	public void visitIpInterfaceComplete(OnmsIpInterface iface) {
 		m_events.add(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId().longValue(), iface.getIpAddress(), -1L));
 	}
 
+	/** {@inheritDoc} */
 	public void visitNodeComplete(OnmsNode node) {
 		m_events.add(EventUtils.createNodeDeletedEvent("ModelImporter", node.getId().intValue(), node.getLabel(), node.getLabel(), -1L));
 	}

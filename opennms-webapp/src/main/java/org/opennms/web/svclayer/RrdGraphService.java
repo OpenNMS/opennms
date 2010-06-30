@@ -39,14 +39,40 @@ import java.io.InputStream;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
+ * <p>RrdGraphService interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Transactional(readOnly = true)
 public interface RrdGraphService {
+    /**
+     * <p>getPrefabGraph</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     * @param report a {@link java.lang.String} object.
+     * @param start a long.
+     * @param end a long.
+     * @return a {@link java.io.InputStream} object.
+     */
     public InputStream getPrefabGraph(String resourceId,
             String report, long start, long end);
     
+    /**
+     * <p>getAdhocGraph</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     * @param title a {@link java.lang.String} object.
+     * @param dataSources an array of {@link java.lang.String} objects.
+     * @param aggregateFunctions an array of {@link java.lang.String} objects.
+     * @param colors an array of {@link java.lang.String} objects.
+     * @param dataSourceTitles an array of {@link java.lang.String} objects.
+     * @param styles an array of {@link java.lang.String} objects.
+     * @param start a long.
+     * @param end a long.
+     * @return a {@link java.io.InputStream} object.
+     */
     public InputStream getAdhocGraph(String resourceId,
             String title, String[] dataSources, String[] aggregateFunctions,
             String[] colors, String[] dataSourceTitles, String[] styles,

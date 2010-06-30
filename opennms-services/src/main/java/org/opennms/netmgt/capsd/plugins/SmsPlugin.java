@@ -41,8 +41,10 @@ import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
 import org.opennms.sms.phonebook.PropertyPhonebook;
 /**
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * <p>SmsPlugin class.</p>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class SmsPlugin implements Plugin {
 
@@ -53,6 +55,11 @@ public class SmsPlugin implements Plugin {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
      */
+    /**
+     * <p>getProtocolName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getProtocolName() {
         return PROTOCOL_NAME;
     }
@@ -60,6 +67,7 @@ public class SmsPlugin implements Plugin {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
      */
+    /** {@inheritDoc} */
     public boolean isProtocolSupported(InetAddress address) {
         return isProtocolSupported(address, null);
     }
@@ -67,6 +75,7 @@ public class SmsPlugin implements Plugin {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress, java.util.Map)
      */
+    /** {@inheritDoc} */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
 
         try {
@@ -78,6 +87,11 @@ public class SmsPlugin implements Plugin {
         
     }
 
+    /**
+     * <p>getSmsDirectory</p>
+     *
+     * @return a {@link org.opennms.sms.phonebook.Phonebook} object.
+     */
     public Phonebook getSmsDirectory() {
         return m_smsDirectory;
     }

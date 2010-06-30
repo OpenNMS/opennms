@@ -38,8 +38,10 @@ package org.opennms.netmgt.vacuumd;
 
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 /**
+ * <p>AutomationInterval class.</p>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class AutomationInterval implements ScheduleInterval {
 
@@ -49,20 +51,40 @@ public class AutomationInterval implements ScheduleInterval {
     
     private long m_interval;
     
+    /**
+     * <p>Constructor for AutomationInterval.</p>
+     *
+     * @param interval a long.
+     */
     public AutomationInterval(long interval) {
         setInterval(interval);
     }
     
+    /**
+     * <p>getInterval</p>
+     *
+     * @return a long.
+     */
     public long getInterval() {
         return m_interval;
     }
     
+    /**
+     * <p>setInterval</p>
+     *
+     * @param interval a long.
+     */
     public void setInterval(long interval) {
         m_interval = interval;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.scheduler.ScheduleInterval#scheduledSuspension()
+     */
+    /**
+     * <p>scheduledSuspension</p>
+     *
+     * @return a boolean.
      */
     public boolean scheduledSuspension() {
         // TODO Auto-generated method stub

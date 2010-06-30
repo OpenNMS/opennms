@@ -43,9 +43,12 @@ package org.opennms.core.fiber;
  * <code>init</code> method will be invoked. Likewise, prior to garbage
  * collection the <code>destroy</code> method should be invoked.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public interface InitializableFiber extends Fiber {
     /**

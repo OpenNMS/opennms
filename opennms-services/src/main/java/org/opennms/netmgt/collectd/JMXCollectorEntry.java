@@ -38,6 +38,12 @@ import java.util.TreeMap;
  */
 
 
+/**
+ * <p>JMXCollectorEntry class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JMXCollectorEntry extends TreeMap<String, String> {
 	
 	/**
@@ -53,7 +59,7 @@ public class JMXCollectorEntry extends TreeMap<String, String> {
      * table for the loaded instance may be retrieved through its OID from the
      * MIBObject.
      * </P>
-     * 
+     *
      * <P>
      * The initial table is constructed with zero elements in the map.
      * </P>
@@ -69,21 +75,18 @@ public class JMXCollectorEntry extends TreeMap<String, String> {
      * created, this constructor will initialize all the variables as per their
      * named variable from the passed array of JMX varbinds.
      * </P>
-     * 
+     *
      * <P>
      * If the information in the object should not be modified then a <EM>final
      * </EM> modifier can be applied to the created object.
      * </P>
-     * 
+     *
      * @param vars
      *            The array of collected JMX variable bindings
      * @param types
      *            String Array of MibObject objects representing each of of the oid's
      *            configured for collection.
-     * @param ifIndex
-     *            The ifIndex (as a String) of the interface for which the
-     *            collected JMX data is relevant. NOTE: NULL if the collected
-     *            JMX data is for the node.
+     * @param objectName a {@link java.lang.String} object.
      */
     public JMXCollectorEntry(String objectName, String[] vars, String[] types) {
         this();
@@ -98,14 +101,29 @@ public class JMXCollectorEntry extends TreeMap<String, String> {
     /* (non-Javadoc)
      * @see java.util.TreeMap#keySet()
      */
+    /**
+     * <p>attributeNames</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> attributeNames() {
         return super.keySet();
     }
 
+	/**
+	 * <p>getObjectName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getObjectName() {
 		return m_objectName;
 	}
 
+	/**
+	 * <p>setObjectName</p>
+	 *
+	 * @param objectName a {@link java.lang.String} object.
+	 */
 	public void setObjectName(String objectName) {
 		this.m_objectName = objectName;
 	}

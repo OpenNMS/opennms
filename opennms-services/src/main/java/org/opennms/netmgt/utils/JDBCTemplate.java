@@ -41,19 +41,32 @@ import org.opennms.core.utils.DBUtils;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**
- * @author brozow
+ * <p>Abstract JDBCTemplate class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 abstract public class JDBCTemplate {
 
     private DataSource m_db;
     private String m_sql;
     
+    /**
+     * <p>Constructor for JDBCTemplate.</p>
+     *
+     * @param db a {@link javax.sql.DataSource} object.
+     * @param sql a {@link java.lang.String} object.
+     */
     protected JDBCTemplate(final DataSource db, final String sql) {
         m_db = db;
         m_sql = sql;
     }
 
+    /**
+     * <p>execute</p>
+     *
+     * @param values a {@link java.lang.Object} object.
+     */
     public void execute(final Object ... values) {
          try {
              doExecute(values);
@@ -90,6 +103,12 @@ abstract public class JDBCTemplate {
         }
     }
     
+    /**
+     * <p>reproduceStatement</p>
+     *
+     * @param values an array of {@link java.lang.Object} objects.
+     * @return a {@link java.lang.String} object.
+     */
     public String reproduceStatement(final Object values[]) {
     		return m_sql+": with vals "+argsToString(values);
     }

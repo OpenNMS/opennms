@@ -36,22 +36,39 @@
 package org.opennms.netmgt.vacuumd;
 
 /**
- * 
+ * <p>AutomationException class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
-
 public class AutomationException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * <p>Constructor for AutomationException.</p>
+	 *
+	 * @param arg0 a {@link java.lang.String} object.
+	 */
 	public AutomationException(String arg0) {
 		super(arg0);
 	}
 
+	/**
+	 * <p>Constructor for AutomationException.</p>
+	 *
+	 * @param arg0 a {@link java.lang.Throwable} object.
+	 */
 	public AutomationException(Throwable arg0) {
 		super(arg0);
 	}
 
+	/**
+	 * <p>Constructor for AutomationException.</p>
+	 *
+	 * @param arg0 a {@link java.lang.String} object.
+	 * @param arg1 a {@link java.lang.Throwable} object.
+	 */
 	public AutomationException(String arg0, Throwable arg1) {
 		super(arg0, arg1);
 	}

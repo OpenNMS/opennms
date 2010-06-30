@@ -36,30 +36,40 @@
 package org.opennms.netmgt.poller.pollables;
 
 /**
- * Represents a PollableVisitorAdaptor 
+ * Represents a PollableVisitorAdaptor
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class PollableVisitorAdaptor implements PollableVisitor {
 
+    /**
+     * <p>Constructor for PollableVisitorAdaptor.</p>
+     */
     public PollableVisitorAdaptor() {
     }
 
+    /** {@inheritDoc} */
     public void visitService(PollableService service) {
     }
 
+    /** {@inheritDoc} */
     public void visitInterface(PollableInterface interface1) {
     }
 
+    /** {@inheritDoc} */
     public void visitNode(PollableNode node) {
     }
 
+    /** {@inheritDoc} */
     public void visitNetwork(PollableNetwork network) {
     }
     
+    /** {@inheritDoc} */
     public void visitContainer(PollableContainer container) {
     }
 
+    /** {@inheritDoc} */
     public void visitElement(PollableElement element) {
     }
 }

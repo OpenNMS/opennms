@@ -38,7 +38,11 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 /**
+ * <p>StatusInterface class.</p>
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class StatusInterface {
 	
@@ -46,32 +50,65 @@ public class StatusInterface {
 	private String m_interfacename;
 	private Collection<StatusService> m_services;
 	
+	/**
+	 * <p>Constructor for StatusInterface.</p>
+	 */
 	public StatusInterface(){
 		
 		m_services = new ArrayList<StatusService>();
 		
 	}
 	
+	/**
+	 * <p>addService</p>
+	 *
+	 * @param service a {@link org.opennms.web.svclayer.catstatus.model.StatusService} object.
+	 */
 	public void addService ( StatusService service ) {	
 		m_services.add(service);
 	}
 	
+	/**
+	 * <p>getServices</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<StatusService> getServices(){
 		return m_services;
 	}
 	
+	/**
+	 * <p>getInterfacename</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getInterfacename() {
 		return m_interfacename;
 	}
 	
+	/**
+	 * <p>setInterfacename</p>
+	 *
+	 * @param m_interfacename a {@link java.lang.String} object.
+	 */
 	public void setInterfacename(String m_interfacename) {
 		this.m_interfacename = m_interfacename;
 	}
 	
+	/**
+	 * <p>getIpAddress</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getIpAddress() {
 		return m_ipaddress;
 	}
 	
+	/**
+	 * <p>setIpAddress</p>
+	 *
+	 * @param m_ipaddress a {@link java.lang.String} object.
+	 */
 	public void setIpAddress(String m_ipaddress) {
 		this.m_ipaddress = m_ipaddress;
 	}

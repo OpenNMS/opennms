@@ -61,9 +61,13 @@ import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles the data comming in from the destination wizard jsps.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DestinationWizardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -85,6 +89,7 @@ public class DestinationWizardServlet extends HttpServlet {
 //
 //    private String SOURCE_PAGE_ESCALATE_ADD = "addEscalation.jsp";
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             DestinationPathFactory.init();

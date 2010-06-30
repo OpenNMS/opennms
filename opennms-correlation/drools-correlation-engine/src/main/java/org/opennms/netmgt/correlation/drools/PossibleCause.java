@@ -38,12 +38,19 @@ package org.opennms.netmgt.correlation.drools;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>PossibleCause class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class PossibleCause extends Cause {
     
+    /**
+     * <p>Constructor for PossibleCause.</p>
+     *
+     * @param cause a {@link java.lang.Long} object.
+     * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public PossibleCause(Long cause, Event symptom) {
         super(Type.POSSIBLE, cause, symptom);
     }

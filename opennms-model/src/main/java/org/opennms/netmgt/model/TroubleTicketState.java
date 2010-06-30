@@ -34,10 +34,12 @@ package org.opennms.netmgt.model;
 
 /**
  * OpenNMS Trouble Ticket State Enumerations.
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public enum TroubleTicketState {
     OPEN,

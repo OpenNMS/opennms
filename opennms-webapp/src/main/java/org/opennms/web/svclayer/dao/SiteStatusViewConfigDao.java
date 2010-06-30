@@ -38,15 +38,34 @@ import org.opennms.netmgt.config.siteStatusViews.Views;
 import org.opennms.netmgt.config.siteStatusViews.View;
 
 /**
- * 
+ * <p>SiteStatusViewConfigDao interface.</p>
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public interface SiteStatusViewConfigDao {
     
+    /**
+     * <p>getViews</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.siteStatusViews.Views} object.
+     */
     Views getViews();
     
+    /**
+     * <p>getView</p>
+     *
+     * @param viewName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.siteStatusViews.View} object.
+     */
     View getView(String viewName);
     
+    /**
+     * <p>getDefaultView</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.siteStatusViews.View} object.
+     */
     View getDefaultView();
 
 }

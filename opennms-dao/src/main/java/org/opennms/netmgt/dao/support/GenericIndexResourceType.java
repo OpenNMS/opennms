@@ -64,6 +64,12 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
+/**
+ * <p>GenericIndexResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GenericIndexResourceType implements OnmsResourceType {
     private static final Pattern SUB_INDEX_PATTERN = Pattern.compile("^subIndex\\((.*)\\)$");
     private static final Pattern SUB_INDEX_ARGUMENTS_PATTERN = Pattern.compile("^(-?\\d+|n)(?:,\\s*(\\d+|n))?$");
@@ -76,6 +82,15 @@ public class GenericIndexResourceType implements OnmsResourceType {
     private ResourceDao m_resourceDao;
     private StorageStrategy m_storageStrategy;
 
+    /**
+     * <p>Constructor for GenericIndexResourceType.</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param name a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param resourceLabelExpression a {@link java.lang.String} object.
+     * @param storageStrategy a {@link org.opennms.netmgt.config.StorageStrategy} object.
+     */
     public GenericIndexResourceType(ResourceDao resourceDao, String name, String label, String resourceLabelExpression, StorageStrategy storageStrategy) {
         m_resourceDao = resourceDao;
         m_name = name;
@@ -84,18 +99,34 @@ public class GenericIndexResourceType implements OnmsResourceType {
         m_storageStrategy = storageStrategy;
     }
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
     
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_label;
     }
     
+    /**
+     * <p>getStorageStrategy</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.StorageStrategy} object.
+     */
     public StorageStrategy getStorageStrategy() {
         return m_storageStrategy;
     }
     
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnNode(int nodeId) {
       return getResourceTypeDirectory(nodeId, false).isDirectory();
     }
@@ -116,6 +147,7 @@ public class GenericIndexResourceType implements OnmsResourceType {
         return generic;
     }
     
+    /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
@@ -126,6 +158,12 @@ public class GenericIndexResourceType implements OnmsResourceType {
         return OnmsResource.sortIntoResourceList(resources);
     }
     
+    /**
+     * <p>getQueryableIndexesForNode</p>
+     *
+     * @param nodeId a int.
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getQueryableIndexesForNode(int nodeId) {
         File nodeDir = getResourceTypeDirectory(nodeId, true);
         
@@ -146,6 +184,13 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
 
     
+    /**
+     * <p>getResourceByNodeAndIndex</p>
+     *
+     * @param nodeId a int.
+     * @param index a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResourceByNodeAndIndex(int nodeId, final String index) {
         final Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(nodeId, index));
         
@@ -306,6 +351,13 @@ public class GenericIndexResourceType implements OnmsResourceType {
         }
     }
 
+    /**
+     * <p>getRelativePathForResource</p>
+     *
+     * @param nodeId a int.
+     * @param index a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getRelativePathForResource(int nodeId, String index) {
         return DefaultResourceDao.SNMP_DIRECTORY
             + File.separator + Integer.toString(nodeId)
@@ -314,6 +366,8 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
     
     /**
+     * {@inheritDoc}
+     *
      * This resource type is never available for domains.
      * Only the interface resource type is available for domains.
      */
@@ -322,11 +376,13 @@ public class GenericIndexResourceType implements OnmsResourceType {
     }
     
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<OnmsResource> getResourcesForDomain(String domain) {
         return Collections.EMPTY_LIST;
     }
 
+    /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }

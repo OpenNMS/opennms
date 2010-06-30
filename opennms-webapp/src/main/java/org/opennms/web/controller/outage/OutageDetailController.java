@@ -13,11 +13,19 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>OutageDetailController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OutageDetailController extends AbstractController implements InitializingBean {
 
     private String m_successView;
     private WebOutageRepository m_webOutageRepository;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int outageId = -1;
@@ -41,6 +49,11 @@ public class OutageDetailController extends AbstractController implements Initia
         return modelAndView;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_successView, "property successView must be set");
         Assert.notNull(m_webOutageRepository, "webOutageRepository must be set");
@@ -50,10 +63,20 @@ public class OutageDetailController extends AbstractController implements Initia
         return m_successView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
     
+    /**
+     * <p>setWebOutageRepository</p>
+     *
+     * @param webOutageRepository a {@link org.opennms.web.outage.WebOutageRepository} object.
+     */
     public void setWebOutageRepository(WebOutageRepository webOutageRepository) {
         m_webOutageRepository = webOutageRepository;
     }

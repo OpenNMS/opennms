@@ -51,6 +51,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
 
 @Component
+/**
+ * <p>OnmsMapElementResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Transactional
@@ -67,6 +74,12 @@ public class OnmsMapElementResource extends OnmsRestService {
     @Context
     ResourceContext m_context;
 
+    /**
+     * <p>getMapElements</p>
+     *
+     * @param mapId a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsMapElementList} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMapElementList getMapElements(@PathParam("mapId") int mapId) {

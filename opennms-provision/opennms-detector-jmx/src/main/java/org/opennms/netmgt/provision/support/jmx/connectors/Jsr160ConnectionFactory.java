@@ -54,10 +54,23 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+/**
+ * <p>Jsr160ConnectionFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Jsr160ConnectionFactory {
     
     static ThreadCategory log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
 
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param propertiesMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionWrapper} object.
+     */
     @SuppressWarnings("unchecked")
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address) {
         String factory  = ParameterMap.getKeyedString( propertiesMap, "factory", "STANDARD");

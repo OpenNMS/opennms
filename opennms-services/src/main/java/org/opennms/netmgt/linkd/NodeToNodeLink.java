@@ -41,8 +41,10 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
- * 
+ * <p>NodeToNodeLink class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class NodeToNodeLink implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -58,11 +60,18 @@ public class NodeToNodeLink implements Serializable {
 		throw new UnsupportedOperationException("default constructor not supported");
 	}
 
+	/**
+	 * <p>Constructor for NodeToNodeLink.</p>
+	 *
+	 * @param nodeId a int.
+	 * @param ifindex a int.
+	 */
 	public NodeToNodeLink(final int nodeId, final int ifindex) {
 		this.m_nodeId = nodeId;
 		this.m_ifIndex = ifindex;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		StringBuffer str = new StringBuffer("Node Id = " + m_nodeId);
@@ -73,42 +82,55 @@ public class NodeToNodeLink implements Serializable {
 	}
 
 	/**
+	 * <p>getNodeparentid</p>
+	 *
 	 * @return Returns the nodeparentid.
 	 */
 	public int getNodeparentid() {
 		return m_nodeParentId;
 	}
 	/**
+	 * <p>setNodeparentid</p>
+	 *
 	 * @param nodeParentId The nodeparentid to set.
 	 */
 	public void setNodeparentid(final int nodeParentId) {
 		this.m_nodeParentId = nodeParentId;
 	}
 	/**
+	 * <p>getParentifindex</p>
+	 *
 	 * @return Returns the parentifindex.
 	 */
 	public int getParentifindex() {
 		return m_parentIfIndex;
 	}
 	/**
+	 * <p>setParentifindex</p>
+	 *
 	 * @param parentIfIndex The parentifindex to set.
 	 */
 	public void setParentifindex(final int parentIfIndex) {
 		this.m_parentIfIndex = parentIfIndex;
 	}
 	/**
+	 * <p>getIfindex</p>
+	 *
 	 * @return Returns the ifindex.
 	 */
 	public int getIfindex() {
 		return m_ifIndex;
 	}
 	/**
-	 * @return
+	 * <p>getNodeId</p>
+	 *
+	 * @return a int.
 	 */
 	public int getNodeId() {
 		return m_nodeId;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
 	    return new HashCodeBuilder(17, 57)
@@ -119,6 +141,7 @@ public class NodeToNodeLink implements Serializable {
 	        .toHashCode();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(final Object o) {
 	    if (o == null) return false;

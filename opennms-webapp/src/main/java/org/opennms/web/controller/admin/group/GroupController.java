@@ -64,6 +64,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * GroupController
  *
  * @author brozow
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class GroupController extends AbstractController {
 
@@ -79,6 +81,7 @@ public class GroupController extends AbstractController {
     @Autowired
     private WebGroupRepository m_groupRepository;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,  HttpServletResponse response) throws Exception {
         String operation = request.getParameter("operation");

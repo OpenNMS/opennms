@@ -66,7 +66,9 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  *
  * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- *
+ * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 
 @Distributable
@@ -119,8 +121,11 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
 
     /**
      * Class constructor.
+     *
+     * @throws java.lang.ClassNotFoundException if any.
+     * @throws java.lang.InstantiationException if any.
+     * @throws java.lang.IllegalAccessException if any.
      */
-
     public RadiusAuthMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         log.info(getClass().getName() + ": RadiusAuthMonitor class loaded");
@@ -128,35 +133,23 @@ final public class RadiusAuthMonitor extends IPv4Monitor {
 
 
     /**
-     * Radius Authentication Poller
-     * 
-     * Note that the poller will return SERVICE_AVAILABLE only if the
-     * authentication Request actually succeeds. A failed authentication 
-     * request will result in SERVICE_UNAVILABLE, although the radius 
-     * server may actually be up. 
-     * @param parameters
-     *            Parameters to pass when polling the interface Currently
-     *            recognized Map keys:
-     *            <ul>
-     *            <li>user - Radius user
-     *            <li>password - Radius password
-     *		  <li>secret - Radius shared secret
-     *            <li>port - Radius auth port
-     *            <li>timeout - Number of miliseconds to wait before sending a
-     *            timeout
-     *            <li>authtype - authentication type to use (pap or chap)
-     *            <li>authport - port to poll for radius authentication
-     *            <li>acctport - radius accounting port - used by
-     *            <li>nasid - the NAS identifier
-     *            </ul>
-     * @param iface
-     *            The interface to poll
-     * @return int An status code that shows the status of the service
+     * {@inheritDoc}
      *
+     * Radius Authentication Poller
+     *
+     * Note that the poller will return SERVICE_AVAILABLE only if the
+     * authentication Request actually succeeds. A failed authentication
+     * request will result in SERVICE_UNAVILABLE, although the radius
+     * server may actually be up.
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
-     *
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();

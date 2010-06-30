@@ -44,24 +44,44 @@ import org.opennms.netmgt.provision.support.Client;
 
 /**
  * Detector client implemenation for the <code>SmsDetector</code>
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class SmsClient implements Client<LineOrientedRequest, SmsResponse> {
     
     private boolean m_isSupported = false;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.detector.sms.response.SmsResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public SmsResponse receiveBanner() throws IOException, Exception {
         return receiveResponse();
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.sms.response.SmsResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public SmsResponse sendRequest(LineOrientedRequest request) throws IOException, Exception {
         return null;
     }
@@ -71,10 +91,20 @@ public class SmsClient implements Client<LineOrientedRequest, SmsResponse> {
         return smsResponse;
     }
 
+    /**
+     * <p>setSupported</p>
+     *
+     * @param isSupported a boolean.
+     */
     public void setSupported(boolean isSupported) {
         m_isSupported = isSupported;
     }
 
+    /**
+     * <p>isSupported</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSupported() {
         return m_isSupported;
     }

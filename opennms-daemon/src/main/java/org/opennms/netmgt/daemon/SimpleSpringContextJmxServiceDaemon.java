@@ -35,6 +35,7 @@ package org.opennms.netmgt.daemon;
  * SimpleSpringContextJmxServiceDaemon
  *
  * @author brozow
+ * @version $Id: $
  */
 public class SimpleSpringContextJmxServiceDaemon extends
         AbstractSpringContextJmxServiceDaemon<SpringServiceDaemon> implements SimpleSpringContextJmxServiceDaemonMBean {
@@ -42,26 +43,26 @@ public class SimpleSpringContextJmxServiceDaemon extends
     private String m_loggingPrefix;
     private String m_springContext;
     /**
+     * <p>getLoggingPrefix</p>
+     *
      * @return the loggingPrefix
      */
     public String getLoggingPrefix() {
         return m_loggingPrefix;
     }
-    /**
-     * @param loggingPrefix the loggingPrefix to set
-     */
+    /** {@inheritDoc} */
     public void setLoggingPrefix(String loggingPrefix) {
         m_loggingPrefix = loggingPrefix;
     }
     /**
+     * <p>getSpringContext</p>
+     *
      * @return the springContext
      */
     public String getSpringContext() {
         return m_springContext;
     }
-    /**
-     * @param springContext the springContext to set
-     */
+    /** {@inheritDoc} */
     public void setSpringContext(String springContext) {
         m_springContext = springContext;
     }

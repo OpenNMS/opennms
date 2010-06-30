@@ -48,8 +48,11 @@ import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.svclayer.AdminApplicationService;
 
 /**
- * 
+ * <p>DefaultAdminApplicationService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultAdminApplicationService implements
         AdminApplicationService {
@@ -57,6 +60,7 @@ public class DefaultAdminApplicationService implements
     private ApplicationDao m_applicationDao;
     private MonitoredServiceDao m_monitoredServiceDao;
 
+    /** {@inheritDoc} */
     public ApplicationAndMemberServices getApplication(String applicationIdString) {
         if (applicationIdString == null) {
             throw new IllegalArgumentException("applicationIdString must not be null");
@@ -74,6 +78,11 @@ public class DefaultAdminApplicationService implements
         return new ApplicationAndMemberServices(application, memberServices);
     }
 
+    /**
+     * <p>findAllMonitoredServices</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsMonitoredService> findAllMonitoredServices() {
         List<OnmsMonitoredService> list =
             new ArrayList<OnmsMonitoredService>(m_monitoredServiceDao.findAll());
@@ -82,6 +91,7 @@ public class DefaultAdminApplicationService implements
         return list;
     }
     
+    /** {@inheritDoc} */
     public EditModel findApplicationAndAllMonitoredServices(String applicationIdString) {
         ApplicationAndMemberServices app = getApplication(applicationIdString); 
         
@@ -91,22 +101,50 @@ public class DefaultAdminApplicationService implements
                              app.getMemberServices());
     }
 
+    /**
+     * <p>getApplicationDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     */
     public ApplicationDao getApplicationDao() {
         return m_applicationDao;
     }
 
+    /**
+     * <p>setApplicationDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     */
     public void setApplicationDao(ApplicationDao dao) {
         m_applicationDao = dao;
     }
 
+    /**
+     * <p>getMonitoredServiceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public MonitoredServiceDao getMonitoredServiceDao() {
         return m_monitoredServiceDao;
     }
 
+    /**
+     * <p>setMonitoredServiceDao</p>
+     *
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
     }
 
+    /**
+     * <p>performEdit</p>
+     *
+     * @param applicationIdString a {@link java.lang.String} object.
+     * @param editAction a {@link java.lang.String} object.
+     * @param toAdd an array of {@link java.lang.String} objects.
+     * @param toDelete an array of {@link java.lang.String} objects.
+     */
     public void performEdit(String applicationIdString, String editAction,
             String[] toAdd, String[] toDelete) {
         if (applicationIdString == null) {
@@ -191,6 +229,7 @@ public class DefaultAdminApplicationService implements
        }
     }
 
+    /** {@inheritDoc} */
     public OnmsApplication addNewApplication(String name) {
         OnmsApplication application = new OnmsApplication();
         application.setName(name);
@@ -198,6 +237,11 @@ public class DefaultAdminApplicationService implements
         return application;
     }
 
+    /**
+     * <p>findAllApplications</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsApplication> findAllApplications() {
         Collection<OnmsApplication> applications = m_applicationDao.findAll();
         List<OnmsApplication> sortedApplications =
@@ -207,11 +251,13 @@ public class DefaultAdminApplicationService implements
         return sortedApplications;
     }
 
+    /** {@inheritDoc} */
     public void removeApplication(String applicationIdString) {
         OnmsApplication application = findApplication(applicationIdString);
         m_applicationDao.delete(application);
     }
 
+    /** {@inheritDoc} */
     public List<OnmsApplication> findByMonitoredService(int id) {
         OnmsMonitoredService service = m_monitoredServiceDao.get(id);
         if (service == null) {
@@ -227,6 +273,14 @@ public class DefaultAdminApplicationService implements
         return sortedApplications;
     }
 
+    /**
+     * <p>performServiceEdit</p>
+     *
+     * @param ifServiceIdString a {@link java.lang.String} object.
+     * @param editAction a {@link java.lang.String} object.
+     * @param toAdd an array of {@link java.lang.String} objects.
+     * @param toDelete an array of {@link java.lang.String} objects.
+     */
     public void performServiceEdit(String ifServiceIdString, String editAction,
             String[] toAdd, String[] toDelete) {
         if (ifServiceIdString == null) {
@@ -310,6 +364,7 @@ public class DefaultAdminApplicationService implements
     }
 
 
+    /** {@inheritDoc} */
     public ServiceEditModel findServiceApplications(String ifServiceIdString) {
         if (ifServiceIdString == null) {
             throw new IllegalArgumentException("ifServiceIdString must not be null");
@@ -324,6 +379,12 @@ public class DefaultAdminApplicationService implements
         return new ServiceEditModel(service, applications);
     }
 
+    /**
+     * <p>findApplication</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     */
     public OnmsApplication findApplication(String name) {
         int applicationId = -1;
         try {

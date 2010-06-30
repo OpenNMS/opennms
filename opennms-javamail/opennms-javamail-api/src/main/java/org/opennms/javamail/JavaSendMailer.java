@@ -57,13 +57,14 @@ import org.springframework.mail.javamail.MimeMailMessage;
 
 /**
  * Use this class for sending emailz.
- * 
+ *
  * Crude extension of JavaMailer
  * TODO: Improve class hierarchy.
- * 
- * TODO: Needs testing
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * TODO: Needs testing
+ *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class JavaSendMailer extends JavaMailer2 {
     
@@ -75,12 +76,12 @@ public class JavaSendMailer extends JavaMailer2 {
     
     /**
      * Constructs everything required to call send()
-     * 
+     *
      * @param config
-     *     SendmailConfig 
+     *     SendmailConfig
      * @param useJmProps
      *     A boolean representing the handling of the deprecated javamail-configuration.properties file.
-     * @throws JavaMailerException
+     * @throws org.opennms.javamail.JavaMailerException if any.
      */
     public JavaSendMailer(SendmailConfig config, boolean useJmProps) throws JavaMailerException {
         m_config = config;
@@ -100,14 +101,20 @@ public class JavaSendMailer extends JavaMailer2 {
     /**
      * Using this constructor implies overriding sendmail configuration with properties
      * from the deprecated javamail-configuration.properties file.
-     * 
-     * @param config
-     * @throws JavaMailerException
+     *
+     * @param config a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     * @throws org.opennms.javamail.JavaMailerException if any.
      */
     public JavaSendMailer(SendmailConfig config) throws JavaMailerException {
         this(config, true);
     }
     
+    /**
+     * <p>buildMimeMessage</p>
+     *
+     * @param msg a {@link org.opennms.netmgt.config.common.SendmailMessage} object.
+     * @return a {@link org.springframework.mail.javamail.MimeMailMessage} object.
+     */
     public MimeMailMessage buildMimeMessage(SendmailMessage msg) {
         //no need to set the same object again
         if (m_config.getSendmailMessage() != msg) {
@@ -123,7 +130,8 @@ public class JavaSendMailer extends JavaMailer2 {
     
     /**
      * Helper method to create an Authenticator based on Password Authentication
-     * @return
+     *
+     * @return a {@link javax.mail.Authenticator} object.
      */
     public Authenticator createAuthenticator() {
         Authenticator auth;
@@ -236,6 +244,11 @@ public class JavaSendMailer extends JavaMailer2 {
         
     }
     
+    /**
+     * <p>send</p>
+     *
+     * @throws org.opennms.javamail.JavaMailerException if any.
+     */
     public void send() throws JavaMailerException {
         m_message.setText(m_config.getSendmailMessage().getBody());
         send(m_message);
@@ -283,26 +296,56 @@ public class JavaSendMailer extends JavaMailer2 {
 
 
 
+    /**
+     * <p>setConfig</p>
+     *
+     * @param config a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     */
     public void setConfig(SendmailConfig config) {
         m_config = config;
     }
 
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     */
     public SendmailConfig getConfig() {
         return m_config;
     }
 
+    /**
+     * <p>setMessage</p>
+     *
+     * @param message a {@link org.springframework.mail.javamail.MimeMailMessage} object.
+     */
     public void setMessage(MimeMailMessage message) {
         m_message = message;
     }
 
+    /**
+     * <p>getMessage</p>
+     *
+     * @return a {@link org.springframework.mail.javamail.MimeMailMessage} object.
+     */
     public MimeMailMessage getMessage() {
         return m_message;
     }
 
+    /**
+     * <p>setProperties</p>
+     *
+     * @param properties a {@link java.util.Properties} object.
+     */
     public void setProperties(Properties properties) {
         m_properties = properties;
     }
 
+    /**
+     * <p>getProperties</p>
+     *
+     * @return a {@link java.util.Properties} object.
+     */
     public Properties getProperties() {
         return m_properties;
     }

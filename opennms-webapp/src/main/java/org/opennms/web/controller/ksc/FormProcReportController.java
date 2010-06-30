@@ -53,11 +53,19 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>FormProcReportController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class FormProcReportController extends AbstractController implements InitializingBean {
     
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
@@ -130,22 +138,47 @@ public class FormProcReportController extends AbstractController implements Init
         }
     }
     
+    /**
+     * <p>getKscReportFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public KSC_PerformanceReportFactory getKscReportFactory() {
         return m_kscReportFactory;
     }
 
+    /**
+     * <p>setKscReportFactory</p>
+     *
+     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
         m_kscReportFactory = kscReportFactory;
     }
 
+    /**
+     * <p>getKscReportService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public KscReportService getKscReportService() {
         return m_kscReportService;
     }
 
+    /**
+     * <p>setKscReportService</p>
+     *
+     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
         Assert.state(m_kscReportService != null, "property kscReportService must be set");

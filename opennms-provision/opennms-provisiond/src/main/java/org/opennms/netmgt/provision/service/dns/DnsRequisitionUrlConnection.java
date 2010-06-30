@@ -78,9 +78,9 @@ import org.xbill.DNS.ZoneTransferIn;
  * Implementation of <code>java.net.URLConnection</code> for handling
  * URLs specified in the Provisiond configuration requesting an import
  * requisition based on the A records of a zone transfer for a DNS server.
- *  
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class DnsRequisitionUrlConnection extends URLConnection {
 
@@ -88,8 +88,10 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 
     private static final String QUERY_ARG_SEPARATOR = "&";
 
+    /** Constant <code>URL_SCHEME="dns://"</code> */
     public static final String URL_SCHEME = "dns://";
     
+    /** Constant <code>PROTOCOL="dns"</code> */
     public static final String PROTOCOL = "dns";
 
     private String m_zone;
@@ -110,6 +112,12 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     private String m_foreignSource;
     
     
+    /**
+     * <p>Constructor for DnsRequisitionUrlConnection.</p>
+     *
+     * @param url a {@link java.net.URL} object.
+     * @throws java.net.MalformedURLException if any.
+     */
     protected DnsRequisitionUrlConnection(URL url) throws MalformedURLException {
         super(url);
         
@@ -133,6 +141,8 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 
     
     /**
+     * {@inheritDoc}
+     *
      * This is a no op.
      */
     @Override
@@ -140,9 +150,10 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Creates a ByteArrayInputStream implementation of InputStream of the XML marshaled version
      * of the Requisition class.  Calling close on this stream is safe.
-     * 
      */
     @Override
     public InputStream getInputStream() throws IOException {
@@ -311,6 +322,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         return hash;
     }
 
+    /** {@inheritDoc} */
     @Override
     public URL getURL() {
         // TODO Auto-generated method stub
@@ -337,46 +349,102 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         return xml;
     }
     
+    /**
+     * <p>getZone</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getZone() {
         return m_zone;
     }
     
+    /**
+     * <p>getSerial</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getSerial() {
         return m_serial;
     }
     
+    /**
+     * <p>setSerial</p>
+     *
+     * @param serial a {@link java.lang.Long} object.
+     */
     public void setSerial(Long serial) {
         m_serial = serial;
     }
     
+    /**
+     * <p>getFallback</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean getFallback() {
         return m_fallback;
     }
     
+    /**
+     * <p>setFallback</p>
+     *
+     * @param fallback a {@link java.lang.Boolean} object.
+     */
     public void setFallback(Boolean fallback) {
         m_fallback = fallback;
     }
     
+    /**
+     * <p>getKey</p>
+     *
+     * @return a {@link org.xbill.DNS.TSIG} object.
+     */
     public TSIG getKey() {
         return m_key;
     }
     
+    /**
+     * <p>setKey</p>
+     *
+     * @param key a {@link org.xbill.DNS.TSIG} object.
+     */
     public void setKey(TSIG key) {
         m_key = key;
     }
     
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         return m_url.toString();
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getDescription();
     }
     
+    /**
+     * <p>getUrl</p>
+     *
+     * @return a {@link java.net.URL} object.
+     */
     public URL getUrl() {
         return m_url;
     }
 
+    /**
+     * <p>determineExpressionFromUrl</p>
+     *
+     * @param url a {@link java.net.URL} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected static String determineExpressionFromUrl(URL url) {
         log().info("determineExpressionFromUrl: finding regex as parameter in query string of URL: "+url);
         
@@ -416,6 +484,12 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         return queryArgs;
     }
 
+    /**
+     * <p>decodeQueryString</p>
+     *
+     * @param url a {@link java.net.URL} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected static String decodeQueryString(URL url) {
         String query = null;
         
@@ -435,11 +509,12 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     /**
      * Validate the format is:
      *   dns://<host>/<zone>/?expression=<regex>
-     *   
+     *
      *   there should be only one arguement in the path
      *   there should only be one query parameter
-     *   
-     * @param url
+     *
+     * @param url a {@link java.net.URL} object.
+     * @throws java.net.MalformedURLException if any.
      */
     protected static void validateDnsUrl(URL url) throws MalformedURLException {
         
@@ -462,11 +537,11 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     
     /**
      * Zone should be the first path entity
-     * 
+     *
      *   dns://<host>/<zone>[/<foreign source>][/<?expression=<regex>>
-     *   
-     * @param url
-     * @return
+     *
+     * @param url a {@link java.net.URL} object.
+     * @return a {@link java.lang.String} object.
      */
     protected static String parseZone(URL url) {
         
@@ -489,11 +564,11 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     /**
      * Foreign Source should be the second path entity, if it exists, otherwise it is
      * set to the value of the zone.
-     * 
+     *
      *   dns://<host>/<zone>[/<foreign source>][/<?expression=<regex>>
-     *   
-     * @param url
-     * @return
+     *
+     * @param url a {@link java.net.URL} object.
+     * @return a {@link java.lang.String} object.
      */
     protected static String parseForeignSource(URL url) {
         
@@ -517,11 +592,21 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     }
 
 
+    /**
+     * <p>setForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     */
     public void setForeignSource(String foreignSource) {
         m_foreignSource = foreignSource;
     }
 
 
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignSource() {
         return m_foreignSource;
     }

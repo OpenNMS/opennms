@@ -14,12 +14,24 @@ import java.util.TooManyListenersException;
 
 import org.eclipse.osgi.framework.console.CommandProvider;
 
+/**
+ * <p>LoopbackEventTest class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LoopbackEventTest {
 
     private SerialPort serialPort;
     private OutputStream outStream;
     private InputStream inStream;
 
+    /**
+     * <p>connect</p>
+     *
+     * @param portName a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     public void connect(String portName) throws IOException {
         try {
             // Obtain a CommPortIdentifier object for the port you want to open
@@ -50,6 +62,7 @@ public class LoopbackEventTest {
 
     /**
      * Get the serial port input stream
+     *
      * @return The serial port input stream
      */
     public InputStream getSerialInputStream() {
@@ -58,6 +71,7 @@ public class LoopbackEventTest {
 
     /**
      * Get the serial port output stream
+     *
      * @return The serial port output stream
      */
     public OutputStream getSerialOutputStream() {

@@ -40,13 +40,16 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 
+ * <p>CollectionMath class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
  */
 public class CollectionMath {
 
 	/**
 	 * Get the number of null entries in a {@link List}
+	 *
 	 * @param list the {@link List}
 	 * @return the number of null entries
 	 */
@@ -63,6 +66,7 @@ public class CollectionMath {
 
 	/**
 	 * Get the number of non-null entries in a {@link List}
+	 *
 	 * @param list the list
 	 * @return the number of non-null entries
 	 */
@@ -73,6 +77,7 @@ public class CollectionMath {
 
 	/**
 	 * Get the percentage of null entries in a {@link List} of {@link Number} values
+	 *
 	 * @param list the {@link List} of {@link Number} values
 	 * @return the percentage of null values as a {@link Number} value
 	 */
@@ -95,6 +100,7 @@ public class CollectionMath {
 	
 	/**
 	 * Get the percentage of not-null entries in a {@link List} of {@link Number} values
+	 *
 	 * @param list the {@link List} of {@link Number} values
 	 * @return the percentage of not-null values as a {@link Number} value
 	 */
@@ -117,6 +123,7 @@ public class CollectionMath {
 
 	/**
 	 * Get the average of the contents of a {@link List} of {@link Number} values, excluding null entries
+	 *
 	 * @param list the {@link List} of {@link Number} values
 	 * @return the average of the not-null values as a {@link Number} value
 	 */
@@ -145,6 +152,7 @@ public class CollectionMath {
 	
 	/**
 	 * Get the median of the contents of a {@link List} of {@link Number} values, excluding null entries
+	 *
 	 * @param list the {@link List} of {@link Number} values
 	 * @return the median of the not-null values as a {@link Number} value
 	 */

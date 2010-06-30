@@ -23,10 +23,23 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>JMXSecureConnectionFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JMXSecureConnectionFactory
 {
     static ThreadCategory log = ThreadCategory.getInstance(JMXSecureConnectionFactory.class);
 
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param propertiesMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.protocols.jmx.connectors.Jsr160ConnectionWrapper} object.
+     */
     public static Jsr160ConnectionWrapper getMBeanServerConnection(Map propertiesMap, InetAddress address)
     {
         Jsr160ConnectionWrapper connectionWrapper = null;

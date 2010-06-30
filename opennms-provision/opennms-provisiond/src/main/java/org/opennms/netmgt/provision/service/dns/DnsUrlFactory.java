@@ -38,8 +38,15 @@ package org.opennms.netmgt.provision.service.dns;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
+/**
+ * <p>DnsUrlFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DnsUrlFactory implements URLStreamHandlerFactory {
 
+    /** {@inheritDoc} */
     public URLStreamHandler createURLStreamHandler(String protocol) {
         if (DnsRequisitionUrlConnection.PROTOCOL.equals(protocol)) {
             return new Handler();

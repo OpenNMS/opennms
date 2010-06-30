@@ -49,11 +49,15 @@ import org.opennms.protocols.rt.Request;
 /**
  * This class is used to encapsulate a ping request. A request consist of
  * the pingable address and a signaled state.
- * 
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 final public class PingRequest implements Request<PingRequestId, PingRequest, PingReply> {
+    /** Constant <code>FILTER_ID=(short) (new java.util.Random(System.currentTimeMillis())).nextInt()</code> */
     public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
     private static final short DEFAULT_SEQUENCE_ID = 1;
     private static long s_nextTid = 1;
@@ -123,35 +127,75 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     }
     
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return m_id.getAddress();
     }
     
+    /**
+     * <p>getTid</p>
+     *
+     * @return a long.
+     */
     public long getTid() {
         return m_id.getTid();
     }
     
+    /**
+     * <p>getSequenceId</p>
+     *
+     * @return a short.
+     */
     public short getSequenceId() {
         return m_id.getSequenceId();
     }
 
+    /**
+     * <p>getRetries</p>
+     *
+     * @return a int.
+     */
     public int getRetries() {
         return m_retries;
     }
 
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a long.
+     */
     public long getTimeout() {
         return m_timeout;
     }
     
+    /**
+     * <p>getRequest</p>
+     *
+     * @return a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
+     */
     public ICMPEchoPacket getRequest() {
         return m_request;
     }
 
+    /**
+     * <p>getResponse</p>
+     *
+     * @return a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
+     */
     public ICMPEchoPacket getResponse() {
         return m_response;
     }
 
 
+    /**
+     * <p>getExpiration</p>
+     *
+     * @return a long.
+     */
     public long getExpiration() {
         return m_expiration;
     }
@@ -165,7 +209,8 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
 
     /**
      * Send this PingRequest through the given icmpSocket
-     * @param icmpSocket
+     *
+     * @param icmpSocket a {@link org.opennms.protocols.icmp.IcmpSocket} object.
      */
     public void sendRequest(IcmpSocket icmpSocket) {
         try {
@@ -188,6 +233,9 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         return packet;
     }
 
+    /**
+     * <p>createRequestPacket</p>
+     */
     public void createRequestPacket() {
         m_expiration = System.currentTimeMillis() + m_timeout;
         ICMPEchoPacket iPkt = new ICMPEchoPacket(getTid());
@@ -197,6 +245,12 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_request = iPkt;
     }
     
+    /**
+     * <p>processResponse</p>
+     *
+     * @param reply a {@link org.opennms.netmgt.ping.PingReply} object.
+     * @return a boolean.
+     */
     public boolean processResponse(PingReply reply) {
         try {
             processResponse(reply.getPacket());
@@ -212,6 +266,11 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_callback.handleResponse(getAddress(), packet);
     }
 
+    /**
+     * <p>processTimeout</p>
+     *
+     * @return a {@link org.opennms.netmgt.ping.PingRequest} object.
+     */
     public PingRequest processTimeout() {
         try {
             PingRequest returnval = null;
@@ -230,10 +289,20 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         }
     }
     
+    /**
+     * <p>isExpired</p>
+     *
+     * @return a boolean.
+     */
     public boolean isExpired() {
         return (System.currentTimeMillis() >= getExpiration());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
@@ -246,10 +315,17 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         return sb.toString();
     }
 
+    /** {@inheritDoc} */
     public long getDelay(TimeUnit unit) {
         return unit.convert(getExpiration() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param request a {@link java.util.concurrent.Delayed} object.
+     * @return a int.
+     */
     public int compareTo(Delayed request) {
         long myDelay = getDelay(TimeUnit.MILLISECONDS);
         long otherDelay = request.getDelay(TimeUnit.MILLISECONDS);
@@ -258,10 +334,16 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         return 1;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link org.opennms.netmgt.ping.PingRequestId} object.
+     */
     public PingRequestId getId() {
         return m_id;
     }
 
+    /** {@inheritDoc} */
     public void processError(Throwable t) {
         try {
             m_callback.handleError(getAddress(), getRequest(), t);
@@ -316,6 +398,11 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_processed.set(processed);
     }
 
+    /**
+     * <p>isProcessed</p>
+     *
+     * @return a boolean.
+     */
     public boolean isProcessed() {
         return m_processed.get();
     }

@@ -38,23 +38,48 @@ import org.opennms.netmgt.provision.detector.loop.response.LoopResponse;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.Client;
 
+/**
+ * <p>LoopClient class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LoopClient implements Client<LineOrientedRequest, LoopResponse> {
     
     private String m_address;
     private boolean m_isSupported = false;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_address = address.getHostAddress();
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.detector.loop.response.LoopResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public LoopResponse receiveBanner() throws IOException, Exception {
         return receiveResponse();
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.loop.response.LoopResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public LoopResponse sendRequest(LineOrientedRequest request) throws IOException, Exception {
         return null;
     }
@@ -65,10 +90,20 @@ public class LoopClient implements Client<LineOrientedRequest, LoopResponse> {
         return loopResponse;
     }
 
+    /**
+     * <p>setSupported</p>
+     *
+     * @param isSupported a boolean.
+     */
     public void setSupported(boolean isSupported) {
         m_isSupported = isSupported;
     }
 
+    /**
+     * <p>isSupported</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSupported() {
         return m_isSupported;
     }

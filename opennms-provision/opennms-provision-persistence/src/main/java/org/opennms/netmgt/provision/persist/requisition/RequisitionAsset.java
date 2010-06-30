@@ -14,6 +14,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * <p>RequisitionAsset class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="")
 @XmlRootElement(name="asset")
@@ -25,26 +31,55 @@ public class RequisitionAsset {
     @XmlAttribute(name="value", required=true)
     protected String m_value;
 
+    /**
+     * <p>Constructor for RequisitionAsset.</p>
+     */
     public RequisitionAsset() {
     }
 
+    /**
+     * <p>Constructor for RequisitionAsset.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public RequisitionAsset(String name, String value) {
         m_name = name;
         m_value = value;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
     public void setName(String value) {
         m_name = value;
     }
 
+    /**
+     * <p>getValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getValue() {
         return m_value;
     }
 
+    /**
+     * <p>setValue</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
     public void setValue(String value) {
         m_value = value;
     }

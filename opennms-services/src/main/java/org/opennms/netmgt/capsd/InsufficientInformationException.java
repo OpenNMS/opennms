@@ -39,10 +39,13 @@
 package org.opennms.netmgt.capsd;
 
 /**
+ * <p>InsufficientInformationException class.</p>
+ *
  * @author brozow
- * 
+ *
  * FIXME To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Generation - Code and Comments
+ * @version $Id: $
  */
 public class InsufficientInformationException extends Exception {
 
@@ -52,7 +55,7 @@ public class InsufficientInformationException extends Exception {
     private static final long serialVersionUID = 8687696175850117574L;
 
     /**
-     * 
+     * <p>Constructor for InsufficientInformationException.</p>
      */
     public InsufficientInformationException() {
         super();
@@ -60,7 +63,9 @@ public class InsufficientInformationException extends Exception {
     }
 
     /**
-     * @param arg0
+     * <p>Constructor for InsufficientInformationException.</p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
      */
     public InsufficientInformationException(String arg0) {
         super(arg0);
@@ -68,8 +73,10 @@ public class InsufficientInformationException extends Exception {
     }
 
     /**
-     * @param arg0
-     * @param arg1
+     * <p>Constructor for InsufficientInformationException.</p>
+     *
+     * @param arg0 a {@link java.lang.String} object.
+     * @param arg1 a {@link java.lang.Throwable} object.
      */
     public InsufficientInformationException(String arg0, Throwable arg1) {
         super(arg0, arg1);
@@ -77,7 +84,9 @@ public class InsufficientInformationException extends Exception {
     }
 
     /**
-     * @param arg0
+     * <p>Constructor for InsufficientInformationException.</p>
+     *
+     * @param arg0 a {@link java.lang.Throwable} object.
      */
     public InsufficientInformationException(Throwable arg0) {
         super(arg0);

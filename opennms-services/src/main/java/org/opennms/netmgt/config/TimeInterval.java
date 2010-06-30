@@ -33,12 +33,24 @@ package org.opennms.netmgt.config;
 
 import java.util.Date;
 
+/**
+ * <p>TimeInterval class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class TimeInterval implements Comparable<TimeInterval> {
     
     private Date m_start;
     private Date m_end;
     
 
+    /**
+     * <p>Constructor for TimeInterval.</p>
+     *
+     * @param start a {@link java.util.Date} object.
+     * @param end a {@link java.util.Date} object.
+     */
     public TimeInterval(Date start, Date end) {
         if (start == null) throw new NullPointerException("start is null");
         if (end == null) throw new NullPointerException("end is null");
@@ -50,21 +62,31 @@ public class TimeInterval implements Comparable<TimeInterval> {
             
     }
     
+    /**
+     * <p>getStart</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getStart() {
         return m_start;
     }
     
+    /**
+     * <p>getEnd</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getEnd() {
         return m_end;
     }
     
     /**
      * Returns -1, 0, 1 based on how date compares to this interval
-     * 
-     * @param date
-     * @return -1 if the interval is entirely before date, 
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return -1 if the interval is entirely before date,
      *          0 if the interval contains date,
-     *           1 if the interface entirely follows date, 
+     *           1 if the interface entirely follows date,
      *           for these the starting date is included the ending date excluded
      */
     public int comparesTo(Date date) {
@@ -75,10 +97,16 @@ public class TimeInterval implements Comparable<TimeInterval> {
         else return 0;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "["+m_start+" - "+m_end+']';
     }
     
+    /** {@inheritDoc} */
     public boolean equals(Object o) {
         if (o instanceof TimeInterval) {
             TimeInterval t = (TimeInterval)o;
@@ -87,11 +115,22 @@ public class TimeInterval implements Comparable<TimeInterval> {
         return false;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return m_start.hashCode() ^ m_end.hashCode();
     }
 
     // I don't implement Comparable because this relation is not consistent with equals
+    /**
+     * <p>compareTo</p>
+     *
+     * @param t a {@link org.opennms.netmgt.config.TimeInterval} object.
+     * @return a int.
+     */
     public int compareTo(TimeInterval t) {
         if (t.m_end.before(m_start) || t.m_end.equals(m_start))
             return 1;

@@ -34,10 +34,19 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.UserNotificationDao;
 import org.opennms.netmgt.model.OnmsUserNotification;
 
+/**
+ * <p>UserNotificationDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class UserNotificationDaoHibernate extends
 		AbstractDaoHibernate<OnmsUserNotification, Integer> implements
 		UserNotificationDao {
 
+	/**
+	 * <p>Constructor for UserNotificationDaoHibernate.</p>
+	 */
 	public UserNotificationDaoHibernate() {
 		super(OnmsUserNotification.class);
 	}

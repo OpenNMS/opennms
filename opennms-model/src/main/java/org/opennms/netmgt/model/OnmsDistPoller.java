@@ -45,10 +45,12 @@ import javax.persistence.TemporalType;
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
+/**
  * Represents an OpenNMS Distributed Poller
- * 
-*/
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Entity
 @Table(name="distPoller")
 public class OnmsDistPoller implements Serializable {
@@ -82,126 +84,201 @@ public class OnmsDistPoller implements Serializable {
     /** nullable persistent field */
     private Integer m_runState;
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsDistPoller() {}
     
-    /** minimal constructor */
+    /**
+     * minimal constructor
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public OnmsDistPoller(String name, String ipAddress) {
         m_name = name;
         m_ipAddress = ipAddress;
     }
 
-    /** 
+    /**
      * A human-readable name for each system.
      * Typically, the system's hostname (not fully qualified).
+     *
+     * @return a {@link java.lang.String} object.
      */
     @Id @Column(name="dpName")
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param dpname a {@link java.lang.String} object.
+     */
     public void setName(String dpname) {
         m_name = dpname;
     }
 
     /**
      * IP address of the distributed poller.
+     *
+     * @return a {@link java.lang.String} object.
      */
     @Column(name="dpIP", nullable=false, length=16)
     public String getIpAddress() {
         return m_ipAddress;
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param dpip a {@link java.lang.String} object.
+     */
     public void setIpAddress(String dpip) {
         m_ipAddress = dpip;
     }
 
-    /** 
+    /**
      * A free form text field providing a desciption of the distrubted poller
+     *
+     * @return a {@link java.lang.String} object.
      */
     @Column(name="dpComment", length=256)
     public String getComment() {
         return m_comment;
     }
 
+    /**
+     * <p>setComment</p>
+     *
+     * @param dpcomment a {@link java.lang.String} object.
+     */
     public void setComment(String dpcomment) {
         m_comment = dpcomment;
     }
 
-    /** 
+    /**
      * Numeric representation of percentage of interface speed available to discovery
      * process.  See documentation for "bandwidth troll"
+     *
+     * @return a {@link java.math.BigDecimal} object.
      */
     @Column(name="dpDiscLimit", length=5, scale=2)
     public BigDecimal getDiscoveryLimit() {
         return m_discoveryLimit;
     }
 
+    /**
+     * <p>setDiscoveryLimit</p>
+     *
+     * @param dpdisclimit a {@link java.math.BigDecimal} object.
+     */
     public void setDiscoveryLimit(BigDecimal dpdisclimit) {
         m_discoveryLimit = dpdisclimit;
     }
 
     /**
      * Time of last pull of new nodes from the DP
+     *
+     * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP) @Column(name="dpLastNodePull")
     public Date getLastNodePull() {
         return m_lastNodePull;
     }
 
+    /**
+     * <p>setLastNodePull</p>
+     *
+     * @param dplastnodepull a {@link java.util.Date} object.
+     */
     public void setLastNodePull(Date dplastnodepull) {
         m_lastNodePull = dplastnodepull;
     }
 
     /**
      * Time of last pull of events from the DP
+     *
+     * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP) @Column(name="dpLastEventPull")
     public Date getLastEventPull() {
         return m_lastEventPull;
     }
 
+    /**
+     * <p>setLastEventPull</p>
+     *
+     * @param dplasteventpull a {@link java.util.Date} object.
+     */
     public void setLastEventPull(Date dplasteventpull) {
         m_lastEventPull = dplasteventpull;
     }
 
-    /** 
+    /**
      * Time of last push of Package (config) to the DP
+     *
+     * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP) @Column(name="dpLastPackagePush")
     public Date getLastPackagePush() {
         return m_lastPackagePush;
     }
 
+    /**
+     * <p>setLastPackagePush</p>
+     *
+     * @param dplastpackagepush a {@link java.util.Date} object.
+     */
     public void setLastPackagePush(Date dplastpackagepush) {
         m_lastPackagePush = dplastpackagepush;
     }
 
-    /** 
+    /**
      * Reflects desired state for this distributed poller. 1 = Up, 0 = Down
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     @Column(name="dpAdminState")
     public Integer getAdminState() {
         return m_adminState;
     }
 
+    /**
+     * <p>setAdminState</p>
+     *
+     * @param dpadminstate a {@link java.lang.Integer} object.
+     */
     public void setAdminState(Integer dpadminstate) {
         m_adminState = dpadminstate;
     }
 
     /**
-     * Reflects the current perceived state of the distributed 
+     * Reflects the current perceived state of the distributed
      * poller.  1 = Up, 0 = Down
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     @Column(name="dpRunState")
     public Integer getRunState() {
         return m_runState;
     }
 
+    /**
+     * <p>setRunState</p>
+     *
+     * @param dprunstate a {@link java.lang.Integer} object.
+     */
     public void setRunState(Integer dprunstate) {
         m_runState = dprunstate;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("name", getName())

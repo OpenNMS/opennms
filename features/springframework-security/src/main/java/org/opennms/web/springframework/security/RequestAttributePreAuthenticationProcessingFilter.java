@@ -33,7 +33,10 @@ import org.springframework.security.ui.preauth.PreAuthenticatedCredentialsNotFou
 import org.springframework.util.Assert;
 
 /**
+ * <p>RequestAttributePreAuthenticationProcessingFilter class.</p>
+ *
  * @author Timothy Nowaczyk, tan7f@virginia.edu
+ * @version $Id: $
  */
 public class RequestAttributePreAuthenticationProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
     
@@ -41,6 +44,7 @@ public class RequestAttributePreAuthenticationProcessingFilter extends AbstractP
     private String m_credentialsRequestAttribute;
 
 
+    /** {@inheritDoc} */
     @Override
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
         Object principal = request.getAttribute(m_principalRequestAttribute);
@@ -53,6 +57,7 @@ public class RequestAttributePreAuthenticationProcessingFilter extends AbstractP
         return principal;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
         if (m_credentialsRequestAttribute != null) {
@@ -65,16 +70,31 @@ public class RequestAttributePreAuthenticationProcessingFilter extends AbstractP
 
     }
     
+    /**
+     * <p>setPrincipalRequestHeader</p>
+     *
+     * @param principalRequestAttribute a {@link java.lang.String} object.
+     */
     public void setPrincipalRequestHeader(String principalRequestAttribute) {
         Assert.hasText(principalRequestAttribute, "principalRequestAttribute must not be empty or null");
         m_principalRequestAttribute = principalRequestAttribute;
     }
 
+    /**
+     * <p>setCredentialsRequestHeader</p>
+     *
+     * @param credentialsRequestAttribute a {@link java.lang.String} object.
+     */
     public void setCredentialsRequestHeader(String credentialsRequestAttribute) {
         Assert.hasText(credentialsRequestAttribute, "credentialsRequestAttribute must not be empty or null");     
         m_credentialsRequestAttribute = credentialsRequestAttribute;
     }
 
+    /**
+     * <p>getOrder</p>
+     *
+     * @return a int.
+     */
     public int getOrder() {
         return FilterChainOrder.PRE_AUTH_FILTER;
     }

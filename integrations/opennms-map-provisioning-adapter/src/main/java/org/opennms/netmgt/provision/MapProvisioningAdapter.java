@@ -75,9 +75,9 @@ import org.springframework.util.Assert;
 
 /**
  * A Dynamic Map provisioning adapter for integration with OpenNMS Provisioning daemon API.
- * 
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  *
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 @EventListener(name="MapsProvisioningAdapter")
 public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter implements InitializingBean {
@@ -163,51 +163,111 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     
     private boolean doSync = false;
 
+    /**
+     * <p>getOnmsMapDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.OnmsMapDao} object.
+     */
     public OnmsMapDao getOnmsMapDao() {
         return m_onmsMapDao;
     }
 
+    /**
+     * <p>setOnmsMapDao</p>
+     *
+     * @param onmsMapDao a {@link org.opennms.netmgt.dao.OnmsMapDao} object.
+     */
     public void setOnmsMapDao(OnmsMapDao onmsMapDao) {
         m_onmsMapDao = onmsMapDao;
     }
 
+    /**
+     * <p>getOnmsMapElementDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.OnmsMapElementDao} object.
+     */
     public OnmsMapElementDao getOnmsMapElementDao() {
         return m_onmsMapElementDao;
     }
 
+    /**
+     * <p>setOnmsMapElementDao</p>
+     *
+     * @param onmsMapElementDao a {@link org.opennms.netmgt.dao.OnmsMapElementDao} object.
+     */
     public void setOnmsMapElementDao(OnmsMapElementDao onmsMapElementDao) {
         m_onmsMapElementDao = onmsMapElementDao;
     }
 
+    /**
+     * <p>getMapsAdapterConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.MapsAdapterConfig} object.
+     */
     public MapsAdapterConfig getMapsAdapterConfig() {
         return m_mapsAdapterConfig;
     }
 
+    /**
+     * <p>setMapsAdapterConfig</p>
+     *
+     * @param mapsAdapterConfig a {@link org.opennms.netmgt.config.MapsAdapterConfig} object.
+     */
     public void setMapsAdapterConfig(MapsAdapterConfig mapsAdapterConfig) {
         m_mapsAdapterConfig = mapsAdapterConfig;
     }
 
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
+    /**
+     * <p>getOnmsNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getOnmsNodeDao() {
         return m_onmsNodeDao;
     }
 
+    /**
+     * <p>setOnmsNodeDao</p>
+     *
+     * @param onmsNodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setOnmsNodeDao(NodeDao onmsNodeDao) {
         m_onmsNodeDao = onmsNodeDao;
     }
 
+    /**
+     * <p>getTemplate</p>
+     *
+     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public TransactionTemplate getTemplate() {
         return m_template;
     }
 
 
+    /**
+     * <p>setTemplate</p>
+     *
+     * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public void setTemplate(TransactionTemplate template) {
         m_template = template;
     }
@@ -216,6 +276,11 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         return ThreadCategory.getInstance(MapProvisioningAdapter.class);
     }
 
+    /**
+     * <p>handleReloadConfigEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event event) {
         if (isReloadConfigEventTarget(event)) {
@@ -245,10 +310,16 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         return isTarget;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return ADAPTER_NAME;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isNodeReady(AdapterOperation op) {
         return true;
@@ -297,6 +368,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }        
     }
 
+    /** {@inheritDoc} */
     @Override
     public void processPendingOperationForNode(AdapterOperation op)
             throws ProvisioningAdapterException {
@@ -535,6 +607,11 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     }
 
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         
         Assert.notNull(m_onmsNodeDao, "Map Provisioning Adapter requires nodeDao property to be set.");
@@ -548,6 +625,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         m_adds = new TreeSet<Integer>();
     }
     
+    /** {@inheritDoc} */
     @Override
     public void init() throws ProvisioningAdapterException {
         MapSyncExecutor e = new MapSyncExecutor();
@@ -717,6 +795,12 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
         return new EventBuilder(uei, "Provisioner", new Date());
     }
     
+    /**
+     * <p>getSuitableIp</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getSuitableIp(OnmsNode node){
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         

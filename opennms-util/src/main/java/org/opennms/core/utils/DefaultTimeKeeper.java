@@ -33,12 +33,28 @@ package org.opennms.core.utils;
 
 import java.util.Date;
 
+/**
+ * <p>DefaultTimeKeeper class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultTimeKeeper implements TimeKeeper {
 
+    /**
+     * <p>getCurrentDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getCurrentDate() {
         return new Date();
     }
 
+    /**
+     * <p>getCurrentTime</p>
+     *
+     * @return a long.
+     */
     public long getCurrentTime() {
         return System.currentTimeMillis();
     }

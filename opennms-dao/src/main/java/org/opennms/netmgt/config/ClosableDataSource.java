@@ -35,8 +35,19 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+/**
+ * <p>ClosableDataSource interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ClosableDataSource extends DataSource {
     
+    /**
+     * <p>close</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void close() throws SQLException;
 
 }

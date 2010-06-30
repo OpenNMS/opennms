@@ -40,14 +40,16 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.util.Assert;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>DefaultNodeService class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class DefaultNodeService implements NodeService {
     
     private NodeDao m_nodeDao;
 
+    /** {@inheritDoc} */
     public Long getParentNode(Long nodeid) {
         OnmsNode node = m_nodeDao.get(nodeid.intValue());
         Assert.notNull(node, "Unable to find node with id "+nodeid);
@@ -56,6 +58,11 @@ public class DefaultNodeService implements NodeService {
         return (parent == null ? null : new Long(parent.getId().longValue()));
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }

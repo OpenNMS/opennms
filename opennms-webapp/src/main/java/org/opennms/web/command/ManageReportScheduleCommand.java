@@ -35,14 +35,31 @@
 //
 package org.opennms.web.command;
 
+/**
+ * <p>ManageReportScheduleCommand class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ManageReportScheduleCommand {
     
     private String[] m_triggerNames;
 
+    /**
+     * <p>setTriggerNames</p>
+     *
+     * @param triggerNames an array of {@link java.lang.String} objects.
+     */
     public void setTriggerNames(String[] triggerNames) {
         m_triggerNames = triggerNames;
     }
 
+    /**
+     * <p>getTriggerNames</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public String[] getTriggerNames() {
         return m_triggerNames;
     }

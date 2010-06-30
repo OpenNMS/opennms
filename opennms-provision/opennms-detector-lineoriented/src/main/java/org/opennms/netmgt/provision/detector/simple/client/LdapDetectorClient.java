@@ -39,8 +39,10 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPSocketFactory;
 
 /**
- * @author thedesloge
+ * <p>LdapDetectorClient class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class LdapDetectorClient extends LineOrientedClient {
     
@@ -64,6 +66,7 @@ public class LdapDetectorClient extends LineOrientedClient {
         }
     }
     
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         super.connect(address, port, timeout);
         LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));

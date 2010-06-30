@@ -43,15 +43,19 @@ import org.apache.log4j.Logger;
 
 /**
  * This class is used to replace the stdout and stderr PrintStreams in Java's System class so that they
- * can be redirected to the Logger API.  
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * can be redirected to the Logger API.
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class CaptchaStds {
     
+    /** Constant <code>captchaLogger</code> */
     public static final Logger captchaLogger = Logger.getLogger("OpenNMS.Stds");
     
+    /**
+     * <p>captchaStdOut</p>
+     */
     public static void captchaStdOut() {
         System.setErr(wrapStdWithLog(System.err));
         System.setOut(wrapStdWithLog(System.out));

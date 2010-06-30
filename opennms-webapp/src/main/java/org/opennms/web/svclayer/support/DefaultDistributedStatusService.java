@@ -80,10 +80,19 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 /**
- * 
+ * <p>DefaultDistributedStatusService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultDistributedStatusService implements DistributedStatusService, InitializingBean {
     private MonitoredServiceDao m_monitoredServiceDao;
@@ -178,10 +187,16 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     
     
     
+    /**
+     * <p>getApplicationCount</p>
+     *
+     * @return a int.
+     */
     public int getApplicationCount() {
         return m_applicationDao.countAll();
     }
 
+    /** {@inheritDoc} */
     public SimpleWebTable createStatusTable(DistributedStatusDetailsCommand command, Errors errors) {
         SimpleWebTable table = new SimpleWebTable(); 
         table.setErrors(errors);
@@ -272,6 +287,13 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
 
 
+    /**
+     * <p>findLocationSpecificStatus</p>
+     *
+     * @param command a {@link org.opennms.web.command.DistributedStatusDetailsCommand} object.
+     * @param errors a {@link org.springframework.validation.Errors} object.
+     * @return a {@link java.util.List} object.
+     */
     protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(DistributedStatusDetailsCommand command, Errors errors) {
         String locationName = command.getLocation();
         String applicationName = command.getApplication();
@@ -326,6 +348,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return status;
     }
 
+    /** {@inheritDoc} */
     public SimpleWebTable createFacilityStatusTable(Date start, Date end) {
         Assert.notNull(start, "argument start cannot be null");
         Assert.notNull(end, "argument end cannot be null");
@@ -447,6 +470,14 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return filteredStatuses;
     }
 
+    /**
+     * <p>calculateCurrentStatus</p>
+     *
+     * @param monitors a {@link java.util.Collection} object.
+     * @param applicationServices a {@link java.util.Collection} object.
+     * @param statuses a {@link java.util.Collection} object.
+     * @return a {@link org.opennms.web.svclayer.support.DefaultDistributedStatusService.Severity} object.
+     */
     public Severity calculateCurrentStatus(
             Collection<OnmsLocationMonitor> monitors,
             Collection<OnmsMonitoredService> applicationServices,
@@ -485,6 +516,14 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         }
     }
     
+    /**
+     * <p>calculateCurrentStatus</p>
+     *
+     * @param monitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param applicationServices a {@link java.util.Collection} object.
+     * @param statuses a {@link java.util.Collection} object.
+     * @return a {@link org.opennms.web.svclayer.support.DefaultDistributedStatusService.Severity} object.
+     */
     public Severity calculateCurrentStatus(OnmsLocationMonitor monitor,
             Collection<OnmsMonitoredService> applicationServices,
             Collection<OnmsLocationSpecificStatus> statuses) {
@@ -510,6 +549,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return calculateStatus(pollStatuses);
     }       
     
+    /**
+     * <p>calculateStatus</p>
+     *
+     * @param pollStatuses a {@link java.util.Collection} object.
+     * @return a {@link org.opennms.web.svclayer.support.DefaultDistributedStatusService.Severity} object.
+     */
     public Severity calculateStatus(Collection<PollStatus> pollStatuses) {
         int goodStatuses = 0;
         int badStatuses = 0;
@@ -534,7 +579,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     /**
      * Calculate the percentage of time that all services are up for this
      * application on this remote monitor.
-     * 
+     *
      * @param applicationServices services to report on
      * @param statuses status entries to use for report
      * @param startDate start date.  The report starts on this date.
@@ -653,6 +698,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             + StringUtils.collectionToDelimitedString(params, "&");
     }
 
+    /** {@inheritDoc} */
     public DistributedStatusHistoryModel createHistoryModel(
             String locationName, String monitorId, String applicationName,
             String timeSpan, String previousLocationName) {
@@ -800,6 +846,11 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         return new ServiceGraph(service, new String[] { "Graph could not be found for '" + graphName + "' on this resource.  Has any response time data been collected for this service from this location monitor and is the graph definition correct?" });
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_monitoredServiceDao != null, "property monitoredServiceDao cannot be null");
         Assert.state(m_locationMonitorDao != null, "property locationMonitorDao cannot be null");
@@ -809,41 +860,86 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
     
 
+    /**
+     * <p>setMonitoredServiceDao</p>
+     *
+     * @param monitoredServiceDao a {@link org.opennms.netmgt.dao.MonitoredServiceDao} object.
+     */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
         
     }
 
+    /**
+     * <p>setLocationMonitorDao</p>
+     *
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
         
     }
     
+    /**
+     * <p>setApplicationDao</p>
+     *
+     * @param applicationDao a {@link org.opennms.netmgt.dao.ApplicationDao} object.
+     */
     public void setApplicationDao(ApplicationDao applicationDao) {
         m_applicationDao = applicationDao;
         
     }
 
+    /**
+     * <p>getResourceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
     }
 
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
 
+    /**
+     * <p>getGraphDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.GraphDao} object.
+     */
     public GraphDao getGraphDao() {
         return m_graphDao;
     }
 
+    /**
+     * <p>setGraphDao</p>
+     *
+     * @param graphDao a {@link org.opennms.netmgt.dao.GraphDao} object.
+     */
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
     }
     
+    /**
+     * <p>setLayoutApplicationsVertically</p>
+     *
+     * @param layoutApplicationsVertically a boolean.
+     */
     public void setLayoutApplicationsVertically(boolean layoutApplicationsVertically) {
         m_layoutApplicationsVertically = layoutApplicationsVertically;
     }
     
+    /**
+     * <p>isLayoutApplicationsVertically</p>
+     *
+     * @return a boolean.
+     */
     public boolean isLayoutApplicationsVertically() {
         return m_layoutApplicationsVertically;
     }

@@ -39,6 +39,12 @@ import java.util.Iterator;
 import org.opennms.netmgt.model.RrdRepository;
 
 
+/**
+ * <p>AliasedResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AliasedResource extends SnmpCollectionResource {
     
     private final IfInfo m_ifInfo;
@@ -46,6 +52,15 @@ public class AliasedResource extends SnmpCollectionResource {
     private final String m_domain;
     private final String m_ifAlias;
 
+    /**
+     * <p>Constructor for AliasedResource.</p>
+     *
+     * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     * @param domain a {@link java.lang.String} object.
+     * @param ifInfo a {@link org.opennms.netmgt.collectd.IfInfo} object.
+     * @param ifAliasComment a {@link java.lang.String} object.
+     * @param ifAlias a {@link java.lang.String} object.
+     */
     public AliasedResource(final ResourceType resourceType, final String domain, final IfInfo ifInfo, final String ifAliasComment, final String ifAlias) {
         super(resourceType);
         m_domain = domain;
@@ -54,6 +69,11 @@ public class AliasedResource extends SnmpCollectionResource {
         m_ifAlias = ifAlias;
     }
     
+    /**
+     * <p>getIfInfo</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.IfInfo} object.
+     */
     public IfInfo getIfInfo() {
         return m_ifInfo;
     }
@@ -62,20 +82,36 @@ public class AliasedResource extends SnmpCollectionResource {
         return getIfInfo().getAliasDir(m_ifAlias, m_ifAliasComment);
     }
 
+    /**
+     * <p>getDomain</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDomain() {
         return m_domain;
     }
 
+    /** {@inheritDoc} */
     public File getResourceDir(final RrdRepository repository) {
         File domainDir = new File(repository.getRrdBaseDir(), getDomain());
         File aliasDir = new File(domainDir, getAliasDir());
         return aliasDir;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getDomain()+'/'+getAliasDir()+" ["+m_ifInfo+']';
     }
 
+    /**
+     * <p>rescanNeeded</p>
+     *
+     * @return a boolean.
+     */
     public boolean rescanNeeded() {
         boolean outOfDate = getIfInfo().currentAliasIsOutOfDate(m_ifAlias);
         if(outOfDate) {
@@ -84,10 +120,16 @@ public class AliasedResource extends SnmpCollectionResource {
         return outOfDate;
     }
 
+    /**
+     * <p>isScheduledForCollection</p>
+     *
+     * @return a boolean.
+     */
     public boolean isScheduledForCollection() {
         return getIfInfo().isScheduledForCollection();
     }
 
+    /** {@inheritDoc} */
     public boolean shouldPersist(final ServiceParameters serviceParameters) {
         boolean shdPrsist = (serviceParameters.aliasesEnabled() && getAliasDir() != null && !getAliasDir().equals("")) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
         if (log().isDebugEnabled()) {
@@ -96,10 +138,16 @@ public class AliasedResource extends SnmpCollectionResource {
         return shdPrsist;
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() {
         return getIfInfo().getType();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitResource(this);
@@ -112,18 +160,38 @@ public class AliasedResource extends SnmpCollectionResource {
         visitor.completeResource(this);
     }
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<AttributeGroup> getGroups() {
     	return getIfInfo().getGroups();
     }
 
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeName() {
         return "if"; //AliasedResources are implicitly interface type data, at least as far as I (Craig Miskell) understand.  If anyone is sure, please adjust this comment
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInstance() {
         return null; //For node and interface type resources, use the default instance
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return getDomain() + '/' + getAliasDir();
     }

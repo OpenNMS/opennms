@@ -10,6 +10,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>MatchingSnmpInterfacePolicy class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 @Policy("Match SNMP Interface")
 public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> implements SnmpInterfacePolicy {
@@ -18,11 +24,21 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
     
     private Action m_action = Action.DO_NOT_PERSIST;
 
+    /**
+     * <p>getAction</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Require({"ENABLE_COLLECTION", "DISABLE_COLLECTION", "DO_NOT_PERSIST"})
     public String getAction() {
         return m_action.toString();
     }
     
+    /**
+     * <p>setAction</p>
+     *
+     * @param action a {@link java.lang.String} object.
+     */
     public void setAction(String action) {
         if (action != null && action.toUpperCase().contains("ENABLE")) {
             m_action = Action.ENABLE_COLLECTION;
@@ -33,6 +49,7 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public OnmsSnmpInterface act(OnmsSnmpInterface iface) {
         switch (m_action) {
@@ -52,90 +69,200 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
         }
     }
     
+    /**
+     * <p>getIfDescr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfDescr() {
         return getCriteria("ifDescr");
     }
 
+    /**
+     * <p>setIfDescr</p>
+     *
+     * @param ifDescr a {@link java.lang.String} object.
+     */
     public void setIfDescr(String ifDescr) {
         putCriteria("ifDescr", ifDescr);
     }
 
+    /**
+     * <p>getIfName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfName() {
         return getCriteria("ifName");
     }
 
+    /**
+     * <p>setIfName</p>
+     *
+     * @param ifName a {@link java.lang.String} object.
+     */
     public void setIfName(String ifName) {
         putCriteria("ifName", ifName);
     }
 
+    /**
+     * <p>getIfType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfType() {
         return getCriteria("ifType");
     }
 
+    /**
+     * <p>setIfType</p>
+     *
+     * @param ifType a {@link java.lang.String} object.
+     */
     public void setIfType(String ifType) {
         putCriteria("ifType", ifType);
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return getCriteria("ipAddress");
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipAddress) {
         putCriteria("ipAddress", ipAddress);
     }
 
+    /**
+     * <p>getNetmask</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNetmask() {
         return getCriteria("netmask");
     }
 
+    /**
+     * <p>setNetmask</p>
+     *
+     * @param netmask a {@link java.lang.String} object.
+     */
     public void setNetmask(String netmask) {
         putCriteria("netmask", netmask);
     }
 
+    /**
+     * <p>getPhysAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPhysAddr() {
         return getCriteria("physAddr");
     }
 
+    /**
+     * <p>setPhysAddr</p>
+     *
+     * @param physAddr a {@link java.lang.String} object.
+     */
     public void setPhysAddr(String physAddr) {
         putCriteria("physAddr", physAddr);
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfIndex() {
         return getCriteria("ifIndex");
     }
 
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param ifIndex a {@link java.lang.String} object.
+     */
     public void setIfIndex(String ifIndex) {
         putCriteria("ifIndex", ifIndex);
     }
 
+    /**
+     * <p>getIfSpeed</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfSpeed() {
         return getCriteria("ifSpeed");
     }
 
+    /**
+     * <p>setIfSpeed</p>
+     *
+     * @param ifSpeed a {@link java.lang.String} object.
+     */
     public void setIfSpeed(String ifSpeed) {
         putCriteria("ifSpeed", ifSpeed);
     }
 
+    /**
+     * <p>getIfAdminStatus</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfAdminStatus() {
         return getCriteria("ifAdminStatus");
     }
 
+    /**
+     * <p>setIfAdminStatus</p>
+     *
+     * @param ifAdminStatus a {@link java.lang.String} object.
+     */
     public void setIfAdminStatus(String ifAdminStatus) {
         putCriteria("ifAdminStatus", ifAdminStatus);
     }
 
+    /**
+     * <p>getIfOperStatus</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfOperStatus() {
         return getCriteria("ifOperStatus");
     }
 
+    /**
+     * <p>setIfOperStatus</p>
+     *
+     * @param ifOperStatus a {@link java.lang.String} object.
+     */
     public void setIfOperStatus(String ifOperStatus) {
         putCriteria("ifOperStatus", ifOperStatus);
     }
 
+    /**
+     * <p>getIfAlias</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfAlias() {
         return getCriteria("ifAlias");
     }
 
+    /**
+     * <p>setIfAlias</p>
+     *
+     * @param ifAlias a {@link java.lang.String} object.
+     */
     public void setIfAlias(String ifAlias) {
         putCriteria("ifAlias", ifAlias);
     }

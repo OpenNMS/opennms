@@ -38,6 +38,7 @@ package org.opennms.netmgt.provision;
  * ServiceDetector
  *
  * @author <a href="mailto:brozow@opennms.org>Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface ServiceDetector {
     
@@ -57,15 +58,16 @@ public interface ServiceDetector {
     
     /**
      * Requires that all implementations of this API return a service name.
-     * @return
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getServiceName();
 
     /**
      * Service name is mutable so that we can create new instances of each implementation
      * and define a new service detector using the underlying protocol.
-     * 
-     * @param serviceName
+     *
+     * @param serviceName a {@link java.lang.String} object.
      */
     public void setServiceName(String serviceName);
 

@@ -1,3 +1,4 @@
+
 /**
  * This file is part of the OpenNMS(R) Application.
  *
@@ -9,7 +10,7 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
- * 
+ *
  * 2009 Jan 19: Created file - jeffg@opennms.org
  *
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
@@ -32,18 +33,22 @@
  *      OpenNMS Licensing       <license@opennms.org>
  *      http://www.opennms.org/
  *      http://www.opennms.com/
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.asterisk.agi.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
-
 public class AsteriskGateway extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.asterisk.agi.AsteriskGateway> implements AsteriskGatewayMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.AsteriskGateway";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "asteriskGatewayContext";

@@ -40,29 +40,49 @@ import java.util.List;
 import org.opennms.core.utils.Argument;
 
 /**
+ * <p>ExecutorStrategy interface.</p>
+ *
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ *
  * Implement this interface to as a means of executing code be it a Java class
  * or system command.
- * 
+ *
  * This interface was created to provide a Java Notification plugin interface.
  * The original CommandExecutor class was developed to execute system commands
  * calling its execute method with the command name and a list of command line
  * paramenters. Now the ClassExecutor class implements this interface and the
  * execute method instantiates the Java class specified in the commandLine
  * parameter to the execute method.
- * 
+ *
  * Now, this interface is implemented by the ClassExecutor class that allows the
  * notification process (NotificationTask) to simply call the execute method and
  * not be concerned if the strategy (binary flag) actually executes a command or
  * instantiates a Java class.
+ * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ *
+ * Implement this interface to as a means of executing code be it a Java class
+ * or system command.
+ *
+ * This interface was created to provide a Java Notification plugin interface.
+ * The original CommandExecutor class was developed to execute system commands
+ * calling its execute method with the command name and a list of command line
+ * paramenters. Now the ClassExecutor class implements this interface and the
+ * execute method instantiates the Java class specified in the commandLine
+ * parameter to the execute method.
+ *
+ * Now, this interface is implemented by the ClassExecutor class that allows the
+ * notification process (NotificationTask) to simply call the execute method and
+ * not be concerned if the strategy (binary flag) actually executes a command or
+ * instantiates a Java class.
+ * @version $Id: $
  */
 public interface ExecutorStrategy {
     /**
      * Implement this method to support execute style commands such as a system
      * command or to instantiate a Java class.
-     * 
+     *
      * @param commandLine
      *            the command/class to execute/instantiate
      * @param arguments

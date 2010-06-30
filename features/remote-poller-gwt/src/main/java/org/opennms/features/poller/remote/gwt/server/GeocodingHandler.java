@@ -20,6 +20,12 @@ class GeocodingHandler implements LocationDefHandler {
 	private Date m_date;
 	private int m_count;
 	
+	/**
+	 * <p>Constructor for GeocodingHandler.</p>
+	 *
+	 * @param locationDataService a {@link org.opennms.features.poller.remote.gwt.server.LocationDataService} object.
+	 * @param eventService a {@link de.novanic.eventservice.service.EventExecutorService} object.
+	 */
 	public GeocodingHandler(final LocationDataService locationDataService, final EventExecutorService eventService) {
 		m_locationDataService = locationDataService;
 		m_eventService = eventService;
@@ -27,11 +33,17 @@ class GeocodingHandler implements LocationDefHandler {
 		m_count = 0;
 	}
 	
+	/** {@inheritDoc} */
 	public void start(final int size) {
 		m_size = size;
 		m_eventService.addEventUserSpecific(new GeocodingUpdatingRemoteEvent(0, size));
 	}
 
+	/**
+	 * <p>handle</p>
+	 *
+	 * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+	 */
 	public void handle(final OnmsMonitoringLocationDefinition def) {
 		final GWTLatLng latLng = m_locationDataService.getLatLng(def, false);
 		if (latLng != null) {
@@ -46,6 +58,9 @@ class GeocodingHandler implements LocationDefHandler {
 		m_count++;
 	}
 	
+	/**
+	 * <p>finish</p>
+	 */
 	public void finish() {
 		m_eventService.addEventUserSpecific(new GeocodingFinishedRemoteEvent(m_size));
 	}

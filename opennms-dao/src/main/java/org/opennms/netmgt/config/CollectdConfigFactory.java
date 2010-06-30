@@ -65,13 +65,16 @@ import org.springframework.util.Assert;
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
  * Collection Daemon from the collectd-configuration xml file.
- * 
+ *
  * A mapping of the configured URLs to the iplist they contain is built at
  * init() time so as to avoid numerous file reads.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class CollectdConfigFactory {
     final static String SELECT_METHOD_MIN = "min";
@@ -133,13 +136,19 @@ public class CollectdConfigFactory {
 
     /**
      * Public constructor
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @param rdr a {@link java.io.Reader} object.
+     * @param localServer a {@link java.lang.String} object.
+     * @param verifyServer a boolean.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Deprecated
     public CollectdConfigFactory(Reader rdr, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
@@ -147,6 +156,15 @@ public class CollectdConfigFactory {
         m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
     }
 
+    /**
+     * <p>Constructor for CollectdConfigFactory.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @param localServer a {@link java.lang.String} object.
+     * @param verifyServer a boolean.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public CollectdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
         CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream);
         m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
@@ -155,13 +173,16 @@ public class CollectdConfigFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (isInitialized()) {
@@ -180,13 +201,16 @@ public class CollectdConfigFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -196,6 +220,10 @@ public class CollectdConfigFactory {
 
     /**
      * Saves the current in-memory configuration to disk and reloads
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
@@ -209,9 +237,8 @@ public class CollectdConfigFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -221,24 +248,39 @@ public class CollectdConfigFactory {
         return m_singleton;
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     */
     public static synchronized void setInstance(CollectdConfigFactory instance) {
         m_singleton = instance;
     }
 
+    /**
+     * <p>getCollectdConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.CollectdConfig} object.
+     */
     public CollectdConfig getCollectdConfig() {
         return m_collectdConfig;
     }
 
+    /**
+     * <p>getPackage</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
+     */
     public CollectdPackage getPackage(String name) {
         return m_collectdConfig.getPackage(name);
     }
 
     /**
      * Returns true if collection package exists
-     * 
+     *
      * @param name
      *            The package name to check
-     * 
      * @return True if the package exists
      */
     public synchronized boolean packageExists(String name) {
@@ -247,10 +289,9 @@ public class CollectdConfigFactory {
 
     /**
      * Returns true if collection domain exists
-     * 
+     *
      * @param name
      *            The domain name to check
-     * 
      * @return True if the domain exists
      */
     public boolean domainExists(String name) {
@@ -261,12 +302,11 @@ public class CollectdConfigFactory {
      * Returns true if the specified interface is included by at least one
      * package which has the specified service and that service is enabled (set
      * to "on").
-     * 
+     *
      * @param ipAddr
      *            IP address of the interface to lookup
      * @param svcName
      *            The service name to lookup
-     * 
      * @return true if Collectd config contains a package which includes the
      *         specified interface and has the specified service enabled.
      */

@@ -44,6 +44,9 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 /**
  * Implementws the VacuumdMBead interface and delegeates the mbean
  * implementation to the single Vacuumd.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class Vacuumd implements VacuumdMBean {
 
@@ -51,6 +54,9 @@ public class Vacuumd implements VacuumdMBean {
      * (non-Javadoc)
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#init()
+     */
+    /**
+     * <p>init</p>
      */
     public void init() {
 
@@ -66,6 +72,9 @@ public class Vacuumd implements VacuumdMBean {
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#start()
      */
+    /**
+     * <p>start</p>
+     */
     public void start() {
         getVacuumd().start();
     }
@@ -74,6 +83,9 @@ public class Vacuumd implements VacuumdMBean {
      * (non-Javadoc)
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#stop()
+     */
+    /**
+     * <p>stop</p>
      */
     public void stop() {
         getVacuumd().stop();
@@ -84,6 +96,11 @@ public class Vacuumd implements VacuumdMBean {
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#getStatus()
      */
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return getVacuumd().getStatus();
     }
@@ -93,6 +110,11 @@ public class Vacuumd implements VacuumdMBean {
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#status()
      */
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
@@ -101,6 +123,11 @@ public class Vacuumd implements VacuumdMBean {
      * (non-Javadoc)
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#getStatusText()
+     */
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];

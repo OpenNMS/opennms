@@ -44,9 +44,13 @@ import org.opennms.web.filter.Filter;
 
 /**
  * Convenience data structure for holding the arguments to an event query.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AlarmQueryParms extends Object {
     public SortStyle sortStyle;
@@ -64,6 +68,8 @@ public class AlarmQueryParms extends Object {
     /**
      * Convert the internal (and useful) ArrayList filters object into an array
      * of Filter instances.
+     *
+     * @return an array of org$opennms$web$filter$Filter objects.
      */
     public Filter[] getFilters() {
         return this.filters.toArray(new Filter[this.filters.size()]);

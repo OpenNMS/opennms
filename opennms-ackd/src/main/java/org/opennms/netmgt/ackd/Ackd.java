@@ -60,13 +60,17 @@ import org.springframework.beans.factory.DisposableBean;
 
 /**
  * Acknowledgment management Daemon
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
  */
 @EventListener(name=Ackd.NAME)
 public class Ackd implements SpringServiceDaemon, DisposableBean {
     
+	/** Constant <code>NAME="Ackd"</code> */
 	public static final String NAME = "Ackd";
 	private volatile AckdConfigurationDao m_configDao;
 
@@ -80,12 +84,18 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     private AckService m_ackService;
     private Object m_lock = new Object();
 	
+    /**
+     * <p>start</p>
+     */
     public void start() {
         log().info("start: Starting "+m_ackReaders.size()+" readers...");
         startReaders();
         log().info("start: readers started.");
     }
 
+    /**
+     * <p>destroy</p>
+     */
     public void destroy() {
         log().info("destroy: shutting down readers...");
         try {
@@ -111,6 +121,8 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     
     /**
      * Starts the AckReaders indicating a reload of their configuration is necessary.
+     *
+     * @param reloadConfig a boolean.
      */
     protected void startReaders(boolean reloadConfig) {
         int enabledReaderCount = getConfigDao().getEnabledReaderCount();
@@ -141,6 +153,9 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         log().info("startReaders: "+m_ackReaders.size()+" readers started.");
     }
     
+    /**
+     * <p>stopReaders</p>
+     */
     protected void stopReaders() {
         log().info("stopReaders: stopping "+m_ackReaders.size()+" readers...");
         for (AckReader reader : m_ackReaders) {
@@ -165,6 +180,9 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         log().info("stopReaders: "+m_ackReaders.size()+" readers stopped.");
     }
     
+    /**
+     * <p>pauseReaders</p>
+     */
     protected void pauseReaders() {
         for (AckReader reader : m_ackReaders) {
             List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
@@ -179,6 +197,9 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         }
     }
     
+    /**
+     * <p>resumeReaders</p>
+     */
     protected void resumeReaders() {
         for (AckReader reader : m_ackReaders) {
             List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
@@ -193,6 +214,11 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     }
 
     
+    /**
+     * <p>restartReaders</p>
+     *
+     * @param reloadConfigs a boolean.
+     */
     protected void restartReaders(boolean reloadConfigs) {
         log().info("restartReaders: restarting readers...");
         stopReaders();
@@ -262,12 +288,13 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
 
     /**
      * Handles the event driven access to acknowledging <code>OnmsAcknowledgable</code>s.  The acknowledgment event
-     * contains 4 parameters: 
+     * contains 4 parameters:
      *     ackUser: The user acknowledging the <code>OnmsAcknowledgable</code>
      *     ackAction: ack, unack, esc, clear
      *     ackType: <code>AckType</code. representing either an <code>OnmsAlarm</code>, <code>OnmsNotification</code>, etc.
      *     refId: The ID of the <code>OnmsAcknowledgable</code>
-     * @param event
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei=EventConstants.ACKNOWLEDGE_EVENT_UEI)
     public void handleAckEvent(Event event) {
@@ -284,6 +311,11 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         }
     }
     
+    /**
+     * <p>handleReloadConfigEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event event) {
         String specifiedDaemon = null;
@@ -337,50 +369,110 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         return ThreadCategory.getInstance(getName());
     }
 
+    /**
+     * <p>setExecutor</p>
+     *
+     * @param executor a {@link java.util.concurrent.ScheduledThreadPoolExecutor} object.
+     */
     public void setExecutor(ScheduledThreadPoolExecutor executor) {
         m_executor = executor;
     }
 
+    /**
+     * <p>getExecutor</p>
+     *
+     * @return a {@link java.util.concurrent.ScheduledThreadPoolExecutor} object.
+     */
     public ScheduledThreadPoolExecutor getExecutor() {
         return m_executor;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getAckReaders</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     protected List<AckReader> getAckReaders() {
         return m_ackReaders;
     }
 
     //FIXME:this is probably bogus
+    /**
+     * <p>setAckReaders</p>
+     *
+     * @param ackReaders a {@link java.util.List} object.
+     */
     public void setAckReaders(List<AckReader> ackReaders) {
         m_ackReaders = ackReaders;
     }
 
+    /**
+     * <p>getAckService</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.acknowledgments.AckService} object.
+     */
     public AckService getAckService() {
         return m_ackService;
     }
 
+    /**
+     * <p>setAckService</p>
+     *
+     * @param ackService a {@link org.opennms.netmgt.model.acknowledgments.AckService} object.
+     */
     public void setAckService(AckService ackService) {
         m_ackService = ackService;
     }
 
+    /**
+     * <p>getConfigDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     */
     public AckdConfigurationDao getConfigDao() {
         return m_configDao;
     }
 
+    /**
+     * <p>setConfigDao</p>
+     *
+     * @param config a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     */
     public void setConfigDao(AckdConfigurationDao config) {
         m_configDao = config;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return NAME;
     }

@@ -59,10 +59,19 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
 
 /**
- * 
+ * <p>DefaultSurveillanceService class.</p>
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultSurveillanceService implements SurveillanceService {
 
@@ -125,6 +134,11 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
     }
 
+    /**
+     * <p>createSurveillanceTable</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     */
     public SimpleWebTable createSurveillanceTable() {
         return createSurveillanceTable("default", new ProgressMonitor());
     }
@@ -196,6 +210,8 @@ public class DefaultSurveillanceService implements SurveillanceService {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Creates a custom table object containing intersected rows and
      * columns and categories.
      */
@@ -287,41 +303,78 @@ public class DefaultSurveillanceService implements SurveillanceService {
         + StringUtils.collectionToDelimitedString(params, "&");
     }
 
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    /**
+     * <p>getCategoryDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
 
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
 
+    /**
+     * <p>getSurveillanceConfigDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     */
     public SurveillanceViewConfigDao getSurveillanceConfigDao() {
         return m_surveillanceConfigDao;
     }
 
+    /**
+     * <p>setSurveillanceConfigDao</p>
+     *
+     * @param surveillanceConfigDao a {@link org.opennms.netmgt.dao.SurveillanceViewConfigDao} object.
+     */
     public void setSurveillanceConfigDao(SurveillanceViewConfigDao surveillanceConfigDao) {
         m_surveillanceConfigDao = surveillanceConfigDao;
     }
 
+    /** {@inheritDoc} */
     public String getHeaderRefreshSeconds(String viewName) {
         viewName = (viewName == null ? m_surveillanceConfigDao.getDefaultView().getName() : viewName);
         return m_surveillanceConfigDao.getView(viewName).getRefreshSeconds();
     }
 
+    /** {@inheritDoc} */
     public boolean isViewName(String viewName) {
         View view;
         view = ( viewName == null ? m_surveillanceConfigDao.getDefaultView() : m_surveillanceConfigDao.getView(viewName) );
         return (view == null) ? false : true;
     }
 
+    /**
+     * <p>getViewNames</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getViewNames() {
         List<String> viewNames = new ArrayList<String>(m_surveillanceConfigDao.getViews().getViewCount());
         for (View view : getViewCollection()) {

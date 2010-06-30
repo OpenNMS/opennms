@@ -34,11 +34,24 @@ package org.opennms.web.notification.filter;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
+/**
+ * <p>AcknowledgedByFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AcknowledgedByFilter extends EqualsFilter<String> {
+    /** Constant <code>TYPE="acknowledgeBy"</code> */
     public static final String TYPE = "acknowledgeBy";
     
     protected String m_user;
     
+    /**
+     * <p>Constructor for AcknowledgedByFilter.</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public AcknowledgedByFilter(String user){
         super(TYPE, SQLType.STRING, "ANSWEREDBY", "answeredBy", user);
         if(user == null){

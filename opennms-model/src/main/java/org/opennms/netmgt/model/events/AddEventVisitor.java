@@ -34,7 +34,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>AddEventVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.model.events;
 
@@ -45,38 +48,63 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
-
 public class AddEventVisitor extends AbstractEntityVisitor {
     private static final String m_eventSource = "Provisiond";
 	private final EventForwarder m_eventForwarder;
 
+	/**
+	 * <p>Constructor for AddEventVisitor.</p>
+	 *
+	 * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+	 */
 	public AddEventVisitor(EventForwarder eventForwarder) {
 		m_eventForwarder = eventForwarder;
 	}
 
+	/** {@inheritDoc} */
 	public void visitNode(OnmsNode node) {
         LogUtils.infof(this, "Sending nodeAdded Event for %s\n", node);
 	    m_eventForwarder.sendNow(createNodeAddedEvent(node));
 	}
 
+    /** {@inheritDoc} */
     public void visitIpInterface(OnmsIpInterface iface) {
         LogUtils.infof(this, "Sending nodeGainedInterface Event for %s\n", iface);
         m_eventForwarder.sendNow(createNodeGainedInterfaceEvent(iface));
     }
 
+    /** {@inheritDoc} */
     public void visitMonitoredService(OnmsMonitoredService monSvc) {
         LogUtils.infof(this, "Sending nodeGainedService Event for %s\n", monSvc);
         m_eventForwarder.sendNow(createNodeGainedServiceEvent(monSvc));
     }
 
+    /**
+     * <p>createNodeAddedEvent</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     protected Event createNodeAddedEvent(OnmsNode node) {
         return EventUtils.createNodeAddedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource());
     }
 
+    /**
+     * <p>createNodeGainedInterfaceEvent</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     protected Event createNodeGainedInterfaceEvent(OnmsIpInterface iface) {
         return EventUtils.createNodeGainedInterfaceEvent(m_eventSource, iface.getNode().getId(), iface.getInetAddress());
     }
 
+    /**
+     * <p>createNodeGainedServiceEvent</p>
+     *
+     * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     protected Event createNodeGainedServiceEvent(OnmsMonitoredService monSvc) {
         OnmsIpInterface iface = monSvc.getIpInterface();
 		OnmsNode node = iface.getNode();

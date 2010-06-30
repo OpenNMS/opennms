@@ -39,6 +39,12 @@ import org.opennms.netmgt.provision.detector.generic.response.GpResponse;
 import org.opennms.netmgt.provision.detector.generic.support.ExecRunner;
 import org.opennms.netmgt.provision.support.Client;
 
+/**
+ * <p>GpClient class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GpClient implements Client<GpRequest, GpResponse> {
     
     private String m_script;
@@ -52,10 +58,14 @@ public class GpClient implements Client<GpRequest, GpResponse> {
     private String m_response = "";
     private String m_error = "";
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         setExitStatus(100);
         
@@ -86,6 +96,13 @@ public class GpClient implements Client<GpRequest, GpResponse> {
         return timeout;
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.detector.generic.response.GpResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public GpResponse receiveBanner() throws IOException, Exception {
         
         return receiveResponse();
@@ -99,79 +116,177 @@ public class GpClient implements Client<GpRequest, GpResponse> {
         return response;
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.generic.request.GpRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.generic.response.GpResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public GpResponse sendRequest(GpRequest request) throws IOException, Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * <p>setScript</p>
+     *
+     * @param script a {@link java.lang.String} object.
+     */
     public void setScript(String script) {
         m_script = script;
     }
 
+    /**
+     * <p>getScript</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getScript() {
         return m_script;
     }
 
+    /**
+     * <p>setArgs</p>
+     *
+     * @param args a {@link java.lang.String} object.
+     */
     public void setArgs(String args) {
         m_args = args;
     }
 
+    /**
+     * <p>getArgs</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getArgs() {
         return m_args;
     }
 
+    /**
+     * <p>setBanner</p>
+     *
+     * @param banner a {@link java.lang.String} object.
+     */
     public void setBanner(String banner) {
         m_banner = banner;
     }
 
+    /**
+     * <p>getBanner</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBanner() {
         return m_banner;
     }
 
+    /**
+     * <p>setMatch</p>
+     *
+     * @param match a {@link java.lang.String} object.
+     */
     public void setMatch(String match) {
         m_match = match;
     }
 
+    /**
+     * <p>getMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMatch() {
         return m_match;
     }
 
+    /**
+     * <p>setHoption</p>
+     *
+     * @param hoption a {@link java.lang.String} object.
+     */
     public void setHoption(String hoption) {
         m_hoption = hoption;
     }
 
+    /**
+     * <p>getHoption</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHoption() {
         return m_hoption;
     }
 
+    /**
+     * <p>setToption</p>
+     *
+     * @param toption a {@link java.lang.String} object.
+     */
     public void setToption(String toption) {
         m_toption = toption;
     }
 
+    /**
+     * <p>getToption</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getToption() {
         return m_toption;
     }
 
+    /**
+     * <p>setExitStatus</p>
+     *
+     * @param exitStatus a int.
+     */
     public void setExitStatus(int exitStatus) {
         m_exitStatus = exitStatus;
     }
 
+    /**
+     * <p>getExitStatus</p>
+     *
+     * @return a int.
+     */
     public int getExitStatus() {
         return m_exitStatus;
     }
 
+    /**
+     * <p>setResponse</p>
+     *
+     * @param response a {@link java.lang.String} object.
+     */
     public void setResponse(String response) {
         m_response = response;
     }
 
+    /**
+     * <p>getResponse</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResponse() {
         return m_response;
     }
 
+    /**
+     * <p>setError</p>
+     *
+     * @param error a {@link java.lang.String} object.
+     */
     public void setError(String error) {
         m_error = error;
     }
 
+    /**
+     * <p>getError</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getError() {
         return m_error;
     }

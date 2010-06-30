@@ -55,9 +55,10 @@ import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfigur
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
- * 
+ * <p>MonitoringLocationsFactory class.</p>
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * 
+ * @version $Id: $
  */
 public class MonitoringLocationsFactory {
     /** The singleton instance. */
@@ -71,10 +72,19 @@ public class MonitoringLocationsFactory {
     /** Timestamp of the config file, used to know when to reload from disk. */
     protected static long m_lastModified;
 
+    /** Constant <code>m_defsMap</code> */
     protected static Map<String,LocationDef> m_defsMap;
 
     private static MonitoringLocationsConfiguration m_config;
 
+    /**
+     * <p>Constructor for MonitoringLocationsFactory.</p>
+     *
+     * @param configFile a {@link java.lang.String} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public MonitoringLocationsFactory(String configFile) throws MarshalException, ValidationException, IOException {
         InputStream stream = null;
         try {
@@ -87,10 +97,24 @@ public class MonitoringLocationsFactory {
         }
     }
 
+    /**
+     * <p>Constructor for MonitoringLocationsFactory.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public MonitoringLocationsFactory(InputStream stream) throws MarshalException, ValidationException {
         initialize(stream);
     }
 
+    /**
+     * <p>Constructor for MonitoringLocationsFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     @Deprecated
     public MonitoringLocationsFactory(Reader rdr) throws MarshalException, ValidationException {
         initialize(rdr);
@@ -116,7 +140,14 @@ public class MonitoringLocationsFactory {
         }
     }
 
-    /** Be sure to call this method before calling getInstance(). */
+    /**
+     * Be sure to call this method before calling getInstance().
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (m_instance == null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MONITORING_LOCATIONS_FILE_NAME);
@@ -129,9 +160,9 @@ public class MonitoringLocationsFactory {
     /**
      * Singleton static call to get the only instance that should exist for the
      * MonioringLocationsFactory
-     * 
+     *
      * @return the monitoring locations factory instance
-     * @throws IllegalStateException
+     * @throws java.lang.IllegalStateException
      *             if init has not been called
      */
     public static synchronized MonitoringLocationsFactory getInstance() {
@@ -142,17 +173,38 @@ public class MonitoringLocationsFactory {
         return m_instance;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.MonitoringLocationsFactory} object.
+     */
     public static synchronized void setInstance(MonitoringLocationsFactory instance) {
         m_instance = instance;
         m_loadedFromFile = false;
     }
 
+    /**
+     * <p>reload</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         m_instance = null;
         init();
     }
 
-    /** Can't be null */
+    /**
+     * Can't be null
+     *
+     * @param defName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.monitoringLocations.LocationDef} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public LocationDef getDef(String defName) throws IOException, MarshalException, ValidationException {
         if (defName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -166,6 +218,10 @@ public class MonitoringLocationsFactory {
     /**
      * Reload the config file if it has been changed since we last
      * read it.
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     protected void updateFromFile() throws IOException, MarshalException, ValidationException {
         if (m_loadedFromFile) {
@@ -176,18 +232,38 @@ public class MonitoringLocationsFactory {
         }
     }
 
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration} object.
+     */
     public synchronized static MonitoringLocationsConfiguration getConfig() {
         return m_config;
     }
 
+    /**
+     * <p>setConfig</p>
+     *
+     * @param m_config a {@link org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration} object.
+     */
     public synchronized static void setConfig(MonitoringLocationsConfiguration m_config) {
         MonitoringLocationsFactory.m_config = m_config;
     }
 
+    /**
+     * <p>getDefsMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public synchronized static Map<String, LocationDef> getDefsMap() {
         return m_defsMap;
     }
 
+    /**
+     * <p>setDefsMap</p>
+     *
+     * @param map a {@link java.util.Map} object.
+     */
     public synchronized static void setDefsMap(Map<String, LocationDef> map) {
         m_defsMap = map;
     }

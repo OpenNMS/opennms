@@ -39,43 +39,74 @@ import java.util.List;
 
 /**
  * Class to manage all user information including the list of authorities
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class UserAuthoritiesDTO extends UserDTO {
 
+    /**
+     * <p>Constructor for UserAuthoritiesDTO.</p>
+     */
     public UserAuthoritiesDTO() {
         super();
         authorities = new ArrayList<AuthorityDTO>();
         groups = new ArrayList<GroupDTO>();
     }
 
+    /**
+     * <p>Getter for the field <code>groups</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<GroupDTO> getGroups() {
         return groups;
     }
 
+    /**
+     * <p>Setter for the field <code>groups</code>.</p>
+     *
+     * @param groups a {@link java.util.List} object.
+     */
     public void setGroups(List<GroupDTO> groups) {
         this.groups = groups;
     }
 
     /**
+     * <p>Getter for the field <code>authorities</code>.</p>
+     *
      *@return List of {@link org.opennms.acl.model.AuthorityDTO} of a user
      */
     public List<AuthorityDTO> getAuthorities() {
         return authorities;
     }
 
+    /**
+     * <p>Setter for the field <code>authorities</code>.</p>
+     *
+     * @param authorities a {@link java.util.List} object.
+     */
     public void setAuthorities(List<AuthorityDTO> authorities) {
         if (this.authorities != null) {
             this.authorities = authorities;
         }
     }
 
+    /**
+     * <p>Getter for the field <code>items</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<?> getItems() {
         return items;
     }
 
+    /**
+     * <p>Setter for the field <code>items</code>.</p>
+     *
+     * @param items a {@link java.util.List} object.
+     */
     public void setItems(List<?> items) {
         this.items = items;
     }

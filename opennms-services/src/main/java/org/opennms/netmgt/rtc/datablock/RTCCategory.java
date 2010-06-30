@@ -43,9 +43,12 @@ import org.opennms.netmgt.config.categories.Category;
 
 /**
  * This class is used to encapsulate a category in the categories XML file.
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class RTCCategory extends Category {
     private static final long serialVersionUID = 1L;
@@ -62,6 +65,9 @@ public class RTCCategory extends Category {
 
     /**
      * The default constructor - initializes the values
+     *
+     * @param cat a {@link org.opennms.netmgt.config.categories.Category} object.
+     * @param commonRule a {@link java.lang.String} object.
      */
     public RTCCategory(Category cat, String commonRule) {
         setLabel(cat.getLabel());
@@ -78,7 +84,7 @@ public class RTCCategory extends Category {
 
     /**
      * Add to the nodes in this category
-     * 
+     *
      * @param node
      *            the node to add
      */
@@ -91,7 +97,7 @@ public class RTCCategory extends Category {
 
     /**
      * Add to the nodes in this category
-     * 
+     *
      * @param nodeid
      *            the node ID to add
      */
@@ -104,7 +110,7 @@ public class RTCCategory extends Category {
 
     /**
      * Delete from the nodes in this category
-     * 
+     *
      * @param nodeid
      *            the node ID to delete
      */
@@ -117,9 +123,10 @@ public class RTCCategory extends Category {
     /**
      * Returns true if the service is in the services list in this category or
      * if service list is null
-     * 
+     *
      * @return true if the service is in the services list in this category or
      *         if service list is null
+     * @param svcname a {@link java.lang.String} object.
      */
     public boolean containsService(String svcname) {
         if (getServiceCount() <= 0) {
@@ -143,7 +150,7 @@ public class RTCCategory extends Category {
 
     /**
      * Return the 'effective' category rule
-     * 
+     *
      * @return the 'effective' category rule
      */
     public String getEffectiveRule() {
@@ -152,7 +159,7 @@ public class RTCCategory extends Category {
 
     /**
      * Get the node IDs in this category
-     * 
+     *
      * @return the list of node IDs in this category
      */
     public List<Long> getNodes() {

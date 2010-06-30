@@ -35,11 +35,23 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>CollectionAttribute interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface CollectionAttribute {
+    /**
+     * <p>getResource</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     */
     public CollectionResource getResource();
     
     /**
-     * Get the value of the attribute as a String.  
+     * Get the value of the attribute as a String.
+     *
      * @return a String representing the attribute value
      */
     public String getStringValue();
@@ -47,12 +59,14 @@ public interface CollectionAttribute {
     /**
      * Get the numeric value of the attribute, as a String.  Assumes the underlying value is actually numeric, and will
      * return null if it is not parseable.
-     * @return a string representation of the numeric value of this attribute 
+     *
+     * @return a string representation of the numeric value of this attribute
      */
     public String getNumericValue();
     
     /**
      * Gets the name of the attribute
+     *
      * @return a name
      */
     public String getName();
@@ -60,31 +74,36 @@ public interface CollectionAttribute {
     
     /**
      * Stores the attribute using the persister.  Not sure this should be here...
-     * @param persister
+     *
+     * @param persister a {@link org.opennms.netmgt.collectd.Persister} object.
      */
     void storeAttribute(Persister persister);
     
     /**
-     * Determines whether the attribute should be persisted.  
-     * @param params
-     * @return
+     * Determines whether the attribute should be persisted.
+     *
+     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @return a boolean.
      */
     public boolean shouldPersist(ServiceParameters params);
     
     /**
      * Return the attribute type for this attribute.  Not sure what an CollectionAttributeType is yet... please fill in if you do know
-     * @return
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
      */
     public CollectionAttributeType getAttributeType();
     
     /**
      * Visit this attribute
-     * @param visitor
+     *
+     * @param visitor a {@link org.opennms.netmgt.collectd.CollectionSetVisitor} object.
      */
     public void visit(CollectionSetVisitor visitor);
     
     /**
-     * Returns type of value (typically one of "counter", "gauge", "timeticks", "integer", "octetstring" - see NumericAttributeType) 
+     * Returns type of value (typically one of "counter", "gauge", "timeticks", "integer", "octetstring" - see NumericAttributeType)
+     *
      * @return type of value stored in this attribute (SNMP semantics)
      */
     public String getType();

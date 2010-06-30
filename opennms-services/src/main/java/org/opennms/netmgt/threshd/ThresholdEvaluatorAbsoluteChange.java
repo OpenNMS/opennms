@@ -47,15 +47,20 @@ import org.springframework.util.Assert;
 /**
  * Implements an absolute change threshold check.  If the value changes by more than the specified amount
  * then it will trigger.  As for relative change, re-arm and trigger are unused
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
     
     private static final String TYPE = "absoluteChange";
 
+    /** {@inheritDoc} */
     public ThresholdEvaluatorState getThresholdEvaluatorState(BaseThresholdDefConfigWrapper threshold) {
         return new ThresholdEvaluatorStateAbsoluteChange(threshold);
     }
 
+    /** {@inheritDoc} */
     public boolean supportsType(String type) {
         return TYPE.equals(type);
     }

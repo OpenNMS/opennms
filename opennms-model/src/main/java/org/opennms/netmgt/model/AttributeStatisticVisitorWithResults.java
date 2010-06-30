@@ -38,14 +38,35 @@ package org.opennms.netmgt.model;
 import java.util.SortedSet;
 
 /**
+ * <p>AttributeStatisticVisitorWithResults interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface AttributeStatisticVisitorWithResults extends AttributeStatisticVisitor {
+    /**
+     * <p>getResults</p>
+     *
+     * @return a {@link java.util.SortedSet} object.
+     */
     public SortedSet<AttributeStatistic> getResults();
     
     // FIXME: Hack, hack, hack
     
+    /**
+     * <p>setCount</p>
+     *
+     * @param count a {@link java.lang.Integer} object.
+     */
     public void setCount(Integer count);
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getCount();
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet();
 }

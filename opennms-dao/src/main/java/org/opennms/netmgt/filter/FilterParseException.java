@@ -43,10 +43,12 @@ import java.io.PrintWriter;
  * This class is used to indicate a failure of the Filter engine to correctly
  * parse a filter expression. If the error was caused by an undeclared exception
  * during processing, that exception is also encapsulated by the exception.
- * 
+ *
  * @author <a href="jason@opennms.org">Jason </a>
  * @author <a href="weave@oculan.com">Weave </a>
- * 
+ * @author <a href="jason@opennms.org">Jason </a>
+ * @author <a href="weave@oculan.com">Weave </a>
+ * @version $Id: $
  */
 public class FilterParseException extends RuntimeException {
     private static final long serialVersionUID = 1L;
@@ -67,10 +69,9 @@ public class FilterParseException extends RuntimeException {
     /**
      * Constructs a new parse exception with the passed message as its error
      * text.
-     * 
+     *
      * @param msg
      *            The exception text.
-     * 
      */
     public FilterParseException(String msg) {
         super(msg);
@@ -80,12 +81,11 @@ public class FilterParseException extends RuntimeException {
     /**
      * Constructs a new parse exception with the passed message as the error
      * text and the throwable as the encapsulated error causing the failure.
-     * 
+     *
      * @param msg
      *            The exception text.
      * @param t
      *            The cause of the failure.
-     * 
      */
     public FilterParseException(String msg, Throwable t) {
         super(msg);
@@ -103,11 +103,10 @@ public class FilterParseException extends RuntimeException {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Prints the stack trace of the exception, and the encapsulated exception
      * if any.
-     * 
-     * @param ps
-     *            The location to write the exception.
      */
     public void printStackTrace(PrintStream ps) {
         if (m_delegate != null)
@@ -118,7 +117,7 @@ public class FilterParseException extends RuntimeException {
     /**
      * Prints the stack trace of the exception, and the encapsulated exception
      * if any.
-     * 
+     *
      * @param pw
      *            The location to write the exception.
      */

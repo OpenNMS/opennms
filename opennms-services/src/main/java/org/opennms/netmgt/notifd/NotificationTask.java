@@ -60,13 +60,26 @@ import org.opennms.netmgt.config.users.User;
  * notification that is sent will be accompanied by a row in the notifications
  * table. All notifications in a group will be identified with a common groupId
  * number.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ *
  * Modification to pick an ExecuteStrategy based on the "binary" flag in
  * notificationCommands.xml by:
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ *
+ * Modification to pick an ExecuteStrategy based on the "binary" flag in
+ * notificationCommands.xml by:
+ * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ *
+ * Modification to pick an ExecuteStrategy based on the "binary" flag in
+ * notificationCommands.xml by:
+ * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @version $Id: $
  */
 public class NotificationTask extends Thread {
     /**
@@ -105,9 +118,14 @@ public class NotificationTask extends Thread {
 
     /**
      * Constructor, initializes some information
-     * 
+     *
      * @param someParams the parameters from
      * Notify
+     * @param notificationManager a {@link org.opennms.netmgt.config.NotificationManager} object.
+     * @param userManager a {@link org.opennms.netmgt.config.UserManager} object.
+     * @param sendTime a long.
+     * @param siblings a {@link java.util.List} object.
+     * @param autoNotify a {@link java.lang.String} object.
      */
     public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify) {
         m_notificationManager = notificationManager;
@@ -119,6 +137,9 @@ public class NotificationTask extends Thread {
     }
 
     /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         StringBuffer buffer = new StringBuffer("Send ");
@@ -137,6 +158,9 @@ public class NotificationTask extends Thread {
     }
 
     /**
+     * <p>getSendTime</p>
+     *
+     * @return a long.
      */
     public long getSendTime() {
         return m_sendTime;
@@ -145,7 +169,7 @@ public class NotificationTask extends Thread {
     /**
      * Returns the unique id used to insert the row in the database for this
      * notification task.
-     * 
+     *
      * @return int, the id of the row in notifications table
      */
     public int getNotifyId() {
@@ -154,7 +178,7 @@ public class NotificationTask extends Thread {
 
     /**
      * Sets the user that the page needs to be sent to.
-     * 
+     *
      * @param aUser
      *            the user info
      */
@@ -162,12 +186,19 @@ public class NotificationTask extends Thread {
         m_user = aUser;
     }
     
+    /**
+     * <p>getUser</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.users.User} object.
+     */
     public User getUser() {
         return m_user;
     }
 
-    /**Sets the autoNotify info for the usersnotified table
-     * @param String autoNotify
+    /**
+     *Sets the autoNotify info for the usersnotified table
+     *
+     * @param autoNotify a {@link java.lang.String} object.
      */
     public void setAutoNotify(String autoNotify) {
         m_autoNotify = autoNotify;
@@ -176,7 +207,7 @@ public class NotificationTask extends Thread {
     /**
      * Sets the group id that will be inserted into the row in notifications
      * table
-     * 
+     *
      * @param anId
      *            the group id to set for the row
      */
@@ -188,7 +219,7 @@ public class NotificationTask extends Thread {
     /**
      * This method will construct the command that will be issued to send the
      * actual page.
-     * 
+     *
      * @param commands
      *            the commands to call at the console.
      */
@@ -196,11 +227,17 @@ public class NotificationTask extends Thread {
         m_commands = commands;
     }
     
+    /**
+     * <p>getCommands</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.config.notificationCommands.Command} objects.
+     */
     public Command[] getCommands() {
         return m_commands.clone();
     }
 
     /**
+     * <p>run</p>
      */
     public void run() {
         boolean outstanding = false;
@@ -347,19 +384,43 @@ public class NotificationTask extends Thread {
         return value;
     }
 
+    /**
+     * <p>getEmail</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public String getEmail() throws IOException, MarshalException, ValidationException {
         return getContactInfo("email");
     }
     
+    /**
+     * <p>getTuiPin</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public String getTuiPin() throws MarshalException, ValidationException, IOException {
         return getContactInfo("tuiPin");
     }
 
+    /**
+     * <p>start</p>
+     */
     public synchronized void start() {
         m_started = true;
         super.start();
     }
 
+    /**
+     * <p>isStarted</p>
+     *
+     * @return a boolean.
+     */
     public boolean isStarted() {
         return m_started;
     }

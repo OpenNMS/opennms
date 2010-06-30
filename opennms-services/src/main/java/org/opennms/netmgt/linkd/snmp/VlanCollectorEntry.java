@@ -38,28 +38,44 @@
 package org.opennms.netmgt.linkd.snmp;
 
 /**
+ * <p>VlanCollectorEntry interface.</p>
+ *
  * @author antonio
  *
  * See CISCO-VTP-MIB for definition
+ * @version $Id: $
  */
-
 public interface VlanCollectorEntry {
 	
+	/** Constant <code>VLAN_INDEX="vtpVlanIndex"</code> */
 	public final static String VLAN_INDEX = "vtpVlanIndex";
+	/** Constant <code>VLAN_NAME="vtpVlanName"</code> */
 	public final static String VLAN_NAME = "vtpVlanName";
+	/** Constant <code>VLAN_STATUS="vtpVlanStatus"</code> */
 	public final static String VLAN_STATUS = "vtpVlanStatus";
+	/** Constant <code>VLAN_TYPE="vtpVlanType"</code> */
 	public final static String VLAN_TYPE = "vtpVlanType";
 
+	/** Constant <code>VLAN_TYPE_ETHERNET=1</code> */
 	public final static int VLAN_TYPE_ETHERNET = 1;
+	/** Constant <code>VLAN_TYPE_FDDI=2</code> */
 	public final static int VLAN_TYPE_FDDI = 2;
+	/** Constant <code>VLAN_TYPE_TOKENRING=3</code> */
 	public final static int VLAN_TYPE_TOKENRING = 3;
+	/** Constant <code>VLAN_TYPE_FDDINET=4</code> */
 	public final static int VLAN_TYPE_FDDINET = 4;
+	/** Constant <code>VLAN_TYPE_TRNET=5</code> */
 	public final static int VLAN_TYPE_TRNET = 5;
+	/** Constant <code>VLAN_TYPE_DEPRECATED=6</code> */
 	public final static int VLAN_TYPE_DEPRECATED = 6;
 	
+	/** Constant <code>VLAN_STATUS_OPERATIONAL=1</code> */
 	public final static int VLAN_STATUS_OPERATIONAL = 1;
+	/** Constant <code>VLAN_STATUS_SUSPENDED=2</code> */
 	public final static int VLAN_STATUS_SUSPENDED = 2;
+	/** Constant <code>VLAN_STATUS_mtuTooBigForDevice=3</code> */
 	public final static int VLAN_STATUS_mtuTooBigForDevice = 3;
+	/** Constant <code>VLAN_STATUS_mtuTooBigForTrunk=4</code> */
 	public final static int VLAN_STATUS_mtuTooBigForTrunk = 4;
 	
 }

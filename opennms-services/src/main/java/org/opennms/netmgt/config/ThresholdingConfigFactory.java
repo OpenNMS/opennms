@@ -66,14 +66,16 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  * This class is the main repository for thresholding configuration information
  * used by the thresholding daemon.. When this class is loaded it reads the
  * thresholding configuration into memory.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class ThresholdingConfigFactory {
     /**
@@ -121,6 +123,13 @@ public final class ThresholdingConfigFactory {
 
     }
     
+    /**
+     * <p>Constructor for ThresholdingConfigFactory.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public ThresholdingConfigFactory(InputStream stream) throws MarshalException, ValidationException {
         parseXML(stream);
     }
@@ -150,13 +159,16 @@ public final class ThresholdingConfigFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -191,13 +203,16 @@ public final class ThresholdingConfigFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -208,9 +223,8 @@ public final class ThresholdingConfigFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -222,6 +236,11 @@ public final class ThresholdingConfigFactory {
         return m_singleton;
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
+     */
     public static synchronized void setInstance(ThresholdingConfigFactory instance) {
         m_loaded = true;
         m_singleton = instance;
@@ -229,19 +248,23 @@ public final class ThresholdingConfigFactory {
     /**
      * Retrieves the configured path to the RRD file repository for the
      * specified thresholding group.
-     * 
+     *
      * @param groupName
      *            Group name to lookup
-     * 
      * @return RRD repository path.
-     * 
-     * @throws IllegalArgumentException
+     * @throws java.lang.IllegalArgumentException
      *             if group name does not exist in the group map.
      */
     public String getRrdRepository(String groupName) {
         return getGroup(groupName).getRrdRepository();
     }
 
+    /**
+     * <p>getGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.threshd.Group} object.
+     */
     public Group getGroup(String groupName) {
         Group group = m_groupMap.get(groupName);
         if (group == null) {
@@ -254,14 +277,12 @@ public final class ThresholdingConfigFactory {
      * Retrieves a Collection object consisting of all the
      * org.opennms.netmgt.config.Threshold objects which make up the specified
      * thresholding group.
-     * 
+     *
      * @param groupName
      *            Group name to lookup
-     * 
      * @return Collection consisting of all the Threshold objects for the
      *         specified group..
-     * 
-     * @throws IllegalArgumentException
+     * @throws java.lang.IllegalArgumentException
      *             if group name does not exist in the group map.
      */
     public Collection<Basethresholddef> getThresholds(String groupName) {
@@ -272,12 +293,21 @@ public final class ThresholdingConfigFactory {
         return result;
     }
     
+    /**
+     * <p>getGroupNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getGroupNames() {
         return m_groupMap.keySet();
     }
     
     /**
      * Saves the current in-memory configuration to disk and reloads
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
         // Marshal to a string first, then write the string to the file. This
@@ -299,6 +329,13 @@ public final class ThresholdingConfigFactory {
         update();
 
     }
+    /**
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public void update() throws IOException, MarshalException, ValidationException {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 

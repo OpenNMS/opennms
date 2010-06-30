@@ -49,12 +49,12 @@
 * http://www.krupczak.org/
 */
 
-/** 
-   Xmp CollectionSet class serves as a container for a collection of
-   query results for the OpenNMS network management software suite.
-   @author <a href="mailto:rdk@krupczak.org">Bobby Krupczak</a>
-   @version $Id: XmpCollectionSet.java 38 2008-07-24 13:39:32Z rdk $
- **/
+/**
+ *   Xmp CollectionSet class serves as a container for a collection of
+ *   query results for the OpenNMS network management software suite.
+ *   @author <a href="mailto:rdk@krupczak.org">Bobby Krupczak</a>
+ *   @version $Id: XmpCollectionSet.java 38 2008-07-24 13:39:32Z rdk $
+ */
 
 package org.opennms.netmgt.collectd;
 
@@ -63,7 +63,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.opennms.core.utils.ThreadCategory;
-
 public class XmpCollectionSet implements CollectionSet {
 
     /* class variables and methods *********************** */
@@ -98,33 +97,80 @@ public class XmpCollectionSet implements CollectionSet {
 
     /* public methods ************************************ */
 
+    /**
+     * <p>addResource</p>
+     *
+     * @param aResource a {@link org.opennms.netmgt.collectd.XmpCollectionResource} object.
+     */
     public void addResource(XmpCollectionResource aResource)
     {
         listOfResources.add(aResource);
     }
 
+    /**
+     * <p>getResources</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<XmpCollectionResource>getResources() 
     { 
         return listOfResources; 
     }
 
     // return a ServiceCollector status value 
+    /**
+     * <p>getCollectionAgent</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public CollectionAgent getCollectionAgent() { return agent; }
+    /**
+     * <p>setCollectionAgent</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public void setCollectionAgent(CollectionAgent agent) { this.agent = agent; }
 
+    /**
+     * <p>Getter for the field <code>status</code>.</p>
+     *
+     * @return a int.
+     */
     public int getStatus() { return status; }
+    /**
+     * <p>Setter for the field <code>status</code>.</p>
+     *
+     * @param status a int.
+     */
     public void setStatus(int status) { this.status = status; }
 
+    /**
+     * <p>setStatusSuccess</p>
+     */
     public void setStatusSuccess() { this.status = ServiceCollector.COLLECTION_SUCCEEDED; }
+    /**
+     * <p>setStatusFailed</p>
+     */
     public void setStatusFailed() { this.status = ServiceCollector.COLLECTION_FAILED; }
 
     // ignorePersist returns true if system has been restarted
     // that is, if sysUpTime has gone backwards, return true
     // if system has continued, return false
 
+    /**
+     * <p>ignorePersist</p>
+     *
+     * @return a boolean.
+     */
     public boolean ignorePersist() { return ignorePersistVar; }
 
+    /**
+     * <p>ignorePersistTrue</p>
+     */
     public void ignorePersistTrue() { ignorePersistVar = true; }
+    /**
+     * <p>ignorePersistFalse</p>
+     */
     public void ignorePersistFalse() { ignorePersistVar = false; }
 
     // Visitor design pattern 
@@ -134,6 +180,7 @@ public class XmpCollectionSet implements CollectionSet {
 
     //public XmpCollectionResource getResource() { return collectionResource; }
 
+    /** {@inheritDoc} */
     public void visit(CollectionSetVisitor visitor) 
     {
         log().debug("XmpCollectionSet: visit starting for set "+agent);

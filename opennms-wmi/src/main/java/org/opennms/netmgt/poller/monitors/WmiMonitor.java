@@ -57,9 +57,12 @@ import org.opennms.protocols.wmi.WmiResult;
  * the availability of WMI services on remote interfaces. The class
  * implements the IPv4Monitor interface that allows it to be used along
  * with other plug-ins by the service poller framework.
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 
 @Distributable
@@ -83,26 +86,18 @@ public class WmiMonitor extends IPv4Monitor {
 	private final static String DEFAULT_WMI_COMP_OP = "EQ";
     private final static String DEFAULT_WMI_WQL = "NOTSET";
 
-    /**
+	/**
+	 * {@inheritDoc}
+	 *
 	 * Poll the specified address for service availability. During the poll an
-	 * attempt is made to connect the WMI agent on the specified host. If the 
-	 * connection request is successful, the parameters are parsed and turned 
+	 * attempt is made to connect the WMI agent on the specified host. If the
+	 * connection request is successful, the parameters are parsed and turned
 	 * into <code>WmiParams</code> and a check is performed against the
 	 * remote WMI service. If the <code>WmiManager</code> responds
 	 * with a <code>WmiResult</code> containing a result code of
 	 * <code>WmiResult.RES_STATE_OK</code> then we have determined that
 	 * we are talking to a valid service and we set the service status to
 	 * SERVICE_AVAILABLE and return.
-	 * @param parameters
-	 *            The package parameters (timeout, retry, etc...) to be used
-	 *            for this poll.
-	 * @param svc
-	 *            The service containing the network interface to test the service on.
-	 * 
-	 * @return The availibility of the interface and if a transition event
-	 *         should be supressed.
-	 * @throws java.lang.RuntimeException
-	 *             Thrown if the interface experiences errors during the poll.
 	 */
 	@Override
 	public PollStatus poll(MonitoredService svc, Map parameters) {

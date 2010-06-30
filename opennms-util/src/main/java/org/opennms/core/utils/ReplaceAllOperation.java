@@ -36,12 +36,24 @@
 //
 package org.opennms.core.utils;
 
+/**
+ * <p>ReplaceAllOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReplaceAllOperation extends StringReplaceOperation {
 
+    /**
+     * <p>Constructor for ReplaceAllOperation.</p>
+     *
+     * @param spec a {@link java.lang.String} object.
+     */
     public ReplaceAllOperation(String spec) {
         super(spec);
     }
     
+    /** {@inheritDoc} */
     @Override
     public String replace(String input) {
         return input.replaceAll(m_pattern, m_replacement);

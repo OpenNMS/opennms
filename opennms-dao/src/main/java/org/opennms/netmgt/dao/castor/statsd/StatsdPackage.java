@@ -41,33 +41,69 @@ import java.util.List;
 /**
  * Represents a package that selects nodes and lists reports to
  * run on them.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see PackageReport
+ * @version $Id: $
  */
 public class StatsdPackage {
     private String m_name;
     private String m_filter;
     private List<PackageReport> m_reports = new ArrayList<PackageReport>();
     
+    /**
+     * <p>getFilter</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFilter() {
         return m_filter;
     }
+    /**
+     * <p>setFilter</p>
+     *
+     * @param filter a {@link java.lang.String} object.
+     */
     public void setFilter(String filter) {
         m_filter = filter;
     }
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
+    /**
+     * <p>getReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<PackageReport> getReports() {
         return m_reports;
     }
+    /**
+     * <p>setReports</p>
+     *
+     * @param reports a {@link java.util.List} object.
+     */
     public void setReports(List<PackageReport> reports) {
         m_reports = reports;
     }
+    /**
+     * <p>addReport</p>
+     *
+     * @param report a {@link org.opennms.netmgt.dao.castor.statsd.PackageReport} object.
+     */
     public void addReport(PackageReport report) {
         m_reports.add(report);
     }

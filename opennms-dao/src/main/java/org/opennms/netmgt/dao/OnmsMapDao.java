@@ -36,19 +36,107 @@ import org.opennms.netmgt.model.OnmsMap;
 import java.util.Collection;
 import java.util.Date;
 
+/**
+ * <p>OnmsMapDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsMapDao extends OnmsDao<OnmsMap, Integer> {
+    /**
+     * <p>findAll</p>
+     *
+     * @param offset a {@link java.lang.Integer} object.
+     * @param limit a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findAll(Integer offset, Integer limit);
+    /**
+     * <p>findMapsLike</p>
+     *
+     * @param mapLabel a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findMapsLike(String mapLabel);
+    /**
+     * <p>findMapsByName</p>
+     *
+     * @param mapLabel a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findMapsByName(String mapLabel);
+    /**
+     * <p>findMapById</p>
+     *
+     * @param id a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsMap} object.
+     */
     OnmsMap findMapById(int id);
+    /**
+     * <p>findMapsByNameAndType</p>
+     *
+     * @param mapName a {@link java.lang.String} object.
+     * @param mapType a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findMapsByNameAndType(String mapName, String mapType);
+    /**
+     * <p>findMapsByType</p>
+     *
+     * @param mapType a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findMapsByType(String mapType);
+    /**
+     * <p>findAutoMaps</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findAutoMaps();
+    /**
+     * <p>findUserMaps</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findUserMaps();
+    /**
+     * <p>findSaveMaps</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findSaveMaps();
+    /**
+     * <p>findAutoAndSaveMaps</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findAutoAndSaveMaps();
+    /**
+     * <p>findMapsByOwner</p>
+     *
+     * @param owner a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findMapsByOwner(String owner);
+    /**
+     * <p>findMapsByGroup</p>
+     *
+     * @param group a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findMapsByGroup(String group);
+    /**
+     * <p>findVisibleMapsByGroup</p>
+     *
+     * @param group a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMap> findVisibleMapsByGroup(String group);
+    /**
+     * <p>updateAllAutomatedMap</p>
+     *
+     * @param time a {@link java.util.Date} object.
+     * @return a int.
+     */
     int updateAllAutomatedMap(Date time);
 }

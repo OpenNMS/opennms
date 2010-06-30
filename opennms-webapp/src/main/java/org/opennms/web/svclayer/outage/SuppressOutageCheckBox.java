@@ -33,8 +33,11 @@
  *      http://www.opennms.com/
  */
 /**
- * 
+ * <p>SuppressOutageCheckBox class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 package org.opennms.web.svclayer.outage;
 
@@ -45,12 +48,13 @@ import org.extremecomponents.table.bean.Column;
 import org.extremecomponents.table.cell.Cell;
 import org.extremecomponents.table.core.TableModel;
 import org.extremecomponents.table.view.html.ColumnBuilder;
-
 public class SuppressOutageCheckBox implements Cell {
+	/** {@inheritDoc} */
 	public String getExportDisplay(TableModel model, Column column) {
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	public String getHtmlDisplay(TableModel model, Column column) {
 		ColumnBuilder columnBuilder = new ColumnBuilder(column);
 

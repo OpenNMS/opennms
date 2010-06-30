@@ -52,8 +52,10 @@ import java.util.StringTokenizer;
 
 /**
  * Bootstrap application for starting OpenNMS.
+ *
+ * @author ranger
+ * @version $Id: $
  */
-
 public class Bootstrap {
 	
     static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
@@ -81,7 +83,7 @@ public class Bootstrap {
 
     /**
      * Create a ClassLoader with the JARs found in dirStr.
-     * 
+     *
      * @param dirStr
      *            List of directories to search for JARs, separated by
      *            {@link java.io.File#pathSeparator File.pathSeparator}
@@ -89,6 +91,8 @@ public class Bootstrap {
      *            Whether to recurse into subdirectories of the directories in
      *            dirStr
      * @returns A new ClassLoader containing the found JARs
+     * @return a {@link java.lang.ClassLoader} object.
+     * @throws java.net.MalformedURLException if any.
      */
     public static ClassLoader loadClasses(String dirStr, boolean recursive)
             throws MalformedURLException {
@@ -105,12 +109,14 @@ public class Bootstrap {
 
     /**
      * Create a ClassLoader with the JARs found in dir.
-     * 
+     *
      * @param dir
      *            Directory to search for JARs
      * @param recursive
      *            Whether to recurse into subdirectories of dir
      * @returns A new ClassLoader containing the found JARs
+     * @return a {@link java.lang.ClassLoader} object.
+     * @throws java.net.MalformedURLException if any.
      */
     public static ClassLoader loadClasses(File dir, boolean recursive)
             throws MalformedURLException {
@@ -121,10 +127,11 @@ public class Bootstrap {
 
     /**
      * Create a ClassLoader with the list of URLs found in urls.
-     * 
+     *
      * @param urls
      *            List of URLs to add to the ClassLoader's search list.
      * @returns A new ClassLoader with the specified search list
+     * @return a {@link java.lang.ClassLoader} object.
      */
     public static ClassLoader newClassLoader(LinkedList<URL> urls) {
         URL[] urlsArray = urls.toArray(new URL[0]);
@@ -134,7 +141,7 @@ public class Bootstrap {
 
     /**
      * Add JARs found in dir to the LinkedList urls.
-     * 
+     *
      * @param dir
      *            Directory to search for JARs
      * @param recursive
@@ -142,6 +149,7 @@ public class Bootstrap {
      *            dir
      * @param urls
      *            LinkedList to append found JARs onto
+     * @throws java.net.MalformedURLException if any.
      */
     public static void loadClasses(File dir, boolean recursive,
             LinkedList<URL> urls) throws MalformedURLException {
@@ -173,7 +181,7 @@ public class Bootstrap {
      * if it is found, the file name of the JAR (e.g.: opennms_bootstrap.jar)
      * and its parent directory (e.g.: the lib directory) are removed from the
      * path and the resulting path (e.g.: /opt/OpenNMS) is returned.
-     * 
+     *
      * @return Home directory or null if it couldn't be found
      */
     public static File findOpenNMSHome() {
@@ -292,11 +300,11 @@ public class Bootstrap {
      * <li>Finally, the main method of org.opennms.netmgt.vmmgr.Controller is
      * invoked with the parameters passed in argv.</li>
      * </ul>
-     * 
+     *
      * @param args
      *            Command line arguments
+     * @throws java.lang.Exception if any.
      */
-    
     public static void main(String[] args) throws Exception {
         
         boolean propertiesLoaded = false;

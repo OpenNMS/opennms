@@ -40,17 +40,25 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 
 /**
- * @author Donald Desloge
+ * <p>LineOrientedDecoder class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class LineOrientedDecoder extends CumulativeProtocolDecoder {
     
     private Charset m_charset;
     
+    /**
+     * <p>Constructor for LineOrientedDecoder.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public LineOrientedDecoder(Charset charset) {
         setCharset(charset);
     }
     
+    /** {@inheritDoc} */
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
         // Remember the initial position.
@@ -98,14 +106,31 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
         
     }
     
+    /**
+     * <p>parseCommand</p>
+     *
+     * @param in a {@link org.apache.mina.core.buffer.IoBuffer} object.
+     * @return a {@link java.lang.Object} object.
+     * @throws java.nio.charset.CharacterCodingException if any.
+     */
     protected Object parseCommand(IoBuffer in) throws CharacterCodingException {
         return new LineOrientedResponse(in.getString(getCharset().newDecoder()));
     }
 
+    /**
+     * <p>setCharset</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public void setCharset(Charset charset) {
         m_charset = charset;
     }
 
+    /**
+     * <p>getCharset</p>
+     *
+     * @return a {@link java.nio.charset.Charset} object.
+     */
     public Charset getCharset() {
         return m_charset;
     }

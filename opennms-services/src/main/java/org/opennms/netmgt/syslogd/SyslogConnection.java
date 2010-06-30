@@ -53,9 +53,18 @@ import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 
 /**
+ * <p>SyslogConnection class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @version $Id: $
  */
 public class SyslogConnection implements Runnable {
 
@@ -77,6 +86,17 @@ public class SyslogConnection implements Runnable {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
+    /**
+     * <p>Constructor for SyslogConnection.</p>
+     *
+     * @param packet a {@link java.net.DatagramPacket} object.
+     * @param matchPattern a {@link java.lang.String} object.
+     * @param hostGroup a int.
+     * @param messageGroup a int.
+     * @param ueiList a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
+     * @param hideMessages a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
+     * @param discardUei a {@link java.lang.String} object.
+     */
     public SyslogConnection(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
         _packet = copyPacket(packet);
         _matchPattern = matchPattern;
@@ -89,6 +109,9 @@ public class SyslogConnection implements Runnable {
         m_logPrefix = LOG4J_CATEGORY;
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
         ThreadCategory.setPrefix(m_logPrefix);
         ThreadCategory log = ThreadCategory.getInstance(getClass());

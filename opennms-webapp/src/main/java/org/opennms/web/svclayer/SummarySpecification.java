@@ -34,8 +34,11 @@
 package org.opennms.web.svclayer;
 
 /**
- * 
+ * <p>SummarySpecification class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SummarySpecification {
     private String m_filterRule;
@@ -43,29 +46,69 @@ public class SummarySpecification {
     private long m_endTime;
     private String m_attributeSieve;
     
+    /**
+     * <p>getFilterRule</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFilterRule() {
         return m_filterRule;
     }
+    /**
+     * <p>setFilterRule</p>
+     *
+     * @param filterRule a {@link java.lang.String} object.
+     */
     public void setFilterRule(String filterRule) {
         m_filterRule = filterRule;
     }
+    /**
+     * <p>getStartTime</p>
+     *
+     * @return a long.
+     */
     public long getStartTime() {
         return m_startTime;
     }
+    /**
+     * <p>setStartTime</p>
+     *
+     * @param startTime a long.
+     */
     public void setStartTime(long startTime) {
         m_startTime = startTime;
     }
+    /**
+     * <p>getEndTime</p>
+     *
+     * @return a long.
+     */
     public long getEndTime() {
         return m_endTime;
     }
+    /**
+     * <p>setEndTime</p>
+     *
+     * @param endTime a long.
+     */
     public void setEndTime(long endTime) {
         m_endTime = endTime;
     }
     
+    /**
+     * <p>getAttributeSieve</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAttributeSieve() {
         return m_attributeSieve;
     }
     
+    /**
+     * <p>setAttributeSieve</p>
+     *
+     * @param attributeSieve a {@link java.lang.String} object.
+     */
     public void setAttributeSieve(String attributeSieve) {
         m_attributeSieve = attributeSieve;
     }

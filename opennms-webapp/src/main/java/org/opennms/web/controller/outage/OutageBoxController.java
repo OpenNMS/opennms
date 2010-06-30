@@ -17,11 +17,16 @@ import org.springframework.web.servlet.mvc.AbstractController;
 /**
  * A controller that handles querying the outages table to create the front-page
  * outage summary box.
- * 
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class OutageBoxController extends AbstractController implements InitializingBean {
+    /** Constant <code>ROWS=12</code> */
     public static final int ROWS = 12;
     private static final OutageType OUTAGE_TYPE = OutageType.CURRENT;
     private static final SortStyle SORT_STYLE = SortStyle.IFLOSTSERVICE;
@@ -29,6 +34,7 @@ public class OutageBoxController extends AbstractController implements Initializ
     private WebOutageRepository m_webOutageRepository;
     private String m_successView;
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -49,14 +55,27 @@ public class OutageBoxController extends AbstractController implements Initializ
         return m_successView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
     
+    /**
+     * <p>setWebOutageRepository</p>
+     *
+     * @param webOutageRepository a {@link org.opennms.web.outage.WebOutageRepository} object.
+     */
     public void setWebOutageRepository(WebOutageRepository webOutageRepository) {
         m_webOutageRepository = webOutageRepository;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.notNull(m_successView, "property successView must be set");
         Assert.notNull(m_webOutageRepository, "webOutageRepository must be set");

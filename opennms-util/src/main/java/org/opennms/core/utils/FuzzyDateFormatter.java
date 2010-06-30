@@ -37,18 +37,35 @@ package org.opennms.core.utils;
 import java.util.Date;
 
 /**
- * 
+ * <p>FuzzyDateFormatter class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
  */
 public class FuzzyDateFormatter {
+    /** Constant <code>MILLISECONDS_PER_SECOND=1000.0</code> */
     public static final double MILLISECONDS_PER_SECOND = 1000.0;
+    /** Constant <code>MILLISECONDS_PER_DAY=86400000.0</code> */
     public static final double MILLISECONDS_PER_DAY = 86400000.0;
+    /** Constant <code>MILLISECONDS_PER_HOUR=3600000.0</code> */
     public static final double MILLISECONDS_PER_HOUR = 3600000.0;
+    /** Constant <code>MILLISECONDS_PER_MINUTE=60000.0</code> */
     public static final double MILLISECONDS_PER_MINUTE = 60000.0;
 
+    /**
+     * <p>Constructor for FuzzyDateFormatter.</p>
+     */
     public FuzzyDateFormatter() {
     }
 
+    /**
+     * <p>formatNumber</p>
+     *
+     * @param number a {@link java.lang.Double} object.
+     * @param singular a {@link java.lang.String} object.
+     * @param plural a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected static String formatNumber(Double number, String singular, String plural) {
         String returnVal;
         returnVal = Long.toString(Math.round(number.doubleValue()));
@@ -62,6 +79,13 @@ public class FuzzyDateFormatter {
         return returnVal;
     }
 
+    /**
+     * <p>calculateDifference</p>
+     *
+     * @param start a {@link java.util.Date} object.
+     * @param end a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String calculateDifference(Date start, Date end) {
         Long difference = Math.abs(end.getTime() - start.getTime());
         // System.err.println("difference = " + difference);

@@ -38,24 +38,43 @@ import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
+/**
+ * <p>TcpCodecFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class TcpCodecFactory implements ProtocolCodecFactory {
 
     private final LineOrientedEncoder m_encoder;
     private final TcpLineDecoder m_decoder;
     
+    /**
+     * <p>Constructor for TcpCodecFactory.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public TcpCodecFactory(Charset charset) {
         this(charset, null);
     }
     
+    /**
+     * <p>Constructor for TcpCodecFactory.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     * @param delimit a {@link java.lang.String} object.
+     */
     public TcpCodecFactory(Charset charset, String delimit) {
         m_encoder = new LineOrientedEncoder(charset);
         m_decoder = new TcpLineDecoder(charset);
     }
     
+    /** {@inheritDoc} */
     public ProtocolDecoder getDecoder(IoSession session) throws Exception {
         return m_decoder;
     }
 
+    /** {@inheritDoc} */
     public ProtocolEncoder getEncoder(IoSession session) throws Exception {
         return m_encoder;
     }

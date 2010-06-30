@@ -46,17 +46,23 @@ import org.opennms.netmgt.asterisk.utils.AsteriskOriginatorException;
 import org.opennms.netmgt.config.NotificationManager;
 
 /**
- * @author Jeff Gehlbach <A HREF="mailto:jeffg@opennms.org">jeffg</A>
+ * <p>AsteriskOriginateNotificationStrategy class.</p>
  *
+ * @author Jeff Gehlbach <A HREF="mailto:jeffg@opennms.org">jeffg</A>
+ * @version $Id: $
  */
 public class AsteriskOriginateNotificationStrategy implements NotificationStrategy {
 
+    /**
+     * <p>Constructor for AsteriskOriginateNotificationStrategy.</p>
+     */
     public AsteriskOriginateNotificationStrategy() {
     }
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
+    /** {@inheritDoc} */
     public int send(List<Argument> arguments) {
         if (log().isDebugEnabled()) {
             log().debug("In the " + getClass() + " class");
@@ -119,6 +125,11 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
         return ao;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

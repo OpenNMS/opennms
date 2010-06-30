@@ -56,16 +56,16 @@ import org.opennms.netmgt.xml.event.Parms;
 /**
  * Provides a collection of utility methods used by the DeleteEvent Processor
  * for dealing with Events
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * 
+ * @version $Id: $
  */
 public class EventUtils {
 
     /**
      * Make the given listener object a listener for the list of events
      * referenced in the ueiList.
-     * 
+     *
      * @param listener
      *            the lister to add
      * @param ueiList
@@ -78,10 +78,10 @@ public class EventUtils {
 
     /**
      * Ensures that the event has a database eventId
-     * 
+     *
      * @param e
      *            the event
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if an event id is not available
      */
     static public void checkEventId(Event e) throws InsufficientInformationException {
@@ -96,10 +96,10 @@ public class EventUtils {
 
     /**
      * Ensures the given event has an interface
-     * 
+     *
      * @param e
      *            the event
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if an interface is not available
      */
     static public void checkInterface(Event e) throws InsufficientInformationException {
@@ -114,12 +114,10 @@ public class EventUtils {
     
     /**
      * Is the given interface a non-IP interface
-     * 
+     *
      * @param intf
      *            the interface
-     *            
      * @return true/false
-     *
      */
     static public boolean isNonIpInterface(String intf) {
         if (intf == null || intf.length() == 0 || "0.0.0.0".equals(intf) ) {
@@ -131,10 +129,10 @@ public class EventUtils {
     
     /**
      * Ensures the given event has an interface or ifIndex
-     * 
+     *
      * @param e
      *            the event
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if  neither an interface nor an ifIndex is available
      */
     static public void checkInterfaceOrIfIndex(Event e) throws InsufficientInformationException {
@@ -150,10 +148,10 @@ public class EventUtils {
 
     /**
      * Ensures the given event has a host
-     * 
+     *
      * @param e
      *            the event
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if an interface is not available
      */
     static public void checkHost(Event e) throws InsufficientInformationException {
@@ -168,10 +166,10 @@ public class EventUtils {
 
     /**
      * Ensures that the given Event has a node id
-     * 
+     *
      * @param e
      *            the event
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if a node id is not available
      */
     static public void checkNodeId(Event e) throws InsufficientInformationException {
@@ -186,10 +184,10 @@ public class EventUtils {
 
     /**
      * Ensures that the given event has a service parameter
-     * 
+     *
      * @param e
      *            the event to check
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if the event does not have a service
      */
     public static void checkService(Event e) throws InsufficientInformationException {
@@ -204,7 +202,7 @@ public class EventUtils {
 
     /**
      * Get the eventId for the given event
-     * 
+     *
      * @param e
      *            the event to get the eventId for
      * @return the eventId of the event or -1 of no eventId is assigned
@@ -221,7 +219,7 @@ public class EventUtils {
     /**
      * Retrieve the value associated with an event parameter and parse it to a
      * long. If the value can not be found, return a default value.
-     * 
+     *
      * @param e
      *            the Event to retrieve the parameter from
      * @param parmName
@@ -248,7 +246,7 @@ public class EventUtils {
     /**
      * Return the nodeId of the node associated with and event, or -1 of no node
      * is associated.
-     * 
+     *
      * @param e
      *            the event
      * @return the nodeId or -1 if no nodeId is set
@@ -264,7 +262,7 @@ public class EventUtils {
 
     /**
      * Return the value of an event parameter of null if it does not exist.
-     * 
+     *
      * @param e
      *            the Event to get the parameter for
      * @param parmName
@@ -278,7 +276,7 @@ public class EventUtils {
     /**
      * Retrieve a parameter from and event, returning defaultValue of the
      * parameter is not set.
-     * 
+     *
      * @param e
      *            The Event to retrieve the parameter from
      * @param parmName
@@ -312,14 +310,13 @@ public class EventUtils {
 
     /**
      * Throw an exception if an event does have the required parameter
-     * 
+     *
      * @param e
      *            the event the parameter must reside on
-     * @param parmname
-     *            the name of the parameter
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if the parameter is not set on the event or if its value has
      *             no content
+     * @param parmName a {@link java.lang.String} object.
      */
     public static void requireParm(Event e, String parmName) throws InsufficientInformationException {
         Parms parms = e.getParms();
@@ -347,11 +344,13 @@ public class EventUtils {
     /**
      * Send an event to the Event manager to be broadcast to interested
      * listeners
-     * 
+     *
      * @param newEvent
      *            the event to send
      * @param isXmlRpcEnabled
      *            whether or not an XMLRPC event should be sent
+     * @param callerUei a {@link java.lang.String} object.
+     * @param txNo a long.
      */
     public static void sendEvent(Event newEvent, String callerUei, long txNo, boolean isXmlRpcEnabled) {
         // Send event to Eventd

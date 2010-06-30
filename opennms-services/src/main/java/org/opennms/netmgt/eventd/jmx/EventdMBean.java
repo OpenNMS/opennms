@@ -36,5 +36,11 @@ package org.opennms.netmgt.eventd.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>EventdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface EventdMBean extends BaseOnmsMBean {
 }

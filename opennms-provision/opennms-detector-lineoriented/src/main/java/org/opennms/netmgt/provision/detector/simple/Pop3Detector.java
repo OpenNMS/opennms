@@ -37,6 +37,12 @@ import org.springframework.stereotype.Component;
 
 
 @Component
+/**
+ * <p>Pop3Detector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class Pop3Detector extends AsyncLineOrientedDetector {
 
@@ -52,14 +58,17 @@ public class Pop3Detector extends AsyncLineOrientedDetector {
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public Pop3Detector(String serviceName, int port) {
         super(serviceName, port);
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit(){
         expectBanner(startsWith("+OK"));
         send(request("QUIT"), startsWith("+OK"));

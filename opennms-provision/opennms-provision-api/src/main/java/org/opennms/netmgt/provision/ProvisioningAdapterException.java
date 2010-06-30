@@ -37,22 +37,38 @@ package org.opennms.netmgt.provision;
 
 /**
  * For use with the ProvisioningExtension API.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class ProvisioningAdapterException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
     
+    /**
+     * <p>Constructor for ProvisioningAdapterException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public ProvisioningAdapterException(String message) {
         super(message);
     }
 
+    /**
+     * <p>Constructor for ProvisioningAdapterException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public ProvisioningAdapterException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * <p>Constructor for ProvisioningAdapterException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public ProvisioningAdapterException(Throwable cause) {
         super(cause);
     }

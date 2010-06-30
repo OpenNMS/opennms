@@ -35,6 +35,12 @@
  */
 package org.opennms.netmgt.provision;
 
+/**
+ * <p>ResourceRecord class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ResourceRecord {
 
     private String m_name;
@@ -44,42 +50,92 @@ public class ResourceRecord {
     
     private String m_ttl;
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getRClass</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRClass() {
         return m_rClass;
     }
 
+    /**
+     * <p>setClass</p>
+     *
+     * @param class1 a {@link java.lang.String} object.
+     */
     public void setClass(String class1) {
         m_rClass = class1;
     }
 
+    /**
+     * <p>getRdLength</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getRdLength() {
         return m_rdLength;
     }
 
+    /**
+     * <p>setRdLength</p>
+     *
+     * @param rdLength a {@link java.lang.Integer} object.
+     */
     public void setRdLength(Integer rdLength) {
         m_rdLength = rdLength;
     }
 
+    /**
+     * <p>getRdata</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRdata() {
         return m_rdata;
     }
 
+    /**
+     * <p>setRdata</p>
+     *
+     * @param rdata a {@link java.lang.String} object.
+     */
     public void setRdata(String rdata) {
         m_rdata = rdata;
     }
 
+    /**
+     * <p>getTtl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTtl() {
         return m_ttl;
     }
 
+    /**
+     * <p>setTtl</p>
+     *
+     * @param ttl a {@link java.lang.String} object.
+     */
     public void setTtl(String ttl) {
         m_ttl = ttl;
     }

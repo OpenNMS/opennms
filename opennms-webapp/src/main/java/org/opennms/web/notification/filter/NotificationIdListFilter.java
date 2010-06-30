@@ -34,7 +34,15 @@ package org.opennms.web.notification.filter;
 import org.opennms.web.filter.InFilter;
 import org.opennms.web.filter.SQLType;
 
+/**
+ * <p>NotificationIdListFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NotificationIdListFilter extends InFilter<Integer> {
+    /** Constant <code>TYPE="notificationIdList"</code> */
     public static final String TYPE = "notificationIdList";
     //private int[] m_notificationIds;
     
@@ -51,14 +59,25 @@ public class NotificationIdListFilter extends InFilter<Integer> {
         return boxed;
     }
     
+    /**
+     * <p>Constructor for NotificationIdListFilter.</p>
+     *
+     * @param notificationIds an array of {@link java.lang.Integer} objects.
+     */
     public NotificationIdListFilter(Integer[] notificationIds) {
         super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", notificationIds);
     }
 
+    /**
+     * <p>Constructor for NotificationIdListFilter.</p>
+     *
+     * @param notificationIds an array of int.
+     */
     public NotificationIdListFilter(int[] notificationIds){
         super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", box(notificationIds));
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getTextDescription() {
         return String.format("notifyId in (%s)", getValueString());

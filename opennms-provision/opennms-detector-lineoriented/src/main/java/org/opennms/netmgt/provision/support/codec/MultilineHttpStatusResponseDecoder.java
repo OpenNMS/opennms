@@ -41,12 +41,24 @@ import org.opennms.netmgt.provision.detector.simple.response.MultilineHttpRespon
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 
 
+/**
+ * <p>MultilineHttpStatusResponseDecoder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MultilineHttpStatusResponseDecoder extends MultiLineDecoder {
     
+    /**
+     * <p>Constructor for MultilineHttpStatusResponseDecoder.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public MultilineHttpStatusResponseDecoder(Charset charset) {
         super(charset, "\r\n");
     }
     
+    /** {@inheritDoc} */
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
         MultilineOrientedResponse response = (MultilineHttpResponse) session.getAttribute(CURRENT_RESPONSE);
@@ -106,6 +118,7 @@ public class MultilineHttpStatusResponseDecoder extends MultiLineDecoder {
         return false;
     }
     
+    /** {@inheritDoc} */
     protected boolean checkIndicator(IoBuffer in) throws CharacterCodingException {
         String line = in.getString(getCharset().newDecoder());
         return !line.equals("\r\n"); //line.substring(3, 4).equals(getMultilineIndicator());

@@ -36,21 +36,124 @@ import org.opennms.netmgt.model.OnmsMapElement;
 
 import java.util.Collection;
 
+/**
+ * <p>OnmsMapElementDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsMapElementDao extends OnmsDao<OnmsMapElement, Integer> {
+    /**
+     * <p>findAll</p>
+     *
+     * @param offset a {@link java.lang.Integer} object.
+     * @param limit a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMapElement> findAll(Integer offset, Integer limit);
+    /**
+     * <p>findElementById</p>
+     *
+     * @param id a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsMapElement} object.
+     */
     OnmsMapElement findElementById(int id);
+    /**
+     * <p>findElement</p>
+     *
+     * @param elementId a int.
+     * @param type a {@link java.lang.String} object.
+     * @param map a {@link org.opennms.netmgt.model.OnmsMap} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMapElement} object.
+     */
     OnmsMapElement findElement(int elementId, String type, OnmsMap map);
+    /**
+     * <p>findElementsByMapId</p>
+     *
+     * @param map a {@link org.opennms.netmgt.model.OnmsMap} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMapElement> findElementsByMapId(OnmsMap map);
+    /**
+     * <p>findElementsByNodeId</p>
+     *
+     * @param nodeId a int.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMapElement> findElementsByNodeId(int nodeId);
+    /**
+     * <p>findElementsByElementIdAndType</p>
+     *
+     * @param elementId a int.
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMapElement> findElementsByElementIdAndType(int elementId, String type);
+    /**
+     * <p>findElementsByMapIdAndType</p>
+     *
+     * @param mapId a int.
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMapElement> findElementsByMapIdAndType(int mapId, String type);
+    /**
+     * <p>findElementsByType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMapElement> findElementsByType(String type);
+    /**
+     * <p>deleteElementsByMapId</p>
+     *
+     * @param map a {@link org.opennms.netmgt.model.OnmsMap} object.
+     */
     void deleteElementsByMapId(OnmsMap map);
+    /**
+     * <p>findMapElementsOnMap</p>
+     *
+     * @param mapId a int.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMapElement> findMapElementsOnMap(int mapId);
+    /**
+     * <p>findNodeElementsOnMap</p>
+     *
+     * @param mapId a int.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsMapElement> findNodeElementsOnMap(int mapId);
+    /**
+     * <p>deleteElementsByNodeid</p>
+     *
+     * @param nodeId a int.
+     */
     void deleteElementsByNodeid(int nodeId);
+    /**
+     * <p>deleteElementsByType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     */
     void deleteElementsByType(String type);
+    /**
+     * <p>deleteElementsByElementIdAndType</p>
+     *
+     * @param elementId a int.
+     * @param type a {@link java.lang.String} object.
+     */
     void deleteElementsByElementIdAndType(int elementId, String type);
+    /**
+     * <p>deleteElementsByMapType</p>
+     *
+     * @param mapType a {@link java.lang.String} object.
+     */
     void deleteElementsByMapType(String mapType);
+    /**
+     * <p>countElementsOnMap</p>
+     *
+     * @param mapid a int.
+     * @return a int.
+     */
     int countElementsOnMap(int mapid);
 }

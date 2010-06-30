@@ -42,26 +42,29 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 
 /**
  *<P>The ThreeComVlanTableEntry class is designed to hold all the MIB
- * information for one entry in the: 
- * 1.3.6.1.4.1.43.10.1.14.1.2.1 
- *  
+ * information for one entry in the:
+ * 1.3.6.1.4.1.43.10.1.14.1.2.1
+ *
  * <P>This object is used by the ThreeComVlanTable  to hold infomation
  * single entries in the table. See the ThreeComVlanTable documentation
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see ThreeComVlanTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class ThreeComVlanTableEntry extends SnmpTableEntry
 implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
 	//
+    /** Constant <code>VLAN_IN="a3ComVlanindex"</code> */
     public final static String VLAN_IN = "a3ComVlanindex";
+	/** Constant <code>VLAN_IFINFO="a3ComVlanIfInfo"</code> */
 	public final static String VLAN_IFINFO = "a3ComVlanIfInfo";
 
 	private static String VLAN_INDEX_OID=".1.3.6.1.4.1.43.10.1.14.1.2.1.4";
@@ -121,15 +124,14 @@ implements VlanCollectorEntry {
 	 * variable from the passed array of SNMP varbinds.</P>
 	 *
 	 * <P>If the information in the object should not be
-	 * modified then a <EM>final</EM> modifier can be 
+	 * modified then a <EM>final</EM> modifier can be
 	 * applied to the created object.</P>
-	 *
-	 * @param vars	The array of variable bindings.
 	 */
 	public ThreeComVlanTableEntry() {
 		super(threeComVlan_elemList);
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public void storeResult(SnmpResult res) {
 		if (!hasVlanIndex) {

@@ -44,19 +44,28 @@ import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.springframework.remoting.RemoteAccessException;
 
 /**
- * ExceptionProtectedPollerBackEnd.  This turns all server side exceptions 
+ * ExceptionProtectedPollerBackEnd.  This turns all server side exceptions
  * into RemoteAccessExceptions so the ServerUnreachableAdapter can handle the code correctly.
- * 
+ *
  * @author brozow
+ * @version $Id: $
  */
 public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     
     private PollerBackEnd m_delegate;
     
+    /**
+     * <p>setDelegate</p>
+     *
+     * @param delegate a {@link org.opennms.netmgt.poller.remote.PollerBackEnd} object.
+     */
     public void setDelegate(PollerBackEnd delegate) {
         m_delegate = delegate;
     }
 
+    /**
+     * <p>checkForDisconnectedMonitors</p>
+     */
     public void checkForDisconnectedMonitors() {
         try {
             m_delegate.checkForDisconnectedMonitors();
@@ -66,6 +75,9 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /**
+     * <p>configurationUpdated</p>
+     */
     public void configurationUpdated() {
         try {
             m_delegate.configurationUpdated();
@@ -75,6 +87,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public String getMonitorName(int locationMonitorId) {
         try {
             return m_delegate.getMonitorName(locationMonitorId);
@@ -84,6 +97,11 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /**
+     * <p>getMonitoringLocations</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
         try {
             return m_delegate.getMonitoringLocations();
@@ -93,6 +111,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public PollerConfiguration getPollerConfiguration(int locationMonitorId) {
         try {
             return m_delegate.getPollerConfiguration(locationMonitorId);
@@ -102,6 +121,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
         try {
             return m_delegate.getServiceMonitorLocators(context);
@@ -111,6 +131,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
         try {
             return m_delegate.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
@@ -120,6 +141,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
         try {
             return m_delegate.pollerStarting(locationMonitorId, pollerDetails);
@@ -129,6 +151,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public void pollerStopping(int locationMonitorId) {
         try {
             m_delegate.pollerStopping(locationMonitorId);
@@ -138,6 +161,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public int registerLocationMonitor(String monitoringLocationId) {
         try {
             return m_delegate.registerLocationMonitor(monitoringLocationId);
@@ -147,6 +171,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    /** {@inheritDoc} */
     public void reportResult(int locationMonitorID, int serviceId,
             PollStatus status) {
         try {

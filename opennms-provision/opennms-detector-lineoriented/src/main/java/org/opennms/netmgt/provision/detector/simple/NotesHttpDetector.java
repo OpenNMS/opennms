@@ -35,14 +35,24 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>NotesHttpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class NotesHttpDetector extends MultilineHttpDetector {
 
+    /**
+     * <p>Constructor for NotesHttpDetector.</p>
+     */
     public NotesHttpDetector(){
         super();
         setServiceName("NOTES");
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         send(request(httpCommand("HEAD")), contains("Lotus", getUrl(), isCheckRetCode(), getMaxRetCode()));

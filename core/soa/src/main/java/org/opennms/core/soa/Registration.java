@@ -35,19 +35,50 @@ import java.util.Map;
  * Registration
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface Registration {
     
+    /**
+     * <p>getRegistry</p>
+     *
+     * @return a {@link org.opennms.core.soa.ServiceRegistry} object.
+     */
     public ServiceRegistry getRegistry();
     
+    /**
+     * <p>getProvidedInterfaces</p>
+     *
+     * @return an array of {@link java.lang.Class} objects.
+     */
     public Class<?>[] getProvidedInterfaces();
     
+    /**
+     * <p>getProvider</p>
+     *
+     * @param service a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     public <T> T getProvider(Class<T> service);
     
+    /**
+     * <p>getProperties</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, String> getProperties();
     
+    /**
+     * <p>isUnregistered</p>
+     *
+     * @return a boolean.
+     */
     public boolean isUnregistered();
     
+    /**
+     * <p>unregister</p>
+     */
     public void unregister();
     
 }

@@ -38,13 +38,16 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * @author thedesloge
+ * <p>DominoIIOPClient class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class DominoIIOPClient extends LineOrientedClient {
     
     private int m_iorPort = 1000;
     
+    /** {@inheritDoc} */
     public void connect(InetAddress host, int port, int timeout) throws IOException, Exception {        
         if(!preconnect(host, getIorPort(), timeout)) {
             throw new Exception("Failed to preconnect");
@@ -106,10 +109,20 @@ public class DominoIIOPClient extends LineOrientedClient {
         return true;
     }
 
+    /**
+     * <p>setIorPort</p>
+     *
+     * @param iorPort a int.
+     */
     public void setIorPort(int iorPort) {
         m_iorPort = iorPort;
     }
 
+    /**
+     * <p>getIorPort</p>
+     *
+     * @return a int.
+     */
     public int getIorPort() {
         return m_iorPort;
     }

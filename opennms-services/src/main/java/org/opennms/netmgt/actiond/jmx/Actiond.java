@@ -38,7 +38,16 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import org.opennms.netmgt.config.ActiondConfigFactory;
 
+/**
+ * <p>Actiond class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Actiond implements ActiondMBean {
+    /**
+     * <p>init</p>
+     */
     public void init() {
     	
     	try {
@@ -53,25 +62,46 @@ public class Actiond implements ActiondMBean {
         actiond.init();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
         actiond.start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
         actiond.stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
         return actiond.getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

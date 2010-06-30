@@ -60,8 +60,23 @@ import org.opennms.netmgt.xml.event.Script;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 
+/**
+ * <p>Abstract EventUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class EventUtils {
     
+    /**
+     * <p>createNodeAddedEvent</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param nodeId a int.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param labelSource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public static Event createNodeAddedEvent(String source, int nodeId,
             String nodeLabel, String labelSource) {
         
@@ -77,6 +92,14 @@ public abstract class EventUtils {
     }
 
 
+    /**
+     * <p>createNodeGainedInterfaceEvent</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param nodeId a int.
+     * @param ifaddr a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public static Event createNodeGainedInterfaceEvent(String source, int nodeId, InetAddress ifaddr) {
         
         debug("createNodeGainedInterfaceEvent:  %d / %s", nodeId, ifaddr.getHostAddress());
@@ -89,6 +112,19 @@ public abstract class EventUtils {
         return bldr.getEvent();
     }
     
+    /**
+     * <p>createNodeGainedServiceEvent</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param nodeId a int.
+     * @param ifaddr a {@link java.net.InetAddress} object.
+     * @param service a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param labelSource a {@link java.lang.String} object.
+     * @param sysName a {@link java.lang.String} object.
+     * @param sysDescr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public static Event createNodeGainedServiceEvent(String source, int nodeId, InetAddress ifaddr, String service, String nodeLabel, String labelSource, String sysName, String sysDescr) {
         
         debug("createAndSendNodeGainedServiceEvent:  nodeId/interface/service  %d/%s/%s", nodeId, ifaddr.getHostAddress(), service);
@@ -117,7 +153,7 @@ public abstract class EventUtils {
     /**
      * This method is responsible for generating a nodeDeleted event and sending
      * it to eventd..
-     * 
+     *
      * @param source
      *            A string representing the source of the event
      * @param nodeId
@@ -126,6 +162,7 @@ public abstract class EventUtils {
      *            the Host server name.
      * @param nodeLabel
      *            the node label of the deleted node.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createNodeDeletedEvent(String source, int nodeId, String hostName, String nodeLabel) {
         
@@ -144,15 +181,13 @@ public abstract class EventUtils {
 
     /**
      * Construct an interfaceDeleted event for an interface.
-     * 
+     *
      * @param source
      *            the source of the event
      * @param nodeId
      *            the nodeId of the node the interface resides in
      * @param ipAddr
      *            the ipAdddr of the event
-     * @param txNo
-     *            a transaction number associated with the event
      * @return an Event represent an interfaceDeleted event for the given
      *         interface
      */
@@ -170,7 +205,7 @@ public abstract class EventUtils {
     /**
      * Constructs a serviceDeleted Event for the nodeId, ipAddr, serviceName
      * triple
-     * 
+     *
      * @param source
      *            the source of the event
      * @param nodeId
@@ -179,8 +214,6 @@ public abstract class EventUtils {
      *            the interface that the service resides on
      * @param service
      *            the name of the service that was deleted
-     * @param txNo
-     *            a transaction number associated with the event
      * @return an Event that represents the serviceDeleted event for the give
      *         triple
      */
@@ -200,7 +233,7 @@ public abstract class EventUtils {
     /**
      * Retrieve the value associated with an event parameter and parse it to a
      * long. If the value can not be found, return a default value.
-     * 
+     *
      * @param e
      *            the Event to retrieve the parameter from
      * @param parmName
@@ -226,7 +259,7 @@ public abstract class EventUtils {
     /**
      * Retrieve the value associated with an event parameter and parse it to an
      * int. If the value can not be found, return a default value.
-     * 
+     *
      * @param e
      *            the Event to retrieve the parameter from
      * @param parmName
@@ -252,7 +285,7 @@ public abstract class EventUtils {
     /**
      * Retrieve a parameter from and event, returning defaultValue of the
      * parameter is not set.
-     * 
+     *
      * @param e
      *            The Event to retrieve the parameter from
      * @param parmName
@@ -285,7 +318,7 @@ public abstract class EventUtils {
 
     /**
      * Return the value of an event parameter of null if it does not exist.
-     * 
+     *
      * @param e
      *            the Event to get the parameter for
      * @param parmName
@@ -304,6 +337,15 @@ public abstract class EventUtils {
     }
 
 
+    /**
+     * <p>createNodeUpdatedEvent</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param labelSource a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, String labelSource) {
         debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
         EventBuilder bldr = new EventBuilder(NODE_UPDATED_EVENT_UEI, source);
@@ -313,6 +355,12 @@ public abstract class EventUtils {
         return bldr.getEvent();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String toString(Event event) {
         StringBuffer b = new StringBuffer("Event: ");
         if (event.getAutoacknowledge() != null) {
@@ -420,6 +468,12 @@ public abstract class EventUtils {
         return b.toString();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @param parms a {@link org.opennms.netmgt.xml.event.Parms} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String toString(Parms parms) {
         if (parms.getParmCount() == 0) {
             return "Parms: (none)\n";
@@ -439,10 +493,22 @@ public abstract class EventUtils {
         return b.toString();
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @param value a {@link org.opennms.netmgt.xml.event.Value} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String toString(Value value) {
         return value.getType() + "(" + value.getEncoding() + "): " + value.getContent();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @param snmp a {@link org.opennms.netmgt.xml.event.Snmp} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String toString(Snmp snmp) {
         StringBuffer b = new StringBuffer("Snmp: ");
     

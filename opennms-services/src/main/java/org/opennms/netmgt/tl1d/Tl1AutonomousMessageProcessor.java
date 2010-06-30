@@ -44,9 +44,9 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * Implementation of the <code>Tl1MessageProcessor</code> Interface.  This is the default
  * Autonomous Message Parser based on Tl1Messages recorded from the Hitachi GPOND TL1 simulator.
- * 
- * @author <a href=mailto:david@opennms.org>David Hustace</a>
  *
+ * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @version $Id: $
  */
 public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
 
@@ -57,6 +57,7 @@ public class Tl1AutonomousMessageProcessor implements Tl1MessageProcessor {
      * (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1MessageProcessor#process(java.lang.String, int)
      */
+    /** {@inheritDoc} */
     public Tl1AutonomousMessage process(String rawMessage, int messageType) {
 
         StringTokenizer lineParser = new StringTokenizer(rawMessage, "\n");

@@ -30,21 +30,28 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>MatchTable class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.core.utils;
 
 import java.util.regex.Matcher;
-
-
 public class MatchTable implements PropertiesUtils.SymbolTable {
     
     private Matcher m_matcher;
 
+    /**
+     * <p>Constructor for MatchTable.</p>
+     *
+     * @param m a {@link java.util.regex.Matcher} object.
+     */
     public MatchTable(Matcher m) {
         m_matcher = m;
     }
 
+    /** {@inheritDoc} */
     public String getSymbolValue(String symbol) {
         try {
             int groupNum = Integer.parseInt(symbol);

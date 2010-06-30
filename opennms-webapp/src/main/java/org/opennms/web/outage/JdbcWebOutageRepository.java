@@ -22,11 +22,19 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+/**
+ * <p>JdbcWebOutageRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class JdbcWebOutageRepository implements WebOutageRepository {
 
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
     
+    /** {@inheritDoc} */
     public int countMatchingOutages(OutageCriteria criteria) {
         String sql = getSql("SELECT COUNT(OUTAGEID) as OUTAGECOUNT "
                                 + "FROM OUTAGES "
@@ -40,6 +48,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
         return queryForInt(sql, paramSetter(criteria));
     }
 
+    /** {@inheritDoc} */
     public Outage[] getMatchingOutages(OutageCriteria criteria) {
         String sql = getSql("SELECT OUTAGES.*, NODE.NODELABEL, IPINTERFACE.IPHOSTNAME, SERVICE.SERVICENAME, "
                             + "NOTIFICATIONS.NOTIFYID, NOTIFICATIONS.ANSWEREDBY FROM OUTAGES "
@@ -55,6 +64,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
         return getOutages(sql, paramSetter(criteria));
     }
 
+    /** {@inheritDoc} */
     public int countMatchingOutageSummaries(OutageCriteria criteria) {
         String sql = getSql("SELECT COUNT(DISTINCT NODE.NODEID) AS OUTAGECOUNT "
                             + "FROM OUTAGES "
@@ -68,6 +78,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
         return queryForInt(sql, paramSetter(criteria));
     }
 
+    /** {@inheritDoc} */
     public OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria) {
         String sql = getSql("SELECT DISTINCT "
                             + "NODE.NODEID, NODE.NODELABEL, max(OUTAGES.IFLOSTSERVICE) AS IFLOSTSERVICE, max(OUTAGES.IFREGAINEDSERVICE) AS IFREGAINEDSERVICE, NOW() AS CURRENTTIME "
@@ -82,6 +93,7 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
         return getOutageSummaries(sql, paramSetter(criteria));
     }
 
+    /** {@inheritDoc} */
     public Outage getOutage(int outageId) {
         OutageCriteria criteria = new OutageCriteria(new OutageIdFilter(outageId));
         Outage[] outages = getMatchingOutages(criteria);

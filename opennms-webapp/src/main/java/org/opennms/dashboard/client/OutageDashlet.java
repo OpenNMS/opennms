@@ -38,11 +38,19 @@ package org.opennms.dashboard.client;
 import com.google.gwt.user.client.ui.Label;
 
 /**
- * 
+ * <p>OutageDashlet class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class OutageDashlet extends Dashlet {
     
+    /**
+     * <p>Constructor for OutageDashlet.</p>
+     *
+     * @param dashboard a {@link org.opennms.dashboard.client.Dashboard} object.
+     */
     public OutageDashlet(Dashboard dashboard) {
         super(dashboard, "Outages");
         setView(new Label("Outages go here."));

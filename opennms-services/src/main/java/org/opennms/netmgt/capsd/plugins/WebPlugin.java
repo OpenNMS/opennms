@@ -16,6 +16,12 @@ import org.jfree.util.Log;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
+/**
+ * <p>WebPlugin class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class WebPlugin extends AbstractPlugin {
 
     static Integer DEFAULT_TIMEOUT = 3000;
@@ -26,18 +32,21 @@ public class WebPlugin extends AbstractPlugin {
     static String DEFAULT_PASSWORD = "admin";
     static String DEFAULT_HTTP_STATUS_RANGE = "100-399";
 
+    /** {@inheritDoc} */
     @Override
     public String getProtocolName() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isProtocolSupported(InetAddress address) {
         // TODO Auto-generated method stub
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> map) {
 

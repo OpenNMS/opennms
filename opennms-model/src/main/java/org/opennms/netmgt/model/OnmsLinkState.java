@@ -21,6 +21,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 @Entity
+/**
+ * <p>OnmsLinkState class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name = "linkstate")
 public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
     
@@ -247,14 +253,28 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
     private DataLinkInterface m_dataLinkInterface;
     private LinkState m_linkState = LinkState.LINK_UP;
 
+    /**
+     * <p>Constructor for OnmsLinkState.</p>
+     */
     public OnmsLinkState() {
     }
 
+    /**
+     * <p>Constructor for OnmsLinkState.</p>
+     *
+     * @param dataLinkInterface a {@link org.opennms.netmgt.model.DataLinkInterface} object.
+     * @param linkState a {@link org.opennms.netmgt.model.OnmsLinkState.LinkState} object.
+     */
     public OnmsLinkState(DataLinkInterface dataLinkInterface, LinkState linkState) {
         m_dataLinkInterface = dataLinkInterface;
         m_linkState = linkState;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")
@@ -262,10 +282,20 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
     
+    /**
+     * <p>getDataLinkInterface</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.DataLinkInterface} object.
+     */
     @XmlIDREF
     @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="datalinkinterfaceid")
@@ -273,20 +303,40 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
         return m_dataLinkInterface;
     }
 
+    /**
+     * <p>setDataLinkInterface</p>
+     *
+     * @param dataLinkInterface a {@link org.opennms.netmgt.model.DataLinkInterface} object.
+     */
     public void setDataLinkInterface(DataLinkInterface dataLinkInterface) {
         m_dataLinkInterface = dataLinkInterface;
     }
 
+    /**
+     * <p>getLinkState</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsLinkState.LinkState} object.
+     */
     @Enumerated(EnumType.STRING)
     @Column(name = "linkstate", length=24, nullable=false)
     public LinkState getLinkState() {
         return m_linkState;
     }
     
+    /**
+     * <p>setLinkState</p>
+     *
+     * @param linkState a {@link org.opennms.netmgt.model.OnmsLinkState.LinkState} object.
+     */
     public void setLinkState(LinkState linkState) {
         m_linkState = linkState;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringBuilder(this)
             .append("id", getId())
@@ -295,6 +345,7 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
             .toString();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object o) {
         if (o instanceof OnmsLinkState) {
             OnmsLinkState lso = (OnmsLinkState) o;
@@ -308,6 +359,12 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
         return false;
     }
     
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.model.OnmsLinkState} object.
+     * @return a int.
+     */
     public int compareTo(OnmsLinkState o) {
         return new CompareToBuilder()
             .append(getId(), o.getId())
@@ -316,6 +373,11 @@ public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
             .toComparison();
     }
     
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return new HashCodeBuilder()
             .append(getId())

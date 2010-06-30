@@ -34,12 +34,13 @@ package org.opennms.web.notification.bobject;
 
 /**
  * This is a data class to store the argument information for a Command
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
+ * @since 1.8.1
  */
 public class Argument {
     /**
@@ -77,7 +78,7 @@ public class Argument {
 
     /**
      * Sets the switch member
-     * 
+     *
      * @param aValue
      *            the value of the switch
      */
@@ -87,7 +88,7 @@ public class Argument {
 
     /**
      * Sets the substitution switch
-     * 
+     *
      * @param aValue
      *            the value of the substitution
      */
@@ -97,7 +98,7 @@ public class Argument {
 
     /**
      * Sets the value of the argument
-     * 
+     *
      * @param aValue
      *            the value of the argument
      */
@@ -107,7 +108,7 @@ public class Argument {
 
     /**
      * Returns the switch
-     * 
+     *
      * @return the switch string
      */
     public String getSwitch() {
@@ -116,7 +117,7 @@ public class Argument {
 
     /**
      * Returns the substitution switch
-     * 
+     *
      * @return the substitution
      */
     public String getSubstitution() {
@@ -125,7 +126,7 @@ public class Argument {
 
     /**
      * Returns the value of the argument
-     * 
+     *
      * @return the value of the argument
      */
     public String getValue() {
@@ -135,7 +136,7 @@ public class Argument {
     /**
      * Sets the boolean indicating if this argument should be sent to an input
      * stream
-     * 
+     *
      * @param aBool
      *            true if the argument should be sent to a input stream, false
      *            otherwise
@@ -147,7 +148,7 @@ public class Argument {
     /**
      * Returns the boolean indicating if this argument should be sent to an
      * input stream.
-     * 
+     *
      * @return true if the argument should be sent to a input stream, false
      *         otherwise
      */
@@ -158,7 +159,7 @@ public class Argument {
     /**
      * Returns a string representation of the argument, for purposes of
      * debugging
-     * 
+     *
      * @return a string representation
      */
     public String toString() {

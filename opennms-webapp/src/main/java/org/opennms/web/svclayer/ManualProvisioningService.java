@@ -40,45 +40,159 @@ import java.util.Map;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 /**
- * 
+ * <p>ManualProvisioningService interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public interface ManualProvisioningService {
     
+    /**
+     * <p>getProvisioningGroupNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<String> getProvisioningGroupNames();
     
+    /**
+     * <p>getProvisioningGroup</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition getProvisioningGroup(String name);
     
+    /**
+     * <p>createProvisioningGroup</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition createProvisioningGroup(String name);
 
+    /**
+     * <p>saveProvisioningGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param groupData a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition saveProvisioningGroup(String groupName, Requisition groupData);
     
+    /**
+     * <p>addNewNodeToGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition addNewNodeToGroup(String groupName, String nodeLabel);
     
+    /**
+     * <p>addCategoryToNode</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToNode a {@link java.lang.String} object.
+     * @param categoryName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition addCategoryToNode(String groupName, String pathToNode, String categoryName);
     
+    /**
+     * <p>addAssetFieldToNode</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToNode a {@link java.lang.String} object.
+     * @param fieldName a {@link java.lang.String} object.
+     * @param fieldValue a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition addAssetFieldToNode(String groupName, String pathToNode, String fieldName, String fieldValue);
     
+    /**
+     * <p>addInterfaceToNode</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToNode a {@link java.lang.String} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition addInterfaceToNode(String groupName, String pathToNode, String ipAddr);
     
+    /**
+     * <p>addServiceToInterface</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToInterface a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition addServiceToInterface(String groupName, String pathToInterface, String serviceName);
     
+    /**
+     * <p>deletePath</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     * @param pathToDelete a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     Requisition deletePath(String groupName, String pathToDelete);
     
+    /**
+     * <p>importProvisioningGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     */
     void importProvisioningGroup(String groupName);
 
+    /**
+     * <p>getAllGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<Requisition> getAllGroups();
 
+    /**
+     * <p>deleteProvisioningGroup</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     */
     void deleteProvisioningGroup(String groupName);
 
+    /**
+     * <p>deleteAllNodes</p>
+     *
+     * @param groupName a {@link java.lang.String} object.
+     */
     void deleteAllNodes(String groupName);
 
+    /**
+     * <p>getGroupDbNodeCounts</p>
+     *
+     * @return a java$util$Map object.
+     */
     Map<String, Integer> getGroupDbNodeCounts();
 
+    /**
+     * <p>getNodeCategoryNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<String> getNodeCategoryNames();
 
+    /**
+     * <p>getAssetFieldNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<String> getAssetFieldNames();
 
+    /**
+     * <p>getServiceTypeNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<String> getServiceTypeNames();
 
 }

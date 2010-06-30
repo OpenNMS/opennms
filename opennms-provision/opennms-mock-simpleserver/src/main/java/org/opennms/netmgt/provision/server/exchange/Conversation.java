@@ -41,6 +41,12 @@ import org.apache.log4j.Logger;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>Conversation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Conversation {    
     
     public static class ErrorExchange implements Exchange{
@@ -64,14 +70,31 @@ public class Conversation {
     private List<Exchange> m_conversation = new ArrayList<Exchange>();
     private Exchange m_errorExchange = new ErrorExchange();
     
+    /**
+     * <p>addExchange</p>
+     *
+     * @param exchange a {@link org.opennms.netmgt.provision.server.exchange.Exchange} object.
+     */
     public void addExchange(Exchange exchange) {
         m_conversation.add(exchange); 
     }
     
+    /**
+     * <p>addErrorExchange</p>
+     *
+     * @param ex a {@link org.opennms.netmgt.provision.server.exchange.Exchange} object.
+     */
     public void addErrorExchange(Exchange ex) {
         m_errorExchange = ex;
     }
     
+    /**
+     * <p>attemptServerConversation</p>
+     *
+     * @param in a {@link java.io.BufferedReader} object.
+     * @param out a {@link java.io.OutputStream} object.
+     * @throws java.lang.Exception if any.
+     */
     public void attemptServerConversation(BufferedReader in, OutputStream out) throws Exception {
         boolean isFinished = false;
 
@@ -103,6 +126,14 @@ public class Conversation {
         
     }
     
+    /**
+     * <p>attemptClientConversation</p>
+     *
+     * @param in a {@link java.io.BufferedReader} object.
+     * @param out a {@link java.io.OutputStream} object.
+     * @return a boolean.
+     * @throws java.io.IOException if any.
+     */
     public boolean attemptClientConversation(BufferedReader in, OutputStream out) throws IOException {
         
         for(Iterator<Exchange> it = m_conversation.iterator(); it.hasNext();) {
@@ -134,6 +165,12 @@ public class Conversation {
         return null;
     }
     
+    /**
+     * <p>startsWith</p>
+     *
+     * @param response a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.server.exchange.ResponseHandler} object.
+     */
     public ResponseHandler startsWith(final String response){
         return new ResponseHandler(){
 
@@ -144,6 +181,12 @@ public class Conversation {
         };
     }
     
+    /**
+     * <p>contains</p>
+     *
+     * @param response a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.server.exchange.ResponseHandler} object.
+     */
     public ResponseHandler contains(final String response){
         return new ResponseHandler(){
 
@@ -154,6 +197,12 @@ public class Conversation {
         };
     }
     
+    /**
+     * <p>regexpMatches</p>
+     *
+     * @param response a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.server.exchange.ResponseHandler} object.
+     */
     public ResponseHandler regexpMatches(final String response){
         return new ResponseHandler(){
 

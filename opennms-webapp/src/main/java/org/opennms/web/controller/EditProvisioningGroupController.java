@@ -46,6 +46,13 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * <p>EditProvisioningGroupController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class EditProvisioningGroupController extends SimpleFormController {
 
     public static class TreeCommand {
@@ -97,15 +104,22 @@ public class EditProvisioningGroupController extends SimpleFormController {
 
     private ManualProvisioningService m_provisioningService;
 
+    /**
+     * <p>setProvisioningService</p>
+     *
+     * @param provisioningService a {@link org.opennms.web.svclayer.ManualProvisioningService} object.
+     */
     public void setProvisioningService(ManualProvisioningService provisioningService) {
         m_provisioningService = provisioningService;
     }
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return super.handleRequestInternal(request, response);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         TreeCommand treeCmd = (TreeCommand)command;
@@ -239,6 +253,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
         return showForm(request, response, errors);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         TreeCommand formCommand = new TreeCommand();
@@ -260,6 +275,7 @@ public class EditProvisioningGroupController extends SimpleFormController {
         formCommand.setFormData(formData);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Map<String, Collection<String>> referenceData(HttpServletRequest request) throws Exception {
         Map<String, Collection<String>> map = new HashMap<String, Collection<String>>();

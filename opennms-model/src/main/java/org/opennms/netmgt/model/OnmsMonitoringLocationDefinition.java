@@ -35,6 +35,12 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * <p>OnmsMonitoringLocationDefinition class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsMonitoringLocationDefinition implements Serializable {
 
     private static final long serialVersionUID = 2L;
@@ -47,21 +53,45 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
     private Long m_priority;
     private Set<String> m_tags = new HashSet<String>();
     
+    /**
+     * <p>Constructor for OnmsMonitoringLocationDefinition.</p>
+     */
     public OnmsMonitoringLocationDefinition() {
         
     }
     
+    /**
+     * <p>Constructor for OnmsMonitoringLocationDefinition.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param pollingPackageName a {@link java.lang.String} object.
+     */
     public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName) {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
     }
     
+    /**
+     * <p>Constructor for OnmsMonitoringLocationDefinition.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param pollingPackageName a {@link java.lang.String} object.
+     * @param area a {@link java.lang.String} object.
+     */
     public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area) {
         m_name = name;
         m_pollingPackageName = pollingPackageName;
         m_area = area;
     }
 
+    /**
+     * <p>Constructor for OnmsMonitoringLocationDefinition.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param pollingPackageName a {@link java.lang.String} object.
+     * @param area a {@link java.lang.String} object.
+     * @param geolocation a {@link java.lang.String} object.
+     */
     public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area, final String geolocation) {
     	m_name = name;
     	m_pollingPackageName = pollingPackageName;
@@ -69,6 +99,15 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
     	m_geolocation = geolocation;
     }
 
+    /**
+     * <p>Constructor for OnmsMonitoringLocationDefinition.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param pollingPackageName a {@link java.lang.String} object.
+     * @param area a {@link java.lang.String} object.
+     * @param geolocation a {@link java.lang.String} object.
+     * @param coordinates a {@link java.lang.String} object.
+     */
     public OnmsMonitoringLocationDefinition(final String name, final String pollingPackageName, final String area, final String geolocation, final String coordinates) {
     	m_name = name;
     	m_pollingPackageName = pollingPackageName;
@@ -77,62 +116,133 @@ public class OnmsMonitoringLocationDefinition implements Serializable {
     	m_coordinates = coordinates;
     }
 
+    /**
+     * <p>getArea</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getArea() {
         return m_area;
     }
 
+    /**
+     * <p>setArea</p>
+     *
+     * @param area a {@link java.lang.String} object.
+     */
     public void setArea(final String area) {
         m_area = area;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(final String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getPollingPackageName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPollingPackageName() {
         return m_pollingPackageName;
     }
 
+    /**
+     * <p>setPollingPackageName</p>
+     *
+     * @param pollingPackageName a {@link java.lang.String} object.
+     */
     public void setPollingPackageName(final String pollingPackageName) {
         m_pollingPackageName = pollingPackageName;
     }
     
+	/**
+	 * <p>getGeolocation</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getGeolocation() {
 		return m_geolocation;
 	}
 
+	/**
+	 * <p>setGeolocation</p>
+	 *
+	 * @param location a {@link java.lang.String} object.
+	 */
 	public void setGeolocation(final String location) {
 		m_geolocation = location;
 	}
 	
+	/**
+	 * <p>getCoordinates</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCoordinates() {
 		return m_coordinates;
 	}
 
+	/**
+	 * <p>setCoordinates</p>
+	 *
+	 * @param coordinates a {@link java.lang.String} object.
+	 */
 	public void setCoordinates(final String coordinates) {
 		m_coordinates = coordinates;
 	}
 	
+	/**
+	 * <p>getPriority</p>
+	 *
+	 * @return a {@link java.lang.Long} object.
+	 */
 	public Long getPriority() {
 		return m_priority;
 	}
 	
+	/**
+	 * <p>setPriority</p>
+	 *
+	 * @param priority a {@link java.lang.Long} object.
+	 */
 	public void setPriority(final Long priority) {
 		m_priority = priority;
 	}
 	
+	/**
+	 * <p>getTags</p>
+	 *
+	 * @return a {@link java.util.Set} object.
+	 */
 	public Set<String> getTags() {
 		return m_tags;
 	}
 	
+	/**
+	 * <p>setTags</p>
+	 *
+	 * @param tags a {@link java.util.Set} object.
+	 */
 	public void setTags(final Set<String> tags) {
 		m_tags = tags;
 	}
 
+	/** {@inheritDoc} */
 	@Override
     public String toString() {
         return "OnmsMonitoringLocationDefinition@" + Integer.toHexString(hashCode()) + ": Name \"" + m_name + "\", polling package name \"" + m_pollingPackageName + "\", area \"" + m_area + "\", geolocation \"" + m_geolocation + "\", coordinates \"" + m_coordinates + "\"";

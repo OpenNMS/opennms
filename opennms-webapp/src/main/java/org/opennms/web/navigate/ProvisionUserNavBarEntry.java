@@ -41,11 +41,13 @@ import org.opennms.web.springframework.security.Authentication;
 
 /**
  * Handle the Quick Add Node Menu Item
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
-
 public class ProvisionUserNavBarEntry extends LocationBasedNavBarEntry {
+    /** {@inheritDoc} */
     @Override
     public DisplayStatus evaluate(HttpServletRequest request) {
         if (request.isUserInRole(Authentication.ADMIN_ROLE) || request.isUserInRole(Authentication.ROLE_PROVISION)) {

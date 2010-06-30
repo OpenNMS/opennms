@@ -48,8 +48,10 @@ import org.opennms.netmgt.provision.detector.simple.response.LineOrientedRespons
 import org.opennms.netmgt.provision.support.Client;
 
 /**
- * @author brozow
+ * <p>LineOrientedClient class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class LineOrientedClient implements Client<LineOrientedRequest, LineOrientedResponse> {
     
@@ -57,6 +59,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
     private OutputStream m_out;
     private BufferedReader m_in;
     
+    /** {@inheritDoc} */
     public void connect(InetAddress host, int port, int timeout) throws IOException, Exception {        
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(host, port), timeout);
@@ -67,6 +70,13 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
         
     }
     
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse} object.
+     * @throws java.io.IOException if any.
+     */
     public LineOrientedResponse sendRequest(LineOrientedRequest request) throws IOException {
         request.send(getOutput());
         return receiveResponse();
@@ -84,14 +94,19 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
     
     
     /**
-     * @return
-     * @throws IOException 
+     * <p>receiveBanner</p>
+     *
+     * @throws java.io.IOException if any.
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse} object.
      */
     public LineOrientedResponse receiveBanner() throws IOException {
         return receiveResponse();
     }
 
 
+    /**
+     * <p>close</p>
+     */
     public void close() {
         Socket socket = m_socket;
         m_socket = null;
@@ -104,18 +119,38 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
         }
     }
 
+    /**
+     * <p>setOutput</p>
+     *
+     * @param out a {@link java.io.OutputStream} object.
+     */
     public void setOutput(OutputStream out) {
         m_out = out;
     }
 
+    /**
+     * <p>getOutput</p>
+     *
+     * @return a {@link java.io.OutputStream} object.
+     */
     public OutputStream getOutput() {
         return m_out;
     }
 
+    /**
+     * <p>setInput</p>
+     *
+     * @param in a {@link java.io.BufferedReader} object.
+     */
     public void setInput(BufferedReader in) {
         m_in = in;
     }
 
+    /**
+     * <p>getInput</p>
+     *
+     * @return a {@link java.io.BufferedReader} object.
+     */
     public BufferedReader getInput() {
         return m_in;
     }

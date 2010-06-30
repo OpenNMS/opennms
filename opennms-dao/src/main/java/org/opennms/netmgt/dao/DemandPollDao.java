@@ -33,6 +33,12 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.DemandPoll;
 
+/**
+ * <p>DemandPollDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface DemandPollDao extends OnmsDao<DemandPoll, Integer> {
 
 }

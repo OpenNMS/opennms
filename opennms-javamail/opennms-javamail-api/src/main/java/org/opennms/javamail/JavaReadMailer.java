@@ -71,9 +71,9 @@ import org.opennms.netmgt.config.common.ReadmailConfig;
 */            
 /**
  * JavaMail implementation for reading electronic mail.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class JavaReadMailer extends JavaMailer2 {
     
@@ -85,6 +85,8 @@ public class JavaReadMailer extends JavaMailer2 {
 
 
     /**
+     * {@inheritDoc}
+     *
      * Finalizer to be sure and close with the appropriate mode
      * any open folders
      */
@@ -104,6 +106,13 @@ public class JavaReadMailer extends JavaMailer2 {
     }
     
     //TODO figure out why need this throws here
+    /**
+     * <p>Constructor for JavaReadMailer.</p>
+     *
+     * @param config a {@link org.opennms.netmgt.config.common.ReadmailConfig} object.
+     * @param closeOnDelete a {@link java.lang.Boolean} object.
+     * @throws org.opennms.javamail.JavaMailerException if any.
+     */
     public JavaReadMailer(final ReadmailConfig config, Boolean closeOnDelete) throws JavaMailerException {
         if (closeOnDelete != null) {
             m_deleteOnClose = closeOnDelete;
@@ -112,6 +121,12 @@ public class JavaReadMailer extends JavaMailer2 {
         m_session = Session.getInstance(configureProperties(), createAuthenticator(config.getUserAuth().getUserName(), config.getUserAuth().getPassword()));
     }
     
+    /**
+     * <p>retrieveMessages</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.javamail.JavaMailerException if any.
+     */
     public List<Message> retrieveMessages() throws JavaMailerException {
         Message[] msgs;
         Folder mailFolder = null;
@@ -142,7 +157,11 @@ public class JavaReadMailer extends JavaMailer2 {
      */
     
     /**
-     * @param term
+     * <p>retrieveMessages</p>
+     *
+     * @param term a {@link javax.mail.search.SearchTerm} object.
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.javamail.JavaMailerException if any.
      */
     public List<Message> retrieveMessages(SearchTerm term) throws JavaMailerException {
         Message[] msgs;
@@ -201,6 +220,11 @@ public class JavaReadMailer extends JavaMailer2 {
         return props;
     }
 
+    /**
+     * <p>getMessages</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Message> getMessages() {
         return m_messages;
     }
@@ -210,11 +234,11 @@ public class JavaReadMailer extends JavaMailer2 {
      * multipart messages as well.  This seems to be working so far with my tests
      * but could use some tweaking later as more types of mail servers are used
      * with this feature.
-     * 
-     * @param msg
+     *
+     * @param msg a {@link javax.mail.Message} object.
      * @return The text portion of an email with each line being an element of the list.
-     * @throws MessagingException
-     * @throws IOException
+     * @throws javax.mail.MessagingException if any.
+     * @throws java.io.IOException if any.
      */
     public static List<String> getText(Message msg) throws MessagingException, IOException {
         
@@ -247,14 +271,30 @@ public class JavaReadMailer extends JavaMailer2 {
         return string2Lines(text);
     }
     
+    /**
+     * <p>isDeleteOnClose</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean isDeleteOnClose() {
         return m_deleteOnClose;
     }
 
+    /**
+     * <p>setDeleteOnClose</p>
+     *
+     * @param deleteOnClose a {@link java.lang.Boolean} object.
+     */
     public void setDeleteOnClose(Boolean deleteOnClose) {
         m_deleteOnClose = deleteOnClose;
     }
 
+    /**
+     * <p>string2Lines</p>
+     *
+     * @param text a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<String> string2Lines(String text) {
         if (text == null) {
             return null;

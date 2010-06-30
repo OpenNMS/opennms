@@ -54,8 +54,11 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 
 /**
+ * <p>MapStartUpController class.</p>
+ *
  * @author mmigliore
- * 
+ * @version $Id: $
+ * @since 1.8.1
  */
 @SuppressWarnings("deprecation")
 public class MapStartUpController extends SimpleFormController {
@@ -63,14 +66,25 @@ public class MapStartUpController extends SimpleFormController {
 
 	private Manager manager;
 		
+	/**
+	 * <p>Getter for the field <code>manager</code>.</p>
+	 *
+	 * @return a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public Manager getManager() {
 		return manager;
 	}
 
+	/**
+	 * <p>Setter for the field <code>manager</code>.</p>
+	 *
+	 * @param manager a {@link org.opennms.web.map.view.Manager} object.
+	 */
 	public void setManager(Manager manager) {
 		this.manager = manager;
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		

@@ -7,10 +7,17 @@ import org.quartz.spi.JobFactory;
 import org.quartz.SchedulerException;
 import org.quartz.spi.TriggerFiredBundle;
 
+/**
+ * <p>ReportJobFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReportJobFactory implements JobFactory {
 
     private Reportd m_reportd;
 
+    /** {@inheritDoc} */
     public Job newJob(TriggerFiredBundle bundle) throws SchedulerException {
 
         JobDetail jobDetail = bundle.getJobDetail();
@@ -34,6 +41,11 @@ public class ReportJobFactory implements JobFactory {
         return (Class<ReportJob>)jobDetail.getJobClass();
     }
 
+    /**
+     * <p>setReportd</p>
+     *
+     * @param reportd a {@link org.opennms.netmgt.reporting.service.Reportd} object.
+     */
     public void setReportd(Reportd reportd) {
         m_reportd = reportd;
     }

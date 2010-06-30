@@ -32,37 +32,44 @@
 package org.opennms.netmgt.scheduler;
 
 /**
- * Represents a PostponeNecessary 
+ * Represents a PostponeNecessary
  *
  * @author brozow
+ * @version $Id: $
  */
 public class PostponeNecessary extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     * <p>Constructor for PostponeNecessary.</p>
      */
     public PostponeNecessary() {
         super();
     }
 
     /**
-     * @param message
+     * <p>Constructor for PostponeNecessary.</p>
+     *
+     * @param message a {@link java.lang.String} object.
      */
     public PostponeNecessary(String message) {
         super(message);
     }
 
     /**
-     * @param message
-     * @param cause
+     * <p>Constructor for PostponeNecessary.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
      */
     public PostponeNecessary(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * @param cause
+     * <p>Constructor for PostponeNecessary.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
      */
     public PostponeNecessary(Throwable cause) {
         super(cause);

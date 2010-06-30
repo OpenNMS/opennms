@@ -37,10 +37,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+/**
+ * <p>Abstract StringReplaceOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class StringReplaceOperation {
     protected String m_pattern;
     protected String m_replacement;
     
+    /**
+     * <p>Constructor for StringReplaceOperation.</p>
+     *
+     * @param spec a {@link java.lang.String} object.
+     */
     public StringReplaceOperation(String spec) {
         if (spec == null) spec = "";
         Matcher specMatcher = Pattern.compile("^s/([^/]+)/([^/]*)/$").matcher(spec);
@@ -52,20 +63,46 @@ public abstract class StringReplaceOperation {
         }
     }
     
+    /**
+     * <p>getPattern</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPattern() {
         return m_pattern;
     }
     
+    /**
+     * <p>getReplacement</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getReplacement() {
         return m_replacement;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "Class: " + getClass().getName() + "; Pattern: " + m_pattern + "; Replacement: " + m_replacement;
     }
     
+    /**
+     * <p>replace</p>
+     *
+     * @param input a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String replace(String input);
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance();
     }

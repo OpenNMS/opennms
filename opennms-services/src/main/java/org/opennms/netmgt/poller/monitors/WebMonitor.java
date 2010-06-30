@@ -18,6 +18,12 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.core.utils.ParameterMap;
 
 @Distributable
+/**
+ * <p>WebMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class WebMonitor extends IPv4Monitor {
 
     static Integer DEFAULT_TIMEOUT = 3000;
@@ -28,6 +34,7 @@ public class WebMonitor extends IPv4Monitor {
     static String DEFAULT_PASSWORD = "admin";
     static String DEFAULT_HTTP_STATUS_RANGE = "100-399";
 
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public PollStatus poll(MonitoredService svc, Map map) {

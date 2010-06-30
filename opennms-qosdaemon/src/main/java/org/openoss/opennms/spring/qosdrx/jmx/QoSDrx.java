@@ -34,11 +34,17 @@ import org.springframework.context.access.DefaultLocatorFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * This JMX bean loads the QoSDrx daemon as a spring bean using the 
+ * This JMX bean loads the QoSDrx daemon as a spring bean using the
  * qosdrx-context.xml file.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 
+	/**
+	 * <p>Constructor for QoSDrx.</p>
+	 */
 	public QoSDrx() {
 		super(NAME);
 	}
@@ -52,9 +58,15 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 		return m_context;
 	}
 
+	/**
+	 * <p>onInit</p>
+	 */
 	protected void onInit() {}
 
 
+	/**
+	 * <p>onStart</p>
+	 */
 	protected void onStart() {
 //		TODO REMOVE EXAMPLE IMPORTER CODE
 //		ThreadCategory.setPrefix(ImporterService.NAME);
@@ -102,6 +114,9 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 	}
 
 
+	/**
+	 * <p>onStop</p>
+	 */
 	protected void onStop() {
 		getQoSDrx().stop();
 
@@ -111,6 +126,7 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 	
 	/**
 	 * Method to return statistics from the running receivers to MX4J
+	 *
 	 * @return string representation of the statistics for the running receivers
 	 */
 	public String getRuntimeStatistics(){
@@ -119,6 +135,11 @@ public class QoSDrx extends AbstractServiceDaemon implements QoSDrxMBean {
 	
 	
 
+	/**
+	 * <p>getStats</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getStats() {
 		return getQoSDrx().getStats();
 	}

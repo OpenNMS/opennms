@@ -35,9 +35,40 @@ import org.opennms.netmgt.model.DataLinkInterface;
 
 import java.util.Collection;
 
+/**
+ * <p>DataLinkInterfaceDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface DataLinkInterfaceDao extends OnmsDao<DataLinkInterface, Integer>{
+    /**
+     * <p>findAll</p>
+     *
+     * @param offset a {@link java.lang.Integer} object.
+     * @param limit a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<DataLinkInterface> findAll(Integer offset, Integer limit);
+    /**
+     * <p>findById</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.DataLinkInterface} object.
+     */
     DataLinkInterface findById(Integer id);
+    /**
+     * <p>findByNodeId</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<DataLinkInterface> findByNodeId(Integer nodeId);
+    /**
+     * <p>findByNodeParentId</p>
+     *
+     * @param nodeParentId a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<DataLinkInterface> findByNodeParentId(Integer nodeParentId);
 }

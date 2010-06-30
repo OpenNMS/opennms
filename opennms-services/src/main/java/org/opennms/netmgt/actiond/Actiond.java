@@ -50,11 +50,17 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
  * event is received by this service that has one of either a notification,
  * trouble ticket, or auto action then a process is launched to execute the
  * appropriate commands.
- * 
+ *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * 
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @version $Id: $
  */
 public final class Actiond extends AbstractServiceDaemon {
 
@@ -84,6 +90,9 @@ public final class Actiond extends AbstractServiceDaemon {
         m_eventReader = null;
     }
 
+	/**
+	 * <p>onInit</p>
+	 */
 	protected void onInit() {
 		// A queue for execution
         //
@@ -101,6 +110,9 @@ public final class Actiond extends AbstractServiceDaemon {
         m_executor = new Executor(execQ, m_actiondConfig.getMaxProcessTime(), m_actiondConfig.getMaxOutstandingActions());
 	}
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
 		if (m_executor == null) {
 		    init();
@@ -109,6 +121,9 @@ public final class Actiond extends AbstractServiceDaemon {
 		m_executor.start();
 	}
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
 		try {
             if (m_executor != null) {
@@ -126,10 +141,16 @@ public final class Actiond extends AbstractServiceDaemon {
         m_actiondConfig = null;
 	}
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {
 		m_executor.pause();
 	}
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
 		m_executor.resume();
 	}
@@ -137,31 +158,63 @@ public final class Actiond extends AbstractServiceDaemon {
     /**
      * Returns the singular instance of the actiond daemon. There can be only
      * one instance of this service per virtual machine.
+     *
+     * @return a {@link org.opennms.netmgt.actiond.Actiond} object.
      */
     public static Actiond getInstance() {
         return m_singleton;
     }
 
+    /**
+     * <p>getEventReader</p>
+     *
+     * @return a {@link org.opennms.netmgt.actiond.BroadcastEventProcessor} object.
+     */
     public BroadcastEventProcessor getEventReader() {
         return m_eventReader;
     }
 
+    /**
+     * <p>setEventReader</p>
+     *
+     * @param eventReader a {@link org.opennms.netmgt.actiond.BroadcastEventProcessor} object.
+     */
     public void setEventReader(BroadcastEventProcessor eventReader) {
         m_eventReader = eventReader;
     }
 
+    /**
+     * <p>getExecutor</p>
+     *
+     * @return a {@link org.opennms.netmgt.actiond.Executor} object.
+     */
     public Executor getExecutor() {
         return m_executor;
     }
 
+    /**
+     * <p>setExecutor</p>
+     *
+     * @param executor a {@link org.opennms.netmgt.actiond.Executor} object.
+     */
     public void setExecutor(Executor executor) {
         m_executor = executor;
     }
 
+    /**
+     * <p>getActiondConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.ActiondConfigFactory} object.
+     */
     public ActiondConfigFactory getActiondConfig() {
         return m_actiondConfig;
     }
 
+    /**
+     * <p>setActiondConfig</p>
+     *
+     * @param actiondConfig a {@link org.opennms.netmgt.config.ActiondConfigFactory} object.
+     */
     public void setActiondConfig(ActiondConfigFactory actiondConfig) {
         m_actiondConfig = actiondConfig;
     }

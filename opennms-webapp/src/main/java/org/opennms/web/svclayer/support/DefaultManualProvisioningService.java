@@ -72,9 +72,14 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultManualProvisioningService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultManualProvisioningService implements ManualProvisioningService {
 
@@ -84,30 +89,59 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     private CategoryDao m_categoryDao;
     private ServiceTypeDao m_serviceTypeDao;
     
+    /**
+     * <p>Constructor for DefaultManualProvisioningService.</p>
+     */
     public DefaultManualProvisioningService() {
         
     }
     
+    /**
+     * <p>setDeployedForeignSourceRepository</p>
+     *
+     * @param repository a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
+     */
     public void setDeployedForeignSourceRepository(ForeignSourceRepository repository) {
         m_deployedForeignSourceRepository = repository;
     }
     
+    /**
+     * <p>setPendingForeignSourceRepository</p>
+     *
+     * @param repository a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
+     */
     public void setPendingForeignSourceRepository(ForeignSourceRepository repository) {
         m_pendingForeignSourceRepository = repository;
     }
     
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
     
+    /**
+     * <p>setServiceTypeDao</p>
+     *
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
 
+    /** {@inheritDoc} */
     public Requisition addCategoryToNode(String groupName, String pathToNode, String categoryName) {
         Requisition group = getProvisioningGroup(groupName);
         
@@ -122,6 +156,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
     
+    /** {@inheritDoc} */
     public Requisition addAssetFieldToNode(String groupName, String pathToNode, String assetName, String assetValue) {
         Requisition group = getProvisioningGroup(groupName);
         RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
@@ -135,6 +170,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
+    /** {@inheritDoc} */
     public Requisition addInterfaceToNode(String groupName, String pathToNode, String ipAddr) {
         Requisition group = getProvisioningGroup(groupName);
         Assert.notNull(group, "Group should not be Null and is null groupName: " + groupName);
@@ -161,6 +197,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return iface;
     }
 
+    /** {@inheritDoc} */
     public Requisition addNewNodeToGroup(String groupName, String nodeLabel) {
         Requisition group = getProvisioningGroup(groupName);
 
@@ -179,6 +216,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return node;
     }
 
+    /** {@inheritDoc} */
     public Requisition addServiceToInterface(String groupName, String pathToInterface, String serviceName) {
         Requisition group = getProvisioningGroup(groupName);
         
@@ -191,6 +229,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
+    /** {@inheritDoc} */
     public Requisition getProvisioningGroup(String name) {
         Requisition deployed  = m_deployedForeignSourceRepository.getRequisition(name);
         Requisition pending = m_pendingForeignSourceRepository.getRequisition(name);
@@ -198,12 +237,18 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return (pending == null)? deployed : pending;
     }
     
+    /** {@inheritDoc} */
     public Requisition saveProvisioningGroup(String groupName, Requisition group) {
         group.setForeignSource(groupName);
         m_pendingForeignSourceRepository.save(group);
         return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
+    /**
+     * <p>getProvisioningGroupNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getProvisioningGroupNames() {
         Set<String> names = new TreeSet<String>();
         for (Requisition r : m_deployedForeignSourceRepository.getRequisitions()) {
@@ -215,6 +260,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return names;
     }
     
+    /** {@inheritDoc} */
     public Requisition createProvisioningGroup(String name) {
         Requisition group = new Requisition();
         group.setForeignSource(name);
@@ -230,6 +276,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     }
 
 
+    /** {@inheritDoc} */
     public void importProvisioningGroup(String groupName) {
 
         // first we update the import timestamp
@@ -253,6 +300,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
     }
 
+    /** {@inheritDoc} */
     public Requisition deletePath(String groupName, String pathToDelete) {
         Requisition group = getProvisioningGroup(groupName);
 
@@ -279,6 +327,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return m_pendingForeignSourceRepository.getRequisition(groupName);
     }
 
+    /**
+     * <p>getAllGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<Requisition> getAllGroups() {
         Collection<Requisition> groups = new LinkedList<Requisition>();
 
@@ -289,6 +342,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return groups;
     }
 
+    /** {@inheritDoc} */
     public void deleteProvisioningGroup(String groupName) {
         Requisition r = getProvisioningGroup(groupName);
         if (r != null) {
@@ -297,6 +351,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
     }
 
+    /** {@inheritDoc} */
     public void deleteAllNodes(String groupName) {
         Requisition group = m_deployedForeignSourceRepository.getRequisition(groupName);
         if (group != null) {
@@ -311,6 +366,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
     }
 
+    /**
+     * <p>getGroupDbNodeCounts</p>
+     *
+     * @return a java$util$Map object.
+     */
     public Map<String, Integer> getGroupDbNodeCounts() {
         Map<String, Integer> counts = new HashMap<String, Integer>();
         
@@ -322,6 +382,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         
     }
 
+    /**
+     * <p>getNodeCategoryNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getNodeCategoryNames() {
         Collection<String> names = new LinkedList<String>();
         for (OnmsCategory category : m_categoryDao.findAll()) {
@@ -330,6 +395,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return names;
     }
     
+    /**
+     * <p>getServiceTypeNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getServiceTypeNames() {
         Collection<String> names = new LinkedList<String>();
         for(OnmsServiceType svcType : m_serviceTypeDao.findAll()) {
@@ -338,6 +408,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         return names;
     }
 
+    /**
+     * <p>getAssetFieldNames</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<String> getAssetFieldNames() {
         return BeanUtils.getProperties(new OnmsAssetRecord());
     }

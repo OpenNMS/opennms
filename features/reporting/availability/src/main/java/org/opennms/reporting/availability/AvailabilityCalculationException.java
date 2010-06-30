@@ -31,20 +31,42 @@
 //
 package org.opennms.reporting.availability;
 
+/**
+ * <p>AvailabilityCalculationException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AvailabilityCalculationException extends Exception {
 
     private static final long serialVersionUID = -8290071295128513350L;
 
+    /**
+     * <p>Constructor for AvailabilityCalculationException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public AvailabilityCalculationException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * <p>Constructor for AvailabilityCalculationException.</p>
+	 *
+	 * @param message a {@link java.lang.String} object.
+	 */
 	public AvailabilityCalculationException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * <p>Constructor for AvailabilityCalculationException.</p>
+	 *
+	 * @param cause a {@link java.lang.Throwable} object.
+	 */
 	public AvailabilityCalculationException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub

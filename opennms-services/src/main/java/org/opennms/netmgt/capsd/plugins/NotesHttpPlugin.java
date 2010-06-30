@@ -42,15 +42,18 @@ package org.opennms.netmgt.capsd.plugins;
  * implements the Plugin interface that allows it to be used along with other
  * plugins by the daemon.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * @version 1.1.1.1
- * 
  */
 public class NotesHttpPlugin extends HttpPlugin {
 
+    /**
+     * <p>Constructor for NotesHttpPlugin.</p>
+     */
     public NotesHttpPlugin() {
         super("NotesHTTP", false, "HEAD / HTTP/1.0\r\n\r\n", "Lotus");
     }

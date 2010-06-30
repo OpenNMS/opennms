@@ -110,8 +110,13 @@ import org.opennms.sms.ping.internal.SinglePingResponseCallback;
  */
 
 /**
+ * <p>SmsPinger class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class SmsPinger {
     
@@ -120,16 +125,32 @@ public class SmsPinger {
     
 	/**
 	 * Initializes this singleton
+	 *
+	 * @throws java.io.IOException if any.
 	 */
 	public synchronized static void initialize() throws IOException {
 	    if (s_pingTracker == null) throw new IllegalStateException("SmsPinger not yet initialized!!"); 
 	}
 	
+	/**
+	 * <p>setSmsPingTracker</p>
+	 *
+	 * @param pingTracker a {@link org.opennms.sms.ping.SmsPingTracker} object.
+	 */
 	public synchronized static void setSmsPingTracker(SmsPingTracker pingTracker) {
 	    log.debug("Initializing SmsPinger with pingTracker " + pingTracker);
 	    s_pingTracker = pingTracker;
 	}
 
+    /**
+     * <p>ping</p>
+     *
+     * @param phoneNumber a {@link java.lang.String} object.
+     * @param timeout a long.
+     * @param retries a int.
+     * @param cb a {@link org.opennms.sms.ping.PingResponseCallback} object.
+     * @throws java.lang.Exception if any.
+     */
     public static void ping(String phoneNumber, long timeout, int retries, PingResponseCallback cb) throws Exception {
         initialize();
         s_pingTracker.sendRequest(phoneNumber, timeout, retries, cb);
@@ -139,17 +160,17 @@ public class SmsPinger {
      * This method is used to ping a remote host to test for ICMP support. If
      * the remote host responds within the specified period, defined by retries
      * and timeouts, then the response time is returned.
-     * 
+     *
      * @param phoneNumber
      *            The address to poll.
      * @param timeout
      *            The time to wait between each retry.
      * @param retries
      *            The number of times to retry
-     * 
      * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
-     * @throws InterruptedException 
-     * @throws IOException 
+     * @throws java.lang.InterruptedException if any.
+     * @throws IOException if any.
+     * @throws java.lang.Exception if any.
      */
     public static Long ping(String phoneNumber, long timeout, int retries) throws InterruptedException, Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(phoneNumber);
@@ -161,10 +182,12 @@ public class SmsPinger {
 
 	/**
 	 * Ping a remote host, using the default number of retries and timeouts.
+	 *
 	 * @param host the host to ping
 	 * @return the round-trip time of the packet
-	 * @throws IOException
-	 * @throws InterruptedException 
+	 * @throws IOException if any.
+	 * @throws java.lang.InterruptedException if any.
+	 * @throws java.lang.Exception if any.
 	 */
 	public static Long ping(String host) throws Exception, InterruptedException {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);

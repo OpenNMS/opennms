@@ -33,33 +33,67 @@ package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
 
+/**
+ * <p>PingRequestId class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PingRequestId {
     InetAddress m_addr;
     long m_tid;
     short m_seqId;
 
+    /**
+     * <p>Constructor for PingRequestId.</p>
+     *
+     * @param addr a {@link java.net.InetAddress} object.
+     * @param tid a long.
+     * @param seqId a short.
+     */
     public PingRequestId(InetAddress addr, long tid, short seqId) {
         m_addr = addr;
         m_tid = tid;
         m_seqId = seqId;
     }
     
+    /**
+     * <p>Constructor for PingRequestId.</p>
+     *
+     * @param reply a {@link org.opennms.netmgt.ping.PingReply} object.
+     */
     public PingRequestId(PingReply reply) {
         this(reply.getAddress(), reply.getPacket().getTID(), reply.getPacket().getSequenceId());
     }
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return m_addr;
     }
 
+    /**
+     * <p>getTid</p>
+     *
+     * @return a long.
+     */
     public long getTid() {
         return m_tid;
     }
 
+    /**
+     * <p>getSequenceId</p>
+     *
+     * @return a short.
+     */
     public short getSequenceId() {
         return m_seqId;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof PingRequestId) {
@@ -69,6 +103,7 @@ public class PingRequestId {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         int hash = 1;
@@ -80,6 +115,11 @@ public class PingRequestId {
     }
 
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(super.toString());

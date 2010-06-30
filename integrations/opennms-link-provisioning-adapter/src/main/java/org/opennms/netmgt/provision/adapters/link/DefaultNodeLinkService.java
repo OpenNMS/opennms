@@ -29,6 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 @Transactional
+/**
+ * <p>DefaultNodeLinkService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultNodeLinkService implements NodeLinkService {
     
     @Autowired
@@ -50,6 +56,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
     @Qualifier("transactionAware")
     private EventForwarder m_eventForwarder;
     
+    /** {@inheritDoc} */
     @Transactional
     public void saveLinkState(OnmsLinkState state) {
         debugf(this, "saving LinkState %s", state.getLinkState());
@@ -57,6 +64,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         m_linkStateDao.flush();
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void createLink(int nodeParentId, int nodeId) {
         infof(this, "adding link between node: %d and node: %d", nodeParentId, nodeId);
@@ -131,6 +139,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         }
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public Integer getNodeId(String endPoint) {
         Collection<OnmsNode> nodes = m_nodeDao.findByLabel(endPoint);
@@ -141,6 +150,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public String getNodeLabel(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
@@ -150,6 +160,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public Collection<DataLinkInterface> getLinkContainingNodeId(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
@@ -161,11 +172,13 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return m_dataLinkDao.findMatching(criteria);
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public OnmsLinkState getLinkStateForInterface(DataLinkInterface dataLinkInterface) {
         return m_linkStateDao.findByDataLinkInterfaceId(dataLinkInterface.getId());
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void updateLinkStatus(int nodeParentId, int nodeId, String status) {
         OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
@@ -183,6 +196,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         }
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public String getPrimaryAddress(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
@@ -195,6 +209,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return null;
     }
     
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public boolean nodeHasEndPointService(int nodeId) {
         
@@ -203,6 +218,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         return endPointService == null ? false : true;
     }
 
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public Boolean getEndPointStatus(int nodeId) {
         OnmsMonitoredService endPointService = m_monitoredServiceDao.getPrimaryService(nodeId, m_endPointConfigDao.getValidator().getServiceName());

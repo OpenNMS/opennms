@@ -32,8 +32,34 @@ package org.opennms.netmgt.provision.server.exchange;
 
 import java.io.IOException;
 
+/**
+ * <p>TemplateExchange interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TemplateExchange {
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param args a {@link java.lang.Object} object.
+     * @return a boolean.
+     * @throws java.io.IOException if any.
+     */
     public boolean sendRequest(Object...args) throws IOException;
+    /**
+     * <p>processResponse</p>
+     *
+     * @param args a {@link java.lang.Object} object.
+     * @return a boolean.
+     * @throws java.io.IOException if any.
+     */
     public boolean processResponse(Object...args) throws IOException;
+    /**
+     * <p>matchResponseByString</p>
+     *
+     * @param input a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean matchResponseByString(String input);
 }

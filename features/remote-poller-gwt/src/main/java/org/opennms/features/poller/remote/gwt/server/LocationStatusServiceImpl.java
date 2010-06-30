@@ -19,6 +19,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import de.novanic.eventservice.service.EventExecutorServiceFactory;
 import de.novanic.eventservice.service.RemoteEventServiceServlet;
 
+/**
+ * <p>LocationStatusServiceImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class LocationStatusServiceImpl extends RemoteEventServiceServlet implements LocationStatusService {
     private static final long serialVersionUID = 1L;
 
@@ -51,24 +58,31 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
         }
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         LogUtils.debugf(this, "starting location status service");
         initialize();
         m_locationDataManager.start(EventExecutorServiceFactory.getInstance().getEventExecutorService(this.getRequest().getSession()));
     }
 
+    /** {@inheritDoc} */
     public LocationInfo getLocationInfo(final String locationName) {
         return m_locationDataManager.getLocationInfo(locationName);
     }
 
+    /** {@inheritDoc} */
     public LocationDetails getLocationDetails(final String locationName) {
         return m_locationDataManager.getLocationDetails(locationName);
     }
 
+    /** {@inheritDoc} */
     public ApplicationInfo getApplicationInfo(final String applicationName) {
         return m_locationDataManager.getApplicationInfo(applicationName);
     }
 
+    /** {@inheritDoc} */
     public ApplicationDetails getApplicationDetails(final String applicationName) {
         return m_locationDataManager.getApplicationDetails(applicationName);
     }

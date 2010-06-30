@@ -41,11 +41,22 @@ import org.opennms.netmgt.poller.LatencyCollectionResource;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * <p>LatencyThresholdingSet class.</p>
  *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
 public class LatencyThresholdingSet extends ThresholdingSet {
     
+    /**
+     * <p>Constructor for LatencyThresholdingSet.</p>
+     *
+     * @param nodeId a int.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param interval a long.
+     */
     public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
         super(nodeId, hostAddress, serviceName, repository, interval);
     }
@@ -53,6 +64,12 @@ public class LatencyThresholdingSet extends ThresholdingSet {
     /*
      * Latency thresholds use ds-type="if"
      * Returns true if any attribute of the service is involved in any of defined thresholds.
+     */
+    /**
+     * <p>hasThresholds</p>
+     *
+     * @param attributes a {@link java.util.Map} object.
+     * @return a boolean.
      */
     public boolean hasThresholds(Map<String, Double> attributes) {
         if (hasThresholds()) {
@@ -67,6 +84,7 @@ public class LatencyThresholdingSet extends ThresholdingSet {
      * Apply thresholds definitions for specified service using attribuesMap as current values.
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
+    /** {@inheritDoc} */
     public List<Event> applyThresholds(String svcName, Map<String, Double> attributes) {
         LatencyCollectionResource latencyResource = new LatencyCollectionResource(svcName, m_hostAddress);
         Map<String, CollectionAttribute> attributesMap = new HashMap<String, CollectionAttribute>();
@@ -80,6 +98,7 @@ public class LatencyThresholdingSet extends ThresholdingSet {
     /*
      * Resource Filters don't make sense for Latency Thresholder.
      */
+    /** {@inheritDoc} */
     @Override
     protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
         return true;

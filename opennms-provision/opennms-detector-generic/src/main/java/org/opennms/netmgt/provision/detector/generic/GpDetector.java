@@ -41,6 +41,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>GpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
     
@@ -54,10 +60,14 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
     private String m_hoption = DEFAULT_HOPTION;
     private String m_toption = DEFAULT_TOPTION;
     
+    /**
+     * <p>Constructor for GpDetector.</p>
+     */
     protected GpDetector() {
         super("GP", 0);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Client<GpRequest, GpResponse> getClient() {
         GpClient client = new GpClient();
@@ -70,6 +80,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
         return client;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         expectBanner(responseMatches(getBanner()));
@@ -86,50 +97,110 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
         };
     }
 
+    /**
+     * <p>setScript</p>
+     *
+     * @param script a {@link java.lang.String} object.
+     */
     public void setScript(String script) {
         m_script = script;
     }
 
+    /**
+     * <p>getScript</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getScript() {
         return m_script;
     }
 
+    /**
+     * <p>setArgs</p>
+     *
+     * @param args a {@link java.lang.String} object.
+     */
     public void setArgs(String args) {
         m_args = args;
     }
 
+    /**
+     * <p>getArgs</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getArgs() {
         return m_args;
     }
 
+    /**
+     * <p>setBanner</p>
+     *
+     * @param banner a {@link java.lang.String} object.
+     */
     public void setBanner(String banner) {
         m_banner = banner;
     }
 
+    /**
+     * <p>getBanner</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBanner() {
         return m_banner;
     }
 
+    /**
+     * <p>setMatch</p>
+     *
+     * @param match a {@link java.lang.String} object.
+     */
     public void setMatch(String match) {
         m_match = match;
     }
 
+    /**
+     * <p>getMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMatch() {
         return m_match;
     }
 
+    /**
+     * <p>setHoption</p>
+     *
+     * @param hoption a {@link java.lang.String} object.
+     */
     public void setHoption(String hoption) {
         m_hoption = hoption;
     }
 
+    /**
+     * <p>getHoption</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHoption() {
         return m_hoption;
     }
 
+    /**
+     * <p>setToption</p>
+     *
+     * @param toption a {@link java.lang.String} object.
+     */
     public void setToption(String toption) {
         m_toption = toption;
     }
 
+    /**
+     * <p>getToption</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getToption() {
         return m_toption;
     }

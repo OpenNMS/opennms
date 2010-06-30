@@ -1,5 +1,9 @@
+
 /**
- * 
+ * <p>EndPointTypeValidator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.provision.adapters.link.endpoint;
 
@@ -22,21 +26,44 @@ public class EndPointTypeValidator {
     @XmlElement(name="endpoint-type")
     List<EndPointType> m_endPointConfigs = Collections.synchronizedList(new ArrayList<EndPointType>());
     
+    /**
+     * <p>Constructor for EndPointTypeValidator.</p>
+     */
     public EndPointTypeValidator() {
     }
 
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_endPointServiceName;
     }
 
+    /**
+     * <p>setServiceName</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     */
     public void setServiceName(String serviceName) {
         m_endPointServiceName = serviceName;
     }
 
+    /**
+     * <p>getConfigs</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<EndPointType> getConfigs() {
         return m_endPointConfigs;
     }
     
+    /**
+     * <p>setConfigs</p>
+     *
+     * @param configs a {@link java.util.List} object.
+     */
     public void setConfigs(List<EndPointType> configs) {
         synchronized(m_endPointConfigs) {
             m_endPointConfigs.clear();
@@ -44,6 +71,12 @@ public class EndPointTypeValidator {
         }
     }
 
+    /**
+     * <p>hasMatch</p>
+     *
+     * @param ep a {@link org.opennms.netmgt.provision.adapters.link.EndPoint} object.
+     * @return a boolean.
+     */
     public boolean hasMatch(EndPoint ep) {
         for (EndPointType config : m_endPointConfigs) {
             if (config.matches(ep)) {
@@ -53,6 +86,12 @@ public class EndPointTypeValidator {
         return false;
     }
 
+    /**
+     * <p>validate</p>
+     *
+     * @param ep a {@link org.opennms.netmgt.provision.adapters.link.EndPoint} object.
+     * @throws org.opennms.netmgt.provision.adapters.link.EndPointStatusException if any.
+     */
     public void validate(EndPoint ep) throws EndPointStatusException {
         for (EndPointType config : m_endPointConfigs) {
             if (config.matches(ep)) {

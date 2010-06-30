@@ -46,14 +46,14 @@ import org.opennms.netmgt.config.NotificationManager;
 /**
  * Implements NotificationStragey pattern used to send notifications via the
  * Java Mail API.
- * 
+ *
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
- * 
+ * @version $Id: $
  */
 public class JavaMailNotificationStrategy implements NotificationStrategy {
 
     /**
-     * 
+     * <p>Constructor for JavaMailNotificationStrategy.</p>
      */
     public JavaMailNotificationStrategy() {
     }
@@ -63,6 +63,7 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
      * 
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
+    /** {@inheritDoc} */
     public int send(List<Argument> arguments) {
         log().debug("In the JavaMailNotification class.");
 

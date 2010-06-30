@@ -54,15 +54,19 @@ import org.springframework.web.servlet.mvc.Controller;
 
 
 /**
+ * <p>ExecCommandController class.</p>
+ *
  * @author mmigliore
  * @author antonio
- * 
+ *
  * this class provides to create pages for executing ping and traceroute commands
- * 
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class ExecCommandController implements Controller {
 	ThreadCategory log;
 
+	/** {@inheritDoc} */
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
    		ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(this.getClass());

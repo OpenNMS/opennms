@@ -38,13 +38,26 @@ package org.opennms.netmgt.poller.remote;
 import org.opennms.netmgt.model.PollStatus;
 
 /**
- * 
+ * <p>PollObserver interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface PollObserver {
 
+	/**
+	 * <p>pollStarted</p>
+	 *
+	 * @param pollId a {@link java.lang.String} object.
+	 */
 	void pollStarted(String pollId);
 
+	/**
+	 * <p>pollCompleted</p>
+	 *
+	 * @param pollId a {@link java.lang.String} object.
+	 * @param pollStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+	 */
 	void pollCompleted(String pollId, PollStatus pollStatus);
 
 }

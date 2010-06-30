@@ -27,6 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
+/**
+ * <p>NotificationRestService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Path("notifications")
@@ -40,6 +47,12 @@ public class NotificationRestService extends OnmsRestService {
     @Context
     SecurityContext m_securityContext;
     
+    /**
+     * <p>getNotification</p>
+     *
+     * @param notifId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsNotification} object.
+     */
     @GET
     @Produces("text/xml")
     @Path("{notifId}")
@@ -49,6 +62,11 @@ public class NotificationRestService extends OnmsRestService {
     	return result;
     }
     
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @GET
     @Produces("text/plain")
     @Path("count")
@@ -57,6 +75,11 @@ public class NotificationRestService extends OnmsRestService {
     	return Integer.toString(m_notifDao.countAll());
     }
 
+    /**
+     * <p>getNotifications</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNotificationCollection} object.
+     */
     @GET
     @Produces("text/xml")
     @Transactional
@@ -71,6 +94,12 @@ public class NotificationRestService extends OnmsRestService {
         return new OnmsNotificationCollection(m_notifDao.findMatching(getDistinctIdCriteria(OnmsNotification.class,criteria)));
     }
     
+    /**
+     * <p>updateNotification</p>
+     *
+     * @param notifId a {@link java.lang.String} object.
+     * @param ack a {@link java.lang.Boolean} object.
+     */
     @PUT
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -83,6 +112,11 @@ public class NotificationRestService extends OnmsRestService {
        	processNotifAck(notif,ack);
     }
     
+	/**
+	 * <p>updateNotifications</p>
+	 *
+	 * @param formProperties a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional

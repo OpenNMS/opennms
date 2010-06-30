@@ -5,11 +5,32 @@ import java.util.Properties;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 
+/**
+ * <p>LogUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LogUtils {
+    /**
+     * <p>tracef</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void tracef(final Object logee, final String format, final Object... args) {
         tracef(logee, null, format, args);
     }
 
+    /**
+     * <p>tracef</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param throwable a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void tracef(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isTraceEnabled()) {
@@ -22,10 +43,25 @@ public class LogUtils {
         }
     }
 
+    /**
+     * <p>debugf</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void debugf(final Object logee, final String format, final Object... args) {
         debugf(logee, null, format, args);
     }
 
+    /**
+     * <p>debugf</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param throwable a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void debugf(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isDebugEnabled()) {
@@ -38,10 +74,25 @@ public class LogUtils {
         }
     }
 
+    /**
+     * <p>infof</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void infof(final Object logee, final String format, final Object... args) {
         infof(logee, null, format, args);
     }
 
+    /**
+     * <p>infof</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param throwable a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void infof(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isInfoEnabled()) {
@@ -54,10 +105,25 @@ public class LogUtils {
         }
     }
 
+    /**
+     * <p>warnf</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void warnf(final Object logee, final String format, final Object... args) {
         warnf(logee, null, format, args);
     }
 
+    /**
+     * <p>warnf</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param throwable a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void warnf(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isWarnEnabled()) {
@@ -70,10 +136,25 @@ public class LogUtils {
         }
     }
 
+    /**
+     * <p>errorf</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void errorf(final Object logee, final String format, final Object... args) {
         errorf(logee, null, format, args);
     }
 
+    /**
+     * <p>errorf</p>
+     *
+     * @param logee a {@link java.lang.Object} object.
+     * @param throwable a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void errorf(final Object logee, final Throwable throwable, final String format, final Object... args) {
         Logger log = getLogger(logee);
         if (log.isErrorEnabled()) {
@@ -87,19 +168,33 @@ public class LogUtils {
     }
 
     /**
+     * <p>fatalf</p>
+     *
      * @deprecated SLF4J doesn't support fatal, so this just goes to {@link #errorf} anyways.
+     * @param logee a {@link java.lang.Object} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
      */
     public static void fatalf(final Object logee, final String format, final Object... args) {
         errorf(logee, null, format, args);
     }
 
     /**
+     * <p>fatalf</p>
+     *
      * @deprecated SLF4J doesn't support fatal, so this just goes to {@link #errorf} anyways.
+     * @param logee a {@link java.lang.Object} object.
+     * @param throwable a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
      */
     public static void fatalf(final Object logee, final Throwable throwable, final String format, final Object... args) {
         errorf(logee, throwable, format, args);
     }
 
+    /**
+     * <p>logToConsole</p>
+     */
     public static void logToConsole() {
     	final Properties logConfig = new Properties();
     	logConfig.setProperty("log4j.reset", "true");
@@ -110,6 +205,11 @@ public class LogUtils {
     	PropertyConfigurator.configure(logConfig);
     }
 
+    /**
+     * <p>logToFile</p>
+     *
+     * @param file a {@link java.lang.String} object.
+     */
     public static void logToFile(final String file) {
     	final Properties logConfig = new Properties();
     	logConfig.setProperty("log4j.reset", "true");
@@ -123,6 +223,9 @@ public class LogUtils {
     	PropertyConfigurator.configure(logConfig);
     }
     
+	/**
+	 * <p>enableDebugging</p>
+	 */
 	public static void enableDebugging() {
 		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
 	}

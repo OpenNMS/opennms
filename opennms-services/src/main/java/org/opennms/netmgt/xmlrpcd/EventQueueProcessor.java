@@ -344,10 +344,9 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * Starts the current fiber. If the fiber has already been started,
      * regardless of it's current state, then an IllegalStateException is
      * thrown.
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber has already been started.
-     * 
      */
     public synchronized void start() {
         if (m_worker != null) {
@@ -391,7 +390,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * Stops this fiber. If the fiber has never been started then an
      * <code>IllegalStateExceptio</code> is generated.
      * </p>
-     * 
+     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the fiber has never been started.
      */
@@ -407,7 +406,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
 
     /**
      * Returns the name of the fiber.
-     * 
+     *
      * @return The name of the Fiber.
      */
     public String getName() {
@@ -416,7 +415,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
 
     /**
      * Returns the current status of the fiber
-     * 
+     *
      * @return The status of the Fiber.
      */
     public synchronized int getStatus() {
@@ -431,7 +430,6 @@ class EventQueueProcessor implements Runnable, PausableFiber {
      * Reads off of the event queue and depends on the uei of the event of read,
      * process the event to send a notification to the external XMLRPC server
      * via XMLRPC protocol.
-     * 
      */
     public void run() {
         synchronized (this) {

@@ -40,12 +40,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 /**
- * 
+ * <p>NodeListService interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Transactional(readOnly = true)
 public interface NodeListService {
+    /**
+     * <p>createNodeList</p>
+     *
+     * @param command a {@link org.opennms.web.command.NodeListCommand} object.
+     * @return a {@link org.opennms.web.svclayer.support.NodeListModel} object.
+     */
     public NodeListModel createNodeList(NodeListCommand command);
 }

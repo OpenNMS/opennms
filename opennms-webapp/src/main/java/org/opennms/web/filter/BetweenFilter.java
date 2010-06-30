@@ -34,20 +34,50 @@ package org.opennms.web.filter;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
+/**
+ * <p>Abstract BetweenFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public abstract class BetweenFilter<T> extends MultiArgFilter<T> {
     
+    /**
+     * <p>Constructor for BetweenFilter.</p>
+     *
+     * @param filterType a {@link java.lang.String} object.
+     * @param type a {@link org.opennms.web.filter.SQLType} object.
+     * @param fieldName a {@link java.lang.String} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @param first a T object.
+     * @param last a T object.
+     * @param <T> a T object.
+     */
     public BetweenFilter(String filterType, SQLType<T> type, String fieldName, String propertyName, T first, T last) {
         super(filterType, type, fieldName, propertyName, type.createArray(first, last));
     }
 
+    /**
+     * <p>getFirst</p>
+     *
+     * @return a T object.
+     */
     public T getFirst() { return getValues()[0]; }
+    /**
+     * <p>getLast</p>
+     *
+     * @return a T object.
+     */
     public T getLast() { return getValues()[1]; }
     
+    /** {@inheritDoc} */
     @Override
     public Criterion getCriterion() {
         return Restrictions.between(getPropertyName(), getFirst(), getLast());
     }
     
+    /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
         return " "+getSQLFieldName() + " BETWEEN %s AND %s ";

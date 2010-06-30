@@ -38,22 +38,38 @@ package org.opennms.reporting.core.svclayer;
 
 /**
  * Used by ReportServiceLocator
- * 
- * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  *
+ * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
 public class ReportServiceLocatorException extends RuntimeException {
 
     private static final long serialVersionUID = -7839336888035725570L;
 
+    /**
+     * <p>Constructor for ReportServiceLocatorException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public ReportServiceLocatorException(String message) {
         super(message);
     }
 
+    /**
+     * <p>Constructor for ReportServiceLocatorException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public ReportServiceLocatorException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * <p>Constructor for ReportServiceLocatorException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public ReportServiceLocatorException(String message, Throwable cause) {
         super(message, cause);
     }

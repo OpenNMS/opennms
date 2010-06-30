@@ -48,9 +48,10 @@ import javax.persistence.Table;
  * Model class for a resource reference.  This maps a unique
  * string resourceID to a unique integer to minimize costs of
  * storing repeated resourceID strings in the database.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see OnmsResource#getId()
+ * @version $Id: $
  */
 @Entity
 @Table(name="resourceReference")
@@ -63,12 +64,16 @@ public class ResourceReference implements Serializable {
     private Integer m_id;
     private String m_resourceId;
     
+    /**
+     * <p>Constructor for ResourceReference.</p>
+     */
     public ResourceReference() {
     }
     
     /**
      * Unique identifier for resource reference.
-     * 
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     @Id
     @Column(name="id")
@@ -77,15 +82,30 @@ public class ResourceReference implements Serializable {
     public Integer getId() {
         return m_id;
     }
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * <p>getResourceId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="resourceId")
     public String getResourceId() {
         return m_resourceId;
     }
     
+    /**
+     * <p>setResourceId</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     */
     public void setResourceId(String resourceId) {
         m_resourceId = resourceId;
     }

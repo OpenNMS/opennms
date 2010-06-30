@@ -41,6 +41,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>LoopDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class LoopDetector extends BasicDetector<LineOrientedRequest, LoopResponse> {
     private static final String DEFAULT_SERVICE_NAME = "LOOP";
@@ -49,10 +55,14 @@ public class LoopDetector extends BasicDetector<LineOrientedRequest, LoopRespons
     private String m_ipMatch;
     private boolean m_isSupported = true;
     
+    /**
+     * <p>Constructor for LoopDetector.</p>
+     */
     public LoopDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Client<LineOrientedRequest, LoopResponse> getClient() {
         LoopClient loopClient = new LoopClient();
@@ -60,6 +70,7 @@ public class LoopDetector extends BasicDetector<LineOrientedRequest, LoopRespons
         return loopClient;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         expectBanner(ipMatches(getIpMatch()));
@@ -76,18 +87,38 @@ public class LoopDetector extends BasicDetector<LineOrientedRequest, LoopRespons
         };
     }
 
+    /**
+     * <p>setIpMatch</p>
+     *
+     * @param ipMatch a {@link java.lang.String} object.
+     */
     public void setIpMatch(String ipMatch) {
         m_ipMatch = ipMatch;
     }
 
+    /**
+     * <p>getIpMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpMatch() {
         return m_ipMatch;
     }
 
+    /**
+     * <p>setSupported</p>
+     *
+     * @param isSupported a boolean.
+     */
     public void setSupported(boolean isSupported) {
         m_isSupported = isSupported;
     }
 
+    /**
+     * <p>isSupported</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSupported() {
         return m_isSupported;
     }

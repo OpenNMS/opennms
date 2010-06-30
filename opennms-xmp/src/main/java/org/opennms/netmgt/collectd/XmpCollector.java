@@ -50,15 +50,15 @@
 */
 
 /**
-   OpenNMS XMP Collector class allows for the querying of XMP-enabled
-   devices by the OpenNMS network management software suite.  XMP is
-   the <b>X</b>ML <b>M</b>management <b>P</b>rotocol; One XmpCollector
-   object is instantiated per OpenNMS instance and its responsible for
-   querying all XMP-enabled systems.  Consequently, we need to be
-   careful about leaving XMP sessions open for too long.
-   @author <a href="mailto:rdk@krupczak.org">Bobby Krupczak</a>
-   @version $Id: XmpCollector.java 38 2008-07-24 13:39:32Z rdk $
- **/
+ *   OpenNMS XMP Collector class allows for the querying of XMP-enabled
+ *   devices by the OpenNMS network management software suite.  XMP is
+ *   the <b>X</b>ML <b>M</b>management <b>P</b>rotocol; One XmpCollector
+ *   object is instantiated per OpenNMS instance and its responsible for
+ *   querying all XMP-enabled systems.  Consequently, we need to be
+ *   careful about leaving XMP sessions open for too long.
+ *   @author <a href="mailto:rdk@krupczak.org">Bobby Krupczak</a>
+ *   @version $Id: XmpCollector.java 38 2008-07-24 13:39:32Z rdk $
+ */
 
 package org.opennms.netmgt.collectd;
 
@@ -85,7 +85,6 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
-
 public class XmpCollector implements ServiceCollector {
 
     /* class variables and methods *********************** */
@@ -100,6 +99,9 @@ public class XmpCollector implements ServiceCollector {
     String authenUser;
 
     /* constructors  ************************************* */
+    /**
+     * <p>Constructor for XmpCollector.</p>
+     */
     public XmpCollector() 
     {
         log().debug("XmpCollector created");
@@ -313,7 +315,11 @@ public class XmpCollector implements ServiceCollector {
 
     /* public methods ************************************ */
 
-    /** initialize our XmpCollector with global parameters **/
+    /**
+     * {@inheritDoc}
+     *
+     * initialize our XmpCollector with global parameters *
+     */
     public void initialize(Map parameters)
     {
         // parameters come from collectd-configuration.xml 
@@ -381,8 +387,12 @@ public class XmpCollector implements ServiceCollector {
 
     } /* initialize() */
 
-    /** initialize the querying of a particular agent/interface with
-     * parameters specific to this agent/interface **/
+    /**
+     * {@inheritDoc}
+     *
+     * initialize the querying of a particular agent/interface with
+     * parameters specific to this agent/interface *
+     */
     public void initialize(CollectionAgent agent, Map parameters)
     {
         log().debug("initialize agent/params called for "+agent);
@@ -401,8 +411,10 @@ public class XmpCollector implements ServiceCollector {
         return;
     }
 
-    /** Release/stop all querying of agents/interfaces and release
-       state associated with them **/
+    /**
+     * Release/stop all querying of agents/interfaces and release
+     *       state associated with them *
+     */
     public void release() 
     {
         log().info("release()");
@@ -414,7 +426,11 @@ public class XmpCollector implements ServiceCollector {
         return;
     }
 
-    /** Release/stop querying a particular agent **/
+    /**
+     * {@inheritDoc}
+     *
+     * Release/stop querying a particular agent *
+     */
     public void release(CollectionAgent agent)
     {
         log().info("release agent called for "+agent);
@@ -425,17 +441,24 @@ public class XmpCollector implements ServiceCollector {
         return;
     }
 
-    /** who am I and what am I ? **/
+    /**
+     * who am I and what am I ? *
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String serviceName() { return SERVICE_NAME; }
 
-    /** Collect data, via XMP, from a particular agent EventProxy is
-       used to send opennms events into the system in case a
-       collection fails or if a system is back working again after a
-       failure (suceed event).  But otherwise, no events sent if
-       collection succeeds.  Collect is called once per agent per
-       collection cycle.  Parameters are a map of String Key/String
-       Value passed in.  Keys come from collectd config 
-     **/
+    /**
+     * {@inheritDoc}
+     *
+     * Collect data, via XMP, from a particular agent EventProxy is
+     *       used to send opennms events into the system in case a
+     *       collection fails or if a system is back working again after a
+     *       failure (suceed event).  But otherwise, no events sent if
+     *       collection succeeds.  Collect is called once per agent per
+     *       collection cycle.  Parameters are a map of String Key/String
+     *       Value passed in.  Keys come from collectd config
+     */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, 
             Map<String, String> parameters)
     {
@@ -612,6 +635,7 @@ public class XmpCollector implements ServiceCollector {
         return collectionSet;
     }
 
+    /** {@inheritDoc} */
     public RrdRepository getRrdRepository(String collectionName)
     {
         log().debug("XMP getRrdRepository called for "+collectionName);

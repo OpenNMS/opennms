@@ -48,11 +48,19 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>IndexController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class IndexController extends AbstractController implements InitializingBean {
     
     private ResourceService m_resourceService;
     private KscReportService m_kscReportService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView = new ModelAndView("KSC/index");
@@ -65,22 +73,47 @@ public class IndexController extends AbstractController implements InitializingB
         return modelAndView;
     }
 
+    /**
+     * <p>getResourceService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public ResourceService getResourceService() {
         return m_resourceService;
     }
 
+    /**
+     * <p>setResourceService</p>
+     *
+     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;
     }
     
+    /**
+     * <p>getKscReportService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public KscReportService getKscReportService() {
         return m_kscReportService;
     }
 
+    /**
+     * <p>setKscReportService</p>
+     *
+     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "property resourceService must be set");
         Assert.state(m_kscReportService != null, "property kscReportService must be set");

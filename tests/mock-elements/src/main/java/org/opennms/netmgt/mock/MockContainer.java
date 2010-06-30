@@ -44,20 +44,29 @@ import java.util.Map;
 import org.opennms.netmgt.model.PollStatus;
 
 /**
+ * <p>Abstract MockContainer class.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 abstract public class MockContainer extends MockElement {
 
     private Map<Object, MockElement> m_members = new HashMap<Object, MockElement>();
 
+    /**
+     * <p>Constructor for MockContainer.</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.mock.MockContainer} object.
+     */
     protected MockContainer(MockContainer parent) {
         super(parent);
     }
 
     // FIXME: generic poll listener?
+    /** {@inheritDoc} */
     public void addAnticipator(final PollAnticipator trigger) {
         MockVisitor triggerAdder = new MockVisitorAdapter() {
             public void visitService(MockService service) {
@@ -68,6 +77,12 @@ abstract public class MockContainer extends MockElement {
     }
 
     // model
+    /**
+     * <p>addMember</p>
+     *
+     * @param element a {@link org.opennms.netmgt.mock.MockElement} object.
+     * @return a {@link org.opennms.netmgt.mock.MockElement} object.
+     */
     protected MockElement addMember(MockElement element) {
         m_members.put(element.getKey(), element);
         element.setParent(this);
@@ -75,16 +90,32 @@ abstract public class MockContainer extends MockElement {
     }
 
     // model
+    /**
+     * <p>getMember</p>
+     *
+     * @param key a {@link java.lang.Object} object.
+     * @return a {@link org.opennms.netmgt.mock.MockElement} object.
+     */
     protected MockElement getMember(Object key) {
         return m_members.get(key);
     }
 
     // model
+    /**
+     * <p>getMembers</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     protected List<MockElement> getMembers() {
         return new ArrayList<MockElement>(m_members.values());
     }
 
     // stats
+    /**
+     * <p>getPollCount</p>
+     *
+     * @return a int.
+     */
     public int getPollCount() {
         class PollCounter extends MockVisitorAdapter {
             int pollCount = 0;
@@ -104,6 +135,11 @@ abstract public class MockContainer extends MockElement {
     }
 
     // FIXME: where should this live?
+    /**
+     * <p>getPollStatus</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus getPollStatus() {
         for (MockElement element : m_members.values()) {
             if (element.getPollStatus().isUp()) {
@@ -114,6 +150,7 @@ abstract public class MockContainer extends MockElement {
     }
 
     // FIXME: make a generic poll listener
+    /** {@inheritDoc} */
     public void removeAnticipator(final PollAnticipator trigger) {
         MockVisitor triggerRemover = new MockVisitorAdapter() {
             public void visitService(MockService service) {
@@ -124,12 +161,20 @@ abstract public class MockContainer extends MockElement {
     }
 
     // model
+    /**
+     * <p>removeMember</p>
+     *
+     * @param element a {@link org.opennms.netmgt.mock.MockElement} object.
+     */
     protected void removeMember(MockElement element) {
         m_members.remove(element.getKey());
         element.setParent(null);
     }
 
     // stats
+    /**
+     * <p>resetPollCount</p>
+     */
     public void resetPollCount() {
         class PollCountReset extends MockVisitorAdapter {
             public void visitService(MockService service) {
@@ -142,12 +187,18 @@ abstract public class MockContainer extends MockElement {
     }
 
     // impl
+    /** {@inheritDoc} */
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitContainer(this);
     }
 
     // impl
+    /**
+     * <p>visitMembers</p>
+     *
+     * @param v a {@link org.opennms.netmgt.mock.MockVisitor} object.
+     */
     protected void visitMembers(MockVisitor v) {
         for (MockElement element : m_members.values()) {
             element.visit(v);

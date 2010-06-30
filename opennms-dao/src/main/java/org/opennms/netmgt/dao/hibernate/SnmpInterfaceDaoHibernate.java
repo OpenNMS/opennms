@@ -35,16 +35,26 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.Assert;
 
+/**
+ * <p>SnmpInterfaceDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpInterfaceDaoHibernate extends
 		AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements
 		SnmpInterfaceDao {
 
+	/**
+	 * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
+	 */
 	public SnmpInterfaceDaoHibernate() {
 		super(OnmsSnmpInterface.class);
 	}
 	
 
 
+    /** {@inheritDoc} */
     public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
@@ -56,6 +66,7 @@ public class SnmpInterfaceDaoHibernate extends
 
 
 
+    /** {@inheritDoc} */
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");

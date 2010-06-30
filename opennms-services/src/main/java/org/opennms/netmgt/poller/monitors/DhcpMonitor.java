@@ -59,16 +59,18 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 /**
  * This class is designed to be used by the service poller framework to test the
  * availability of the DHCP service on remote interfaces as defined by RFC 2131.
- * 
+ *
  * This class relies on the DHCP API provided by JDHCP v1.1.1 (please refer to
  * <A HREF="http://www.dhcp.org/javadhcp">http://www.dhcp.org/javadhcp </A>).
- * 
+ *
  * The class implements the ServiceMonitor interface that allows it to be used
  * along with other plug-ins by the service poller framework.
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
 final public class DhcpMonitor extends IPv4Monitor {
@@ -85,15 +87,9 @@ final public class DhcpMonitor extends IPv4Monitor {
                                                         // read()
 
     /**
+     * {@inheritDoc}
+     *
      * Poll the specified address for DHCP service availability.
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availability of the interface and if a transition event
-     *         should be supressed.
-     * 
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();

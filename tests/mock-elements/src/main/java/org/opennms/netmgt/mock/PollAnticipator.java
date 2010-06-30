@@ -42,7 +42,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * <p>PollAnticipator class.</p>
+ *
  * @author brozow
+ * @version $Id: $
  */
 public class PollAnticipator {
 
@@ -51,8 +54,9 @@ public class PollAnticipator {
     List<MockService> m_unanticipatedPolls = new ArrayList<MockService>();
 
     /**
-     * @param element
-     * @return
+     * <p>anticipateAllServices</p>
+     *
+     * @param element a {@link org.opennms.netmgt.mock.MockElement} object.
      */
     public void anticipateAllServices(MockElement element) {
         /*
@@ -70,14 +74,18 @@ public class PollAnticipator {
     }
 
     /**
-     * @param svc
+     * <p>anticipatePoll</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.mock.MockService} object.
      */
     public synchronized void anticipatePoll(MockService svc) {
         m_anticipatedPolls.add(svc);
     }
 
     /**
-     * @param service
+     * <p>poll</p>
+     *
+     * @param service a {@link org.opennms.netmgt.mock.MockService} object.
      */
     public synchronized void poll(MockService service) {
 
@@ -92,13 +100,18 @@ public class PollAnticipator {
         }
     }
 
+    /**
+     * <p>reset</p>
+     */
     public synchronized void reset() {
         m_anticipatedPolls.clear();
         m_unanticipatedPolls.clear();
     }
 
     /**
-     * @return
+     * <p>unanticipatedPolls</p>
+     *
+     * @return a {@link java.util.Collection} object.
      */
     public Collection unanticipatedPolls() {
         return Collections.unmodifiableCollection(m_unanticipatedPolls);
@@ -118,6 +131,9 @@ public class PollAnticipator {
      * Waits for millis milliseconds for the anticipated polls to come. If they
      * all come in before the timeout return an empty list. Otherwise return a
      * readonly list of the services that were anticipated but not received.
+     *
+     * @param millis a long.
+     * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<MockService> waitForAnticipated(long millis) {
         long start = System.currentTimeMillis();

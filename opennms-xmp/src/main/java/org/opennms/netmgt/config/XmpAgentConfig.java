@@ -36,6 +36,12 @@
 
 package org.opennms.netmgt.config;
 
+/**
+ * <p>XmpAgentConfig class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class XmpAgentConfig {
     /**
      * The TCP port on which the agent communicates
@@ -57,34 +63,74 @@ public class XmpAgentConfig {
      */
     private int m_retry;
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
+     */
     public int getPort() {
         return m_port;
     }
 
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a int.
+     */
     public void setPort(int port) {
         m_port = port;
     }
 
+    /**
+     * <p>getAuthenUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAuthenUser() {
         return m_authenUser;
     }
 
+    /**
+     * <p>setAuthenUser</p>
+     *
+     * @param authenUser a {@link java.lang.String} object.
+     */
     public void setAuthenUser(String authenUser) {
         m_authenUser = authenUser;
     }
 
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a long.
+     */
     public long getTimeout() {
         return m_timeout;
     }
 
+    /**
+     * <p>setTimeout</p>
+     *
+     * @param timeout a long.
+     */
     public void setTimeout(long timeout) {
         m_timeout = timeout;
     }
 
+    /**
+     * <p>getRetry</p>
+     *
+     * @return a int.
+     */
     public int getRetry() {
         return m_retry;
     }
 
+    /**
+     * <p>setRetry</p>
+     *
+     * @param retries a int.
+     */
     public void setRetry(int retries) {
         m_retry = retries;
     }

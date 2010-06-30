@@ -59,6 +59,12 @@ import org.opennms.netmgt.provision.support.protocol.jmx.MBeanServerProxy;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+/**
+ * <p>JBossConnectionFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JBossConnectionFactory {
     
     //static Category log = ThreadCategory.getInstance(JBossConnectionFactory.class);
@@ -66,6 +72,13 @@ public class JBossConnectionFactory {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.utils.jmx.connectors.ConnectionFactory#getMBeanServer()
+     */
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param propertiesMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.provision.support.jmx.connectors.JBossConnectionWrapper} object.
      */
     public static JBossConnectionWrapper getMBeanServerConnection(Map<String,Object> propertiesMap, InetAddress address) {
         

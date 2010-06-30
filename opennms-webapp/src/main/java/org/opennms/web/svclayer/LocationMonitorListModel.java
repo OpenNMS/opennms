@@ -50,8 +50,11 @@ import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.springframework.validation.Errors;
 
 /**
- * 
+ * <p>LocationMonitorListModel class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class LocationMonitorListModel {
     private static final String HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.hostAddress";
@@ -60,17 +63,35 @@ public class LocationMonitorListModel {
     private Errors m_errors;
     private List<LocationMonitorModel> m_locationMonitors;
     
+    /**
+     * <p>Constructor for LocationMonitorListModel.</p>
+     */
     public LocationMonitorListModel() {
     }
 
+    /**
+     * <p>getLocationMonitors</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<LocationMonitorModel> getLocationMonitors() {
         return m_locationMonitors;
     }
 
+    /**
+     * <p>setLocationMonitors</p>
+     *
+     * @param locationMonitors a {@link java.util.List} object.
+     */
     public void setLocationMonitors(List<LocationMonitorModel> locationMonitors) {
         m_locationMonitors = locationMonitors;
     }
     
+    /**
+     * <p>addLocationMonitor</p>
+     *
+     * @param locationMonitor a {@link org.opennms.web.svclayer.LocationMonitorListModel.LocationMonitorModel} object.
+     */
     public void addLocationMonitor(LocationMonitorModel locationMonitor) {
         if (m_locationMonitors == null) {
             m_locationMonitors = new LinkedList<LocationMonitorModel>();
@@ -78,10 +99,20 @@ public class LocationMonitorListModel {
         m_locationMonitors.add(locationMonitor);
     }
 
+    /**
+     * <p>getErrors</p>
+     *
+     * @return a {@link org.springframework.validation.Errors} object.
+     */
     public Errors getErrors() {
         return m_errors;
     }
 
+    /**
+     * <p>setErrors</p>
+     *
+     * @param errors a {@link org.springframework.validation.Errors} object.
+     */
     public void setErrors(Errors errors) {
         m_errors = errors;
     }

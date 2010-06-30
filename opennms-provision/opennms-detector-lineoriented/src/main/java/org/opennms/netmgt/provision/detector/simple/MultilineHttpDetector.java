@@ -39,6 +39,12 @@ import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseVali
 import org.opennms.netmgt.provision.support.codec.MultilineHttpProtocolFactory;
 
 
+/**
+ * <p>Abstract MultilineHttpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrientedRequest, MultilineHttpResponse> {
     
     private static final String DEFAULT_SERVICE_NAME = "HTTP";
@@ -50,11 +56,20 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
     private int m_maxRetCode;
     private boolean m_checkRetCode = false;
     
+    /**
+     * <p>Constructor for MultilineHttpDetector.</p>
+     */
     public MultilineHttpDetector(){
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
         contructDefaults();
     }
     
+    /**
+     * <p>Constructor for MultilineHttpDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     public MultilineHttpDetector(String serviceName, int port) {
         super(serviceName, port);
         contructDefaults();
@@ -68,24 +83,42 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
     
     
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         send(request(httpCommand("GET")), contains(DEFAULT_SERVICE_NAME, getUrl(), isCheckRetCode(), getMaxRetCode()));
     }
     
     /**
-     * @param string
-     * @return
+     * <p>httpCommand</p>
+     *
+     * @param command a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     protected String httpCommand(String command) {
         
         return String.format("%s %s  HTTP/1.0\r\n\r\n", command, getUrl());
     }
     
+    /**
+     * <p>request</p>
+     *
+     * @param command a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     */
     protected LineOrientedRequest request(String command) {
         return new LineOrientedRequest(command);
     }
     
+    /**
+     * <p>contains</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param isCheckCode a boolean.
+     * @param maxRetCode a int.
+     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     */
     protected ResponseValidator<MultilineHttpResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
         return new ResponseValidator<MultilineHttpResponse>(){
 
@@ -102,26 +135,56 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
         };
     }
 
+    /**
+     * <p>setUrl</p>
+     *
+     * @param url a {@link java.lang.String} object.
+     */
     public void setUrl(String url) {
         m_url = url;
     }
 
+    /**
+     * <p>getUrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrl() {
         return m_url;
     }
 
+    /**
+     * <p>setMaxRetCode</p>
+     *
+     * @param maxRetCode a int.
+     */
     public void setMaxRetCode(int maxRetCode) {
         m_maxRetCode = maxRetCode;
     }
 
+    /**
+     * <p>getMaxRetCode</p>
+     *
+     * @return a int.
+     */
     public int getMaxRetCode() {
         return m_maxRetCode;
     }
 
+    /**
+     * <p>setCheckRetCode</p>
+     *
+     * @param checkRetCode a boolean.
+     */
     public void setCheckRetCode(boolean checkRetCode) {
         m_checkRetCode = checkRetCode;
     }
 
+    /**
+     * <p>isCheckRetCode</p>
+     *
+     * @return a boolean.
+     */
     public boolean isCheckRetCode() {
         return m_checkRetCode;
     }

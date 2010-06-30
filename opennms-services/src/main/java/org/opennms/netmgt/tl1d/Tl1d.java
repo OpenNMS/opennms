@@ -57,8 +57,9 @@ import org.springframework.beans.factory.InitializingBean;
 
 /**
  * OpenNMS TL1 Daemon!
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 @EventListener(name="OpenNMS:Tl1d")
 public class Tl1d extends AbstractServiceDaemon implements PausableFiber, InitializingBean {
@@ -74,12 +75,17 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
     private final BlockingQueue<Tl1AutonomousMessage> m_tl1Queue = new LinkedBlockingQueue<Tl1AutonomousMessage>();
     private final List<Tl1Client> m_tl1Clients = new ArrayList<Tl1Client>();
 
+    /**
+     * <p>Constructor for Tl1d.</p>
+     */
     public Tl1d() {
         super("OpenNMS.Tl1d");
     }
 	
     /**
-     * 
+     * <p>handleRelooadConfigurationEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleRelooadConfigurationEvent(Event e) {
@@ -140,10 +146,16 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         return isTarget;
     }
 
+    /**
+     * <p>onInit</p>
+     */
     public synchronized void onInit() {
         initializeTl1Connections();  
     }
 
+    /**
+     * <p>onStart</p>
+     */
     public synchronized void onStart() {
         log().info("onStart: Initializing Tl1d message processing." );
         
@@ -174,6 +186,9 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         log().info("startClients: clients started.");
     }
 
+	/**
+	 * <p>onStop</p>
+	 */
 	public synchronized void onStop() {
 		stopListeners();
         m_tl1MesssageProcessor.interrupt();
@@ -267,7 +282,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
 
     /**
      * Returns the current status of the service.
-     * 
+     *
      * @return The service's status.
      */
     public synchronized int getStatus() {
@@ -294,14 +309,29 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
         log().debug("doMessageProcessing: Exiting processing messages.");
     }
     
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
+    /**
+     * <p>setConfigurationDao</p>
+     *
+     * @param configurationDao a {@link org.opennms.netmgt.dao.Tl1ConfigurationDao} object.
+     */
     public void setConfigurationDao(Tl1ConfigurationDao configurationDao) {
         m_configurationDao = configurationDao;
     }

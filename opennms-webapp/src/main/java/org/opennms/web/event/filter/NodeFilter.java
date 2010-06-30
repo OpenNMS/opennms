@@ -38,14 +38,31 @@ import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
-/** Encapsulates all node filtering functionality. */
+/**
+ * Encapsulates all node filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NodeFilter extends EqualsFilter<Integer> {
+    /** Constant <code>TYPE="node"</code> */
     public static final String TYPE = "node";
 
+    /**
+     * <p>Constructor for NodeFilter.</p>
+     *
+     * @param nodeId a int.
+     */
     public NodeFilter(int nodeId) {
         super(TYPE, SQLType.INT, "EVENTS.NODEID", "node.id", nodeId);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         String nodeName = Integer.toString(getNodeId());
         try {
@@ -56,14 +73,25 @@ public class NodeFilter extends EqualsFilter<Integer> {
         return (TYPE + "=" + nodeName);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<WebEventRepository.NodeFilter: " + getDescription() + ">");
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }
