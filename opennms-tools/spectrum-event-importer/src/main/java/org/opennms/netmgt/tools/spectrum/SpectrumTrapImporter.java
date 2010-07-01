@@ -14,6 +14,7 @@ import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 
 /**
  * @author Jeff Gehlbach <jeffg@opennms.org>
@@ -21,6 +22,6 @@ import org.opennms.netmgt.xml.eventconf.Logmsg;
  *
  */
 public class SpectrumTrapImporter {
-    private Map<String,String> m_spectrumEventIdsByTrapOid;
-    
+    private static final String s_baseUei = "uei.opennms.org/import/Spectrum/";
+        
 }
