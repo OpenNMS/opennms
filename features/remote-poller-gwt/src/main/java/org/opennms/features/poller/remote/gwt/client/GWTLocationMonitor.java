@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
-import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

@@ -28,7 +28,6 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
-import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
@@ -116,11 +115,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
         m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
         m_eventBus.addHandler(GWTMarkerInfoWindowRefreshEvent.TYPE, this);
-
-        // by default, we select all statuses until the UI says otherwise
-        for (final Status s : Status.values()) {
-            m_selectedStatuses.add(s);
-        }
     }
 
     /**

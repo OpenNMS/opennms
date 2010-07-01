@@ -211,9 +211,12 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
 
     private MQAPoi createMarker(final GWTMarkerState marker) {
         final MQALatLng latLng = toMQALatLng(marker.getLatLng());
+        final MQAPoi point = (MQAPoi)MQAPoi.newInstance(latLng);
+
         final MQAIcon icon = createIcon(marker);
-        final MQAPoi point = MQAPoi.newInstance(latLng, icon);
+        point.setIcon(icon);
         point.setIconOffset(MQAPoint.newInstance(-16, -32));
+
         point.addClickHandler(new DefaultMarkerClickHandler(marker));
         point.setMaxZoomLevel(16);
         point.setMinZoomLevel(1);
@@ -311,5 +314,4 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addDomHandler(handler, ClickEvent.getType());
     }
-
 }

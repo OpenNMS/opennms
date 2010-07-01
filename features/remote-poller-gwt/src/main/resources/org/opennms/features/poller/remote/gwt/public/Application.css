@@ -51,6 +51,16 @@ button {
   background-color: #ff8888;
 }
 
+.statusDisconnected {
+  vertical-align: top;
+  background-color: #ffaa44;
+}
+
+.statusStopped {
+  vertical-align: top;
+  background-color: #aaaaaa;
+}
+
 .statusUnknown {
   vertical-align: top;
   background-color: #8888ff;

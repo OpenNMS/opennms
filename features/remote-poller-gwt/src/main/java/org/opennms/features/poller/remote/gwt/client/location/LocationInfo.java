@@ -185,7 +185,7 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 	 */
 	public StatusDetails getStatusDetails() {
 		if (m_statusDetails == null) {
-			return StatusDetails.uninitialized();
+			return StatusDetails.unknown();
 		}
 		return m_statusDetails;
 	}
