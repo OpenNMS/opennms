@@ -32,11 +32,13 @@ function runsql() {
 function runSetup() {
   runsql "CREATE SEQUENCE $PG_TXID_SEQ;"
   runsql "insert into events (eventid, eventuei, eventtime, eventsource, eventdpname, eventcreatetime, eventseverity, eventlog, eventdisplay) values (0, 'uei.opennms.org/internal/archivedEvent', now(), 'Script', 'localhost', now(), 1, 'N', 'N');"
+  runsql "UPDATE $PG_ARCH_TABLE SET eventtime = now() WHERE eventid = 0";
   runsql "CREATE TABLE $PG_ARCH_TABLE (LIKE events);"
   runsql "ALTER TABLE $PG_ARCH_TABLE ADD COLUMN txid bigint;"
   runsql "CREATE INDEX "$PG_ARCH_TABLE"_txid ON $PG_ARCH_TABLE (txid);"
   runsql "CREATE UNIQUE INDEX "$PG_ARCH_TABLE"_eventid ON $PG_ARCH_TABLE (eventid);"
   runsql "CREATE INDEX "$PG_ARCH_TABLE"_eventid_txid ON $PG_ARCH_TABLE (eventid,txid);"
+  runsql "CREATE INDEX "$PG_ARCH_TABLE"_eventtime ON $PG_ARCH_TABLE (eventtime);
 }
 
 #
