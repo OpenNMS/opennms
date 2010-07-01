@@ -7,6 +7,7 @@ import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEventHa
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselectedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEventHandler;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerInfoWindowRefreshHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
@@ -26,6 +27,7 @@ public interface RemotePollerPresenter extends MapPanelBoundsChangedEventHandler
 		TagClearedEventHandler,
 		StatusSelectionChangedEventHandler,
 		GWTMarkerClickedEventHandler,
+		GWTMarkerInfoWindowRefreshHandler,
 		ApplicationDeselectedEventHandler,
 		ApplicationSelectedEventHandler
 {

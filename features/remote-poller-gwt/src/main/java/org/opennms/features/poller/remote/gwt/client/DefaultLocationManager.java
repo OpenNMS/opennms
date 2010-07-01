@@ -20,6 +20,7 @@ import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselecte
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationDetailsRetrievedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerInfoWindowRefreshEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
@@ -102,6 +103,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_eventBus.addHandler(ApplicationDeselectedEvent.TYPE, this);
         m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
         m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
+        m_eventBus.addHandler(GWTMarkerInfoWindowRefreshEvent.TYPE, this);
 
         // by default, we select all statuses until the UI says otherwise
         for (final Status s : Status.values()) {
@@ -471,6 +473,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         GWTMarkerState markerState = event.getMarkerState();
         showLocationDetails(markerState.getName());
     }
+    
+    public void onGWTMarkerInfoWindowRefresh(GWTMarkerInfoWindowRefreshEvent event) {
+        refreshLocationInfoWindowDetails(event.getMarkerState().getName());
+    }
+
+    private void refreshLocationInfoWindowDetails(String name) {
+        showLocationDetails(name);
+    }
 
     public void onStatusSelectionChanged(Status status, boolean selected) {
         if (selected) {
@@ -596,4 +606,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         sb.append("</div>");
         return sb.toString();
     }
+
+    
 }
