@@ -39,10 +39,17 @@ import org.opennms.netmgt.model.ResourceReference;
 
 /**
  * DAO for accessing ResourceReference objects.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see ResourceReference
+ * @version $Id: $
  */
 public interface ResourceReferenceDao extends OnmsDao<ResourceReference, Integer> {
+    /**
+     * <p>getByResourceId</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.ResourceReference} object.
+     */
     public ResourceReference getByResourceId(String resourceId);
 }

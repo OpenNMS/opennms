@@ -41,15 +41,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
+ * <p>ResourceTypeFilteringResourceVisitor class.</p>
+ *
  * @author <a href="dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class ResourceTypeFilteringResourceVisitor implements ResourceVisitor, InitializingBean {
     private ResourceVisitor m_delegatedVisitor;
     private String m_resourceTypeMatch;
 
-    /**
-     * @see org.opennms.netmgt.model.ResourceVisitor#visit(org.opennms.netmgt.model.OnmsResource)
-     */
+    /** {@inheritDoc} */
     public void visit(OnmsResource resource) {
         if (m_resourceTypeMatch.equals(resource.getResourceType().getName())) {
             m_delegatedVisitor.visit(resource);
@@ -57,6 +58,8 @@ public class ResourceTypeFilteringResourceVisitor implements ResourceVisitor, In
     }
 
     /**
+     * <p>afterPropertiesSet</p>
+     *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet() {
@@ -64,18 +67,38 @@ public class ResourceTypeFilteringResourceVisitor implements ResourceVisitor, In
         Assert.state(m_resourceTypeMatch != null, "property resourceTypeMatch must be set to a non-null value");
     }
 
+    /**
+     * <p>getDelegatedVisitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.ResourceVisitor} object.
+     */
     public ResourceVisitor getDelegatedVisitor() {
         return m_delegatedVisitor;
     }
 
+    /**
+     * <p>setDelegatedVisitor</p>
+     *
+     * @param delegatedVisitor a {@link org.opennms.netmgt.model.ResourceVisitor} object.
+     */
     public void setDelegatedVisitor(ResourceVisitor delegatedVisitor) {
         m_delegatedVisitor = delegatedVisitor;
     }
 
+    /**
+     * <p>getResourceTypeMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeMatch() {
         return m_resourceTypeMatch;
     }
 
+    /**
+     * <p>setResourceTypeMatch</p>
+     *
+     * @param resourceTypeMatch a {@link java.lang.String} object.
+     */
     public void setResourceTypeMatch(String resourceTypeMatch) {
         m_resourceTypeMatch = resourceTypeMatch;
     }

@@ -43,8 +43,17 @@ import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 
+/**
+ * <p>Threshd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
 
+    /**
+     * <p>Constructor for Threshd.</p>
+     */
     public Threshd() {
         super(NAME);
     }
@@ -54,6 +63,9 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
      */
     private final static String NAME = "OpenNMS.Threshd";
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
         // Load threshd configuration file
         //
@@ -97,14 +109,25 @@ public class Threshd extends AbstractServiceDaemon implements ThreshdMBean {
         return org.opennms.netmgt.threshd.Threshd.getInstance();
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         getInstance().start();
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         getInstance().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return getInstance().getStatus();
     }

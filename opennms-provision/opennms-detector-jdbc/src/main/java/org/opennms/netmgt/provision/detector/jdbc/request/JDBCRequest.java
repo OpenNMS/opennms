@@ -37,11 +37,14 @@ import java.sql.SQLException;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
 
 /**
- * @author thedesloge
+ * <p>JDBCRequest class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class JDBCRequest {
     
+    /** Constant <code>Null</code> */
     public static final JDBCRequest Null = new JDBCRequest() {
         @Override
         public JDBCResponse send(Connection conn) throws SQLException {
@@ -53,10 +56,17 @@ public class JDBCRequest {
     private String m_schema = "test";
     
     /**
-     * @param object
+     * <p>Constructor for JDBCRequest.</p>
      */
     public JDBCRequest() {}
 
+    /**
+     * <p>send</p>
+     *
+     * @param conn a {@link java.sql.Connection} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse} object.
+     * @throws java.sql.SQLException if any.
+     */
     public JDBCResponse send(Connection conn) throws SQLException {
         if(getStoredProcedure() != null){
             
@@ -72,18 +82,38 @@ public class JDBCRequest {
         return null;
     }
 
+    /**
+     * <p>setStoredProcedure</p>
+     *
+     * @param storedProcedure a {@link java.lang.String} object.
+     */
     public void setStoredProcedure(String storedProcedure) {
         m_storedProcedure = storedProcedure;
     }
 
+    /**
+     * <p>getStoredProcedure</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStoredProcedure() {
         return m_storedProcedure;
     }
 
+    /**
+     * <p>setSchema</p>
+     *
+     * @param schema a {@link java.lang.String} object.
+     */
     public void setSchema(String schema) {
         m_schema = schema;
     }
 
+    /**
+     * <p>getSchema</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSchema() {
         return m_schema;
     }

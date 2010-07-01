@@ -38,14 +38,31 @@ import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
-/** Encapsulates all node filtering functionality. */
+/**
+ * Encapsulates all node filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
+    /** Constant <code>TYPE="nodenot"</code> */
     public static final String TYPE = "nodenot";
 
+    /**
+     * <p>Constructor for NegativeNodeFilter.</p>
+     *
+     * @param nodeId a int.
+     */
     public NegativeNodeFilter(int nodeId) {
         super(TYPE, SQLType.INT, "NODEID", "node.id", nodeId);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         String nodeName = Integer.toString(getValue());
         try {
@@ -56,14 +73,25 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
         return ("node is not " + nodeName);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.NegativeNodeFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

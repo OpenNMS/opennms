@@ -14,6 +14,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * <p>RequisitionCategory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="")
 @XmlRootElement(name="category")
@@ -22,17 +28,35 @@ public class RequisitionCategory {
     @XmlAttribute(name="name", required=true)
     protected String m_name;
 
+    /**
+     * <p>Constructor for RequisitionCategory.</p>
+     */
     public RequisitionCategory() {
     }
 
+    /**
+     * <p>Constructor for RequisitionCategory.</p>
+     *
+     * @param category a {@link java.lang.String} object.
+     */
     public RequisitionCategory(String category) {
         m_name = category;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
     public void setName(String value) {
         m_name = value;
     }

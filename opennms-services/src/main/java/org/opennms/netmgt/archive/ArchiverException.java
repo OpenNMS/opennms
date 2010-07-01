@@ -39,17 +39,28 @@ package org.opennms.netmgt.archive;
  * The ArchiverException is thrown by the database archvier. The message in the
  * exception should provide the reason
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class ArchiverException extends Exception {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * <p>Constructor for ArchiverException.</p>
+     */
     public ArchiverException() {
         super();
     }
 
+    /**
+     * <p>Constructor for ArchiverException.</p>
+     *
+     * @param s a {@link java.lang.String} object.
+     */
     public ArchiverException(String s) {
         super(s);
     }

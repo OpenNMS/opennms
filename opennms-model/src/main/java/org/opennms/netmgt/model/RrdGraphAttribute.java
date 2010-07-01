@@ -39,6 +39,12 @@ package org.opennms.netmgt.model;
 import java.io.File;
 
 
+/**
+ * <p>RrdGraphAttribute class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class RrdGraphAttribute implements OnmsAttribute {
 
 	private String m_name;
@@ -46,24 +52,40 @@ public class RrdGraphAttribute implements OnmsAttribute {
     private String m_rrdFile;
     private OnmsResource m_resource;
     
+    /**
+     * <p>Constructor for RrdGraphAttribute.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param relativePath a {@link java.lang.String} object.
+     * @param rrdFile a {@link java.lang.String} object.
+     */
     public RrdGraphAttribute(String name, String relativePath, String rrdFile) {
         m_name = name;
         m_relativePath = relativePath;
         m_rrdFile = rrdFile;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
     /**
      * Retrieve the resource for this attribute.
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
     public OnmsResource getResource() {
         return m_resource;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Set the resource for this attribute.  This is called
      * when the attribute is added to a resource.
      */
@@ -71,10 +93,16 @@ public class RrdGraphAttribute implements OnmsAttribute {
         m_resource = resource;
     }
 
+    /**
+     * <p>getRrdRelativePath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRrdRelativePath() {
         return m_relativePath + File.separator + m_rrdFile;
     }
     
+    /** {@inheritDoc} */
     @Override
 	public String toString() {
     	return ""+m_resource + '.' + m_name;

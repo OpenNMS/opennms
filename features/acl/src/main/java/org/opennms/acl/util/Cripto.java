@@ -39,12 +39,19 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Util class to encript a password
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class Cripto {
 
+    /**
+     * <p>stringToSHA</p>
+     *
+     * @param buffer a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String stringToSHA(String buffer) {
         try {
             MessageDigest shaDigest = MessageDigest.getInstance(Constants.ALGORITHM_SHA);

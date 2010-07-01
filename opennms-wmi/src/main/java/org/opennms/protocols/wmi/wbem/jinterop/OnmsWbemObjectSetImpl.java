@@ -42,13 +42,30 @@ import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
 
+/**
+ * <p>OnmsWbemObjectSetImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsWbemObjectSetImpl implements OnmsWbemObjectSet {
     private IJIDispatch wbemObjectSet;
 
+    /**
+     * <p>Constructor for OnmsWbemObjectSetImpl.</p>
+     *
+     * @param wbemObjectSet a {@link org.jinterop.dcom.impls.automation.IJIDispatch} object.
+     */
     public OnmsWbemObjectSetImpl(IJIDispatch wbemObjectSet) {
         this.wbemObjectSet = wbemObjectSet;
     }
 
+    /**
+     * <p>count</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Integer count() throws WmiException {
         try {
             JIVariant Count = wbemObjectSet.get("Count");
@@ -58,6 +75,7 @@ public class OnmsWbemObjectSetImpl implements OnmsWbemObjectSet {
         }
     }
 
+    /** {@inheritDoc} */
     public OnmsWbemObject get(Integer idx) throws WmiException {
         try {
             IJIComObject enumComObject = wbemObjectSet.get("_NewEnum").getObjectAsComObject();

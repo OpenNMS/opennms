@@ -39,5 +39,11 @@ package org.opennms.netmgt.passive.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>PassiveStatusdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface PassiveStatusdMBean extends BaseOnmsMBean {
 }

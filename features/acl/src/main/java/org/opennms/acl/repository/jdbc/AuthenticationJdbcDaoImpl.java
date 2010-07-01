@@ -46,13 +46,16 @@ import org.springframework.security.userdetails.jdbc.JdbcDaoImpl;
 
 /**
  * Used by Spring security to perform authentication
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class AuthenticationJdbcDaoImpl extends JdbcDaoImpl {
 
     /**
+     * {@inheritDoc}
+     *
      * Load the user detail in the authentication phase
      */
     public UserDetails loadUserByUsername(String username) {

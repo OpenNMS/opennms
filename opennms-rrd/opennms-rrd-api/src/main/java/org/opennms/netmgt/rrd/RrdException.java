@@ -42,8 +42,9 @@ package org.opennms.netmgt.rrd;
 /**
  * This exception indicates an error has occurred creating, updating, or
  * fetching data from an Rrd file
- * 
+ *
  * @author brozow
+ * @version $Id: $
  */
 public class RrdException extends Exception {
 
@@ -53,7 +54,7 @@ public class RrdException extends Exception {
     private static final long serialVersionUID = 5251168945484451493L;
 
     /**
-     * 
+     * <p>Constructor for RrdException.</p>
      */
     public RrdException() {
         super();
@@ -61,7 +62,9 @@ public class RrdException extends Exception {
     }
 
     /**
-     * @param message
+     * <p>Constructor for RrdException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
      */
     public RrdException(String message) {
         super(message);
@@ -69,8 +72,10 @@ public class RrdException extends Exception {
     }
 
     /**
-     * @param message
-     * @param cause
+     * <p>Constructor for RrdException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
      */
     public RrdException(String message, Throwable cause) {
         super(message, cause);
@@ -78,7 +83,9 @@ public class RrdException extends Exception {
     }
 
     /**
-     * @param cause
+     * <p>Constructor for RrdException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
      */
     public RrdException(Throwable cause) {
         super(cause);

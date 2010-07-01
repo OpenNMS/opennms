@@ -42,18 +42,32 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Transactional boundary for processing acknowledgments
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="makilto:jeffg@opennms.org">Jeff Gehlbach</a>
- * 
- * Acknowledgment 
- * 
+ *
+ * Acknowledgment
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="makilto:jeffg@opennms.org">Jeff Gehlbach</a>
+ *
+ * Acknowledgment
+ * @version $Id: $
  */
 public interface AckService {
 
+    /**
+     * <p>processAck</p>
+     *
+     * @param ack a {@link org.opennms.netmgt.model.OnmsAcknowledgment} object.
+     */
     @Transactional(readOnly=false)
     void processAck(OnmsAcknowledgment ack);
     
+    /**
+     * <p>processAcks</p>
+     *
+     * @param acks a {@link java.util.Collection} object.
+     */
     @Transactional(readOnly=false)
     void processAcks(Collection<OnmsAcknowledgment> acks);
 

@@ -40,16 +40,29 @@ import org.opennms.protocols.rt.RequestLocator;
  * MatchingRequestLocator
  *
  * @author brozow
+ * @version $Id: $
  */
 public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, MobileMsgResponse> {
     
     private final Set<MobileMsgRequest> m_requests = new CopyOnWriteArraySet<MobileMsgRequest>();
 
+    /**
+     * <p>trackRequest</p>
+     *
+     * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+     * @return a boolean.
+     */
     public boolean trackRequest(MobileMsgRequest request) {
         m_requests.add(request);
         return true;
     }
 
+    /**
+     * <p>locateMatchingRequest</p>
+     *
+     * @param response a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponse} object.
+     * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+     */
     public MobileMsgRequest locateMatchingRequest(MobileMsgResponse response) {
         for(MobileMsgRequest request : m_requests) {
             
@@ -61,10 +74,21 @@ public class MatchingRequestLocator implements RequestLocator<MobileMsgRequest, 
         return null;
     }
     
+    /**
+     * <p>requestTimedOut</p>
+     *
+     * @param timedOutRequest a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+     * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+     */
     public MobileMsgRequest requestTimedOut(MobileMsgRequest timedOutRequest) {
         return m_requests.remove(timedOutRequest) ? timedOutRequest : null;
     }
 
+    /**
+     * <p>requestComplete</p>
+     *
+     * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+     */
     public void requestComplete(MobileMsgRequest request) {
         m_requests.remove(request);
     }

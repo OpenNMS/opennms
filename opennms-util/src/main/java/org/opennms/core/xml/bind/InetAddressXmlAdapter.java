@@ -39,14 +39,17 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  * InetAddresssXmlAdapter
  *
  * @author brozow
+ * @version $Id: $
  */
 public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
 
+    /** {@inheritDoc} */
     @Override
     public String marshal(InetAddress inetAddr) throws Exception {
         return inetAddr.getHostAddress();
     }
 
+    /** {@inheritDoc} */
     @Override
     public InetAddress unmarshal(String ipAddr) throws Exception {
         return InetAddress.getByName(ipAddr);

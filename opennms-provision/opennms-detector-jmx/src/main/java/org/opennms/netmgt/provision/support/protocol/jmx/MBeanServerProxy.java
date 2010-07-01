@@ -42,6 +42,12 @@ import java.lang.reflect.Proxy;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 
+/**
+ * <p>MBeanServerProxy class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MBeanServerProxy implements InvocationHandler {
 
     private Object remoteServer;
@@ -49,12 +55,25 @@ public class MBeanServerProxy implements InvocationHandler {
     private static final Class<?>[] INTERFACES = { MBeanServer.class };
 
 
-    /** Creates a new instance of Proxy */
+    /**
+     * Creates a new instance of Proxy
+     *
+     * @param remoteServer a {@link java.lang.Object} object.
+     */
     public MBeanServerProxy(Object remoteServer) {
         this.remoteServer = remoteServer;
     }
 
 
+    /**
+     * <p>invoke</p>
+     *
+     * @param proxy a {@link java.lang.Object} object.
+     * @param m a {@link java.lang.reflect.Method} object.
+     * @param args an array of {@link java.lang.Object} objects.
+     * @return a {@link java.lang.Object} object.
+     * @throws java.lang.Throwable if any.
+     */
     public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
 
         Class<?> serverClass = this.remoteServer.getClass();
@@ -66,6 +85,12 @@ public class MBeanServerProxy implements InvocationHandler {
        }
     }
 
+    /**
+     * <p>buildServerProxy</p>
+     *
+     * @param server a {@link java.lang.Object} object.
+     * @return a {@link javax.management.MBeanServer} object.
+     */
     public static MBeanServer buildServerProxy(Object server) {
 
         Object proxy =

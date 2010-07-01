@@ -39,31 +39,61 @@
 
 package org.opennms.netmgt.scriptd.jmx;
 
+/**
+ * <p>Scriptd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Scriptd implements ScriptdMBean {
+    /**
+     * <p>init</p>
+     */
     public void init() {
         org.opennms.netmgt.scriptd.Scriptd scriptd = org.opennms.netmgt.scriptd.Scriptd.getInstance();
         scriptd.init();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         org.opennms.netmgt.scriptd.Scriptd scriptd = org.opennms.netmgt.scriptd.Scriptd.getInstance();
         scriptd.start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         org.opennms.netmgt.scriptd.Scriptd scriptd = org.opennms.netmgt.scriptd.Scriptd.getInstance();
         scriptd.stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         org.opennms.netmgt.scriptd.Scriptd scriptd = org.opennms.netmgt.scriptd.Scriptd.getInstance();
         return scriptd.getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

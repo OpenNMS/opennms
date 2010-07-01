@@ -39,17 +39,48 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 /**
- * @author brozow
+ * <p>Client interface.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public interface Client<Request, Response> {
     
+    /**
+     * <p>connect</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @param <Request> a Request object.
+     * @param <Response> a Response object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception;
     
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a Response object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     Response receiveBanner() throws IOException, Exception;
     
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a Request object.
+     * @return a Response object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     Response sendRequest(Request request) throws IOException, Exception; 
     
+    /**
+     * <p>close</p>
+     */
     public void close();
 
 }

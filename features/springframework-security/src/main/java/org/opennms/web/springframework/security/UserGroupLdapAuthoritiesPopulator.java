@@ -36,6 +36,8 @@ import org.springframework.util.Assert;
 
 
 /**
+ * <p>UserGroupLdapAuthoritiesPopulator class.</p>
+ *
  * @author Luke Taylor
  * @version $Id: DefaultLdapAuthoritiesPopulator.java 3260 2008-08-26 12:38:02Z luke_t $
  */
@@ -97,11 +99,10 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
     //~ Methods ========================================================================================================
 
     /**
+     * {@inheritDoc}
+     *
      * Obtains the authorities for the user who's directory entry is represented by
      * the supplied LdapUserDetails object.
-     *
-     * @param user the user who's authorities are required
-     * @return the set of roles granted to the user.
      */
     public final GrantedAuthority[] getGrantedAuthorities(DirContextOperations user, String username) {
         String userDn = user.getNameInNamespace();
@@ -120,6 +121,13 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         return (GrantedAuthority[]) roles.toArray(new GrantedAuthority[roles.size()]);
     }
 
+    /**
+     * <p>getGroupMembershipRoles</p>
+     *
+     * @param userDn a {@link java.lang.String} object.
+     * @param username a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
     @SuppressWarnings("unchecked")
 	public Set<GrantedAuthority> getGroupMembershipRoles(String userDn, String username) {
         Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
@@ -149,6 +157,12 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         return authorities;
     }
     
+    /**
+     * <p>getRolesFromGroups</p>
+     *
+     * @param groups a {@link java.util.Set} object.
+     * @return a {@link java.util.Set} object.
+     */
     protected Set<String> getRolesFromGroups(Set<String> groups) {
          
         Set<String> roles = new HashSet<String>();
@@ -168,6 +182,11 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         
     }
 
+    /**
+     * <p>getContextSource</p>
+     *
+     * @return a {@link org.springframework.ldap.core.ContextSource} object.
+     */
     protected ContextSource getContextSource() {
         return ldapTemplate.getContextSource();
     }
@@ -186,10 +205,20 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         }
     }
 
+    /**
+     * <p>Getter for the field <code>groupSearchBase</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected String getGroupSearchBase() {
         return groupSearchBase;
     }
     
+    /**
+     * <p>Setter for the field <code>groupToRoleMap</code>.</p>
+     *
+     * @param groupToRoleMap a {@link java.util.Map} object.
+     */
     public void setGroupToRoleMap(Map<String, List<String>> groupToRoleMap) {
         this.groupToRoleMap = groupToRoleMap;
     }
@@ -204,11 +233,21 @@ public class UserGroupLdapAuthoritiesPopulator implements LdapAuthoritiesPopulat
         this.defaultRole = new GrantedAuthorityImpl(defaultRole);
     }
 
+    /**
+     * <p>Setter for the field <code>groupRoleAttribute</code>.</p>
+     *
+     * @param groupRoleAttribute a {@link java.lang.String} object.
+     */
     public void setGroupRoleAttribute(String groupRoleAttribute) {
         Assert.notNull(groupRoleAttribute, "groupRoleAttribute must not be null");
         this.groupRoleAttribute = groupRoleAttribute;
     }
 
+    /**
+     * <p>Setter for the field <code>groupSearchFilter</code>.</p>
+     *
+     * @param groupSearchFilter a {@link java.lang.String} object.
+     */
     public void setGroupSearchFilter(String groupSearchFilter) {
         Assert.notNull(groupSearchFilter, "groupSearchFilter must not be null");
         this.groupSearchFilter = groupSearchFilter;

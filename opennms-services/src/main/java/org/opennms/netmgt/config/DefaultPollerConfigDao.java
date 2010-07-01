@@ -46,8 +46,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultPollerConfigDao class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class DefaultPollerConfigDao implements InitializingBean {
     private Resource m_configResource;
@@ -56,9 +58,17 @@ public class DefaultPollerConfigDao implements InitializingBean {
     
     private PollerConfig m_pollerConfig;
     
+    /**
+     * <p>Constructor for DefaultPollerConfigDao.</p>
+     */
     public DefaultPollerConfigDao() {
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_configResource != null, "property configResource must be set to a non-null value");
         Assert.state(m_localServer != null, "property localServer must be set to a non-null value");
@@ -93,6 +103,11 @@ public class DefaultPollerConfigDao implements InitializingBean {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getPollerConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.PollerConfig} object.
+     */
     public PollerConfig getPollerConfig() {
         return m_pollerConfig;
     }
@@ -101,26 +116,56 @@ public class DefaultPollerConfigDao implements InitializingBean {
         m_pollerConfig = pollerConfig;
     }
 
+    /**
+     * <p>getConfigResource</p>
+     *
+     * @return a {@link org.springframework.core.io.Resource} object.
+     */
     public Resource getConfigResource() {
         return m_configResource;
     }
 
+    /**
+     * <p>setConfigResource</p>
+     *
+     * @param configResource a {@link org.springframework.core.io.Resource} object.
+     */
     public void setConfigResource(Resource configResource) {
         m_configResource = configResource;
     }
 
+    /**
+     * <p>getLocalServer</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLocalServer() {
         return m_localServer;
     }
 
+    /**
+     * <p>setLocalServer</p>
+     *
+     * @param localServer a {@link java.lang.String} object.
+     */
     public void setLocalServer(String localServer) {
         m_localServer = localServer;
     }
 
+    /**
+     * <p>isVerifyServer</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean isVerifyServer() {
         return m_verifyServer;
     }
 
+    /**
+     * <p>setVerifyServer</p>
+     *
+     * @param verifyServer a {@link java.lang.Boolean} object.
+     */
     public void setVerifyServer(Boolean verifyServer) {
         m_verifyServer = verifyServer;
     }

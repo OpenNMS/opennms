@@ -48,6 +48,11 @@ final class MergeableRange implements Comparable<Range> {
     private final MergeableSpecific m_first;
     private final MergeableSpecific m_last;
     
+    /**
+     * <p>Constructor for MergeableRange.</p>
+     *
+     * @param range a {@link org.opennms.netmgt.config.common.Range} object.
+     */
     public MergeableRange(Range range) {
         m_range = range;
         m_comparator = new RangeComparator();
@@ -60,10 +65,17 @@ final class MergeableRange implements Comparable<Range> {
      * (non-Javadoc)
      * @see java.lang.Comparable#compareTo(T)
      */
+    /**
+     * <p>compareTo</p>
+     *
+     * @param range a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a int.
+     */
     public int compareTo(Range range) {
         return m_comparator.compare(getRange(), range);
     }
     
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         boolean equals = false;
         
@@ -75,10 +87,21 @@ final class MergeableRange implements Comparable<Range> {
         return equals;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return 0;
     }
 
+    /**
+     * <p>equals</p>
+     *
+     * @param range a {@link org.opennms.netmgt.config.MergeableRange} object.
+     * @return a boolean.
+     */
     public boolean equals(MergeableRange range) {
         boolean equals = false;
         
@@ -88,16 +111,33 @@ final class MergeableRange implements Comparable<Range> {
         return equals;
     }
     
+    /**
+     * <p>equals</p>
+     *
+     * @param range a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a boolean.
+     */
     public boolean equals(Range range) {
         return equals(new MergeableRange(range));
     }
     
+    /**
+     * <p>getRange</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.common.Range} object.
+     */
     public Range getRange() {
         synchronized (m_range) {
             return m_range;
         }        
     }
     
+    /**
+     * <p>coversSpecific</p>
+     *
+     * @param spec a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean coversSpecific(String spec) {
         boolean covers = false;
         
@@ -107,6 +147,12 @@ final class MergeableRange implements Comparable<Range> {
         return covers;
     }
 
+    /**
+     * <p>overlapsBegin</p>
+     *
+     * @param rng a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a boolean.
+     */
     public boolean overlapsBegin(Range rng) {
         boolean overlaps = false;
         if (m_first.compareTo(rng.getBegin()) < 0 
@@ -117,6 +163,12 @@ final class MergeableRange implements Comparable<Range> {
         return overlaps;
     }
     
+    /**
+     * <p>withInRange</p>
+     *
+     * @param rng a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a boolean.
+     */
     public boolean withInRange(Range rng) {
         boolean within = false;
         
@@ -126,6 +178,12 @@ final class MergeableRange implements Comparable<Range> {
         return within;
     }
     
+    /**
+     * <p>overlapsEnd</p>
+     *
+     * @param rng a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a boolean.
+     */
     public boolean overlapsEnd(Range rng) {
         boolean overlaps = false;
         
@@ -137,6 +195,12 @@ final class MergeableRange implements Comparable<Range> {
         return overlaps;
     }
 
+    /**
+     * <p>eclipses</p>
+     *
+     * @param rng a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a boolean.
+     */
     public boolean eclipses(Range rng) {
         boolean eclipses = false;
         
@@ -146,6 +210,12 @@ final class MergeableRange implements Comparable<Range> {
         return eclipses;
     }
 
+    /**
+     * <p>isAdjacentToBegin</p>
+     *
+     * @param nextRange a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a boolean.
+     */
     public boolean isAdjacentToBegin(Range nextRange) {
         boolean adjacent = false;
         
@@ -155,6 +225,12 @@ final class MergeableRange implements Comparable<Range> {
         return adjacent;
     }
     
+    /**
+     * <p>isAdjacentToEnd</p>
+     *
+     * @param nextRange a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a boolean.
+     */
     public boolean isAdjacentToEnd(Range nextRange) {
         boolean adjacent = false;
         
@@ -168,9 +244,9 @@ final class MergeableRange implements Comparable<Range> {
      * Changes the current Range by moving the end before the specific and
      * creates a new range to the right of the specific ending with the
      * current Range's end address.
-     * 
-     * @param rng
+     *
      * @return a new Range to be added to Definition
+     * @param spec a {@link java.lang.String} object.
      */
     protected Range removeSpecificFromRange(final String spec) {
         
@@ -195,6 +271,8 @@ final class MergeableRange implements Comparable<Range> {
     }
         
     /**
+     * <p>getComparator</p>
+     *
      * @return the comparator
      */
     public RangeComparator getComparator() {
@@ -202,6 +280,8 @@ final class MergeableRange implements Comparable<Range> {
     }
 
     /**
+     * <p>getFirst</p>
+     *
      * @return the first
      */
     public MergeableSpecific getFirst() {
@@ -209,6 +289,8 @@ final class MergeableRange implements Comparable<Range> {
     }
 
     /**
+     * <p>getLast</p>
+     *
      * @return the last
      */
     public MergeableSpecific getLast() {

@@ -40,6 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>AckAction class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public enum AckAction {
     UNSPECIFIED(1, "Unspecified"),
     ACKNOWLEDGE(2, "Acknowledge"),
@@ -47,6 +53,7 @@ public enum AckAction {
     ESCALATE(4, "Escalate"),
     CLEAR(5, "Clear");
     
+    /** Constant <code>m_idMap</code> */
     private static final Map<Integer, AckAction> m_idMap; 
     private static final List<Integer> m_ids;
 
@@ -73,11 +80,18 @@ public enum AckAction {
         return m_id;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return m_label;
     }
     
+    /**
+     * <p>get</p>
+     *
+     * @param id a int.
+     * @return a {@link org.opennms.netmgt.model.AckAction} object.
+     */
     public static AckAction get(int id) {
         if (m_idMap.containsKey(id)) {
             return m_idMap.get(id);

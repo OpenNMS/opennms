@@ -43,6 +43,13 @@ import org.opennms.web.svclayer.outage.OutageTable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.UrlFilenameViewController;
 
+/**
+ * <p>OutageResolvedController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OutageResolvedController extends UrlFilenameViewController {
     
         private String m_successView;
@@ -51,11 +58,17 @@ public class OutageResolvedController extends UrlFilenameViewController {
         
         private OutageTable m_outageTable = new OutageTable();
         
+        /**
+         * <p>setOutageService</p>
+         *
+         * @param service a {@link org.opennms.web.svclayer.outage.OutageService} object.
+         */
         public void setOutageService(OutageService service) {
                 m_outageService = service;
         }
 
         
+        /** {@inheritDoc} */
         protected ModelAndView handleRequestInternal(HttpServletRequest request,
                 HttpServletResponse reply) {
             
@@ -67,10 +80,20 @@ public class OutageResolvedController extends UrlFilenameViewController {
             
         }
         
+        /**
+         * <p>setSuccessView</p>
+         *
+         * @param successView a {@link java.lang.String} object.
+         */
         public void setSuccessView(String successView) {
             m_successView = successView;
         }
 
+        /**
+         * <p>getSuccessView</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String getSuccessView() {
             return m_successView;
         }

@@ -38,8 +38,16 @@ package org.opennms.web.svclayer;
 import org.springframework.binding.convert.converters.StringToDate;
 import org.springframework.binding.convert.service.DefaultConversionService;
 
+/**
+ * <p>ApplicationConversionService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ApplicationConversionService extends DefaultConversionService {
 
+    /** {@inheritDoc} */
     @Override
     protected void addDefaultConverters() {
     super.addDefaultConverters();

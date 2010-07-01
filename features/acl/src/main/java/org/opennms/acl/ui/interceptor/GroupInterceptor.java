@@ -46,12 +46,14 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * Interceptor to put a Group in the request
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class GroupInterceptor extends HandlerInterceptorAdapter {
 
+    /** {@inheritDoc} */
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
         Integer gid = ServletRequestUtils.getIntParameter(req, Constants.GROUP_ID, 0);

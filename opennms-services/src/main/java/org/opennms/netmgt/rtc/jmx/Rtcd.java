@@ -34,27 +34,57 @@
 
 package org.opennms.netmgt.rtc.jmx;
 
+/**
+ * <p>Rtcd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Rtcd implements RtcdMBean {
+    /**
+     * <p>init</p>
+     */
     public void init() {
         org.opennms.netmgt.rtc.RTCManager.getInstance().init();
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         org.opennms.netmgt.rtc.RTCManager.getInstance().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         org.opennms.netmgt.rtc.RTCManager.getInstance().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return org.opennms.netmgt.rtc.RTCManager.getInstance().getStatus();
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

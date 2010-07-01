@@ -39,11 +39,20 @@ import java.util.Collection;
 import org.opennms.web.svclayer.catstatus.model.StatusSection;
 
 /**
+ * <p>CategoryStatusService interface.</p>
+ *
  * @author <a href="mailto:jason.aras@opennms.org">Jason Aras</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public interface CategoryStatusService {
 
 	
+	/**
+	 * <p>getCategoriesStatus</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<StatusSection> getCategoriesStatus();
 	
 	

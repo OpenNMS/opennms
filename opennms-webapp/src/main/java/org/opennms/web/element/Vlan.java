@@ -38,8 +38,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 
+ * <p>Vlan class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class Vlan
 {
@@ -97,6 +100,11 @@ public class Vlan
                 m_status = status;
         }
 
+        /**
+         * <p>toString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String toString()
         {
                 StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n" );
@@ -108,30 +116,46 @@ public class Vlan
 
 
 		/**
-		 * @return
+		 * <p>getLastPollTime</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String getLastPollTime() {
 			return m_lastPollTime;
 		}
 
 		/**
-		 * @return
+		 * <p>getNodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int getNodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>getStatus</p>
+		 *
+		 * @return a char.
 		 */
 		public char getStatus() {
 			return m_status;
 		}
 
+	    /**
+	     * <p>getStatusString</p>
+	     *
+	     * @return a {@link java.lang.String} object.
+	     */
 	    public String getStatusString() {
 	        return( (String)statusMap.get( new Character(m_status) ));
 	    }
 
+	    /**
+	     * <p>getVlanColorIdentifier</p>
+	     *
+	     * @return a {@link java.lang.String} object.
+	     */
 	    public String getVlanColorIdentifier() {
 	        int red = 128;
 	        int green = 128;
@@ -150,26 +174,56 @@ public class Vlan
 	        return "#"+Integer.toHexString(red)+Integer.toHexString(green)+Integer.toHexString(blue);
 	    }
 
+		/**
+		 * <p>getVlanId</p>
+		 *
+		 * @return a int.
+		 */
 		public int getVlanId() {
 			return m_vlanId;
 		}
 
+		/**
+		 * <p>getVlanName</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String getVlanName() {
 			return m_vlanname;
 		}
 
+		/**
+		 * <p>getVlanStatus</p>
+		 *
+		 * @return a int.
+		 */
 		public int getVlanStatus() {
 			return m_vlanstatus;
 		}
 
+		/**
+		 * <p>getVlanStatusString</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String getVlanStatusString() {
 			return VLAN_STATUS[m_vlanstatus];
 		}
 		
+		/**
+		 * <p>getVlanType</p>
+		 *
+		 * @return a int.
+		 */
 		public int getVlanType() {
 			return m_vlantype;
 		}
 		
+		/**
+		 * <p>getVlanTypeString</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String getVlanTypeString() {
 			return VLAN_TYPE[m_vlantype];
 		}

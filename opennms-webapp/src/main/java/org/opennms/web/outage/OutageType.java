@@ -5,12 +5,20 @@ import java.util.Map;
 
 import org.springframework.util.Assert;
 
+/**
+ * <p>OutageType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public enum OutageType {
     CURRENT("current"),
     RESOLVED("resolved"),
     BOTH("both"),
     SUPPRESSED("suppressed");
 
+    /** Constant <code>s_outageTypesString</code> */
     private static final Map<String, OutageType> s_outageTypesString;
 
     private String m_shortName;
@@ -27,14 +35,29 @@ public enum OutageType {
         m_shortName = shortName;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "Outage." + getName();
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return name();
     }
 
+    /**
+     * <p>getShortName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getShortName() {
         return m_shortName;
     }
@@ -42,9 +65,8 @@ public enum OutageType {
     /**
      * Convenience method for getting the SQL <em>ORDER BY</em> clause related
      * to a given sort style.
-     * 
-     * @param outType
-     *            the outage type to map to a clause
+     *
+     * @return a {@link java.lang.String} object.
      */
     protected String getClause() {
         String clause = null;
@@ -69,6 +91,12 @@ public enum OutageType {
         return clause;
     }
 
+    /**
+     * <p>getOutageType</p>
+     *
+     * @param outageTypeString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.outage.OutageType} object.
+     */
     public static OutageType getOutageType(String outageTypeString) {
         Assert.notNull(outageTypeString, "Cannot take null parameters.");
 

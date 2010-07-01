@@ -44,8 +44,9 @@ import javax.persistence.Embeddable;
 
 /**
  * OpenNMS severity enumeration.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 @Embeddable
 public enum OnmsSeverity implements Serializable {
@@ -58,6 +59,7 @@ public enum OnmsSeverity implements Serializable {
     MAJOR(6, "Major", "orange"),
     CRITICAL(7, "Critical", "red");
     
+    /** Constant <code>m_idMap</code> */
     private static final Map<Integer, OnmsSeverity> m_idMap; 
     private static final List<Integer> m_ids;
     
@@ -80,34 +82,79 @@ public enum OnmsSeverity implements Serializable {
         m_color = color;
     }
     
+    /**
+     * <p>getId</p>
+     *
+     * @return a int.
+     */
     public int getId() {
         return m_id;
     }
     
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_label;
     }
 
+    /**
+     * <p>getColor</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getColor() {
         return m_color;
     }
 
+    /**
+     * <p>isLessThan</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     * @return a boolean.
+     */
     public boolean isLessThan(OnmsSeverity other) {
         return compareTo(other) < 0;
     }
 
+    /**
+     * <p>isLessThanOrEqual</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     * @return a boolean.
+     */
     public boolean isLessThanOrEqual(OnmsSeverity other) {
         return compareTo(other) <= 0;
     }
 
+    /**
+     * <p>isGreaterThan</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     * @return a boolean.
+     */
     public boolean isGreaterThan(OnmsSeverity other) {
         return compareTo(other) > 0;
     }
     
+    /**
+     * <p>isGreaterThanOrEqual</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     * @return a boolean.
+     */
     public boolean isGreaterThanOrEqual(OnmsSeverity other) {
         return compareTo(other) >= 0;
     }
     
+    /**
+     * <p>get</p>
+     *
+     * @param id a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
     public static OnmsSeverity get(int id) {
         if (m_idMap.containsKey(id)) {
             return m_idMap.get(id);
@@ -116,6 +163,12 @@ public enum OnmsSeverity implements Serializable {
         }
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
     public static OnmsSeverity get(String label) {
         for (Integer key : m_idMap.keySet()) {
             if (m_idMap.get(key).getLabel().equals(label)) {
@@ -125,6 +178,12 @@ public enum OnmsSeverity implements Serializable {
         return null;
     }
 
+/**
+ * <p>escalate</p>
+ *
+ * @param sev a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+ * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+ */
 public static OnmsSeverity escalate(OnmsSeverity sev) {
         if (sev.isLessThan(OnmsSeverity.CRITICAL)) {
             return OnmsSeverity.get(sev.getId()+1);

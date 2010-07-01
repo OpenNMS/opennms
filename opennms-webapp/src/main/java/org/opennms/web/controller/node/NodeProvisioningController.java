@@ -50,8 +50,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Node list controller.
- * 
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class NodeProvisioningController extends AbstractController implements
         InitializingBean {
@@ -63,6 +65,8 @@ public class NodeProvisioningController extends AbstractController implements
     private String m_redirectView;
 
     /**
+     * {@inheritDoc}
+     *
      * Acknowledge the alarms specified in the POST and then redirect the
      * client to an appropriate URL for display.
      */
@@ -120,18 +124,38 @@ public class NodeProvisioningController extends AbstractController implements
 
     }
 
+    /**
+     * <p>setRedirectView</p>
+     *
+     * @param redirectView a {@link java.lang.String} object.
+     */
     public void setRedirectView(String redirectView) {
         m_redirectView = redirectView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
 
+    /**
+     * <p>setNodeProvisionService</p>
+     *
+     * @param nodeProvisionService a {@link org.opennms.netmgt.provision.persist.NodeProvisionService} object.
+     */
     public void setNodeProvisionService(NodeProvisionService nodeProvisionService) {
         m_nodeProvisionService = nodeProvisionService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_successView, "successView must be set");

@@ -30,7 +30,11 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>KscResultSet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 package org.opennms.web.graph;
 
@@ -38,7 +42,6 @@ import java.util.Date;
 
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsResource;
-
 public class KscResultSet {
     private String m_title;
     private Date m_start;
@@ -46,6 +49,15 @@ public class KscResultSet {
     private OnmsResource m_resource;
     private PrefabGraph m_prefabGraph;
     
+    /**
+     * <p>Constructor for KscResultSet.</p>
+     *
+     * @param title a {@link java.lang.String} object.
+     * @param start a java$util$Date object.
+     * @param end a java$util$Date object.
+     * @param resource a {@link org.opennms.netmgt.model.OnmsResource} object.
+     * @param prefabGraph a {@link org.opennms.netmgt.model.PrefabGraph} object.
+     */
     public KscResultSet(String title, Date start, Date end, OnmsResource resource, PrefabGraph prefabGraph) {
         m_title = title;
         m_start = start;
@@ -54,22 +66,47 @@ public class KscResultSet {
         m_prefabGraph = prefabGraph;
     }
     
+    /**
+     * <p>getTitle</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle() {
         return m_title;
     }
     
+    /**
+     * <p>getStart</p>
+     *
+     * @return a java$util$Date object.
+     */
     public Date getStart() {
         return m_start;
     }
     
+    /**
+     * <p>getEnd</p>
+     *
+     * @return a java$util$Date object.
+     */
     public Date getEnd() {
         return m_end;
     }
     
+    /**
+     * <p>getResource</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getResource() {
         return m_resource;
     }
     
+    /**
+     * <p>getPrefabGraph</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PrefabGraph} object.
+     */
     public PrefabGraph getPrefabGraph() {
         return m_prefabGraph;
     }

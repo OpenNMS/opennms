@@ -34,8 +34,25 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.ServiceDaemon;
 
+/**
+ * <p>DaemonStatusDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface DaemonStatusDao {
+	/**
+	 * <p>getCurrentDaemonStatus</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	Map<String, ServiceInfo> getCurrentDaemonStatus();
 
+	/**
+	 * <p>getServiceHandle</p>
+	 *
+	 * @param service a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.model.ServiceDaemon} object.
+	 */
 	ServiceDaemon getServiceHandle(String service);
 }

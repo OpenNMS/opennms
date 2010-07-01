@@ -64,15 +64,17 @@ import com.sun.jersey.spi.resource.PerRequest;
  * TODO: Add functionality to getting outages by:
  * nodelabel, nodeid, foreignsource, foreignsource+foreignid, ipaddress, etc.
  * add filters for current, resolved, all
- * 
-<p>REST service to the OpenNMS Outage {@link OnmsOutage} data.</p>
-<p>This service supports getting the list of outages or one specific outage by ID:</p>
-<p>Example 1: Query List of outages.</p>
-<pre>
-curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/outages
-</pre>
-
+ *
+ *<p>REST service to the OpenNMS Outage {@link OnmsOutage} data.</p>
+ *<p>This service supports getting the list of outages or one specific outage by ID:</p>
+ *<p>Example 1: Query List of outages.</p>
+ *<pre>
+ *curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/outages
+ *</pre>
+ *
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Component
 @PerRequest
@@ -88,6 +90,12 @@ public class OutageRestService extends OnmsRestService {
     @Context
     SecurityContext m_securityContext;
     
+    /**
+     * <p>getOutage</p>
+     *
+     * @param outageId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsOutage} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{outageId}")
@@ -97,6 +105,11 @@ public class OutageRestService extends OnmsRestService {
     	return result;
     }
     
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @GET
     @Produces("text/plain")
     @Path("count")
@@ -105,6 +118,11 @@ public class OutageRestService extends OnmsRestService {
     	return Integer.toString(m_outageDao.countAll());
     }
 
+    /**
+     * <p>getOutages</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsOutageCollection} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
@@ -119,6 +137,12 @@ public class OutageRestService extends OnmsRestService {
     	return new OnmsOutageCollection(m_outageDao.findMatching(getDistinctIdCriteria(OnmsOutage.class, criteria)));
     }
 
+    /**
+     * <p>forNodeId</p>
+     *
+     * @param nodeId a int.
+     * @return a {@link org.opennms.netmgt.model.OnmsOutageCollection} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional

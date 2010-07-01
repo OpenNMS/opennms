@@ -42,6 +42,12 @@ import java.util.regex.Pattern;
 
 import org.springframework.util.StringUtils;
 
+/**
+ * <p>Index class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Index {
 
     private String m_name;
@@ -61,6 +67,16 @@ public class Index {
                             + "(?:\\s+WHERE\\s+(.*?))?"
                             + "\\s*(?:;|$)");
 
+    /**
+     * <p>Constructor for Index.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param table a {@link java.lang.String} object.
+     * @param using a {@link java.lang.String} object.
+     * @param columns a {@link java.util.List} object.
+     * @param unique a boolean.
+     * @param where a {@link java.lang.String} object.
+     */
     public Index(String name, String table, String using, List<String> columns,
             boolean unique, String where) {
         m_name = name;
@@ -71,6 +87,12 @@ public class Index {
         m_where = where;
     }
     
+    /**
+     * <p>findIndexInString</p>
+     *
+     * @param create a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.dao.db.Index} object.
+     */
     public static Index findIndexInString(String create) {
         Matcher m = m_pattern.matcher(create.toString());
         if (!m.find()) {
@@ -90,6 +112,13 @@ public class Index {
                          where);
     }
     
+    /**
+     * <p>isOnDatabase</p>
+     *
+     * @param connection a {@link java.sql.Connection} object.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public boolean isOnDatabase(Connection connection) throws SQLException {
         boolean exists;
     
@@ -110,6 +139,12 @@ public class Index {
         return exists;
     }
 
+    /**
+     * <p>removeFromDatabase</p>
+     *
+     * @param connection a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void removeFromDatabase(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         try {
@@ -119,6 +154,12 @@ public class Index {
         }
     }
     
+    /**
+     * <p>addToDatabase</p>
+     *
+     * @param connection a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void addToDatabase(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         try {
@@ -128,6 +169,11 @@ public class Index {
         }
     }
     
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         StringBuffer sql = new StringBuffer();
         sql.append("CREATE ");
@@ -155,22 +201,48 @@ public class Index {
     }
 
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>getTable</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTable() {
         return m_table;
     }
     
+    /**
+     * <p>isUnique</p>
+     *
+     * @return a boolean.
+     */
     public boolean isUnique() {
         return m_unique;
     }
     
+    /**
+     * <p>getColumns</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getColumns() {
         return m_columns;
     }
 
+    /**
+     * <p>getIndexUniquenessQuery</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String getIndexUniquenessQuery() throws Exception {
         String firstColumn = getColumns().get(0);
         String columnList = StringUtils.collectionToDelimitedString(getColumns(), ", ");

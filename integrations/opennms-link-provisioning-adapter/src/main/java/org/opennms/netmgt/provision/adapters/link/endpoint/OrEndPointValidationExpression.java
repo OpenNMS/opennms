@@ -1,5 +1,9 @@
+
 /**
- * 
+ * <p>OrEndPointValidationExpression class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.provision.adapters.link.endpoint;
 
@@ -19,15 +23,24 @@ public class OrEndPointValidationExpression extends EndPointValidationExpression
     @XmlElementRef
     private List<EndPointValidationExpressionImpl> m_validators = Collections.synchronizedList(new ArrayList<EndPointValidationExpressionImpl>());
 
+    /**
+     * <p>Constructor for OrEndPointValidationExpression.</p>
+     */
     public OrEndPointValidationExpression() {
     }
 
+    /**
+     * <p>Constructor for OrEndPointValidationExpression.</p>
+     *
+     * @param validators an array of {@link org.opennms.netmgt.provision.adapters.link.endpoint.EndPointValidationExpressionImpl} objects.
+     */
     public OrEndPointValidationExpression(EndPointValidationExpressionImpl[] validators) {
         for (EndPointValidationExpressionImpl e : validators) {
             m_validators.add(e);
         }
     }
 
+    /** {@inheritDoc} */
     public void validate(EndPoint endPoint) throws EndPointStatusException {
         EndPointStatusException reason = null;
         for(EndPointValidationExpression validator : m_validators) {
@@ -44,6 +57,11 @@ public class OrEndPointValidationExpression extends EndPointValidationExpression
         throw new EndPointStatusException("no validators in this 'or'");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("or(");

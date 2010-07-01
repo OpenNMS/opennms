@@ -5,6 +5,13 @@ import java.util.Map;
 
 import org.springframework.util.Assert;
 
+/**
+ * <p>SortStyle class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public enum SortStyle {
     NODE("node"),
     INTERFACE("interface"),
@@ -19,6 +26,7 @@ public enum SortStyle {
     REVERSE_IFREGAINEDSERVICE("rev_ifregainedservice"),
     REVERSE_ID("rev_id");
 
+    /** Constant <code>DEFAULT_SORT_STYLE</code> */
     public static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
 
     private static final Map<String, SortStyle> m_sortStylesString;
@@ -37,18 +45,39 @@ public enum SortStyle {
         m_shortName = shortName;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("SortStyle." + getName());
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return name();
     }
 
+    /**
+     * <p>getShortName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getShortName() {
         return m_shortName;
     }
 
+    /**
+     * <p>getSortStyle</p>
+     *
+     * @param sortStyleString a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.outage.SortStyle} object.
+     */
     public static SortStyle getSortStyle(String sortStyleString) {
         Assert.notNull(sortStyleString, "Cannot take null parameters.");
 
@@ -58,6 +87,8 @@ public enum SortStyle {
     /**
      * Convenience method for getting the SQL <em>ORDER BY</em> clause related
      * to a given sort style.
+     *
+     * @return a {@link java.lang.String} object.
      */
     protected String getOrderByClause() {
         String clause = null;

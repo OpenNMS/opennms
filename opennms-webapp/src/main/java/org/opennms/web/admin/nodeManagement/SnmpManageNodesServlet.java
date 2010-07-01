@@ -65,14 +65,23 @@ import org.opennms.web.WebSecurityUtils;
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
  * node
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SnmpManageNodesServlet extends HttpServlet {
     private static final long serialVersionUID = 1604691299928314549L;
     private static final String UPDATE_INTERFACE = "UPDATE snmpInterface SET snmpCollect = ? WHERE id = ?";
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
@@ -87,6 +96,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
         List<SnmpManagedInterface> allInterfaces = getManagedInterfacesFromSession(userSession);

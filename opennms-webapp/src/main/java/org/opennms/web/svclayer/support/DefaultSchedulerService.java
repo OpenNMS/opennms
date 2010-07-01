@@ -62,6 +62,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.webflow.execution.RequestContext;
 
+/**
+ * <p>DefaultSchedulerService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DefaultSchedulerService implements InitializingBean, SchedulerService {
 
     private static final String SUCCESS = "success";
@@ -76,6 +83,11 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     private String m_triggerGroup;
     private ReportWrapperService m_reportWrapperService;
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
 
         log().debug("Adding job " + m_jobDetail.getName() + " to scheduler");
@@ -83,6 +95,11 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
     }
 
+    /**
+     * <p>getTriggerDescriptions</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<TriggerDescription> getTriggerDescriptions() {
 
         List<TriggerDescription> triggerDescriptions = new ArrayList<TriggerDescription>();
@@ -106,6 +123,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
     }
 
+    /** {@inheritDoc} */
     public Boolean exists(String triggerName) {
 
         Boolean found = false;
@@ -130,6 +148,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * org.opennms.web.svclayer.support.SchedulerService#removeTrigger(java
      * .lang.String)
      */
+    /** {@inheritDoc} */
     public void removeTrigger(String triggerName) {
         try {
             m_scheduler.unscheduleJob(triggerName, m_triggerGroup);
@@ -142,6 +161,11 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
     }
 
+    /**
+     * <p>removeTriggers</p>
+     *
+     * @param triggerNames an array of {@link java.lang.String} objects.
+     */
     public void removeTriggers(String[] triggerNames) {
         for (String triggerName : triggerNames) {
             removeTrigger(triggerName);
@@ -156,6 +180,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * java.lang.String, java.lang.String, java.lang.String,
      * org.springframework.webflow.execution.RequestContext)
      */
+    /** {@inheritDoc} */
     public String addCronTrigger(String id, ReportParameters criteria,
             DeliveryOptions deliveryOptions,
             String cronExpression, RequestContext context) {
@@ -221,6 +246,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
      * .web.report.database.model.DatabaseReportCriteria, java.lang.String,
      * org.springframework.webflow.execution.RequestContext)
      */
+    /** {@inheritDoc} */
     public String execute(String id, ReportParameters criteria,
             DeliveryOptions deliveryOptions, RequestContext context) {
 
@@ -265,18 +291,38 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
         return ThreadCategory.getInstance();
     }
 
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link org.quartz.Scheduler} object.
+     */
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }
 
+    /**
+     * <p>setJobDetail</p>
+     *
+     * @param reportJob a {@link org.quartz.JobDetail} object.
+     */
     public void setJobDetail(JobDetail reportJob) {
         m_jobDetail = reportJob;
     }
 
+    /**
+     * <p>setTriggerGroup</p>
+     *
+     * @param triggerGroup a {@link java.lang.String} object.
+     */
     public void setTriggerGroup(String triggerGroup) {
         m_triggerGroup = triggerGroup;
     }
 
+    /**
+     * <p>setReportWrapperService</p>
+     *
+     * @param reportWrapperService a {@link org.opennms.reporting.core.svclayer.ReportWrapperService} object.
+     */
     public void setReportWrapperService(ReportWrapperService reportWrapperService) {
         m_reportWrapperService = reportWrapperService;
     }

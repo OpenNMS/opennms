@@ -61,8 +61,22 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.web.WebSecurityUtils;
 import org.springframework.util.Assert;
 
+/**
+ * <p>AssetModel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AssetModel extends Object {
 
+    /**
+     * <p>getAsset</p>
+     *
+     * @param nodeId a int.
+     * @return a {@link org.opennms.web.asset.Asset} object.
+     * @throws java.sql.SQLException if any.
+     */
     public Asset getAsset(int nodeId) throws SQLException {
         Asset asset = null;
         Connection conn = Vault.getDbConnection();
@@ -87,6 +101,12 @@ public class AssetModel extends Object {
         return asset;
     }
 
+    /**
+     * <p>getAllAssets</p>
+     *
+     * @return an array of {@link org.opennms.web.asset.Asset} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public Asset[] getAllAssets() throws SQLException {
         Asset[] assets = new Asset[0];
 
@@ -107,6 +127,12 @@ public class AssetModel extends Object {
         return assets;
     }
 
+    /**
+     * <p>createAsset</p>
+     *
+     * @param asset a {@link org.opennms.web.asset.Asset} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void createAsset(Asset asset) throws SQLException {
         Assert.notNull(asset, "argument asset cannot be null");
 
@@ -169,6 +195,12 @@ public class AssetModel extends Object {
         }
     }
 
+    /**
+     * <p>modifyAsset</p>
+     *
+     * @param asset a {@link org.opennms.web.asset.Asset} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void modifyAsset(Asset asset) throws SQLException {
         Assert.notNull(asset, "argument asset cannot be null");
 
@@ -241,6 +273,14 @@ public class AssetModel extends Object {
         public String columnSearched;
     }
 
+    /**
+     * <p>searchAssets</p>
+     *
+     * @param columnName a {@link java.lang.String} object.
+     * @param searchText a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.asset.AssetModel.MatchingAsset} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static MatchingAsset[] searchAssets(String columnName, String searchText) throws SQLException {
         Assert.notNull(columnName, "argument columnName cannot be null");
         Assert.notNull(searchText, "argument searchText cannot be null");
@@ -284,6 +324,13 @@ public class AssetModel extends Object {
         return list.toArray(new MatchingAsset[list.size()]);
     }
 
+    /**
+     * <p>rs2Assets</p>
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.asset.Asset} objects.
+     * @throws java.sql.SQLException if any.
+     */
     protected static Asset[] rs2Assets(ResultSet rs) throws SQLException {
         List<Asset> list = new ArrayList<Asset>();
 
@@ -345,6 +392,11 @@ public class AssetModel extends Object {
         return list.toArray(new Asset[list.size()]);
     }
 
+    /**
+     * <p>getColumns</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
     public static String[][] getColumns() {
         return s_columns;
     }

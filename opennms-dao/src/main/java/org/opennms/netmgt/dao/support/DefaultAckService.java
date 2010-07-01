@@ -49,14 +49,15 @@ import org.opennms.netmgt.model.acknowledgments.AckService;
 /**
  * This class provides the work of acknowledging <code>Acknowledgables</code> associated with
  * an <code>Acknowledgment</code>.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class DefaultAckService implements AckService {
     
     private AcknowledgmentDao m_ackDao;
     
+    /** {@inheritDoc} */
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
         log().info("processAcks: Processing "+acks.size()+" acknowledgements...");
         for (OnmsAcknowledgment ack : acks) {
@@ -64,6 +65,7 @@ public class DefaultAckService implements AckService {
         }
     }
 
+    /** {@inheritDoc} */
     public void processAck(OnmsAcknowledgment ack) {
         log().info("processAck: Searching DB for acknowledgables for ack: "+ack);
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
@@ -121,10 +123,20 @@ public class DefaultAckService implements AckService {
         return ThreadCategory.getInstance();
     }
 
+    /**
+     * <p>setAckDao</p>
+     *
+     * @param ackDao a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
+     */
     public void setAckDao(AcknowledgmentDao ackDao) {
         m_ackDao = ackDao;
     }
 
+    /**
+     * <p>getAckDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.AcknowledgmentDao} object.
+     */
     public AcknowledgmentDao getAckDao() {
         return m_ackDao;
     }

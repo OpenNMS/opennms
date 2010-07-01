@@ -54,14 +54,23 @@ import org.springframework.web.bind.support.SessionStatus;
 
 /**
  * Authority Form Controller to insert or update an Authority
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Controller
 @RequestMapping("/authority.edit.page")
 public class AuthorityFormController {
 
+    /**
+     * <p>processSubmit</p>
+     *
+     * @param authority a {@link org.opennms.acl.model.AuthorityDTO} object.
+     * @param result a {@link org.springframework.validation.BindingResult} object.
+     * @param status a {@link org.springframework.web.bind.support.SessionStatus} object.
+     * @return a {@link java.lang.String} object.
+     */
     @RequestMapping(method = RequestMethod.POST)
     protected String processSubmit(@ModelAttribute("authority") AuthorityDTO authority, BindingResult result, SessionStatus status) {
         String mav = authorityForm;
@@ -74,11 +83,24 @@ public class AuthorityFormController {
         return mav;
     }
 
+    /**
+     * <p>initBinder</p>
+     *
+     * @param binder a {@link org.springframework.web.bind.WebDataBinder} object.
+     * @throws java.lang.Exception if any.
+     */
     @InitBinder()
     public void initBinder(WebDataBinder binder) throws Exception {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
     }
 
+    /**
+     * <p>setupForm</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @param model a {@link org.springframework.ui.ModelMap} object.
+     * @return a {@link java.lang.String} object.
+     */
     @RequestMapping(method = RequestMethod.GET)
     public String setupForm(@RequestParam(required = false, value = "aid") Integer id, ModelMap model) {
         model.addAttribute(Constants.AUTHORITY, id == null ? new AuthorityDTO() : authorityService.getAuthority(id));

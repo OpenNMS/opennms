@@ -1,7 +1,11 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.util.Date;
+
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
+import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -9,6 +13,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -16,15 +21,22 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
-public class Application implements EntryPoint {
+public class Application implements EntryPoint, LocationsUpdatedEventHandler {
     interface Binder extends UiBinder<DockLayoutPanel, Application> {
     }
+
+    private static final DateTimeFormat UPDATE_TIMESTAMP_FORMAT = DateTimeFormat.getMediumDateTimeFormat();
 
     private static final Binder BINDER = GWT.create(Binder.class);
 
@@ -46,6 +58,8 @@ public class Application implements EntryPoint {
     @UiField
     protected Hyperlink applicationLink;
     @UiField
+    protected Label updateTimestamp;
+    @UiField
     protected LinkStyles linkStyles;
 
     /**
@@ -65,11 +79,15 @@ public class Application implements EntryPoint {
 			}
         });
 
+        // Register for all relevant events thrown by the UI components
+        m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this);
+
         m_locationManager = new DefaultLocationManager(m_eventBus, splitPanel, locationPanel, createMapPanel());
 
         m_locationManager.addLocationManagerInitializationCompleteEventHandler(new LocationManagerInitializationCompleteEventHander() {
 
                     public void onInitializationComplete(LocationManagerInitializationCompleteEvent event) {
+                        updateTimestamp();
                         splitPanel.setWidgetMinSize(locationPanel, 255);
                         mainPanel.setSize("100%", "100%");
                         RootPanel.get("remotePollerMap").add(mainPanel);
@@ -91,6 +109,11 @@ public class Application implements EntryPoint {
 		return Window.getClientHeight() - extraHeight;
     }
 
+    /**
+     * <p>onLocationClick</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     */
     @UiHandler("locationLink")
     public void onLocationClick(ClickEvent event) {
         if (locationLink.getStyleName().contains(linkStyles.activeLink())) {
@@ -105,6 +128,11 @@ public class Application implements EntryPoint {
         }
     }
 
+    /**
+     * <p>onApplicationClick</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     */
     @UiHandler("applicationLink")
     public void onApplicationClick(ClickEvent event) {
         if (applicationLink.getStyleName().contains(linkStyles.activeLink())) {
@@ -134,7 +162,24 @@ public class Application implements EntryPoint {
         return mapPanel;
     }
 
+    /**
+     * <p>getMapImplementationType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public native String getMapImplementationType() /*-{
-		return $wnd.mapImplementation;
-	}-*/;
+        return $wnd.mapImplementation;
+    }-*/;
+
+    /** {@inheritDoc} */
+    public void onLocationsUpdated(LocationsUpdatedEvent e) {
+        updateTimestamp();
+    }
+    
+    /**
+     * <p>updateTimestamp</p>
+     */
+    public void updateTimestamp() {
+        updateTimestamp.setText("Last update: " + UPDATE_TIMESTAMP_FORMAT.format(new Date()));
+    }
 }

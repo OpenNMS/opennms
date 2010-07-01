@@ -43,16 +43,23 @@ import org.springframework.beans.factory.InitializingBean;
  * applicationContext-reporting.xml.
  * In particular, this sets up system properties that are needed by Spring.
  * System properties are not set until afterPropertiesSet() is called.
- * 
+ *
  * @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
  */
 public class AvailabilityReportTestConfigBean extends DaoTestConfigBean implements InitializingBean {
     private String m_reportDirectory = "target/share/reports";
 
+    /**
+     * <p>Constructor for AvailabilityReportTestConfigBean.</p>
+     */
     public AvailabilityReportTestConfigBean() {
         super();
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         super.afterPropertiesSet();
         
@@ -61,6 +68,11 @@ public class AvailabilityReportTestConfigBean extends DaoTestConfigBean implemen
     }
 
 
+    /**
+     * <p>setRerpotDirectory</p>
+     *
+     * @param reportDirectory a {@link java.lang.String} object.
+     */
     public void setRerpotDirectory(String reportDirectory) {
         m_reportDirectory = reportDirectory;
     }

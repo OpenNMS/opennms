@@ -62,6 +62,12 @@ import org.opennms.reporting.datablock.Node;
 import org.opennms.reporting.datablock.Outage;
 import org.opennms.reporting.datablock.OutageSvcTimesList;
 
+/**
+ * <p>LegacyAvailabilityDataService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LegacyAvailabilityDataService implements
         AvailabilityDataService {
     
@@ -81,6 +87,9 @@ public class LegacyAvailabilityDataService implements
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
     
+    /**
+     * <p>Constructor for LegacyAvailabilityDataService.</p>
+     */
     public LegacyAvailabilityDataService() {
         
     ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -91,6 +100,7 @@ public class LegacyAvailabilityDataService implements
     log.debug("initialised DefaultAvailablityReportService");
     }
 
+    /** {@inheritDoc} */
     public List<Node> getNodes(org.opennms.netmgt.config.categories.Category category, long startTime, long endTime) throws AvailabilityDataServiceException {
         
         m_nodes = new ArrayList<Node>();
@@ -315,6 +325,13 @@ public class LegacyAvailabilityDataService implements
 
     /**
      * This method adds a unique tuple to the list of nodes m_nodes.
+     *
+     * @param nodeName a {@link java.lang.String} object.
+     * @param nodeid a int.
+     * @param ipaddr a {@link java.lang.String} object.
+     * @param serviceid a {@link java.lang.String} object.
+     * @param losttime a long.
+     * @param regainedtime a long.
      */
     public void addNode(String nodeName, int nodeid, String ipaddr,
             String serviceid, long losttime, long regainedtime) {

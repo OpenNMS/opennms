@@ -31,6 +31,12 @@
  */
 package org.opennms.netmgt.provision.detector.generic.request;
 
+/**
+ * <p>GpRequest class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GpRequest {
 
 }

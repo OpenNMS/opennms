@@ -61,6 +61,13 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * @version $Id: $
  */
 public final class SyslogHandler {
     /**
@@ -126,6 +133,9 @@ public final class SyslogHandler {
 
     static QueueManager queueManager = new QueueManager();
 
+    /**
+     * <p>Constructor for SyslogHandler.</p>
+     */
     public SyslogHandler() {
         m_dgSock = null;
         m_dgPort = m_syslogdConfig.getSyslogPort();
@@ -155,10 +165,18 @@ public final class SyslogHandler {
         m_logPrefix = null;
     }
 
+    /**
+     * <p>setSyslogConfig</p>
+     *
+     * @param syslogdConfig a {@link org.opennms.netmgt.config.SyslogdConfig} object.
+     */
     public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
         m_syslogdConfig = syslogdConfig;
     }
 
+    /**
+     * <p>start</p>
+     */
     public synchronized void start() {
         if (m_status != START_PENDING)
             throw new RuntimeException("The Fiber is in an incorrect state");
@@ -214,6 +232,9 @@ public final class SyslogHandler {
         m_status = RUNNING;
     }
 
+    /**
+     * <p>stop</p>
+     */
     public synchronized void stop() {
         if (m_status == STOPPED)
             return;
@@ -240,20 +261,41 @@ public final class SyslogHandler {
         m_status = STOPPED;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "SyslogdHandler[" + getIpAddress() + ":" + m_dgPort + "]";
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
     }
 
+    /**
+     * <p>destroy</p>
+     */
     public void destroy() {
     }
 
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a {@link java.lang.Integer} object.
+     */
     public void setPort(final Integer port) {
         if (m_status == STARTING || m_status == RUNNING
                 || m_status == STOP_PENDING)
@@ -262,14 +304,31 @@ public final class SyslogHandler {
         m_dgPort = port;
     }
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getPort() {
         return m_dgPort;
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @since 1.8.1
+     */
     public void setIpAddress(final String ipAddress) {
         m_dgIp = ipAddress;
     }
     
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @since 1.8.1
+     */
     public String getIpAddress() {
         if (m_dgIp == null || m_dgIp.length() == 0) {
             return "0.0.0.0";
@@ -297,6 +356,8 @@ public final class SyslogHandler {
      * class.
      * <p/>
      * A reference to the event handler.
+     *
+     * @param prefix a {@link java.lang.String} object.
      */
     /*
      * public void removeEventHandler(Syslogd handler) { synchronized

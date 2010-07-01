@@ -44,18 +44,38 @@ import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 
-/**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- */public class QueueManager {
+ /**
+  * <p>QueueManager class.</p>
+  *
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @version $Id: $
+  */
+ public class QueueManager {
 
     FifoQueue<ConvertToEvent> m_backlogQ = new FifoQueueImpl<ConvertToEvent>();
 
     ConvertToEvent ret;
 
+    /**
+     * <p>putInQueue</p>
+     *
+     * @param re a {@link org.opennms.netmgt.syslogd.ConvertToEvent} object.
+     */
     public synchronized void putInQueue(ConvertToEvent re) {
         // This synchronized method places a message in the queue
         // Category log = ThreadCategory.getInstance(this.getClass());
@@ -76,6 +96,11 @@ import org.opennms.core.utils.ThreadCategory;
 
     // -----------------------------------------------------//
 
+    /**
+     * <p>getFromQueue</p>
+     *
+     * @return a {@link org.opennms.netmgt.syslogd.ConvertToEvent} object.
+     */
     public synchronized ConvertToEvent getFromQueue() {
         // This synchronized method removes a message from the queue
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());

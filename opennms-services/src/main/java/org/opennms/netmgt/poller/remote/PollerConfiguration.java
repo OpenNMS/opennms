@@ -38,12 +38,24 @@ package org.opennms.netmgt.poller.remote;
 import java.util.Date;
 
 /**
- * 
+ * <p>PollerConfiguration interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface PollerConfiguration {
     
+    /**
+     * <p>getConfigurationTimestamp</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     Date getConfigurationTimestamp();
 	
+    /**
+     * <p>getPolledServices</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.poller.remote.PolledService} objects.
+     */
     PolledService[] getPolledServices();
 }

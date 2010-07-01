@@ -56,21 +56,24 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * collection speed and disk write speed. This behaviour is implemented using
  * the Strategy pattern with a different RrdStrategy for JRobin and JNI as well
  * as a Strategy that provides Queueing on top of either one.
- * 
+ *
  * The following System properties select which strategy is in use.
- * 
+ *
  * <pre>
- * 
+ *
  *  org.opennms.rrd.usejni: (defaults to true)
  *   true - use the existing RRDTool code via the JNI interface @see JniRrdStrategy
  *   false - use the pure java JRobin interface @see JRobinRrdStrategy
- *  
+ *
  *  org.opennms.rrd.usequeue: (defaults to true)
  *    use the queueing that allows collection to occur even though the disks are
- *    keeping up. @see QueuingRrdStrategy  
- *  
- *  
+ *    keeping up. @see QueuingRrdStrategy
+ *
+ *
  * </pre>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public abstract class RrdUtils {
 
@@ -88,6 +91,11 @@ public abstract class RrdUtils {
         tcpAndQueuingRrdStrategy
     }
 
+    /**
+     * <p>getStrategy</p>
+     *
+     * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public static RrdStrategy getStrategy() {
         RrdStrategy retval = null;
         if (m_rrdStrategy == null) {
@@ -114,6 +122,12 @@ public abstract class RrdUtils {
         return retval;
     }
 
+    /**
+     * <p>getSpecificStrategy</p>
+     *
+     * @param strategy a {@link org.opennms.netmgt.rrd.RrdUtils.StrategyName} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public static RrdStrategy getSpecificStrategy(StrategyName strategy) {
         RrdStrategy retval = null;
         retval = (RrdStrategy)m_context.getBean(strategy.toString());
@@ -123,6 +137,11 @@ public abstract class RrdUtils {
         return retval;
     }
 
+    /**
+     * <p>setStrategy</p>
+     *
+     * @param strategy a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
+     */
     public static void setStrategy(RrdStrategy strategy) {
         m_rrdStrategy = strategy;
     }
@@ -130,7 +149,7 @@ public abstract class RrdUtils {
     /**
      * Create a round robin database file. See the man page for rrdtool create
      * for definitions of each of these.
-     * 
+     *
      * @param creator -
      *            A string representing who is creating this file for use in log
      *            msgs
@@ -151,11 +170,24 @@ public abstract class RrdUtils {
      * @param rraList -
      *            a List of the round robin archives to create in the database
      * @return true if the file was actually created, false otherwise
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
     public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List<String> rraList) throws RrdException {
         return createRRD(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
     }
 
+    /**
+     * <p>createRRD</p>
+     *
+     * @param creator a {@link java.lang.String} object.
+     * @param directory a {@link java.lang.String} object.
+     * @param rrdName a {@link java.lang.String} object.
+     * @param step a int.
+     * @param dataSources a {@link java.util.List} object.
+     * @param rraList a {@link java.util.List} object.
+     * @return a boolean.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
+     */
     public static boolean createRRD(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws RrdException {
         String fileName = rrdName + getExtension();
 
@@ -179,7 +211,7 @@ public abstract class RrdUtils {
 
     /**
      * Add datapoints to a round robin database using the current system time as the timestamp for the values
-     * 
+     *
      * @param owner
      *            the owner of the file. This is used in log messages
      * @param repositoryDir
@@ -188,8 +220,7 @@ public abstract class RrdUtils {
      *            the name for the rrd file.
      * @param val
      *            a colon separated list of values representing the updates for datasources for this rrd
-     *            
-     * @throws RrdException
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
     public static void updateRRD(String owner, String repositoryDir, String rrdName, String val) throws RrdException {
         updateRRD(owner, repositoryDir, rrdName, System.currentTimeMillis(), val);
@@ -197,7 +228,7 @@ public abstract class RrdUtils {
 
     /**
      * Add datapoints to a round robin database.
-     * 
+     *
      * @param owner
      *            the owner of the file. This is used in log messages
      * @param repositoryDir
@@ -208,8 +239,7 @@ public abstract class RrdUtils {
      *            the timestamp in millis to use for the rrd update (this gets rounded to the nearest second)
      * @param val
      *            a colon separated list of values representing the updates for datasources for this rrd
-     *            
-     * @throws RrdException
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
     public static void updateRRD(String owner, String repositoryDir, String rrdName, long timestamp, String val) throws RrdException {
         // Issue the RRD update
@@ -247,46 +277,45 @@ public abstract class RrdUtils {
      * This method issues an round robin fetch command to retrieve the last
      * value of the datasource stored in the specified RRD file. The retrieved
      * value returned to the caller.
-     * 
+     *
      * NOTE: This method assumes that each RRD file contains a single
      * datasource.
-     * 
+     *
      * @param rrdFile
      *            RRD file from which to fetch the data.
      * @param interval
      *            Thresholding interval (should equal RRD step size)
      * @param ds
      *            Name of the Data Source to be used
-     * 
      * @return Retrived datasource value as a java.lang.Double
-     * 
-     * @throws NumberFormatException
+     * @throws java.lang.NumberFormatException
      *             if the retrieved value fails to convert to a double
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
     public static Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException, RrdException {
         return getStrategy().fetchLastValue(rrdFile, ds, interval);
     }
 
     /**
-     * This method issues an round robing fetch command to retrieve the last 
+     * This method issues an round robing fetch command to retrieve the last
      * value of the datasource stored in the specified RRD file within given
      * tolerance (which should be a multiple of the RRD interval). This is useful
-     * If you are not entirely sure when an RRD might have been updated, but you 
+     * If you are not entirely sure when an RRD might have been updated, but you
      * want to retrieve the last value which is not NaN
      * NOTE: This method assumes that each RRD file contains a single
      * datasource.
-     * 
+     *
      * @param rrdFile
      *            RRD file from which to fetch the data.
      * @param interval
      *            Thresholding interval (should equal RRD step size)
      * @param ds
      *            Name of the Data Source to be used
-     * 
      * @return Retrived datasource value as a java.lang.Double
-     * 
-     * @throws NumberFormatException
+     * @throws java.lang.NumberFormatException
      *             if the retrieved value fails to convert to a double
+     * @param range a int.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
     public static Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         return getStrategy().fetchLastValueInRange(rrdFile, ds, interval, range);
@@ -296,22 +325,27 @@ public abstract class RrdUtils {
      * Creates an InputStream representing the bytes of a graph created from
      * round robin data. It accepts an rrdtool graph command. The underlying
      * implementation converts this command to a format appropriate for it .
-     * 
+     *
      * @param command
      *            the command needed to create the graph
      * @param workDir
      *            the directory that all referenced files are relative to
      * @return an input stream representing the bytes of a graph image as a PNG
      *         file
-     * @throws IOException
+     * @throws java.io.IOException
      *             if an IOError occurs
-     * @throws RrdException
+     * @throws org.opennms.netmgt.rrd.RrdException
      *             if an RRD error occurs
      */
     public static InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         return getStrategy().createGraph(command, workDir);
     }
 
+    /**
+     * <p>getExtension</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public static String getExtension() {
         String rrdExtension = (String)m_context.getBean("rrdFileExtension");
         if (rrdExtension == null || "".equals(rrdExtension)) {
@@ -320,6 +354,11 @@ public abstract class RrdUtils {
         return rrdExtension;
     }
 
+    /**
+     * <p>promoteEnqueuedFiles</p>
+     *
+     * @param files a {@link java.util.Collection} object.
+     */
     public static void promoteEnqueuedFiles(Collection<String> files) {
         getStrategy().promoteEnqueuedFiles(files);
     }

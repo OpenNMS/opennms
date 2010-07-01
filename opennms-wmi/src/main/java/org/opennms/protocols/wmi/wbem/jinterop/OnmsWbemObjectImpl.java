@@ -44,25 +44,53 @@ import org.opennms.protocols.wmi.WmiException;
 
 import java.util.List;
 
+/**
+ * <p>OnmsWbemObjectImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsWbemObjectImpl implements OnmsWbemObject {
     private IJIDispatch wbemObjectDispatch;
 
+    /**
+     * <p>Constructor for OnmsWbemObjectImpl.</p>
+     *
+     * @param wbemObjectDispatch a {@link org.jinterop.dcom.impls.automation.IJIDispatch} object.
+     */
     public OnmsWbemObjectImpl(IJIDispatch wbemObjectDispatch) {
         this.wbemObjectDispatch = wbemObjectDispatch;
     }
 
+    /** {@inheritDoc} */
     public OnmsWbemObjectImpl wmiExecMethod(String methodName, List params, List namedValueSet) {
         return null; // TODO IMPLEMENT THIS METHOD
     }
 
+    /**
+     * <p>wmiInstances</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> wmiInstances() {
         return null; // TODO IMPLEMENT THIS METHOD
     }
 
+    /**
+     * <p>wmiPut</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String wmiPut() {
         return ""; // TODO IMPLEMENT THIS METHOD
     }
 
+    /**
+     * <p>getWmiMethods</p>
+     *
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemMethodSet} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public OnmsWbemMethodSet getWmiMethods() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.
@@ -75,6 +103,12 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
         }
     }
 
+    /**
+     * <p>getWmiPath</p>
+     *
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public OnmsWbemObjectPath getWmiPath() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.
@@ -87,6 +121,12 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
         }
     }
 
+    /**
+     * <p>getWmiObjectText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiObjectText() throws WmiException {
         try {
             JIVariant variant = (wbemObjectDispatch.callMethodA("GetObjectText_", new Object[]{1}))[0];
@@ -97,6 +137,12 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
         }
     }
 
+    /**
+     * <p>getWmiProperties</p>
+     *
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public OnmsWbemPropertySet getWmiProperties() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.

@@ -44,8 +44,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.netmgt.model.PollStatus;
 
 /**
- * 
+ * <p>ServicePollState class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class ServicePollState implements Comparable<ServicePollState>, Serializable {
     private static final long serialVersionUID = 1L;
@@ -55,23 +57,49 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
     private PollStatus m_lastPoll;
     private Date m_initialPollTime;
 
+    /**
+     * <p>Constructor for ServicePollState.</p>
+     *
+     * @param polledService a {@link org.opennms.netmgt.poller.remote.PolledService} object.
+     * @param index a int.
+     */
     public ServicePollState(final PolledService polledService, final int index) {
         m_polledService = polledService;
         m_index = index;
     }
 
+    /**
+     * <p>getLastPoll</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus getLastPoll() {
         return m_lastPoll;
     }
 
+    /**
+     * <p>setLastPoll</p>
+     *
+     * @param lastPoll a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public void setLastPoll(final PollStatus lastPoll) {
         m_lastPoll = lastPoll;
     }
     
+    /**
+     * <p>getLastPollTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getLastPollTime() {
         return (m_lastPoll == null ? null : m_lastPoll.getTimestamp());
     }
     
+    /**
+     * <p>getNextPollTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getNextPollTime() {
         if (m_lastPoll == null) {
             return m_initialPollTime;
@@ -81,18 +109,34 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
         }
     }
 
+    /**
+     * <p>getIndex</p>
+     *
+     * @return a int.
+     */
     public int getIndex() {
         return m_index;
     }
 
+    /**
+     * <p>getPolledService</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.remote.PolledService} object.
+     */
     public PolledService getPolledService() {
         return m_polledService;
     }
 
+    /**
+     * <p>setInitialPollTime</p>
+     *
+     * @param initialPollTime a {@link java.util.Date} object.
+     */
     public void setInitialPollTime(final Date initialPollTime) {
         m_initialPollTime = initialPollTime;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return new HashCodeBuilder(5, 37)
@@ -102,6 +146,7 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
             .toHashCode();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(final Object o) {
         if (o == null) return false;
@@ -113,6 +158,12 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
             .isEquals();
     }
     
+    /**
+     * <p>compareTo</p>
+     *
+     * @param that a {@link org.opennms.netmgt.poller.remote.ServicePollState} object.
+     * @return a int.
+     */
     public int compareTo(final ServicePollState that) {
         if (that == null) return -1;
         final PolledService thisService = this.getPolledService();

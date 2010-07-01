@@ -57,29 +57,50 @@ import org.springframework.web.servlet.view.RedirectView;
  * This servlet receives an HTTP POST with a list of alarms to escalate or
  * clear, and then it redirects the client to a URL for display. The
  * target URL is configurable in the servlet config (web.xml file).
- * 
+ *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AlarmSeverityChangeController extends AbstractController implements InitializingBean {
     
     private static final long serialVersionUID = 1L;
 
+    /** Constant <code>ESCALATE_ACTION="1"</code> */
     public final static String ESCALATE_ACTION = "1";
+    /** Constant <code>CLEAR_ACTION="2"</code> */
     public final static String CLEAR_ACTION = "2";
 
     private WebAlarmRepository m_webAlarmRepository;
     
     private String m_redirectView;
     
+    /**
+     * <p>setRedirectView</p>
+     *
+     * @param redirectView a {@link java.lang.String} object.
+     */
     public void setRedirectView(String redirectView) {
         m_redirectView = redirectView;
     }
     
+    /**
+     * <p>setWebAlarmRepository</p>
+     *
+     * @param webAlarmRepository a {@link org.opennms.web.alarm.WebAlarmRepository} object.
+     */
     public void setWebAlarmRepository(WebAlarmRepository webAlarmRepository) {
         m_webAlarmRepository = webAlarmRepository;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
@@ -87,6 +108,8 @@ public class AlarmSeverityChangeController extends AbstractController implements
 
 
     /**
+     * {@inheritDoc}
+     *
      * Adjust the severity of the alarms specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */

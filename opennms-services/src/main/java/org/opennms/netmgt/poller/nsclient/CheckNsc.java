@@ -45,12 +45,21 @@ import org.apache.commons.cli.PosixParser;
 /**
  * This is an example commandline tool to perform checks against NSClient
  * services using <code>NsclientManager</code>
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class CheckNsc {
 
+    /**
+     * <p>main</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws org.apache.commons.cli.ParseException if any.
+     */
     public static void main(String[] args) throws ParseException {
     	
     	Options options = new Options();

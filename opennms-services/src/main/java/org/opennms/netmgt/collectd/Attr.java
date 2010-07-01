@@ -40,10 +40,13 @@ package org.opennms.netmgt.collectd;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
+ * <p>Attr class.</p>
+ *
  * @author mjamison
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public class Attr {
 
@@ -82,7 +85,7 @@ public class Attr {
 
     /**
      * This method is used to assign the object's identifier.
-     * 
+     *
      * @param oid -
      *            object identifier in dotted decimal notation (e.g.,
      *            ".1.3.6.1.2.1.1.1")
@@ -93,7 +96,7 @@ public class Attr {
 
     /**
      * This method is used to assign the object's alias.
-     * 
+     *
      * @param alias -
      *            object alias (e.g., "sysDescription")
      */
@@ -103,7 +106,7 @@ public class Attr {
 
     /**
      * This method is used to assign the object's expected data type.
-     * 
+     *
      * @param type -
      *            object's data type
      */
@@ -113,7 +116,7 @@ public class Attr {
 
     /**
      * This method is used to assign the object's maximum value.
-     * 
+     *
      * @param maxval
      *            object's maximum value
      */
@@ -123,7 +126,7 @@ public class Attr {
 
     /**
      * This method is used to assign the object's minimum value.
-     * 
+     *
      * @param minval
      *            object's minimum value
      */
@@ -133,7 +136,7 @@ public class Attr {
 
     /**
      * Returns the object's identifier.
-     * 
+     *
      * @return The object's identifier string.
      */
     public String getName() {
@@ -142,7 +145,7 @@ public class Attr {
 
     /**
      * Returns the object's maximum value.
-     * 
+     *
      * @return The object's maxval.
      */
     public String getMaxval() {
@@ -151,7 +154,7 @@ public class Attr {
 
     /**
      * Returns the object's minimum value.
-     * 
+     *
      * @return The object's minval.
      */
     public String getMinval() {
@@ -160,7 +163,7 @@ public class Attr {
 
     /**
      * Returns the object's alias.
-     * 
+     *
      * @return The object's alias.
      */
     public String getAlias() {
@@ -169,7 +172,7 @@ public class Attr {
 
     /**
      * Returns the object's data type.
-     * 
+     *
      * @return The object's data type
      */
     public String getType() {
@@ -177,15 +180,12 @@ public class Attr {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is responsible for comparing this MibObject with the passed
      * Object to determine if they are equivalent. The objects are equivalent if
      * the argument is a MibObject object with the same object identifier,
      * instance, alias and type.
-     * 
-     * @param object -
-     *            MibObject to be compared to this object.
-     * 
-     * @return true if the objects are equal, false otherwise.
      */
     @Override
     public boolean equals(Object object) {
@@ -207,6 +207,7 @@ public class Attr {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return new HashCodeBuilder(7, 11)
@@ -219,10 +220,10 @@ public class Attr {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is responsible for returning a String object which represents
      * the content of this MibObject. Primarily used for debugging purposes.
-     * 
-     * @return String which represents the content of this MibObject
      */
     @Override
     public String toString() {

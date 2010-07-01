@@ -47,6 +47,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>DiskUsageDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class DiskUsageDetector extends SnmpDetector {
     /**
@@ -74,6 +80,9 @@ public class DiskUsageDetector extends SnmpDetector {
     private String m_disk;
     private String m_hrStorageDescr;
     
+    /**
+     * <p>Constructor for DiskUsageDetector.</p>
+     */
     public DiskUsageDetector(){
         setServiceName(PROTOCOL_NAME);
         setOid(DEFAULT_OID);
@@ -83,7 +92,7 @@ public class DiskUsageDetector extends SnmpDetector {
     /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.
-     * 
+     *
      * @return The protocol name for this plugin.
      */
     public String getProtocolName() {
@@ -93,10 +102,9 @@ public class DiskUsageDetector extends SnmpDetector {
     /**
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
-     * 
+     *
      * @param address
      *            The address to check for support.
-     * 
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address) {
@@ -111,18 +119,13 @@ public class DiskUsageDetector extends SnmpDetector {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If the
      * protocol is not supported then a false value is returned to the caller.
      * The qualifier map passed to the method is used by the plugin to return
      * additional information by key-name. These key-value pairs can be added to
      * service events if needed.
-     * 
-     * @param address
-     *            The address to check for support.
-     * @param qualifiers
-     *            The map where qualification are set by the plugin.
-     * 
-     * @return True if the protocol is supported by the address.
      */
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
         int matchType = MATCH_TYPE_EXACT;
@@ -219,26 +222,56 @@ public class DiskUsageDetector extends SnmpDetector {
         return matches;
     }
     
+    /**
+     * <p>setMatchType</p>
+     *
+     * @param matchType a {@link java.lang.String} object.
+     */
     public void setMatchType(String matchType) {
         m_matchType = matchType;
     }
 
+    /**
+     * <p>getMatchType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMatchType() {
         return m_matchType;
     }
 
+    /**
+     * <p>setDisk</p>
+     *
+     * @param disk a {@link java.lang.String} object.
+     */
     public void setDisk(String disk) {
         m_disk = disk;
     }
 
+    /**
+     * <p>getDisk</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisk() {
         return m_disk;
     }
 
+    /**
+     * <p>Setter for the field <code>hrStorageDescr</code>.</p>
+     *
+     * @param hrStorageDescr a {@link java.lang.String} object.
+     */
     public void setHrStorageDescr(String hrStorageDescr) {
         m_hrStorageDescr = hrStorageDescr;
     }
 
+    /**
+     * <p>Getter for the field <code>hrStorageDescr</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHrStorageDescr() {
         return m_hrStorageDescr;
     }

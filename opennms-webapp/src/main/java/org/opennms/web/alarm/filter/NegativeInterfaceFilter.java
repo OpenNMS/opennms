@@ -35,26 +35,54 @@ package org.opennms.web.alarm.filter;
 import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
-/** Encapsulates all interface filtering functionality. */
+/**
+ * Encapsulates all interface filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
+    /** Constant <code>TYPE="interfacenot"</code> */
     public static final String TYPE = "interfacenot";
 
+    /**
+     * <p>Constructor for NegativeInterfaceFilter.</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public NegativeInterfaceFilter(String ipAddress) {
         super(TYPE, SQLType.STRING, "IPADDR", "ipAddr", ipAddress);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("interface is not " + getValue());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.NegativeInterfaceFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

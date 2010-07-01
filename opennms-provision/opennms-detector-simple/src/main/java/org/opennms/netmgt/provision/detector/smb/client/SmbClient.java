@@ -40,28 +40,48 @@ import org.opennms.netmgt.provision.detector.smb.response.NbtAddressResponse;
 import org.opennms.netmgt.provision.support.Client;
 
 /**
- * @author thedesloge
+ * <p>SmbClient class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse>{
     
     private NbtAddress m_nbtAddress;
     private String m_address;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         // TODO Auto-generated method stub
         
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
        m_address = address.getHostAddress();
        m_nbtAddress = NbtAddress.getByName(m_address);
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.detector.smb.response.NbtAddressResponse} object.
+     * @throws java.io.IOException if any.
+     */
     public NbtAddressResponse receiveBanner() throws IOException {
         return receiveResponse();
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.smb.response.NbtAddressResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public NbtAddressResponse sendRequest(LineOrientedRequest request) throws IOException, Exception {
         return receiveResponse();
     }

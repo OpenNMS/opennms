@@ -37,20 +37,54 @@ import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
 
+/**
+ * <p>DateSqlType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DateSqlType implements SQLType<Date> {
 
+    /**
+     * <p>bindParam</p>
+     *
+     * @param ps a {@link java.sql.PreparedStatement} object.
+     * @param parameterIndex a int.
+     * @param value a {@link java.util.Date} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void bindParam(PreparedStatement ps, int parameterIndex, Date value) throws SQLException {
         ps.setTimestamp(parameterIndex, new java.sql.Timestamp(value.getTime()));
     }
     
+    /**
+     * <p>getValueAsString</p>
+     *
+     * @param value a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getValueAsString(Date value) {
         return String.valueOf(value.getTime());
     }
 
+    /**
+     * <p>formatValue</p>
+     *
+     * @param value a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String formatValue(Date value) {
         return "to_timestamp(\'" + value.toString() + "\', " + EventConstants.POSTGRES_DATE_FORMAT +")";
     }
 
+    /**
+     * <p>createArray</p>
+     *
+     * @param value1 a {@link java.util.Date} object.
+     * @param value2 a {@link java.util.Date} object.
+     * @return an array of {@link java.util.Date} objects.
+     */
     public Date[] createArray(Date value1, Date value2) {
         return new Date[] { value1, value2 };
     }

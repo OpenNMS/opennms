@@ -66,20 +66,26 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * status of devices per site (a column from the asset table such as building,
  * floor, etc.)  The status per site is broken down into rows of categories from
  * the categories table.
- * 
+ *
  * example:
- * 
+ *
  *              site: HQBLDB
- * 
+ *
  *  |Routers/Switches |   1 of  20 |
  *  |Servers          |   0 of 200 |
  *  |Hubs/APs         |   5 of  30 |
- *  
- *  
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultSiteStatusViewService implements SiteStatusViewService {
     
@@ -89,9 +95,10 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     
     
     /**
-     * This creator looks up a configured status view by name and calls the creator that 
+     * {@inheritDoc}
+     *
+     * This creator looks up a configured status view by name and calls the creator that
      * accepts the AggregateStatusView model object.
-     * 
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusView(java.lang.String)
      */
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
@@ -149,10 +156,11 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     /**
+     * {@inheritDoc}
+     *
      * Use the node id to find the value assciated with column defined in the view.  The view defines a column
      * and column value to be used by default.  This method determines the column value using the value associated
      * with the asset record for the given nodeid.
-     * 
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusesUsingNodeId(int, java.lang.String)
      */
     public Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName) {
@@ -166,9 +174,10 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     /**
+     * {@inheritDoc}
+     *
      * This creator is used when wanting to use a different value than the defined column value defined
      * for the requested view.
-     * 
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatuses(org.opennms.netmgt.model.AggregateStatusView, java.lang.String)
      */
     public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView, String statusSite) {
@@ -180,6 +189,12 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     }
 
     
+    /**
+     * <p>createAggregateStatusUsingAssetColumn</p>
+     *
+     * @param statusView a {@link org.opennms.netmgt.model.AggregateStatusView} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(AggregateStatusView statusView) {
         
         if (statusView == null) {
@@ -243,23 +258,44 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         
     }
     
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao dao) {
         m_categoryDao = dao;
     }
     
+    /**
+     * <p>setSiteStatusViewConfigDao</p>
+     *
+     * @param dao a {@link org.opennms.web.svclayer.dao.SiteStatusViewConfigDao} object.
+     */
     public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao dao) {
         m_siteStatusViewConfigDao = dao;
     }
 
 
+    /** {@inheritDoc} */
     public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView) {
         if (! "assets".equalsIgnoreCase("assets")) {
             throw new IllegalArgumentException("statusView only currently supports asset table columns");
@@ -267,6 +303,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         return createAggregateStatusUsingAssetColumn(statusView);
     }
 
+    /** {@inheritDoc} */
     public AggregateStatus getAggregateStatus(String statusViewName, String statusSite, String rowLabel) {
         
         AggregateStatusView statusView = createAggregateStatusView(statusViewName);
@@ -281,6 +318,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     }
 
 
+    /** {@inheritDoc} */
     public Collection<OnmsNode> getNodes(String statusViewName, String statusSite, String rowLabel) {
         if (statusViewName == null) {
             statusViewName = m_siteStatusViewConfigDao.getDefaultView().getName();

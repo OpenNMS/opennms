@@ -35,43 +35,87 @@ import java.util.Collection;
 
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>AliasedGroup class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AliasedGroup extends AttributeGroup {
 	
 	AttributeGroup m_group;
 
+	/**
+	 * <p>Constructor for AliasedGroup.</p>
+	 *
+	 * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+	 * @param group a {@link org.opennms.netmgt.collectd.AttributeGroup} object.
+	 */
 	public AliasedGroup(CollectionResource resource, AttributeGroup group) {
 		super(resource, group.getGroupType());
 		m_group = group;
 	}
 
+	/**
+	 * <p>addAttribute</p>
+	 *
+	 * @param attr a {@link org.opennms.netmgt.collectd.SnmpAttribute} object.
+	 */
 	public void addAttribute(SnmpAttribute attr) {
 		m_group.addAttribute(attr);
 	}
 
+	/** {@inheritDoc} */
 	public boolean equals(Object obj) {
 		return m_group.equals(obj);
 	}
 
+	/**
+	 * <p>getAttributes</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<CollectionAttribute> getAttributes() {
 		return m_group.getAttributes();
 	}
 
+	/**
+	 * <p>getGroupType</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+	 */
 	public AttributeGroupType getGroupType() {
 		return m_group.getGroupType();
 	}
 
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_group.getName();
 	}
 
+	/**
+	 * <p>hashCode</p>
+	 *
+	 * @return a int.
+	 */
 	public int hashCode() {
 		return m_group.hashCode();
 	}
 
+	/** {@inheritDoc} */
 	public boolean shouldPersist(ServiceParameters params) {
 		return m_group.shouldPersist(params);
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return m_group.toString();
 	}
@@ -80,6 +124,7 @@ public class AliasedGroup extends AttributeGroup {
 		return ThreadCategory.getInstance(getClass());
 	}
 
+	/** {@inheritDoc} */
 	public void visit(CollectionSetVisitor visitor) {
 		visitor.visitGroup(this);
 		

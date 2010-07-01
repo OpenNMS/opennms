@@ -38,17 +38,23 @@ import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
 import org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionFactory;
 
 /**
- * @author thedesloge
+ * <p>Jsr160Client class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class Jsr160Client extends JMXClient {
     
     private Map<String, Object> m_parameterMap;
     
+    /**
+     * <p>Constructor for Jsr160Client.</p>
+     */
     public Jsr160Client() {
         m_parameterMap = new HashMap<String, Object>();
     }
     
+    /** {@inheritDoc} */
     @Override
     protected Map<String, Object> generateMap(int port, int timeout) {
         
@@ -57,35 +63,71 @@ public class Jsr160Client extends JMXClient {
         return m_parameterMap;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
         return Jsr160ConnectionFactory.getMBeanServerConnection(parameterMap, address);
     }
     
+    /**
+     * <p>setFactory</p>
+     *
+     * @param factory a {@link java.lang.String} object.
+     */
     public void setFactory(String factory) {
         m_parameterMap.put("factory", factory);
     }
     
+    /**
+     * <p>setFriendlyName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setFriendlyName(String name) {
         m_parameterMap.put("friendlyname", name);
     }
     
+    /**
+     * <p>setUsername</p>
+     *
+     * @param username a {@link java.lang.String} object.
+     */
     public void setUsername(String username) {
         m_parameterMap.put("username", username);
     }
     
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPassword(String password) {
         m_parameterMap.put("password", password);
     }
     
+    /**
+     * <p>setUrlPath</p>
+     *
+     * @param urlPath a {@link java.lang.String} object.
+     */
     public void setUrlPath(String urlPath) {
         m_parameterMap.put("urlPath", urlPath);
     }
     
+    /**
+     * <p>setType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     */
     public void setType(String type) {
         m_parameterMap.put("type", type);
     }
 
+    /**
+     * <p>setProtocol</p>
+     *
+     * @param protocol a {@link java.lang.String} object.
+     */
     public void setProtocol(String protocol) {
         m_parameterMap.put("protocol", protocol);
         

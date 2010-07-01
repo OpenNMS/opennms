@@ -16,16 +16,24 @@ import org.opennms.sms.ping.PingConstants;
 import org.opennms.sms.ping.SmsPinger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * <p>SMSPingMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Distributable(DistributionContext.DAEMON)
 final public class SMSPingMonitor extends IPv4Monitor {
 	Phonebook phonebook = new PropertyPhonebook();
 
+	/** {@inheritDoc} */
 	@Override
 	public void initialize(Map<String,Object> params) {
 		super.initialize(params);
 		BeanUtils.getFactory("mobileMessagePollerContext", ClassPathXmlApplicationContext.class);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);

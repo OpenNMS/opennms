@@ -54,7 +54,7 @@ import org.springframework.util.Assert;
  * an underlying file has changed.  Ideally suited for automatically reloading
  * configuration files that might be edited outside of the application.
  * </p>
- * 
+ *
  * <p>
  * <!--
  *      Can't use generics in @see and @link tags.  See Sun bug 5096551:
@@ -75,7 +75,7 @@ import org.springframework.util.Assert;
  * difference in code is at initialization time when one constructor or the
  * other is used).
  * </p>
- * 
+ *
  * <p>
  * If the first constructor is used, the Resource will be stored for later
  * reloading.  If {@link Resource#getFile() Resource.getFile()} does not
@@ -89,7 +89,7 @@ import org.springframework.util.Assert;
  * object is returned, the stored object isn't modified and the old object
  * is returned to the caller.
  * </p>
- * 
+ *
  * <p>
  * If an unchecked exception is thrown by the reload callback, it will be
  * caught, logged, and a {@link DataAccessResourceFailureException} with
@@ -99,10 +99,10 @@ import org.springframework.util.Assert;
  * caught within the reload method.  Returning a null in the case of errors
  * is a good alternative in this case.
  * </p>
- * 
- * @author dj@opennms.org
  *
+ * @author dj@opennms.org
  * @param <T> the class of the inner object that is stored in this container
+ * @version $Id: $
  */
 public class FileReloadContainer<T> {
     private static final long DEFAULT_RELOAD_CHECK_INTERVAL = 1000;
@@ -123,13 +123,14 @@ public class FileReloadContainer<T> {
      * {@link FileReloadCallback#reload(Object, File) reload}
      * on the callback will be called when the file is modified.  The
      * check will be performed when {@link #getObject()} is called and
-     * at least reloadCheckInterval milliseconds have passed. 
-     *  
+     * at least reloadCheckInterval milliseconds have passed.
+     *
      * @param object object to be stored in this container
-     * @param file file underlying the object
      * @param callback {@link FileReloadCallback#reload(Object, File) reload}
      *  will be called when the underlying file object is modified
-     * @throws IllegalArgumentException if object, file, or callback are null
+     * @throws java.lang.IllegalArgumentException if object, file, or callback are null
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @param <T> a T object.
      */
     public FileReloadContainer(T object, Resource resource,
                                FileReloadCallback<T> callback) {
@@ -155,9 +156,9 @@ public class FileReloadContainer<T> {
     /**
      * Creates a new container with an object which has no underlying file.
      * This will not auto-reload.
-     * 
+     *
      * @param object object to be stored in this container
-     * @throws IllegalArgumentException if object is null
+     * @throws java.lang.IllegalArgumentException if object is null
      */
     public FileReloadContainer(T object) {
         Assert.notNull(object, "argument object cannot be null");
@@ -169,9 +170,9 @@ public class FileReloadContainer<T> {
      * Get the object in this container.  If the object is backed by a file,
      * the last modified time on the file will be checked, and if it has
      * changed the object will be reloaded.
-     * 
+     *
      * @return object in this container
-     * @throws DataAccessResourceFailureException if an unchecked exception
+     * @throws org.springframework.dao.DataAccessResourceFailureException if an unchecked exception
      *  is received while trying to reload the object from the underlying file
      */
     public T getObject() throws DataAccessResourceFailureException {
@@ -230,7 +231,7 @@ public class FileReloadContainer<T> {
 
     /**
      * Get the file underlying the object in this container, if any.
-     * 
+     *
      * @return if the container was created with an underlying file the
      *  file will be returned, otherwise null
      */

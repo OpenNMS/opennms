@@ -44,6 +44,12 @@ import org.springframework.core.style.ToStringCreator;
 
 
 @Entity
+/**
+ * <p>OnmsServerMap class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name="servermap")
 public class OnmsServerMap extends OnmsEntity implements Serializable {
 
@@ -60,17 +66,29 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
 
     private Integer m_id;
 
-    /** full constructor */
+    /**
+     * full constructor
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param serverName a {@link java.lang.String} object.
+     */
     public OnmsServerMap(String ipAddr, String serverName) {
         m_ipAddr = ipAddr;
         m_serverName = serverName;
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsServerMap() {
     }
 
     
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @Column(name="id")
     @SequenceGenerator(name="serverMapSequence", sequenceName="svrMapNxtId")
@@ -79,30 +97,60 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
         return m_id;
     }
     
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
     
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="ipAddr", length=16)
     public String getIpAddress() {
         return m_ipAddr;
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipAddr) {
         m_ipAddr = ipAddr;
     }
 
     
+    /**
+     * <p>getServerName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="serverName", length=64)
     public String getServerName() {
         return m_serverName;
     }
 
+    /**
+     * <p>setServerName</p>
+     *
+     * @param serverName a {@link java.lang.String} object.
+     */
     public void setServerName(String serverName) {
         m_serverName = serverName;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("ipAddr", getIpAddress())
@@ -110,6 +158,7 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
             .toString();
     }
 
+	/** {@inheritDoc} */
 	public void visit(EntityVisitor visitor) {
 		// TODO Auto-generated method stub
 		throw new RuntimeException("visitor method not implemented");

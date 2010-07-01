@@ -38,25 +38,42 @@ import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
 /**
- * @author Donald Desloge
+ * <p>Abstract LineOrientedDetector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public abstract class LineOrientedDetector extends BasicDetector<LineOrientedRequest, LineOrientedResponse> {
 
+    /**
+     * <p>Constructor for LineOrientedDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     protected LineOrientedDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
     /**
-     * @param port
-     * @param timeout
-     * @param retries
+     * <p>Constructor for LineOrientedDetector.</p>
+     *
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
+     * @param serviceName a {@link java.lang.String} object.
      */
     protected LineOrientedDetector(String serviceName, int port, int timeout, int retries) {
         super(serviceName, port, timeout, retries);
 
     }
 
+    /**
+     * <p>startsWith</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<LineOrientedResponse> startsWith(final String pattern) {
         return new ResponseValidator<LineOrientedResponse>() {
             public boolean validate(LineOrientedResponse response) {
@@ -66,6 +83,12 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
         };
     }
     
+    /**
+     * <p>equals</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<LineOrientedResponse> equals(final String pattern) {
         return new ResponseValidator<LineOrientedResponse>() {
             public boolean validate(LineOrientedResponse response) {
@@ -75,6 +98,12 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
         };
     }
     
+    /**
+     * <p>matches</p>
+     *
+     * @param regex a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
@@ -85,6 +114,12 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
         };
     }
     
+    /**
+     * <p>find</p>
+     *
+     * @param regex a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<LineOrientedResponse> find(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
@@ -96,14 +131,24 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
         };
     }
     
+    /**
+     * <p>request</p>
+     *
+     * @param command a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     */
     public LineOrientedRequest request(String command) {
         return new LineOrientedRequest(command);
     }
     
+    /**
+     * <p>expectClose</p>
+     */
     public void expectClose() {
         send(LineOrientedRequest.Null, equals(null));
     }
     
+    /** {@inheritDoc} */
     @Override
     protected Client<LineOrientedRequest, LineOrientedResponse> getClient() {
         return new LineOrientedClient();

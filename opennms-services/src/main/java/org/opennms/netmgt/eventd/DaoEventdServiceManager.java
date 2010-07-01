@@ -46,6 +46,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+/**
+ * <p>DaoEventdServiceManager class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Transactional(readOnly = true)
 public class DaoEventdServiceManager implements InitializingBean, EventdServiceManager {
     private ServiceTypeDao m_serviceTypeDao;
@@ -55,12 +61,16 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
      */
     private Map<String, Integer> m_serviceMap = new HashMap<String, Integer>();
 
+    /**
+     * <p>Constructor for DaoEventdServiceManager.</p>
+     */
     public DaoEventdServiceManager() {
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventdServiceManager#getServiceId(java.lang.String)
      */
+    /** {@inheritDoc} */
     public synchronized int getServiceId(String serviceName) throws DataAccessException {
         Assert.notNull(serviceName, "The serviceName argument must not be null");
 
@@ -86,6 +96,9 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventdServiceManager#dataSourceSync()
      */
+    /**
+     * <p>dataSourceSync</p>
+     */
     public synchronized void dataSourceSync() {
         m_serviceMap.clear();
         
@@ -98,14 +111,29 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_serviceTypeDao != null, "property serviceTypeDao must be set");
     }
 
+    /**
+     * <p>getServiceTypeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     */
     public ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
     }
 
+    /**
+     * <p>setServiceTypeDao</p>
+     *
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.ServiceTypeDao} object.
+     */
     public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }

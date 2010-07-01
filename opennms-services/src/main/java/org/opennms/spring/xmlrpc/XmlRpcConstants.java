@@ -35,12 +35,16 @@
 package org.opennms.spring.xmlrpc;
 
 /**
- * 
+ * <p>XmlRpcConstants interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface XmlRpcConstants {
 
+    /** Constant <code>FAULT_INVALID_DATA=1</code> */
     public static final int FAULT_INVALID_DATA = 1;
+    /** Constant <code>FAULT_INVALID_URL=2</code> */
     public static final int FAULT_INVALID_URL = 2;
 
 }

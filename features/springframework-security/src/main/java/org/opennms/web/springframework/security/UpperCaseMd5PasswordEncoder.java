@@ -33,7 +33,14 @@ package org.opennms.web.springframework.security;
 
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
+/**
+ * <p>UpperCaseMd5PasswordEncoder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class UpperCaseMd5PasswordEncoder extends Md5PasswordEncoder {
+    /** {@inheritDoc} */
     public String encodePassword(String rawPass, Object salt) {
     	// This is almost too easy -- I'm not complaining!!
         return super.encodePassword(rawPass, salt).toUpperCase();

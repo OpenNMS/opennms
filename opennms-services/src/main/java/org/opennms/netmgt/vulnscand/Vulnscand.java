@@ -66,17 +66,19 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
  * vulnerability scanner that this version uses to identify security flaws is
  * Nessus 1.1.X (www.nessus.org).
  * </P>
- * 
+ *
  * <P>
  * This code is adapted from the capsd code because its behavior is quite
  * similar; it continually scans the target ranges, enters the scan results into
  * a database table, and also supports rescans whose threads are pulled from a
  * separate thread pool so that they occur immediately.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:seth@opennms.org">Seth Leger </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:seth@opennms.org">Seth Leger </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class Vulnscand extends AbstractServiceDaemon {
     /**
@@ -160,6 +162,9 @@ public class Vulnscand extends AbstractServiceDaemon {
         m_scheduler = null;
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
 		// Stop the broadcast event receiver
         //
@@ -174,6 +179,9 @@ public class Vulnscand extends AbstractServiceDaemon {
         m_scheduledScanRunner.stop();
 	}
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
 		// Initialize the Vulnscand configuration factory.
         //
@@ -265,11 +273,18 @@ public class Vulnscand extends AbstractServiceDaemon {
     /**
      * Used to retrieve the local host name/address. The name/address of the
      * machine on which Vulnscand is running.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public static String getLocalHostAddress() {
         return m_address;
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.vulnscand.Vulnscand} object.
+     */
     public static Vulnscand getInstance() {
         return m_singleton;
     }
@@ -278,6 +293,9 @@ public class Vulnscand extends AbstractServiceDaemon {
         return m_dbSyncLock;
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
     }
 
@@ -451,6 +469,11 @@ public class Vulnscand extends AbstractServiceDaemon {
 		}
 	}
 
+	/**
+	 * <p>initialize</p>
+	 *
+	 * @throws java.sql.SQLException if any.
+	 */
 	public void initialize() throws SQLException {
 		// Get rescan interval from configuration factory
 	    setInitialScheduleSleep();

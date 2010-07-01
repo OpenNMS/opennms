@@ -38,14 +38,31 @@ import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
 
-/** Encapsulates all service filtering functionality. */
+/**
+ * Encapsulates all service filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
+    /** Constant <code>TYPE="servicenot"</code> */
     public static final String TYPE = "servicenot";
 
+    /**
+     * <p>Constructor for NegativeServiceFilter.</p>
+     *
+     * @param serviceId a int.
+     */
     public NegativeServiceFilter(int serviceId) {
         super(TYPE, SQLType.INT, "OUTAGES.SERVICEID", "serviceType.id", serviceId);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         int serviceId = getServiceId();
         String serviceName = Integer.toString(serviceId);
@@ -59,14 +76,25 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
         return ("service is not " + serviceName);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<NegativeServiceFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getServiceId</p>
+     *
+     * @return a int.
+     */
     public int getServiceId() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

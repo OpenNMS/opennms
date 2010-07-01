@@ -31,8 +31,10 @@
 package org.opennms.netmgt.provision.server.exchange;
 
 /**
- * @author thedesloge
+ * <p>ServerConversation class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class ServerConversation extends Conversation {
 

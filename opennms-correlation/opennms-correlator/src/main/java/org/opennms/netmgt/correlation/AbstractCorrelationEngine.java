@@ -46,9 +46,10 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>Abstract AbstractCorrelationEngine class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public abstract class AbstractCorrelationEngine implements CorrelationEngine {
 
@@ -57,30 +58,62 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
     private Timer m_scheduler;
     private Map<Integer, TimerTask> m_pendingTasks = Collections.synchronizedMap(new HashMap<Integer, TimerTask>());
 
+    /** {@inheritDoc} */
     abstract public void correlate(Event e);
 
+    /**
+     * <p>getInterestingEvents</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     abstract public List<String> getInterestingEvents();
     
+    /**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
     
+    /**
+     * <p>sendEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public void sendEvent(Event e) {
         m_eventIpcManager.sendNow(e);
     }
     
+    /**
+     * <p>setTimer</p>
+     *
+     * @param millis a long.
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer setTimer( long millis ) {
         RuleTimerTask task = getTimerTask();
         m_scheduler.schedule(task, millis);
         return task.getId();
     }
     
+    /**
+     * <p>getTimerTask</p>
+     *
+     * @return a {@link org.opennms.netmgt.correlation.AbstractCorrelationEngine.RuleTimerTask} object.
+     */
     public RuleTimerTask getTimerTask() {
         RuleTimerTask timerTask = new RuleTimerTask();
         m_pendingTasks.put(timerTask.getId(), timerTask);
         return timerTask;
     }
     
+    /**
+     * <p>cancelTimer</p>
+     *
+     * @param timerId a {@link java.lang.Integer} object.
+     */
     public void cancelTimer( Integer timerId ) {
         TimerTask task = m_pendingTasks.remove(timerId);
         if (task != null) {
@@ -88,12 +121,27 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
         }
     }
     
+    /**
+     * <p>timerExpired</p>
+     *
+     * @param timerId a {@link java.lang.Integer} object.
+     */
     protected abstract void timerExpired(Integer timerId);
     
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link java.util.Timer} object.
+     */
     public void setScheduler(Timer scheduler) {
         m_scheduler = scheduler;
     }
     
+    /**
+     * <p>runTimer</p>
+     *
+     * @param task a {@link org.opennms.netmgt.correlation.AbstractCorrelationEngine.RuleTimerTask} object.
+     */
     public void runTimer(RuleTimerTask task) {
         m_pendingTasks.remove(task.getId());
         timerExpired(task.getId());

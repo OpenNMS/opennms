@@ -36,31 +36,69 @@ import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.collectd.CollectionAttributeType;
 import org.opennms.netmgt.collectd.AbstractCollectionResource;
 
+/**
+ * <p>Abstract WmiCollectionResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class WmiCollectionResource extends AbstractCollectionResource {
+    /**
+     * <p>Constructor for WmiCollectionResource.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public WmiCollectionResource(CollectionAgent agent) {
         super(agent);
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() {
         return -1; //Is this right?
     }
 
     //A rescan is never needed for the WmiCollector, at least on resources
+    /**
+     * <p>rescanNeeded</p>
+     *
+     * @return a boolean.
+     */
     public boolean rescanNeeded() {
         return false;
     }
 
+    /** {@inheritDoc} */
     public boolean shouldPersist(ServiceParameters params) {
         return true;
     }
 
+    /**
+     * <p>setAttributeValue</p>
+     *
+     * @param type a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public void setAttributeValue(CollectionAttributeType type, String value) {
         WmiCollectionAttribute attr = new WmiCollectionAttribute(this, type, type.getName(), value);
         addAttribute(attr);
     }
 
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getResourceTypeName();
 
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getInstance();   
 }

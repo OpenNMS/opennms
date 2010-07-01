@@ -64,9 +64,19 @@ import org.opennms.web.WebSecurityUtils;
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
+ * <p>ImportAssetsServlet class.</p>
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class ImportAssetsServlet extends HttpServlet {
     private static final long serialVersionUID = 2L;
@@ -94,6 +104,8 @@ public class ImportAssetsServlet extends HttpServlet {
      * Looks up the <code>redirect.success</code> parameter in the servlet's
      * configuration. If not present, this servlet will throw an exception so it will
      * be marked unavailable.
+     *
+     * @throws javax.servlet.ServletException if any.
      */
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
@@ -108,6 +120,8 @@ public class ImportAssetsServlet extends HttpServlet {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
@@ -170,6 +184,13 @@ public class ImportAssetsServlet extends HttpServlet {
 		response.sendRedirect(response.encodeRedirectURL("import.jsp?showMessage=true"));
 	}
 
+    /**
+     * <p>decodeAssetsText</p>
+     *
+     * @param text a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.web.asset.ImportAssetsServlet$AssetException if any.
+     */
     public List<Asset> decodeAssetsText(String text) throws AssetException {
         CSVReader reader = new CSVReader(new StringReader(text));
         String[] line;
@@ -257,6 +278,12 @@ public class ImportAssetsServlet extends HttpServlet {
         return list;
     }
 
+    /**
+     * <p>getCurrentAssetNodesList</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws java.sql.SQLException if any.
+     */
     public List<Integer> getCurrentAssetNodesList() throws SQLException {
         Connection conn = Vault.getDbConnection();
         List<Integer> list = new ArrayList<Integer>();

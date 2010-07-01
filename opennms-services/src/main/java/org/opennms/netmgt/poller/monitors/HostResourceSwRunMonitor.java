@@ -66,10 +66,12 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 
 //this does snmp and there relies on the snmp configuration so it is not distributable
@@ -95,7 +97,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      * <P>
      * Returns the name of the service that the plug-in monitors ("SNMP").
      * </P>
-     * 
+     *
      * @return The service that the plug-in monitors.
      */
     public String serviceName() {
@@ -103,16 +105,14 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Initialize the service monitor.
      * </P>
-     * @param parameters
-     *            Not currently used.
-     * 
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
-     * 
      */
     public void initialize(Map<String, Object> parameters) {
         // Initialize the SnmpPeerFactory
@@ -139,10 +139,11 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
      * scheduler. Here we perform any necessary initialization to prepare the
      * NetworkInterface object for polling.
      * </P>
-     * 
+     *
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
     public void initialize(MonitoredService svc) {
         super.initialize(svc);
@@ -150,18 +151,12 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * The poll() method is responsible for polling the specified address for
      * SNMP service availability.
      * </P>
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availability of the interface and if a transition event
-     *         should be supressed.
-     * 
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */

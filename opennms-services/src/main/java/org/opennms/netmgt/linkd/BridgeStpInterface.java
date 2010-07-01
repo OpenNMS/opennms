@@ -38,10 +38,13 @@
 package org.opennms.netmgt.linkd;
 
 /**
+ * <p>BridgeStpInterface class.</p>
+ *
  * @author antonio
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public class BridgeStpInterface {
 
@@ -59,6 +62,8 @@ public class BridgeStpInterface {
 	}
 
 	/**
+	 * <p>Getter for the field <code>stpPortDesignatedBridge</code>.</p>
+	 *
 	 * @return Returns the stpPortDesignatedBridge.
 	 */
 	public String getStpPortDesignatedBridge() {
@@ -66,6 +71,8 @@ public class BridgeStpInterface {
 	}
 
 	/**
+	 * <p>Setter for the field <code>stpPortDesignatedBridge</code>.</p>
+	 *
 	 * @param stpPortDesignatedBridge The stpPortDesignatedBridge to set.
 	 */
 	public void setStpPortDesignatedBridge(String stpPortDesignatedBridge) {
@@ -73,6 +80,8 @@ public class BridgeStpInterface {
 	}
 
 	/**
+	 * <p>Getter for the field <code>stpPortDesignatedPort</code>.</p>
+	 *
 	 * @return Returns the stpPortDesignatedPort.
 	 */
 	public String getStpPortDesignatedPort() {
@@ -80,6 +89,8 @@ public class BridgeStpInterface {
 	}
 
 	/**
+	 * <p>Setter for the field <code>stpPortDesignatedPort</code>.</p>
+	 *
 	 * @param stpPortDesignatedPort The stpPortDesignatedPort to set.
 	 */
 	public void setStpPortDesignatedPort(String stpPortDesignatedPort) {
@@ -87,12 +98,19 @@ public class BridgeStpInterface {
 	}
 
 	/**
+	 * <p>Getter for the field <code>bridgeport</code>.</p>
+	 *
 	 * @return Returns the bridgeport.
 	 */
 	public int getBridgeport() {
 		return bridgeport;
 	}
 	
+	/**
+	 * <p>Getter for the field <code>vlan</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getVlan() {
 		return vlan;
 	}

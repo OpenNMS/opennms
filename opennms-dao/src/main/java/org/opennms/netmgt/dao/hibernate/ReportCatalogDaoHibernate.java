@@ -38,14 +38,24 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 
+/**
+ * <p>ReportCatalogDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReportCatalogDaoHibernate extends
         AbstractDaoHibernate<ReportCatalogEntry, Integer> implements
         ReportCatalogDao {
 
+    /**
+     * <p>Constructor for ReportCatalogDaoHibernate.</p>
+     */
     public ReportCatalogDaoHibernate() {
         super(ReportCatalogEntry.class);
     }
 
+    /** {@inheritDoc} */
     public void delete(Integer id) {
         ReportCatalogEntry catalogEntry = (ReportCatalogEntry)getHibernateTemplate().get(ReportCatalogEntry.class, id);
         super.delete(catalogEntry);

@@ -33,6 +33,9 @@
 /**
  * Container for all state needed by the SnmpThresholder for a
  * ThresholdNetworkInterface.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.threshd;
 
@@ -42,12 +45,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.poller.NetworkInterface;
-
 public class SnmpThresholdNetworkInterface {
     private ThresholdNetworkInterface m_networkInterface;
     private SnmpThresholdConfiguration m_thresholdConfiguration;
     private Map<String, Map<String, Set<ThresholdEntity>>> m_allInterfaceMap;
     
+    /**
+     * <p>Constructor for SnmpThresholdNetworkInterface.</p>
+     *
+     * @param thresholdsDao a {@link org.opennms.netmgt.threshd.ThresholdsDao} object.
+     * @param iface a {@link org.opennms.netmgt.threshd.ThresholdNetworkInterface} object.
+     * @param parms a {@link java.util.Map} object.
+     */
     public SnmpThresholdNetworkInterface(ThresholdsDao thresholdsDao, ThresholdNetworkInterface iface, Map parms) {
         setNetworkInterface(iface);
         setThresholdConfiguration(new SnmpThresholdConfiguration(thresholdsDao, parms));
@@ -55,56 +64,118 @@ public class SnmpThresholdNetworkInterface {
         setAllInterfaceMap(new HashMap<String, Map<String, Set<ThresholdEntity>>>());
     }
 
+    /**
+     * <p>getThresholdConfiguration</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.SnmpThresholdConfiguration} object.
+     */
     public SnmpThresholdConfiguration getThresholdConfiguration() {
         return m_thresholdConfiguration;
     }
 
+    /**
+     * <p>setThresholdConfiguration</p>
+     *
+     * @param thresholdConfiguration a {@link org.opennms.netmgt.threshd.SnmpThresholdConfiguration} object.
+     */
     public void setThresholdConfiguration(SnmpThresholdConfiguration thresholdConfiguration) {
         m_thresholdConfiguration = thresholdConfiguration;
     }
     
+    /**
+     * <p>setAllInterfaceMap</p>
+     *
+     * @param allInterfaceMap a {@link java.util.Map} object.
+     */
     public void setAllInterfaceMap(Map<String, Map<String, Set<ThresholdEntity>>> allInterfaceMap) {
         m_allInterfaceMap = allInterfaceMap;
     }
     
+    /**
+     * <p>getAllInterfaceMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Map<String, Set<ThresholdEntity>>> getAllInterfaceMap() {
         return m_allInterfaceMap;
     }
     
+    /**
+     * <p>getNetworkInterface</p>
+     *
+     * @return a {@link org.opennms.netmgt.threshd.ThresholdNetworkInterface} object.
+     */
     public ThresholdNetworkInterface getNetworkInterface() {
         return m_networkInterface;
     }
 
+    /**
+     * <p>setNetworkInterface</p>
+     *
+     * @param networkInterface a {@link org.opennms.netmgt.threshd.ThresholdNetworkInterface} object.
+     */
     public void setNetworkInterface(ThresholdNetworkInterface networkInterface) {
         m_networkInterface = networkInterface;
     }
 
+    /**
+     * <p>isIPV4</p>
+     *
+     * @return a boolean.
+     */
     public boolean isIPV4() {
         return getNetworkInterface().getType() == NetworkInterface.TYPE_IPV4;
     }
 
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getInetAddress() {
         return (InetAddress) getNetworkInterface().getAddress();
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return getInetAddress().getHostAddress();
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getNodeId() {
         return m_networkInterface.getNodeId();
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getNodeId() + "/" + getIpAddress() + "/" + m_thresholdConfiguration.getGroupName();
     }
 
+    /**
+     * <p>getNodeThresholdMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Set<ThresholdEntity>> getNodeThresholdMap() {
     	ThresholdResourceType resourceType = getThresholdConfiguration().getNodeResourceType();
     	return resourceType.getThresholdMap();
     }
 
+    /**
+     * <p>getInterfaceThresholdMap</p>
+     *
+     * @param ifLabel a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Set<ThresholdEntity>> getInterfaceThresholdMap(String ifLabel) {
         ThresholdResourceType resourceType = getThresholdConfiguration().getIfResourceType();
 

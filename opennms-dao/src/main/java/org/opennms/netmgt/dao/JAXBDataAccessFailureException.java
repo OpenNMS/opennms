@@ -30,19 +30,32 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>JAXBDataAccessFailureException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.dao;
 
 import org.springframework.dao.DataAccessResourceFailureException;
-
 public class JAXBDataAccessFailureException extends DataAccessResourceFailureException {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * <p>Constructor for JAXBDataAccessFailureException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public JAXBDataAccessFailureException(String message) {
         super(message);
     }
     
+    /**
+     * <p>Constructor for JAXBDataAccessFailureException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param throwable a {@link java.lang.Throwable} object.
+     */
     public JAXBDataAccessFailureException(String message, Throwable throwable) {
         super(message, throwable);
     }

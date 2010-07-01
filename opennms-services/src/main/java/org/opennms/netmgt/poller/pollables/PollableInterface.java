@@ -44,19 +44,31 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a PollableInterface 
+ * Represents a PollableInterface
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class PollableInterface extends PollableContainer {
 
     private final InetAddress m_addr;
 
+    /**
+     * <p>Constructor for PollableInterface.</p>
+     *
+     * @param node a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
+     * @param addr a {@link java.net.InetAddress} object.
+     */
     public PollableInterface(PollableNode node, InetAddress addr) {
         super(node, Scope.INTERFACE);
         m_addr = addr;
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
+     */
     public PollableNode getNode() {
         return (PollableNode)getParent();
     }
@@ -65,30 +77,66 @@ public class PollableInterface extends PollableContainer {
         setParent(newNode);
     }
 
+    /**
+     * <p>getNetwork</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableNetwork} object.
+     */
     public PollableNetwork getNetwork() {
         return getNode().getNetwork();
     }
     
+    /**
+     * <p>getContext</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollContext} object.
+     */
     public PollContext getContext() {
         return getNode().getContext();
     }
 
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddr() {
         return m_addr.getHostAddress();
     }
     
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return m_addr;
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return getNode().getNodeId();
     }
 
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return getNode().getNodeLabel();
     }
 
+    /**
+     * <p>createService</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
+     */
     public PollableService createService(final String svcName) {
         return withTreeLock(new Callable<PollableService>() {
             public PollableService call() {
@@ -103,20 +151,31 @@ public class PollableInterface extends PollableContainer {
         
     }
 
+    /**
+     * <p>getService</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
+     */
     public PollableService getService(String svcName) {
         return (PollableService)getMember(svcName);
     }
 
+    /** {@inheritDoc} */
     protected Object createMemberKey(PollableElement member) {
         PollableService svc = (PollableService)member;
         return svc.getSvcName();
     }
     
+    /** {@inheritDoc} */
     protected void visitThis(PollableVisitor v) {
         super.visitThis(v);
         v.visitInterface(this);
     }
     
+    /**
+     * <p>recalculateStatus</p>
+     */
     public void recalculateStatus() {
         PollableService criticalSvc = getCriticalService();
         if (criticalSvc != null) {
@@ -135,11 +194,17 @@ public class PollableInterface extends PollableContainer {
     }
 
 
+    /**
+     * <p>selectPollElement</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     */
     public PollableElement selectPollElement() {
         PollableService critSvc = getCriticalService();
         return (critSvc != null ? critSvc : super.selectPollElement());
     }
     
+    /** {@inheritDoc} */
     protected PollStatus poll(PollableElement elem) {
         PollableService critSvc = getCriticalService();
         if (getStatus().isUp() || critSvc == null || elem == critSvc)
@@ -148,6 +213,7 @@ public class PollableInterface extends PollableContainer {
         return PollStatus.down();
     }
     
+    /** {@inheritDoc} */
     public PollStatus pollRemainingMembers(PollableElement member) {
         PollableService critSvc = getCriticalService();
         
@@ -166,17 +232,29 @@ public class PollableInterface extends PollableContainer {
         }
             
     }
+    /** {@inheritDoc} */
     public Event createDownEvent(Date date) {
         return getContext().createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
     }
     
     
+    /** {@inheritDoc} */
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() { return getNode()+":"+getIpAddr(); }
 
+    /**
+     * <p>reparentTo</p>
+     *
+     * @param newNode a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
+     */
     public void reparentTo(final PollableNode newNode) {
         final PollableNode oldNode = getNode();
         

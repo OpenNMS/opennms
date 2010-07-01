@@ -35,40 +35,54 @@ package org.opennms.core.tasks;
  * DefaultTaskMonitor
  *
  * @author brozow
+ * @version $Id: $
  */
 public class DefaultTaskMonitor implements TaskMonitor {
 
+    /**
+     * <p>Constructor for DefaultTaskMonitor.</p>
+     *
+     * @param task a {@link org.opennms.core.tasks.Task} object.
+     */
     public DefaultTaskMonitor(Task task) {
     }
 
+    /** {@inheritDoc} */
     public void completed(Task task) {
         log("completed(%s)", task);
     }
 
+    /** {@inheritDoc} */
     public void prerequisiteAdded(Task monitored, Task prerequsite) {
         log("prerequisiteAdded(%s, %s)", monitored, prerequsite);
     }
 
+    /** {@inheritDoc} */
     public void prerequisiteCompleted(Task monitored, Task prerequisite) {
         log("prerequisiteCompleted(%s, %s)", monitored, prerequisite);
     }
 
+    /** {@inheritDoc} */
     public void scheduled(Task task) {
         log("scheduled(%s)", task);
     }
 
+    /** {@inheritDoc} */
     public void started(Task task) {
         log("started(%s)", task);
     }
 
+    /** {@inheritDoc} */
     public void submitted(Task task) {
         log("submitted(%s)", task);
     }
 
+    /** {@inheritDoc} */
     public void monitorException(Throwable t) {
         log(t, "monitorException(%s)", t);
     }
     
+    /** {@inheritDoc} */
     public TaskMonitor getChildTaskMonitor(Task task, Task child) {
         return this;
     }

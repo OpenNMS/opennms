@@ -53,6 +53,13 @@ import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.users.User;
 
+/**
+ * <p>Manager class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class Manager implements WebRoleManager, WebUserManager, WebGroupManager {
     
     private GroupManager m_groupManager;
@@ -208,6 +215,11 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         return mgdRole;
     }
     
+    /**
+     * <p>createRole</p>
+     *
+     * @return a {@link org.opennms.web.admin.roles.WebRole} object.
+     */
     public WebRole createRole() {
         return new ManagedRole();
     }
@@ -340,11 +352,22 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         
     }
 
+    /**
+     * <p>Constructor for Manager.</p>
+     *
+     * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
+     * @param userManager a {@link org.opennms.netmgt.config.UserManager} object.
+     */
     public Manager(GroupManager groupManager, UserManager userManager) {
         m_groupManager = groupManager;
         m_userManager = userManager;
     }
 
+    /**
+     * <p>getRoles</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<WebRole> getRoles() {
         Collection<Role> roles = m_groupManager.getRoles();
         List<WebRole> webRoles = new ArrayList<WebRole>(roles.size());
@@ -354,6 +377,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         return webRoles;
     }
 
+    /** {@inheritDoc} */
     public void deleteRole(String roleName) {
         try {
             m_groupManager.deleteRole(roleName);
@@ -362,11 +386,13 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         }
     }
 
+    /** {@inheritDoc} */
     public WebRole getRole(String roleName) {
         Role role = getBackingRole(roleName);
         return (role == null ? null : getWebRole(role));
     }
 
+    /** {@inheritDoc} */
     public void saveRole(WebRole webRole) {
         try {
             ManagedRole mgdRole = getManagedRole(webRole);
@@ -376,6 +402,11 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         }
     }
 
+    /**
+     * <p>getUsers</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<WebUser> getUsers() {
         List<WebUser> users = new ArrayList<WebUser>();
         for (User u : getBackingUsers()) {
@@ -384,10 +415,16 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         return users;
     }
 
+    /** {@inheritDoc} */
     public WebUser getUser(String name) {
         return getWebUser(name);
     }
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<WebGroup> getGroups() {
         List<WebGroup> groups = new ArrayList<WebGroup>();
         for (Group group : getBackingGroups()) {
@@ -396,6 +433,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         return groups;
     }
 
+    /** {@inheritDoc} */
     public WebGroup getGroup(String groupName) {
         return getWebGroup(groupName);
     }

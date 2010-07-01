@@ -52,9 +52,10 @@ import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
 
 /**
- * Represents a PollableServiceConfig 
+ * Represents a PollableServiceConfig
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
@@ -67,6 +68,15 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private Service m_configService;
 	private ServiceMonitor m_serviceMonitor;
 
+    /**
+     * <p>Constructor for PollableServiceConfig.</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
+     * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
+     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
+     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
+     * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
+     */
     public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
@@ -94,6 +104,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         
     }
 
+    /**
+     * <p>poll</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus poll() {
         try {
             ServiceMonitor monitor = getServiceMonitor();
@@ -119,10 +134,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 		return m_serviceMonitor;
 	}
     
-        /**
-    * Uses the existing package name to try and re-obtain the package from the poller config factory.
-    * Should be called when the poller config has been reloaded.
-    */
+    /**
+     * Uses the existing package name to try and re-obtain the package from the poller config factory.
+     * Should be called when the poller config has been reloaded.
+     */
     public synchronized void refresh() {
         Package newPkg = m_pollerConfig.getPackage(m_pkg.getName());
         if (newPkg == null) {
@@ -167,10 +182,20 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     }
     
 
+    /**
+     * <p>getCurrentTime</p>
+     *
+     * @return a long.
+     */
     public long getCurrentTime() {
         return m_timer.getCurrentTime();
     }
 
+    /**
+     * <p>getInterval</p>
+     *
+     * @return a long.
+     */
     public long getInterval() {
         
         if (m_service.isDeleted())
@@ -214,6 +239,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     
 
 
+    /**
+     * <p>scheduledSuspension</p>
+     *
+     * @return a boolean.
+     */
     public boolean scheduledSuspension() {
         long nodeId=m_service.getNodeId();
         for (String outageName : m_pkg.getOutageCalendarCollection()) {

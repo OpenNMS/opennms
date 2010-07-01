@@ -69,6 +69,9 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * Provides a JRobin based implementation of RrdStrategy. It uses JRobin 1.4 in
  * FILE mode (NIO is too memory consuming for the large number of files that we
  * open)
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     //Ensure that we only initialize certain things *once* per Java VM, not once per instantiation of this class
@@ -76,21 +79,31 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
     private Properties m_configurationProperties;
 
+    /**
+     * <p>getConfigurationProperties</p>
+     *
+     * @return a {@link java.util.Properties} object.
+     */
     public Properties getConfigurationProperties() {
         return m_configurationProperties;
     }
 
+    /** {@inheritDoc} */
     public void setConfigurationProperties(Properties configurationParameters) {
         this.m_configurationProperties = configurationParameters;
     }
 
     /**
      * Closes the JRobin RrdDb.
+     *
+     * @param rrdFile a {@link org.jrobin.core.RrdDb} object.
+     * @throws java.lang.Exception if any.
      */
     public void closeFile(final RrdDb rrdFile) throws Exception {
         rrdFile.close();
     }
 
+    /** {@inheritDoc} */
     public RrdDef createDefinition(final String creator, final String directory, final String rrdName, int step, final List<RrdDataSource> dataSources, final List<String> rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
@@ -127,6 +140,9 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * Creates the JRobin RrdDb from the def by opening the file and then
      * closing. TODO: Change the interface here to create the file and return it
      * opened.
+     *
+     * @param rrdDef a {@link org.jrobin.core.RrdDef} object.
+     * @throws java.lang.Exception if any.
      */
     public void createFile(final RrdDef rrdDef) throws Exception {
         if (rrdDef == null) {
@@ -138,6 +154,8 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Opens the JRobin RrdDb by name and returns it.
      */
     public RrdDb openFile(final String fileName) throws Exception {
@@ -146,6 +164,8 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Creates a sample from the JRobin RrdDb and passes in the data provided.
      */
     public void updateFile(final RrdDb rrdFile, final String owner, final String data) throws Exception {
@@ -156,6 +176,8 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     /**
      * Initialized the RrdDb to use the FILE factory because the NIO factory
      * uses too much memory for our implementation.
+     *
+     * @throws java.lang.Exception if any.
      */
     public JRobinRrdStrategy() throws Exception {
         if(!s_initialized) {
@@ -173,12 +195,15 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Fetch the last value from the JRobin RrdDb file.
      */
     public Double fetchLastValue(final String fileName, final String ds, final int interval) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         return fetchLastValue(fileName, ds, "AVERAGE", interval);
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValue(final String fileName, final String ds, final String consolidationFunction, final int interval)
             throws org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
@@ -211,6 +236,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         }
     }
     
+    /** {@inheritDoc} */
     public Double fetchLastValueInRange(final String fileName, final String ds, final int interval, final int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
         try {
@@ -272,11 +298,14 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         return new Color(1.0f, 1.0f, 1.0f, 0.0f);
     }
 
+    /** {@inheritDoc} */
     public InputStream createGraph(final String command, final File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
         return createGraphReturnDetails(command, workDir).getInputStream();
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This constructs a graphDef by parsing the rrdtool style command and using
      * the values to create the JRobin graphDef. It does not understand the 'AT
      * style' time arguments however. Also there may be some rrdtool parameters
@@ -284,7 +313,6 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * used to construct an RrdGraph and a PNG image will be created. An input
      * stream returning the bytes of the PNG image is returned.
      */
-
     public RrdGraphDetails createGraphReturnDetails(final String command, final File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
 
         try {
@@ -313,11 +341,20 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         }
     }
     
+    /** {@inheritDoc} */
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         // no need to do anything since this strategy doesn't queue
     }
 
 
+    /**
+     * <p>createGraphDef</p>
+     *
+     * @param workDir a {@link java.io.File} object.
+     * @param commandArray an array of {@link java.lang.String} objects.
+     * @return a {@link org.jrobin.graph.RrdGraphDef} object.
+     * @throws org.jrobin.core.RrdException if any.
+     */
     protected RrdGraphDef createGraphDef(final File workDir, final String[] commandArray) throws RrdException {
         RrdGraphDef graphDef = new RrdGraphDef();
         graphDef.setImageFormat("PNG");
@@ -658,6 +695,8 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
     /**
      * This implementation does not track any stats.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getStats() {
         return "";
@@ -666,18 +705,38 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     /*
      * These offsets work for ranger@ with Safari and JRobin 1.5.8.
      */
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphLeftOffset() {
         return 74;
     }
     
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphRightOffset() {
         return -15;
     }
 
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
     public int getGraphTopOffsetWithText() {
         return -61;
     }
 
+    /**
+     * <p>getDefaultFileExtension</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDefaultFileExtension() {
         return ".jrb";
     }
@@ -686,12 +745,21 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>tokenizeWithQuotingAndEscapes</p>
+     *
+     * @param line a {@link java.lang.String} object.
+     * @param delims a {@link java.lang.String} object.
+     * @param processQuoted a boolean.
+     * @return an array of {@link java.lang.String} objects.
+     */
     public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted) {
         return tokenizeWithQuotingAndEscapes(line, delims, processQuoted, "");
     }
     
     /**
      * Tokenize a {@link String} into an array of {@link String}s.
+     *
      * @param line
      *          the string to tokenize
      * @param delims
@@ -701,7 +769,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @param tokens
      *          custom escaped tokens to pass through, escaped.  For example, if tokens contains "lsg", then \l, \s, and \g
      *          will be passed through unescaped.
-     * @return
+     * @return an array of {@link java.lang.String} objects.
      */
     public static String[] tokenizeWithQuotingAndEscapes(final String line, final String delims, final boolean processQuoted, final String tokens) {
         ThreadCategory log = ThreadCategory.getInstance(StringUtils.class);
@@ -785,6 +853,14 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         return (String[]) tokenList.toArray(new String[tokenList.size()]);
     }
     
+    /**
+     * <p>escapeIfNotPathSepInDEF</p>
+     *
+     * @param encountered a char.
+     * @param escaped a char.
+     * @param currToken a {@link java.lang.StringBuffer} object.
+     * @return an array of char.
+     */
     public static char[] escapeIfNotPathSepInDEF(final char encountered, final char escaped, final StringBuffer currToken) {
     	if ( ('\\' != File.separatorChar) || (! currToken.toString().startsWith("DEF:")) ) {
     		return new char[] { escaped };

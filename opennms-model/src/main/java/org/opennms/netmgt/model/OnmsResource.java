@@ -52,6 +52,12 @@ import java.util.Set;
 
 import org.springframework.util.Assert;
 
+/**
+ * <p>OnmsResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsResource implements Comparable<OnmsResource> {
 
     private String m_name;
@@ -63,11 +69,28 @@ public class OnmsResource implements Comparable<OnmsResource> {
     private List<OnmsResource> m_resources;
     private OnmsResource m_parent = null;
     
+    /**
+     * <p>Constructor for OnmsResource.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param resourceType a {@link org.opennms.netmgt.model.OnmsResourceType} object.
+     * @param attributes a {@link java.util.Set} object.
+     */
     public OnmsResource(String name, String label,
             OnmsResourceType resourceType, Set<OnmsAttribute> attributes) {
         this(name, label, resourceType, attributes, new ArrayList<OnmsResource>(0));
     }
     
+    /**
+     * <p>Constructor for OnmsResource.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param resourceType a {@link org.opennms.netmgt.model.OnmsResourceType} object.
+     * @param attributes a {@link java.util.Set} object.
+     * @param resources a {@link java.util.List} object.
+     */
     public OnmsResource(String name, String label,
             OnmsResourceType resourceType, Set<OnmsAttribute> attributes,
             List<OnmsResource> resources) {
@@ -88,26 +111,57 @@ public class OnmsResource implements Comparable<OnmsResource> {
         }
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_label;
     }
 
+    /**
+     * <p>getResourceType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsResourceType} object.
+     */
     public OnmsResourceType getResourceType() {
         return m_resourceType;
     }
 
+    /**
+     * <p>getAttributes</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<OnmsAttribute> getAttributes() {
         return m_attributes;
     }
     
+    /**
+     * <p>getChildResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsResource> getChildResources() {
         return m_resources;
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.model.OnmsResource} object.
+     * @return a int.
+     */
     public int compareTo(OnmsResource o) {
         return getLabel().compareTo(o.getLabel());
     }
@@ -115,7 +169,7 @@ public class OnmsResource implements Comparable<OnmsResource> {
     /**
      * Sorts the List of Resources and returns a new List of the
      * generic type Resource.
-     * 
+     *
      * @param resources list of Resource objects.  This will be
      *          sorted using Collections.sort, and note that this will modify
      *          the provided list.
@@ -133,14 +187,29 @@ public class OnmsResource implements Comparable<OnmsResource> {
         return outputResources;
     }
 
+    /**
+     * <p>setParent</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public void setParent(OnmsResource parent) {
         m_parent = parent;
     }
     
+    /**
+     * <p>getParent</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
+     */
     public OnmsResource getParent() {
         return m_parent;
     }
     
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getId() {
         String thisId = encode(m_resourceType.getName()) + "[" + encode(m_name) + "]";
         if (getParent() != null) {
@@ -150,6 +219,11 @@ public class OnmsResource implements Comparable<OnmsResource> {
         }
     }
 
+    /**
+     * <p>getLink</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLink() {
         if (m_link != null) {
             return m_link;
@@ -158,11 +232,22 @@ public class OnmsResource implements Comparable<OnmsResource> {
         }
     }
 
+    /**
+     * <p>setLink</p>
+     *
+     * @param link a {@link java.lang.String} object.
+     */
     public void setLink(String link) {
         m_link = link;
     }
 
     
+    /**
+     * <p>createResourceId</p>
+     *
+     * @param resources a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String createResourceId(String... resources) {
         if ((resources.length % 2) != 0) {
             throw new IllegalArgumentException("Values passed as resources parameter must be in pairs");
@@ -184,6 +269,8 @@ public class OnmsResource implements Comparable<OnmsResource> {
 
     /**
      * Get the RRD graph attributes for this resource, if any.
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, RrdGraphAttribute> getRrdGraphAttributes() {
         Map<String, RrdGraphAttribute> attributes = new HashMap<String, RrdGraphAttribute>();
@@ -199,6 +286,8 @@ public class OnmsResource implements Comparable<OnmsResource> {
 
     /**
      * Get the string property attributes for this resource, if any.
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getStringPropertyAttributes() {
         Map<String, String> properties = new HashMap<String, String>();
@@ -214,6 +303,8 @@ public class OnmsResource implements Comparable<OnmsResource> {
     
     /**
      * Get the external value attributes for this resource, if any.
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getExternalValueAttributes() {
         Map<String, String> properties = new HashMap<String, String>();
@@ -237,14 +328,29 @@ public class OnmsResource implements Comparable<OnmsResource> {
         }
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getId();
     }
 
+    /**
+     * <p>getEntity</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsEntity} object.
+     */
     public OnmsEntity getEntity() {
         return m_entity;
     }
 
+    /**
+     * <p>setEntity</p>
+     *
+     * @param entity a {@link org.opennms.netmgt.model.OnmsEntity} object.
+     */
     public void setEntity(OnmsEntity entity) {
         m_entity = entity;
     }

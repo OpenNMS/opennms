@@ -38,6 +38,12 @@ import org.opennms.core.utils.ThreadCategory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * <p>Provisioner class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Provisioner implements ProvisionerMBean {
 
     private ClassPathXmlApplicationContext m_context;
@@ -48,10 +54,16 @@ public class Provisioner implements ProvisionerMBean {
         return m_context;
     }
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
         XmlRpc.debug = "true".equalsIgnoreCase(System.getProperty("xmlrpc.debug", "false"));
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         m_status = Fiber.STARTING;
         ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());;
@@ -60,6 +72,9 @@ public class Provisioner implements ProvisionerMBean {
         m_status = Fiber.RUNNING;
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         m_status = Fiber.STOP_PENDING;
         m_context.close();
@@ -70,15 +85,27 @@ public class Provisioner implements ProvisionerMBean {
 
     /**
      * Returns the status of this Fiber.
+     *
+     * @return a int.
      */
     public int getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return Fiber.STATUS_NAMES[m_status];
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return getStatusText();
     }

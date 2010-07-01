@@ -35,26 +35,55 @@
 package org.opennms.web.map.config;
 
 /**
- * 
+ * <p>Filter class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class Filter{
 	String table;
 	String condition;
+	/**
+	 * <p>Constructor for Filter.</p>
+	 *
+	 * @param table a {@link java.lang.String} object.
+	 * @param condition a {@link java.lang.String} object.
+	 */
 	public Filter(String table, String condition) {
 		super();
 		this.table = table;
 		this.condition = condition;
 	}
+	/**
+	 * <p>Getter for the field <code>condition</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected String getCondition() {
 		return condition;
 	}
+	/**
+	 * <p>Setter for the field <code>condition</code>.</p>
+	 *
+	 * @param condition a {@link java.lang.String} object.
+	 */
 	protected void setCondition(String condition) {
 		this.condition = condition;
 	}
+	/**
+	 * <p>Getter for the field <code>table</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected String getTable() {
 		return table;
 	}
+	/**
+	 * <p>Setter for the field <code>table</code>.</p>
+	 *
+	 * @param table a {@link java.lang.String} object.
+	 */
 	protected void setTable(String table) {
 		this.table = table;
 	}

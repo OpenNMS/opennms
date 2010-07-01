@@ -37,15 +37,20 @@ package org.opennms.netmgt.eventd;
 
 import org.springframework.dao.DataAccessException;
 
+/**
+ * <p>EventdServiceManager interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface EventdServiceManager {
     /**
-     * Lookup the service ID for a specific service by name.  
-     * 
-     * @param name service name to lookup
-     * 
+     * Lookup the service ID for a specific service by name.
+     *
      * @return service ID for the given service name or -1 if not found
-     * 
      * @exception DataAccessException if there is an error accessing the database
+     * @param serviceName a {@link java.lang.String} object.
+     * @throws org.springframework.dao.DataAccessException if any.
      */
     public abstract int getServiceId(String serviceName) throws DataAccessException;
 

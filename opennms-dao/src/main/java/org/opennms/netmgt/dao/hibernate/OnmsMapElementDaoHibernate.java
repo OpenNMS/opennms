@@ -43,11 +43,21 @@ import org.opennms.netmgt.model.OnmsMapElement;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 
+/**
+ * <p>OnmsMapElementDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElement, Integer> implements OnmsMapElementDao {
+    /**
+     * <p>Constructor for OnmsMapElementDaoHibernate.</p>
+     */
     public OnmsMapElementDaoHibernate() {
         super(OnmsMapElement.class);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Collection<OnmsMapElement> findAll(final Integer offset, final Integer limit) {
         return (Collection<OnmsMapElement>)getHibernateTemplate().execute(new HibernateCallback() {
@@ -62,19 +72,23 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         });
     }
 
+    /** {@inheritDoc} */
     public OnmsMapElement findElementById(int id) {
         return findUnique("from OnmsMapElement as element where element.id = ?", id);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsMapElement> findElementsByMapId(OnmsMap map) {
         return find("from OnmsMapElement as element where element.map = ?", map);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsMapElement> findElementsByNodeId(int nodeid) {
         Object[] values = {nodeid, OnmsMapElement.NODE_TYPE, OnmsMapElement.NODE_HIDE_TYPE};
         return find("from OnmsMapElement as element where element.elementId = ? and (element.type = ? or element.type = ? )", values);
     }
     
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public void deleteElementsByMapId(final OnmsMap map) {
         getHibernateTemplate().execute(
@@ -90,6 +104,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         });
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public void deleteElementsByNodeid(final int nodeid) {
       getHibernateTemplate().execute(
@@ -108,6 +123,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
       });
   }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public void deleteElementsByType(final String type) {
         getHibernateTemplate().execute(
@@ -124,6 +140,7 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
 
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public void deleteElementsByElementIdAndType(final int id,final String type) {
         getHibernateTemplate().execute(
@@ -142,21 +159,25 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
       
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsMapElement> findElementsByElementIdAndType(
             int elementId, String type) {
         Object[] values = {elementId, type};
         return  find("from OnmsMapElement as element where element.elementId = ? and element.type = ?", values);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsMapElement> findElementsByType(String type) {
         return find("from OnmsMapElement as element where element.type = ?", type);
     }
 
+    /** {@inheritDoc} */
     public OnmsMapElement findElement(int elementId, String type, OnmsMap map) {
         Object[] values = {elementId, type, map};
         return  findUnique("from OnmsMapElement as element where element.elementId = ? and element.type = ? and element.map = ?", values);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public void deleteElementsByMapType(final String mapType) {
         getHibernateTemplate().execute(
@@ -172,22 +193,26 @@ public class OnmsMapElementDaoHibernate extends AbstractDaoHibernate<OnmsMapElem
         });
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsMapElement> findElementsByMapIdAndType(int mapId,
             String type) {
         Object[] values = {mapId,type};
         return find("from OnmsMapElement as element where element.map.id = ? and element.type = ? ",values);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsMapElement> findMapElementsOnMap(int mapId) {
         Object[] values = {mapId,OnmsMapElement.MAP_TYPE,OnmsMapElement.MAP_HIDE_TYPE};
         return find("from OnmsMapElement as element where element.map.id = ? and (element.type = ? or element.type= ? )",values);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsMapElement> findNodeElementsOnMap(int mapId) {
         Object[] values = {mapId,OnmsMapElement.NODE_TYPE,OnmsMapElement.NODE_HIDE_TYPE};
         return find("from OnmsMapElement as element where element.map.id = ? and (element.type = ? or element.type= ? )",values);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public int countElementsOnMap(final int mapid) {
         Number nu = (Number) getHibernateTemplate().execute(

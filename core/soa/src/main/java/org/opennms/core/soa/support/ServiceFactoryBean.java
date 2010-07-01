@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * ServiceRegistrationBean
  *
  * @author brozow
+ * @version $Id: $
  */
 public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactoryAware, InitializingBean, DisposableBean {
     
@@ -56,26 +57,52 @@ public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactor
     private Registration m_registration;
 
     
+    /** {@inheritDoc} */
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         m_beanFactory = beanFactory;
     }
     
+    /**
+     * <p>setTargetBeanName</p>
+     *
+     * @param targetBeanName a {@link java.lang.String} object.
+     */
     public void setTargetBeanName(String targetBeanName) {
         m_targetBeanName = targetBeanName;
     }
     
+    /**
+     * <p>setTarget</p>
+     *
+     * @param target a {@link java.lang.Object} object.
+     */
     public void setTarget(Object target) {
         m_target = target;
     }
     
+    /**
+     * <p>setInterfaces</p>
+     *
+     * @param serviceInterfaces an array of {@link java.lang.Class} objects.
+     */
     public void setInterfaces(Class<?>[] serviceInterfaces) {
         m_serviceInterfaces = serviceInterfaces;
     }
     
+    /**
+     * <p>setServiceRegistry</p>
+     *
+     * @param serviceRegistry a {@link org.opennms.core.soa.ServiceRegistry} object.
+     */
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         m_serviceRegistry = serviceRegistry;
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         
         boolean hasText = StringUtils.hasText(m_targetBeanName);
@@ -94,20 +121,41 @@ public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactor
     }
     
 
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void destroy() throws Exception {
         if ( m_registration != null ) {
             m_registration.unregister();
         }
     }
 
+    /**
+     * <p>getObject</p>
+     *
+     * @return a {@link org.opennms.core.soa.Registration} object.
+     * @throws java.lang.Exception if any.
+     */
     public Registration getObject() throws Exception {
         return m_registration;
     }
 
+    /**
+     * <p>getObjectType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<? extends Registration> getObjectType() {
         return (m_registration == null ? Registration.class : m_registration.getClass());
     }
 
+    /**
+     * <p>isSingleton</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSingleton() {
         return true;
     }

@@ -46,10 +46,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * Represents an Snmp PollableInterface
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
-
 public class PollableInterface {
 
     private int m_nodeid;
@@ -68,15 +68,11 @@ public class PollableInterface {
      * <P>
      * Initialize the service monitor.
      * </P>
-     * @param parameters
-     *            Not currently used.
-     * 
+     *
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                plug-in from functioning.
-     * 
      */
-
     protected void initialize() {
         // Initialize the SnmpPeerFactory
         //
@@ -93,27 +89,67 @@ public class PollableInterface {
         }
     }
     
+    /**
+     * <p>getNodeid</p>
+     *
+     * @return a int.
+     */
     public int getNodeid() {
         return m_nodeid;
     }
 
+    /**
+     * <p>setNodeid</p>
+     *
+     * @param nodeid a int.
+     */
     public void setNodeid(int nodeid) {
         m_nodeid = nodeid;
     }
 
+    /**
+     * <p>getIpaddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpaddress() {
         return m_ipaddress;
     }
 
+    /**
+     * <p>setIpaddress</p>
+     *
+     * @param ipaddress a {@link java.lang.String} object.
+     */
     public void setIpaddress(String ipaddress) {
         m_ipaddress = ipaddress;
     }
 
+    /**
+     * <p>Constructor for PollableInterface.</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork} object.
+     */
     public PollableInterface(PollableNetwork parent) {
         m_parent = parent;
         m_pollablesnmpinterface = new HashMap<String,PollableSnmpInterface>();
     }
 
+  /**
+   * <p>createPollableSnmpInterface</p>
+   *
+   * @param name a {@link java.lang.String} object.
+   * @param criteria a {@link java.lang.String} object.
+   * @param hasPort a boolean.
+   * @param port a int.
+   * @param hasTimeout a boolean.
+   * @param timeout a int.
+   * @param hasRetries a boolean.
+   * @param retries a int.
+   * @param hasMaxVarsPerPdu a boolean.
+   * @param maxVarsPerPdu a int.
+   * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface} object.
+   */
   public PollableSnmpInterface createPollableSnmpInterface(String name, String criteria, boolean hasPort, 
           int port, boolean hasTimeout, int timeout, boolean hasRetries, int retries, 
           boolean hasMaxVarsPerPdu,int maxVarsPerPdu) {
@@ -139,6 +175,9 @@ public class PollableInterface {
         return iface;
     }
     
+    /**
+     * <p>refresh</p>
+     */
     protected void refresh() {
         for ( PollableSnmpInterface pi: getSnmpinterfacepollableNodes().values()){
             getContext().updatePollStatus(getNodeid(), pi.getCriteria(), "P");
@@ -146,46 +185,90 @@ public class PollableInterface {
         }
     }
     
+    /**
+     * <p>suspend</p>
+     */
     protected void suspend() {
           polling = false;  
     }
 
+    /**
+     * <p>activate</p>
+     */
     protected void activate() {
         polling = true;
     }
 
+    /**
+     * <p>getSnmpinterfacepollableNodes</p>
+     *
+     * @return a {@link java.util.HashMap} object.
+     */
     public HashMap<String,PollableSnmpInterface> getSnmpinterfacepollableNodes() {
         return m_pollablesnmpinterface;
     }
 
 
+    /**
+     * <p>polling</p>
+     *
+     * @return a boolean.
+     */
     public boolean polling() {
         return polling;
     }
     
 
+    /**
+     * <p>delete</p>
+     */
     protected void delete() {
         for ( PollableSnmpInterface node: getSnmpinterfacepollableNodes().values()){
             node.delete();
         }
     }
 
+    /**
+     * <p>getParent</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork} object.
+     */
     public PollableNetwork getParent() {
         return m_parent;
     }
 
+    /**
+     * <p>setParent</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork} object.
+     */
     public void setParent(PollableNetwork parent) {
         m_parent = parent;
     }
     
+    /**
+     * <p>getContext</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext} object.
+     */
     public PollContext getContext() {
         return getParent().getContext();
     }
 
+    /**
+     * <p>getPackageName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPackageName() {
         return m_packageName;
     }
 
+    /**
+     * <p>setPackageName</p>
+     *
+     * @param packageName a {@link java.lang.String} object.
+     */
     public void setPackageName(String packageName) {
         m_packageName = packageName;
     }

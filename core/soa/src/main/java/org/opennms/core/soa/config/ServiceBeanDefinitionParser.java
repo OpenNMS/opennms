@@ -44,39 +44,41 @@ import org.w3c.dom.NodeList;
 
 /**
  * ServiceRegistrationBeanDefinitionParser
- * 
- * Simplest 
+ *
+ * Simplest
  * <onmsgi:service ref="beanToRegister" interface="com.example.Interface" />
- * 
+ *
  * ID also allowed and becomes the ID of the Registration object
  * <onmsgi:service id="registrationId" ref="beanToRegister" interface="interfaceToPublish" />
- * 
+ *
  * More than interface supported with nested interfaces element
- * 
+ *
  * <onmsgi:service ref="beanToRegister">
  *   <onmsgi:interfaces>
  *     <value>com.example.Interface1</value>
  *     <value>com.example.Interface2</value>
  *   </onmsgi:interfaces>
  * </onmsgi:service>
- * 
- * 
- * 
- * 
  *
  * @author brozow
+ * @version $Id: $
  */
 public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
     
+    /** Constant <code>REF_ATTR="ref"</code> */
     public static final String REF_ATTR = "ref";
+    /** Constant <code>INTERFACE_ATTR="interface"</code> */
     public static final String INTERFACE_ATTR = "interface";
+    /** Constant <code>INTERFACES_ELEM="interfaces"</code> */
     public static final String INTERFACES_ELEM = "interfaces";
     
     
+    /** {@inheritDoc} */
     protected Class<?> getBeanClass(Element element) {
         return ServiceFactoryBean.class;
     }
 
+    /** {@inheritDoc} */
     public void doParse(Element element, ParserContext context, BeanDefinitionBuilder bean) {
         
         String ref = element.getAttribute(REF_ATTR);
@@ -115,6 +117,7 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
 
     }
 
+    /** {@inheritDoc} */
     @Override
     protected boolean shouldGenerateIdAsFallback() {
         return true;

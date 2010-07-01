@@ -60,6 +60,9 @@ import org.openoss.ossj.fm.monitor.spring.OssBeanAlarmEventReceiver;
 
 /**
  * Work in progress - implementing business methods
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventReceiverEventHandler{
 
@@ -109,7 +112,8 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used by Spring Application context to pass in alarmUpdateBehaviour as a string
-	 * @param alarmUpdateBehaviour must be  
+	 *
+	 * @param _alarmUpdateBehaviour must be
 	 * <code>"USE_TYPE_INSTANCE"</code>
 	 * or
 	 * <code>"SPECIFY_OUTSTATION"</code>
@@ -139,7 +143,8 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used by Spring Application context to pass in AssetRecordDao
-	 * @param ar 
+	 *
+	 * @param ar a {@link org.opennms.netmgt.dao.AssetRecordDao} object.
 	 */
 	public  void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
@@ -154,7 +159,8 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used by Spring Application context to pass in NodeDaof
-	 * @param nodedao 
+	 *
+	 * @param nodedao a {@link org.opennms.netmgt.dao.NodeDao} object.
 	 */
 	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
@@ -169,7 +175,8 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	/**
 	 * Used by Spring Application context to pass in alarmDao
-	 * @param alarmDao
+	 *
+	 * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
 	 */
 	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
@@ -182,6 +189,8 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	
 	/**
 	 * Used by Spring Application context to pass in distPollerDao;
+	 *
+	 * @param _distPollerDao a {@link org.opennms.netmgt.dao.DistPollerDao} object.
 	 */
 	public  void setDistPollerDao(DistPollerDao _distPollerDao) {
 		 distPollerDao =  _distPollerDao;
@@ -193,8 +202,9 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 //	private static boolean ossDaoIsInitialised=false; // TODO - may want this in the spring initialisation
 
 	/**
-	 * provides an interface to OpenNMS which provides a unified api 
-	 * @param ossDao the ossDao to set
+	 * provides an interface to OpenNMS which provides a unified api
+	 *
+	 * @param _ossDao the ossDao to set
 	 */
 	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
@@ -206,6 +216,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	/**
 	 * Used by Spring Application context to pass in OnmsAlarmOssjMapper
 	 * The OnmsAlarmOssjMapper class maps OpenNMS alarms to OSS/J alarms and events
+	 *
 	 * @param onmsAlarmOssjMapper the onmsAlarmOssjMapper to set
 	 */
 	public void setOnmsAlarmOssjMapper(
@@ -245,6 +256,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 	// ************************
 
 
+	/** {@inheritDoc} */
 	public void onNotifyNewAlarmEvent(NotifyNewAlarmEvent nnae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -444,6 +456,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 		}
 	}
 
+	/** {@inheritDoc} */
 	public void onNotifyClearedAlarmEvent(NotifyClearedAlarmEvent nclae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -540,6 +553,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 
 
+	/** {@inheritDoc} */
 	public void onNotifyAckStateChangedEvent(NotifyAckStateChangedEvent nasce, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -612,6 +626,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 
 	}
 
+	/** {@inheritDoc} */
 	public void onNotifyAlarmCommentsEvent(NotifyAlarmCommentsEvent nace, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -625,6 +640,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
+	/** {@inheritDoc} */
 	public void onNotifyAlarmListRebuiltEvent(NotifyAlarmListRebuiltEvent nalre, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -638,6 +654,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
+	/** {@inheritDoc} */
 	public void onNotifyChangedAlarmEvent(NotifyChangedAlarmEvent nchae, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -651,6 +668,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
+	/** {@inheritDoc} */
 	public void onUnknownIRPEvt(IRPEvent irpevt, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	
@@ -664,6 +682,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 		//TODO ADD IN BUSINESS LOGIC
 	}
 
+	/** {@inheritDoc} */
 	public void onunknownObjectMessage(Object objectMessage, OssBeanAlarmEventReceiver callingAer) {
 		//	Get a reference to the QoSD logger instance assigned by OpenNMS
 		ThreadCategory log = getLog();	

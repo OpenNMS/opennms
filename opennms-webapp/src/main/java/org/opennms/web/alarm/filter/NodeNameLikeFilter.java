@@ -34,31 +34,60 @@ package org.opennms.web.alarm.filter;
 
 import org.opennms.web.filter.SubstringFilter;
 
-/** Encapsulates all node filtering functionality. */
+/**
+ * Encapsulates all node filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NodeNameLikeFilter extends SubstringFilter {
+    /** Constant <code>TYPE="nodenamelike"</code> */
     public static final String TYPE = "nodenamelike";
 
+    /**
+     * <p>Constructor for NodeNameLikeFilter.</p>
+     *
+     * @param substring a {@link java.lang.String} object.
+     */
     public NodeNameLikeFilter(String substring) {
         super(TYPE, "NODELABEL", "node.label", substring);
     }
     
+    /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
         return " ALARMID IN (SELECT ALARMID FROM ALARMS JOIN NODE ON ALARMS.NODEID=NODE.NODEID WHERE NODE.NODELABEL ILIKE %s) ";
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("node name containing \"" + getValue() + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AlarmFactory.NodeNameContainingFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getSubstring</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSubstring() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

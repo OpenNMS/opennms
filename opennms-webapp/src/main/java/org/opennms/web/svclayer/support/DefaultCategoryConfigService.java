@@ -46,17 +46,30 @@ import org.opennms.web.svclayer.CategoryConfigService;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 
 /**
- * 
+ * <p>DefaultCategoryConfigService class.</p>
+ *
  * @author <a href="mailto:johnathan@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultCategoryConfigService implements CategoryConfigService {
 
     private CategoryConfigDao m_categoryConfigDao;
 
+    /**
+     * <p>getCategories</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<Category> getCategories() {
         return m_categoryConfigDao.findAll();
     }
     
+    /**
+     * <p>getCategoriesList</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getCategoriesList() {
         List<String> categories = new ArrayList<String>();
         Collection<Category> catCollection = m_categoryConfigDao.findAll();;
@@ -68,10 +81,20 @@ public class DefaultCategoryConfigService implements CategoryConfigService {
         
     }
 
+    /**
+     * <p>getCategoryConfigDao</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.dao.CategoryConfigDao} object.
+     */
     public CategoryConfigDao getCategoryConfigDao() {
         return m_categoryConfigDao;
     }
 
+    /**
+     * <p>setCategoryConfigDao</p>
+     *
+     * @param categoryConfigDao a {@link org.opennms.web.svclayer.dao.CategoryConfigDao} object.
+     */
     public void setCategoryConfigDao(CategoryConfigDao categoryConfigDao) {
         m_categoryConfigDao = categoryConfigDao;
     }

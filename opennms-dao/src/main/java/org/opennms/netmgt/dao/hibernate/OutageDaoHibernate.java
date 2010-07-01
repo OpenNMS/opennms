@@ -51,20 +51,40 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
+/**
+ * <p>OutageDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
 
+    /**
+     * <p>Constructor for OutageDaoHibernate.</p>
+     */
     public OutageDaoHibernate() {
         super(OnmsOutage.class);
     }
 
+    /**
+     * <p>currentOutageCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer currentOutageCount() {
         return queryInt("select count(*) from OnmsOutage as o where o.ifRegainedService is null");
     }
 
+    /**
+     * <p>currentOutages</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<OnmsOutage> currentOutages() {
         return find("from OnmsOutage as o where o.ifRegainedService is null");
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Collection<OnmsOutage> findAll(final Integer offset, final Integer limit) {
         return (Collection<OnmsOutage>)getHibernateTemplate().execute(new HibernateCallback() {
@@ -79,6 +99,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
         });
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector) {
         Set<String> matchingIps = new HashSet<String>(FilterDaoFactory.getInstance().getIPList(selector.getFilterRule()));
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());

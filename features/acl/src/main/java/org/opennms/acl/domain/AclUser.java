@@ -43,21 +43,22 @@ import org.springframework.security.userdetails.User;
 
 /**
  * This entity is a ACL application user, extends the {@link org.springframework.security.userdetails.User} to use authentication and authorization Spring Security infrastructure.
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @SuppressWarnings("serial")
 public class AclUser extends User implements Serializable {
 
     /**
      * Entity that represents an acl application user. Used by Spring Security during authentication. In this constructor you can add additional custom information to AclUser
-     * 
-     * @param username
-     * @param password
-     * @param isEnabled
-     * @param authorities
-     * @param userInfo
+     *
+     * @param username a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
+     * @param isEnabled a boolean.
+     * @param authorities an array of {@link org.springframework.security.GrantedAuthority} objects.
+     * @param userInfo a {@link java.util.Map} object.
      */
     public AclUser(String username, String password, boolean isEnabled, GrantedAuthority[] authorities, Map<String, ?> userInfo) {
         super(username, password, isEnabled, true, true, true, authorities);
@@ -66,8 +67,8 @@ public class AclUser extends User implements Serializable {
 
     /**
      * The additional custom informations kept in AclUser
-     * 
-     * @return
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, ?> getUserInfo() {
         return userInfo;
@@ -75,8 +76,8 @@ public class AclUser extends User implements Serializable {
 
     /**
      * The AclUser's unique identifier
-     * 
-     * @return
+     *
+     * @return a long.
      */
     public long getId() {
         return new Long(userInfo.get(Constants.USER_SID).toString());

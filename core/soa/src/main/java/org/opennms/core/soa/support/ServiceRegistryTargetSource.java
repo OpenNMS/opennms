@@ -36,17 +36,25 @@ import org.springframework.aop.target.AbstractLazyCreationTargetSource;
  * ServiceRegistryTargetSource
  *
  * @author brozow
+ * @version $Id: $
  */
 public class ServiceRegistryTargetSource extends AbstractLazyCreationTargetSource {
     
     private ServiceRegistry m_serviceRegistry;
     private Class<?> m_serviceInterface;
 
+    /**
+     * <p>Constructor for ServiceRegistryTargetSource.</p>
+     *
+     * @param serviceRegistry a {@link org.opennms.core.soa.ServiceRegistry} object.
+     * @param serviceInterface a {@link java.lang.Class} object.
+     */
     public ServiceRegistryTargetSource(ServiceRegistry serviceRegistry, Class<?> serviceInterface) {
         m_serviceRegistry = serviceRegistry;
         m_serviceInterface = serviceInterface;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Object createObject() throws Exception {
         return m_serviceRegistry.findProvider(m_serviceInterface);

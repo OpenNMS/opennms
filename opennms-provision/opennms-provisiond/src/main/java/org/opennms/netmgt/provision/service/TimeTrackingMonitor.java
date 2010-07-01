@@ -39,6 +39,12 @@ import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
 
+/**
+ * <p>TimeTrackingMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class TimeTrackingMonitor implements ProvisionMonitor {
 
 	private WorkDuration m_importDuration = new WorkDuration("Importing");
@@ -55,6 +61,7 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
 	private int m_updateCount;
 	private int m_eventCount;
 
+	/** {@inheritDoc} */
 	public void beginProcessingOps(int deleteCount, int updateCount, int insertCount) {
 	    m_deleteCount = deleteCount;
 	    m_updateCount = updateCount;
@@ -62,81 +69,121 @@ public class TimeTrackingMonitor implements ProvisionMonitor {
 		m_processingDuration.start();
 	}
 
+	/**
+	 * <p>finishProcessingOps</p>
+	 */
 	public void finishProcessingOps() {
 		m_processingDuration.end();
 	}
 
+	/**
+	 * <p>beginPreprocessingOps</p>
+	 */
 	public void beginPreprocessingOps() {
 		m_preprocessingDuration.start();
 	}
 
+	/**
+	 * <p>finishPreprocessingOps</p>
+	 */
 	public void finishPreprocessingOps() {
 		m_preprocessingDuration.end();
 	}
 
+	/** {@inheritDoc} */
 	public void beginPreprocessing(ImportOperation oper) {
 		if (oper instanceof SaveOrUpdateOperation) {
 			m_preprocessingEffort.begin();
 		}
 	}
 
+	/** {@inheritDoc} */
 	public void finishPreprocessing(ImportOperation oper) {
 		if (oper instanceof SaveOrUpdateOperation) {
 			m_preprocessingEffort.end();
 		}
 	}
 
+	/** {@inheritDoc} */
 	public void beginPersisting(ImportOperation oper) {
 		m_processingEffort.begin();
 		
 	}
 
+	/** {@inheritDoc} */
 	public void finishPersisting(ImportOperation oper) {
 		m_processingEffort.end();
 	}
 
+	/** {@inheritDoc} */
 	public void beginSendingEvents(ImportOperation oper, List<Event> events) {
 		if (events != null) m_eventCount += events.size();
 		m_eventEffort.begin();
 	}
 
+	/** {@inheritDoc} */
 	public void finishSendingEvents(ImportOperation oper, List<Event> events) {
 		m_eventEffort.end();
 	}
 
+	/** {@inheritDoc} */
 	public void beginLoadingResource(Resource resource) {
 		m_loadingDuration.setName("Loading Resource: "+resource);
 		m_loadingDuration.start();
 	}
 
+	/** {@inheritDoc} */
 	public void finishLoadingResource(Resource resource) {
 		m_loadingDuration.end();
 	}
 
+	/**
+	 * <p>beginImporting</p>
+	 */
 	public void beginImporting() {
 		m_importDuration.start();
 	}
 
+	/**
+	 * <p>finishImporting</p>
+	 */
 	public void finishImporting() {
 		m_importDuration.end();
 	}
 
+	/**
+	 * <p>beginAuditNodes</p>
+	 */
 	public void beginAuditNodes() {
 		m_auditDuration.start();
 	}
 
+	/**
+	 * <p>finishAuditNodes</p>
+	 */
 	public void finishAuditNodes() {
 		m_auditDuration.end();
 	}
 	
+	/**
+	 * <p>beginRelateNodes</p>
+	 */
 	public void beginRelateNodes() {
 		m_relateDuration.start();
 	}
 
+	/**
+	 * <p>finishRelateNodes</p>
+	 */
 	public void finishRelateNodes() {
 		m_relateDuration.end();
 	}
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		StringBuffer stats = new StringBuffer();
 		stats.append("Deletes: ").append(m_deleteCount).append(' ');

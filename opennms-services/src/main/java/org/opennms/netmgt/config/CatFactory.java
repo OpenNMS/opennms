@@ -35,22 +35,53 @@ import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.categories.Catinfo;
 
 /**
+ * <p>CatFactory interface.</p>
+ *
  * @author jsartin
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
-
 public interface CatFactory {
 
+	/**
+	 * <p>getConfig</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.config.categories.Catinfo} object.
+	 */
 	public Catinfo getConfig();
 	
+	/**
+	 * <p>getCategory</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.config.categories.Category} object.
+	 */
 	public Category getCategory(String name);
 	
+	/**
+	 * <p>getEffectiveRule</p>
+	 *
+	 * @param catLabel a {@link java.lang.String} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getEffectiveRule(String catLabel);
 	
+	/**
+	 * <p>getNormal</p>
+	 *
+	 * @param catlabel a {@link java.lang.String} object.
+	 * @return a double.
+	 */
 	public double getNormal(String catlabel);
 	
+	/**
+	 * <p>getWarning</p>
+	 *
+	 * @param catlabel a {@link java.lang.String} object.
+	 * @return a double.
+	 */
 	public double getWarning(String catlabel);
 	
 }

@@ -38,8 +38,21 @@ import java.util.LinkedList;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.Assert;
 
+/**
+ * <p>BeanUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class BeanUtils {
 
+    /**
+     * <p>getProperties</p>
+     *
+     * @param bean a {@link java.lang.Object} object.
+     * @return a {@link java.util.Collection} object.
+     */
     public static Collection<String> getProperties(Object bean) {
         Collection<String> props = new LinkedList<String>();
 
@@ -50,6 +63,15 @@ public class BeanUtils {
         return props;
     }
     
+    /**
+     * <p>getPathValue</p>
+     *
+     * @param bean a {@link java.lang.Object} object.
+     * @param path a {@link java.lang.String} object.
+     * @param expectedClass a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     @SuppressWarnings("unchecked")
     public static <T> T getPathValue(Object bean, String path, Class<T> expectedClass) {
         BeanWrapperImpl wrapper = new BeanWrapperImpl(bean);

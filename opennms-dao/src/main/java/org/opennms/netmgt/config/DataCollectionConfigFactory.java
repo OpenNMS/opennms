@@ -75,14 +75,16 @@ import org.opennms.netmgt.model.RrdRepository;
  * This class is the main respository for SNMP data collection configuration
  * information used by the SNMP service monitor. When this class is loaded it
  * reads the snmp data collection configuration into memory.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class DataCollectionConfigFactory implements DataCollectionConfig {
 	private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
@@ -136,27 +138,52 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         }
     }
     
+    /**
+     * <p>Constructor for DataCollectionConfigFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     @Deprecated
     public DataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(DatacollectionConfig.class, rdr);        
         setUpFactory();
     }
 
+    /**
+     * <p>Constructor for DataCollectionConfigFactory.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public DataCollectionConfigFactory(InputStream stream) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(DatacollectionConfig.class, stream);
         setUpFactory();
     }
 
+    /**
+     * <p>setUpFactory</p>
+     */
     protected void setUpFactory() {
         buildCollectionMap();
         processConfiguredResourceTypes();
         validateResourceTypes();
     }
     
+    /**
+     * <p>getConfiguredResourceTypes</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String,ResourceType> getConfiguredResourceTypes() {
     	return m_configuredResourceTypes;
     }
     
+    /**
+     * <p>processConfiguredResourceTypes</p>
+     */
     public void processConfiguredResourceTypes() {
     	Map<String,ResourceType> map = new HashMap<String,ResourceType>();
     	Collection<SnmpCollection> snmpCollections = getSnmpCollections();
@@ -237,6 +264,11 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         return (List<Group>) collection.getGroups().getGroupCollection();
     }
 
+	/**
+	 * <p>setInstance</p>
+	 *
+	 * @param instance a {@link org.opennms.netmgt.config.DataCollectionConfig} object.
+	 */
 	public static void setInstance(DataCollectionConfig instance) {
         m_singleton = instance;
         m_loaded = true;
@@ -245,13 +277,16 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -271,13 +306,16 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -288,9 +326,8 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -302,21 +339,10 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method returns the list of MIB objects associated with a particular
      * system object id, IP address, and ifType for the specified collection.
-     * 
-     * @param cName
-     *            name of the data collection from which to retrieve oid
-     *            information.
-     * @param aSysoid
-     *            system object id to look up in the collection
-     * @param anAddress
-     *            IP address to look up in the collection
-     * @param ifType
-     *            Interface type (-1 indicates that only node-level objects
-     *            should be retrieved.
-     * 
-     * @return a list of MIB objects
      */
     public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
         if (log().isDebugEnabled())
@@ -678,12 +704,9 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Retrieves configured RRD step size.
-     * 
-     * @param cName
-     *            Name of the data collection
-     * 
-     * @return RRD step size for the specified collection
      */
     public int getStep(String cName) {
         SnmpCollection collection = m_collectionMap.get(cName);
@@ -694,12 +717,9 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Retrieves configured list of RoundRobin Archive statements.
-     * 
-     * @param cName
-     *            Name of the data collection
-     * 
-     * @return list of RRA strings.
      */
     public List<String> getRRAList(String cName) {
         SnmpCollection collection = m_collectionMap.get(cName);
@@ -711,12 +731,9 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Retrieves the configured value of the SNMP storage flag.
-     * 
-     * @param cName
-     *            Name of the data collection
-     * 
-     * @return SNMP storage flag
      */
     public String getSnmpStorageFlag(String cName) {
         SnmpCollection collection = m_collectionMap.get(cName);
@@ -726,6 +743,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             return null;
     }
 
+    /** {@inheritDoc} */
     public RrdRepository getRrdRepository(String collectionName) {
             RrdRepository repo = new RrdRepository();
             repo.setRrdBaseDir(new File(getRrdPath()));
@@ -735,6 +753,11 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             return repo;
     }
     
+    /**
+     * <p>getRrdPath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRrdPath() {
         String rrdPath = m_config.getRrdRepository();
     	if (rrdPath == null) {

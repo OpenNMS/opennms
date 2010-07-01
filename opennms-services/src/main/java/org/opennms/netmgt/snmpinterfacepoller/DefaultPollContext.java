@@ -53,9 +53,10 @@ import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a DefaultPollContext 
- * 
+ * Represents a DefaultPollContext
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class DefaultPollContext implements PollContext {
     
@@ -67,42 +68,92 @@ public class DefaultPollContext implements PollContext {
 
     private String m_serviceName="SNMP";
 
+    /**
+     * <p>getSnmpInterfaceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.SnmpInterfaceDao} object.
+     */
     public SnmpInterfaceDao getSnmpInterfaceDao() {
         return m_snmpInterfaceDao;
     }
 
+    /**
+     * <p>setSnmpInterfaceDao</p>
+     *
+     * @param snmpInterfaceDao a {@link org.opennms.netmgt.dao.SnmpInterfaceDao} object.
+     */
     public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
         m_snmpInterfaceDao = snmpInterfaceDao;
     }
 
+    /**
+     * <p>getEventManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public EventIpcManager getEventManager() {
         return m_eventManager;
     }
     
+    /**
+     * <p>setEventManager</p>
+     *
+     * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
     }
     
+    /**
+     * <p>setLocalHostName</p>
+     *
+     * @param localHostName a {@link java.lang.String} object.
+     */
     public void setLocalHostName(String localHostName) {
         m_localHostName = localHostName;
     }
     
+    /**
+     * <p>getLocalHostName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLocalHostName() {
         return m_localHostName;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
 
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
@@ -110,10 +161,16 @@ public class DefaultPollContext implements PollContext {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#getCriticalServiceName()
      */
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_serviceName;
     }
     
+    /** {@inheritDoc} */
     public void setServiceName(String serviceName) {
         m_serviceName=serviceName;
     }
@@ -121,6 +178,7 @@ public class DefaultPollContext implements PollContext {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#sendEvent(org.opennms.netmgt.xml.event.Event)
      */
+    /** {@inheritDoc} */
     public void sendEvent(Event event) {
         getEventManager().sendNow(event);
     }
@@ -132,6 +190,7 @@ public class DefaultPollContext implements PollContext {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#createEvent(java.lang.String, int, java.net.InetAddress, java.lang.String, java.util.Date)
      */
+    /** {@inheritDoc} */
     public Event createEvent(String uei, int nodeId, String address, Date date, OnmsSnmpInterface snmpinterface) {
         
             log().debug("createEvent: uei = " + uei + " nodeid = " + nodeId + " date = " + date);
@@ -156,6 +215,7 @@ public class DefaultPollContext implements PollContext {
         return bldr.getEvent();
     }
 
+    /** {@inheritDoc} */
     public List<OnmsSnmpInterface> get(int nodeId, String criteria) {
         final OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsSnmpInterface.class);
         onmsCriteria.add(Restrictions.sqlRestriction(criteria + " and nodeid = " + nodeId));
@@ -163,10 +223,12 @@ public class DefaultPollContext implements PollContext {
 
     }
         
+    /** {@inheritDoc} */
     public void update(OnmsSnmpInterface snmpinterface) {
         getSnmpInterfaceDao().update(snmpinterface);
     }
 
+    /** {@inheritDoc} */
     public void updatePollStatus(int nodeId, String criteria, String status) {
         String sql = "update snmpinterface set snmppoll = ? where nodeid = ? and " + criteria;
         
@@ -174,6 +236,7 @@ public class DefaultPollContext implements PollContext {
         updater.execute(status,new Integer(nodeId));  
     }
     
+    /** {@inheritDoc} */
     public void updatePollStatus(int nodeId, String status) {
         String sql = "update snmpinterface set snmppoll = ? where nodeid = ? ";
         
@@ -182,6 +245,7 @@ public class DefaultPollContext implements PollContext {
         
     }
 
+    /** {@inheritDoc} */
     public void updatePollStatus(String status) {
         final String sql = "update snmpinterface set snmppoll = ? ";
         

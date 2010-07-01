@@ -38,10 +38,20 @@ import org.opennms.web.svclayer.support.ChooseResourceModel;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
+ * <p>ChooseResourceService interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Transactional(readOnly = true)
 public interface ChooseResourceService {
+    /**
+     * <p>findChildResources</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     * @param endUrl a {@link java.lang.String} object.
+     * @return a {@link org.opennms.web.svclayer.support.ChooseResourceModel} object.
+     */
     public ChooseResourceModel findChildResources(String resourceId, String endUrl);
 }

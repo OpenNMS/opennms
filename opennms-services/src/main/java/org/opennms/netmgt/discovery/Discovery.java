@@ -77,10 +77,12 @@ import org.springframework.util.Assert;
  * implements the <em>singleton</em> design pattern, in that there is only one
  * instance in any given virtual machine. The service delays the reading of
  * configuration information until the service is started.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @version $Id: $
  */
 @EventListener(name="OpenNMS.Discovery")
 public class Discovery extends AbstractServiceDaemon {
@@ -113,18 +115,38 @@ public class Discovery extends AbstractServiceDaemon {
     
     private volatile EventForwarder m_eventForwarder;
 
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
     
+    /**
+     * <p>setDiscoveryFactory</p>
+     *
+     * @param discoveryFactory a {@link org.opennms.netmgt.config.DiscoveryConfigFactory} object.
+     */
     public void setDiscoveryFactory(DiscoveryConfigFactory discoveryFactory) {
         m_discoveryFactory = discoveryFactory;
     }
 
+    /**
+     * <p>getDiscoveryFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.DiscoveryConfigFactory} object.
+     */
     public DiscoveryConfigFactory getDiscoveryFactory() {
         return m_discoveryFactory;
     }
@@ -136,6 +158,11 @@ public class Discovery extends AbstractServiceDaemon {
         super("OpenNMS.Discovery");
     }
 
+    /**
+     * <p>onInit</p>
+     *
+     * @throws java.lang.IllegalStateException if any.
+     */
     protected void onInit() throws IllegalStateException {
 
         Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
@@ -241,23 +268,38 @@ public class Discovery extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
     	syncAlreadyDiscovered();
         startTimer();
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         stopTimer();
     }
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {
         stopTimer();
     }
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
         startTimer();
     }
     
+    /**
+     * <p>syncAlreadyDiscovered</p>
+     */
     protected void syncAlreadyDiscovered() {
     	/**
     	 * Make a new list with which we'll replace the existing one, that way
@@ -291,6 +333,11 @@ public class Discovery extends AbstractServiceDaemon {
     	log().info("syncAlreadyDiscovered initialized list of managed IP addresses with " + m_alreadyDiscovered.size() + " members");
     }
 
+    /**
+     * <p>handleDiscoveryConfigurationChanged</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
     public void handleDiscoveryConfigurationChanged(Event event) {
         log().info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
@@ -324,6 +371,11 @@ public class Discovery extends AbstractServiceDaemon {
         m_eventForwarder.sendNow(ebldr.getEvent());
     }
     
+    /**
+     * <p>reloadDaemonConfig</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void reloadDaemonConfig(Event e) {
         log().info("reloadDaemonConfig: processing reload daemon event...");
@@ -349,6 +401,11 @@ public class Discovery extends AbstractServiceDaemon {
         return isTarget;
     }
 
+    /**
+     * <p>handleInterfaceDeleted</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
     public void handleInterfaceDeleted(Event event) {
         if(event.getInterface() != null) {
@@ -359,6 +416,11 @@ public class Discovery extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>handleDiscoveryResume</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)
     public void handleDiscoveryResume(Event event) {
         try {
@@ -367,6 +429,11 @@ public class Discovery extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>handleDiscoveryPause</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DISC_PAUSE_EVENT_UEI)
     public void handleDiscoveryPause(Event event) {
         try {
@@ -375,6 +442,11 @@ public class Discovery extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>handleNodeGainedInterface</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes

@@ -37,22 +37,33 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>JBossDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class JBossDetector extends JMXDetector {
     
     private static String DEFAULT_SERVICE_NAME = "JBoss";
     private static int DEFAULT_JBOSS_PORT = 1099;
     
+    /**
+     * <p>Constructor for JBossDetector.</p>
+     */
     public JBossDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_JBOSS_PORT);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected JMXClient getClient() {
         JBossClient client = new JBossClient();
         return client;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onInit() {
         expectBeanCount(greatThan(0));

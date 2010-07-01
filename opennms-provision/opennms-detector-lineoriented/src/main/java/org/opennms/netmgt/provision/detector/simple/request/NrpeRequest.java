@@ -35,11 +35,14 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
- * @author Donald Desloge
+ * <p>NrpeRequest class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class NrpeRequest {
     
+    /** Constant <code>Null</code> */
     public static final NrpeRequest Null = new NrpeRequest(null) {
         @Override
         public void send(OutputStream out) throws IOException {
@@ -48,6 +51,11 @@ public class NrpeRequest {
     
     private final byte[] m_command;
     
+    /**
+     * <p>Constructor for NrpeRequest.</p>
+     *
+     * @param command an array of byte.
+     */
     public NrpeRequest(byte[] command) {
         if (command != null) {
             m_command = command.clone();
@@ -57,13 +65,20 @@ public class NrpeRequest {
     }
 
     /**
-     * @param socket
-     * @throws IOException 
+     * <p>send</p>
+     *
+     * @throws java.io.IOException if any.
+     * @param out a {@link java.io.OutputStream} object.
      */
     public void send(OutputStream out) throws IOException {
         out.write( m_command);
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return String.format("Request: %s", Arrays.toString(m_command));
     }

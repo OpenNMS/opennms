@@ -48,19 +48,31 @@ import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 
 /**
- * @author thedesloge
+ * <p>SSLClient class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class SSLClient extends MultilineOrientedClient implements Client<LineOrientedRequest, MultilineOrientedResponse> {
     
     
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException {
         m_socket = getWrappedSocket(address, port, timeout);
         setOutput(m_socket.getOutputStream());
         setInput(new BufferedReader(new InputStreamReader(m_socket.getInputStream())));
     }
     
+    /**
+     * <p>getWrappedSocket</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @return a {@link java.net.Socket} object.
+     * @throws java.io.IOException if any.
+     */
     protected Socket getWrappedSocket(InetAddress address, int port, int timeout) throws IOException {
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(address, port), timeout);
@@ -74,6 +86,15 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
         }
     }
     
+    /**
+     * <p>wrapSocket</p>
+     *
+     * @param socket a {@link java.net.Socket} object.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param port a int.
+     * @return a {@link java.net.Socket} object.
+     * @throws java.lang.Exception if any.
+     */
     protected Socket wrapSocket(Socket socket, String hostAddress, int port) throws Exception {
         Socket sslSocket;
 

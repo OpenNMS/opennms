@@ -40,8 +40,10 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 
 /**
- * @author thedesloge
+ * <p>MultiLineDecoder class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class MultiLineDecoder extends CumulativeProtocolDecoder {
     
@@ -49,11 +51,18 @@ public class MultiLineDecoder extends CumulativeProtocolDecoder {
     private Charset m_charset;
     protected String CURRENT_RESPONSE = "CURRENT_RESPONSE";
     
+    /**
+     * <p>Constructor for MultiLineDecoder.</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     * @param multilineIndicator a {@link java.lang.String} object.
+     */
     public MultiLineDecoder(Charset charset, String multilineIndicator) {
         setCharset(charset);
         m_multilineIndicator = multilineIndicator;
     }
     
+    /** {@inheritDoc} */
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
         MultilineOrientedResponse response = (MultilineOrientedResponse) session.getAttribute(CURRENT_RESPONSE);
@@ -113,19 +122,41 @@ public class MultiLineDecoder extends CumulativeProtocolDecoder {
         return false;
     }
     
+    /**
+     * <p>checkIndicator</p>
+     *
+     * @param in a {@link org.apache.mina.core.buffer.IoBuffer} object.
+     * @return a boolean.
+     * @throws java.nio.charset.CharacterCodingException if any.
+     */
     protected boolean checkIndicator(IoBuffer in) throws CharacterCodingException {
         String line = in.getString(getCharset().newDecoder());
         return line.substring(3, 4).equals(getMultilineIndicator());
     }
 
+    /**
+     * <p>setCharset</p>
+     *
+     * @param charset a {@link java.nio.charset.Charset} object.
+     */
     public void setCharset(Charset charset) {
         m_charset = charset;
     }
 
+    /**
+     * <p>getCharset</p>
+     *
+     * @return a {@link java.nio.charset.Charset} object.
+     */
     public Charset getCharset() {
         return m_charset;
     }
 
+    /**
+     * <p>getMultilineIndicator</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMultilineIndicator() {
         return m_multilineIndicator;
     }

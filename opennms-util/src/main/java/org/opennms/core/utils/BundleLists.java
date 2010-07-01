@@ -39,16 +39,19 @@ import java.util.StringTokenizer;
  * is, a comma-delimited list of strings that are contained as one line in a
  * Java properties file. This class contains methods to parse and create these
  * bundle lists.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class BundleLists extends Object {
 
     /**
      * Parses a string into an array of substrings, using a comma as a delimiter
      * and trimming whitespace.
-     * 
+     *
      * @param list
      *            The list formatted as a <code>delimeter</code> -delimited
      *            string.
@@ -61,7 +64,7 @@ public class BundleLists extends Object {
     /**
      * Parses a string into an array of substrings, using the specified
      * delimeter and trimming whitespace.
-     * 
+     *
      * @param list
      *            The list formatted as a <code>delimeter</code> -delimited
      *            string.
@@ -91,7 +94,7 @@ public class BundleLists extends Object {
     /**
      * Parses a Object array and puts them into a array of substrings, using a
      * comma as a delimiter
-     * 
+     *
      * @param objArray
      *            The object array to be formatted as a comma-delimited string.
      * @return The comma-delimited string.
@@ -103,10 +106,11 @@ public class BundleLists extends Object {
     /**
      * Parses a Object array and puts them into a array of substrings, using a
      * comma as a delimiter
-     * 
+     *
      * @param objArray
      *            The object array to be formatted as a comma-delimited string.
      * @return The comma-delimited string.
+     * @param delimiter a {@link java.lang.String} object.
      */
     public static String createBundleList(Object[] objArray, String delimiter) {
         if (objArray == null || delimiter == null) {

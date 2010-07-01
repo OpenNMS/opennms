@@ -55,50 +55,71 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapExecutor;
 
 /**
+ * <p>GroupRepositoryIbatis class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Repository("groupRepository")
 public class GroupRepositoryIbatis extends SqlMapClientTemplate implements GroupRepository {
 
+    /** {@inheritDoc} */
     @Autowired
     @Override
     public void setSqlMapClient(@Qualifier("sqlMapClient") SqlMapClient sqlMapClient) {
         super.setSqlMapClient(sqlMapClient);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<GroupDTO> getUserGroupsWithAutorities(String username) {
         return queryForList("getUserGroupsComplete", username);
     }
 
+    /** {@inheritDoc} */
     public Boolean hasUsers(Integer id) {
         return queryForList("getGroupMembers", id).size() > 0;
     }
 
+    /**
+     * <p>getGroupUsernames</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<String> getGroupUsernames(Integer id) {
         return queryForList("getGroupMembers", id);
     }
 
+    /** {@inheritDoc} */
     public Boolean deleteUserGroups(String username) {
         return delete("deleteUserGroups", username) > 0;
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<GroupDTO> getFreeGroups(String username) {
         return queryForList("getFreeGroups", username);
     }
 
+    /** {@inheritDoc} */
     public GroupDTO getGroup(Integer id) {
         return (GroupDTO) queryForObject("getGroup", id);
     }
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<GroupDTO> getGroups() {
         return queryForList("getAllGroups");
     }
 
+    /** {@inheritDoc} */
     public Boolean saveGroups(final String username, final List<Integer> groups) {
 
         return execute(new SqlMapClientCallback<Boolean>() {
@@ -128,6 +149,7 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
         });
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<GroupDTO> getGroups(Pager pager) {
         Map params = new HashMap();
@@ -136,19 +158,27 @@ public class GroupRepositoryIbatis extends SqlMapClientTemplate implements Group
         return queryForList("getGroups", params);
     }
 
+    /**
+     * <p>getGroupsNumber</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getGroupsNumber() {
         return (Integer) queryForObject("getGroupsNumber");
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<GroupDTO> getUserGroups(String username) {
         return queryForList("getUserGroups", username);
     }
 
+    /** {@inheritDoc} */
     public Boolean removeGroup(Integer id) {
         return delete("deleteGroup", id) == 1;
     }
 
+    /** {@inheritDoc} */
     public Boolean save(GroupDTO group) {
         return group.isNew() ? add(group) : update(group);
     }

@@ -32,6 +32,12 @@
 
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>OnmsOutageCalendar class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsOutageCalendar {
 
 }

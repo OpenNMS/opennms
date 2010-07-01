@@ -38,13 +38,30 @@ import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiClient;
 import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
 
+/**
+ * <p>OnmsWbemPropertyImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
     private IJIDispatch wbemPropertyDispatch;
 
+    /**
+     * <p>Constructor for OnmsWbemPropertyImpl.</p>
+     *
+     * @param wbemPropertyDispatch a {@link org.jinterop.dcom.impls.automation.IJIDispatch} object.
+     */
     public OnmsWbemPropertyImpl(IJIDispatch wbemPropertyDispatch) {
         this.wbemPropertyDispatch = wbemPropertyDispatch;
     }
 
+    /**
+     * <p>getWmiName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiName() throws WmiException {
         try {
             JIVariant variant = wbemPropertyDispatch.get("Name");
@@ -55,6 +72,12 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
         }
     }
 
+    /**
+     * <p>getWmiOrigin</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiOrigin() throws WmiException {
         try {
             JIVariant variant = wbemPropertyDispatch.get("Origin");
@@ -65,6 +88,12 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
         }
     }
 
+    /**
+     * <p>getWmiIsArray</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Boolean getWmiIsArray() throws WmiException {
         try {
             JIVariant variant = wbemPropertyDispatch.get("IsArray");
@@ -75,6 +104,12 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
         }
     }
 
+    /**
+     * <p>getWmiIsLocal</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Boolean getWmiIsLocal() throws WmiException {
         try {
             JIVariant variant = wbemPropertyDispatch.get("IsLocal");
@@ -85,6 +120,12 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
         }
     }
 
+    /**
+     * <p>getWmiValue</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Object getWmiValue() throws WmiException {
         try {
             JIVariant variant = wbemPropertyDispatch.get("Value");
@@ -95,6 +136,12 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
         }
     }
 
+    /**
+     * <p>getWmiCIMType</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Integer getWmiCIMType() throws WmiException {
         try {
             JIVariant variant = wbemPropertyDispatch.get("CIMType");

@@ -35,12 +35,21 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>Win32ServiceDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class Win32ServiceDetector extends SnmpDetector {
     
     private static final String SV_SVC_OPERATING_STATE_OID = ".1.3.6.1.4.1.77.1.2.3.1.3";
     private static final String DEFAULT_SERVICE_NAME = "Service";
     
+    /**
+     * <p>Constructor for Win32ServiceDetector.</p>
+     */
     public Win32ServiceDetector(){
         setServiceName(DEFAULT_SERVICE_NAME);
         setOid(generateOid());

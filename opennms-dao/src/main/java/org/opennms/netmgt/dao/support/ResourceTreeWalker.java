@@ -44,16 +44,27 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
+ * <p>ResourceTreeWalker class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class ResourceTreeWalker implements InitializingBean {
     private ResourceDao m_resourceDao;
     private ResourceVisitor m_visitor;
 
+    /**
+     * <p>walk</p>
+     */
     public void walk() {
         walk(m_resourceDao.findTopLevelResources());
     }
     
+    /**
+     * <p>walk</p>
+     *
+     * @param resources a {@link java.util.Collection} object.
+     */
     public void walk(Collection<OnmsResource> resources) {
         for (OnmsResource resource : resources) {
             m_visitor.visit(resource);
@@ -61,23 +72,46 @@ public class ResourceTreeWalker implements InitializingBean {
         }
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_resourceDao !=  null, "property resourceDao must be set to a non-null value");
         Assert.state(m_visitor !=  null, "property visitor must be set to a non-null value");
     }
 
+    /**
+     * <p>getResourceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public ResourceDao getResourceDao() {
         return m_resourceDao;
     }
 
+    /**
+     * <p>setResourceDao</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     */
     public void setResourceDao(ResourceDao resourceDao) {
         m_resourceDao = resourceDao;
     }
 
+    /**
+     * <p>getVisitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.ResourceVisitor} object.
+     */
     public ResourceVisitor getVisitor() {
         return m_visitor;
     }
 
+    /**
+     * <p>setVisitor</p>
+     *
+     * @param visitor a {@link org.opennms.netmgt.model.ResourceVisitor} object.
+     */
     public void setVisitor(ResourceVisitor visitor) {
         m_visitor = visitor;
     }

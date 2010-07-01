@@ -39,10 +39,22 @@ package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.config.MibObject;
 
+/**
+ * <p>NumericAttributeType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NumericAttributeType extends SnmpAttributeType {
     
     private static String[] s_supportedTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
     
+    /**
+     * <p>supportsType</p>
+     *
+     * @param rawType a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public static boolean supportsType(String rawType) {
         String type = rawType.toLowerCase();
         for (int i = 0; i < s_supportedTypes.length; i++) {
@@ -56,6 +68,14 @@ public class NumericAttributeType extends SnmpAttributeType {
 
 
     static final String DST_COUNTER = "COUNTER";
+    /**
+     * <p>Constructor for NumericAttributeType.</p>
+     *
+     * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     * @param collectionName a {@link java.lang.String} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
+     */
     public NumericAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         super(resourceType, collectionName, mibObj, groupType);
         
@@ -75,6 +95,7 @@ public class NumericAttributeType extends SnmpAttributeType {
 
     }
     
+    /** {@inheritDoc} */
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
         persister.persistNumericAttribute(attribute);
     }

@@ -4,8 +4,15 @@ import java.io.PrintStream;
 import org.opennms.sms.ping.SmsPinger;
 import org.apache.felix.shell.Command;
 
+/**
+ * <p>SmsPingCommand class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SmsPingCommand implements Command {
 
+	/** {@inheritDoc} */
 	public void execute(String s, PrintStream out, PrintStream err) {
 		try {
 			String[] command = s.split("\\s");
@@ -28,14 +35,29 @@ public class SmsPingCommand implements Command {
         }
 	}
 
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return "smsPing";
 	}
 
+	/**
+	 * <p>getShortDescription</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getShortDescription() {
 		return "Initiates an smsPing to the desired phonenumber";
 	}
 
+	/**
+	 * <p>getUsage</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getUsage() {
 		return "smsPing <phoneNumber>";
 	}

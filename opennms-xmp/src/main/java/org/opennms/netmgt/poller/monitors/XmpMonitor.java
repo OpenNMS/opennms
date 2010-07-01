@@ -55,8 +55,10 @@ import org.opennms.netmgt.protocols.xmp.XmpUtil;
 import org.opennms.netmgt.protocols.xmp.XmpUtilException;
 
 /**
- * @author jeffg
+ * <p>XmpMonitor class.</p>
  *
+ * @author jeffg
+ * @version $Id: $
  */
 public class XmpMonitor extends IPv4Monitor {
     
@@ -141,6 +143,7 @@ public class XmpMonitor extends IPv4Monitor {
     private static final boolean DEFAULT_VALUE_CASE_SENSITIVE = false;
 
 
+    /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map parameters) {
         NetworkInterface iface = svc.getNetInterface();

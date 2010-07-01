@@ -44,85 +44,104 @@ import org.opennms.acl.model.UserView;
 
 /**
  * Contract to insert/update/read/delete acl users
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface UserRepository {
 
     /**
-     * @param username
+     * <p>getIdUser</p>
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the unique identifier user.
      */
     public Object getIdUser(String username);
 
     /**
-     * @param id
+     * <p>getUserCredentials</p>
+     *
+     * @param id a {@link java.lang.String} object.
      * @return the user to update its credentials
      */
     public UserDTO getUserCredentials(String id);
 
     /**
      * disable user by id
-     * 
-     * @param id
+     *
+     * @param id a {@link java.lang.String} object.
      * @return the resutl of the operation
      */
     public Boolean disableUser(String id);
 
     /**
-     * @param id
+     * <p>getUser</p>
+     *
+     * @param id a {@link java.lang.String} object.
      * @return a read only user
      */
     public UserView getUser(String id);
 
     /**
-     * @param username
+     * <p>getUserWithAuthorities</p>
+     *
+     * @param username a {@link java.lang.String} object.
      * @return user with its authorities
      */
     public UserAuthoritiesDTO getUserWithAuthorities(String username);
 
     /**
-     * @param id
+     * <p>getUserWithAuthoritiesByID</p>
+     *
      * @return user with its authorities
+     * @param sid a {@link java.lang.Integer} object.
      */
     public UserAuthoritiesDTO getUserWithAuthoritiesByID(Integer sid);
 
     /**
-     * @param pager
+     * <p>getEnabledUsers</p>
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
      * @return paginated list of enabled users
      */
     public List<UserDTOLight> getEnabledUsers(Pager pager);
 
     /**
-     * @param pager
+     * <p>getDisabledUsers</p>
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
      * @return paginated list of disabled users
      */
     public List<UserDTOLight> getDisabledUsers(Pager pager);
 
     /**
+     * <p>getUsersNumber</p>
+     *
      * @return number of users in the system
      */
     public Integer getUsersNumber();
 
     /**
-     * @param user
+     * <p>insertUser</p>
+     *
+     * @param user a {@link org.opennms.acl.model.UserDTO} object.
      * @return id of the inserted user
      */
     public Long insertUser(UserDTO user);
 
     /**
      * Update a user
-     * 
-     * @param user
+     *
+     * @param user a {@link org.opennms.acl.model.UserDTO} object.
      * @return the number of row updated
      */
     public Integer updatePassword(UserDTO user);
 
     /**
      * Save an UserDTO user
-     * 
-     * @param user
+     *
+     * @param user a {@link org.opennms.acl.model.UserAuthoritiesDTO} object.
      * @return the result of the operation
      */
     public Boolean save(UserAuthoritiesDTO user);

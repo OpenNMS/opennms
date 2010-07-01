@@ -56,13 +56,18 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * A servlet that handles saving a group
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class UpdateGroupController extends AbstractController implements InitializingBean{
     private static final long serialVersionUID = 1L;
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession userSession = request.getSession(false);
@@ -128,6 +133,11 @@ public class UpdateGroupController extends AbstractController implements Initial
         return list.toArray(new String[list.size()]);
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         // TODO Auto-generated method stub
         

@@ -43,19 +43,26 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * 
+ * <p>ProvisionServer class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class ProvisionServer {
     
     private ClassPathXmlApplicationContext m_context;
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
         m_context = new ClassPathXmlApplicationContext("**/*-context.xml");
     }
 
     /**
-     * @param args
+     * <p>main</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
         Properties logConfig = new Properties();
@@ -69,6 +76,11 @@ public class ProvisionServer {
         svr.run();
     }
 
+    /**
+     * <p>getContext</p>
+     *
+     * @return a {@link org.springframework.context.ApplicationContext} object.
+     */
     public ApplicationContext getContext() {
         return m_context;
     }

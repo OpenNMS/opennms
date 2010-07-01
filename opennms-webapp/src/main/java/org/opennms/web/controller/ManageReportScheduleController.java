@@ -47,22 +47,43 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * <p>ManageReportScheduleController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ManageReportScheduleController extends SimpleFormController {
     
     private SchedulerService m_reportSchedulerService;
     private int m_pageSize;
     
+    /**
+     * <p>Constructor for ManageReportScheduleController.</p>
+     */
     public ManageReportScheduleController() {
         setFormView("report/database/manageSchedule");
     }
 
+    /**
+     * <p>setReportSchedulerService</p>
+     *
+     * @param schedulerService a {@link org.opennms.web.svclayer.SchedulerService} object.
+     */
     public void setReportSchedulerService(SchedulerService schedulerService) {
         m_reportSchedulerService = schedulerService;
     }
+    /**
+     * <p>setPageSize</p>
+     *
+     * @param pageSize a int.
+     */
     public void setPageSize(int pageSize) {
         m_pageSize = pageSize;
     }
     
+    /** {@inheritDoc} */
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest req) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
@@ -75,6 +96,7 @@ public class ManageReportScheduleController extends SimpleFormController {
 
     }
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
         ManageReportScheduleCommand manageCommand = (ManageReportScheduleCommand) command;

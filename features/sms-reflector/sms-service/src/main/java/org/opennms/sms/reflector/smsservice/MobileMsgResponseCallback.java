@@ -36,14 +36,35 @@
 package org.opennms.sms.reflector.smsservice;
 
 
+/**
+ * <p>MobileMsgResponseCallback interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface MobileMsgResponseCallback {
 
-    /**
-     * return true if this completes the response for this request
-     * return false if more responses are expected
-     */
+	/**
+	 * return true if this completes the response for this request
+	 * return false if more responses are expected
+	 *
+	 * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+	 * @param packet a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponse} object.
+	 * @return a boolean.
+	 */
 	public boolean handleResponse(MobileMsgRequest request, MobileMsgResponse packet);
+	/**
+	 * <p>handleTimeout</p>
+	 *
+	 * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+	 */
 	public void handleTimeout(MobileMsgRequest request);
+    /**
+     * <p>handleError</p>
+     *
+     * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+     * @param t a {@link java.lang.Throwable} object.
+     */
     public void handleError(MobileMsgRequest request, Throwable t);
 
 }

@@ -38,9 +38,13 @@ import org.opennms.core.utils.FuzzyDateFormatter;
 
 /**
  * A data structure holding information on all outages on a single IP address.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class OutageSummary extends Object {
     protected final int nodeId;
@@ -49,6 +53,15 @@ public class OutageSummary extends Object {
     protected final Date timeUp;
     protected final Date timeNow;
 
+    /**
+     * <p>Constructor for OutageSummary.</p>
+     *
+     * @param nodeId a int.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param timeDown a {@link java.util.Date} object.
+     * @param timeUp a {@link java.util.Date} object.
+     * @param timeNow a {@link java.util.Date} object.
+     */
     public OutageSummary(int nodeId, String nodeLabel, Date timeDown, Date timeUp, Date timeNow) {
         if (nodeLabel == null || timeDown == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -61,40 +74,89 @@ public class OutageSummary extends Object {
         this.timeNow = timeNow;
     }
     
+    /**
+     * <p>Constructor for OutageSummary.</p>
+     *
+     * @param nodeId a int.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param timeDown a {@link java.util.Date} object.
+     * @param timeUp a {@link java.util.Date} object.
+     */
     public OutageSummary(int nodeId, String nodeLabel, Date timeDown, Date timeUp) {
         this(nodeId, nodeLabel, timeDown, timeUp, new Date());
     }
     
+    /**
+     * <p>Constructor for OutageSummary.</p>
+     *
+     * @param nodeId a int.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param timeDown a {@link java.util.Date} object.
+     */
     public OutageSummary(int nodeId, String nodeLabel, Date timeDown) {
         this(nodeId, nodeLabel, timeDown, null, new Date());
     }
 
+    /**
+     * <p>Getter for the field <code>nodeId</code>.</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return (this.nodeId);
     }
 
-    /** @deprecated Please use {@link #getNodeLabel getNodeLabel}instead. */
+    /**
+     * <p>getHostname</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHostname() {
         return (this.nodeLabel);
     }
 
+    /**
+     * <p>Getter for the field <code>nodeLabel</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return (this.nodeLabel);
     }
 
+    /**
+     * <p>Getter for the field <code>timeDown</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getTimeDown() {
         return (this.timeDown);
     }
 
+    /**
+     * <p>Getter for the field <code>timeUp</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getTimeUp() {
         return (this.timeUp);
     }
     
+    /**
+     * <p>getFuzzyTimeDown</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFuzzyTimeDown() {
         // mmm... I *love* Get Fuzzy!
         return FuzzyDateFormatter.calculateDifference(this.getTimeDown(), new Date());
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("<OutageSummary: ");

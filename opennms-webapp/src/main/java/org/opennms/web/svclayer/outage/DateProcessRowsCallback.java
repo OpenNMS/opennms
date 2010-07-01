@@ -42,15 +42,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * 
+ *
  * Overwrite Default ProcessRowsCallback to enable date filtering.
  * Example code from Nathan MA
- * 
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DateProcessRowsCallback extends ProcessRowsCallback
 {
-	/** {@inheritDoc} **/
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Collection filterRows(TableModel model, Collection rows)
         throws Exception

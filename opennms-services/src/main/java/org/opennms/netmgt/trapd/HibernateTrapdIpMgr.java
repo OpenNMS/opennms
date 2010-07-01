@@ -47,11 +47,17 @@ import org.springframework.util.Assert;
 /**
  * This class represents a singular instance that is used to map trap IP
  * addresses to known nodes.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     private IpInterfaceDao m_ipInterfaceDao;
@@ -70,6 +76,9 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#dataSourceSync()
      */
+    /**
+     * <p>dataSourceSync</p>
+     */
     @Transactional(readOnly = true)
     public synchronized void dataSourceSync() {
         m_knownips = m_ipInterfaceDao.getInterfacesForNodes();
@@ -78,6 +87,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#getNodeId(java.lang.String)
      */
+    /** {@inheritDoc} */
     public synchronized long getNodeId(String addr) {
         if (addr == null) {
             return -1;
@@ -88,6 +98,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#setNodeId(java.lang.String, long)
      */
+    /** {@inheritDoc} */
     public synchronized long setNodeId(String addr, long nodeid) {
         if (addr == null || nodeid == -1) {
             return -1;
@@ -99,6 +110,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#removeNodeId(java.lang.String)
      */
+    /** {@inheritDoc} */
     public synchronized long removeNodeId(String addr) {
         if (addr == null) {
             return -1;
@@ -109,6 +121,9 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.trapd.TrapdIpMgr#clearKnownIpsMap()
      */
+    /**
+     * <p>clearKnownIpsMap</p>
+     */
     public synchronized void clearKnownIpsMap() {
         m_knownips.clear();
     }
@@ -117,14 +132,29 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         return (result == null ? -1 : result.longValue());
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_ipInterfaceDao != null, "property ipInterfaceDao must be set");
     }
 
+    /**
+     * <p>getIpInterfaceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     */
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }
 
+    /**
+     * <p>setIpInterfaceDao</p>
+     *
+     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     */
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
     }

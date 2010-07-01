@@ -38,13 +38,18 @@ import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
 
 /**
- * @author Donald Desloge
+ * <p>Abstract JMXClient class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public abstract class JMXClient implements Client<ConnectionWrapper, Integer> {
     
     private ConnectionWrapper m_connection;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         if(m_connection != null) {
             m_connection.close();
@@ -52,14 +57,36 @@ public abstract class JMXClient implements Client<ConnectionWrapper, Integer> {
         
     }
     
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param parameterMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper} object.
+     */
     protected abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address);
     
+    /**
+     * <p>generateMap</p>
+     *
+     * @param port a int.
+     * @param timeout a int.
+     * @return a {@link java.util.Map} object.
+     */
     protected abstract Map<String, Object> generateMap(int port, int timeout);
     
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_connection = getMBeanServerConnection(generateMap(port, timeout), address);
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public Integer receiveBanner() throws IOException, Exception {
         if(m_connection != null) {
             return m_connection.getMBeanServer().getMBeanCount();
@@ -68,6 +95,14 @@ public abstract class JMXClient implements Client<ConnectionWrapper, Integer> {
         }
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper} object.
+     * @return a {@link java.lang.Integer} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public Integer sendRequest(ConnectionWrapper request) throws IOException, Exception {
         return receiveResponse();
     }

@@ -39,29 +39,63 @@ import java.util.Date;
 import org.opennms.web.filter.GreaterThanFilter;
 import org.opennms.web.filter.SQLType;
 
+/**
+ * <p>AfterLastEventTimeFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AfterLastEventTimeFilter extends GreaterThanFilter<Date> {
+    /** Constant <code>TYPE="afterlasteventtime"</code> */
     public static final String TYPE = "afterlasteventtime";
 
+    /**
+     * <p>Constructor for AfterLastEventTimeFilter.</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     */
     public AfterLastEventTimeFilter(Date date) {
         super(TYPE, SQLType.DATE, "LASTEVENTTIME", "lastEventTime", date);
     }
 
+    /**
+     * <p>Constructor for AfterLastEventTimeFilter.</p>
+     *
+     * @param epochTime a long.
+     */
     public AfterLastEventTimeFilter(long epochTime) {
         this(new Date(epochTime));
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("time of last event after \"" + getValue() + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<AfterLastEventTimeFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getDate() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

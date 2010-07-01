@@ -34,7 +34,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>CollectdConfig class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.config;
 
@@ -45,7 +48,6 @@ import java.util.LinkedList;
 
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Package;
-
 public class CollectdConfig {
     private CollectdConfiguration m_config;
     private Collection<CollectdPackage> m_packages;
@@ -54,7 +56,7 @@ public class CollectdConfig {
 
     /**
      * Convenience object for CollectdConfiguration.
-     * 
+     *
      * @param config collectd configuration object
      * @param localServer local server name from opennms-server.xml
      * @param verifyServer verify server option from opennms-server.xml
@@ -81,14 +83,29 @@ public class CollectdConfig {
         }
     }
 
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.collectd.CollectdConfiguration} object.
+     */
     public CollectdConfiguration getConfig() {
         return m_config;
     }
 
+    /**
+     * <p>getPackages</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<CollectdPackage> getPackages() {
         return m_packages;
     }
 
+    /**
+     * <p>getThreads</p>
+     *
+     * @return a int.
+     */
     public int getThreads() {
         return m_config.getThreads();
     }
@@ -97,9 +114,10 @@ public class CollectdConfig {
      * This method is used to establish package agaist iplist mapping, with
      * which, the iplist is selected per package via the configured filter rules
      * from the database.
-     * @param verifyServer2 
-     * @param localServer2 
+     *
+     * @param localServer2
      * @param localServer TODO
+     * @param verifyServer2
      * @param verifyServer TODO
      */
     protected void createPackageIpListMap(String localServer, boolean verifyServer) {
@@ -113,11 +131,16 @@ public class CollectdConfig {
         }
     }
     
+    /**
+     * <p>rebuildPackageIpListMap</p>
+     */
     public void rebuildPackageIpListMap() {
         createPackageIpListMap(m_localServer, m_verifyServer);
     }
 
     /**
+     * <p>initialize</p>
+     *
      * @param localServer TODO
      * @param verifyServer TODO
      */
@@ -126,6 +149,12 @@ public class CollectdConfig {
 
     }
 
+    /**
+     * <p>getPackage</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
+     */
     public CollectdPackage getPackage(String name) {
         for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
             CollectdPackage wpkg = it.next();
@@ -138,7 +167,7 @@ public class CollectdConfig {
 
     /**
      * Returns true if collection domain exists
-     * 
+     *
      * @param name
      *            The domain name to check
      * @return True if the domain exists
@@ -158,7 +187,7 @@ public class CollectdConfig {
      * Returns true if the specified interface is included by at least one
      * package which has the specified service and that service is enabled (set
      * to "on").
-     * 
+     *
      * @param ipAddr
      *            IP address of the interface to lookup
      * @param svcName

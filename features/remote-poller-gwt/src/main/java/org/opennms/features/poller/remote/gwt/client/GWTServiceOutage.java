@@ -1,5 +1,10 @@
+
 /**
- * 
+ * <p>GWTServiceOutage class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 package org.opennms.features.poller.remote.gwt.client;
 
@@ -11,7 +16,6 @@ import org.opennms.features.poller.remote.gwt.client.utils.EqualsUtil;
 import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-
 public class GWTServiceOutage implements Serializable, IsSerializable, Comparable<GWTServiceOutage> {
     private static final long serialVersionUID = 1L;
 
@@ -23,46 +27,96 @@ public class GWTServiceOutage implements Serializable, IsSerializable, Comparabl
 
     private Date m_to;
 
+    /**
+     * <p>Constructor for GWTServiceOutage.</p>
+     */
     public GWTServiceOutage() {
     }
 
+    /**
+     * <p>Constructor for GWTServiceOutage.</p>
+     *
+     * @param monitor a {@link org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor} object.
+     * @param service a {@link org.opennms.features.poller.remote.gwt.client.GWTMonitoredService} object.
+     */
     public GWTServiceOutage(final GWTLocationMonitor monitor, final GWTMonitoredService service) {
         m_monitor = monitor;
         m_service = service;
     }
 
+    /**
+     * <p>getFrom</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getFrom() {
         return m_from;
     }
 
+    /**
+     * <p>setFrom</p>
+     *
+     * @param from a {@link java.util.Date} object.
+     */
     public void setFrom(final Date from) {
         m_from = from;
     }
 
+    /**
+     * <p>getTo</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getTo() {
         return m_to;
     }
 
+    /**
+     * <p>setTo</p>
+     *
+     * @param to a {@link java.util.Date} object.
+     */
     public void setTo(final Date to) {
         m_to = to;
     }
 
+    /**
+     * <p>getMonitor</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor} object.
+     */
     public GWTLocationMonitor getMonitor() {
         return m_monitor;
     }
 
+    /**
+     * <p>setMonitor</p>
+     *
+     * @param monitor a {@link org.opennms.features.poller.remote.gwt.client.GWTLocationMonitor} object.
+     */
     public void setMonitor(final GWTLocationMonitor monitor) {
         m_monitor = monitor;
     }
 
+    /**
+     * <p>getService</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTMonitoredService} object.
+     */
     public GWTMonitoredService getService() {
         return m_service;
     }
 
+    /**
+     * <p>setService</p>
+     *
+     * @param service a {@link org.opennms.features.poller.remote.gwt.client.GWTMonitoredService} object.
+     */
     public void setService(final GWTMonitoredService service) {
         m_service = service;
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object o) {
         if (!(o instanceof GWTServiceOutage))
             return false;
@@ -81,14 +135,30 @@ public class GWTServiceOutage implements Serializable, IsSerializable, Comparabl
           && EqualsUtil.areEqual(this.getTo(), that.getTo());
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return new HashCodeBuilder().append(this.getMonitor()).append(this.getService()).append(this.getFrom()).append(this.getTo()).toHashcode();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "GWTServiceOutage[monitor=" + m_monitor + ",service=" + m_service + ",from=" + m_from + ",to=" + m_to + "]";
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param that a {@link org.opennms.features.poller.remote.gwt.client.GWTServiceOutage} object.
+     * @return a int.
+     */
     public int compareTo(final GWTServiceOutage that) {
         if (that == null) return -1;
         return new CompareToBuilder()

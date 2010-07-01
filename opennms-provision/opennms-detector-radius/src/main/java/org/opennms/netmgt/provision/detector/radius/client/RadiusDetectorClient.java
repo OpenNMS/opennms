@@ -39,8 +39,10 @@ import net.sourceforge.jradiusclient.RadiusPacket;
 import org.opennms.netmgt.provision.support.Client;
 
 /**
- * @author Donald Desloge
+ * <p>RadiusDetectorClient class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class RadiusDetectorClient implements Client<RadiusPacket, RadiusPacket> {
     /**
@@ -67,44 +69,91 @@ public class RadiusDetectorClient implements Client<RadiusPacket, RadiusPacket> 
     //private String m_user;
     //private String m_password;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         // TODO Auto-generated method stub
         
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         m_radiusClient = new RadiusClient(address.getCanonicalHostName(), getAuthPort() ,getAcctPort(), getSecret(), timeout);
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link net.sourceforge.jradiusclient.RadiusPacket} object.
+     * @throws java.io.IOException if any.
+     */
     public RadiusPacket receiveBanner() throws IOException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link net.sourceforge.jradiusclient.RadiusPacket} object.
+     * @return a {@link net.sourceforge.jradiusclient.RadiusPacket} object.
+     * @throws java.lang.Exception if any.
+     */
     public RadiusPacket sendRequest(RadiusPacket request) throws Exception {
         return m_radiusClient.authenticate(request);
     }
 
+    /**
+     * <p>setAuthport</p>
+     *
+     * @param authport a int.
+     */
     public void setAuthport(int authport) {
         m_authport = authport;
     }
 
+    /**
+     * <p>getAuthPort</p>
+     *
+     * @return a int.
+     */
     public int getAuthPort() {
         return m_authport;
     }
 
+    /**
+     * <p>setAcctPort</p>
+     *
+     * @param acctport a int.
+     */
     public void setAcctPort(int acctport) {
         m_acctport = acctport;
     }
 
+    /**
+     * <p>getAcctPort</p>
+     *
+     * @return a int.
+     */
     public int getAcctPort() {
         return m_acctport;
     }
 
+    /**
+     * <p>setSecret</p>
+     *
+     * @param secret a {@link java.lang.String} object.
+     */
     public void setSecret(String secret) {
         m_secret = secret;
     }
 
+    /**
+     * <p>getSecret</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSecret() {
         return m_secret;
     }

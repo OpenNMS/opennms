@@ -8,6 +8,12 @@ import org.apache.mina.transport.socket.SocketConnector;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>ConnectorFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ConnectorFactory {
     
     
@@ -26,6 +32,12 @@ public class ConnectorFactory {
     
     private static Executor s_executor = Executors.newSingleThreadExecutor();
     
+    /**
+     * <p>getConnector</p>
+     *
+     * @return a {@link org.apache.mina.transport.socket.SocketConnector} object.
+     * @throws java.lang.InterruptedException if any.
+     */
     public SocketConnector getConnector() throws InterruptedException {
         if(s_available != null){
             s_available.acquire();
@@ -33,6 +45,11 @@ public class ConnectorFactory {
         return createConnector(); 
     }
 
+    /**
+     * <p>dispose</p>
+     *
+     * @param connector a {@link org.apache.mina.transport.socket.SocketConnector} object.
+     */
     public void dispose(final SocketConnector connector) {
        Runnable r = new Runnable(){
 

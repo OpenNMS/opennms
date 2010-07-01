@@ -39,14 +39,35 @@ import java.util.Collection;
 import org.opennms.netmgt.config.categories.Category;
 
 /**
+ * <p>CategoryConfigDao interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public interface CategoryConfigDao {
 
+	/**
+	 * <p>getCategoryByLabel</p>
+	 *
+	 * @param label a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.config.categories.Category} object.
+	 */
 	public Category getCategoryByLabel(String label);
 	
+	/**
+	 * <p>findAll</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<Category> findAll();
 	
 }

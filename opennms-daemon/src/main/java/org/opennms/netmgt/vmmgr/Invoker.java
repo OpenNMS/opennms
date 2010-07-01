@@ -85,10 +85,17 @@ import org.opennms.netmgt.config.service.types.InvokeAtType;
  * stop control event, it will exit - does not check to see if the services
  * its started are all stopped
  * <p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @version $Id: $
  */
 public class Invoker {
     private MBeanServer m_server;
@@ -97,10 +104,18 @@ public class Invoker {
     private boolean m_failFast = true;
     private List<InvokerService> m_services;
     
+    /**
+     * <p>Constructor for Invoker.</p>
+     */
     public Invoker() {
         
     }
     
+    /**
+     * <p>getDefaultServiceConfigFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.ServiceConfigFactory} object.
+     */
     public static ServiceConfigFactory getDefaultServiceConfigFactory() {
         try {
             ServiceConfigFactory.init();
@@ -110,6 +125,9 @@ public class Invoker {
         }
     }
     
+    /**
+     * <p>instantiateClasses</p>
+     */
     public void instantiateClasses() {
 
         /*
@@ -171,6 +189,9 @@ public class Invoker {
         }
     }
 
+    /**
+     * <p>getObjectInstances</p>
+     */
     public void getObjectInstances() {
         for (InvokerService invokerService : getServices()) {
             Service service = invokerService.getService();
@@ -192,6 +213,11 @@ public class Invoker {
         }
     }
 
+    /**
+     * <p>invokeMethods</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<InvokerResult> invokeMethods() {
         List<InvokerService> invokerServicesOrdered;
         if (isReverse()) {
@@ -356,42 +382,92 @@ public class Invoker {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getAtType</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.service.types.InvokeAtType} object.
+     */
     public InvokeAtType getAtType() {
         return m_atType;
     }
 
+    /**
+     * <p>setAtType</p>
+     *
+     * @param atType a {@link org.opennms.netmgt.config.service.types.InvokeAtType} object.
+     */
     public void setAtType(InvokeAtType atType) {
         m_atType = atType;
     }
 
+    /**
+     * <p>isFailFast</p>
+     *
+     * @return a boolean.
+     */
     public boolean isFailFast() {
         return m_failFast;
     }
 
+    /**
+     * <p>setFailFast</p>
+     *
+     * @param failFast a boolean.
+     */
     public void setFailFast(boolean failFast) {
         m_failFast = failFast;
     }
 
+    /**
+     * <p>isReverse</p>
+     *
+     * @return a boolean.
+     */
     public boolean isReverse() {
         return m_reverse;
     }
 
+    /**
+     * <p>setReverse</p>
+     *
+     * @param reverse a boolean.
+     */
     public void setReverse(boolean reverse) {
         m_reverse = reverse;
     }
 
+    /**
+     * <p>getServer</p>
+     *
+     * @return a {@link javax.management.MBeanServer} object.
+     */
     public MBeanServer getServer() {
         return m_server;
     }
 
+    /**
+     * <p>setServer</p>
+     *
+     * @param server a {@link javax.management.MBeanServer} object.
+     */
     public void setServer(MBeanServer server) {
         m_server = server;
     }
 
+    /**
+     * <p>getServices</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<InvokerService> getServices() {
         return m_services;
     }
 
+    /**
+     * <p>setServices</p>
+     *
+     * @param services a {@link java.util.List} object.
+     */
     public void setServices(List<InvokerService> services) {
         m_services = services;
     }

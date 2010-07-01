@@ -43,21 +43,18 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Implementation of Executor strategy that instantiates a Java class.
- * 
+ *
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class ClassExecutor implements ExecutorStrategy {
     /**
+     * {@inheritDoc}
+     *
      * This method calls the send method of the specified class in
-     * 
-     * @param className.
-     * @param Java
-     *            className of the notification sender plug-in
-     * @param arguments
-     *            a list of Argument objects that need to be passed to the class
-     * @return int, the return code of the send method of the plug-in
      */
     public int execute(String className, List<Argument> arguments) {
         log().debug("Going for the class instance: " + className);

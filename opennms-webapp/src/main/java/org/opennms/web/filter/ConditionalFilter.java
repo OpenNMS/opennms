@@ -39,12 +39,26 @@ import org.hibernate.criterion.Criterion;
 import org.opennms.netmgt.model.OnmsCriteria;
 
 
+/**
+ * <p>Abstract ConditionalFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public abstract class ConditionalFilter implements Filter {
+    /** Constant <code>TYPE="conditionalFilter"</code> */
     public static final String TYPE = "conditionalFilter";
     
     private String m_conditionType;
     private Filter[] m_filters;
     
+    /**
+     * <p>Constructor for ConditionalFilter.</p>
+     *
+     * @param conditionType a {@link java.lang.String} object.
+     * @param filters a {@link org.opennms.web.filter.Filter} object.
+     */
     public ConditionalFilter(String conditionType, Filter... filters){
         if (filters.length == 0) {
             throw new IllegalArgumentException("You must pass at least one filter");
@@ -53,10 +67,16 @@ public abstract class ConditionalFilter implements Filter {
         m_filters = filters;
     }
     
+    /**
+     * <p>getFilters</p>
+     *
+     * @return an array of {@link org.opennms.web.filter.Filter} objects.
+     */
     public Filter[] getFilters() {
         return m_filters;
     }
     
+    /** {@inheritDoc} */
     public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
         int parametersBound = 0;
         for (Filter mFilter : m_filters) {
@@ -65,6 +85,11 @@ public abstract class ConditionalFilter implements Filter {
         return parametersBound;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() {
         if (m_filters.length == 1) {
             return m_filters[0].getDescription();
@@ -81,6 +106,11 @@ public abstract class ConditionalFilter implements Filter {
         return buf.toString();
     }
 
+    /**
+     * <p>getParamSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getParamSql() {
         if (m_filters.length == 1) {
             return m_filters[0].getParamSql();
@@ -98,6 +128,11 @@ public abstract class ConditionalFilter implements Filter {
         return buf.toString();
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         if (m_filters.length == 1) {
             return m_filters[0].getSql();
@@ -115,6 +150,11 @@ public abstract class ConditionalFilter implements Filter {
         return buf.toString();
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         if (m_filters.length == 1) {
             return m_filters[0].getTextDescription();
@@ -133,13 +173,28 @@ public abstract class ConditionalFilter implements Filter {
     }
 
 
+    /**
+     * <p>applyCriteria</p>
+     *
+     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public void applyCriteria(OnmsCriteria criteria) {
         criteria.add(getCriterion());
     }
     
+    /**
+     * <p>getCriterion</p>
+     *
+     * @return a {@link org.hibernate.criterion.Criterion} object.
+     */
     abstract public Criterion getCriterion();
 
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringBuilder(this)
             .append("description", getDescription())

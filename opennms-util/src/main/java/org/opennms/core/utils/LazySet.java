@@ -36,6 +36,12 @@ import java.util.Iterator;
 import java.util.Set;
 
 
+/**
+ * <p>LazySet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LazySet<E> extends JdbcSet<E> {
 	
 	public static interface Loader<E> {
@@ -45,82 +51,104 @@ public class LazySet<E> extends JdbcSet<E> {
 	private Loader<E> m_loader;
 	private boolean m_loaded = false;
 
+	/**
+	 * <p>Constructor for LazySet.</p>
+	 *
+	 * @param loader a {@link org.opennms.core.utils.LazySet.Loader} object.
+	 */
 	public LazySet(Loader<E> loader) {
 		m_loader = loader;
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public Iterator<E> iterator() {
 		load();
 		return super.iterator();
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public int size() {
 		load();
 		return super.size();
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public boolean removeAll(Collection<?> arg0) {
 		load();
 		return super.removeAll(arg0);
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public boolean addAll(Collection<? extends E> arg0) {
 		load();
 		return super.addAll(arg0);
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public void clear() {
 		load();
 		super.clear();
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public boolean contains(Object o) {
 		load();
 		return super.contains(o);
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public boolean containsAll(Collection<?> arg0) {
 		load();
 		return super.containsAll(arg0);
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public boolean isEmpty() {
 		load();
 		return super.isEmpty();
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public boolean remove(Object o) {
 		load();
 		return super.remove(o);
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public boolean retainAll(Collection<?> arg0) {
 		load();
 		return super.retainAll(arg0);
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public Object[] toArray() {
 		load();
 		return super.toArray();
 	}
 
+        /** {@inheritDoc} */
         @Override
 	public <T> T[] toArray(T[] arg0) {
 		load();
 		return super.toArray(arg0);
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		load();
 		return super.toString();
@@ -133,6 +161,11 @@ public class LazySet<E> extends JdbcSet<E> {
 		}
 	}
 	
+	/**
+	 * <p>isLoaded</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isLoaded() {
 		return m_loaded;
 	}

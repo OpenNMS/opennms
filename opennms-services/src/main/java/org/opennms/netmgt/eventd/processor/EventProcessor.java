@@ -45,7 +45,17 @@ import org.opennms.netmgt.xml.event.Header;
  * Event processor interface.  Classes that want to modify or react to
  * events within eventd implement this interface and are dependency
  * injected into the eventProcessors List in EventHandler.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public interface EventProcessor {
+    /**
+     * <p>process</p>
+     *
+     * @param eventHeader a {@link org.opennms.netmgt.xml.event.Header} object.
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void process(Header eventHeader, Event event) throws SQLException;
 }

@@ -33,6 +33,12 @@ package org.opennms.core.utils;
 
 import java.util.Iterator;
 
+/**
+ * <p>Abstract FilteringIterator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
     
     private static final class PeekableIterator<T> implements Iterator<T> {
@@ -75,14 +81,29 @@ abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
     
     private PeekableIterator<T> m_it;
     
+    /**
+     * <p>Constructor for FilteringIterator.</p>
+     *
+     * @param iterable a {@link java.lang.Iterable} object.
+     */
     public FilteringIterator(Iterable<T> iterable) {
         this(iterable.iterator());
     }
 
+    /**
+     * <p>Constructor for FilteringIterator.</p>
+     *
+     * @param iterator a {@link java.util.Iterator} object.
+     */
     public FilteringIterator(Iterator<T> iterator) {
         m_it = new PeekableIterator<T>(iterator);
     }
 
+    /**
+     * <p>hasNext</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasNext() {
         skipNonMatching();
         return m_it.hasNext();
@@ -97,17 +118,36 @@ abstract public class FilteringIterator<T> implements Iterator<T>, Iterable<T> {
     /*
      * This iterator will only return objects for which matches returns true;
      */
+    /**
+     * <p>matches</p>
+     *
+     * @param item a T object.
+     * @return a boolean.
+     */
     abstract protected boolean matches(T item);
 
+    /**
+     * <p>next</p>
+     *
+     * @return a T object.
+     */
     public T next() {
         skipNonMatching();
         return m_it.next();
     }
 
+    /**
+     * <p>remove</p>
+     */
     public void remove() {
         m_it.remove();
     }
 
+    /**
+     * <p>iterator</p>
+     *
+     * @return a {@link java.util.Iterator} object.
+     */
     public Iterator<T> iterator() {
         return this;
     }

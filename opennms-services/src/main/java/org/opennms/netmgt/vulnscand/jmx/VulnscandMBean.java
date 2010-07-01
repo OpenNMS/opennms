@@ -34,5 +34,11 @@ package org.opennms.netmgt.vulnscand.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>VulnscandMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface VulnscandMBean extends BaseOnmsMBean {
 }

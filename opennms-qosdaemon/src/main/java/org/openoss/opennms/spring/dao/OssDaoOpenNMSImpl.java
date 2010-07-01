@@ -50,6 +50,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
+/**
+ * <p>OssDaoOpenNMSImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OssDaoOpenNMSImpl implements OssDao {
 
 	private static final String LOG4J_CATEGORY = "OpenOSS.QoSDrx";
@@ -98,6 +104,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#setDataSource(javax.sql.DataSource)
 	 */
+	/** {@inheritDoc} */
 	public void setDataSource(DataSource dataSource) {
 		_dataSource = dataSource;
 	}
@@ -112,6 +119,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#setAssetRecordDao(org.opennms.netmgt.dao.AssetRecordDao)
 	 */
+	/** {@inheritDoc} */
 	public void setAssetRecordDao(AssetRecordDao ar){
 		_assetRecordDao = ar;
 	}
@@ -125,6 +133,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#setNodeDao(org.opennms.netmgt.dao.NodeDao)
 	 */
+	/** {@inheritDoc} */
 	public  void setNodeDao( NodeDao nodedao){
 		_nodeDao = nodedao;
 	}
@@ -138,6 +147,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#setAlarmDao(org.opennms.netmgt.dao.AlarmDao)
 	 */
+	/** {@inheritDoc} */
 	public  void setAlarmDao( AlarmDao alarmDao){
 		_alarmDao = alarmDao;
 	}
@@ -151,6 +161,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#setTransTemplate(org.springframework.transaction.support.TransactionTemplate)
 	 */
+	/** {@inheritDoc} */
 	public void setTransTemplate(TransactionTemplate _transTemplate) {
 		transTemplate = _transTemplate;
 	}
@@ -168,6 +179,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#setQoSD(org.openoss.opennms.spring.qosd.QoSD)
 	 */
+	/** {@inheritDoc} */
 	public void setQoSD(QoSD _qoSD){
 		qoSD=_qoSD;
 	}
@@ -180,6 +192,9 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#init()
+	 */
+	/**
+	 * <p>init</p>
 	 */
 	synchronized public void init(){
 		if (initialised) return;
@@ -205,6 +220,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	 */
 
 
+	/** {@inheritDoc} */
 	public synchronized OnmsAlarm addCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
 		ThreadCategory log = getLog();	
 
@@ -265,6 +281,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#updateCurrentAlarmForUniqueKey(org.opennms.netmgt.model.OnmsAlarm)
 	 */
+	/** {@inheritDoc} */
 	public synchronized OnmsAlarm updateCurrentAlarmForUniqueKey(final OnmsAlarm alarm){
 		ThreadCategory log = getLog();	
 
@@ -322,6 +339,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#getCurrentAlarmForUniqueKey(java.lang.String, java.lang.String)
 	 */
+	/** {@inheritDoc} */
 	public synchronized OnmsAlarm getCurrentAlarmForUniqueKey(String applicationDN , String ossPrimaryKey){
 		ThreadCategory log = getLog();	
 
@@ -400,12 +418,22 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#updateAlarmCache()
 	 */
+	/**
+	 * <p>updateAlarmCache</p>
+	 *
+	 * @throws java.lang.IllegalStateException if any.
+	 */
 	synchronized public void updateAlarmCache() throws IllegalStateException{
 		localUpdateAlarmCache();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#updateAlarmCacheAndSendAlarms()
+	 */
+	/**
+	 * <p>updateAlarmCacheAndSendAlarms</p>
+	 *
+	 * @throws java.lang.IllegalStateException if any.
 	 */
 	synchronized public void updateAlarmCacheAndSendAlarms() throws IllegalStateException{
 		localUpdateAlarmCache();
@@ -414,6 +442,11 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#getAlarmCache()
+	 */
+	/**
+	 * <p>getAlarmCache</p>
+	 *
+	 * @return an array of {@link org.opennms.netmgt.model.OnmsAlarm} objects.
 	 */
 	public OnmsAlarm[] getAlarmCache(){
 		OnmsAlarm[] returnAlarmCache= new OnmsAlarm[alarmCacheByID.size()];
@@ -490,7 +523,8 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 	/**
 	 * Debug method to print out opennms alarms
-	 * @param alarm
+	 *
+	 * @param alarm a {@link org.opennms.netmgt.model.OnmsAlarm} object.
 	 * @return string to print out
 	 */
 	public static String alarmToString(OnmsAlarm alarm){
@@ -542,6 +576,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByLabel(java.lang.String)
 	 */
+	/** {@inheritDoc} */
 	public OnmsNode findNodeByLabel(String label) {
 		ThreadCategory log = getLog();	
 
@@ -559,6 +594,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByInstanceAndType(java.lang.String, java.lang.String)
 	 */
+	/** {@inheritDoc} */
 	public OnmsNode findNodeByInstanceAndType(String managedObjectInstance, String managedObjectType) throws IllegalArgumentException{
 		ThreadCategory log = getLog();	
 		if (managedObjectInstance==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByInstanceType: Illegal value: managedObjectInstance null");
@@ -580,6 +616,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#findNodeByID(java.lang.Integer)
 	 */
+	/** {@inheritDoc} */
 	public OnmsNode findNodeByID(Integer nodeid){
 		if (nodeid==null) throw new IllegalArgumentException("OssDaoOpenNMSImpl().findNodeByLabel: Illegal value: nodeid null or empty ");
 		OnmsNode node=null;
@@ -594,6 +631,9 @@ public class OssDaoOpenNMSImpl implements OssDao {
 
 	/* (non-Javadoc)
 	 * @see org.openoss.opennms.spring.dao.OssDao#updateNodeCaches()
+	 */
+	/**
+	 * <p>updateNodeCaches</p>
 	 */
 	public synchronized void updateNodeCaches(){
 		localUpdateNodeCaches();

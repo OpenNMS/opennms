@@ -38,12 +38,22 @@
 package org.opennms.web.element;
 
 /**
+ * <p>XmlEncoder class.</p>
+ *
  * @author micmas
  *
  * Per modificare il modello associato al commento di questo tipo generato, aprire
  * Finestra&gt;Preferenze&gt;Java&gt;Generazione codice&gt;Codice e commenti
+ * @version $Id: $
+ * @since 1.8.1
  */
 public final class XmlEncoder {
+	/**
+	 * <p>encode</p>
+	 *
+	 * @param str a {@link java.lang.String} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	public static String encode(String str)
 	{
 		char[] specialChar = {'&', '<', '>', '"', '\''};

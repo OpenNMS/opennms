@@ -34,6 +34,13 @@ package org.opennms.web.admin.roles;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * <p>CalendarEntry class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class CalendarEntry {
     
     Date m_start;
@@ -41,6 +48,14 @@ public class CalendarEntry {
     String m_descr;
     List m_labels;
     
+    /**
+     * <p>Constructor for CalendarEntry.</p>
+     *
+     * @param start a {@link java.util.Date} object.
+     * @param end a {@link java.util.Date} object.
+     * @param descr a {@link java.lang.String} object.
+     * @param labels a {@link java.util.List} object.
+     */
     public CalendarEntry(Date start, Date end, String descr, List labels) {
         m_start = start;
         m_end = end;
@@ -48,11 +63,31 @@ public class CalendarEntry {
         m_labels = labels;
     }
 
+    /**
+     * <p>getStartTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getStartTime() { return m_start; }
     
+    /**
+     * <p>getEndTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getEndTime() { return m_end; }
     
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDescription() { return m_descr; }
     
+    /**
+     * <p>getLabels</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List getLabels() { return m_labels; }
 }

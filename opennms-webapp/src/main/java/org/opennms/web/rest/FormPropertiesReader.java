@@ -17,16 +17,25 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 @Provider
+/**
+ * <p>FormPropertiesReader class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImpl> {	
     @Context private HttpServletRequest m_httpServletRequest;
     
     Map<String, List<String>> params=new HashMap<String,List<String>>();
 	
+    /** {@inheritDoc} */
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaTypes) {
         return type.isAssignableFrom(MultivaluedMapImpl.class);
     }
 
 	
+    /** {@inheritDoc} */
     public MultivaluedMapImpl readFrom(java.lang.Class<MultivaluedMapImpl> type,
 			java.lang.reflect.Type genericType,
 			java.lang.annotation.Annotation[] annotations, MediaType mediaType,

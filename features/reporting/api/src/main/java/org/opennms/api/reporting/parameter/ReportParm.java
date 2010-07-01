@@ -37,6 +37,12 @@ package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
 
+/**
+ * <p>ReportParm class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReportParm implements Serializable {
 
     private static final long serialVersionUID = -7987984390575422836L;
@@ -44,18 +50,38 @@ public class ReportParm implements Serializable {
     String m_name;
     String m_displayName;
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getDisplayName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDisplayName() {
         return m_displayName;
     }
 
+    /**
+     * <p>setDisplayName</p>
+     *
+     * @param displayName a {@link java.lang.String} object.
+     */
     public void setDisplayName(String displayName) {
         m_displayName = displayName;
     }

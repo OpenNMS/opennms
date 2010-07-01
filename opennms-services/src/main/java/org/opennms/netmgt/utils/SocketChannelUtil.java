@@ -44,9 +44,12 @@ import java.nio.channels.SocketChannel;
 
 /**
  * Class to obtain a connected SocketChannel object.
- * 
+ *
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public class SocketChannelUtil extends Object {
 
@@ -54,18 +57,19 @@ public class SocketChannelUtil extends Object {
      * This will attempt to connect to the passed host and port. The connection
      * will be made in non-blocking mode, so if there is no route to the host,
      * then it won't hold up capsd or the poller.
-     * 
+     *
      * Once a connection is made, the channel is returned to blocking mode.
-     * 
+     *
      * @param host
      *            remote host
      * @param port
      *            port
      * @param timeout
      *            timeout (ms)
-     * 
      * @return SocketChannel object already connected to the remote host/port
      *         pair.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.InterruptedException if any.
      */
     public static SocketChannel getConnectedSocketChannel(InetAddress host, int port, int timeout) throws IOException, InterruptedException {
         SocketChannel sChannel = null;

@@ -32,6 +32,13 @@
 
 package org.opennms.web.element;
 
+/**
+ * <p>Service class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class Service {
     private int m_id;
     
@@ -53,9 +60,26 @@ public class Service {
 
     private char m_status;
 
+    /**
+     * <p>Constructor for Service.</p>
+     */
     public Service() {
     }
 
+    /**
+     * <p>Constructor for Service.</p>
+     *
+     * @param id a int.
+     * @param nodeid a int.
+     * @param ifindex a int.
+     * @param ipaddr a {@link java.lang.String} object.
+     * @param serviceid a int.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param lastGood a {@link java.lang.String} object.
+     * @param lastFail a {@link java.lang.String} object.
+     * @param notify a {@link java.lang.String} object.
+     * @param status a char.
+     */
     public Service(int id, int nodeid, int ifindex, String ipaddr, int serviceid, String serviceName, String lastGood, String lastFail, String notify, char status) {
         setId(id);
         setNodeId(nodeid);
@@ -69,50 +93,110 @@ public class Service {
         setStatus(status);
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a int.
+     */
     public int getId() {
         return m_id;
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a int.
+     */
     public int getIfIndex() {
         return m_ifIndex;
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return m_ipAddr;
     }
 
+    /**
+     * <p>getServiceId</p>
+     *
+     * @return a int.
+     */
     public int getServiceId() {
         return m_serviceId;
     }
 
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_serviceName;
     }
 
+    /**
+     * <p>getLastGood</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLastGood() {
         return m_lastGood;
     }
 
+    /**
+     * <p>getLastFail</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLastFail() {
         return m_lastFail;
     }
 
+    /**
+     * <p>getNotify</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNotify() {
         return m_notify;
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a char.
+     */
     public char getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>isManaged</p>
+     *
+     * @return a boolean.
+     */
     public boolean isManaged() {
         return (getStatus() == 'A');
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer str = new StringBuffer("Node Id = " + getNodeId() + "\n");
         str.append("Ifindex = " + getIfIndex() + "\n");

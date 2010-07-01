@@ -61,6 +61,13 @@ import org.springframework.beans.BeanWrapperImpl;
 
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+/**
+ * <p>OnmsRestService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OnmsRestService {
 
 	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS }
@@ -69,12 +76,16 @@ public class OnmsRestService {
 	private Integer m_limit = null;
 	private Integer m_offset = null;
 
+	/**
+	 * <p>Constructor for OnmsRestService.</p>
+	 */
 	public OnmsRestService() {
 		super();
 	}
 
 	/**
 	 * Convenience for the other setLimitOffset method with the extra parameter, passing a default limit of 10
+	 *
 	 * @param params See other setLimitOffset
 	 * @param criteria See other setLimitOffset
 	 */
@@ -82,18 +93,27 @@ public class OnmsRestService {
 		setLimitOffset(params, criteria, 10);  //Default limit is 10
 	}
 	
+    /**
+     * <p>setLimitOffset</p>
+     *
+     * @param params a {@link javax.ws.rs.core.MultivaluedMap} object.
+     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     * @param defaultLimit a int.
+     */
     protected void setLimitOffset(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, int defaultLimit) {
         setLimitOffset(params, criteria, defaultLimit, true);
     }
 
-    /**
-	 * Uses parameters in params to setup criteria with standard limit and offset parameters.  
+	/**
+	 * Uses parameters in params to setup criteria with standard limit and offset parameters.
 	 * If "limit" is in params, is used, otherwise default limit is used.  If limit is 0, then no limit is set
 	 * If "offset" is in params, is set as the offset into the result set
 	 * In both cases, the limit and offset parameters are removed if found.
+	 *
 	 * @param params Set of parameters to look in for limit and offset
 	 * @param criteria The Criteria that will be modified with the limit and offset
 	 * @param defaultLimit A limit to use if none is specified in the params
+	 * @param addImmediately a boolean.
 	 */
 	protected void setLimitOffset(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria, int defaultLimit, boolean addImmediately) {
 		Integer limit=defaultLimit;
@@ -133,15 +153,15 @@ public class OnmsRestService {
 	}
 
 	/**
-	 * Method to pull out all the named params in params and use them to add restriction filters to a criteria object.  
+	 * Method to pull out all the named params in params and use them to add restriction filters to a criteria object.
 	 * Uses the objectClass to determine parameters and types; auto converts from strings to appropriate types, if at all possible.
 	 * Additionally, the param "comparator", if set, will change the comparision from the default of equality.  Acceptable comparators are:
 	 * "equals", "ilike", "like", "gt", "lt", "ge", "le", "ne" (other values will default to equality).
 	 * If there is an "orderBy" param, results will be ordered by the property name given.  Default is ascending, unless "order" is set to "desc"
 	 * If there is a "query" param, it will be added to the criteria as a raw hibernate SQL statement (in addition to any other parameters specified
-	 * 
+	 *
 	 * The "criteria" object will be populated with the filter and ordering details provided
-	 * 
+	 *
 	 * @param params set of string parameters from which various configuration properties are extracted
 	 * @param criteria the object which will be populated with the filter/ordering
 	 * @param objectClass the type of thing being filtered.
@@ -263,18 +283,19 @@ public class OnmsRestService {
 		}
 	}
 
-	/**
-	 * Does ordering processing; pulled out to a separate method for visual clarity.  Configures ordering as defined in addFiltersToCriteria
-	 * @param params - set of values to look in for the "order" and "orderBy" values
-	 * @param criteria - the criteria object which will be updated with ordering configuration
-	 */
+    /**
+     * Does ordering processing; pulled out to a separate method for visual clarity.  Configures ordering as defined in addFiltersToCriteria
+     *
+     * @param params - set of values to look in for the "order" and "orderBy" values
+     * @param criteria - the criteria object which will be updated with ordering configuration
+     */
     protected void addOrdering(MultivaluedMap<java.lang.String, java.lang.String> params, OnmsCriteria criteria) {
         addOrdering(params, criteria, true);
     }
 
     /**
      * Same as addOrdering() but you can say whether to add the order to the criteria object immediately.
-     * 
+     *
      * @param params - set of values to look in for the "order" and "orderBy" values
      * @param criteria - the criteria object which will be updated with ordering configuration
      * @param addImmediately - whether to add immediately to the criteria object.  Use "false" if you intend to
@@ -304,11 +325,24 @@ public class OnmsRestService {
 		}
 	}
 	
+    /**
+     * <p>throwException</p>
+     *
+     * @param status a {@link javax.ws.rs.core.Response.Status} object.
+     * @param msg a {@link java.lang.String} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     protected <T> T throwException(Status status, String msg) {
         log().error(msg);
         throw new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -316,6 +350,7 @@ public class OnmsRestService {
     /**
      * Convert a column name with underscores to the corresponding property name using "camel case".  A name
      * like "customer_number" would match a "customerNumber" property name.
+     *
      * @param name the column name to be converted
      * @return the name using "camel case"
      */
@@ -345,6 +380,13 @@ public class OnmsRestService {
         return result.toString();
     }
 
+    /**
+     * <p>getDistinctIdCriteria</p>
+     *
+     * @param clazz a {@link java.lang.Class} object.
+     * @param criteria a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     protected OnmsCriteria getDistinctIdCriteria(Class<?> clazz, OnmsCriteria criteria) {
         criteria.setProjection(
                                Projections.distinct(
@@ -368,6 +410,12 @@ public class OnmsRestService {
         return rootCriteria;
     }
     
+    /**
+     * <p>setProperties</p>
+     *
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @param req a {@link java.lang.Object} object.
+     */
     protected void setProperties(org.opennms.web.rest.MultivaluedMapImpl params, Object req) {
         BeanWrapper wrapper = new BeanWrapperImpl(req);
         wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());

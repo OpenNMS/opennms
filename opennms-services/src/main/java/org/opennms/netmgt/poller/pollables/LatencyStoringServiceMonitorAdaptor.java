@@ -67,12 +67,17 @@ import org.opennms.netmgt.threshd.ThresholdingEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * 
+ * <p>LatencyStoringServiceMonitorAdaptor class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @version $Id: $
  */
 public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
+    /** Constant <code>DEFAULT_BASENAME="response-time"</code> */
     public static final String DEFAULT_BASENAME = "response-time";
 
     private ServiceMonitor m_serviceMonitor;
@@ -81,20 +86,34 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     
     private LatencyThresholdingSet m_thresholdingSet;
 
+    /**
+     * <p>Constructor for LatencyStoringServiceMonitorAdaptor.</p>
+     *
+     * @param monitor a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
+     * @param config a {@link org.opennms.netmgt.config.PollerConfig} object.
+     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
+     */
     public LatencyStoringServiceMonitorAdaptor(ServiceMonitor monitor, PollerConfig config, Package pkg) {
         m_serviceMonitor = monitor;
         m_pollerConfig = config;
         m_pkg = pkg;
     }
 
+    /** {@inheritDoc} */
     public void initialize(Map<String, Object> parameters) {
         m_serviceMonitor.initialize(parameters);
     }
 
+    /**
+     * <p>initialize</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
+     */
     public void initialize(MonitoredService svc) {
         m_serviceMonitor.initialize(svc);
     }
 
+    /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         PollStatus status = m_serviceMonitor.poll(svc, parameters);
 
@@ -165,19 +184,17 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     /**
      * Update an RRD database file with latency/response time data.
-     * 
-     * @param rrdJniInterface
-     *            interface used to issue RRD commands.
+     *
      * @param repository
      *            path to the RRD file repository
      * @param addr
      *            interface address
      * @param dsName
-     *            the datasource name to update 
+     *            the datasource name to update
      * @param value
      *            value to update the RRD file with
+     * @param rrdBaseName a {@link java.lang.String} object.
      */
-
     public void updateRRD(String repository, InetAddress addr, String rrdBaseName, String dsName, long value) {
         LinkedHashMap<String, Number> lhm = new LinkedHashMap<String, Number>();
         lhm.put(dsName, value);
@@ -186,17 +203,15 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     /**
      * Update an RRD database file with multiple latency/response time data sources.
-     * 
-     * @param rrdJniInterface
-     *            interface used to issue RRD commands.
+     *
      * @param repository
      *            path to the RRD file repository
      * @param addr
      *            interface address
      * @param entries
      *            the entries for the rrd, containing a Map of dsNames to values
+     * @param rrdBaseName a {@link java.lang.String} object.
      */
-
     public void updateRRD(String repository, InetAddress addr, String rrdBaseName, LinkedHashMap<String, Number> entries) {
         try {
             // Create RRD if it doesn't already exist
@@ -241,17 +256,16 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     /**
      * Create an RRD database file with a single dsName for storing latency/response time data.
-     * 
-     * @param rrdJniInterface
-     *            interface used to issue RRD commands.
+     *
      * @param repository
      *            path to the RRD file repository
      * @param addr
      *            interface address
      * @param dsName
      *            data source/RRD file name
-     * 
      * @return true if RRD file successfully created, false otherwise
+     * @param rrdBaseName a {@link java.lang.String} object.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
     public boolean createRRD(String repository, InetAddress addr, String rrdBaseName, String dsName) throws RrdException {
         List<RrdDataSource> dsList = Collections.singletonList(new RrdDataSource(dsName, "GAUGE", m_pollerConfig.getStep(m_pkg)*2, "U", "U"));
@@ -261,17 +275,15 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     /**
      * Create an RRD database file with multiple dsNames for storing latency/response time data.
-     * 
-     * @param rrdJniInterface
-     *            interface used to issue RRD commands.
+     *
      * @param repository
      *            path to the RRD file repository
      * @param addr
      *            interface address
-     * @param dsName
-     *            data source/RRD file name list
-     * 
      * @return true if RRD file successfully created, false otherwise
+     * @param rrdBaseName a {@link java.lang.String} object.
+     * @param dsList a {@link java.util.List} object.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
      */
     public boolean createRRD(String repository, InetAddress addr, String rrdBaseName, List<RrdDataSource> dsList) throws RrdException {
 
@@ -288,10 +300,14 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>release</p>
+     */
     public void release() {
         m_serviceMonitor.release();
     }
 
+    /** {@inheritDoc} */
     public void release(MonitoredService svc) {
         m_serviceMonitor.release(svc);
     }

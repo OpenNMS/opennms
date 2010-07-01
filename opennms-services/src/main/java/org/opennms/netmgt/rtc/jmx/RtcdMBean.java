@@ -36,5 +36,11 @@ package org.opennms.netmgt.rtc.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>RtcdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface RtcdMBean extends BaseOnmsMBean {
 }

@@ -37,30 +37,64 @@ import java.util.Date;
 import org.opennms.web.filter.LessThanFilter;
 import org.opennms.web.filter.SQLType;
 
+/**
+ * <p>BeforeFirstEventTimeFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class BeforeFirstEventTimeFilter extends LessThanFilter<Date> {
+    /** Constant <code>TYPE="beforefirsteventtime"</code> */
     public static final String TYPE = "beforefirsteventtime";
 
+    /**
+     * <p>Constructor for BeforeFirstEventTimeFilter.</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     */
     public BeforeFirstEventTimeFilter(Date date) {
         super(TYPE, SQLType.DATE, "FIRSTEVENTTIME", "firstEventTime", date);
     }
 
+    /**
+     * <p>Constructor for BeforeFirstEventTimeFilter.</p>
+     *
+     * @param epochTime a long.
+     */
     public BeforeFirstEventTimeFilter(long epochTime) {
         this(new Date(epochTime));
     }
 
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("time of first event before \"" + getValue() + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<BeforeFirstEventTimeFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getDate() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

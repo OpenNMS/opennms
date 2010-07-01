@@ -60,8 +60,9 @@ import org.opennms.netmgt.provision.service.ProvisionService;
 
 /**
  * This nodes job is to tracks nodes that need to be deleted, added, or changed
- * @author david
  *
+ * @author david
+ * @version $Id: $
  */
 public class ImportOperationsManager {
     
@@ -73,11 +74,26 @@ public class ImportOperationsManager {
     
     private String m_foreignSource;
     
+    /**
+     * <p>Constructor for ImportOperationsManager.</p>
+     *
+     * @param foreignIdToNodeMap a {@link java.util.Map} object.
+     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     */
     public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService) {
         m_provisionService = provisionService;
         m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
     }
 
+    /**
+     * <p>foundNode</p>
+     *
+     * @param foreignId a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     * @param city a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation} object.
+     */
     public SaveOrUpdateOperation foundNode(String foreignId, String nodeLabel, String building, String city) {
         
         SaveOrUpdateOperation ret;
@@ -116,18 +132,38 @@ public class ImportOperationsManager {
         return m_foreignIdToNodeMap.remove(foreignId);
     }
     
+    /**
+     * <p>getOperationCount</p>
+     *
+     * @return a int.
+     */
     public int getOperationCount() {
         return m_inserts.size() + m_updates.size() + m_foreignIdToNodeMap.size();
     }
     
+    /**
+     * <p>getInsertCount</p>
+     *
+     * @return a int.
+     */
     public int getInsertCount() {
     	return m_inserts.size();
     }
 
+    /**
+     * <p>getUpdateCount</p>
+     *
+     * @return a int.
+     */
     public int  getUpdateCount() {
         return m_updates.size();
     }
 
+    /**
+     * <p>getDeleteCount</p>
+     *
+     * @return a int.
+     */
     public int getDeleteCount() {
     	return m_foreignIdToNodeMap.size();
     }
@@ -193,6 +229,12 @@ public class ImportOperationsManager {
     	
     }
     
+    /**
+     * <p>shutdownAndWaitForCompletion</p>
+     *
+     * @param executorService a {@link java.util.concurrent.ExecutorService} object.
+     * @param msg a {@link java.lang.String} object.
+     */
     public void shutdownAndWaitForCompletion(ExecutorService executorService, String msg) {
         executorService.shutdown();
         try {
@@ -204,6 +246,11 @@ public class ImportOperationsManager {
         }
     }
     
+    /**
+     * <p>getOperations</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<ImportOperation> getOperations() {
         return Collections.list(new OperationIterator());
     }
@@ -222,14 +269,29 @@ public class ImportOperationsManager {
 		return ThreadCategory.getInstance(getClass());
 	}
 
+    /**
+     * <p>setForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     */
     public void setForeignSource(String foreignSource) {
         m_foreignSource = foreignSource;
     }
 
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignSource() {
         return m_foreignSource;
     }
 
+    /**
+     * <p>auditNodes</p>
+     *
+     * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     public void auditNodes(Requisition requisition) {
         requisition.visit(new RequisitionAccountant(this));
     }

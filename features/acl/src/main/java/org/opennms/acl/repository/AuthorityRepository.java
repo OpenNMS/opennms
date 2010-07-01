@@ -41,76 +41,88 @@ import org.opennms.acl.model.Pager;
 
 /**
  * Contract to insert/update/read/delete the authorities
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface AuthorityRepository {
 
     /**
      * Save an authorityDTO
-     * 
-     * @param authority
+     *
+     * @param authority a {@link org.opennms.acl.model.AuthorityDTO} object.
      * @return the result of the operation
      */
     public Boolean save(AuthorityDTO authority);
 
     /**
      * Retrieve an authority by id
-     * 
-     * @param id
+     *
+     * @param id a {@link java.lang.Integer} object.
      * @return authority
      */
     public AuthorityDTO getAuthority(Integer id);
 
     /**
      * Remove an authority by id
-     * 
-     * @param id
+     *
+     * @param id a {@link java.lang.Integer} object.
      * @return the result of the operation
      */
     public Boolean removeAuthority(Integer id);
 
     /**
-     * @param pager
+     * <p>getAuthorities</p>
+     *
+     * @param pager a {@link org.opennms.acl.model.Pager} object.
      * @return paginated list of authorities
      */
     public List<AuthorityDTO> getAuthorities(Pager pager);
 
     /**
+     * <p>getAuthorities</p>
+     *
      * @return list of all authorities
      */
     public List<AuthorityDTO> getAuthorities();
 
     /**
+     * <p>getAuthoritiesNumber</p>
+     *
      * @return numbers of authorities present in the system
      */
     public Integer getAuthoritiesNumber();
 
     /**
-     * @param username
+     * <p>getUserAuthorities</p>
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the list of user's authorities by username
      */
     public List<AuthorityDTO> getUserAuthorities(String username);
 
     /**
-     * @param username
+     * <p>getFreeAuthorities</p>
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the list of authorities that user doesn't have
      */
     public List<AuthorityDTO> getFreeAuthorities(String username);
 
     /**
-     * @param username
+     * <p>getFreeAuthoritiesForGroup</p>
+     *
      * @return the list of authorities that Group doesn't have
      */
     public List<AuthorityDTO> getFreeAuthoritiesForGroup();
 
     /**
      * Save a list of authorities for a given group
-     * 
-     * @param username
-     * @param authorities
+     *
+     * @param authorities a {@link java.util.List} object.
      * @return the result of operation
+     * @param id a {@link java.lang.Integer} object.
      */
     public Boolean saveAuthorities(Integer id, List<Integer> authorities);
 
@@ -123,20 +135,34 @@ public interface AuthorityRepository {
     // public Boolean deleteUserAuthorities(String username);
     /**
      * Delete all user's groups
-     * 
-     * @param username
+     *
+     * @param username a {@link java.lang.String} object.
      * @return the result of the operation
      */
     public Boolean deleteUserGroups(String username);
 
     /**
-     * @param id
-     * @return
+     * <p>getIdItemsAuthority</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link java.util.List} object.
      */
     public List<Integer> getIdItemsAuthority(Integer id);
 
+    /**
+     * <p>getGroupAuthorities</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<AuthorityDTO> getGroupAuthorities(Integer id);
 
+    /**
+     * <p>removeGroupFromAuthorities</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean removeGroupFromAuthorities(Integer id);
 
 }

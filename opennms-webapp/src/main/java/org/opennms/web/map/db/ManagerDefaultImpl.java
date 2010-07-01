@@ -85,10 +85,13 @@ import org.opennms.web.map.view.VMapInfo;
 import org.opennms.web.map.view.VProperties;
 
 /**
+ * <p>ManagerDefaultImpl class.</p>
+ *
  * @author maurizio
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
-
 public class ManagerDefaultImpl implements Manager {
 
     private class AlarmInfo {
@@ -141,34 +144,74 @@ public class ManagerDefaultImpl implements Manager {
 
     private List<VMapInfo> mapInfo = new ArrayList<VMapInfo>();
 
+    /**
+     * <p>Getter for the field <code>filter</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFilter() {
         return filter;
     }
 
+    /**
+     * <p>Setter for the field <code>filter</code>.</p>
+     *
+     * @param filter a {@link java.lang.String} object.
+     */
     public void setFilter(String filter) {
         this.filter = filter;
     }
 
+    /**
+     * <p>Getter for the field <code>dataSource</code>.</p>
+     *
+     * @return a {@link org.opennms.web.map.db.datasources.DataSourceInterface} object.
+     */
     public DataSourceInterface getDataSource() {
         return dataSource;
     }
 
+    /**
+     * <p>Setter for the field <code>dataSource</code>.</p>
+     *
+     * @param dataSource a {@link org.opennms.web.map.db.datasources.DataSourceInterface} object.
+     */
     public void setDataSource(DataSourceInterface dataSource) {
         this.dataSource = dataSource;
     }
 
+    /**
+     * <p>Getter for the field <code>dbManager</code>.</p>
+     *
+     * @return a {@link org.opennms.web.map.db.Manager} object.
+     */
     public org.opennms.web.map.db.Manager getDbManager() {
         return dbManager;
     }
 
+    /**
+     * <p>Setter for the field <code>dbManager</code>.</p>
+     *
+     * @param dbManager a {@link org.opennms.web.map.db.Manager} object.
+     */
     public void setDbManager(org.opennms.web.map.db.Manager dbManager) {
         this.dbManager = dbManager;
     }
 
+    /**
+     * <p>Getter for the field <code>mapsPropertiesFactory</code>.</p>
+     *
+     * @return a org$opennms$web$map$config$MapPropertiesFactory object.
+     */
     public org.opennms.web.map.config.MapPropertiesFactory getMapsPropertiesFactory() {
         return mapsPropertiesFactory;
     }
 
+    /**
+     * <p>Setter for the field <code>mapsPropertiesFactory</code>.</p>
+     *
+     * @param mapsPropertiesFactory a org$opennms$web$map$config$MapPropertiesFactory object.
+     */
     public void setMapsPropertiesFactory(
             org.opennms.web.map.config.MapPropertiesFactory mapsPropertiesFactory) {
         this.mapsPropertiesFactory = mapsPropertiesFactory;
@@ -200,6 +243,8 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * Manage Maps using default implementation of Factory and Manager
+     *
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public ManagerDefaultImpl() throws MapsException {
         ThreadCategory.setPrefix(MapsConstants.LOG4J_CATEGORY);
@@ -209,6 +254,12 @@ public class ManagerDefaultImpl implements Manager {
         }
     }
 
+    /**
+     * <p>openMap</p>
+     *
+     * @return a {@link org.opennms.web.map.view.VMap} object.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
+     */
     public VMap openMap() throws MapNotFoundException {
         if (sessionMap != null) {
             return sessionMap;
@@ -216,6 +267,12 @@ public class ManagerDefaultImpl implements Manager {
         throw new MapNotFoundException();
     }
 
+    /**
+     * <p>clearMap</p>
+     *
+     * @throws org.opennms.web.map.MapNotFoundException if any.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public void clearMap() throws MapNotFoundException, MapsException {
         if (sessionMap == null) {
             throw new MapNotFoundException();
@@ -224,14 +281,24 @@ public class ManagerDefaultImpl implements Manager {
         sessionMap.removeAllElements();
     }
 
+    /**
+     * <p>deleteMap</p>
+     *
+     * @throws org.opennms.web.map.MapNotFoundException if any.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public void deleteMap() throws MapNotFoundException, MapsException {
         deleteMap(sessionMap.getId());
     }
 
+    /**
+     * <p>closeMap</p>
+     */
     public void closeMap() {
         sessionMap = null;
     }
 
+    /** {@inheritDoc} */
     public VMap openMap(int id, String user, boolean refreshElems)
             throws MapsManagementException, MapNotFoundException,
             MapsException {
@@ -255,15 +322,9 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Create a new VMap and return it
-     * 
-     * @param name
-     * @param accessMode
-     * @param owner
-     * @param userModifies
-     * @param width
-     * @param height
-     * @return the new VMap
      */
     public VMap newMap(String owner,
             String userModifies, int width, int height) {
@@ -282,12 +343,14 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * Take the map with id in input and return it in VMap form.
-     * 
-     * @param id
+     *
+     * @param id a int.
      * @param refreshElems
      *            says if refresh the map's elements
      * @return the VMap with identifier id
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @throws org.opennms.web.map.MapsManagementException if any.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
      */
     public VMap openMap(int id, boolean refreshElems)
             throws MapsManagementException, MapNotFoundException,
@@ -361,6 +424,14 @@ public class ManagerDefaultImpl implements Manager {
         return elems;
     }
 
+    /**
+     * <p>getMapMenu</p>
+     *
+     * @param mapId a int.
+     * @return a {@link org.opennms.web.map.view.VMapInfo} object.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public VMapInfo getMapMenu(int mapId) throws MapNotFoundException,
             MapsException {
         VMapInfo m = null;
@@ -374,13 +445,13 @@ public class ManagerDefaultImpl implements Manager {
     /**
      * Take the maps with label like the pattern in input and return them in
      * VMap[] form.
-     * 
-     * @param label
+     *
      * @param refreshElems
      *            says if refresh map's elements
      * @return the VMaps array if any label matches the pattern in input, null
      *         otherwise
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @param likeLabel a {@link java.lang.String} object.
      */
     public VMap[] getMapsLike(String likeLabel, boolean refreshElems)
             throws MapsException {
@@ -399,12 +470,12 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * Take the maps with name in input and return them in VMap[] form.
-     * 
-     * @param mapName
-     * @param refhresElems
-     *            says if refresh maps' elements
+     *
+     * @param mapName a {@link java.lang.String} object.
      * @return the VMaps array if any map has name in input, null otherwise
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @param refreshElems a boolean.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
      */
     public VMap[] getMapsByName(String mapName, boolean refreshElems)
             throws MapNotFoundException, MapsException {
@@ -423,11 +494,12 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * Get all defined maps.
-     * 
+     *
      * @param refreshElems
      *            says if refresh maps' elements
      * @return the VMaps array containing all maps defined
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
      */
     public VMap[] getAllMaps(boolean refreshElems)
             throws MapNotFoundException, MapsException {
@@ -445,11 +517,10 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * Get all defined maps.
-     * 
+     *
      * @return the MapMenu array containing all maps defined
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
      */
-
     public VMapInfo[] getAllMapMenus() throws MapsException {
         VMapInfo[] m = null;
         m = dbManager.getAllMapMenus();
@@ -459,10 +530,11 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * Take the maps with name in input and return them in MapMenu[] form.
-     * 
-     * @param mapName
+     *
+     * @param mapName a {@link java.lang.String} object.
      * @return the MapMenu array if any map has name in input, null otherwise
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
      */
     public VMapInfo[] getMapsMenuByName(String mapName)
             throws MapNotFoundException, MapsException {
@@ -475,6 +547,7 @@ public class ManagerDefaultImpl implements Manager {
         return retVMap;
     }
 
+    /** {@inheritDoc} */
     public VMapInfo getDefaultMapsMenu(String user) throws MapsException {
 
         Iterator<Group> ite = getGroupDao().findGroupsForUser(user).iterator();
@@ -535,12 +608,9 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * gets all visible maps for user and userRole in input
-     * 
-     * @param user
-     * @param userRole
-     * @return a List of MapMenu objects.
-     * @throws MapsException
      */
     public List<VMapInfo> getVisibleMapsMenu(String user)
             throws MapsException {
@@ -592,10 +662,11 @@ public class ManagerDefaultImpl implements Manager {
      * input as the root of the tree. If there are more maps with
      * <i>mapName</i> (case insensitive) all trees with these maps as root are
      * considered and returned.
-     * 
-     * @param mapName
+     *
+     * @param mapName a {@link java.lang.String} object.
      * @return a List with the MapMenu objects.
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
      */
     public List<VMapInfo> getMapsMenuTreeByName(String mapName)
             throws MapNotFoundException, MapsException {
@@ -653,15 +724,15 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * Create a new VElement with the identifier setted to id.
-     * 
-     * @param mapId
-     * @param elementId
+     *
+     * @param mapId a int.
+     * @param elementId a int.
      * @param type
      *            the node type
-     * @param x
-     * @param y
+     * @param x a int.
+     * @param y a int.
      * @return the new VElement
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public VElement newElement(int mapId, int elementId, String type, int x,
             int y) throws MapsException {
@@ -672,6 +743,16 @@ public class ManagerDefaultImpl implements Manager {
         return velem;
     }
 
+    /**
+     * <p>newElement</p>
+     *
+     * @param elementId a int.
+     * @param type a {@link java.lang.String} object.
+     * @param x a int.
+     * @param y a int.
+     * @return a {@link org.opennms.web.map.view.VElement} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public VElement newElement(int elementId, String type, int x, int y)
             throws MapsException {
         if (sessionMap == null) {
@@ -681,15 +762,10 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Create a new element child of the map with mapId (this map must be the
      * sessionMap)
-     * 
-     * @param mapId
-     * @param elementId
-     * @param type
-     *            the node type
-     * @return the new VElement
-     * @throws MapsException
      */
     public VElement newElement(int mapId, int elementId, String type)
             throws MapsException {
@@ -731,15 +807,10 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Create a new element child of the map with mapId (this map must be the
      * sessionMap).
-     * 
-     * @param mapId
-     * @param elementId
-     * @param type
-     *            the node type
-     * @return the new VElement
-     * @throws MapsException
      */
     public VElement newElement(int mapId, int elementId, String type,
             String iconname, int x, int y) throws MapsException {
@@ -759,13 +830,14 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * Create a new (not child) empty Submap with the identifier setted to id.
-     * 
-     * @param mapId
-     * @param elementId
+     *
+     * @param mapId a int.
+     * @param elementId a int.
      * @param type
      *            the node type
      * @return the new VElement
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
+     * @param iconname a {@link java.lang.String} object.
      */
     public VElement newElement(int mapId, int elementId, String type,
             String iconname) throws MapsException {
@@ -776,12 +848,13 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * delete the map in input
-     * 
+     *
      * @param map
      *            to delete
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException
      *             if an error occour deleting map, MapNotFoundException if
      *             the map to delete doesn't exist.
+     * @throws org.opennms.web.map.MapNotFoundException if any.
      */
     synchronized public void deleteMap(VMap map) throws MapsException,
             MapNotFoundException {
@@ -790,10 +863,9 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * delete the map with identifier id
-     * 
-     * @param id
-     *            of the map to delete
-     * @throws MapsException
+     *
+     * @throws org.opennms.web.map.MapsException if any.
+     * @param mapId a int.
      */
     synchronized public void deleteMap(int mapId) throws MapsException {
         if (sessionMap == null) {
@@ -813,10 +885,10 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * delete the maps in input
-     * 
+     *
      * @param maps
      *            to delete
-     * @throws MapsException
+     * @throws org.opennms.web.map.MapsException if any.
      */
     synchronized public void deleteMaps(VMap[] maps) throws MapsException {
         for (VMap map : maps) {
@@ -826,10 +898,9 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * delete the maps with the identifiers in input
-     * 
-     * @param identifiers
-     *            of the maps to delete
-     * @throws MapsException
+     *
+     * @throws org.opennms.web.map.MapsException if any.
+     * @param maps an array of int.
      */
     synchronized public void deleteMaps(int[] maps) throws MapsException {
         for (int map : maps) {
@@ -838,11 +909,9 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * save the map in input
-     * 
-     * @param map
-     *            to save
-     * @throws MapsException
      */
     synchronized public int save(VMap map) throws MapsException {
         Collection<DbElement> dbe = new ArrayList<DbElement>();
@@ -855,8 +924,8 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * delete all defined node elements in existent maps
-     * 
-     * @throws MapsException
+     *
+     * @throws org.opennms.web.map.MapsException if any.
      */
     synchronized public void deleteAllNodeElements() throws MapsException {
         dbManager.deleteNodeTypeElementsFromAllMaps();
@@ -864,18 +933,17 @@ public class ManagerDefaultImpl implements Manager {
 
     /**
      * delete all defined sub maps in existent maps
-     * 
-     * @throws MapsException
+     *
+     * @throws org.opennms.web.map.MapsException if any.
      */
     synchronized public void deleteAllMapElements() throws MapsException {
         dbManager.deleteMapTypeElementsFromAllMaps();
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Reloads elements of map and theirs avail,severity and status
-     * 
-     * @param map
-     * @return the map refreshed
      */
     public VMap reloadMap(VMap map) throws MapsException {
 
@@ -892,6 +960,7 @@ public class ManagerDefaultImpl implements Manager {
         return map;
     }
 
+    /** {@inheritDoc} */
     public VMap refreshMap(VMap map) throws MapsException {
         
         if (map == null) {
@@ -910,6 +979,7 @@ public class ManagerDefaultImpl implements Manager {
         return map;
     }
 
+    /** {@inheritDoc} */
     public boolean foundLoopOnMaps(VMap parentMap, int mapId)
             throws MapsException {
 
@@ -955,6 +1025,10 @@ public class ManagerDefaultImpl implements Manager {
     /**
      * recursively gets all nodes contained by elem and its submaps (if elem
      * is a map)
+     *
+     * @param velem a {@link org.opennms.web.map.view.VElement} object.
+     * @return a {@link java.util.Set} object.
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public Set<Integer> getNodeidsOnElement(VElement velem)
             throws MapsException {
@@ -962,11 +1036,22 @@ public class ManagerDefaultImpl implements Manager {
         return dbManager.getNodeidsOnElement(elem);
     }
 
+    /**
+     * <p>getElementInfo</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public List<VElementInfo> getElementInfo() throws MapsException {
         elemInfo=  dbManager.getAllElementInfo();
         return elemInfo;
     }
 
+    /**
+     * <p>getDataAccessManager</p>
+     *
+     * @return a {@link org.opennms.web.map.db.Manager} object.
+     */
     public org.opennms.web.map.db.Manager getDataAccessManager() {
         return dbManager;
     }
@@ -1416,10 +1501,20 @@ public class ManagerDefaultImpl implements Manager {
                                                                                          ">"));
     }
 
+    /**
+     * <p>getGroupDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.GroupDao} object.
+     */
     public GroupDao getGroupDao() {
         return m_groupDao;
     }
 
+    /**
+     * <p>setGroupDao</p>
+     *
+     * @param groupDao a {@link org.opennms.netmgt.config.GroupDao} object.
+     */
     public void setGroupDao(GroupDao groupDao) {
         m_groupDao = groupDao;
     }
@@ -1429,6 +1524,7 @@ public class ManagerDefaultImpl implements Manager {
         return new VElement(dbManager.getElement(elementId, mapId, type));
     }
 
+    /** {@inheritDoc} */
     public VMap searchMap(String owner,String userModifies, int width, int height, List<VElement> elems) throws MapsException {
         VMap m = new VMap(MapsConstants.SEARCH_MAP_NAME);
         m.setOwner(owner);
@@ -1448,6 +1544,7 @@ public class ManagerDefaultImpl implements Manager {
         return m;    
     }
 
+    /** {@inheritDoc} */
     public java.util.Map<String, Set<Integer>> getNodeLabelToMaps(String user)
             throws MapsException {
         Map<Integer,String> maps = new HashMap<Integer,String>();
@@ -1506,6 +1603,7 @@ public class ManagerDefaultImpl implements Manager {
         return nodelabelMap;
     }
 
+    /** {@inheritDoc} */
     public VProperties getProperties(boolean isUserAdmin)
             throws MapsException {
         VProperties inObj = new VProperties();
@@ -1538,6 +1636,7 @@ public class ManagerDefaultImpl implements Manager {
         return inObj;
     }
 
+    /** {@inheritDoc} */
     public VMap addElements(VMap map, List<VElement> velems) throws MapsException {
         map.removeAllLinks();
         for (VElement ve: velems) {
@@ -1559,6 +1658,11 @@ public class ManagerDefaultImpl implements Manager {
         return map;
     }
 
+    /**
+     * <p>reloadConfig</p>
+     *
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public void reloadConfig() throws MapsException {
         try {
             mapsPropertiesFactory.reload(true);

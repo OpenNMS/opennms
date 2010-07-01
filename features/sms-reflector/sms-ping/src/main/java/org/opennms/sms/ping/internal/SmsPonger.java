@@ -51,12 +51,14 @@ import org.smslib.Message.MessageTypes;
  * SmsMessenger
  *
  * @author brozow
+ * @version $Id: $
  */
 public class SmsPonger implements OnmsInboundMessageNotification {
     
     Logger log = Logger.getLogger(getClass());
     Map<String,String> s_tokenResponses = buildTokenResponses();
     
+    /** {@inheritDoc} */
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
         debugf("SmsPonger.processInboundMessage");
         

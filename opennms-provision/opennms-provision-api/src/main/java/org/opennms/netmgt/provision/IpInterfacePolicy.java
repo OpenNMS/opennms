@@ -37,8 +37,15 @@ import org.opennms.netmgt.model.OnmsIpInterface;
  * IpInterfacePolicy
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface IpInterfacePolicy extends OnmsPolicy {
 
+    /**
+     * <p>apply</p>
+     *
+     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     */
     OnmsIpInterface apply(OnmsIpInterface iface);
 }

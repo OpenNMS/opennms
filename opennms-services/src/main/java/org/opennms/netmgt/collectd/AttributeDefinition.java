@@ -31,14 +31,41 @@
 //
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>AttributeDefinition interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface AttributeDefinition {
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getType();
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getName();
     
+    /**
+     * <p>equals</p>
+     *
+     * @param o a {@link java.lang.Object} object.
+     * @return a boolean.
+     */
     public abstract boolean equals(Object o);
     
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public abstract int hashCode();
 
 }

@@ -34,6 +34,13 @@ package org.opennms.web.element;
 
 import org.opennms.web.Util;
 
+/**
+ * <p>Node class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class Node implements Comparable<Node> {
 
     int m_nodeId;
@@ -89,62 +96,137 @@ public class Node implements Comparable<Node> {
         m_foreignSource = foreignSource;
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
 
+    /**
+     * <p>getNodeParent</p>
+     *
+     * @return a int.
+     */
     public int getNodeParent() {
         return m_nodeParent;
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_label;
     }
 
+    /**
+     * <p>getDpName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDpName() {
         return m_dpname;
     }
 
+    /**
+     * <p>getNodeCreateTime</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeCreateTime() {
         return m_nodeCreateTime;
     }
 
+    /**
+     * <p>getNodeSysId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeSysId() {
         return m_nodeSysId;
     }
 
+    /**
+     * <p>getNodeSysName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeSysName() {
         return Util.htmlify(m_nodeSysName);
     }
 
+    /**
+     * <p>getNodeSysDescr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeSysDescr() {
         return Util.htmlify(m_nodeSysDescr);
     }
 
+    /**
+     * <p>getNodeSysLocn</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeSysLocn() {
         return Util.htmlify(m_nodeSysLocn);
     }
 
+    /**
+     * <p>getNodeSysContact</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeSysContact() {
         return Util.htmlify(m_nodeSysContact);
     }
 
+    /**
+     * <p>getNodeType</p>
+     *
+     * @return a char.
+     */
     public char getNodeType() {
         return m_nodeType;
     }
 
+    /**
+     * <p>getOperatingSystem</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOperatingSystem() {
         return Util.htmlify(m_operatingSystem);
     }
 
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignSource() {
         return m_foreignSource;
     }
     
+    /**
+     * <p>getForeignId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignId() {
         return m_foreignId;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n");
         str.append("Node Parent = " + m_nodeParent + "\n");
@@ -160,6 +242,12 @@ public class Node implements Comparable<Node> {
         return str.toString();
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.web.element.Node} object.
+     * @return a int.
+     */
     public int compareTo(Node o) {
         String compareLabel = "";
         Integer compareId = 0;

@@ -20,6 +20,7 @@ import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselecte
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationDetailsRetrievedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerInfoWindowRefreshEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
@@ -57,6 +58,10 @@ import com.google.gwt.user.client.ui.SplitLayoutPanel;
  * If this class ever grows too large, we can split it into separate model and
  * controller classes.
  * </p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultLocationManager implements LocationManager, RemotePollerPresenter {
 
@@ -86,6 +91,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     private Set<ApplicationInfo> m_selectedApplications = new HashSet<ApplicationInfo>();
 
+    /**
+     * <p>Constructor for DefaultLocationManager.</p>
+     *
+     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     * @param panel a {@link com.google.gwt.user.client.ui.SplitLayoutPanel} object.
+     * @param locationPanel a {@link org.opennms.features.poller.remote.gwt.client.LocationPanel} object.
+     * @param mapPanel a {@link org.opennms.features.poller.remote.gwt.client.MapPanel} object.
+     */
     public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, final LocationPanel locationPanel, MapPanel mapPanel) {
         m_eventBus = eventBus;
         m_panel = panel;
@@ -94,7 +107,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Register for all relevant events thrown by the UI components
         m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this);
-        m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this);
         m_eventBus.addHandler(MapPanelBoundsChangedEvent.TYPE, this);
         m_eventBus.addHandler(FiltersChangedEvent.TYPE, this);
         m_eventBus.addHandler(TagSelectedEvent.TYPE, this);
@@ -103,6 +115,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_eventBus.addHandler(ApplicationDeselectedEvent.TYPE, this);
         m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
         m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
+        m_eventBus.addHandler(GWTMarkerInfoWindowRefreshEvent.TYPE, this);
 
         // by default, we select all statuses until the UI says otherwise
         for (final Status s : Status.values()) {
@@ -110,6 +123,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }
     }
 
+    /**
+     * <p>initialize</p>
+     */
     public void initialize() {
         DeferredCommand.addCommand(new InitializationCommand(this, createFinisher(), createDataLoaders()));
     }
@@ -122,6 +138,11 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         };
     }
 
+    /**
+     * <p>createDataLoaders</p>
+     *
+     * @return an array of {@link org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader} objects.
+     */
     protected DataLoader[] createDataLoaders() {
         return new DataLoader[] { new DataLoader() {
             @Override
@@ -132,18 +153,33 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }, new EventServiceInitializer(this) };
     }
 
+    /**
+     * <p>initializationComplete</p>
+     */
     protected void initializationComplete() {
         m_handlerManager.fireEvent(new LocationManagerInitializationCompleteEvent());
     }
 
+    /**
+     * <p>getRemoteService</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.LocationStatusServiceAsync} object.
+     */
     protected LocationStatusServiceAsync getRemoteService() {
         return m_remoteService;
     }
 
+    /** {@inheritDoc} */
     public void addLocationManagerInitializationCompleteEventHandler(LocationManagerInitializationCompleteEventHander handler) {
         m_handlerManager.addHandler(LocationManagerInitializationCompleteEvent.TYPE, handler);
     };
 
+    /**
+     * <p>displayDialog</p>
+     *
+     * @param title a {@link java.lang.String} object.
+     * @param contents a {@link java.lang.String} object.
+     */
     protected void displayDialog(final String title, final String contents) {
         final DialogBox db = new DialogBox();
         db.setAutoHideEnabled(true);
@@ -153,14 +189,29 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         db.show();
     }
 
+    /**
+     * <p>getPanel</p>
+     *
+     * @return a {@link com.google.gwt.user.client.ui.SplitLayoutPanel} object.
+     */
     protected SplitLayoutPanel getPanel() {
         return m_panel;
     }
 
+    /**
+     * <p>getAllLocationNames</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<String> getAllLocationNames() {
         return new TreeSet<String>(m_locations.keySet());
     }
 
+    /**
+     * <p>getLocationBounds</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
+     */
     protected GWTBounds getLocationBounds() {
         BoundsBuilder bldr = new BoundsBuilder();
         for (final LocationInfo l : m_locations.values()) {
@@ -169,6 +220,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return bldr.getBounds();
     }
 
+    /** {@inheritDoc} */
     public void createOrUpdateLocation(final LocationInfo locationInfo) {
         if (locationInfo.getMarkerState() == null) {
             locationInfo.setMarkerState(getMarkerForLocation(locationInfo));
@@ -177,6 +229,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
     }
 
+    /** {@inheritDoc} */
     public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo.getLocations().size() == 0) {
             applicationInfo.setPriority(Long.MAX_VALUE);
@@ -193,10 +246,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_locationPanel.updateApplicationNames(getAllApplicationNames());
     }
 
+    /** {@inheritDoc} */
     public void reportError(final String errorMessage, final Throwable throwable) {
         // FIXME: implement error reporting in UI
     }
 
+    /**
+     * <p>fitMapToLocations</p>
+     */
     public void fitMapToLocations() {
         if (m_mapPanel instanceof SmartMapFit) {
             ((SmartMapFit)m_mapPanel).fitToBounds();
@@ -208,6 +265,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     /**
      * TODO: Figure out if this public function is necessary or if we can get
      * by just responding to incoming events.
+     *
+     * @return a {@link java.util.ArrayList} object.
      */
     public ArrayList<LocationInfo> getVisibleLocations() {
         // Use an ArrayList so that it has good random-access efficiency
@@ -262,6 +321,11 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }
     }
 
+    /**
+     * <p>getAllTags</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getAllTags() {
         final List<String> retval = new ArrayList<String>();
         for (final LocationInfo location : m_locations.values()) {
@@ -270,6 +334,11 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return retval;
     }
 
+    /**
+     * <p>getTagsOnVisibleLocations</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getTagsOnVisibleLocations() {
         List<String> retval = new ArrayList<String>();
         for (final LocationInfo location : getVisibleLocations()) {
@@ -279,6 +348,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Handler triggered when a user clicks on a specific location record.
      */
     public void onLocationSelected(final LocationPanelSelectEvent event) {
@@ -308,6 +379,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Refresh the list of locations whenever the map panel boundaries change.
      */
     public void onBoundsChanged(final MapPanelBoundsChangedEvent e) {
@@ -328,22 +401,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /**
-     * Refresh the list of locations whenever they are m_updated.
-     */
-    public void onLocationsUpdated(final LocationsUpdatedEvent e) {
-        // make sure each location's marker is up-to-date
-        updateAllMarkerStates();
-
-        // Update the contents of the tag panel
-        m_locationPanel.clearTagPanel();
-        m_locationPanel.addAllTags(getAllTags());
-        m_locationPanel.selectTag(m_selectedTag);
-
-        m_locationPanel.updateApplicationNames(getAllApplicationNames());
-        m_locationPanel.updateLocationList(getVisibleLocations());
-    }
-
-    /**
+     * {@inheritDoc}
+     *
      * Invoked by the {@link LocationUpdatedRemoteEvent} and
      * {@link LocationsUpdatedRemoteEvent} events.
      */
@@ -366,11 +425,15 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         // Update the icon/caption in the LHN
         m_locationPanel.updateLocationList(getVisibleLocations());
+
+        m_eventBus.fireEvent(new LocationsUpdatedEvent());
     }
 
     /**
-     * Invoked by the {@link ApplicationUpdatedRemoteEvent} and
-     * {@link ApplicationsUpdatedRemoteEvent} events.
+     * {@inheritDoc}
+     *
+     * Invoked by the {@link org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent} and
+     * {@link org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent} events.
      */
     public void updateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo == null)
@@ -401,6 +464,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
                 m_mapPanel.placeMarker(m);
             }
         }
+
+        m_eventBus.fireEvent(new LocationsUpdatedEvent());
     }
 
     private void updateApplicationList() {
@@ -410,6 +475,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_locationPanel.updateApplicationList(applicationList);
     }
 
+    /** {@inheritDoc} */
     public void removeApplication(final String applicationName) {
         final ApplicationInfo info = m_applications.get(applicationName);
         if (info != null) {
@@ -418,6 +484,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             m_applications.remove(applicationName);
             updateApplicationList();
         }
+
+        m_eventBus.fireEvent(new LocationsUpdatedEvent());
     }
 
     /**
@@ -431,6 +499,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         }
     }
 
+    /** {@inheritDoc} */
     public void onFiltersChanged(Filters filters) {
         // TODO: Update state inside of this object to track the filter state
         // (if necessary)
@@ -438,6 +507,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         // TODO: Update the list of objects in the LHN
     }
 
+    /** {@inheritDoc} */
     public void onTagSelected(String tagName) {
         // Update state inside of this object to track the selected tag
         m_selectedTag = tagName;
@@ -447,6 +517,9 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_locationPanel.updateLocationList(getVisibleLocations());
     }
 
+    /**
+     * <p>onTagCleared</p>
+     */
     public void onTagCleared() {
         // Update state inside of this object to track the selected tag
         m_selectedTag = null;
@@ -461,11 +534,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     /**
      * Fetch a list of all application names.
+     *
+     * @return a {@link java.util.Set} object.
      */
     public Set<String> getAllApplicationNames() {
         return new TreeSet<String>(m_applications.keySet());
     }
 
+    /** {@inheritDoc} */
     public ApplicationInfo getApplicationInfo(final String name) {
         if (name == null) {
             return null;
@@ -474,15 +550,26 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return m_applications.get(name);
     }
 
+    /** {@inheritDoc} */
     public LocationInfo getLocation(String locationName) {
         return m_locations.get(locationName);
     }
 
+    /** {@inheritDoc} */
     public void onGWTMarkerClicked(GWTMarkerClickedEvent event) {
         GWTMarkerState markerState = event.getMarkerState();
         showLocationDetails(markerState.getName());
     }
+    
+    public void onGWTMarkerInfoWindowRefresh(GWTMarkerInfoWindowRefreshEvent event) {
+        refreshLocationInfoWindowDetails(event.getMarkerState().getName());
+    }
 
+    private void refreshLocationInfoWindowDetails(String name) {
+        showLocationDetails(name);
+    }
+
+    /** {@inheritDoc} */
     public void onStatusSelectionChanged(Status status, boolean selected) {
         if (selected) {
             m_selectedStatuses.add(status);
@@ -517,6 +604,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return state;
     }
 
+    /** {@inheritDoc} */
     public void onApplicationSelected(final ApplicationSelectedEvent event) {
         final String applicationName = event.getApplicationname();
         final ApplicationInfo app = m_applications.get(applicationName);
@@ -540,6 +628,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         });
     }
 
+    /** {@inheritDoc} */
     public void onApplicationDeselected(ApplicationDeselectedEvent event) {
         // Remove the application from the selected application list
         removeSelectedApplication(event.getAppInfo());
@@ -554,16 +643,29 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_selectedApplications.remove(appInfo);
     }
 
+    /**
+     * <p>locationClicked</p>
+     */
     public void locationClicked() {
         m_locationViewActive = true;
         updateAllMarkerStates();
     }
 
+    /**
+     * <p>applicationClicked</p>
+     */
     public void applicationClicked() {
         m_locationViewActive = false;
         updateAllMarkerStates();
     }
 
+    /**
+     * <p>getLocationInfoDetails</p>
+     *
+     * @param locationInfo a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
+     * @param locationDetails a {@link org.opennms.features.poller.remote.gwt.client.location.LocationDetails} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getLocationInfoDetails(final LocationInfo locationInfo, final LocationDetails locationDetails) {
         final LocationMonitorState state = locationDetails.getLocationMonitorState();
 
@@ -607,4 +709,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         sb.append("</div>");
         return sb.toString();
     }
+
+    
 }

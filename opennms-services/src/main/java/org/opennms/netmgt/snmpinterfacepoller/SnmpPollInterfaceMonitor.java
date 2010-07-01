@@ -50,11 +50,10 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface.Snm
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * 
+ * @version $Id: $
  */
-
 public class SnmpPollInterfaceMonitor {
 
     /**
@@ -67,6 +66,13 @@ public class SnmpPollInterfaceMonitor {
      */
     private static final String IF_OPER_STATUS_OID = ".1.3.6.1.2.1.2.2.1.8.";
 
+    /**
+     * <p>poll</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param mifaces a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
+     */
     public List<SnmpMinimalPollInterface> poll(SnmpAgentConfig agentConfig, List<SnmpMinimalPollInterface> mifaces) {
 
         if (mifaces == null ) {
@@ -125,6 +131,11 @@ public class SnmpPollInterfaceMonitor {
         return mifaces;
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

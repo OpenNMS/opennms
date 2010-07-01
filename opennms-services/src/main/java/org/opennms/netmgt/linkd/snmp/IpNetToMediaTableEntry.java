@@ -55,18 +55,37 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see IpNetToMediaTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class IpNetToMediaTableEntry extends SnmpTableEntry
 {
 	// Lookup strings for specific table entries
 	//
+	/** Constant <code>INTM_INDEX="ipNetToMediaIfIndex"</code> */
 	public final static	String	INTM_INDEX		= "ipNetToMediaIfIndex";
+	/** Constant <code>INTM_PHYSADDR="ipNetToMediaPhysAddress"</code> */
 	public final static	String	INTM_PHYSADDR	= "ipNetToMediaPhysAddress";
+	/** Constant <code>INTM_NETADDR="ipNetToMediaNetAddress"</code> */
 	public final static	String	INTM_NETADDR	= "ipNetToMediaNetAddress";
+	/** Constant <code>INTM_TYPE="ipNetToMediatype"</code> */
 	public final static	String	INTM_TYPE		= "ipNetToMediatype";
 
 	/**
@@ -148,20 +167,40 @@ public final class IpNetToMediaTableEntry extends SnmpTableEntry
 		super(ms_elemList);
 	}
 
+	/**
+	 * <p>getIpNetToMediaIfIndex</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpNetToMediaIfIndex(){
 		Integer val = getInt32(IpNetToMediaTableEntry.INTM_INDEX);
 		if (val == null) return -1;
 		return val;
 	}
 	
+	/**
+	 * <p>getIpNetToMediaPhysAddress</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getIpNetToMediaPhysAddress(){
 		return getHexString(IpNetToMediaTableEntry.INTM_PHYSADDR);
 	}
 	
+	/**
+	 * <p>getIpNetToMediaNetAddress</p>
+	 *
+	 * @return a {@link java.net.InetAddress} object.
+	 */
 	public InetAddress getIpNetToMediaNetAddress(){
 		return getIPAddress(IpNetToMediaTableEntry.INTM_NETADDR);
 	}
 	
+	/**
+	 * <p>getIpNetToMediatype</p>
+	 *
+	 * @return a int.
+	 */
 	public int getIpNetToMediatype(){
 		Integer val = getInt32(IpNetToMediaTableEntry.INTM_TYPE);
 		if (val == null) return -1;

@@ -20,8 +20,15 @@ import org.quartz.Trigger;
 import org.quartz.spi.JobFactory;
 
 
+/**
+ * <p>ReportScheduler class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReportScheduler implements InitializingBean {
 
+    /** Constant <code>JOB_GROUP="Reportd"</code> */
     protected static final String JOB_GROUP = "Reportd";
     
     @Autowired
@@ -34,6 +41,11 @@ public class ReportScheduler implements InitializingBean {
 
     private Object m_lock = new Object();
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         
         
@@ -48,6 +60,9 @@ public class ReportScheduler implements InitializingBean {
         m_scheduler = sched;
     }
 
+    /**
+     * <p>rebuildReportSchedule</p>
+     */
     public void rebuildReportSchedule() {
         
         LogUtils.infof(this,"rebuildReportSchedule: obtaining lock...");
@@ -161,36 +176,71 @@ public class ReportScheduler implements InitializingBean {
             }        
     }
 
+    /**
+     * <p>getConfigDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ReportdConfigurationDao} object.
+     */
     public ReportdConfigurationDao getConfigDao() {
         return m_configDao;
     }
 
 
+    /**
+     * <p>setConfigDao</p>
+     *
+     * @param configDao a {@link org.opennms.netmgt.dao.ReportdConfigurationDao} object.
+     */
     public void setConfigDao(ReportdConfigurationDao configDao) {
         m_configDao = configDao;
     }
 
     
+    /**
+     * <p>getScheduler</p>
+     *
+     * @return a {@link org.quartz.Scheduler} object.
+     */
     public Scheduler getScheduler() {
         return m_scheduler;
     }
 
     
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link org.quartz.Scheduler} object.
+     */
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }
 
 
+    /**
+     * <p>setReportJobFactory</p>
+     *
+     * @param reportJobFactory a {@link org.quartz.spi.JobFactory} object.
+     */
     public void setReportJobFactory(JobFactory reportJobFactory) {
         m_reportJobFactory = reportJobFactory;
     }
 
 
+    /**
+     * <p>getReportJobFactory</p>
+     *
+     * @return a {@link org.quartz.spi.JobFactory} object.
+     */
     public JobFactory getReportJobFactory() {
         return m_reportJobFactory;
     }
     
 
+    /**
+     * <p>start</p>
+     *
+     * @throws org.quartz.SchedulerException if any.
+     */
     public void start() throws SchedulerException {
         getScheduler().start();
         buildReportSchedule();

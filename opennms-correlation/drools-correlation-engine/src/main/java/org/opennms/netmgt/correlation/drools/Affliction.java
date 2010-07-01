@@ -40,9 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>Affliction class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class Affliction {
     Long m_nodeid;
@@ -58,6 +59,14 @@ public class Affliction {
     List<Integer> m_reporters = new ArrayList<Integer>();
     private Type m_type  = Type.UNDECIDED;
     
+    /**
+     * <p>Constructor for Affliction.</p>
+     *
+     * @param nodeId a {@link java.lang.Long} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @param reporter a {@link java.lang.Integer} object.
+     */
     public Affliction(Long nodeId, String ipAddr, String svcName, Integer reporter) {
         m_nodeid = nodeId;
         m_ipAddr = ipAddr;
@@ -65,54 +74,119 @@ public class Affliction {
         m_reporters.add(reporter);
     }
 
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddr() {
         return m_ipAddr;
     }
 
+    /**
+     * <p>setIpAddr</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     */
     public void setIpAddr(String ipAddr) {
         m_ipAddr = ipAddr;
     }
 
+    /**
+     * <p>getNodeid</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getNodeid() {
         return m_nodeid;
     }
 
+    /**
+     * <p>setNodeid</p>
+     *
+     * @param nodeid a {@link java.lang.Long} object.
+     */
     public void setNodeid(Long nodeid) {
         m_nodeid = nodeid;
     }
 
+    /**
+     * <p>getReporters</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Integer> getReporters() {
         return m_reporters;
     }
 
+    /**
+     * <p>setReporters</p>
+     *
+     * @param reporters a {@link java.util.List} object.
+     */
     public void setReporters(List<Integer> reporters) {
         m_reporters = reporters;
     }
 
+    /**
+     * <p>getSvcName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSvcName() {
         return m_svcName;
     }
 
+    /**
+     * <p>setSvcName</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     */
     public void setSvcName(String svcName) {
         m_svcName = svcName;
     }
     
+    /**
+     * <p>getReporterCount</p>
+     *
+     * @return a int.
+     */
     public int getReporterCount() {
         return m_reporters.size();
     }
     
+    /**
+     * <p>addReporter</p>
+     *
+     * @param reporter a {@link java.lang.Integer} object.
+     */
     public void addReporter(Integer reporter) {
         m_reporters.add( reporter );
     }
     
+    /**
+     * <p>removeReporter</p>
+     *
+     * @param reporter a {@link java.lang.Integer} object.
+     */
     public void removeReporter(Integer reporter) {
         m_reporters.remove(reporter);
     }
     
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link org.opennms.netmgt.correlation.drools.Affliction.Type} object.
+     */
     public Type getType() {
         return m_type;
     }
     
+    /**
+     * <p>setType</p>
+     *
+     * @param type a {@link org.opennms.netmgt.correlation.drools.Affliction.Type} object.
+     */
     public void setType(Type type) {
         m_type = type;
     }

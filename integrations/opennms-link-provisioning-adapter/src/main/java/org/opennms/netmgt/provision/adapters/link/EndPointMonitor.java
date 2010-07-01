@@ -14,15 +14,26 @@ import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigura
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * <p>EndPointMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class EndPointMonitor extends IPv4Monitor {
     
+    /** Constant <code>SNMP_AGENTCONFIG_KEY="org.opennms.netmgt.snmp.SnmpAgentConfig"</code> */
     public static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
     private EndPointConfigurationDao m_configDao;
     private NodeDao m_nodeDao;
     private SnmpAgentConfigFactory m_agentConfigFactory;
 
+    /**
+     * <p>Constructor for EndPointMonitor.</p>
+     */
     public EndPointMonitor() {}
     
+    /** {@inheritDoc} */
     @Override
     public void initialize(Map<String, Object> parameters) {
         ClassPathXmlApplicationContext appContext = BeanUtils.getFactory("linkAdapterPollerContext", ClassPathXmlApplicationContext.class);
@@ -32,6 +43,7 @@ public class EndPointMonitor extends IPv4Monitor {
                
     }
     
+    /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         SnmpAgentConfig agentConfig = m_agentConfigFactory.getAgentConfig(svc.getAddress());

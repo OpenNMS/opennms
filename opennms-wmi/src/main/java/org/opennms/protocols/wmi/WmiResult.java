@@ -39,8 +39,9 @@ import java.util.Map;
 /**
  * This object implements the results received by the
  * <code>WmiManager</code> system.
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @version $Id: $
  */
 public class WmiResult {
 	/**
@@ -87,7 +88,7 @@ public class WmiResult {
 
 	/**
 	 * This method converts a result code to a string.
-	 * 
+	 *
 	 * @param type
 	 *            the result code to convert
 	 * @return the string name of the result code passed, default "UNKNOWN" if
@@ -107,7 +108,7 @@ public class WmiResult {
 
 	/**
 	 * This method returns the result code for a corresponding string.
-	 * 
+	 *
 	 * @param type
 	 *            the string name of the result code.
 	 * @return the short ID for the result code.
@@ -128,7 +129,7 @@ public class WmiResult {
 
 	/**
 	 * Returns the value of the server response.
-	 * 
+	 *
 	 * @return the value of the server response.
 	 */
 	public ArrayList<Object> getResponse() {
@@ -137,7 +138,7 @@ public class WmiResult {
 
 	/**
 	 * Returns the result code for the validation.
-	 * 
+	 *
 	 * @return the result code for the validation.
 	 */
 	public short getResultCode() {
@@ -146,12 +147,18 @@ public class WmiResult {
 
 	/**
 	 * This method sets the result code for the check validation.
+	 *
 	 * @param res the result code.
 	 */
 	public void setResultCode(short res) {
 		m_ResultCode = res;
 	}
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "WmiResult result code: " + convertStateToString(m_ResultCode);
     }

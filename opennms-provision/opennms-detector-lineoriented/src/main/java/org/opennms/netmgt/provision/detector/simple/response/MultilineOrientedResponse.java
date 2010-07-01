@@ -29,26 +29,48 @@ import java.util.StringTokenizer;
 import org.opennms.core.utils.LogUtils;
 
 /**
+ * <p>MultilineOrientedResponse class.</p>
+ *
  * @author Donald Desloge
+ * @version $Id: $
  */
 public class MultilineOrientedResponse {
     private BufferedReader m_in;
     
     private List<String> m_responseList;
     
+    /**
+     * <p>Constructor for MultilineOrientedResponse.</p>
+     */
     public MultilineOrientedResponse() {
         setResponseList(new ArrayList<String>());
     }
     
+    /**
+     * <p>addLine</p>
+     *
+     * @param line a {@link java.lang.String} object.
+     */
     public void addLine(String line) {
         getResponseList().add(line);
     }
 
 
+    /**
+     * <p>receive</p>
+     *
+     * @param in a {@link java.io.BufferedReader} object.
+     */
     public void receive(BufferedReader in) {
         m_in = in;
     }
     
+    /**
+     * <p>startsWith</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean startsWith(String prefix) {
         for(String line : getResponseList()) {
            if(!line.startsWith(prefix)) {
@@ -59,9 +81,11 @@ public class MultilineOrientedResponse {
     }
     
     /**
-     * @param beginRange
-     * @param endRange
-     * @return
+     * <p>expectedCodeRange</p>
+     *
+     * @param beginCodeRange a int.
+     * @param endCodeRange a int.
+     * @return a boolean.
      */
     public boolean expectedCodeRange(int beginCodeRange, int endCodeRange) {
 
@@ -82,6 +106,15 @@ public class MultilineOrientedResponse {
 
     
     //Kept in here 
+    /**
+     * <p>containedInHTTP</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param isCheckCode a boolean.
+     * @param maxRetCode a int.
+     * @return a boolean.
+     */
     public boolean containedInHTTP(String pattern, String url, boolean isCheckCode, int maxRetCode) {
 
         
@@ -162,15 +195,16 @@ public class MultilineOrientedResponse {
     }
 
     /**
-     * @param pattern
-     * @return
-     * @throws IOException 
+     * <p>toString</p>
+     *
+     * @throws IOException if any.
+     * @return a {@link java.lang.String} object.
      */
 //    public boolean readStreamUntilContains(String pattern) throws IOException {
-//        
+//
 //        BufferedReader reader = m_in;
 //        StringBuffer buffer = new StringBuffer();
-//        
+//
 //        boolean patternFound = false;
 //        while (!patternFound) {
 //            buffer.append((char) reader.read());
@@ -182,15 +216,24 @@ public class MultilineOrientedResponse {
 //        }
 //        return false;
 //    }
-    
     public String toString() {
         return getResponseList().isEmpty() ? "MultilineOrientedResponse" : String.format("Response: %s", getResponseList().toArray());
     }
 
+    /**
+     * <p>setResponseList</p>
+     *
+     * @param responseList a {@link java.util.List} object.
+     */
     public void setResponseList(List<String> responseList) {
         m_responseList = responseList;
     }
 
+    /**
+     * <p>getResponseList</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getResponseList() {
         return m_responseList;
     }

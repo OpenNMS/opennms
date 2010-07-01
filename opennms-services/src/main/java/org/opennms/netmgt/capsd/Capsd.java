@@ -57,15 +57,17 @@ import org.springframework.util.Assert;
  * node is discovered - it then polls for all the capabilities for this node and
  * is responsible for loading the data collecte1d into the database.
  * </P>
- * 
+ *
  * <P>
  * Once a node is added to the database, its sends an indication back to the
  * discovery which then flags this node as 'known'.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class Capsd extends AbstractServiceDaemon {
     /**
@@ -142,6 +144,9 @@ public class Capsd extends AbstractServiceDaemon {
         m_scheduler = null;
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
 		// Stop the broadcast event receiver
         m_eventListener.stop();
@@ -153,6 +158,9 @@ public class Capsd extends AbstractServiceDaemon {
         m_rescanRunner.stop();
 	}
 
+	/**
+	 * <p>onInit</p>
+	 */
 	protected void onInit() {
 	    
         Assert.state(m_suspectEventProcessorFactory != null, "must set the suspectEventProcessorFactory property");
@@ -189,6 +197,9 @@ public class Capsd extends AbstractServiceDaemon {
 
 	}
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
     	// Set the Set that SuspectEventProcessor will use to track
     	// suspect scans that are in progress
@@ -209,10 +220,16 @@ public class Capsd extends AbstractServiceDaemon {
         m_scheduler.start();
 	}
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {
         // XXX Pause all threads?
     }
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
         // XXX Resume all threads?
 	}
@@ -222,6 +239,8 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * Used to retrieve the local host name/address. The name/address of the
      * machine on which Capsd is running.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public static String getLocalHostAddress() {
         return m_address;
@@ -236,10 +255,9 @@ public class Capsd extends AbstractServiceDaemon {
      * capability scanning. The If the interface converts properly then it is
      * scanned as a suspect interface for the discovery of all the services and
      * other interfaces that exists on the node.
-     * 
+     *
      * @param ifAddr
      *            The address of the suspect interface.
-     * 
      * @throws java.net.UnknownHostException
      *             Thrown if the address cannot be converted to aa proper
      *             internet address.
@@ -261,7 +279,7 @@ public class Capsd extends AbstractServiceDaemon {
      * The main reason for its existence is as a hook for JMX managed beans to
      * invoke forced rescans allowing the main rescan logic to remain in the
      * capsd agent.
-     * 
+     *
      * @param nodeId
      *            The node identifier from the database.
      */
@@ -279,30 +297,65 @@ public class Capsd extends AbstractServiceDaemon {
         return m_capsdDbSyncer;
     }
 
+    /**
+     * <p>setCapsdDbSyncer</p>
+     *
+     * @param capsdDbSyncer a {@link org.opennms.netmgt.capsd.CapsdDbSyncer} object.
+     */
     public void setCapsdDbSyncer(CapsdDbSyncer capsdDbSyncer) {
         m_capsdDbSyncer = capsdDbSyncer;
     }
 
+    /**
+     * <p>setSuspectEventProcessorFactory</p>
+     *
+     * @param eventProcessorFactory a {@link org.opennms.netmgt.capsd.SuspectEventProcessorFactory} object.
+     */
     public void setSuspectEventProcessorFactory(SuspectEventProcessorFactory eventProcessorFactory) {
         m_suspectEventProcessorFactory = eventProcessorFactory;
     }
     
+    /**
+     * <p>setCapsdConfig</p>
+     *
+     * @param capsdConfig a {@link org.opennms.netmgt.config.CapsdConfig} object.
+     */
     public void setCapsdConfig(CapsdConfig capsdConfig) {
         m_capsdConfig = capsdConfig;
     }
 
+    /**
+     * <p>setSuspectRunner</p>
+     *
+     * @param suspectRunner a {@link org.opennms.core.concurrent.RunnableConsumerThreadPool} object.
+     */
     public void setSuspectRunner(RunnableConsumerThreadPool suspectRunner) {
         m_suspectRunner = suspectRunner;
     }
 
+    /**
+     * <p>setRescanRunner</p>
+     *
+     * @param rescanRunner a {@link org.opennms.core.concurrent.RunnableConsumerThreadPool} object.
+     */
     public void setRescanRunner(RunnableConsumerThreadPool rescanRunner) {
         m_rescanRunner = rescanRunner;
     }
 
+    /**
+     * <p>setEventListener</p>
+     *
+     * @param eventListener a {@link org.opennms.netmgt.model.events.StoppableEventListener} object.
+     */
     public void setEventListener(StoppableEventListener eventListener) {
         m_eventListener = eventListener;
     }
 
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link org.opennms.netmgt.capsd.Scheduler} object.
+     */
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }

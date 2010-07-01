@@ -52,10 +52,12 @@ import org.apache.log4j.Logger;
 
 /**
  * Provides convenience methods for use the HTTP POST method.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class HttpUtils extends Object {
     /** Private constructor so this class will not be instantiated. */
@@ -67,13 +69,14 @@ public final class HttpUtils extends Object {
 
     /**
      * Post a given <code>InputStream</code> s data to a URL.
-     * 
+     *
      * @param url
      *            the <code>URL</code> to post to
      * @param dataStream
      *            an input stream containing the data to send
      * @return An <code>InputStream</a> that the programmer can read from
      * to get the HTTP server's response.
+     * @throws java.io.IOException if any.
      */
     public static InputStream post(URL url, InputStream dataStream) throws IOException {
         return (post(url, dataStream, null, null, DEFAULT_POST_BUFFER_SIZE));
@@ -82,7 +85,7 @@ public final class HttpUtils extends Object {
     /**
      * Post a given <code>InputStream</code> s data to a URL using BASIC
      * authentication and the given username and password.
-     * 
+     *
      * @param url
      *            the <code>URL</code> to post to
      * @param dataStream
@@ -93,6 +96,7 @@ public final class HttpUtils extends Object {
      *            the password to use in the BASIC authentication
      * @return An <code>InputStream</a> that the programmer can read from
      * to get the HTTP server's response.
+     * @throws java.io.IOException if any.
      */
     public static InputStream post(URL url, InputStream dataStream, String username, String password) throws IOException {
         return (post(url, dataStream, username, password, DEFAULT_POST_BUFFER_SIZE));
@@ -101,7 +105,7 @@ public final class HttpUtils extends Object {
     /**
      * Post a given <code>InputStream</code> s data to a URL using BASIC
      * authentication, the given username and password, and a buffer size.
-     * 
+     *
      * @param url
      *            the <code>URL</code> to post to
      * @param dataStream
@@ -115,6 +119,7 @@ public final class HttpUtils extends Object {
      *            and write to the HTTP server
      * @return An <code>InputStream</a> that the programmer can read from
      * to get the HTTP server's response.
+     * @throws java.io.IOException if any.
      */
     public static InputStream post(URL url, InputStream dataStream, String username, String password, int bufSize) throws IOException {
         if (url == null || dataStream == null) {
@@ -175,7 +180,7 @@ public final class HttpUtils extends Object {
     /**
      * Post a given <code>Reader</code> s data to a URL using BASIC
      * authentication, the given username and password, and a buffer size.
-     * 
+     *
      * @param url
      *            the <code>URL</code> to post to
      * @param dataReader
@@ -189,6 +194,7 @@ public final class HttpUtils extends Object {
      *            and write to the HTTP server
      * @return An <code>InputStream</a> that the programmer can read from
      * to get the HTTP server's response.
+     * @throws java.io.IOException if any.
      */
     public static InputStream post(URL url, Reader dataReader, String username, String password, int bufSize) throws IOException {
         if (url == null || dataReader == null) {

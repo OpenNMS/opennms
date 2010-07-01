@@ -40,10 +40,21 @@ import org.snmp4j.smi.Variable;
 
 
 /**
+ * <p>Updatable interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
  */
 public interface Updatable {
+    /**
+     * <p>updateValue</p>
+     *
+     * @param oid a {@link org.snmp4j.smi.OID} object.
+     * @param value a {@link org.snmp4j.smi.Variable} object.
+     */
     public void updateValue(OID oid, Variable value);
 
 }

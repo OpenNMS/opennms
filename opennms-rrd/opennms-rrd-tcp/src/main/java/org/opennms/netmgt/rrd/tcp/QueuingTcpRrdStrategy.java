@@ -61,6 +61,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Provides a TCP socket-based implementation of RrdStrategy that pushes update commands
  * out in a simple serialized format.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,String> {
 
@@ -120,32 +123,52 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
         }
     }
 
+    /**
+     * <p>Constructor for QueuingTcpRrdStrategy.</p>
+     *
+     * @param delegate a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy} object.
+     */
     public QueuingTcpRrdStrategy(TcpRrdStrategy delegate) {
         m_delegate = delegate;
         m_consumerThread = new ConsumerThread(delegate, m_queue);
         m_consumerThread.start();
     }
 
+    /** {@inheritDoc} */
     public void setConfigurationProperties(Properties configurationParameters) {
         m_delegate.setConfigurationProperties(configurationParameters);
     }
 
+    /**
+     * <p>getDefaultFileExtension</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDefaultFileExtension() {
         return m_delegate.getDefaultFileExtension();
     }
 
+    /** {@inheritDoc} */
     public TcpRrdStrategy.RrdDefinition createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         return new TcpRrdStrategy.RrdDefinition(directory, rrdName);
     }
 
+    /**
+     * <p>createFile</p>
+     *
+     * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
+     * @throws java.lang.Exception if any.
+     */
     public void createFile(TcpRrdStrategy.RrdDefinition rrdDef) throws Exception {
         // Do nothing
     }
 
+    /** {@inheritDoc} */
     public String openFile(String fileName) throws Exception {
         return fileName;
     }
 
+    /** {@inheritDoc} */
     public void updateFile(String fileName, String owner, String data) throws Exception {
         if (m_queue.offer(new PerformanceDataReading(fileName, owner, data), 500, TimeUnit.MILLISECONDS)) {
             if (m_skippedReadings > 0) {
@@ -157,46 +180,78 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
         }
     }
 
+    /**
+     * <p>closeFile</p>
+     *
+     * @param rrd a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public void closeFile(String rrd) throws Exception {
         // Do nothing
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValue(String rrdFile, String ds, int interval) throws NumberFormatException {
         return m_delegate.fetchLastValue(rrdFile, ds, interval);
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) throws NumberFormatException {
         return m_delegate.fetchLastValue(rrdFile, ds, consolidationFunction, interval);
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException {
         return m_delegate.fetchLastValueInRange(rrdFile, ds, interval, range);
     }
 
+    /** {@inheritDoc} */
     public InputStream createGraph(String command, File workDir) throws IOException {
         return m_delegate.createGraph(command, workDir);
     }
 
+    /** {@inheritDoc} */
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException {
         return m_delegate.createGraphReturnDetails(command, workDir);
     }
 
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphLeftOffset() {
         return m_delegate.getGraphLeftOffset();
     }
 
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphRightOffset() {
         return m_delegate.getGraphRightOffset();
     }
 
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
     public int getGraphTopOffsetWithText() {
         return m_delegate.getGraphTopOffsetWithText();
     }
 
+    /**
+     * <p>getStats</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStats() {
         return m_delegate.getStats();
     }
 
+    /** {@inheritDoc} */
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         m_delegate.promoteEnqueuedFiles(rrdFiles);
     }

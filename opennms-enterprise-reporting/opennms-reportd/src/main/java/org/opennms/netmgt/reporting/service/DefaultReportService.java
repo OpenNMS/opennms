@@ -27,10 +27,17 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.config.reportd.Parameter;
 
+/**
+ * <p>DefaultReportService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultReportService implements ReportService {
     
     private enum Format { pdf,html,xml,xls };
     
+    /** {@inheritDoc} */
     public synchronized String runReport(Report report,String reportDirectory) {
 
         String outputFile = null;

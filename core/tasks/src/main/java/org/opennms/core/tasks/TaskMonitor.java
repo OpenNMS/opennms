@@ -35,25 +35,67 @@ package org.opennms.core.tasks;
  * TaskMonitor
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface TaskMonitor {
     
+    /**
+     * <p>prerequisiteAdded</p>
+     *
+     * @param monitored a {@link org.opennms.core.tasks.Task} object.
+     * @param prerequsite a {@link org.opennms.core.tasks.Task} object.
+     */
     public void prerequisiteAdded(Task monitored, Task prerequsite);
     
+    /**
+     * <p>prerequisiteCompleted</p>
+     *
+     * @param monitored a {@link org.opennms.core.tasks.Task} object.
+     * @param prerequisite a {@link org.opennms.core.tasks.Task} object.
+     */
     public void prerequisiteCompleted(Task monitored, Task prerequisite);
     
+    /**
+     * <p>scheduled</p>
+     *
+     * @param task a {@link org.opennms.core.tasks.Task} object.
+     */
     public void scheduled(Task task);
     
+    /**
+     * <p>submitted</p>
+     *
+     * @param task a {@link org.opennms.core.tasks.Task} object.
+     */
     public void submitted(Task task);
     
+    /**
+     * <p>started</p>
+     *
+     * @param task a {@link org.opennms.core.tasks.Task} object.
+     */
     public void started(Task task);
     
+    /**
+     * <p>completed</p>
+     *
+     * @param task a {@link org.opennms.core.tasks.Task} object.
+     */
     public void completed(Task task);
     
+    /**
+     * <p>getChildTaskMonitor</p>
+     *
+     * @param task a {@link org.opennms.core.tasks.Task} object.
+     * @param child a {@link org.opennms.core.tasks.Task} object.
+     * @return a {@link org.opennms.core.tasks.TaskMonitor} object.
+     */
     public TaskMonitor getChildTaskMonitor(Task task, Task child);
     
     /**
      * This is called if an exception occurs while calling a monitor method
+     *
+     * @param t a {@link java.lang.Throwable} object.
      */
     public void monitorException(Throwable t);
 

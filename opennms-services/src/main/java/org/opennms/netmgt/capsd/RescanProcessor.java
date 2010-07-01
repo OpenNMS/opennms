@@ -121,11 +121,24 @@ import org.opennms.netmgt.xml.event.Value;
  * node, update the database based on the information collected, and generate
  * events necessary to notify the other OpenNMS services. The constructor takes
  * an integer which is the node identifier of the node to be rescanned. .
- * 
+ *
  * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class RescanProcessor implements Runnable {
     /**
@@ -239,6 +252,14 @@ public final class RescanProcessor implements Runnable {
         this(nodeInfo.getNodeId(), forceRescan, capsdDbSyncer, pluginManager);
     }
     
+    /**
+     * <p>Constructor for RescanProcessor.</p>
+     *
+     * @param nodeId a int.
+     * @param forceRescan a boolean.
+     * @param capsdDbSyncer a {@link org.opennms.netmgt.capsd.CapsdDbSyncer} object.
+     * @param pluginManager a {@link org.opennms.netmgt.capsd.PluginManager} object.
+     */
     public RescanProcessor(int nodeId, boolean forceRescan, CapsdDbSyncer capsdDbSyncer, PluginManager pluginManager) {
         m_nodeId = nodeId;
         m_forceRescan = forceRescan;
@@ -3033,6 +3054,13 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
+    /**
+     * <p>scannableInterface</p>
+     *
+     * @param dbInterfaces an array of {@link org.opennms.netmgt.capsd.DbIpInterfaceEntry} objects.
+     * @param ifaddr a {@link java.net.InetAddress} object.
+     * @return a boolean.
+     */
     protected static boolean scannableInterface(final DbIpInterfaceEntry[] dbInterfaces, final InetAddress ifaddr) {
         boolean localHostAddress = (ifaddr.getHostAddress().startsWith("127") && dbInterfaces.length > 1);
         boolean nonIpAddress = ifaddr.getHostAddress().equals("0.0.0.0");
@@ -4397,11 +4425,11 @@ public final class RescanProcessor implements Runnable {
     }
     
     
-    /** 
+    /**
      * Responsible for setting the Set used to track rescans that
      * are already enqueued for processing.  Should be called once by Capsd
      * at startup.
-     * 
+     *
      * @param queuedRescanTracker
      *          The synchronized Set to use
      */
@@ -4411,9 +4439,9 @@ public final class RescanProcessor implements Runnable {
     
     /**
      * Is a rescan already enqueued for a given node ID?
-     * 
-     * @param ipAddr
-     *          The IP address of interest
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @return a boolean.
      */
     public static boolean isRescanQueuedForNode(Integer nodeId) {
         synchronized(m_queuedRescanTracker) {

@@ -37,8 +37,10 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
 
 /**
- * @author thedesloge
+ * <p>Abstract AsyncAbstractDetector class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
     
@@ -51,10 +53,24 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
     private String m_serviceName;
     
     
+    /**
+     * <p>Constructor for AsyncAbstractDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     protected AsyncAbstractDetector(String serviceName, int port) {
         this(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
     
+    /**
+     * <p>Constructor for AsyncAbstractDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
+     */
     protected AsyncAbstractDetector(String serviceName, int port, int timeout, int retries) {
         m_serviceName = serviceName;
         m_port = port;
@@ -62,6 +78,9 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
         m_retries = retries;
     }
 
+    /**
+     * <p>init</p>
+     */
     public void init() {
         if (m_serviceName == null || m_timeout <= 0) {
             throw new IllegalStateException(String.format("ServiceName is null or timeout of %d is invalid.  Timeout must be > 0", m_timeout));
@@ -70,47 +89,83 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
         onInit();
     }
     
+    /**
+     * <p>onInit</p>
+     */
     abstract protected void onInit();
     
-    /**
-     * 
-     * @param InetAddress address
-     * @param DetectMonitor monitor
-     * @return DetectFuture
-     * @throws Exception 
-     */
+    /** {@inheritDoc} */
     abstract public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception;
     
+    /**
+     * <p>dispose</p>
+     */
     abstract public void dispose();
     
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a int.
+     */
     public void setPort(int port) {
         m_port = port;
     }
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
+     */
     public int getPort() {
         return m_port;
     }
 
+    /**
+     * <p>setRetries</p>
+     *
+     * @param retries a int.
+     */
     public void setRetries(int retries) {
         m_retries = retries;
     }
 
+    /**
+     * <p>getRetries</p>
+     *
+     * @return a int.
+     */
     public int getRetries() {
         return m_retries;
     }
 
+    /**
+     * <p>setTimeout</p>
+     *
+     * @param timeout a int.
+     */
     public void setTimeout(int timeout) {
         m_timeout = timeout;
     }
 
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a int.
+     */
     public int getTimeout() {
         return m_timeout;
     }
 
+    /** {@inheritDoc} */
     public void setServiceName(String serviceName) {
         m_serviceName = serviceName;
     }
 
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_serviceName;
     }

@@ -59,12 +59,13 @@ import org.springframework.util.StringUtils;
 
 /**
  * Maintains the Provisioner's import schedule defined in provisiond-configuration.xml
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class ImportScheduler implements InitializingBean {
     
+    /** Constant <code>JOB_GROUP="Provisiond"</code> */
     protected static final String JOB_GROUP = "Provisiond";
 
     @Autowired
@@ -80,10 +81,18 @@ public class ImportScheduler implements InitializingBean {
 
     private JobFactory m_importJobFactory;
     
+    /**
+     * <p>Constructor for ImportScheduler.</p>
+     *
+     * @param scheduler a {@link org.quartz.Scheduler} object.
+     */
     protected ImportScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         
         try {
@@ -103,22 +112,47 @@ public class ImportScheduler implements InitializingBean {
         buildImportSchedule();
     }
     
+    /**
+     * <p>start</p>
+     *
+     * @throws org.quartz.SchedulerException if any.
+     */
     public void start() throws SchedulerException {
         getScheduler().start();
     }
     
+    /**
+     * <p>pause</p>
+     *
+     * @throws org.quartz.SchedulerException if any.
+     */
     public void pause() throws SchedulerException {
         getScheduler().pauseAll();
     }
     
+    /**
+     * <p>standBy</p>
+     *
+     * @throws org.quartz.SchedulerException if any.
+     */
     public void standBy() throws SchedulerException {
         getScheduler().standby();
     }
     
+    /**
+     * <p>resume</p>
+     *
+     * @throws org.quartz.SchedulerException if any.
+     */
     public void resume() throws SchedulerException {
         getScheduler().resumeAll();
     }
     
+    /**
+     * <p>stop</p>
+     *
+     * @throws org.quartz.SchedulerException if any.
+     */
     public void stop() throws SchedulerException {
         getScheduler().shutdown();
     }
@@ -127,8 +161,8 @@ public class ImportScheduler implements InitializingBean {
      * Removes all jobs from the current scheduled and the builds a new schedule
      * from the reloaded configuration.  Since all jobs are Cron like, removing and re-adding
      * shouldn't be an issue.
-     * 
-     * @throws Exception
+     *
+     * @throws java.lang.Exception if any.
      */
     protected void rebuildImportSchedule() throws Exception {
         
@@ -164,8 +198,8 @@ public class ImportScheduler implements InitializingBean {
 
     /**
      * Iterates of current job list and removes each job from the underlying schedule
-     * 
-     * @throws SchedulerException
+     *
+     * @throws org.quartz.SchedulerException if any.
      */
     protected void removeCurrentJobsFromSchedule() throws SchedulerException {
         
@@ -186,6 +220,9 @@ public class ImportScheduler implements InitializingBean {
         printCurrentSchedule();
     }
 
+    /**
+     * <p>buildImportSchedule</p>
+     */
     protected void buildImportSchedule() {
         
         synchronized (m_lock) {
@@ -217,23 +254,48 @@ public class ImportScheduler implements InitializingBean {
 
     }
 
+    /**
+     * <p>getScheduler</p>
+     *
+     * @return a {@link org.quartz.Scheduler} object.
+     */
     public Scheduler getScheduler() {
         return m_scheduler;
     }
 
+    /**
+     * <p>setProvisioner</p>
+     *
+     * @param provisioner a {@link org.opennms.netmgt.provision.service.Provisioner} object.
+     */
     public void setProvisioner(Provisioner provisioner) {
         m_provisioner = provisioner;
     }
     
+    /**
+     * <p>getProvisioner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.service.Provisioner} object.
+     */
     protected final Provisioner getProvisioner() {
         return m_provisioner;
     }
     
     
+    /**
+     * <p>setImportJobFactory</p>
+     *
+     * @param importJobFactory a {@link org.quartz.spi.JobFactory} object.
+     */
     public void setImportJobFactory(JobFactory importJobFactory) {
         m_importJobFactory = importJobFactory;
     }
 
+    /**
+     * <p>getImportJobFactory</p>
+     *
+     * @return a {@link org.quartz.spi.JobFactory} object.
+     */
     public JobFactory getImportJobFactory() {
         return m_importJobFactory;
     }

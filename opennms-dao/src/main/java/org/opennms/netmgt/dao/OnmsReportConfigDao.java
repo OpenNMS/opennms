@@ -41,24 +41,84 @@ import org.opennms.netmgt.config.reporting.IntParm;
 import org.opennms.netmgt.config.reporting.Parameters;
 import org.opennms.netmgt.config.reporting.StringParm;
 
+/**
+ * <p>OnmsReportConfigDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsReportConfigDao {
     
+    /**
+     * <p>getParameters</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.reporting.Parameters} object.
+     */
     Parameters getParameters(String id);
     
+    /**
+     * <p>getDateParms</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.netmgt.config.reporting.DateParm} objects.
+     */
     DateParm[] getDateParms(String id);
     
+    /**
+     * <p>getStringParms</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.netmgt.config.reporting.StringParm} objects.
+     */
     StringParm[] getStringParms(String id);
     
+    /**
+     * <p>getIntParms</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.netmgt.config.reporting.IntParm} objects.
+     */
     IntParm[] getIntParms(String id);
     
+    /**
+     * <p>getPdfStylesheetLocation</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     String getPdfStylesheetLocation(String id);
     
+    /**
+     * <p>getSvgStylesheetLocation</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     String getSvgStylesheetLocation(String id);
     
+    /**
+     * <p>getHtmlStylesheetLocation</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     String getHtmlStylesheetLocation(String id);
     
+    /**
+     * <p>getType</p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     String getType(String id);
     
+    /**
+     * <p>getLogo</p>
+     *
+     * @param logo a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     String getLogo(String logo);
 
 }

@@ -54,8 +54,10 @@ import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that manages the pathOutage table in the DB
- * 
+ *
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SetCriticalPathServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -63,6 +65,7 @@ public class SetCriticalPathServlet extends HttpServlet {
     private static final String SQL_SET_CRITICAL_PATH = "INSERT INTO pathoutage (nodeid, criticalpathip, criticalpathservicename) VALUES (?, ?, ?)";
     private static final String SQL_DELETE_CRITICAL_PATH = "DELETE FROM pathoutage WHERE nodeid=?";
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nodeString = request.getParameter("node");
         String criticalIp = request.getParameter("criticalIp");

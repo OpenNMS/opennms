@@ -44,8 +44,10 @@ import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.jdbc.DBTools;
 
 /**
- * @author thedesloge
+ * <p>JDBCClient class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
 
@@ -57,6 +59,9 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
 //    private ResultSet m_result;
     private Connection m_connection;
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         if(m_connection != null) {
             try {
@@ -67,6 +72,7 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         }
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         log().info("connecting to JDBC on " + address);
         if (log().isDebugEnabled()) {
@@ -93,48 +99,108 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         }
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public JDBCResponse receiveBanner() throws IOException, Exception {
         JDBCResponse response = new JDBCResponse();
         response.receive(m_connection);
         return response;
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public JDBCResponse sendRequest(JDBCRequest request) throws IOException, Exception {
         return request.send(m_connection);
     }
 
+    /**
+     * <p>setDbDriver</p>
+     *
+     * @param dbDriver a {@link java.lang.String} object.
+     */
     public void setDbDriver(String dbDriver) {
         m_dbDriver = dbDriver;
     }
 
+    /**
+     * <p>getDbDriver</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDbDriver() {
         return m_dbDriver;
     }
 
+    /**
+     * <p>setUser</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public void setUser(String user) {
         m_user = user;
     }
 
+    /**
+     * <p>getUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUser() {
         return m_user;
     }
 
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPassword(String password) {
         m_password = password;
     }
 
+    /**
+     * <p>getPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPassword() {
         return m_password;
     }
 
+    /**
+     * <p>setUrl</p>
+     *
+     * @param url a {@link java.lang.String} object.
+     */
     public void setUrl(String url) {
         m_url = url;
     }
 
+    /**
+     * <p>getUrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrl() {
         return m_url;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

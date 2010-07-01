@@ -44,7 +44,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 
 /**
  *<P>The CdpCacheTableEntry class is designed to hold all the MIB-II
- * information for one entry in the 
+ * information for one entry in the
  * .iso.org.dod.internet.private.enterprises.cisco.ciscoMgmt.
  * ciscoCdpMIB.ciscoCdpMIBObjects.cdpCache.cdpCacheTable.cdpCacheEntry </P>
  * <P>This object is used by the CdpCacheTable  to hold infomation
@@ -56,38 +56,77 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A>Jon Whetzel</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see CdpCacheTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class CdpCacheTableEntry extends SnmpTableEntry {
 
 	// Lookup strings for specific table entries
 	//
+	/** Constant <code>CDP_IFINDEX="cdpCacheIfIndex"</code> */
 	public final static String CDP_IFINDEX = "cdpCacheIfIndex";
+	/** Constant <code>CDP_DEVICEINDEX="cdpCacheDeviceIndex"</code> */
 	public final static String CDP_DEVICEINDEX = "cdpCacheDeviceIndex";
+	/** Constant <code>CDP_ADDRESS_TYPE="cdpCacheAddressType"</code> */
 	public final static String CDP_ADDRESS_TYPE = "cdpCacheAddressType";
+	/** Constant <code>CDP_ADDRESS="cdpCacheAddress"</code> */
 	public final static String CDP_ADDRESS = "cdpCacheAddress";
+	/** Constant <code>CDP_VERSION="cdpCacheVersion"</code> */
 	public final static String CDP_VERSION = "cdpCacheVersion";
+	/** Constant <code>CDP_DEVICEID="cdpCacheDeviceId"</code> */
 	public final static String CDP_DEVICEID = "cdpCacheDeviceId";
+	/** Constant <code>CDP_DEVICEPORT="cdpCacheDevicePort"</code> */
 	public final static String CDP_DEVICEPORT = "cdpCacheDevicePort";
+	/** Constant <code>CDP_PLATFORM="cdpPlatform"</code> */
 	public final static String CDP_PLATFORM = "cdpPlatform";
+	/** Constant <code>CDP_CAPS="cdpCacheCapabilities"</code> */
 	public final static String CDP_CAPS = "cdpCacheCapabilities";
+	/** Constant <code>CDP_VTP_MGMTDOMAIN="cdpCacheVtpMgmtDomain"</code> */
 	public final static String CDP_VTP_MGMTDOMAIN = "cdpCacheVtpMgmtDomain";
+	/** Constant <code>CDP_NATIVEVLAN="cdpCacheNatveVlan"</code> */
 	public final static String CDP_NATIVEVLAN = "cdpCacheNatveVlan";
+	/** Constant <code>CDP_DUPLEX="cdpCacheDuplex"</code> */
 	public final static String CDP_DUPLEX = "cdpCacheDuplex";
+	/** Constant <code>CDP_APPLIANCEID="cdpCacheApplianceID"</code> */
 	public final static String CDP_APPLIANCEID = "cdpCacheApplianceID";
+	/** Constant <code>CDP_VLANID="cdpCacheVlanID"</code> */
 	public final static String CDP_VLANID = "cdpCacheVlanID";
+	/** Constant <code>CDP_POWERCONS="cdpCachePowerConsumption"</code> */
 	public final static String CDP_POWERCONS = "cdpCachePowerConsumption";
+	/** Constant <code>CDP_MTU="cdpCacheMTU"</code> */
 	public final static String CDP_MTU = "cdpCacheMTU";
+	/** Constant <code>CDP_SYSNAME="cdpCacheSysName"</code> */
 	public final static String CDP_SYSNAME = "cdpCacheSysName";
+	/** Constant <code>CDP_SYSOBJID="cdpCacheSysObjectID"</code> */
 	public final static String CDP_SYSOBJID = "cdpCacheSysObjectID";
+	/** Constant <code>CDP_PRIMARYMGMTADDR_TYPE="cdpCachePrimaryMgmtAddressType"</code> */
 	public final static String CDP_PRIMARYMGMTADDR_TYPE = "cdpCachePrimaryMgmtAddressType";
+	/** Constant <code>CDP_PRIMARYMGMTADDR="cdpCachePrimaryMgmtAddress"</code> */
 	public final static String CDP_PRIMARYMGMTADDR = "cdpCachePrimaryMgmtAddress";
+	/** Constant <code>CDP_SECONDARYMGMTADDR_TYPE="cdpCacheSecondaryMgmtAddressType"</code> */
 	public final static String CDP_SECONDARYMGMTADDR_TYPE = "cdpCacheSecondaryMgmtAddressType";
+	/** Constant <code>CDP_SECONDARYMGMTADDR="cdpCacheSecondaryMgmtAddress"</code> */
 	public final static String CDP_SECONDARYMGMTADDR = "cdpCacheSecondaryMgmtAddress";
+	/** Constant <code>CDP_PHYSLOC="cdpCachePhysLocation"</code> */
 	public final static String CDP_PHYSLOC = "cdpCachePhysLocation";
+	/** Constant <code>CDP_LASTCHANGE="cdpCacheLastChange"</code> */
 	public final static String CDP_LASTCHANGE = "cdpCacheLastChange";
 
 	/**
@@ -385,11 +424,15 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 	 */
 	public static final String TABLE_OID = ".1.3.6.1.4.1.9.9.23.1.2.1.1"; // start of table (GETNEXT)
 
+	/**
+	 * <p>Constructor for CdpCacheTableEntry.</p>
+	 */
 	public CdpCacheTableEntry() {
 		super(cdpCache_elemList);
 	}
 
 
+	/** {@inheritDoc} */
 	@Override
 	public void storeResult(SnmpResult res) {
 		if (!hasIfIndex) {
@@ -401,6 +444,11 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		super.storeResult(res);
 	}
 	
+	/**
+	 * <p>getCdpCacheIfIndex</p>
+	 *
+	 * @return a int.
+	 */
 	public int getCdpCacheIfIndex() {
 		Integer val = getInt32(CdpCacheTableEntry.CDP_IFINDEX);
 		if (val == null) {
@@ -409,6 +457,11 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		return val;
 	}
 	
+	/**
+	 * <p>getCdpCacheDeviceIndex</p>
+	 *
+	 * @return a int.
+	 */
 	public int getCdpCacheDeviceIndex() {
 		Integer val = getInt32(CdpCacheTableEntry.CDP_DEVICEINDEX);
 		if (val == null) {
@@ -417,6 +470,11 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		return val;
 	}
 
+	/**
+	 * <p>getCdpCacheAddressType</p>
+	 *
+	 * @return a int.
+	 */
 	public int getCdpCacheAddressType() {
 		Integer val = getInt32(CdpCacheTableEntry.CDP_ADDRESS_TYPE);
 		if (val == null) {
@@ -425,22 +483,47 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		return val;
 	}
 	
+	/**
+	 * <p>getCdpCacheAddress</p>
+	 *
+	 * @return a {@link java.net.InetAddress} object.
+	 */
 	public InetAddress getCdpCacheAddress() {
 		return getIpAddressByHexString(getHexString(CdpCacheTableEntry.CDP_ADDRESS));
 	}
 
+	/**
+	 * <p>getCdpCacheVersion</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCdpCacheVersion() {
 		return getHexString(CdpCacheTableEntry.CDP_VERSION);
 	}
 	
+	/**
+	 * <p>getCdpCacheDeviceId</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCdpCacheDeviceId() {
 		return getHexString(CdpCacheTableEntry.CDP_DEVICEID);
 	}
 	
+	/**
+	 * <p>getCdpCacheDevicePort</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCdpCacheDevicePort() {
 		return 	getDisplayString(CdpCacheTableEntry.CDP_DEVICEPORT);
 	}
 
+	/**
+	 * <p>getCdpPlatform</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCdpPlatform() {
 		return 	getDisplayString(CdpCacheTableEntry.CDP_PLATFORM);
 	}

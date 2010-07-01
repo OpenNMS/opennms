@@ -55,6 +55,12 @@ import javax.persistence.Table;
 import org.springframework.core.style.ToStringCreator;
 
 @Entity
+/**
+ * <p>OnmsApplication class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name = "applications")
 public class OnmsApplication implements Comparable<OnmsApplication> {
 
@@ -64,6 +70,11 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<OnmsMonitoredService>();
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
@@ -71,19 +82,40 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "name", length=32, nullable=false, unique=true)
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
+    /**
+     * <p>getMonitoredServices</p>
+     *
+     * @return a {@link java.util.Set} object.
+     * @since 1.8.1
+     */
     @ManyToMany(
                 mappedBy="applications",
                 cascade={CascadeType.PERSIST, CascadeType.MERGE}
@@ -92,18 +124,37 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         return m_monitoredServices;
     }
 
+    /**
+     * <p>setMonitoredServices</p>
+     *
+     * @param services a {@link java.util.Set} object.
+     * @since 1.8.1
+     */
     public void setMonitoredServices(Set<OnmsMonitoredService> services) {
         m_monitoredServices = services;
     }
 
+    /**
+     * <p>addMonitoredService</p>
+     *
+     * @param service a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     * @since 1.8.1
+     */
     public void addMonitoredService(OnmsMonitoredService service) {
         getMonitoredServices().add(service);
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     * @return a int.
+     */
     public int compareTo(OnmsApplication o) {
         return getName().compareToIgnoreCase(o.getName());
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         ToStringCreator creator = new ToStringCreator(this);
@@ -112,6 +163,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         return creator.toString();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof OnmsApplication) {
@@ -121,6 +173,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return getName().hashCode();

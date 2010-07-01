@@ -34,32 +34,64 @@ package org.opennms.netmgt.model;
 /**
  * This is part of the 'secret' project from the 2005 Dev-Jam.  It will mostly
  * likely be replaced by or refactored into the new OnmsResource/OnmsAttribute
- * model classes. 
+ * model classes.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class OnmsSecretAttribute {
 	
 	private String m_label;
 	private String m_id;
 	
+	/**
+	 * <p>Constructor for OnmsSecretAttribute.</p>
+	 */
 	public OnmsSecretAttribute() {
 		
 	}
 	
+	/**
+	 * <p>Constructor for OnmsSecretAttribute.</p>
+	 *
+	 * @param id a {@link java.lang.String} object.
+	 * @param label a {@link java.lang.String} object.
+	 */
 	public OnmsSecretAttribute(String id, String label) {
 		m_id = id;
 		m_label = label;
 	}
 
+	/**
+	 * <p>getId</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getId() {
 		return m_id;
 	}
+	/**
+	 * <p>setId</p>
+	 *
+	 * @param id a {@link java.lang.String} object.
+	 */
 	public void setId(String id) {
 		m_id = id;
 	}
 	
+	/**
+	 * <p>getLabel</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getLabel() {
 		return m_label;
 	}
+	/**
+	 * <p>setLabel</p>
+	 *
+	 * @param label a {@link java.lang.String} object.
+	 */
 	public void setLabel(String label) {
 		m_label = label;
 	}

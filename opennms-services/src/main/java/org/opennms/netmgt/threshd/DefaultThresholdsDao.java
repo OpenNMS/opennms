@@ -49,13 +49,21 @@ import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+/**
+ * <p>DefaultThresholdsDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
     private ThresholdingConfigFactory m_thresholdingConfigFactory;
     
+    /** {@inheritDoc} */
     public ThresholdGroup get(String name) {
         return get(name, null);
     }
 
+    /** {@inheritDoc} */
     public ThresholdGroup merge(ThresholdGroup group) {
         return get(group.getName(), group);
     }
@@ -185,14 +193,29 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getThresholdingConfigFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
+     */
     public ThresholdingConfigFactory getThresholdingConfigFactory() {
         return m_thresholdingConfigFactory;
     }
 
+    /**
+     * <p>setThresholdingConfigFactory</p>
+     *
+     * @param thresholdingConfigFactory a {@link org.opennms.netmgt.config.ThresholdingConfigFactory} object.
+     */
     public void setThresholdingConfigFactory(ThresholdingConfigFactory thresholdingConfigFactory) {
         m_thresholdingConfigFactory = thresholdingConfigFactory;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_thresholdingConfigFactory != null, "thresholdingConfigFactory property not set");
     }

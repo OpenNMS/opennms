@@ -32,19 +32,41 @@
 package org.opennms.netmgt.model;
 
 
+/**
+ * <p>LocationMonitorIpInterface class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class LocationMonitorIpInterface {
     private OnmsLocationMonitor m_locationMonitor;
     private OnmsIpInterface m_ipInterface;
 
+    /**
+     * <p>Constructor for LocationMonitorIpInterface.</p>
+     *
+     * @param locationMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     */
     public LocationMonitorIpInterface(OnmsLocationMonitor locationMonitor, OnmsIpInterface ipInterface) {
         m_locationMonitor = locationMonitor;
         m_ipInterface = ipInterface;
     }
 
+    /**
+     * <p>getIpInterface</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     */
     public OnmsIpInterface getIpInterface() {
         return m_ipInterface;
     }
 
+    /**
+     * <p>getLocationMonitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
+     */
     public OnmsLocationMonitor getLocationMonitor() {
         return m_locationMonitor;
     }

@@ -42,41 +42,59 @@ import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
 
+/**
+ * <p>AbstractImportVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AbstractImportVisitor implements ImportVisitor {
 
+    /** {@inheritDoc} */
     public void visitModelImport(ModelImport mi) {
     }
 
+    /** {@inheritDoc} */
     public void completeModelImport(ModelImport modelImport) {
     }
 
+    /** {@inheritDoc} */
     public void visitNode(Node node) {
     }
 
+    /** {@inheritDoc} */
     public void completeNode(Node node) {
     }
 
+    /** {@inheritDoc} */
     public void visitInterface(Interface iface) {
     }
 
+    /** {@inheritDoc} */
     public void completeInterface(Interface iface) {
     }
 
+    /** {@inheritDoc} */
     public void visitMonitoredService(MonitoredService svc) {
     }
 
+    /** {@inheritDoc} */
     public void completeMonitoredService(MonitoredService svc) {
     }
 
+    /** {@inheritDoc} */
     public void visitCategory(Category category) {
     }
 
+    /** {@inheritDoc} */
     public void completeCategory(Category category) {
     }
 
+    /** {@inheritDoc} */
     public void visitAsset(Asset asset) {
     }
     
+    /** {@inheritDoc} */
     public void completeAsset(Asset asset) {
     }
 }

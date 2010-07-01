@@ -2,8 +2,19 @@
 
 package org.opennms.netmgt.rrd.tcp;
 
+/**
+ * <p>PerformanceDataProtos class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public final class PerformanceDataProtos {
   private PerformanceDataProtos() {}
+  /**
+   * <p>registerAllExtensions</p>
+   *
+   * @param registry a {@link com.google.protobuf.ExtensionRegistry} object.
+   */
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
@@ -758,6 +769,11 @@ public final class PerformanceDataProtos {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_PerformanceDataReadings_fieldAccessorTable;
   
+  /**
+   * <p>Getter for the field <code>descriptor</code>.</p>
+   *
+   * @return a {@link com.google.protobuf.Descriptors.FileDescriptor} object.
+   */
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
@@ -803,5 +819,8 @@ public final class PerformanceDataProtos {
         }, assigner);
   }
   
+  /**
+   * <p>internalForceInit</p>
+   */
   public static void internalForceInit() {}
 }

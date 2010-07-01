@@ -49,6 +49,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Represents a remote SNMP agent on a specific IPv4 interface.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class DefaultCollectionAgent extends IPv4NetworkInterface implements CollectionAgent {
 
@@ -57,6 +60,14 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      */
     private static final long serialVersionUID = 6694654071513990997L;
 
+    /**
+     * <p>create</p>
+     *
+     * @param ifaceId a {@link java.lang.Integer} object.
+     * @param ifaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public static CollectionAgent create(Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
         return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
     }
@@ -84,11 +95,13 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public Object getAddress() {
         return getInetAddress();
     }
 
+    /** {@inheritDoc} */
     @Override
     public InetAddress getInetAddress() {
         if (m_inetAddress == null) {
@@ -100,6 +113,11 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getHostAddress()
      */
+    /**
+     * <p>getHostAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHostAddress() {
         return getInetAddress().getHostAddress();
     }
@@ -107,6 +125,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#setSavedIfCount(int)
      */
+    /** {@inheritDoc} */
     public void setSavedIfCount(int ifCount) {
         m_ifCount = ifCount;
     }
@@ -114,12 +133,22 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSavedIfCount()
      */
+    /**
+     * <p>getSavedIfCount</p>
+     *
+     * @return a int.
+     */
     public int getSavedIfCount() {
         return m_ifCount;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getNodeId()
+     */
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
      */
     public int getNodeId() {
         if (m_nodeId == -1) {
@@ -138,6 +167,11 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSysObjectId()
+     */
+    /**
+     * <p>getSysObjectId</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getSysObjectId() {
         if (m_sysObjId == null) {
@@ -215,6 +249,9 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#validateAgent()
      */
+    /**
+     * <p>validateAgent</p>
+     */
     public void validateAgent() {
         logCollectionParms();
         validateIsSnmpPrimary();
@@ -226,12 +263,22 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#toString()
      */
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "Agent[nodeid = "+getNodeId()+" ipaddr= "+getHostAddress()+']';
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getAgentConfig()
+     */
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpAgentConfig getAgentConfig() {
         return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
@@ -248,6 +295,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
      */
+    /** {@inheritDoc} */
     public Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type) {
         Set<SnmpIfData> snmpIfData = getSnmpInterfaceData();
         
@@ -261,6 +309,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
         return ifInfos;
     }
 
+    /** {@inheritDoc} */
     public String getSnmpInterfaceLabel(int ifIndex) {
         for (SnmpIfData ifData : getSnmpInterfaceData()) {
             if (ifData.getIfIndex() == ifIndex)
@@ -269,10 +318,16 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
         return null;
     }
 
+    /**
+     * <p>getSavedSysUpTime</p>
+     *
+     * @return a long.
+     */
     public long getSavedSysUpTime() {
         return m_sysUpTime;
     }
 
+    /** {@inheritDoc} */
     public void setSavedSysUpTime(long sysUpTime) {
         m_sysUpTime = sysUpTime;
     }

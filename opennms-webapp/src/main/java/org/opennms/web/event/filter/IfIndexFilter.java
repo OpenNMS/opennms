@@ -35,22 +35,45 @@ package org.opennms.web.event.filter;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
-/** Encapsulates all interface filtering functionality. */
+/**
+ * Encapsulates all interface filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class IfIndexFilter extends EqualsFilter<Integer> {
+    /** Constant <code>TYPE="ifindex"</code> */
     public static final String TYPE = "ifindex";
 
+    /**
+     * <p>Constructor for IfIndexFilter.</p>
+     *
+     * @param ifIndex a int.
+     */
     public IfIndexFilter(int ifIndex) {
         super(TYPE, SQLType.INT, "ifIndex", "ifIndex", ifIndex);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<WebEventRepository.InterfaceFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a int.
+     */
     public int getIfIndex() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

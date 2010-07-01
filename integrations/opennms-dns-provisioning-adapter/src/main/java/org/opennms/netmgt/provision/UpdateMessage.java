@@ -37,6 +37,12 @@ package org.opennms.netmgt.provision;
 
 import java.util.Set;
 
+/**
+ * <p>UpdateMessage class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class UpdateMessage {
 
     /*
@@ -60,33 +66,83 @@ public class UpdateMessage {
     private String m_additionalData;
     
     
+    /**
+     * <p>getHeader</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.UpdateMessage.UpdateHeader} object.
+     */
     public UpdateHeader getHeader() {
         return m_header;
     }
+    /**
+     * <p>setHeader</p>
+     *
+     * @param header a {@link org.opennms.netmgt.provision.UpdateMessage.UpdateHeader} object.
+     */
     public void setHeader(UpdateHeader header) {
         m_header = header;
     }
+    /**
+     * <p>getZone</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getZone() {
         return m_zone;
     }
+    /**
+     * <p>setZone</p>
+     *
+     * @param zone a {@link java.lang.String} object.
+     */
     public void setZone(String zone) {
         m_zone = zone;
     }
+    /**
+     * <p>getPrereq</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPrereq() {
         return m_prereq;
     }
+    /**
+     * <p>setPrereq</p>
+     *
+     * @param prereq a {@link java.lang.String} object.
+     */
     public void setPrereq(String prereq) {
         m_prereq = prereq;
     }
+    /**
+     * <p>getUpdate</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<ResourceRecord> getUpdate() {
         return m_update;
     }
+    /**
+     * <p>setUpdate</p>
+     *
+     * @param update a {@link java.util.Set} object.
+     */
     public void setUpdate(Set<ResourceRecord> update) {
         m_update = update;
     }
+    /**
+     * <p>getAdditionalData</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAdditionalData() {
         return m_additionalData;
     }
+    /**
+     * <p>setAdditionalData</p>
+     *
+     * @param additionalData a {@link java.lang.String} object.
+     */
     public void setAdditionalData(String additionalData) {
         m_additionalData = additionalData;
     }

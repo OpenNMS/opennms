@@ -36,8 +36,16 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * <p>CheckNrpe class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CheckNrpe {
+	/** Constant <code>DEFAULT_PORT=5666</code> */
 	public static final int DEFAULT_PORT = 5666;
+	/** Constant <code>DEFAULT_TIMEOUT=10</code> */
 	public static final int DEFAULT_TIMEOUT = 10;
 	
 	private static final String s_usage =
@@ -46,15 +54,42 @@ public class CheckNrpe {
 		"Note: if the -a option is specified it *must* be the last option\n";
 	
 	
+	/**
+	 * <p>executeQuery</p>
+	 *
+	 * @param host a {@link java.lang.String} object.
+	 * @param buffer a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.poller.nrpe.NrpePacket} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static NrpePacket executeQuery(String host, String buffer) throws Exception {
 		return executeQuery(host, DEFAULT_PORT, buffer,
 				NrpePacket.DEFAULT_PADDING);
 	}
 	
+	/**
+	 * <p>executeQuery</p>
+	 *
+	 * @param host a {@link java.lang.String} object.
+	 * @param buffer a {@link java.lang.String} object.
+	 * @param padding a int.
+	 * @return a {@link org.opennms.netmgt.poller.nrpe.NrpePacket} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static NrpePacket executeQuery(String host, String buffer, int padding) throws Exception {
 		return executeQuery(host, DEFAULT_PORT, buffer, padding);
 	}
 	
+	/**
+	 * <p>executeQuery</p>
+	 *
+	 * @param host a {@link java.lang.String} object.
+	 * @param port a int.
+	 * @param buffer a {@link java.lang.String} object.
+	 * @param padding a int.
+	 * @return a {@link org.opennms.netmgt.poller.nrpe.NrpePacket} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static NrpePacket executeQuery(String host, int port, String buffer,
 			int padding) throws Exception {
 		NrpePacket p = new NrpePacket(NrpePacket.QUERY_PACKET, (short) 0,
@@ -67,6 +102,15 @@ public class CheckNrpe {
 		return NrpePacket.receivePacket(s.getInputStream(), padding);
 	}
 	
+	/**
+	 * <p>sendPacket</p>
+	 *
+	 * @param type a short.
+	 * @param resultCode a short.
+	 * @param buffer a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.poller.nrpe.NrpePacket} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static NrpePacket sendPacket(short type, short resultCode, String buffer) throws Exception {
 		int padding = NrpePacket.DEFAULT_PADDING;
 		
@@ -79,6 +123,12 @@ public class CheckNrpe {
 		return NrpePacket.receivePacket(s.getInputStream(), padding);
 	}
 	
+	/**
+	 * <p>main</p>
+	 *
+	 * @param argv an array of {@link java.lang.String} objects.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static void main(String[] argv) throws Exception {
 		String host = null;
 		int port = DEFAULT_PORT;
@@ -131,6 +181,14 @@ public class CheckNrpe {
 		System.exit(p.getResultCode());
 	}
 	
+	/**
+	 * <p>nextArg</p>
+	 *
+	 * @param argv an array of {@link java.lang.String} objects.
+	 * @param i a int.
+	 * @return a {@link java.lang.String} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static String nextArg(String[] argv, int i) throws Exception {
 		if (i >= argv.length) {
 			throw new Exception("No more command-line arguments but option " +

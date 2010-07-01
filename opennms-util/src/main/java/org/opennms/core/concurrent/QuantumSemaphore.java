@@ -46,11 +46,14 @@ package org.opennms.core.concurrent;
  * idea is that the value of the <EM>semaphore</EM> is reset each quantum to
  * it's maximum value.
  * </P>
- * 
+ *
  * Implementation: A Java implementation of Brian's C++ class
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class QuantumSemaphore extends Object {
     /**
@@ -128,12 +131,11 @@ public final class QuantumSemaphore extends Object {
      * and time quantum. The object's values cannot be change once the object is
      * created.
      * </P>
-     * 
+     *
      * @param maxValue
      *            The maximum value of the semaphore
      * @param quantum
      *            The time quantum between resets, in milliseconds.
-     * 
      */
     public QuantumSemaphore(long maxValue, long quantum) {
         m_lQuantum = quantum;
@@ -148,8 +150,9 @@ public final class QuantumSemaphore extends Object {
      * Returns a true value if the semaphore is successfully acquired by the
      * application. A false value is returned if the acquisition does not work.
      * </P>
-     * 
+     *
      * @return True if the semaphore is acquired, false otherwise.
+     * @throws java.lang.InterruptedException if any.
      */
     public synchronized boolean acquire() throws InterruptedException {
         // Category log = ThreadCategory.getInstance(getClass());
@@ -198,6 +201,8 @@ public final class QuantumSemaphore extends Object {
      * <P>
      * Returns the maximum value of the QuantumSemaphore.
      * </P>
+     *
+     * @return a long.
      */
     public long getMaxValue() {
         return m_lMaxValue;

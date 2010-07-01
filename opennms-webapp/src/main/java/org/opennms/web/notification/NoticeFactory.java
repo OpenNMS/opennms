@@ -54,9 +54,13 @@ import org.opennms.web.notification.filter.NodeFilter;
 
 /**
  * Encapsulates all querying functionality for notices
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class NoticeFactory {
 
@@ -66,6 +70,11 @@ public class NoticeFactory {
 
     /**
      * Count the number of notices for a given acknowledgement type.
+     *
+     * @param ackType a {@link org.opennms.web.notification.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getNoticeCount(AcknowledgeType ackType, Filter[] filters) throws SQLException {
         if (ackType == null || filters == null) {
@@ -106,7 +115,13 @@ public class NoticeFactory {
         return noticeCount;
     }
 
-    /** Return a specific notice. */
+    /**
+     * Return a specific notice.
+     *
+     * @param noticeId a int.
+     * @return a {@link org.opennms.web.notification.Notification} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Notification getNotice(int noticeId) throws SQLException {
         Notification notice = null;
         Connection conn = Vault.getDbConnection();
@@ -135,7 +150,7 @@ public class NoticeFactory {
     /**
      * This method determines the log status of an event associated with a
      * notification
-     * 
+     *
      * @param eventId
      *            the unique id of the event from the notice
      * @return true if the event is display, false if log only
@@ -175,17 +190,34 @@ public class NoticeFactory {
         return display;
     }
 
-    /** Return all unacknowledged notices sorted by id. */
+    /**
+     * Return all unacknowledged notices sorted by id.
+     *
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Notification[] getNotices() throws SQLException {
         return (NoticeFactory.getNotices(SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED));
     }
 
-    /** Return all unacknowledged or acknowledged notices sorted by id. */
+    /**
+     * Return all unacknowledged or acknowledged notices sorted by id.
+     *
+     * @param ackType a {@link org.opennms.web.notification.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Notification[] getNotices(AcknowledgeType ackType) throws SQLException {
         return (NoticeFactory.getNotices(SortStyle.ID, ackType));
     }
 
-    /** Return all unacknowledged notices sorted by the given sort style. */
+    /**
+     * Return all unacknowledged notices sorted by the given sort style.
+     *
+     * @param sortStyle a {@link org.opennms.web.notification.SortStyle} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Notification[] getNotices(SortStyle sortStyle) throws SQLException {
         return (NoticeFactory.getNotices(sortStyle, AcknowledgeType.UNACKNOWLEDGED));
     }
@@ -193,9 +225,13 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by the
      * given sort style.
-     * 
+     *
      * @deprecated Replaced by
      *             {@link " #getNotices(SortStyle,AcknowledgeType) getNotices( SortStyle, AcknowledgeType )"}
+     * @param sortStyle a {@link org.opennms.web.notification.SortStyle} object.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNotices(SortStyle sortStyle, boolean includeAcknowledged) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
@@ -205,6 +241,11 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by the
      * given sort style.
+     *
+     * @param sortStyle a {@link org.opennms.web.notification.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.notification.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
         return (NoticeFactory.getNotices(sortStyle, ackType, new org.opennms.web.filter.Filter[0]));
@@ -213,6 +254,12 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by the
      * given sort style.
+     *
+     * @param sortStyle a {@link org.opennms.web.notification.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.notification.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, org.opennms.web.filter.Filter[] filters) throws SQLException {
         return (NoticeFactory.getNotices(sortStyle, ackType, filters, -1, -1));
@@ -221,18 +268,23 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by the
      * given sort style.
-     * 
+     *
      * <p>
-     * <strong>Note: </strong> This limit/offset code is <em>Postgres 
+     * <strong>Note: </strong> This limit/offset code is <em>Postgres
      * specific!</em>
      * Per <a href="mailto:shaneo@opennms.org">Shane </a>, this is okay for now
      * until we can come up with an Oracle alternative too.
      * </p>
-     * 
+     *
      * @param limit
      *            if -1 or zero, no limit or offset is used
      * @param offset
      *            if -1, no limit or offset if used
+     * @param sortStyle a {@link org.opennms.web.notification.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.notification.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, org.opennms.web.filter.Filter[] filters, int limit, int offset) throws SQLException {
         if (sortStyle == null || ackType == null || filters == null) {
@@ -290,7 +342,13 @@ public class NoticeFactory {
         return notices;
     }
 
-    /** Return all unacknowledged notices sorted by time for the given node. */
+    /**
+     * Return all unacknowledged notices sorted by time for the given node.
+     *
+     * @param nodeId a int.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Notification[] getNoticesForNode(int nodeId) throws SQLException {
         return (getNoticesForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED));
     }
@@ -298,9 +356,13 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by id
      * for the given node.
-     * 
+     *
      * @deprecated Replaced by
      *             {@link " #getNoticesForNode(int,SortStyle,AcknowledgeType) getNoticesForNode( int, SortStyle, AcknowledgeType )"}
+     * @param nodeId a int.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNoticesForNode(int nodeId, boolean includeAcknowledged) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
@@ -310,6 +372,12 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by
      * given sort style for the given node.
+     *
+     * @param nodeId a int.
+     * @param sortStyle a {@link org.opennms.web.notification.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.notification.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNoticesForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
         if (sortStyle == null || ackType == null) {
@@ -320,7 +388,14 @@ public class NoticeFactory {
         return (NoticeFactory.getNotices(sortStyle, ackType, filters));
     }
 
-    /** Return all unacknowledged notices for the given interface. */
+    /**
+     * Return all unacknowledged notices for the given interface.
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Notification[] getNoticesForInterface(int nodeId, String ipAddress) throws SQLException {
         return (getNoticesForInterface(nodeId, ipAddress, false));
     }
@@ -328,6 +403,12 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by id
      * for the given interface.
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNoticesForInterface(int nodeId, String ipAddress, boolean includeAcknowledged) throws SQLException {
         if (ipAddress == null) {
@@ -365,6 +446,10 @@ public class NoticeFactory {
     /**
      * Return all unacknowledged notices sorted by time for that have the given
      * IP address, regardless of what node they belong to.
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNoticesForInterface(String ipAddress) throws SQLException {
         return (getNoticesForInterface(ipAddress, false));
@@ -373,6 +458,11 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by id
      * that have the given IP address, regardless of what node they belong to.
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNoticesForInterface(String ipAddress, boolean includeAcknowledged) throws SQLException {
         if (ipAddress == null) {
@@ -406,7 +496,15 @@ public class NoticeFactory {
         return notices;
     }
 
-    /** Return all unacknowledged notices sorted by time for the given service. */
+    /**
+     * Return all unacknowledged notices sorted by time for the given service.
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Notification[] getNoticesForService(int nodeId, String ipAddress, int serviceId) throws SQLException {
         return (getNoticesForService(nodeId, ipAddress, serviceId, false));
     }
@@ -414,6 +512,13 @@ public class NoticeFactory {
     /**
      * Return all notices (optionally only unacknowledged notices) sorted by
      * time for the given service.
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNoticesForService(int nodeId, String ipAddress, int serviceId, boolean includeAcknowledged) throws SQLException {
         if (ipAddress == null) {
@@ -452,6 +557,10 @@ public class NoticeFactory {
     /**
      * Return all unacknowledged notices sorted by time for the given service
      * type, regardless of what node or interface they belong to.
+     *
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNoticesForService(int serviceId) throws SQLException {
         return (getNoticesForService(serviceId, false));
@@ -461,6 +570,11 @@ public class NoticeFactory {
      * Return all notices (optionally only unacknowledged notices) sorted by id
      * for the given service type, regardless of what node or interface they
      * belong to.
+     *
+     * @param serviceId a int.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Notification[] getNoticesForService(int serviceId, boolean includeAcknowledged) throws SQLException {
         Notification[] notices = null;
@@ -492,6 +606,10 @@ public class NoticeFactory {
 
     /**
      * Acknowledge a list of notices with the given username
+     *
+     * @param notices an array of {@link org.opennms.web.notification.Notification} objects.
+     * @param user a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(Notification[] notices, String user) throws SQLException {
         acknowledge(notices, user, new Date());
@@ -499,6 +617,11 @@ public class NoticeFactory {
 
     /**
      * Acknowledge a list of notices with the given username and the given time.
+     *
+     * @param notices an array of {@link org.opennms.web.notification.Notification} objects.
+     * @param user a {@link java.lang.String} object.
+     * @param time a java$util$Date object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(Notification[] notices, String user, Date time) throws SQLException {
         if (notices == null) {
@@ -517,6 +640,10 @@ public class NoticeFactory {
     /**
      * Acknowledge a list of notices with the given username and the current
      * time.
+     *
+     * @param noticeIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(int[] noticeIds, String user) throws SQLException {
         acknowledge(noticeIds, user, new Date());
@@ -524,6 +651,11 @@ public class NoticeFactory {
 
     /**
      * Acknowledge a list of notices with the given username and the given time.
+     *
+     * @param noticeIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param time a java$util$Date object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(int[] noticeIds, String user, Date time) throws SQLException {
         if (noticeIds == null || user == null || time == null) {
@@ -562,6 +694,10 @@ public class NoticeFactory {
      * Convenience method for translating a <code>java.sql.ResultSet</code>
      * containing notice information into an array of <code>Notification</code>
      * objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     // FIXME: Don't use the single variable "element" for different objects. - dj@opennms.org
     protected static Notification[] rs2Notices(ResultSet rs) throws SQLException {

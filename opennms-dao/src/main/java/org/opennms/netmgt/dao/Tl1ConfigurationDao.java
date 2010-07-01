@@ -38,11 +38,22 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * Tl1ConfigurationDao
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface Tl1ConfigurationDao {
     
+    /**
+     * <p>getElements</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     List<Tl1Element> getElements();
     
+    /**
+     * <p>update</p>
+     *
+     * @throws org.springframework.dao.DataAccessResourceFailureException if any.
+     */
     void update() throws DataAccessResourceFailureException;
 
 }

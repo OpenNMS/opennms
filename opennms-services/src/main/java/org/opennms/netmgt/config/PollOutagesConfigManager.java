@@ -47,8 +47,9 @@ import org.opennms.netmgt.config.poller.Outages;
 
 /**
  * Represents a PollOutagesConfigManager
- * 
+ *
  * @author brozow
+ * @version $Id: $
  */
 abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
@@ -58,6 +59,8 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
     private Outages m_config;
 
     /**
+     * <p>setConfig</p>
+     *
      * @param config
      *            The config to set.
      */
@@ -66,6 +69,8 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
     }
 
     /**
+     * <p>getConfig</p>
+     *
      * @return Returns the config.
      */
     protected Outages getConfig() {
@@ -74,7 +79,7 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Return the outages configured.
-     * 
+     *
      * @return the outages configured
      */
     public synchronized Outage[] getOutages() {
@@ -83,10 +88,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Return the specified outage.
-     * 
+     *
      * @param name
      *            the outage that is to be looked up
-     * 
      * @return the specified outage, null if not found
      */
     public synchronized Outage getOutage(String name) {
@@ -101,10 +105,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Return the type for specified outage.
-     * 
+     *
      * @param name
      *            the outage that is to be looked up
-     * 
      * @return the type for the specified outage, null if not found
      */
     public synchronized String getOutageType(String name) {
@@ -117,10 +120,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Return the outage times for specified outage.
-     * 
+     *
      * @param name
      *            the outage that is to be looked up
-     * 
      * @return the outage times for the specified outage, null if not found
      */
     public synchronized Time[] getOutageTimes(String name) {
@@ -133,10 +135,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Return the interfaces for specified outage.
-     * 
+     *
      * @param name
      *            the outage that is to be looked up
-     * 
      * @return the interfaces for the specified outage, null if not found
      */
     public synchronized Interface[] getInterfaces(String name) {
@@ -148,14 +149,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return if interfaces is part of specified outage.
-     * 
-     * @param linterface
-     *            the interface to be looked up
-     * @param outName
-     *            the outage name
-     * 
-     * @return the interface is part of the specified outage
      */
     public synchronized boolean isInterfaceInOutage(String linterface, String outName) {
         Outage out = getOutage(outName);
@@ -167,12 +163,11 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Return if interfaces is part of specified outage.
-     * 
+     *
      * @param linterface
      *            the interface to be looked up
      * @param out
      *            the outage
-     * 
      * @return the interface is part of the specified outage
      */
     public synchronized boolean isInterfaceInOutage(String linterface, Outage out) {
@@ -189,14 +184,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return if time is part of specified outage.
-     * 
-     * @param cal
-     *            the calendar to lookup
-     * @param outName
-     *            the outage name
-     * 
-     * @return true if time is in outage
      */
     public synchronized boolean isTimeInOutage(Calendar cal, String outName) {
         Outage out = getOutage(outName);
@@ -207,14 +197,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return if time is part of specified outage.
-     * 
-     * @param time
-     *            the time in millis to look up
-     * @param outName
-     *            the outage name
-     * 
-     * @return true if time is in outage
      */
     public synchronized boolean isTimeInOutage(long time, String outName) {
         Outage out = getOutage(outName);
@@ -228,12 +213,11 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Return if time is part of specified outage.
-     * 
+     *
      * @param cal
      *            the calendar to lookup
      * @param outage
      *            the outage
-     * 
      * @return true if time is in outage
      */
     public synchronized boolean isTimeInOutage(Calendar cal, Outage outage) {
@@ -242,12 +226,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return if current time is part of specified outage.
-     * 
-     * @param outName
-     *            the outage name
-     * 
-     * @return true if current time is in outage
      */
     public synchronized boolean isCurTimeInOutage(String outName) {
         // get current time
@@ -258,10 +239,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Return if current time is part of specified outage.
-     * 
+     *
      * @param out
      *            the outage
-     * 
      * @return true if current time is in outage
      */
     public synchronized boolean isCurTimeInOutage(Outage out) {
@@ -271,18 +251,39 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
         return isTimeInOutage(cal, out);
     }
 
+    /**
+     * <p>addOutage</p>
+     *
+     * @param newOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
+     */
     public synchronized void addOutage(Outage newOutage) {
         m_config.addOutage(newOutage);
     }
 
+    /**
+     * <p>removeOutage</p>
+     *
+     * @param outageName a {@link java.lang.String} object.
+     */
     public synchronized void removeOutage(String outageName) {
         m_config.removeOutage(getOutage(outageName));
     }
 
+    /**
+     * <p>removeOutage</p>
+     *
+     * @param outageToRemove a {@link org.opennms.netmgt.config.poller.Outage} object.
+     */
     public synchronized void removeOutage(Outage outageToRemove) {
         m_config.removeOutage(outageToRemove);
     }
 
+    /**
+     * <p>replaceOutage</p>
+     *
+     * @param oldOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param newOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
+     */
     public synchronized void replaceOutage(Outage oldOutage, Outage newOutage) {
         int count = m_config.getOutageCount();
         for (int i = 0; i < count; i++) {
@@ -300,6 +301,12 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * 
      * @return the nodes for the specified outage, null if not found
      */
+    /**
+     * <p>getNodeIds</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.netmgt.config.poller.Node} objects.
+     */
     public synchronized Node[] getNodeIds(String name) {
         Outage out = getOutage(name);
         if (out == null)
@@ -309,16 +316,11 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <p>
      * Return if nodeid is part of specified outage
      * </p>
-     * 
-     * @param lnodeid
-     *            the nodeid to be looked up
-     * @param outName
-     *            the outage name
-     * 
-     * @return the node is part of the specified outage
      */
     public synchronized boolean isNodeIdInOutage(long lnodeid, String outName) {
         Outage out = getOutage(outName);
@@ -328,6 +330,12 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
         return isNodeIdInOutage(lnodeid, out);
     }
 
+    /**
+     * <p>getEndOfOutage</p>
+     *
+     * @param outName a {@link java.lang.String} object.
+     * @return a {@link java.util.Calendar} object.
+     */
     public synchronized Calendar getEndOfOutage(String outName) {
         Outage out = getOutage(outName);
         if (out == null)
@@ -339,9 +347,12 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
     /**
      * Return a calendar representing the end time of this outage, assuming it's
      * currently active (i.e. right now is within one of the time periods)
-     * 
+     *
      * FIXME: This code is almost identical to isTimeInOutage... We need to fix
      * it
+     *
+     * @param out a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @return a {@link java.util.Calendar} object.
      */
     public static synchronized Calendar getEndOfOutage(Outage out) {
         // FIXME: We need one that takes the time as a parm.  This makes it more testable
@@ -352,13 +363,11 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * <p>
      * Return if nodeid is part of specified outage
      * </p>
-     * 
+     *
      * @param lnodeid
      *            the nodeid to be looked up
-     * @param outName
-     *            the outage
-     * 
      * @return the node iis part of the specified outage
+     * @param out a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
     public synchronized boolean isNodeIdInOutage(long lnodeid, Outage out) {
         if (out == null)
@@ -375,6 +384,10 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     /**
      * Saves the current in-memory configuration to disk and reloads
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
         // Marshal to a string first, then write the string to the file. This
@@ -392,8 +405,23 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
 
     }
 
+    /**
+     * <p>saveXML</p>
+     *
+     * @param xmlString a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     abstract protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException;
     
+    /**
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     abstract public void update() throws IOException, MarshalException, ValidationException;
 
 
