@@ -371,12 +371,12 @@
       <statement>
         <!-- Remove expired locations specific status changes -->
         DELETE 
-          FROM location_specific_status_changes lssc
+          FROM location_specific_status_changes
          WHERE (locationmonitorid, ifserviceid, id) 
         NOT IN (SELECT locationmonitorid, ifserviceid, max(id) 
                   FROM location_specific_status_changes 
               GROUP BY locationmonitorid, ifserviceid)
-           AND lssc.statustime &lt; now() - interval '24 hours'
+           AND statustime &lt; now() - interval '24 hours'
       </statement>
     </action>
 
