@@ -9,11 +9,9 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.core.io.FileSystemResource;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.core.utils.LogUtils;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * @author jeffg
@@ -27,6 +25,7 @@ public class EventDispositionReaderTest {
     
     @Test
     public void oneArgConstructor() throws IOException {
+        @SuppressWarnings("unused")
         EventDispositionReader reader = new EventDispositionReader(new FileSystemResource("src/test/resources/sonus-traps/EventDisp"));
     }
     

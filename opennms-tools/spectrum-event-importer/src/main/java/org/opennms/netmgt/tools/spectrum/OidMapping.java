@@ -1,7 +1,5 @@
 package org.opennms.netmgt.tools.spectrum;
 
-import java.util.regex.Pattern;
-
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;

@@ -10,9 +10,9 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.FileSystemResource;
-import org.opennms.test.mock.MockLogAppender;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * @author jeffg
@@ -26,6 +26,7 @@ public class AlertMapReaderTest {
     
     @Test
     public void oneArgConstructor() throws IOException {
+        @SuppressWarnings("unused")
         AlertMapReader reader = new AlertMapReader(new FileSystemResource("src/test/resources/sonus-traps/AlertMap"));
     }
     
