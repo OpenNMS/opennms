@@ -23,7 +23,7 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	private String m_name;
 	private Set<GWTMonitoredService> m_services;
 	private Set<String> m_locations;
-	private StatusDetails m_statusDetails = StatusDetails.uninitialized();
+	private StatusDetails m_statusDetails = StatusDetails.unknown();
 	private Long m_priority = null;
 
 	/**
@@ -159,7 +159,7 @@ public class ApplicationInfo implements Serializable, IsSerializable, Comparable
 	 * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTMarkerState} object.
 	 */
 	public GWTMarkerState getMarkerState() {
-		return new GWTMarkerState(m_name, null, m_statusDetails == null? Status.UNINITIALIZED : m_statusDetails.getStatus());
+		return new GWTMarkerState(m_name, null, m_statusDetails == null? Status.UNKNOWN : m_statusDetails.getStatus());
 	}
 
 	/** {@inheritDoc} */

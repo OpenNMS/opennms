@@ -24,9 +24,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * <p>FilterPanel class.</p>
@@ -59,14 +58,6 @@ public class FilterPanel extends Composite {
     Label noApplicationsCaption;
     @UiField
     Panel applicationFilters;
-    @UiField
-    ToggleButton upButton;
-    @UiField
-    ToggleButton marginalButton;
-    @UiField
-    ToggleButton downButton;
-    @UiField
-    ToggleButton unknownButton;
 
     private final MultiWordSuggestOracle applicationNames = new MultiWordSuggestOracle();
     
@@ -146,10 +137,6 @@ public class FilterPanel extends Composite {
         super();
         applicationNameSuggestBox = new SuggestBox(applicationNames);
         initWidget(BINDER.createAndBindUi(this));
-        upButton.setDown(true);
-        marginalButton.setDown(true);
-        downButton.setDown(true);
-        unknownButton.setDown(true);
     }
 
     /**
@@ -162,46 +149,6 @@ public class FilterPanel extends Composite {
         Suggestion item = event.getSelectedItem();
         ApplicationInfo app = m_locationManager.getApplicationInfo(item.getReplacementString());
         m_eventBus.fireEvent(new ApplicationSelectedEvent(app.getName()));
-    }
-
-    /**
-     * <p>onUpButtonClick</p>
-     *
-     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
-     */
-    @UiHandler("upButton") 
-    public void onUpButtonClick(ClickEvent event) {
-        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.UP, upButton.isDown()));
-    }
-
-    /**
-     * <p>onMarginalButtonClick</p>
-     *
-     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
-     */
-    @UiHandler("marginalButton") 
-    public void onMarginalButtonClick(ClickEvent event) {
-        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.MARGINAL, marginalButton.isDown()));
-    }
-
-    /**
-     * <p>onDownButtonClick</p>
-     *
-     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
-     */
-    @UiHandler("downButton") 
-    public void onDownButtonClick(ClickEvent event) {
-        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.DOWN, downButton.isDown()));
-    }
-
-    /**
-     * <p>onUnknownButtonClick</p>
-     *
-     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
-     */
-    @UiHandler("unknownButton") 
-    public void onUnknownButtonClick(ClickEvent event) {
-        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.UNKNOWN, unknownButton.isDown()));
     }
 
     /**

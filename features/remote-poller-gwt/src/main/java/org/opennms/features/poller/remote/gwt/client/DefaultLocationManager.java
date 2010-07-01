@@ -20,6 +20,7 @@ import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselecte
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationDetailsRetrievedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerInfoWindowRefreshEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
@@ -27,7 +28,6 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
-import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
@@ -114,11 +114,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_eventBus.addHandler(ApplicationDeselectedEvent.TYPE, this);
         m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
         m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
-
-        // by default, we select all statuses until the UI says otherwise
-        for (final Status s : Status.values()) {
-            m_selectedStatuses.add(s);
-        }
+        m_eventBus.addHandler(GWTMarkerInfoWindowRefreshEvent.TYPE, this);
     }
 
     /**
@@ -558,6 +554,14 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         GWTMarkerState markerState = event.getMarkerState();
         showLocationDetails(markerState.getName());
     }
+    
+    public void onGWTMarkerInfoWindowRefresh(GWTMarkerInfoWindowRefreshEvent event) {
+        refreshLocationInfoWindowDetails(event.getMarkerState().getName());
+    }
+
+    private void refreshLocationInfoWindowDetails(String name) {
+        showLocationDetails(name);
+    }
 
     /** {@inheritDoc} */
     public void onStatusSelectionChanged(Status status, boolean selected) {
@@ -699,4 +703,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         sb.append("</div>");
         return sb.toString();
     }
+
+    
 }

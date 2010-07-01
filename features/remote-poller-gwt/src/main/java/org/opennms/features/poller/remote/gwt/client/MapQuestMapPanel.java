@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerInfoWindowRefreshEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.utils.BoundsBuilder;
 
@@ -53,6 +54,8 @@ import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
  */
 public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleClickHandlers, HasClickHandlers {
 
+    public GWTLatLng m_currentInfoWindowLatLng = null;
+
     private class DefaultMarkerClickHandler implements ClickHandler {
 
         private GWTMarkerState m_markerState;
@@ -62,6 +65,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         }
 
         public void onClick(final ClickEvent event) {
+            m_currentInfoWindowLatLng  = getMarkerState().getLatLng();
             m_eventBus.fireEvent(new GWTMarkerClickedEvent(getMarkerState()));
         }
 
@@ -187,13 +191,12 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     public void showLocationDetails(final String name, final String htmlTitle, final String htmlContent) {
         final MQAPoi point = getMarker(name);
         if (point != null) {
-            final MQALatLng latLng = point.getLatLng();
-            m_map.setCenter(latLng);
-            m_map.getInfoWindow().hide();
-
             point.setInfoTitleHTML(htmlTitle);
             point.setInfoContentHTML(htmlContent);
-            point.showInfoWindow();
+            if(m_map.getInfoWindow().isHidden()) {
+                point.showInfoWindow();
+            }
+            
             final NodeList<Element> elements = Document.get().getElementsByTagName("div");
             for (int i = 0; i < elements.getLength(); i++) {
                 final Element e = elements.getItem(i);
@@ -208,9 +211,12 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
 
     private MQAPoi createMarker(final GWTMarkerState marker) {
         final MQALatLng latLng = toMQALatLng(marker.getLatLng());
+        final MQAPoi point = (MQAPoi)MQAPoi.newInstance(latLng);
+
         final MQAIcon icon = createIcon(marker);
-        final MQAPoi point = MQAPoi.newInstance(latLng, icon);
+        point.setIcon(icon);
         point.setIconOffset(MQAPoint.newInstance(-16, -32));
+
         point.addClickHandler(new DefaultMarkerClickHandler(marker));
         point.setMaxZoomLevel(16);
         point.setMinZoomLevel(1);
@@ -273,6 +279,10 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
             m_map.addShape(m);
         } else {
             updateMarker(m, marker);
+            GWTLatLng latLng = new GWTLatLng(m.getLatLng().getLatitude(), m.getLatLng().getLongitude());
+            if(latLng.equals(m_currentInfoWindowLatLng) && !m_map.getInfoWindow().isHidden()) {
+                m_eventBus.fireEvent(new GWTMarkerInfoWindowRefreshEvent(marker));
+            }
         }
 
     }
@@ -304,5 +314,4 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addDomHandler(handler, ClickEvent.getType());
     }
-
 }

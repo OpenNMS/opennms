@@ -161,4 +161,12 @@ public class GWTMarkerState implements IsSerializable, Serializable {
     public boolean isWithinBounds(GWTBounds bounds) {
         return bounds.contains(getLatLng());
     }
+    
+    public boolean equals(final Object o) {
+        if (o != null && o instanceof GWTMarkerState) {
+            final GWTMarkerState that = (GWTMarkerState)o;
+            return this.getName() == that.getName();
+        }
+        return false;
+    }
 }

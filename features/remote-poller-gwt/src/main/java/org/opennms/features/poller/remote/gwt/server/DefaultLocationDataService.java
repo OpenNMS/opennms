@@ -239,7 +239,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             latLng = new GWTLatLng(35.715751, -79.16262);
         }
         
-        final GWTMarkerState state = new GWTMarkerState(def.getName(), latLng, Status.UNINITIALIZED);
+        final GWTMarkerState state = new GWTMarkerState(def.getName(), latLng, Status.UNKNOWN);
         final LocationInfo locationInfo = new LocationInfo(
             def.getName(),
             def.getArea(),
@@ -512,7 +512,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     public ApplicationDetails getApplicationDetails(final OnmsApplication app) {
         waitForGeocoding("getApplicationDetails");
 
-        final ApplicationInfo applicationInfo = getApplicationInfo(app, StatusDetails.uninitialized());
+        final ApplicationInfo applicationInfo = getApplicationInfo(app, StatusDetails.unknown());
         List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
         
         final Date to = new Date();

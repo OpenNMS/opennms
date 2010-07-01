@@ -38,16 +38,6 @@
 	</ui:style>
 
 	<g:VerticalPanel addStyleNames="{style.fullWidth}">
-		<g:VerticalPanel addStyleNames="{style.fullWidth} {style.panelPadding}">
-			<g:Label addStyleNames="{style.selectorLabel}" text="Show statuses:"/>
-			<g:HorizontalPanel>
-				<g:ToggleButton ui:field="upButton"       text="Up"  />
-				<g:ToggleButton ui:field="marginalButton" text="Marginal" />
-				<g:ToggleButton ui:field="downButton"     text="Down" />
-				<g:ToggleButton ui:field="unknownButton"  text="Unknown" />
-			</g:HorizontalPanel>
-		</g:VerticalPanel>
-
 		<g:VerticalPanel addStyleNames="{style.fullWidth}" ui:field="applicationTray">
 			<g:HTMLPanel><hr/></g:HTMLPanel>
 			<g:VerticalPanel addStyleNames="{style.panelPadding}">
