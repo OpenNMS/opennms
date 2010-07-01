@@ -45,18 +45,37 @@ import java.util.List;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading;
 
+/**
+ * <p>RrdOutputSocket class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class RrdOutputSocket {
     // private final RrdDefinition m_def;
     private final String m_host;
     private final int m_port;
     private final PerformanceDataProtos.PerformanceDataReadings.Builder m_messages; 
 
+    /**
+     * <p>Constructor for RrdOutputSocket.</p>
+     *
+     * @param host a {@link java.lang.String} object.
+     * @param port a int.
+     */
     public RrdOutputSocket(String host, int port) {
         m_host = host;
         m_port = port;
         m_messages = PerformanceDataProtos.PerformanceDataReadings.newBuilder();
     }
 
+    /**
+     * <p>addData</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     * @param data a {@link java.lang.String} object.
+     */
     public void addData(String filename, String owner, String data) {
         Long timestamp = parseRrdTimestamp(data);
         List<Double> values = parseRrdValues(data);
@@ -68,6 +87,9 @@ public class RrdOutputSocket {
         );
     }
 
+    /**
+     * <p>writeData</p>
+     */
     public void writeData() {
         Socket socket = null;
         try {

@@ -36,6 +36,12 @@ import java.util.List;
 
 import org.springframework.util.StringUtils;
 
+/**
+ * <p>BackupTablesFoundException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class BackupTablesFoundException extends Exception {
     /**
      * 
@@ -50,15 +56,30 @@ public class BackupTablesFoundException extends Exception {
 			+ "You either need to remove them or rename them "
 			+ "so they do not contain the string '_old_'.";
 	
+	/**
+	 * <p>Constructor for BackupTablesFoundException.</p>
+	 *
+	 * @param oldTables a {@link java.util.List} object.
+	 */
 	public BackupTablesFoundException(List<String> oldTables) {
 		super(s_ourMessage);
 		m_oldTables = oldTables;
 	}
 	
+	/**
+	 * <p>getOldTables</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<String> getOldTables() {
 		return Collections.unmodifiableList(m_oldTables);
 	}
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		StringBuffer m = new StringBuffer(getMessage());
 		m.append("\nBackup tables: \n\t");

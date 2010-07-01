@@ -35,12 +35,17 @@ import org.springframework.context.access.DefaultLocatorFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * This JMX bean loads the QoSD daemon as a spring bean using the 
+ * This JMX bean loads the QoSD daemon as a spring bean using the
  * qosd-context.xml file.
- * 
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 
+	/**
+	 * <p>Constructor for QoSD.</p>
+	 */
 	public QoSD() {
 		super(NAME);
 	}
@@ -54,9 +59,15 @@ public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 		return m_context;
 	}
 
+	/**
+	 * <p>onInit</p>
+	 */
 	protected void onInit() {}
 
 
+	/**
+	 * <p>onStart</p>
+	 */
 	protected void onStart() {
 
 
@@ -128,12 +139,20 @@ public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 	}
 
 
+	/**
+	 * <p>onStop</p>
+	 */
 	protected void onStop() {
 		getQoSD().stop();
 
 		m_context.close();
 	}
 
+	/**
+	 * <p>getStats</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getStats() {
 		return getQoSD().getStats();
 	}

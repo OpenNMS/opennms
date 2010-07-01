@@ -33,12 +33,24 @@ package org.opennms.netmgt.poller.pollables;
 
 import org.opennms.netmgt.EventConstants;
 
+/**
+ * <p>Scope class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public enum Scope {
     SERVICE,
     INTERFACE,
     NODE,
     NETWORK;
     
+    /**
+     * <p>fromUei</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     */
     public static Scope fromUei(String uei) {
         if (EventConstants.NODE_DOWN_EVENT_UEI.equals(uei)) {
             return NODE;
@@ -50,16 +62,35 @@ public enum Scope {
         return null;
     }
     
+    /**
+     * <p>isLargerThan</p>
+     *
+     * @param s a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     * @return a boolean.
+     */
     public boolean isLargerThan(Scope s) {
         if (s == null) return true;
         return this.ordinal() > s.ordinal();
     }
     
+    /**
+     * <p>isSmallerThan</p>
+     *
+     * @param s a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     * @return a boolean.
+     */
     public boolean isSmallerThan(Scope s) {
         if (s == null) return false;
         return this.ordinal() < s.ordinal();
     }
     
+    /**
+     * <p>isLargerThan</p>
+     *
+     * @param a a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     * @param b a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     * @return a boolean.
+     */
     public static boolean isLargerThan(Scope a, Scope b) {
         if (a == null && b == null) {
             return false;
@@ -72,6 +103,13 @@ public enum Scope {
         }
     }
     
+    /**
+     * <p>isSmallerThan</p>
+     *
+     * @param a a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     * @param b a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     * @return a boolean.
+     */
     public static boolean isSmallerThan(Scope a, Scope b) {
         return a != b && !isLargerThan(a, b);
     }

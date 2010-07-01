@@ -42,12 +42,16 @@ import org.asteriskjava.fastagi.AgiRequest;
 /**
  * A fairly useless AGI script that reads the lyrics of
  * "Louie, Louie" by The Kingsmen to the called party
- * 
+ *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
  */
 public class LouieLouieLyricsAgiScript extends BaseOnmsAgiScript {
 
+    /** {@inheritDoc} */
     public void service(AgiRequest req, AgiChannel chan) throws AgiException {
         log().debug("Reading lyrics of Louie, Louie to user");
         streamFile("lyrics-louie-louie");

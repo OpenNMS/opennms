@@ -67,17 +67,17 @@ import org.opennms.netmgt.model.RrdRepository;
  * This class is the main respository for JMX data collection configuration
  * information used by the an instance of the JMX service monitor. When this class is loaded it
  * reads the jmx data collection configuration into memory.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
- * 
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- *
+ * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
-
 public final class JMXDataCollectionConfigFactory {
     /**
      * The singleton instance of this factory
@@ -127,11 +127,25 @@ public final class JMXDataCollectionConfigFactory {
         }
     }
 
+    /**
+     * <p>Constructor for JMXDataCollectionConfigFactory.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public JMXDataCollectionConfigFactory(InputStream stream) throws MarshalException, ValidationException {
         initialize(stream);
     }
 
     //@Deprecated
+    /**
+     * <p>Constructor for JMXDataCollectionConfigFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public JMXDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
     	initialize(rdr);
     }
@@ -197,13 +211,16 @@ public final class JMXDataCollectionConfigFactory {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -234,13 +251,16 @@ public final class JMXDataCollectionConfigFactory {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -251,9 +271,8 @@ public final class JMXDataCollectionConfigFactory {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -264,6 +283,11 @@ public final class JMXDataCollectionConfigFactory {
         return m_singleton;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param singleton a {@link org.opennms.netmgt.config.JMXDataCollectionConfigFactory} object.
+     */
     public static synchronized void setInstance(JMXDataCollectionConfigFactory singleton) {
     	m_singleton = singleton;
     	m_loaded = true;
@@ -273,7 +297,7 @@ public final class JMXDataCollectionConfigFactory {
     /**
      * This method returns the list of MIB objects associated with a particular
      * system object id, IP address, and ifType for the specified collection.
-     * 
+     *
      * @param cName
      *            name of the data collection from which to retrieve oid
      *            information.
@@ -281,10 +305,6 @@ public final class JMXDataCollectionConfigFactory {
      *            system object id to look up in the collection
      * @param anAddress
      *            IP address to look up in the collection
-     * @param ifType
-     *            Interface type (-1 indicates that only node-level objects
-     *            should be retrieved.
-     * 
      * @return a list of MIB objects
      */
     public Map<String, List<Attrib>> getAttributeMap(String cName, String aSysoid, String anAddress) {
@@ -335,6 +355,12 @@ public final class JMXDataCollectionConfigFactory {
         return attributeMap;
     }
     
+    /**
+     * <p>getMBeanInfo</p>
+     *
+     * @param cName a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, BeanInfo> getMBeanInfo(String cName) {
         Map<String, BeanInfo> map = new HashMap<String, BeanInfo>();
         
@@ -386,6 +412,12 @@ public final class JMXDataCollectionConfigFactory {
         return map;
     }
 
+    /**
+     * <p>getMBeanInfo_save</p>
+     *
+     * @param cName a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, String[]> getMBeanInfo_save(String cName) {
         Map<String, String[]> map = new HashMap<String, String[]>();
         
@@ -443,10 +475,9 @@ public final class JMXDataCollectionConfigFactory {
 
     /**
      * Retrieves configured RRD step size.
-     * 
+     *
      * @param cName
      *            Name of the data collection
-     * 
      * @return RRD step size for the specified collection
      */
     public int getStep(String cName) {
@@ -459,10 +490,9 @@ public final class JMXDataCollectionConfigFactory {
 
     /**
      * Retrieves configured list of RoundRobin Archive statements.
-     * 
+     *
      * @param cName
      *            Name of the data collection
-     * 
      * @return list of RRA strings.
      */
     public List<String> getRRAList(String cName) {
@@ -476,8 +506,9 @@ public final class JMXDataCollectionConfigFactory {
 
     /**
      * Retrieves the configured path to the RRD file repository.
-     * 
+     *
      * @return RRD repository path.
+     * @param collectionName a {@link java.lang.String} object.
      */
     public RrdRepository getRrdRepository(String collectionName) {
         RrdRepository repo = new RrdRepository();
@@ -489,6 +520,11 @@ public final class JMXDataCollectionConfigFactory {
         //return m_config.getRrdRepository();
     }
 
+    /**
+     * <p>getRrdPath</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRrdPath() {
         String rrdPath = m_config.getRrdRepository();
         if (rrdPath == null) {

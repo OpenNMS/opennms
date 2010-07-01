@@ -34,8 +34,9 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 /**
  * This {@link TestExecutionListener} looks for the {@link JUnitSnmpAgent} annotation
  * and uses attributes on it to launch a mock SNMP agent for use during unit testing.
- * 
+ *
  * @author brozow
+ * @version $Id: $
  */
 public class JUnitSnmpAgentExecutionListener extends
         AbstractTestExecutionListener {
@@ -48,6 +49,7 @@ public class JUnitSnmpAgentExecutionListener extends
      * org.springframework.test.context.support.AbstractTestExecutionListener
      * #beforeTestMethod(org.springframework.test.context.TestContext)
      */
+    /** {@inheritDoc} */
     @Override
     public void beforeTestMethod(TestContext testContext) throws Exception {
         JUnitSnmpAgent config = findAgentAnnotation(testContext);
@@ -97,6 +99,7 @@ public class JUnitSnmpAgentExecutionListener extends
      * org.springframework.test.context.support.AbstractTestExecutionListener
      * #afterTestMethod(org.springframework.test.context.TestContext)
      */
+    /** {@inheritDoc} */
     @Override
     public void afterTestMethod(TestContext testContext) throws Exception {
         MockSnmpAgent agent = (MockSnmpAgent) testContext.getAttribute(MOCK_SNMP_AGENT);

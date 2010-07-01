@@ -50,12 +50,15 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * Produce a list of available statistics reports.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class ListController extends AbstractController implements InitializingBean {
     private StatisticsReportService m_statisticsReportService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<StatisticsReport> reports = m_statisticsReportService.getStatisticsReports();
@@ -69,14 +72,29 @@ public class ListController extends AbstractController implements InitializingBe
         return new ModelAndView("statisticsReports/index", "model", reportsSorted);
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_statisticsReportService != null, "property statisticsReportService must be set to a non-null value");
     }
 
+    /**
+     * <p>getStatisticsReportService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.StatisticsReportService} object.
+     */
     public StatisticsReportService getStatisticsReportService() {
         return m_statisticsReportService;
     }
 
+    /**
+     * <p>setStatisticsReportService</p>
+     *
+     * @param statisticsReportService a {@link org.opennms.web.svclayer.StatisticsReportService} object.
+     */
     public void setStatisticsReportService(StatisticsReportService statisticsReportService) {
         m_statisticsReportService = statisticsReportService;
     }

@@ -52,16 +52,23 @@ import org.smslib.InboundMessage;
  * {@link ICMPEchoPacket packet}class. The reply must be of type ICMP Echo Reply and be
  * the correct length.
  * </p>
- * 
+ *
  * <p>
  * When constructed by the <code>create</code> method the returned reply
  * encapsulates the sender's address and the received packet as final,
  * non-mutable values for the instance.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
@@ -79,11 +86,10 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
      * Constructs a new reply with the packet as the contents
      * of the reply.
-     * 
+     *
      * @param pkt
      *            The received packet.
-     * @param receiveTime 
-     * 
+     * @param receiveTime a long.
      */
     public PingReply(InboundMessage pkt, long receiveTime) {
         m_packet = pkt;
@@ -91,18 +97,38 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
         m_receiveTimestamp = receiveTime;
     }
 
+    /**
+     * <p>getRequestId</p>
+     *
+     * @return a {@link org.opennms.sms.ping.PingRequestId} object.
+     */
     public PingRequestId getRequestId() {
         return m_requestId;
     }
     
+    /**
+     * <p>getPacket</p>
+     *
+     * @return a {@link org.smslib.InboundMessage} object.
+     */
     public InboundMessage getPacket() {
         return m_packet;
     }
     
+    /**
+     * <p>setReceiveTimestamp</p>
+     *
+     * @param millis a long.
+     */
     public void setReceiveTimestamp(long millis){
     	m_receiveTimestamp = millis;
     }
     
+    /**
+     * <p>getReceiveTimestamp</p>
+     *
+     * @return a long.
+     */
     public long getReceiveTimestamp(){
     	return m_receiveTimestamp;
     }

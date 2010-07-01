@@ -50,9 +50,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>SnmpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class SnmpDetector extends AbstractDetector {
     
+    /** Constant <code>DEFAULT_SERVICE_NAME="SNMP"</code> */
     protected static final String DEFAULT_SERVICE_NAME = "SNMP";
 
     public static class SnmpExchange implements Exchange {
@@ -91,23 +98,28 @@ public class SnmpDetector extends AbstractDetector {
     
     private SnmpAgentConfigFactory m_agentConfigFactory;
     
+    /**
+     * <p>Constructor for SnmpDetector.</p>
+     */
     public SnmpDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public SnmpDetector(String serviceName, int port) {
         super(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void init() {}
 
+    /** {@inheritDoc} */
     @Override
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectMonitor) {
         try {
@@ -136,6 +148,11 @@ public class SnmpDetector extends AbstractDetector {
         }
     }
 
+    /**
+     * <p>configureAgentVersion</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     protected void configureAgentVersion(SnmpAgentConfig agentConfig) {
         if (getForceVersion() != null) {
             String version = getForceVersion();
@@ -150,6 +167,11 @@ public class SnmpDetector extends AbstractDetector {
         }
     }
 
+    /**
+     * <p>configureAgentPTR</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     protected void configureAgentPTR(SnmpAgentConfig agentConfig) {
         if (getPort() > 0) {
             agentConfig.setPort(getPort());
@@ -164,6 +186,13 @@ public class SnmpDetector extends AbstractDetector {
         }
     }
     
+    /**
+     * <p>getValue</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String getValue(SnmpAgentConfig agentConfig, String oid) {
         SnmpValue val = SnmpUtils.get(agentConfig, SnmpObjId.get(oid));
         if (val == null || val.isNull() || val.isEndOfMib() || val.isError()) {
@@ -175,35 +204,75 @@ public class SnmpDetector extends AbstractDetector {
         
     }
 
+    /**
+     * <p>setOid</p>
+     *
+     * @param oid a {@link java.lang.String} object.
+     */
     public void setOid(String oid) {
         m_oid = oid;
     }
 
+    /**
+     * <p>getOid</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOid() {
         return m_oid;
     }
 
+    /**
+     * <p>setForceVersion</p>
+     *
+     * @param forceVersion a {@link java.lang.String} object.
+     */
     public void setForceVersion(String forceVersion) {
         m_forceVersion = forceVersion;
     }
 
+    /**
+     * <p>getForceVersion</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForceVersion() {
         return m_forceVersion;
     }
 
+    /**
+     * <p>setVbvalue</p>
+     *
+     * @param vbvalue a {@link java.lang.String} object.
+     */
     public void setVbvalue(String vbvalue) {
         m_vbvalue = vbvalue;
     }
 
+    /**
+     * <p>getVbvalue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getVbvalue() {
         return m_vbvalue;
     }
     
+    /**
+     * <p>setAgentConfigFactory</p>
+     *
+     * @param agentConfigFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     */
     @Autowired
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
         m_agentConfigFactory = agentConfigFactory;
     }
     
+    /**
+     * <p>getAgentConfigFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     */
     public SnmpAgentConfigFactory getAgentConfigFactory() {
         return m_agentConfigFactory;
     }
@@ -211,12 +280,14 @@ public class SnmpDetector extends AbstractDetector {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.AbstractDetector#onInit()
      */
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         // TODO Auto-generated method stub
         
     }
 
+    /** {@inheritDoc} */
     @Override
     public void dispose() {
         // TODO Auto-generated method stub

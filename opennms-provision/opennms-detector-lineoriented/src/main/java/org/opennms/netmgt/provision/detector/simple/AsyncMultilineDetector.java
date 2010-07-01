@@ -36,27 +36,46 @@ import org.opennms.netmgt.provision.support.AsyncBasicDetector;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 
 /**
- * @author Donald Desloge
+ * <p>Abstract AsyncMultilineDetector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
 
+    /**
+     * <p>Constructor for AsyncMultilineDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     public AsyncMultilineDetector(String serviceName, int port) {
         super(serviceName, port);
     }
 
-     /**
-     * @param port
-     * @param timeout
-     * @param retries
+    /**
+     * <p>Constructor for AsyncMultilineDetector.</p>
+     *
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
+     * @param serviceName a {@link java.lang.String} object.
      */
     public AsyncMultilineDetector(String serviceName, int port, int timeout, int retries) {
         super(serviceName, port, timeout, retries);
     }
 
+    /** {@inheritDoc} */
     @Override
     abstract protected void onInit();
     
+    /**
+     * <p>expectCodeRange</p>
+     *
+     * @param beginRange a int.
+     * @param endRange a int.
+     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     */
     protected ResponseValidator<MultilineOrientedResponse> expectCodeRange(final int beginRange, final int endRange){
         return new ResponseValidator<MultilineOrientedResponse>() {
             
@@ -67,6 +86,7 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
         };
     }
     
+    /** {@inheritDoc} */
     public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
         return new ResponseValidator<MultilineOrientedResponse>(){
 
@@ -77,6 +97,12 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
         };
     }
     
+    /**
+     * <p>request</p>
+     *
+     * @param command a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     */
     public LineOrientedRequest request(String command) {
         return new LineOrientedRequest(command);
     }

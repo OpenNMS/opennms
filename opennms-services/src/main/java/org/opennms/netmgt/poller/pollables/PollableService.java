@@ -50,9 +50,10 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a PollableService 
+ * Represents a PollableService
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class PollableService extends PollableElement implements ReadyRunnable, MonitoredService {
 
@@ -77,9 +78,10 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     private volatile Schedule m_schedule;
     private volatile long m_statusChangeTime = 0L;
     /**
-     * @param svcName
-     * @param iface
-     * 
+     * <p>Constructor for PollableService.</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     * @param iface a {@link org.opennms.netmgt.poller.pollables.PollableInterface} object.
      */
     public PollableService(PollableInterface iface, String svcName) {
         super(iface, Scope.SERVICE);
@@ -87,61 +89,97 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         m_netInterface = new IPv4NetworkInterface(iface.getAddress());
     }
     
+    /**
+     * <p>getInterface</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableInterface} object.
+     */
     public PollableInterface getInterface() {
         return (PollableInterface)getParent();
     }
     
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
+     */
     public PollableNode getNode() {
         return getInterface().getNode();
     }
 
+    /**
+     * <p>getNetwork</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollableNetwork} object.
+     */
     public PollableNetwork getNetwork() {
         return getInterface().getNetwork();
     }
     
+    /**
+     * <p>getContext</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollContext} object.
+     */
     public PollContext getContext() {
         return getInterface().getContext();
     }
-/**
-     * @return
+    /**
+     * <p>getSvcName</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getSvcName() {
         return m_svcName;
     }
 
     /**
-     * @return
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getIpAddr() {
         return getInterface().getIpAddr();
     }
 
     /**
-     * @return
+     * <p>getNodeId</p>
+     *
+     * @return a int.
      */
     public int getNodeId() {
         return getInterface().getNodeId();
     }
     
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return getInterface().getNodeLabel();
     }
 
 
+    /** {@inheritDoc} */
     protected void visitThis(PollableVisitor v) {
         super.visitThis(v);
         v.visitService(this);
     }
 
     /**
-     * @param pollConfig
+     * <p>setPollConfig</p>
+     *
+     * @param pollConfig a {@link org.opennms.netmgt.poller.pollables.PollableServiceConfig} object.
      */
     public void setPollConfig(PollableServiceConfig pollConfig) {
         m_pollConfig = pollConfig;
     }
 
     /**
-     * 
+     * <p>poll</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
      */
     public PollStatus poll() {
         PollStatus newStatus = m_pollConfig.poll();
@@ -152,21 +190,27 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
 
     /**
-     * @return
-     * @throws UnknownHostException
+     * <p>getNetInterface</p>
+     *
+     * @throws UnknownHostException if any.
+     * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
      */
     public NetworkInterface getNetInterface() {
         return m_netInterface;
     }
 
     /**
-     * @return
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getAddress() {
         return getInterface().getAddress();
     }
 
     /**
+     * <p>doPoll</p>
+     *
      * @return the top changed element whose status changes needs to be processed
      */
     public PollStatus doPoll() {
@@ -181,34 +225,56 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     
 
     
+    /** {@inheritDoc} */
     public Event createDownEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
     }
     
     
+    /** {@inheritDoc} */
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
     }
     
+    /**
+     * <p>createUnresponsiveEvent</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createUnresponsiveEvent(Date date) {
         return getContext().createEvent(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
     }
 
+    /**
+     * <p>createResponsiveEvent</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createResponsiveEvent(Date date) {
         return getContext().createEvent(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
     }
 
+    /** {@inheritDoc} */
     public void createOutage(PollEvent cause) {
         super.createOutage(cause);
         getContext().openOutage(this, cause);
     }
+    /** {@inheritDoc} */
     protected void resolveOutage(PollEvent resolution) {
         super.resolveOutage(resolution);
         getContext().resolveOutage(this, resolution);
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() { return getInterface()+":"+getSvcName(); }
 
+    /** {@inheritDoc} */
     public void processStatusChange(Date date) {
         
         if (getContext().isServiceUnresponsiveEnabled()) {
@@ -226,6 +292,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         super.processStatusChange(date);
     }
     
+    /** {@inheritDoc} */
     public void updateStatus(PollStatus newStatus) {
         
         if (!getContext().isServiceUnresponsiveEnabled()) {
@@ -248,16 +315,28 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
 
     /**
-     * @param schedule
+     * <p>setSchedule</p>
+     *
+     * @param schedule a {@link org.opennms.netmgt.scheduler.Schedule} object.
      */
     public synchronized void setSchedule(Schedule schedule) {
         m_schedule = schedule;
     }
     
+    /**
+     * <p>getSchedule</p>
+     *
+     * @return a {@link org.opennms.netmgt.scheduler.Schedule} object.
+     */
     public synchronized Schedule getSchedule() {
         return m_schedule;
     }
     
+    /**
+     * <p>getStatusChangeTime</p>
+     *
+     * @return a long.
+     */
     public long getStatusChangeTime() {
         return m_statusChangeTime;
     }
@@ -265,6 +344,11 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         m_statusChangeTime = statusChangeTime;
     }
     
+    /**
+     * <p>isReady</p>
+     *
+     * @return a boolean.
+     */
     public boolean isReady() {
 		/* FIXME: There is a bug in the Scheduler that only checks the first service in a queue.
 		 * If a thread hangs the below line will cause all services with the same interval to get
@@ -280,10 +364,18 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
+    /**
+     * <p>run</p>
+     */
     public void run() {
         doRun(500);
     }
     
+    /**
+     * <p>doRun</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus doRun() {
     	return doRun(0);
     }
@@ -316,6 +408,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 		return ThreadCategory.getInstance(PollableService.class);
 	}
 
+    /**
+     * <p>delete</p>
+     */
     public void delete() {
         Runnable r = new Runnable() {
             public void run() {
@@ -327,7 +422,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
 
     /**
-     * 
+     * <p>schedule</p>
      */
     public void schedule() {
         if (m_schedule == null)
@@ -337,16 +432,22 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
 
     /**
-     * 
+     * <p>sendDeleteEvent</p>
      */
     public void sendDeleteEvent() {
         getContext().sendEvent(getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date(), getStatus().getReason()));
     }
 
+    /**
+     * <p>refreshConfig</p>
+     */
     public void refreshConfig() {
         m_pollConfig.refresh();
     }
 
+    /**
+     * <p>refreshThresholds</p>
+     */
     public void refreshThresholds() {
         m_pollConfig.refreshThresholds();
     }

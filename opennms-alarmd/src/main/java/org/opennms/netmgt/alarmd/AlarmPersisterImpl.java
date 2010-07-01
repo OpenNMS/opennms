@@ -47,17 +47,16 @@ import org.springframework.util.Assert;
 
 /**
  * Singleton to persist OnmsAlarms.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class AlarmPersisterImpl implements AlarmPersister {
 
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
 
-    /**
-     * @see org.opennms.netmgt.alarmd.AlarmPersister#persist(org.opennms.netmgt.xml.event.Event)
-     */
+    /** {@inheritDoc} */
     public void persist(Event event) {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return;
@@ -162,18 +161,38 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return ThreadCategory.getInstance(AlarmPersisterImpl.class);
     }
     
+    /**
+     * <p>setAlarmDao</p>
+     *
+     * @param alarmDao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     */
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 
+    /**
+     * <p>getAlarmDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     */
     public AlarmDao getAlarmDao() {
         return m_alarmDao;
     }
 
+    /**
+     * <p>setEventDao</p>
+     *
+     * @param eventDao a {@link org.opennms.netmgt.dao.EventDao} object.
+     */
     public void setEventDao(EventDao eventDao) {
         m_eventDao = eventDao;
     }
 
+    /**
+     * <p>getEventDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.EventDao} object.
+     */
     public EventDao getEventDao() {
         return m_eventDao;
     }

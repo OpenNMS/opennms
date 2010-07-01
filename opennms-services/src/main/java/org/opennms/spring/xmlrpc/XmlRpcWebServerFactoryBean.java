@@ -45,8 +45,10 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * 
+ * <p>XmlRpcWebServerFactoryBean class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class XmlRpcWebServerFactoryBean implements FactoryBean, InitializingBean, DisposableBean {
     
@@ -56,50 +58,111 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean, InitializingBean
     XmlRpcServer xmlRpcServer = null;
     boolean secure = false;
 
+    /**
+     * <p>Getter for the field <code>port</code>.</p>
+     *
+     * @return a int.
+     */
     public int getPort() {
         return this.port;
     }
     
+    /**
+     * <p>Setter for the field <code>port</code>.</p>
+     *
+     * @param port a int.
+     */
     public void setPort(int port) {
         this.port = port;
     }
     
+    /**
+     * <p>Getter for the field <code>address</code>.</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return this.address;
     }
     
+    /**
+     * <p>Setter for the field <code>address</code>.</p>
+     *
+     * @param addrress a {@link java.net.InetAddress} object.
+     */
     public void setAddress(InetAddress addrress) {
         this.address = addrress;
     }
     
+    /**
+     * <p>Getter for the field <code>secure</code>.</p>
+     *
+     * @return a boolean.
+     */
     public boolean getSecure() {
         return this.secure;
     }
 
+    /**
+     * <p>Setter for the field <code>secure</code>.</p>
+     *
+     * @param secure a boolean.
+     */
     public void setSecure(boolean secure) {
         this.secure = secure;
     }
 
+    /**
+     * <p>Getter for the field <code>xmlRpcServer</code>.</p>
+     *
+     * @return a {@link org.apache.xmlrpc.XmlRpcServer} object.
+     */
     public XmlRpcServer getXmlRpcServer() {
         return this.xmlRpcServer;
     }
 
+    /**
+     * <p>Setter for the field <code>xmlRpcServer</code>.</p>
+     *
+     * @param xmlRpcServer a {@link org.apache.xmlrpc.XmlRpcServer} object.
+     */
     public void setXmlRpcServer(XmlRpcServer xmlRpcServer) {
         this.xmlRpcServer = xmlRpcServer;
     }
 
+    /**
+     * <p>getObject</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     * @throws java.lang.Exception if any.
+     */
     public Object getObject() throws Exception {
         return webServer;
     }
 
+    /**
+     * <p>getObjectType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class getObjectType() {
         return WebServer.class;
     }
 
+    /**
+     * <p>isSingleton</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSingleton() {
         return true;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         if (this.port == -1)
             throw new IllegalArgumentException("port is required");
@@ -115,6 +178,11 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean, InitializingBean
         webServer.start();
     }
 
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void destroy() throws Exception {
         webServer.shutdown();
     }

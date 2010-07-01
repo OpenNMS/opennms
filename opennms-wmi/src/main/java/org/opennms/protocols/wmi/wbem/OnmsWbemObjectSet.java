@@ -41,9 +41,28 @@ import org.jinterop.dcom.common.JIException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.WmiException;
 
+/**
+ * <p>OnmsWbemObjectSet interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsWbemObjectSet {
 
+    /**
+     * <p>count</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Integer count() throws WmiException;
 
+    /**
+     * <p>get</p>
+     *
+     * @param idx a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemObject} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public OnmsWbemObject get(Integer idx) throws WmiException;   
 }

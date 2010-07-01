@@ -39,13 +39,23 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 
 /**
- * 
+ * <p>Abstract DirectionalChangeHandler class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public abstract class DirectionalChangeHandler implements ChangeHandler {
+    /** {@inheritDoc} */
     public void onChange(ChangeEvent event) {
         onChange(event, 1);
     }
 
+    /**
+     * <p>onChange</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ChangeEvent} object.
+     * @param direction a int.
+     */
     public abstract void onChange(ChangeEvent event, int direction);
 }

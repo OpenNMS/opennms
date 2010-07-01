@@ -40,29 +40,42 @@ import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseVali
 import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
 
 /**
- * @author Donald Desloge
+ * <p>Abstract AsyncLineOrientedDetector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineOrientedRequest, LineOrientedResponse> {
 
+    /**
+     * <p>Constructor for AsyncLineOrientedDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     public AsyncLineOrientedDetector(String serviceName, int port) {
         super(serviceName, port);
         setProtocolCodecFilter( new ProtocolCodecFilter ( new LineOrientedCodecFactory ( Charset.forName("UTF-8" ))));
     }
 
     /**
-     * @param port
-     * @param timeout
-     * @param retries
+     * <p>Constructor for AsyncLineOrientedDetector.</p>
+     *
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
+     * @param serviceName a {@link java.lang.String} object.
      */
     public AsyncLineOrientedDetector(String serviceName, int port, int timeout, int retries) {
         super(serviceName, port, timeout, retries);
         setProtocolCodecFilter( new ProtocolCodecFilter (new LineOrientedCodecFactory ( Charset.forName("UTF-8" ))));
     }
 
+    /** {@inheritDoc} */
     @Override
     abstract protected void onInit();
     
+    /** {@inheritDoc} */
     protected ResponseValidator<LineOrientedResponse> startsWith(final String prefix) {
         return new ResponseValidator<LineOrientedResponse>() {
 
@@ -73,6 +86,7 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
         };
     }
     
+    /** {@inheritDoc} */
     public ResponseValidator<LineOrientedResponse> find(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
@@ -84,6 +98,12 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
         };
     }
     
+    /**
+     * <p>request</p>
+     *
+     * @param command a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     */
     public LineOrientedRequest request(String command) {
         return new LineOrientedRequest(command);
     }

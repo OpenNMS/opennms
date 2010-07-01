@@ -112,8 +112,13 @@ import org.opennms.protocols.rt.RequestTracker;
  */
 
 /**
+ * <p>Pinger class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class Pinger {
     
@@ -122,6 +127,8 @@ public class Pinger {
     
 	/**
 	 * Initializes this singleton
+	 *
+	 * @throws java.io.IOException if any.
 	 */
 	public synchronized static void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
@@ -129,6 +136,16 @@ public class Pinger {
 	    s_pingTracker.start();
 	}
 
+    /**
+     * <p>ping</p>
+     *
+     * @param host a {@link java.net.InetAddress} object.
+     * @param timeout a long.
+     * @param retries a int.
+     * @param sequenceId a short.
+     * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
+     * @throws java.lang.Exception if any.
+     */
     public static void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception {
         initialize();
         s_pingTracker.sendRequest(new PingRequest(host, sequenceId, timeout, retries, cb));
@@ -138,17 +155,17 @@ public class Pinger {
      * This method is used to ping a remote host to test for ICMP support. If
      * the remote host responds within the specified period, defined by retries
      * and timeouts, then the response time is returned.
-     * 
+     *
      * @param host
      *            The address to poll.
      * @param timeout
      *            The time to wait between each retry.
      * @param retries
      *            The number of times to retry
-     * 
      * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
-     * @throws InterruptedException 
-     * @throws IOException 
+     * @throws InterruptedException if any.
+     * @throws IOException if any.
+     * @throws java.lang.Exception if any.
      */
     public static Long ping(InetAddress host, long timeout, int retries) throws Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
@@ -160,10 +177,12 @@ public class Pinger {
 
 	/**
 	 * Ping a remote host, using the default number of retries and timeouts.
+	 *
 	 * @param host the host to ping
 	 * @return the round-trip time of the packet
-	 * @throws IOException
-	 * @throws InterruptedException 
+	 * @throws IOException if any.
+	 * @throws InterruptedException if any.
+	 * @throws java.lang.Exception if any.
 	 */
 	public static Long ping(InetAddress host) throws Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
@@ -172,6 +191,16 @@ public class Pinger {
         return cb.getResponseTime();
 	}
 
+	/**
+	 * <p>parallelPing</p>
+	 *
+	 * @param host a {@link java.net.InetAddress} object.
+	 * @param count a int.
+	 * @param timeout a long.
+	 * @param pingInterval a long.
+	 * @return a {@link java.util.List} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception {
 	    initialize();
 	    ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);

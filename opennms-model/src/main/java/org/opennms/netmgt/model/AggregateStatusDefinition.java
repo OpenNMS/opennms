@@ -37,9 +37,9 @@ import java.util.Set;
 /**
  * This class defines how the AggregateStatus object is to be
  * created and it's properties are to be populated.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class AggregateStatusDefinition {
     
@@ -48,10 +48,19 @@ public class AggregateStatusDefinition {
     private String m_reportCategory;
     private Set<OnmsCategory> m_categories;
     
+    /**
+     * <p>Constructor for AggregateStatusDefinition.</p>
+     */
     public AggregateStatusDefinition() {
         
     }
     
+    /**
+     * <p>Constructor for AggregateStatusDefinition.</p>
+     *
+     * @param aggrStatus a {@link java.lang.String} object.
+     * @param categories a {@link java.util.Set} object.
+     */
     public AggregateStatusDefinition(String aggrStatus, Set<OnmsCategory> categories) {
         if (aggrStatus == null || categories == null || categories.isEmpty()) {
             throw new IllegalArgumentException("Invalid arguments");
@@ -61,39 +70,84 @@ public class AggregateStatusDefinition {
         m_categories = categories;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getId() {
         return m_id;
     }
     
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_name;
 	}
 
+	/**
+	 * <p>setName</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public void setName(String name) {
 		m_name = name;
 	}
     
 
+	/**
+	 * <p>getCategories</p>
+	 *
+	 * @return a {@link java.util.Set} object.
+	 */
 	public Set<OnmsCategory> getCategories() {
         return m_categories;
     }
 
+    /**
+     * <p>setCategories</p>
+     *
+     * @param categories a {@link java.util.Set} object.
+     */
     public void setCategories(Set<OnmsCategory> categories) {
         m_categories = categories;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return getName();
     }
 
+    /**
+     * <p>getReportCategory</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getReportCategory() {
         return m_reportCategory;
     }
 
+    /**
+     * <p>setReportCategory</p>
+     *
+     * @param reportCategory a {@link java.lang.String} object.
+     */
     public void setReportCategory(String reportCategory) {
         m_reportCategory = reportCategory;
     }

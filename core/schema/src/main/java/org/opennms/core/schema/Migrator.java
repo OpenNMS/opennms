@@ -25,8 +25,16 @@ import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
+/**
+ * <p>Migrator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Migrator {
+    /** Constant <code>POSTGRES_MIN_VERSION=7.4f</code> */
     public static final float POSTGRES_MIN_VERSION = 7.4f;
+    /** Constant <code>POSTGRES_MAX_VERSION_PLUS_ONE=9.1f</code> */
     public static final float POSTGRES_MAX_VERSION_PLUS_ONE = 9.1f;
 
     private DataSource m_dataSource;
@@ -36,6 +44,9 @@ public class Migrator {
     private boolean m_createUser = true;
     private boolean m_createDatabase = true;
 
+    /**
+     * <p>Constructor for Migrator.</p>
+     */
     public Migrator() {
         initLogging();
     }
@@ -44,34 +55,75 @@ public class Migrator {
         LogFactory.getLogger().setLevel(Level.INFO);
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
 
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }
 
+    /**
+     * <p>getAdminDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getAdminDataSource() {
         return m_adminDataSource;
     }
 
+    /**
+     * <p>setAdminDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setAdminDataSource(DataSource dataSource) {
         m_adminDataSource = dataSource;
     }
 
+    /**
+     * <p>setValidateDatabaseVersion</p>
+     *
+     * @param validate a boolean.
+     */
     public void setValidateDatabaseVersion(boolean validate) {
         m_validateDatabaseVersion = validate;
     }
 
+    /**
+     * <p>setCreateUser</p>
+     *
+     * @param create a boolean.
+     */
     public void setCreateUser(boolean create) {
         m_createUser = create;
     }
 
+    /**
+     * <p>setCreateDatabase</p>
+     *
+     * @param create a boolean.
+     */
     public void setCreateDatabase(boolean create) {
         m_createDatabase = create;
     }
 
+    /**
+     * <p>getDatabaseVersion</p>
+     *
+     * @return a {@link java.lang.Float} object.
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public Float getDatabaseVersion() throws MigrationException {
         if (m_databaseVersion == null) {
             String versionString = null;
@@ -107,6 +159,11 @@ public class Migrator {
         return m_databaseVersion;
     }
     
+    /**
+     * <p>validateDatabaseVersion</p>
+     *
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public void validateDatabaseVersion() throws MigrationException {
         if (!m_validateDatabaseVersion) {
             log().info("skipping database version validation");
@@ -129,6 +186,11 @@ public class Migrator {
         }
     }
 
+    /**
+     * <p>createLangPlPgsql</p>
+     *
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public void createLangPlPgsql() throws MigrationException {
         log().info("adding PL/PgSQL support to the database, if necessary");
         Statement st = null;
@@ -159,6 +221,13 @@ public class Migrator {
         }
     }
 
+    /**
+     * <p>databaseUserExists</p>
+     *
+     * @param migration a {@link org.opennms.core.schema.Migration} object.
+     * @return a boolean.
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public boolean databaseUserExists(Migration migration) throws MigrationException {
         Statement st = null;
         ResultSet rs = null;
@@ -183,6 +252,12 @@ public class Migrator {
         }
     }
 
+    /**
+     * <p>createUser</p>
+     *
+     * @param migration a {@link org.opennms.core.schema.Migration} object.
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public void createUser(Migration migration) throws MigrationException {
         if (!m_createUser || databaseUserExists(migration)) {
             return;
@@ -203,6 +278,13 @@ public class Migrator {
         }
     }
 
+    /**
+     * <p>databaseExists</p>
+     *
+     * @param migration a {@link org.opennms.core.schema.Migration} object.
+     * @return a boolean.
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public boolean databaseExists(Migration migration) throws MigrationException {
         Statement st = null;
         ResultSet rs = null;
@@ -227,6 +309,12 @@ public class Migrator {
         }
     }
 
+    /**
+     * <p>createDatabase</p>
+     *
+     * @param migration a {@link org.opennms.core.schema.Migration} object.
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public void createDatabase(Migration migration) throws MigrationException {
         if (!m_createDatabase || databaseExists(migration)) {
             return;
@@ -251,6 +339,12 @@ public class Migrator {
         }
     }
 
+    /**
+     * <p>prepareDatabase</p>
+     *
+     * @param migration a {@link org.opennms.core.schema.Migration} object.
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public void prepareDatabase(Migration migration) throws MigrationException {
         validateDatabaseVersion();
         createLangPlPgsql();
@@ -258,6 +352,12 @@ public class Migrator {
         createDatabase(migration);
     }
 
+    /**
+     * <p>migrate</p>
+     *
+     * @param migration a {@link org.opennms.core.schema.Migration} object.
+     * @throws org.opennms.core.schema.MigrationException if any.
+     */
     public void migrate(Migration migration) throws MigrationException {
         Connection connection;
         Database database;
@@ -294,6 +394,12 @@ public class Migrator {
         cleanUpDatabase(connection, null, null);
     }
 
+    /**
+     * <p>getMigrationResourceLoader</p>
+     *
+     * @param migration a {@link org.opennms.core.schema.Migration} object.
+     * @return a {@link org.springframework.core.io.ResourceLoader} object.
+     */
     protected ResourceLoader getMigrationResourceLoader(Migration migration) {
         File changeLog = new File(migration.getChangeLog());
         List<URL> urls = new ArrayList<URL>();

@@ -54,6 +54,12 @@ import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 
+/**
+ * <p>DefaultReportStoreService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultReportStoreService implements ReportStoreService {
     
     private ReportCatalogDao m_reportCatalogDao;
@@ -64,6 +70,9 @@ public class DefaultReportStoreService implements ReportStoreService {
     
     private ThreadCategory log;
     
+    /**
+     * <p>Constructor for DefaultReportStoreService.</p>
+     */
     public DefaultReportStoreService () {
         
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -71,12 +80,22 @@ public class DefaultReportStoreService implements ReportStoreService {
     
     }
 
+    /**
+     * <p>delete</p>
+     *
+     * @param ids an array of {@link java.lang.Integer} objects.
+     */
     public void delete(Integer[] ids) {
         for (Integer id : ids) {
             delete(id); 
         }
     }
     
+    /**
+     * <p>delete</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void delete(Integer id) {
         String deleteFile = new String(m_reportCatalogDao.get(id).getLocation());
         boolean success = (new File(deleteFile).delete());
@@ -88,10 +107,20 @@ public class DefaultReportStoreService implements ReportStoreService {
         m_reportCatalogDao.delete(id);
     }
 
+    /**
+     * <p>getAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<ReportCatalogEntry> getAll() {
         return m_reportCatalogDao.findAll();
     }
     
+    /**
+     * <p>getFormatMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public Map<String, Object> getFormatMap() {
         HashMap <String, Object> formatMap = new HashMap<String, Object>();
         List <Report> reports = m_databaseReportConfigDao.getReports();
@@ -106,6 +135,7 @@ public class DefaultReportStoreService implements ReportStoreService {
         return formatMap;
     }
     
+    /** {@inheritDoc} */
     public void render(Integer id, ReportFormat format, OutputStream outputStream) {
         ReportCatalogEntry catalogEntry = m_reportCatalogDao.get(id);
         String reportServiceName = m_databaseReportConfigDao.getReportService(catalogEntry.getReportId());
@@ -122,18 +152,26 @@ public class DefaultReportStoreService implements ReportStoreService {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /** {@inheritDoc} */
     public void save(ReportCatalogEntry reportCatalogEntry) {
         m_reportCatalogDao.save(reportCatalogEntry);
     }
 
+    /** {@inheritDoc} */
     public void setReportCatalogDao(ReportCatalogDao reportCatalogDao) {
         m_reportCatalogDao = reportCatalogDao;
     }
     
+    /**
+     * <p>setDatabaseReportConfigDao</p>
+     *
+     * @param databaseReportConfigDao a {@link org.opennms.netmgt.dao.DatabaseReportConfigDao} object.
+     */
     public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportConfigDao) {
         m_databaseReportConfigDao = databaseReportConfigDao;
     }
     
+    /** {@inheritDoc} */
     public void setReportServiceLocator(ReportServiceLocator reportServiceLocator) {
         m_reportServiceLocator = reportServiceLocator;
     }

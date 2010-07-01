@@ -51,6 +51,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * <p>AcknowledgeEventByFilterController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AcknowledgeEventByFilterController extends AbstractController implements InitializingBean {
     private static final long serialVersionUID = 2L;
     
@@ -58,20 +65,37 @@ public class AcknowledgeEventByFilterController extends AbstractController imple
     
     private String m_redirectView;
     
+    /**
+     * <p>setRedirectView</p>
+     *
+     * @param redirectView a {@link java.lang.String} object.
+     */
     public void setRedirectView(String redirectView) {
         m_redirectView = redirectView;
     }
     
+    /**
+     * <p>setWebEventRepository</p>
+     *
+     * @param webEventRepository a {@link org.opennms.web.event.WebEventRepository} object.
+     */
     public void setWebEventRepository(WebEventRepository webEventRepository) {
         m_webEventRepository = webEventRepository;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_webEventRepository, "webEventRepository must be set");
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */

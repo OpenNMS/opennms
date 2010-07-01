@@ -8,6 +8,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>FtpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class FtpDetector extends AsyncMultilineDetector {
     
@@ -24,14 +30,17 @@ public class FtpDetector extends AsyncMultilineDetector {
     
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public FtpDetector(String serviceName, int port) {
         super(serviceName, port);
     }
 
+    /**
+     * <p>onInit</p>
+     */
     public void onInit() {
         //setup the correct codec for this Detector
         setProtocolCodecFilter(new ProtocolCodecFilter( new MultilineOrientedCodecFactory( Charset.forName( "UTF-8"), getMultilineIndicator())));
@@ -40,10 +49,20 @@ public class FtpDetector extends AsyncMultilineDetector {
         send(request("quit"), expectCodeRange(100,600));
     }
 
+    /**
+     * <p>setMultilineIndicator</p>
+     *
+     * @param multilineIndicator a {@link java.lang.String} object.
+     */
     public void setMultilineIndicator(String multilineIndicator) {
         m_multilineIndicator = multilineIndicator;
     }
 
+    /**
+     * <p>getMultilineIndicator</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMultilineIndicator() {
         return m_multilineIndicator;
     }

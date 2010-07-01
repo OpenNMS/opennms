@@ -54,9 +54,13 @@ import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles adding new duty schedules to a users notification info
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AddDutySchedulesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -72,6 +76,7 @@ public class AddDutySchedulesServlet extends HttpServlet {
         FALSE_LIST = Collections.unmodifiableList(list);
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(true);
 

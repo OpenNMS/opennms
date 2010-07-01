@@ -8,16 +8,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+/**
+ * <p>DBUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DBUtils {
     private final Set<Statement> m_statements;
     private final Set<ResultSet> m_resultSets;
     private final Set<Connection> m_connections;
     private Class<?> m_loggingClass;
 
+    /**
+     * <p>Constructor for DBUtils.</p>
+     */
     public DBUtils() {
         this(DBUtils.class);
     }
     
+    /**
+     * <p>Constructor for DBUtils.</p>
+     *
+     * @param loggingClass a {@link java.lang.Class} object.
+     */
     public DBUtils(Class<?> loggingClass) {
         m_statements = Collections.synchronizedSet(new HashSet<Statement>());
         m_resultSets = Collections.synchronizedSet(new HashSet<ResultSet>());
@@ -25,11 +39,23 @@ public class DBUtils {
         m_loggingClass = loggingClass;
     }
 
+    /**
+     * <p>setLoggingClass</p>
+     *
+     * @param c a {@link java.lang.Class} object.
+     * @return a {@link org.opennms.core.utils.DBUtils} object.
+     */
     public DBUtils setLoggingClass(Class<?> c) {
         m_loggingClass = c;
         return this;
     }
 
+    /**
+     * <p>watch</p>
+     *
+     * @param o a {@link java.lang.Object} object.
+     * @return a {@link org.opennms.core.utils.DBUtils} object.
+     */
     public DBUtils watch(Object o) {
         if (o instanceof Statement) {
             m_statements.add((Statement)o);
@@ -41,6 +67,9 @@ public class DBUtils {
         return this;
     }
 
+    /**
+     * <p>cleanUp</p>
+     */
     public void cleanUp() {
         for (ResultSet rs : m_resultSets) {
             if (rs != null) {
@@ -76,6 +105,11 @@ public class DBUtils {
         m_connections.clear();
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
         return ThreadCategory.getInstance(m_loggingClass);
     }

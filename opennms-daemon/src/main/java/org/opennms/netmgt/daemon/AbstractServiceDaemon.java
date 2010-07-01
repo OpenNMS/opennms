@@ -40,11 +40,20 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.ServiceDaemon;
 
 /**
- * 
+ * <p>Abstract AbstractServiceDaemon class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServiceDaemon {
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public final void afterPropertiesSet() throws Exception {
         init();
     }
@@ -58,23 +67,53 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     
     private Object m_statusLock = new Object();
 
+    /**
+     * <p>onInit</p>
+     */
     abstract protected void onInit();
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {}
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {}
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {}
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {}
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     final public String getName() { return m_name; }
 
+    /**
+     * <p>Constructor for AbstractServiceDaemon.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     protected AbstractServiceDaemon(String name) {
         m_name = name;
         setStatus(START_PENDING);
     }
 
+    /**
+     * <p>setStatus</p>
+     *
+     * @param status a int.
+     */
     protected void setStatus(int status) {
         synchronized (m_statusLock) {
             m_status = status;
@@ -82,6 +121,13 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
         }
     }
     
+    /**
+     * <p>waitForStatus</p>
+     *
+     * @param status a int.
+     * @param timeout a long.
+     * @throws java.lang.InterruptedException if any.
+     */
     protected void waitForStatus(int status, long timeout) throws InterruptedException {
         synchronized (m_statusLock) {
             
@@ -96,6 +142,12 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
         }
     }
 
+    /**
+     * <p>waitForStatus</p>
+     *
+     * @param status a int.
+     * @throws java.lang.InterruptedException if any.
+     */
     protected void waitForStatus(int status) throws InterruptedException {
         synchronized (m_statusLock) {
             while (status != m_status) {
@@ -104,88 +156,196 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
         }
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         synchronized (m_statusLock) {
             return m_status;
         }
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return getStatusText();
     }
 
+    /**
+     * <p>isStartPending</p>
+     *
+     * @return a boolean.
+     */
     protected synchronized boolean isStartPending() {
         return getStatus() == START_PENDING;
     }
 
+    /**
+     * <p>isRunning</p>
+     *
+     * @return a boolean.
+     */
     protected synchronized boolean isRunning() {
         return getStatus() == RUNNING;
     }
 
+    /**
+     * <p>isPaused</p>
+     *
+     * @return a boolean.
+     */
     protected synchronized boolean isPaused() {
         return getStatus() == PAUSED;
     }
 
+    /**
+     * <p>isStarting</p>
+     *
+     * @return a boolean.
+     */
     protected synchronized boolean isStarting() {
         return getStatus() == STARTING;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
     
+    /**
+     * <p>fatalf</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void fatalf(String format, Object... args) {
         log().fatal(String.format(format, args));
     }
 
+    /**
+     * <p>fatalf</p>
+     *
+     * @param t a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void fatalf(Throwable t, String format, Object... args) {
         log().fatal(String.format(format, args), t);
     }
 
+    /**
+     * <p>errorf</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void errorf(String format, Object... args) {
         log().error(String.format(format, args));
     }
 
+    /**
+     * <p>errorf</p>
+     *
+     * @param t a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void errorf(Throwable t, String format, Object... args) {
         log().error(String.format(format, args), t);
     }
 
+    /**
+     * <p>warnf</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void warnf(String format, Object... args) {
         log().warn(String.format(format, args));
     }
 
+    /**
+     * <p>warnf</p>
+     *
+     * @param t a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void warnf(Throwable t, String format, Object... args) {
         log().warn(String.format(format, args), t);
     }
 
+    /**
+     * <p>infof</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void infof(String format, Object... args) {
         if (log().isInfoEnabled()) {
             log().info(String.format(format, args));
         }
     }
 
+    /**
+     * <p>infof</p>
+     *
+     * @param t a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void infof(Throwable t, String format, Object... args) {
         if (log().isInfoEnabled()) {
             log().info(String.format(format, args), t);
         }
     }
 
+    /**
+     * <p>debugf</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void debugf(String format, Object... args) {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args));
         }
     }
 
+    /**
+     * <p>debugf</p>
+     *
+     * @param t a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void debugf(Throwable t, String format, Object... args) {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args), t);
         }
     }
 
+    /**
+     * <p>init</p>
+     */
     final public void init() {
         String prefix = ThreadCategory.getPrefix();
         try {
@@ -203,6 +363,9 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
 
 
 
+    /**
+     * <p>pause</p>
+     */
     final public void pause() {
         String prefix = ThreadCategory.getPrefix();
         try {
@@ -224,6 +387,9 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
         }
     }
 
+    /**
+     * <p>resume</p>
+     */
     final public void resume() {
         String prefix = ThreadCategory.getPrefix();
         try {
@@ -243,6 +409,9 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
         }
     }
 
+    /**
+     * <p>start</p>
+     */
     final public synchronized void start() {
         String prefix = ThreadCategory.getPrefix();
         try {

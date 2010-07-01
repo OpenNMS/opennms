@@ -69,10 +69,11 @@ import org.opennms.netmgt.xml.event.Value;
  * duplicates. All interfaces under each duplicate node are then reparented
  * under the "reparent node" and the duplicate node(s) are flagged in the
  * database as deleted (nodeType='D').
- * 
+ *
  * @author <A HREF="mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
  */
 public final class ReparentViaSmb {
@@ -341,7 +342,7 @@ public final class ReparentViaSmb {
 
     /**
      * Class constructor.
-     * 
+     *
      * @param connection
      *            Database connection
      */
@@ -463,8 +464,8 @@ public final class ReparentViaSmb {
     /**
      * Performs reparenting if necessary and generates appropriate events to
      * inform other OpenNMS processes of any database changes..
-     * 
-     * @throws SQLException
+     *
+     * @throws java.sql.SQLException
      *             if error occurs updating the database
      */
     public void sync() throws SQLException {

@@ -36,14 +36,16 @@
 package org.opennms.netmgt.poller.pollables;
 
 /**
- * 
+ * <p>ThreadInterrupted class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class ThreadInterrupted extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
+     * <p>Constructor for ThreadInterrupted.</p>
      */
     public ThreadInterrupted() {
         super();
@@ -51,7 +53,9 @@ public class ThreadInterrupted extends RuntimeException {
     }
 
     /**
-     * @param message
+     * <p>Constructor for ThreadInterrupted.</p>
+     *
+     * @param message a {@link java.lang.String} object.
      */
     public ThreadInterrupted(String message) {
         super(message);
@@ -59,8 +63,10 @@ public class ThreadInterrupted extends RuntimeException {
     }
 
     /**
-     * @param message
-     * @param cause
+     * <p>Constructor for ThreadInterrupted.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
      */
     public ThreadInterrupted(String message, Throwable cause) {
         super(message, cause);
@@ -68,7 +74,9 @@ public class ThreadInterrupted extends RuntimeException {
     }
 
     /**
-     * @param cause
+     * <p>Constructor for ThreadInterrupted.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
      */
     public ThreadInterrupted(Throwable cause) {
         super(cause);

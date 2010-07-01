@@ -39,6 +39,7 @@ import java.util.Set;
  * MultivaluedMapImpl
  *
  * @author brozow
+ * @version $Id: $
  */
 public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implements MultivaluedMap<K, V> {
     
@@ -153,10 +154,19 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * <p>Constructor for MultivaluedMapImpl.</p>
+     */
     public MultivaluedMapImpl() {
         super();
     }
 
+    /**
+     * <p>add</p>
+     *
+     * @param key a K object.
+     * @param value a V object.
+     */
     public void add(K key, V value) {
         if (!containsKey(key)) {
             LinkedHashSet<V> valueList = new LinkedHashSet<V>();
@@ -167,6 +177,13 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
         }
     }
 
+    /**
+     * <p>remove</p>
+     *
+     * @param key a K object.
+     * @param value a V object.
+     * @return a boolean.
+     */
     public boolean remove(K key, V value) {
         if (!containsKey(key)) return false;
         
@@ -181,17 +198,38 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
         return found;
      }
     
+    /**
+     * <p>getCopy</p>
+     *
+     * @param key a K object.
+     * @return a {@link java.util.Set} object.
+     */
     public Set<V> getCopy(K key) {
         Set<V> values = get(key);
         return values == null ? null : new LinkedHashSet<V>(values);
     }
     
     
+    /**
+     * <p>synchronizedMultivaluedMap</p>
+     *
+     * @param m a {@link org.opennms.core.soa.support.MultivaluedMap} object.
+     * @param <Key> a Key object.
+     * @param <Value> a Value object.
+     * @return a {@link org.opennms.core.soa.support.MultivaluedMap} object.
+     */
     public static <Key, Value> MultivaluedMap<Key, Value> synchronizedMultivaluedMap(MultivaluedMap<Key, Value> m) {
 
         return new SynchronizedMultivaluedMap<Key, Value>(m);
     }
     
+    /**
+     * <p>synchronizedMultivaluedMap</p>
+     *
+     * @param <Key> a Key object.
+     * @param <Value> a Value object.
+     * @return a {@link org.opennms.core.soa.support.MultivaluedMap} object.
+     */
     public static <Key, Value> MultivaluedMap<Key, Value> synchronizedMultivaluedMap() {
         return synchronizedMultivaluedMap(new MultivaluedMapImpl<Key, Value>());
     }

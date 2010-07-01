@@ -49,20 +49,26 @@ import org.opennms.netmgt.model.PollStatus;
  * information at <a
  * href="http://www.opennms.org/users/docs/docs/html/devref.html">OpenNMS
  * developer site </a>
- * 
+ *
  * @author Jose Vicente Nunez Zuleta (josevnz@users.sourceforge.net) - RHCE,
  *         SJCD, SJCP version 0.1 - 07/23/2002 * version 0.2 - 08/05/2002 --
  *         Added retry logic, input validations to poller.
  * @since 0.1
+ * @version $Id: $
  */
 final public class JDBCStoredProcedureMonitor extends JDBCMonitor
 {
    /**
-   * Class constructor.
-   */
+    * Class constructor.
+    *
+    * @throws java.lang.ClassNotFoundException if any.
+    * @throws java.lang.InstantiationException if any.
+    * @throws java.lang.IllegalAccessException if any.
+    */
    public JDBCStoredProcedureMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
    }
 
+   /** {@inheritDoc} */
    public PollStatus checkDatabaseStatus(Connection con, Map<String, Object> parameters)
    {
 	   

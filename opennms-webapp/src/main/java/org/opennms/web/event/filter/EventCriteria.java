@@ -38,6 +38,13 @@ import org.opennms.web.event.AcknowledgeType;
 import org.opennms.web.event.SortStyle;
 import org.opennms.web.filter.Filter;
 
+/**
+ * <p>EventCriteria class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class EventCriteria {
     
     public static interface EventCriteriaVisitor<E extends Exception>{
@@ -61,14 +68,34 @@ public class EventCriteria {
     int m_offset = -1;
     int m_limit = -1;
     
+    /**
+     * <p>Constructor for EventCriteria.</p>
+     *
+     * @param filters a org$opennms$web$filter$Filter object.
+     */
     public EventCriteria(Filter... filters){
         this(filters, null, null, -1, -1);
     }
     
+    /**
+     * <p>Constructor for EventCriteria.</p>
+     *
+     * @param ackType a {@link org.opennms.web.event.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     */
     public EventCriteria(AcknowledgeType ackType, Filter[] filters) {
         this(filters, null, ackType, -1, -1);
     }
 
+    /**
+     * <p>Constructor for EventCriteria.</p>
+     *
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @param sortStyle a {@link org.opennms.web.event.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.event.AcknowledgeType} object.
+     * @param limit a int.
+     * @param offset a int.
+     */
     public EventCriteria(Filter[] filters, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset){
         m_filters = filters;
         m_sortStyle = sortStyle;
@@ -77,6 +104,13 @@ public class EventCriteria {
         m_offset = offset;
     }
     
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor} object.
+     * @param <E> a E object.
+     * @throws E if any.
+     */
     public <E extends Exception> void visit(EventCriteriaVisitor<E> visitor) throws E{
         if(m_ackType != null){
             visitor.visitAckType(m_ackType);
@@ -92,6 +126,7 @@ public class EventCriteria {
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new ToStringBuilder(this)

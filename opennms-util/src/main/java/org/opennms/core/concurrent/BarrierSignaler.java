@@ -41,17 +41,23 @@ package org.opennms.core.concurrent;
  * methods. In some instances is would be nice to alter the default behavior
  * slightly, the signaler interface allows this to occur.
  * </P>
- * 
+ *
  * <P>
  * An object that implements the Signaler interface is used just like a typical
  * object. But instead of using notify and notifyAll, the methods signal and
  * signalAll should be used in their place.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class BarrierSignaler implements Signaler {
     /**
@@ -67,10 +73,9 @@ public final class BarrierSignaler implements Signaler {
 
     /**
      * Constructs a new barrier signaler.
-     * 
+     *
      * @param barrier
      *            The barrier for notification to start.
-     * 
      */
     public BarrierSignaler(int barrier) {
         m_barrier = barrier;
@@ -82,7 +87,7 @@ public final class BarrierSignaler implements Signaler {
      * Provides the functionality of the notify method, but may be overridden by
      * the implementor to provide additional functionality.
      * </P>
-     * 
+     *
      * @see java.lang.Object#notify
      */
     public synchronized void signal() {
@@ -96,7 +101,7 @@ public final class BarrierSignaler implements Signaler {
      * Provides the functionality of the notifyAll method, but may be overridden
      * by the implementor to provide additional functionality.
      * </P>
-     * 
+     *
      * @see java.lang.Object#notifyAll
      */
     public synchronized void signalAll() {
@@ -106,12 +111,23 @@ public final class BarrierSignaler implements Signaler {
     }
     
     
+    /**
+     * <p>waitFor</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public synchronized void waitFor() throws InterruptedException {
         while(m_counter < m_barrier) {
             wait();
         }
     }
     
+    /**
+     * <p>waitFor</p>
+     *
+     * @param timeout a long.
+     * @throws java.lang.InterruptedException if any.
+     */
     public synchronized void waitFor(long timeout) throws InterruptedException {
         long last = System.currentTimeMillis();
         long waitTime = timeout;

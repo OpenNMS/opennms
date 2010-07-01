@@ -20,6 +20,13 @@ import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * <p>ApplicationDetails class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ApplicationDetails implements Serializable, IsSerializable {
     private static final long serialVersionUID = 1L;
 
@@ -41,6 +48,9 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 
     private Map<Integer, Map<Integer, List<GWTServiceOutage>>> m_outages;
 
+    /**
+     * <p>Constructor for ApplicationDetails.</p>
+     */
     public ApplicationDetails() {
         m_name = null;
         setLocationSpecificStatuses(null);
@@ -48,6 +58,15 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         setEndTime(null);
     }
 
+    /**
+     * <p>Constructor for ApplicationDetails.</p>
+     *
+     * @param application a {@link org.opennms.features.poller.remote.gwt.client.ApplicationInfo} object.
+     * @param from a {@link java.util.Date} object.
+     * @param to a {@link java.util.Date} object.
+     * @param monitors a {@link java.util.Collection} object.
+     * @param statuses a {@link java.util.List} object.
+     */
     public ApplicationDetails(final ApplicationInfo application, final Date from, final Date to, final Collection<GWTLocationMonitor> monitors, final List<GWTLocationSpecificStatus> statuses) {
         m_name = application.getName();
         setApplicationInfo(application);
@@ -144,6 +163,11 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         return outages;
     }
 
+    /**
+     * <p>getStatusDetails</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
     public StatusDetails getStatusDetails() {
         if (m_statusDetails == null) {
             m_statusDetails = getStatusDetailsUncached();
@@ -155,11 +179,22 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         return new AppStatusDetailsComputer(getStartTime(), getEndTime(), getMonitors().values(), getApplicationInfo().getServices(), getLocationSpecificStatuses()).compute();
     }
 
+    /**
+     * <p>getAvailability</p>
+     *
+     * @param service a {@link org.opennms.features.poller.remote.gwt.client.GWTMonitoredService} object.
+     * @return a {@link java.lang.Double} object.
+     */
     public Double getAvailability(final GWTMonitoredService service) {
         final Set<Interval> serviceOutages = getServiceOutageIntervals(service.getId());
         return computeAvailabilityForOutageIntervals(serviceOutages);
     }
 
+    /**
+     * <p>getAvailability</p>
+     *
+     * @return a {@link java.lang.Double} object.
+     */
     public Double getAvailability() {
         if (getStartTime() == null || getLocationSpecificStatuses() == null) {
             return null;
@@ -210,14 +245,29 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         return IntervalUtils.getIntervalSet();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "ApplicationDetails[name=" + m_name + ",range=" + getStartTime() + "-" + getEndTime() + ",statuses=" + getLocationSpecificStatuses() + "]";
     }
 
+    /**
+     * <p>getApplicationName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getApplicationName() {
         return m_name;
     }
 
+    /**
+     * <p>getDetailsAsString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDetailsAsString() {
         // service id -> location id -> outages
         final Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = getOutages();
@@ -339,6 +389,8 @@ public class ApplicationDetails implements Serializable, IsSerializable {
     }
 
     /**
+     * <p>getApplicationInfo</p>
+     *
      * @return the application
      */
     public ApplicationInfo getApplicationInfo() {

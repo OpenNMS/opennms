@@ -34,25 +34,54 @@ package org.opennms.web.alarm.filter;
 
 import org.opennms.web.filter.SubstringFilter;
 
+/**
+ * <p>DescriptionSubstringFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DescriptionSubstringFilter extends SubstringFilter {
+    /** Constant <code>TYPE="descsub"</code> */
     public static final String TYPE = "descsub";
 
+    /**
+     * <p>Constructor for DescriptionSubstringFilter.</p>
+     *
+     * @param substring a {@link java.lang.String} object.
+     */
     public DescriptionSubstringFilter(String substring) {
         super(TYPE, "DESCRIPTION", "description", substring);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("description containing \"" + getValue() + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<DescriptionSubstringFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getSubstring</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSubstring() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

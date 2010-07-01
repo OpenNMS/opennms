@@ -41,6 +41,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * <p>PropertiesUtils class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PropertiesUtils {
 	
 	private static final String PLACEHOLDER_SUFFIX = "}";
@@ -61,12 +67,13 @@ public class PropertiesUtils {
 	}
     
     /**
-     * This recursively substitutes occurrences ${property.name} in initialString with the value of 
-     * the property property.name taken from the supplied properties object. If 
-     * property.name is not defined in properties that the substitution is not done. 
+     * This recursively substitutes occurrences ${property.name} in initialString with the value of
+     * the property property.name taken from the supplied properties object. If
+     * property.name is not defined in properties that the substitution is not done.
+     *
      * @param initialString the string to perform the substitutions in
-     * @param properties the properties to take the values from
      * @return The string with appropriate substitutions made.
+     * @param propertiesArray a {@link java.util.Properties} object.
      */
     public static String substitute(String initialString, Properties... propertiesArray) {
         String workingString = initialString;
@@ -77,11 +84,27 @@ public class PropertiesUtils {
         return workingString;
     }
 
+    /**
+     * <p>substitute</p>
+     *
+     * @param initialString a {@link java.lang.String} object.
+     * @param properties a {@link java.util.Properties} object.
+     * @param prefix a {@link java.lang.String} object.
+     * @param suffix a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String substitute(String initialString, Properties properties, String prefix, String suffix) {
         return substitute(initialString, new PropertyBasedSymbolTable(properties), prefix, suffix, new ArrayList<String>());
     }
 
 
+    /**
+     * <p>substitute</p>
+     *
+     * @param initialString a {@link java.lang.String} object.
+     * @param symbolsArray a {@link org.opennms.core.utils.PropertiesUtils.SymbolTable} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String substitute(String initialString, SymbolTable... symbolsArray) {
         String workingString = initialString;
         for (SymbolTable symbols : symbolsArray) {
@@ -127,12 +150,13 @@ public class PropertiesUtils {
     /**
      * Get a String valued property, returning default value if it is not set
      * or is set to an invalid value.
-     * 
+     *
      * @param name
      *            the property name
      * @param defaultVal
      *            the default value to use if the property is not set
      * @return the value of the property
+     * @param props a {@link java.util.Properties} object.
      */
     public static String getProperty(Properties props, String name, String defaultVal) {
         return props.getProperty(name) == null ? defaultVal : props.getProperty(name);
@@ -141,12 +165,13 @@ public class PropertiesUtils {
     /**
      * Get a boolean valued property, returning default value if it is not set
      * or is set to an invalid value.
-     * 
+     *
      * @param name
      *            the property name
      * @param defaultVal
      *            the default value to use if the property is not set
      * @return the value of the property
+     * @param props a {@link java.util.Properties} object.
      */
     public static boolean getProperty(Properties props, String name, boolean defaultVal) {
         return "true".equalsIgnoreCase(props.getProperty(name, (defaultVal ? "true" : "false")));
@@ -155,12 +180,13 @@ public class PropertiesUtils {
     /**
      * Get a int valued property, returning default value if it is not set or is
      * set to an invalid value.
-     * 
+     *
      * @param name
      *            the property name
      * @param defaultVal
      *            the default value to use if the property is not set
      * @return the value of the property
+     * @param props a {@link java.util.Properties} object.
      */
     public static int getProperty(Properties props, String name, int defaultVal) {
         String val = props.getProperty(name, (String) null);
@@ -176,12 +202,13 @@ public class PropertiesUtils {
     /**
      * Get a long valued property, returning default value if it is not set or
      * is set to an invalid value
-     * 
+     *
      * @param name
      *            the property name
      * @param defaultVal
      *            the default value to use if the property is not set
      * @return the value of the property
+     * @param props a {@link java.util.Properties} object.
      */
     public static long getProperty(Properties props, String name, long defaultVal) {
         String val = props.getProperty(name, (String) null);

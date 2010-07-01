@@ -212,6 +212,8 @@ final class Poller {
     /**
      * Ensures that during garbage collection the resources used by this
      * object are released!
+     *
+     * @throws java.lang.Throwable if any.
      */
     protected void finalize() throws Throwable {
         close();
@@ -271,7 +273,7 @@ final class Poller {
 
     /**
      * Closes the client's socket connection to the DHCP daemon.
-     * 
+     *
      * @throws IOException
      *             if the socket close() method fails.
      */

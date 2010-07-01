@@ -42,40 +42,57 @@ import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
 
+/**
+ * <p>RequisitionAccountant class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class RequisitionAccountant extends AbstractRequisitionVisitor {
 	private final ImportOperationsManager m_opsMgr;
     private SaveOrUpdateOperation m_currentOp;
         
+    /**
+     * <p>Constructor for RequisitionAccountant.</p>
+     *
+     * @param opsMgr a {@link org.opennms.netmgt.provision.service.operations.ImportOperationsManager} object.
+     */
     public RequisitionAccountant(ImportOperationsManager opsMgr) {
         m_opsMgr = opsMgr;
     }
     
+    /** {@inheritDoc} */
     @Override
     public void visitNode(OnmsNodeRequisition nodeReq) {
         m_currentOp = m_opsMgr.foundNode(nodeReq.getForeignId(), nodeReq.getNodeLabel(), nodeReq.getBuilding(), nodeReq.getCity());        
     }
     
+    /** {@inheritDoc} */
     @Override
     public void completeNode(OnmsNodeRequisition nodeReq) {
         m_currentOp = null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
         m_currentOp.foundInterface(ifaceReq.getIpAddr().trim(), ifaceReq.getDescr(), ifaceReq.getSnmpPrimary(), ifaceReq.getManaged(), ifaceReq.getStatus());
         
     }
     
+    /** {@inheritDoc} */
     @Override
     public void visitMonitoredService(OnmsMonitoredServiceRequisition svcReq) {
         m_currentOp.foundMonitoredService(svcReq.getServiceName());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
         m_currentOp.foundCategory(catReq.getName());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visitAsset(OnmsAssetRequisition assetReq) {
         m_currentOp.foundAsset(assetReq.getName(), assetReq.getValue());

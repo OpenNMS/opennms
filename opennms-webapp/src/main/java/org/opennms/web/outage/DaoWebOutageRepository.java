@@ -53,8 +53,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author brozow
+ * <p>DaoWebOutageRepository class.</p>
  *
+ * @author brozow
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DaoWebOutageRepository implements WebOutageRepository {
     
@@ -188,6 +191,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#countMatchingOutageSummaries(org.opennms.web.outage.filter.OutageCriteria)
      */
+    /** {@inheritDoc} */
     @Transactional
     public int countMatchingOutageSummaries(OutageCriteria criteria) {
         return getMatchingOutageSummaries(criteria).length;
@@ -196,6 +200,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#countMatchingOutages(org.opennms.web.outage.filter.OutageCriteria)
      */
+    /** {@inheritDoc} */
     @Transactional
     public int countMatchingOutages(OutageCriteria criteria) {
         return m_outageDao.countMatching(getOnmsCriteria(criteria));
@@ -204,6 +209,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#getMatchingOutageSummaries(org.opennms.web.outage.filter.OutageCriteria)
      */
+    /** {@inheritDoc} */
     @Transactional
     public OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria) {
         
@@ -266,6 +272,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#getMatchingOutages(org.opennms.web.outage.filter.OutageCriteria)
      */
+    /** {@inheritDoc} */
     @Transactional
     public Outage[] getMatchingOutages(OutageCriteria criteria) {
         List<Outage> outages = new ArrayList<Outage>();
@@ -286,6 +293,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#getOutage(int)
      */
+    /** {@inheritDoc} */
     @Transactional
     public Outage getOutage(int OutageId) {
         return mapOnmsOutageToOutage(m_outageDao.get(OutageId));

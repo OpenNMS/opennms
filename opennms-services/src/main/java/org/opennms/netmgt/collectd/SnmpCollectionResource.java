@@ -45,42 +45,91 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 
+/**
+ * <p>Abstract SnmpCollectionResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class SnmpCollectionResource implements CollectionResource {
     
     private ResourceType m_resourceType;
 
     private Map<AttributeGroupType, AttributeGroup> m_groups = new HashMap<AttributeGroupType, AttributeGroup>();
 
+    /**
+     * <p>Constructor for SnmpCollectionResource.</p>
+     *
+     * @param def a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     */
     public SnmpCollectionResource(final ResourceType def) {
         m_resourceType = def;
     }
     
+    /**
+     * <p>getResourceType</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.ResourceType} object.
+     */
     public ResourceType getResourceType() {
         return m_resourceType;
     }
     
+    /**
+     * <p>getCollectionAgent</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public final CollectionAgent getCollectionAgent() {
         return m_resourceType.getAgent();
     }
 
+    /** {@inheritDoc} */
     public abstract boolean shouldPersist(ServiceParameters params);
 
+    /**
+     * <p>getOwnerName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOwnerName() {
         return getCollectionAgent().getHostAddress();
     }
 
+    /** {@inheritDoc} */
     public abstract File getResourceDir(RrdRepository repository);
     
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public abstract int getType();
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>rescanNeeded</p>
+     *
+     * @return a boolean.
+     */
     public boolean rescanNeeded() {
     	return false;
     }
     
+    /**
+     * <p>setAttributeValue</p>
+     *
+     * @param type a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
+     * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public void setAttributeValue(final SnmpAttributeType type, final SnmpValue val) {
         SnmpAttribute attr = new SnmpAttribute(this, type, val);
         addAttribute(attr);
@@ -103,6 +152,7 @@ public abstract class SnmpCollectionResource implements CollectionResource {
         return group;
     }
 
+    /** {@inheritDoc} */
     public void visit(final CollectionSetVisitor visitor) {
         visitor.visitResource(this);
         
@@ -113,6 +163,11 @@ public abstract class SnmpCollectionResource implements CollectionResource {
         visitor.completeResource(this);
     }
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     protected Collection<AttributeGroup> getGroups() {
         return m_groups.values();
     }

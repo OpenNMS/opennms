@@ -34,9 +34,22 @@ package org.opennms.web.notification.filter;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
+/**
+ * <p>NotificationIdFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NotificationIdFilter extends EqualsFilter<Integer> {
+    /** Constant <code>TYPE="notificationIdFilter"</code> */
     public static final String TYPE = "notificationIdFilter";
     
+    /**
+     * <p>Constructor for NotificationIdFilter.</p>
+     *
+     * @param notificationId a int.
+     */
     public NotificationIdFilter(int notificationId){
         super(TYPE, SQLType.INT, "NOTIFICATIONS.NOTIFYID", "notifyId", new Integer(notificationId));
     }

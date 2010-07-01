@@ -44,16 +44,24 @@ import org.opennms.sms.ping.SmsPingTracker;
  * SmsPingTrackerImpl
  *
  * @author brozow
+ * @version $Id: $
  */
 public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> implements SmsPingTracker {
     
     private static Logger log = Logger.getLogger(SmsPingTrackerImpl.class);
 
+    /**
+     * <p>Constructor for SmsPingTrackerImpl.</p>
+     *
+     * @param smsMessenger a {@link org.opennms.sms.ping.internal.SmsPingMessenger} object.
+     * @throws java.io.IOException if any.
+     */
     public SmsPingTrackerImpl(SmsPingMessenger smsMessenger) throws IOException {
         super("SMS", smsMessenger, new IDBasedRequestLocator<PingRequestId, PingRequest, PingReply>());
         log.debug("Created SmsPingTrackerImpl");
     }
 
+    /** {@inheritDoc} */
     public void sendRequest(String phoneNumber, long timeout, int retries, PingResponseCallback cb) throws Exception {
         sendRequest(new PingRequest(new PingRequestId(phoneNumber), timeout, retries, cb));
     }
@@ -61,6 +69,7 @@ public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> i
     /* (non-Javadoc)
      * @see org.opennms.protocols.rt.RequestTracker#start()
      */
+    /** {@inheritDoc} */
     @Override
     public synchronized void start() {
         log.debug("Calling start()");
@@ -69,6 +78,9 @@ public class SmsPingTrackerImpl extends RequestTracker<PingRequest, PingReply> i
     }
     
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         log.debug("Calling stop()");
 

@@ -38,33 +38,55 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
+ * <p>Abstract MockElement class.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 abstract public class MockElement {
 
     MockContainer m_parent;
 
+    /**
+     * <p>Constructor for MockElement.</p>
+     *
+     * @param parent a {@link org.opennms.netmgt.mock.MockContainer} object.
+     */
     protected MockElement(MockContainer parent) {
         m_parent = parent;
     }
 
     // FIXME: generic listener
+    /**
+     * <p>addAnticipator</p>
+     *
+     * @param trigger a {@link org.opennms.netmgt.mock.PollAnticipator} object.
+     */
     abstract public void addAnticipator(PollAnticipator trigger);
 
     // test
+    /**
+     * <p>bringDown</p>
+     */
     public void bringDown() {
         setServicePollStatus(PollStatus.down());
     }
 
     // test
+    /**
+     * <p>bringUp</p>
+     */
     public void bringUp() {
         setServicePollStatus(PollStatus.up());
     }
     
     // test
+    /**
+     * <p>bringUnresponsive</p>
+     */
     public void bringUnresponsive() {
         setServicePollStatus(PollStatus.unresponsive());
     }
@@ -73,10 +95,20 @@ abstract public class MockElement {
     abstract Object getKey();
 
     // model
+    /**
+     * <p>getParent</p>
+     *
+     * @return a {@link org.opennms.netmgt.mock.MockContainer} object.
+     */
     public MockContainer getParent() {
         return m_parent;
     }
     
+    /**
+     * <p>getNetwork</p>
+     *
+     * @return a {@link org.opennms.netmgt.mock.MockNetwork} object.
+     */
     public MockNetwork getNetwork() {
         MockElement network = this;
         
@@ -87,21 +119,44 @@ abstract public class MockElement {
     }
 
     // stats
+    /**
+     * <p>getPollCount</p>
+     *
+     * @return a int.
+     */
     abstract public int getPollCount();
 
     // test
+    /**
+     * <p>getPollStatus</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     abstract public PollStatus getPollStatus();
 
     // model
+    /**
+     * <p>moveTo</p>
+     *
+     * @param newParent a {@link org.opennms.netmgt.mock.MockContainer} object.
+     */
     public void moveTo(MockContainer newParent) {
         m_parent.removeMember(this);
         newParent.addMember(this);
     }
 
     // FIXME: generic listener
+    /**
+     * <p>removeAnticipator</p>
+     *
+     * @param trigger a {@link org.opennms.netmgt.mock.PollAnticipator} object.
+     */
     abstract public void removeAnticipator(PollAnticipator trigger);
 
     // stats
+    /**
+     * <p>resetPollCount</p>
+     */
     abstract public void resetPollCount();
 
     // model
@@ -110,6 +165,11 @@ abstract public class MockElement {
     }
 
     // test
+    /**
+     * <p>setServicePollStatus</p>
+     *
+     * @param newStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     protected void setServicePollStatus(final PollStatus newStatus) {
         MockVisitor statusSetter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
@@ -122,18 +182,35 @@ abstract public class MockElement {
     }
 
     // impl
+    /**
+     * <p>visit</p>
+     *
+     * @param v a {@link org.opennms.netmgt.mock.MockVisitor} object.
+     */
     public void visit(MockVisitor v) {
         v.visitElement(this);
     }
     
+    /**
+     * <p>createDownEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     abstract public Event createDownEvent();
     
+    /**
+     * <p>createUpEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     abstract public Event createUpEvent();
     
 
     /**
-     * @param upDate
-     * @return
+     * <p>createUpEvent</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createUpEvent(Date date) {
         Event e = createUpEvent();
@@ -142,8 +219,10 @@ abstract public class MockElement {
     }
 
     /**
-     * @param date
-     * @return
+     * <p>createDownEvent</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createDownEvent(Date date) {
         Event e = createDownEvent();
@@ -151,8 +230,18 @@ abstract public class MockElement {
         return e;
     }
     
+    /**
+     * <p>createNewEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     abstract public Event createNewEvent();
 
+    /**
+     * <p>createDeleteEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     abstract public Event createDeleteEvent();
 
 }

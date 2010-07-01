@@ -20,8 +20,10 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
  * The Basic building blocks for a simple Pageable List
- * @author Donald Desloge
  *
+ * @author Donald Desloge
+ * @version $Id: $
+ * @since 1.8.1
  */
 public abstract class PageableList extends Composite {
 
@@ -51,10 +53,14 @@ public abstract class PageableList extends Composite {
     private int m_currentPageIndex = 0;
     private int m_totalPages = 0;
 
+    /**
+     * <p>Constructor for PageableList.</p>
+     */
     public PageableList() {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onLoad() {
         super.onLoad();
@@ -69,15 +75,26 @@ public abstract class PageableList extends Composite {
         }.scheduleRepeating(500);
     }
 
+    /**
+     * <p>refresh</p>
+     */
     public void refresh() {
         m_needsRefresh = true;
     }
 
+    /**
+     * <p>showFirstPage</p>
+     */
     protected void showFirstPage() {
         setCurrentPageIndex(0);
         refresh();
     }
 
+    /**
+     * <p>updateListDisplay</p>
+     *
+     * @param currentPageIndex a int.
+     */
     protected void updateListDisplay(final int currentPageIndex) {
         getDataList().removeAllRows();
 
@@ -107,17 +124,43 @@ public abstract class PageableList extends Composite {
         updatePageStatsDisplay(startIndex + 1, showableLocations, getListSize());
     }
 
+    /**
+     * <p>getAlternateRowStyle</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     protected String getAlternateRowStyle() {
         return locationDetailStyle.alternateRowStyle();
     }
     
+    /**
+     * <p>getListSize</p>
+     *
+     * @return a int.
+     */
     protected abstract int getListSize();
     
+    /**
+     * <p>getListItemWidget</p>
+     *
+     * @param rowIndex a int.
+     * @return a {@link com.google.gwt.user.client.ui.Widget} object.
+     */
     protected abstract Widget getListItemWidget(final int rowIndex);
 
+    /**
+     * <p>onItemClickHandler</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     */
     @UiHandler("dataList")
     public abstract void onItemClickHandler(final ClickEvent event);
 
+    /**
+     * <p>onPrevBtnClick</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     */
     @UiHandler("prevBtn")
     public void onPrevBtnClick(final ClickEvent event) {
         final int newIndex = getCurrentPageIndex() - 1;
@@ -125,6 +168,11 @@ public abstract class PageableList extends Composite {
         //updateListDisplay(newIndex);
     }
 
+    /**
+     * <p>onNextBtnClick</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     */
     @UiHandler("nextBtn")
     public void onNextBtnClick(final ClickEvent event) {
         final int newIndex = getCurrentPageIndex() + 1;
@@ -132,6 +180,11 @@ public abstract class PageableList extends Composite {
         //updateListDisplay(newIndex);
     }
 
+    /**
+     * <p>addLocationPanelSelectEventHandler</p>
+     *
+     * @param handler a {@link org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler} object.
+     */
     public void addLocationPanelSelectEventHandler(final LocationPanelSelectEventHandler handler) {
         addHandler(handler, LocationPanelSelectEvent.TYPE);
     }
@@ -145,6 +198,11 @@ public abstract class PageableList extends Composite {
         updateListDisplay(m_currentPageIndex);
     }
 
+    /**
+     * <p>getCurrentPageIndex</p>
+     *
+     * @return a int.
+     */
     protected int getCurrentPageIndex() {
         return m_currentPageIndex;
     }
@@ -165,6 +223,11 @@ public abstract class PageableList extends Composite {
         return m_totalPages;
     }
 
+    /**
+     * <p>getTotalListItemsPerPage</p>
+     *
+     * @return a int.
+     */
     protected int getTotalListItemsPerPage() {
         return TOTAL_LOCATIONS;
     }
@@ -177,6 +240,12 @@ public abstract class PageableList extends Composite {
         return dataList;
     }
 
+    /**
+     * <p>getCellForEvent</p>
+     *
+     * @param event a {@link com.google.gwt.event.dom.client.ClickEvent} object.
+     * @return a {@link com.google.gwt.user.client.ui.HTMLTable.Cell} object.
+     */
     protected Cell getCellForEvent(final ClickEvent event) {
         return getDataList().getCellForEvent(event);
     }

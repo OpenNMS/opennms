@@ -91,8 +91,9 @@ import org.opennms.netmgt.model.events.EventProxy;
 
 /**
  * Collect data via URI
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class HttpCollector implements ServiceCollector {
 
@@ -108,6 +109,9 @@ public class HttpCollector implements ServiceCollector {
     private NumberFormat rrdFormatter =  null;
     
     
+    /**
+     * <p>Constructor for HttpCollector.</p>
+     */
     public HttpCollector() {
         parser = NumberFormat.getNumberInstance();
         ((DecimalFormat)parser).setParseBigDecimal(true);
@@ -122,6 +126,7 @@ public class HttpCollector implements ServiceCollector {
         
     }
 
+    /** {@inheritDoc} */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
         HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
         collectionSet.collect();
@@ -584,6 +589,7 @@ public class HttpCollector implements ServiceCollector {
     }
 
     
+    /** {@inheritDoc} */
     public void initialize(Map<String, String> parameters) {
         
         log().debug("initialize: Initializing HttpCollector.");
@@ -660,6 +666,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
     
+    /** {@inheritDoc} */
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
         log().debug("initialize: Initializing HTTP collection for agent: "+agent);
         final Integer scheduledNodeKey = agent.getNodeId();
@@ -689,10 +696,14 @@ public class HttpCollector implements ServiceCollector {
         return ParameterMap.getKeyedString(parameters, "service-name", "HTTP");
     }
 
+    /**
+     * <p>release</p>
+     */
     public void release() {
         // TODO Auto-generated method stub
     }
 
+    /** {@inheritDoc} */
     public void release(CollectionAgent agent) {
         // TODO Auto-generated method stub
     }
@@ -785,6 +796,7 @@ public class HttpCollector implements ServiceCollector {
         
     }
     
+    /** {@inheritDoc} */
     public RrdRepository getRrdRepository(String collectionName) {
         return HttpCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }

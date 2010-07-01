@@ -57,39 +57,65 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
  * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class Dot1dStpGroup extends AggregateTracker {
 	//
 	// Lookup strings for specific table entries
 	//
+	/** Constant <code>STP_PROTOCOL_SPEC="dot1dStpProtocolSpecification"</code> */
 	public final static String STP_PROTOCOL_SPEC = "dot1dStpProtocolSpecification";
 
+	/** Constant <code>STP_PRIORITY="dot1dStpPriority"</code> */
 	public final static String STP_PRIORITY = "dot1dStpPriority";
 
+	/** Constant <code>STP_TIME_LASTTOPCH="dot1dStpTimeSinceLastTopologyChange"</code> */
 	public final static String STP_TIME_LASTTOPCH = "dot1dStpTimeSinceLastTopologyChange";
 
+	/** Constant <code>STP_TOP_CHANGES="dot1dStpTopChanges"</code> */
 	public final static String STP_TOP_CHANGES = "dot1dStpTopChanges";
 
+	/** Constant <code>STP_DESIGNATED_ROOT="dot1dStpDesignatedRoot"</code> */
 	public final static String STP_DESIGNATED_ROOT = "dot1dStpDesignatedRoot";
 
+	/** Constant <code>STP_ROOT_COST="dot1dStpRootCost"</code> */
 	public final static String STP_ROOT_COST = "dot1dStpRootCost";
 
+	/** Constant <code>STP_ROOT_PORT="dot1dStpRootPort"</code> */
 	public final static String STP_ROOT_PORT = "dot1dStpRootPort";
 
+	/** Constant <code>STP_MAX_AGE="dot1dStpMaxAge"</code> */
 	public final static String STP_MAX_AGE = "dot1dStpMaxAge";
 
+	/** Constant <code>STP_HELLO_TIME="dot1dStpHelloTime"</code> */
 	public final static String STP_HELLO_TIME = "dot1dStpHelloTime";
 
+	/** Constant <code>STP_HOLD_TIME="dot1dStpHoldTime"</code> */
 	public final static String STP_HOLD_TIME = "dot1dStpHoldTime";
 
+	/** Constant <code>STP_FORW_DELAY="dot1dStpForwardDelay"</code> */
 	public final static String STP_FORW_DELAY = "dot1dStpForwardDelay";
 
+	/** Constant <code>STP_BRDG_MAX_AGE="dot1dStpBridgeMaxAge"</code> */
 	public final static String STP_BRDG_MAX_AGE = "dot1dStpBridgeMaxAge";
 
+	/** Constant <code>STP_BRDG_HELLO_TIME="dot1dStpBridgeHelloTime"</code> */
 	public final static String STP_BRDG_HELLO_TIME = "dot1dStpBridgeHelloTime";
 
+	/** Constant <code>STP_BRDG_FORW_DELAY="dot1dStpBridgeForwardDelay"</code> */
 	public final static String STP_BRDG_FORW_DELAY = "dot1dStpBridgeForwardDelay";
 
 	/**
@@ -295,9 +321,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
 	 * data has been collected the passed signaler object is <EM>notified</em>
 	 * using the notifyAll() method.</P>
 	 *
-	 * @param session	The SNMP session with the remote agent.
-	 * @param signaler	The object signaled when data collection is done.
-	 *
+	 * @param address a {@link java.net.InetAddress} object.
 	 */
 	public Dot1dStpGroup(InetAddress address) {
         super(NamedSnmpVar.getTrackersFor(ms_elemList));
@@ -305,14 +329,17 @@ public final class Dot1dStpGroup extends AggregateTracker {
         m_store = new SnmpStore(ms_elemList); 
     }
     
+    /** {@inheritDoc} */
     protected void storeResult(SnmpResult res) {
         m_store.storeResult(res);
     }
 
+    /** {@inheritDoc} */
     protected void reportGenErr(String msg) {
         log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
+    /** {@inheritDoc} */
     protected void reportNoSuchNameErr(String msg) {
         log().info("Error retrieving systemGroup from "+m_address+". "+msg);
     }
@@ -321,6 +348,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getStpProtocolSpecification</p>
+     *
+     * @return a int.
+     */
     public int getStpProtocolSpecification(){
     	Integer stpProtocolSpecification = m_store.getInt32(STP_PROTOCOL_SPEC);
     	if (stpProtocolSpecification == null) {
@@ -329,6 +361,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpProtocolSpecification;
     }
 	
+    /**
+     * <p>getStpPriority</p>
+     *
+     * @return a int.
+     */
     public int getStpPriority(){
     	Integer stpPriority = m_store.getInt32(STP_PRIORITY);
     	if (stpPriority == null ) {
@@ -337,18 +374,38 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpPriority;
     }
 
+    /**
+     * <p>getStpTimeSinceLastTopologyChange</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpValue} object.
+     */
     public SnmpValue getStpTimeSinceLastTopologyChange(){
     	return m_store.getValue(STP_TIME_LASTTOPCH);
     }
 
+    /**
+     * <p>getStpTopologyChanges</p>
+     *
+     * @return a int.
+     */
     public int getStpTopologyChanges(){
     	return m_store.getInt32(STP_TOP_CHANGES);
     }
 
+    /**
+     * <p>getStpDesignatedRoot</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStpDesignatedRoot(){
     	return m_store.getHexString(STP_DESIGNATED_ROOT);
     }
     
+    /**
+     * <p>getStpRootCost</p>
+     *
+     * @return a int.
+     */
     public int getStpRootCost(){
     	Integer stpRootCost = m_store.getInt32(STP_ROOT_COST); 
     	if (stpRootCost == null) {
@@ -357,6 +414,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpRootCost;
     }
 
+    /**
+     * <p>getStpRootPort</p>
+     *
+     * @return a int.
+     */
     public int getStpRootPort(){
     	Integer stpRootPort = m_store.getInt32(STP_ROOT_PORT);
     	if (stpRootPort == null) {
@@ -365,6 +427,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpRootPort;
     }
 
+    /**
+     * <p>getStpMaxAge</p>
+     *
+     * @return a int.
+     */
     public int getStpMaxAge(){
     	Integer stpMaxAge = m_store.getInt32(STP_MAX_AGE);
     	if (stpMaxAge == null ) {
@@ -373,6 +440,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpMaxAge;
     }
 
+    /**
+     * <p>getStpHelloTime</p>
+     *
+     * @return a int.
+     */
     public int getStpHelloTime(){
     	Integer stpHelloTime = m_store.getInt32(STP_HELLO_TIME); 
     	if (stpHelloTime == null) {
@@ -381,6 +453,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpHelloTime;
     }
 
+    /**
+     * <p>getStpHoldTime</p>
+     *
+     * @return a int.
+     */
     public int getStpHoldTime(){
     	Integer stpHoldTime = m_store.getInt32(STP_HOLD_TIME); 
     	if (stpHoldTime == null) {
@@ -389,6 +466,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpHoldTime;
     }
 
+    /**
+     * <p>getStpForwardDelay</p>
+     *
+     * @return a int.
+     */
     public int getStpForwardDelay(){
  
     	Integer stpForwardDelay = m_store.getInt32(STP_FORW_DELAY);
@@ -398,6 +480,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpForwardDelay;
     }
 
+    /**
+     * <p>getStpBridgeMaxAge</p>
+     *
+     * @return a int.
+     */
     public int getStpBridgeMaxAge(){
     	Integer stpBridgeMaxAge = m_store.getInt32(STP_BRDG_MAX_AGE);
     	if (stpBridgeMaxAge == null ) {
@@ -406,6 +493,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpBridgeMaxAge;
     }
 
+    /**
+     * <p>getStpBridgeHelloTime</p>
+     *
+     * @return a int.
+     */
     public int getStpBridgeHelloTime(){
     	Integer stpBridgeHelloTime = m_store.getInt32(STP_BRDG_HELLO_TIME);
     	if (stpBridgeHelloTime == null ) {
@@ -414,6 +506,11 @@ public final class Dot1dStpGroup extends AggregateTracker {
     	return stpBridgeHelloTime;
     }
 
+    /**
+     * <p>getStpBridgeForwardDelay</p>
+     *
+     * @return a int.
+     */
     public int getStpBridgeForwardDelay(){
     	Integer stpBridgeForwardDelay = m_store.getInt32(STP_BRDG_FORW_DELAY);
     	if (stpBridgeForwardDelay == null ) {

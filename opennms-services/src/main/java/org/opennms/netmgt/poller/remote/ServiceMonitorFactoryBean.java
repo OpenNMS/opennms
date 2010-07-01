@@ -44,8 +44,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>ServiceMonitorFactoryBean class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class ServiceMonitorFactoryBean implements FactoryBean<ServiceMonitor>, InitializingBean {
 	
@@ -53,26 +55,57 @@ public class ServiceMonitorFactoryBean implements FactoryBean<ServiceMonitor>, I
 	private Class<? extends ServiceMonitor> m_monitorClass;
 	private Map<String,Object> m_monitorParameters;
 	
+	/**
+	 * <p>setMonitorClass</p>
+	 *
+	 * @param serviceClass a {@link java.lang.Class} object.
+	 */
 	public void setMonitorClass(Class<? extends ServiceMonitor> serviceClass) {
 		m_monitorClass = serviceClass;
 	}
 	
+	/**
+	 * <p>setMonitorParameters</p>
+	 *
+	 * @param serviceParameters a {@link java.util.Map} object.
+	 */
 	public void setMonitorParameters(Map<String,Object> serviceParameters) {
 		m_monitorParameters = serviceParameters;
 	}
 
+	/**
+	 * <p>getObject</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public ServiceMonitor getObject() throws Exception {
 		return m_serviceMonitor;
 	}
 
+	/**
+	 * <p>getObjectType</p>
+	 *
+	 * @return a {@link java.lang.Class} object.
+	 */
 	public Class<? extends ServiceMonitor> getObjectType() {
 		return m_monitorClass;
 	}
 
+	/**
+	 * <p>isSingleton</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isSingleton() {
 		return true;
 	}
 
+	/**
+	 * <p>afterPropertiesSet</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void afterPropertiesSet() throws Exception {
 		assertNotNull(m_monitorClass, "monitorClass");
 		

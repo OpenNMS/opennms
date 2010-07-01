@@ -37,23 +37,42 @@ import java.util.Collections;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 
+/**
+ * <p>NodeResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NodeResourceType extends ResourceType {
     
     private NodeInfo m_nodeInfo;
 
+    /**
+     * <p>Constructor for NodeResourceType.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
+     */
     public NodeResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         super(agent, snmpCollection);
         m_nodeInfo = new NodeInfo(this, agent);
     }
 
+    /**
+     * <p>getNodeInfo</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.NodeInfo} object.
+     */
     public NodeInfo getNodeInfo() {
         return m_nodeInfo;
     }
 
+    /** {@inheritDoc} */
     public SnmpCollectionResource findResource(SnmpInstId inst) {
         return m_nodeInfo;
     }
 
+    /** {@inheritDoc} */
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
     // This is here for completeness but it should not get called from here.
     // findResource should be called instead
@@ -61,10 +80,16 @@ public class NodeResourceType extends ResourceType {
         return null;
     }
 
+    /**
+     * <p>getResources</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<NodeInfo> getResources() {
         return Collections.singleton(m_nodeInfo);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getNodeAttributeTypes(getAgent());

@@ -4,8 +4,20 @@ import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.smslib.USSDSessionStatus;
 
+/**
+ * <p>MobileMsgResponseMatchers class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MobileMsgResponseMatchers {
 
+	/**
+	 * <p>smsFrom</p>
+	 *
+	 * @param originator a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 */
 	public static MobileMsgResponseMatcher smsFrom(final String originator) {
 		return new MobileMsgResponseMatcher() {
 			
@@ -24,6 +36,11 @@ public class MobileMsgResponseMatchers {
 		};
 	}
 
+	/**
+	 * <p>smsFromRecipient</p>
+	 *
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 */
 	public static MobileMsgResponseMatcher smsFromRecipient() {
 		return new MobileMsgResponseMatcher() {
 			
@@ -50,6 +67,12 @@ public class MobileMsgResponseMatchers {
 		};
 	}
 
+	/**
+	 * <p>and</p>
+	 *
+	 * @param matchers a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 */
 	public static MobileMsgResponseMatcher and(final MobileMsgResponseMatcher... matchers) {
 		return new MobileMsgResponseMatcher() {
 			
@@ -82,6 +105,12 @@ public class MobileMsgResponseMatchers {
 		};
 	}
 
+	/**
+	 * <p>or</p>
+	 *
+	 * @param matchers a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 */
 	public static MobileMsgResponseMatcher or(final MobileMsgResponseMatcher... matchers) {
 		return new MobileMsgResponseMatcher() {
 			
@@ -113,6 +142,12 @@ public class MobileMsgResponseMatchers {
 			}
 		};
 	}
+	/**
+	 * <p>textMatches</p>
+	 *
+	 * @param regex a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 */
 	public static MobileMsgResponseMatcher textMatches(final String regex) {
 		return new MobileMsgResponseMatcher() {
 			
@@ -128,6 +163,11 @@ public class MobileMsgResponseMatchers {
 		};
 	}
 
+	/**
+	 * <p>isSms</p>
+	 *
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 */
 	public static MobileMsgResponseMatcher isSms() {
 		return new MobileMsgResponseMatcher() {
 			
@@ -145,6 +185,11 @@ public class MobileMsgResponseMatchers {
 		};
 	}
 
+	/**
+	 * <p>isUssd</p>
+	 *
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 */
 	public static MobileMsgResponseMatcher isUssd() {
 		return new MobileMsgResponseMatcher() {
 			
@@ -162,6 +207,12 @@ public class MobileMsgResponseMatchers {
 		};
 	}
 	
+	/**
+	 * <p>ussdStatusIs</p>
+	 *
+	 * @param status a {@link org.smslib.USSDSessionStatus} object.
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
+	 */
 	public static MobileMsgResponseMatcher ussdStatusIs(final USSDSessionStatus status) {
 		return new MobileMsgResponseMatcher() {
 			
@@ -182,6 +233,12 @@ public class MobileMsgResponseMatchers {
 		};
 	}
 
+	/**
+	 * <p>tracef</p>
+	 *
+	 * @param format a {@link java.lang.String} object.
+	 * @param args a {@link java.lang.Object} object.
+	 */
 	public static void tracef(String format, Object... args) {
 		ThreadCategory log = ThreadCategory.getInstance(MobileMsgResponseMatchers.class);
 		
@@ -190,6 +247,13 @@ public class MobileMsgResponseMatchers {
 		}
 	}
 	
+	/**
+	 * <p>isAMatch</p>
+	 *
+	 * @param expected a {@link java.lang.String} object.
+	 * @param actual a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public static boolean isAMatch(String expected, String actual) {
 	    if (expected.startsWith("~") && expected.length() > 1) {
 	        return actual.matches(expected.substring(1));

@@ -41,8 +41,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author brozow
+ * <p>JUnitSnmpAgent class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 
 @Retention(RetentionPolicy.RUNTIME)

@@ -39,10 +39,26 @@ import java.util.concurrent.TimeoutException;
  * TaskWaiter
  *
  * @author brozow
+ * @version $Id: $
  */
 public interface TaskWaiter {
 
+    /**
+     * <p>waitFor</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.util.concurrent.ExecutionException if any.
+     */
     public void waitFor() throws InterruptedException, ExecutionException;
 
+    /**
+     * <p>waitFor</p>
+     *
+     * @param timeout a long.
+     * @param unit a {@link java.util.concurrent.TimeUnit} object.
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.util.concurrent.ExecutionException if any.
+     * @throws java.util.concurrent.TimeoutException if any.
+     */
     public void waitFor(long timeout, TimeUnit unit)  throws InterruptedException, ExecutionException, TimeoutException;
 }

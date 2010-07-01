@@ -58,15 +58,20 @@ import org.opennms.web.WebSecurityUtils;
 
 /**
  * A servlet that handles updating the ifservices table with the notice status
- * 
+ *
  * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class ServiceNoticeUpdateServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     private static final String UPDATE_SERVICE = "UPDATE ifservices SET notify = ? WHERE nodeID = ? AND ipaddr = ? AND serviceid = ?";
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
         Map<String, String> servicesCheckedMap = getServicesChecked(userSession);

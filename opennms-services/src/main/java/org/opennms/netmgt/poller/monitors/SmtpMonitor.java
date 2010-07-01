@@ -77,10 +77,12 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 
 @Distributable
@@ -138,10 +140,12 @@ final public class SmtpMonitor extends IPv4Monitor {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Poll the specified address for SMTP service availability.
      * </P>
-     * 
+     *
      * <P>
      * During the poll an attempt is made to connect on the specified port (by
      * default TCP port 25). If the connection request is successful, the banner
@@ -152,14 +156,6 @@ final public class SmtpMonitor extends IPv4Monitor {
      * command is sent. Provided that the interface's response is valid we set
      * the service status to SERVICE_AVAILABLE and return.
      * </P>
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
-     * 
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();

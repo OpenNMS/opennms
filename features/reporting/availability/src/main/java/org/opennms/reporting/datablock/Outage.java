@@ -39,10 +39,12 @@ import org.opennms.core.utils.ThreadCategory;
 /**
  * This class holds the service lost and regained time pair for the
  * node/ipaddr/service combination.
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan Corp </A>
- * 
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">Oculan Corp </A>
+ * @version $Id: $
  */
 public class Outage extends Object {
     /**
@@ -70,7 +72,7 @@ public class Outage extends Object {
 
     /**
      * Constructor that sets the lost time.
-     * 
+     *
      * @param svcLost
      *            Time at which the service is lost.
      */
@@ -81,7 +83,7 @@ public class Outage extends Object {
 
     /**
      * Constructor that sets the service lost and regained times.
-     * 
+     *
      * @param svcLost
      *            Time at which the service is lost.
      * @param svcRegained
@@ -94,7 +96,7 @@ public class Outage extends Object {
 
     /**
      * Set the Lost time
-     * 
+     *
      * @param losttime
      *            Time at which the service is lost.
      */
@@ -104,7 +106,7 @@ public class Outage extends Object {
 
     /**
      * Set the regained time.
-     * 
+     *
      * @param regainedtime
      *            Time at which the service is regained.
      */
@@ -114,7 +116,7 @@ public class Outage extends Object {
 
     /**
      * Return the service lost time
-     * 
+     *
      * @return the service lost time.
      */
     public long getLostTime() {
@@ -123,7 +125,7 @@ public class Outage extends Object {
 
     /**
      * Return the regained time
-     * 
+     *
      * @return the service regained time.
      */
     public long getRegainedTime() {
@@ -133,12 +135,11 @@ public class Outage extends Object {
     /**
      * Return the downtime (difference between the regained and lost times) in
      * the last rolling window
-     * 
+     *
      * @param curTime
      *            Time denoting end of rolling window (milliseconds).
      * @param rollingWindow
      *            Rolling Window (milliseconds)
-     * 
      * @return the downtime (difference between the regained and lost times) in
      *         the last rolling window
      */
@@ -195,6 +196,8 @@ public class Outage extends Object {
 
     /**
      * Returns the outage information in date format.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         StringBuffer retVal = new StringBuffer();

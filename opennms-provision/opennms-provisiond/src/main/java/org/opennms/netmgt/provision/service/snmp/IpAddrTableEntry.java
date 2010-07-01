@@ -44,32 +44,45 @@ import java.net.InetAddress;
  * an IP Address, its netmask, interface binding, broadcast address, and maximum
  * packet reassembly size.
  * </P>
- * 
+ *
  * <P>
  * This object is used by the IpAddrTable to hold information single entries in
  * the table. See the IpAddrTable documentation form more information.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A>Jon Whetzel </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see IpAddrTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public final class IpAddrTableEntry extends SnmpTableEntry {
     // Lookup strings for specific table entries
     //
+    /** Constant <code>IP_ADDR_ENT_ADDR="ipAdEntAddr"</code> */
     public final static String IP_ADDR_ENT_ADDR = "ipAdEntAddr";
 
+    /** Constant <code>IP_ADDR_IF_INDEX="ipAdEntIfIndex"</code> */
     public final static String IP_ADDR_IF_INDEX = "ipAdEntIfIndex";
 
+    /** Constant <code>IP_ADDR_ENT_NETMASK="ipAdEntNetMask"</code> */
     public final static String IP_ADDR_ENT_NETMASK = "ipAdEntNetMask";
 
+    /** Constant <code>IP_ADDR_ENT_BCASTADDR="ipAdEntBcastAddr"</code> */
     public final static String IP_ADDR_ENT_BCASTADDR = "ipAdEntBcastAddr";
 
+    /** Constant <code>ms_elemList</code> */
     public static NamedSnmpVar[] ms_elemList = null;
 
     /**
@@ -111,31 +124,48 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
      * created, this constructor will initialize all the variables as per their
      * named variable from the passed array of SNMP varbinds.
      * </P>
-     * 
+     *
      * <P>
      * If the information in the object should not be modified then a <EM>final
      * </EM> modifier can be applied to the created object.
      * </P>
-     * 
-     * @param vars
-     *            The array of variable bindings.
      */
     public IpAddrTableEntry() {
         super(ms_elemList);
     }
 
+    /**
+     * <p>getIpAdEntAddr</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getIpAdEntAddr() {
         return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
     }
 
+    /**
+     * <p>getIpAdEntIfIndex</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getIpAdEntIfIndex() {
         return getInt32(IpAddrTableEntry.IP_ADDR_IF_INDEX);
     }
 
+    /**
+     * <p>getIpAdEntNetMask</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getIpAdEntNetMask() {
         return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_NETMASK);
     }
     
+    /**
+     * <p>getIpAdEntBcastAddr</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getIpAdEntBcastAddr() {
         return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_BCASTADDR);
     }

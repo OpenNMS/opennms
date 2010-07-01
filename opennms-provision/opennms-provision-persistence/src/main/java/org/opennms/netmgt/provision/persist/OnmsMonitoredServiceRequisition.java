@@ -41,12 +41,18 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
  * OnmsMonitoredServiceRequisition
  *
  * @author brozow
+ * @version $Id: $
  */
 public class OnmsMonitoredServiceRequisition {
 
     private RequisitionMonitoredService m_svc;
     private final List<OnmsServiceCategoryRequisition> m_categoryReqs;
 
+    /**
+     * <p>Constructor for OnmsMonitoredServiceRequisition.</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} object.
+     */
     public OnmsMonitoredServiceRequisition(RequisitionMonitoredService svc) {
         m_svc = svc;
         m_categoryReqs = constructCategoryReqs();
@@ -67,6 +73,11 @@ public class OnmsMonitoredServiceRequisition {
         return m_svc;
     }
 
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.netmgt.provision.persist.RequisitionVisitor} object.
+     */
     public void visit(RequisitionVisitor visitor) {
         visitor.visitMonitoredService(this);
         for (OnmsServiceCategoryRequisition cat : m_categoryReqs) {
@@ -75,6 +86,11 @@ public class OnmsMonitoredServiceRequisition {
         visitor.completeMonitoredService(this);
     }
 
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_svc.getServiceName();
     }

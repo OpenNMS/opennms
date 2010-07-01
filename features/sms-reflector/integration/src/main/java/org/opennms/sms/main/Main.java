@@ -39,9 +39,17 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * Main
  *
  * @author brozow
+ * @version $Id: $
  */
 public class Main {
 
+    /**
+     * <p>main</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.Exception if any.
+     */
     public static void main(String[] args) throws InterruptedException, Exception {
         String[] contextFiles = new String[] {
                 "classpath*:/META-INF/spring/bundle-context.xml",

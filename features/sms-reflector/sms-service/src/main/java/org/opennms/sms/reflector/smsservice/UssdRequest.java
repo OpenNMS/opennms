@@ -39,19 +39,23 @@ import org.smslib.USSDRequest;
 import org.springframework.core.style.ToStringCreator;
 
 /**
- * @author brozow
+ * <p>UssdRequest class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class UssdRequest extends MobileMsgRequest {
 
     private USSDRequest m_msg;
 
     /**
-     * @param msg
-     * @param timeout
-     * @param retries
-     * @param cb
-     * @param responseMatcher
+     * <p>Constructor for UssdRequest.</p>
+     *
+     * @param msg a {@link org.smslib.USSDRequest} object.
+     * @param timeout a long.
+     * @param retries a int.
+     * @param cb a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseCallback} object.
+     * @param responseMatcher a {@link org.opennms.sms.reflector.smsservice.MobileMsgResponseMatcher} object.
      */
     public UssdRequest(USSDRequest msg, long timeout, int retries, MobileMsgResponseCallback cb, MobileMsgResponseMatcher responseMatcher) {
         super(timeout, retries, cb, responseMatcher);
@@ -59,17 +63,25 @@ public class UssdRequest extends MobileMsgRequest {
         
     }
     
+    /**
+     * <p>getGatewayId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGatewayId() {
     	return m_msg.getGatewayId();
     }
 
     /**
+     * <p>getContent</p>
+     *
      * @return the text
      */
     public String getContent() {
         return m_msg.getContent();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getId() {
         return "1";
@@ -78,6 +90,7 @@ public class UssdRequest extends MobileMsgRequest {
     /* (non-Javadoc)
      * @see org.opennms.sms.reflector.smsservice.MobileMsgRequest#createNextRetry()
      */
+    /** {@inheritDoc} */
     @Override
     public MobileMsgRequest createNextRetry() {
         if (getRetries() > 0) {
@@ -88,10 +101,20 @@ public class UssdRequest extends MobileMsgRequest {
         
     }
 
+    /**
+     * <p>getMessage</p>
+     *
+     * @return a {@link org.smslib.USSDRequest} object.
+     */
     public USSDRequest getMessage() {
         return m_msg;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
     	return new ToStringCreator(this)
     		.append("id", getId())

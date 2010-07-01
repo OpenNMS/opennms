@@ -45,20 +45,31 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>NtpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     
     private String m_ipToValidate;
     
+    /**
+     * <p>Constructor for NtpDetector.</p>
+     */
     public NtpDetector() {
         super("NTP", 123);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Client<NtpMessage, DatagramPacket> getClient() {
         return new NtpClient();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         send(createNtpMessage(), validateResponse(getAddress()));
@@ -99,10 +110,20 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
         }
     }
     
+    /**
+     * <p>setIpToValidate</p>
+     *
+     * @param ipToValidate a {@link java.lang.String} object.
+     */
     public void setIpToValidate(String ipToValidate) {
         m_ipToValidate = ipToValidate;
     }
 
+    /**
+     * <p>getIpToValidate</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpToValidate() {
         return m_ipToValidate;
     }

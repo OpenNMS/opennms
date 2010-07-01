@@ -90,6 +90,9 @@ import org.opennms.netmgt.poller.MonitoredService;
  * This class is designed to be used by the service poller framework to test the availability
  * of the HTTP service on remote interfaces. The class implements the ServiceMonitor interface
  * that allows it to be used along with other plug-ins by the service poller framework.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 @Distributable
 public class PageSequenceMonitor extends IPv4Monitor {
@@ -608,6 +611,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
         }
     }
 
+    /** {@inheritDoc} */
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameterMap) {
         HttpClient client = null;
         PollStatus serviceStatus = PollStatus.unavailable("");

@@ -40,12 +40,20 @@ import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
 
 /**
- * 
+ * <p>DbElement class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ *
+ * TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DbElement implements Cloneable {
     private int mapId;
@@ -60,10 +68,20 @@ public class DbElement implements Cloneable {
 
     private String sysoid;
     
+    /**
+     * <p>Getter for the field <code>sysoid</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSysoid() {
         return sysoid;
     }
 
+    /**
+     * <p>Setter for the field <code>sysoid</code>.</p>
+     *
+     * @param sysoid a {@link java.lang.String} object.
+     */
     public void setSysoid(String sysoid) {
         this.sysoid = sysoid;
     }
@@ -72,14 +90,35 @@ public class DbElement implements Cloneable {
 
     private int y;
     
+    /**
+     * <p>Constructor for DbElement.</p>
+     */
     protected DbElement() {
         // blank
     }
 
+    /**
+     * <p>Constructor for DbElement.</p>
+     *
+     * @param e a {@link org.opennms.web.map.db.DbElement} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public DbElement(DbElement e) throws MapsException {
         this(e.mapId, e.id, e.type, e.label, e.icon, e.x, e.y);
     }
 
+    /**
+     * <p>Constructor for DbElement.</p>
+     *
+     * @param mapId a int.
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param iconName a {@link java.lang.String} object.
+     * @param x a int.
+     * @param y a int.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public DbElement(int mapId, int id, String type, String label,
             String iconName, int x, int y)throws MapsException {
         this.mapId = mapId;
@@ -92,6 +131,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Getter for the field <code>icon</code>.</p>
+     *
      * @return Returns the iconName.
      */
     public String getIcon() {
@@ -99,6 +140,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Setter for the field <code>icon</code>.</p>
+     *
      * @param iconName
      *            The iconName to set.
      */
@@ -107,6 +150,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Getter for the field <code>label</code>.</p>
+     *
      * @return Returns the label.
      */
     public String getLabel() {
@@ -114,6 +159,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Setter for the field <code>label</code>.</p>
+     *
      * @param label
      *            The label to set.
      */
@@ -122,6 +169,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Getter for the field <code>x</code>.</p>
+     *
      * @return Returns the x.
      */
     public int getX() {
@@ -129,6 +178,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Setter for the field <code>x</code>.</p>
+     *
      * @param x
      *            The x to set.
      */
@@ -137,6 +188,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Getter for the field <code>y</code>.</p>
+     *
      * @return Returns the y.
      */
     public int getY() {
@@ -144,6 +197,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Setter for the field <code>y</code>.</p>
+     *
      * @param y
      *            The y to set.
      */
@@ -152,6 +207,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return Returns the type.
      */
     public String getType() {
@@ -159,23 +216,38 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type
      *            The type to set.
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public void setType(String type) throws MapsException {
         if (type.equals(MapsConstants.MAP_TYPE) || type.equals(MapsConstants.NODE_TYPE) || type.equals(MapsConstants.NODE_HIDE_TYPE) || type.equals(MapsConstants.MAP_HIDE_TYPE))  this.type = type;
         new MapsException("Cannot create an Element with type " + type);
     }
 
+    /**
+     * <p>Getter for the field <code>mapId</code>.</p>
+     *
+     * @return a int.
+     */
     public int getMapId() {
         return mapId;
     }
 
+    /**
+     * <p>Setter for the field <code>mapId</code>.</p>
+     *
+     * @param mapId a int.
+     */
     public void setMapId(int mapId) {
         this.mapId = mapId;
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return Returns the id.
      */
     public int getId() {
@@ -183,6 +255,8 @@ public class DbElement implements Cloneable {
     }
 
     /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
      * @param id
      *            The id to set.
      */
@@ -190,6 +264,11 @@ public class DbElement implements Cloneable {
         this.id = id;
     }
 
+    /**
+     * <p>clone</p>
+     *
+     * @return a {@link org.opennms.web.map.db.DbElement} object.
+     */
     public DbElement clone() {
         try {
             return (DbElement) super.clone();
@@ -198,21 +277,41 @@ public class DbElement implements Cloneable {
         }
     }
     
+    /**
+     * <p>isMap</p>
+     *
+     * @return a boolean.
+     */
     public boolean isMap() {
     	if (type.equals(MapsConstants.MAP_TYPE)) return true;
     	return false;
     }
 
+    /**
+     * <p>isNode</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNode() {
     	if (type.equals(MapsConstants.NODE_TYPE)) return true;
     	return false;
     }
 
+    /**
+     * <p>isHideMap</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHideMap() {
         if (type.equals(MapsConstants.MAP_HIDE_TYPE)) return true;
         return false;
     }
 
+    /**
+     * <p>isHideNode</p>
+     *
+     * @return a boolean.
+     */
     public boolean isHideNode() {
         if (type.equals(MapsConstants.NODE_HIDE_TYPE)) return true;
         return false;

@@ -62,8 +62,16 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>NotificationFilterController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NotificationFilterController extends AbstractController implements InitializingBean {
 
+    /** Constant <code>DEFAULT_MULTIPLE=0</code> */
     public static final int DEFAULT_MULTIPLE = 0;
     
     private String m_successView;
@@ -77,6 +85,8 @@ public class NotificationFilterController extends AbstractController implements 
     private NodeDao m_nodeDao;
 
     /**
+     * {@inheritDoc}
+     *
      * Parses the query string to determine what types of notification filters to use
      * (for example, what to filter on or sort by), then does the database query
      * and then forwards the results to a JSP for display.
@@ -200,34 +210,72 @@ public class NotificationFilterController extends AbstractController implements 
         return modelAndView;
     }
     
+    /**
+     * <p>setDefaultShortLimit</p>
+     *
+     * @param limit a {@link java.lang.Integer} object.
+     */
     public void setDefaultShortLimit(Integer limit) {
         m_defaultShortLimit = limit;
     }
 
+    /**
+     * <p>setDefaultLongLimit</p>
+     *
+     * @param limit a {@link java.lang.Integer} object.
+     */
     public void setDefaultLongLimit(Integer limit) {
         m_defaultLongLimit = limit;
     }
 
+    /**
+     * <p>setDefaultSortStyle</p>
+     *
+     * @param sortStyle a {@link org.opennms.web.notification.SortStyle} object.
+     */
     public void setDefaultSortStyle(SortStyle sortStyle) {
         m_defaultSortStyle = sortStyle;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
     
+    /**
+     * <p>setWebEventRepository</p>
+     *
+     * @param webEventRepository a {@link org.opennms.web.event.WebEventRepository} object.
+     */
     public void setWebEventRepository(WebEventRepository webEventRepository) {
         m_webEventRepository = webEventRepository;
     }
 
+    /**
+     * <p>setWebNotificationRepository</p>
+     *
+     * @param webNotificationRepository a {@link org.opennms.web.notification.WebNotificationRepository} object.
+     */
     public void setWebNotificationRepository(WebNotificationRepository webNotificationRepository) {
         m_webNotificationRepository = webNotificationRepository;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.notNull(m_defaultShortLimit, "property defaultShortLimit must be set to a value greater than 0");
         Assert.isTrue(m_defaultShortLimit > 0, "property defaultShortLimit must be set to a value greater than 0");

@@ -37,8 +37,10 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 
 /**
- * @author Donald Desloge
+ * <p>BaseDetectorHandler class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     
@@ -46,18 +48,32 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     private AsyncClientConversation<Request, Response> m_conversation;
     
 
+    /**
+     * <p>setFuture</p>
+     *
+     * @param future a {@link org.opennms.netmgt.provision.DetectFuture} object.
+     * @param <Request> a Request object.
+     * @param <Response> a Response object.
+     */
     public void setFuture(DetectFuture future) {
         m_future = future;
     }
 
+    /**
+     * <p>getFuture</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.DetectFuture} object.
+     */
     public DetectFuture getFuture() {
         return m_future;
     }
     
+    /** {@inheritDoc} */
     public void sessionCreated(IoSession session) throws Exception {
         
     }
 
+    /** {@inheritDoc} */
     public void sessionOpened(IoSession session) throws Exception {
         if(!m_conversation.hasBanner()) {
             Object request = m_conversation.getRequest();
@@ -65,23 +81,27 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
        }
     }
 
+    /** {@inheritDoc} */
     public void sessionClosed(IoSession session) throws Exception {
         if(!getFuture().isDone()) {
             getFuture().setServiceDetected(false);
         }
     }
 
+    /** {@inheritDoc} */
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         getFuture().setServiceDetected(false);
         session.close(false);
     }
 
+    /** {@inheritDoc} */
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         LogUtils.debugf(this, cause, "Caught a Throwable in BaseDetectorHandler");
         getFuture().setException(cause);
         session.close(true);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
         try {    
@@ -114,15 +134,23 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
         
     }
 
+    /** {@inheritDoc} */
     public void messageSent(IoSession session, Object message) throws Exception {}
 
     /**
-     * @param conversation
+     * <p>setConversation</p>
+     *
+     * @param conversation a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
      */
     public void setConversation(AsyncClientConversation<Request, Response> conversation) {
         m_conversation = conversation;        
     }
     
+    /**
+     * <p>getConversation</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
+     */
     public AsyncClientConversation<Request, Response> getConversation() {
         return m_conversation;
     }

@@ -31,6 +31,12 @@
 //
 package org.opennms.netmgt.rrd;
 
+/**
+ * <p>RrdDataSource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class RrdDataSource {
     private String m_name;
     private String m_type;
@@ -38,6 +44,15 @@ public class RrdDataSource {
     private String m_min;
     private String m_max;
     
+    /**
+     * <p>Constructor for RrdDataSource.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param type a {@link java.lang.String} object.
+     * @param heartBeat a int.
+     * @param min a {@link java.lang.String} object.
+     * @param max a {@link java.lang.String} object.
+     */
     public RrdDataSource(String name, String type, int heartBeat, String min, String max) {
         m_name = name;
         m_type = type;
@@ -46,22 +61,47 @@ public class RrdDataSource {
         m_max = max;
     }
 
+    /**
+     * <p>getHeartBeat</p>
+     *
+     * @return a int.
+     */
     public int getHeartBeat() {
         return m_heartBeat;
     }
 
+    /**
+     * <p>getMax</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMax() {
         return m_max;
     }
 
+    /**
+     * <p>getMin</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMin() {
         return m_min;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getType() {
         return m_type;
     }

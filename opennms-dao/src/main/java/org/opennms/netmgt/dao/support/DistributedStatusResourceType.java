@@ -55,30 +55,55 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
+/**
+ * <p>DistributedStatusResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DistributedStatusResourceType implements OnmsResourceType {
+    /** Constant <code>DISTRIBUTED_DIRECTORY="distributed"</code> */
     public static final String DISTRIBUTED_DIRECTORY = "distributed";
     
     private ResourceDao m_resourceDao;
     private LocationMonitorDao m_locationMonitorDao;
     
+    /**
+     * <p>Constructor for DistributedStatusResourceType.</p>
+     *
+     * @param resourceDao a {@link org.opennms.netmgt.dao.ResourceDao} object.
+     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.LocationMonitorDao} object.
+     */
     public DistributedStatusResourceType(ResourceDao resourceDao, LocationMonitorDao locationMonitorDao) {
         m_resourceDao = resourceDao;
         m_locationMonitorDao = locationMonitorDao;
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return "Distributed Status";
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "distributedStatus";
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<OnmsResource> getResourcesForDomain(String domain) {
         return Collections.EMPTY_LIST;
     }
 
+    /** {@inheritDoc} */
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         LinkedList<OnmsResource> resources =
             new LinkedList<OnmsResource>();
@@ -100,6 +125,12 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         return OnmsResource.sortIntoResourceList(resources);
     }
     
+    /**
+     * <p>getResourcesForLocationMonitor</p>
+     *
+     * @param locationMonitorId a int.
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsResource> getResourcesForLocationMonitor(int locationMonitorId) {
         ArrayList<OnmsResource> resources =
             new ArrayList<OnmsResource>();
@@ -148,10 +179,12 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         return new OnmsResource(resource, label, this, set);
     }
 
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnDomain(String domain) {
         return false;
     }
 
+    /** {@inheritDoc} */
     public boolean isResourceTypeOnNode(int nodeId) {
         return getResourcesForNode(nodeId).size() > 0;
     }
@@ -201,10 +234,24 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         return Integer.parseInt(dir.substring(index + 1));
     }
     
+    /**
+     * <p>getInterfaceDirectory</p>
+     *
+     * @param id a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link java.io.File} object.
+     */
     public File getInterfaceDirectory(int id, String ipAddr) {
         return new File(m_resourceDao.getRrdDirectory(), getRelativeInterfacePath(id, ipAddr));
     }
     
+    /**
+     * <p>getRelativeInterfacePath</p>
+     *
+     * @param id a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getRelativeInterfacePath(int id, String ipAddr) {
         return DefaultResourceDao.RESPONSE_DIRECTORY
             + File.separator + DISTRIBUTED_DIRECTORY
@@ -251,6 +298,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         }
     }
 
+    /** {@inheritDoc} */
     public String getLinkForResource(OnmsResource resource) {
         return null;
     }

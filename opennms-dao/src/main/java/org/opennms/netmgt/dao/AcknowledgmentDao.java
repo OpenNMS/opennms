@@ -42,14 +42,25 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
 
 /**
  * Contract for persisting Acknowledgments
- * 
- * @author <a href="mailto:david@opennms.org>David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org>David Hustace</a>
+ * @version $Id: $
  */
 public interface AcknowledgmentDao extends OnmsDao<OnmsAcknowledgment, Integer> {
 
+    /**
+     * <p>findAcknowledgables</p>
+     *
+     * @param ack a {@link org.opennms.netmgt.model.OnmsAcknowledgment} object.
+     * @return a {@link java.util.List} object.
+     */
     List<Acknowledgeable> findAcknowledgables(OnmsAcknowledgment ack);
 
+    /**
+     * <p>updateAckable</p>
+     *
+     * @param ackable a {@link org.opennms.netmgt.model.Acknowledgeable} object.
+     */
     void updateAckable(Acknowledgeable ackable);
     
 

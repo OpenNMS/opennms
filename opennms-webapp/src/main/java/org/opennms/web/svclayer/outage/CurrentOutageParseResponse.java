@@ -46,20 +46,41 @@ import org.apache.commons.lang.StringUtils;
 import org.opennms.web.WebSecurityUtils;
 
 /**
- * 
+ * <p>CurrentOutageParseResponse class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class CurrentOutageParseResponse {
 
     static SuppressOutages m_suppress = new SuppressOutages();
 
 
+    /**
+     * <p>ParseResponse</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     */
     public void ParseResponse(HttpServletRequest request) {
         return;
     }
 
+    /**
+     * <p>findSelectedOutagesIDs</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param outageService a {@link org.opennms.web.svclayer.outage.OutageService} object.
+     * @return a java$util$Map object.
+     */
     public static  Map findSelectedOutagesIDs(HttpServletRequest request, OutageService outageService) {
         Map<String, String> myOutages = new HashMap<String, String>();
         Enumeration parameterNames = request.getParameterNames();

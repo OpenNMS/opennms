@@ -35,6 +35,12 @@ import java.util.Set;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
+/**
+ * <p>OnmsSnmpAgent class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsSnmpAgent extends OnmsAgent {
 	
 	private String m_sysObjectId;
@@ -47,47 +53,117 @@ public class OnmsSnmpAgent extends OnmsAgent {
 	@SuppressWarnings("unchecked")
     private Set m_attributes;
 	
+	/**
+	 * <p>getAttributes</p>
+	 *
+	 * @return a {@link java.util.Set} object.
+	 */
 	@SuppressWarnings("unchecked")
     public Set getAttributes() {
 		return m_attributes;
 	}
+	/**
+	 * <p>setAttributes</p>
+	 *
+	 * @param attributes a {@link java.util.Set} object.
+	 */
 	@SuppressWarnings("unchecked")
     public void setAttributes(Set attributes) {
 		m_attributes = attributes;
 	}
+	/**
+	 * <p>getConfig</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+	 */
 	public SnmpAgentConfig getConfig() {
 		return m_config;
 	}
+	/**
+	 * <p>setConfig</p>
+	 *
+	 * @param config a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+	 */
 	public void setConfig(SnmpAgentConfig config) {
 		m_config = config;
 	}
+	/**
+	 * <p>getSysObjectId</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getSysObjectId() {
 		return m_sysObjectId;
 	}
+	/**
+	 * <p>setSysObjectId</p>
+	 *
+	 * @param sysObjectId a {@link java.lang.String} object.
+	 */
 	public void setSysObjectId(String sysObjectId) {
 		m_sysObjectId = sysObjectId;
 	}
+	/**
+	 * <p>getSysContact</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getSysContact() {
 		return m_sysContact;
 	}
+	/**
+	 * <p>setSysContact</p>
+	 *
+	 * @param sysContact a {@link java.lang.String} object.
+	 */
 	public void setSysContact(String sysContact) {
 		m_sysContact = sysContact;
 	}
+	/**
+	 * <p>getSysDescription</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getSysDescription() {
 		return m_sysDescription;
 	}
+	/**
+	 * <p>setSysDescription</p>
+	 *
+	 * @param sysDescription a {@link java.lang.String} object.
+	 */
 	public void setSysDescription(String sysDescription) {
 		m_sysDescription = sysDescription;
 	}
+	/**
+	 * <p>getSysLocation</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getSysLocation() {
 		return m_sysLocation;
 	}
+	/**
+	 * <p>setSysLocation</p>
+	 *
+	 * @param sysLocation a {@link java.lang.String} object.
+	 */
 	public void setSysLocation(String sysLocation) {
 		m_sysLocation = sysLocation;
 	}
+	/**
+	 * <p>getSysName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getSysName() {
 		return m_sysName;
 	}
+	/**
+	 * <p>setSysName</p>
+	 *
+	 * @param sysName a {@link java.lang.String} object.
+	 */
 	public void setSysName(String sysName) {
 		m_sysName = sysName;
 	}

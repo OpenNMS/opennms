@@ -34,12 +34,22 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 
+/**
+ * <p>DistPollerDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DistPollerDaoHibernate extends AbstractCachingDaoHibernate<OnmsDistPoller, String, String> implements DistPollerDao {
 
+    /**
+     * <p>Constructor for DistPollerDaoHibernate.</p>
+     */
     public DistPollerDaoHibernate() {
 		super(OnmsDistPoller.class, true);
 	}
 
+    /** {@inheritDoc} */
     @Override
     protected String getKey(OnmsDistPoller t) {
         return t.getName();

@@ -65,6 +65,13 @@ import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+/**
+ * <p>JdbcWebAlarmRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class JdbcWebAlarmRepository implements WebAlarmRepository {
     
     @Autowired
@@ -182,11 +189,13 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         }
     }
 
+    /** {@inheritDoc} */
     public int countMatchingAlarms(AlarmCriteria criteria) {
         String sql = getSql("SELECT COUNT(ALARMID) as ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return queryForInt(sql, paramSetter(criteria));
     }
     
+    /** {@inheritDoc} */
     public int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria) {
         String selectClause = "SELECT SEVERITY, COUNT(ALARMID) AS ALARMCOUNT FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ";
         String sql = getSql(selectClause, criteria);
@@ -208,6 +217,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         return alarmCounts;
     }
     
+    /** {@inheritDoc} */
     public Alarm getAlarm(int alarmId) {
         Alarm[] alarms = getMatchingAlarms(new AlarmCriteria(new AlarmIdFilter(alarmId)));
         if (alarms.length < 1) {
@@ -217,6 +227,7 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         }
     }
     
+    /** {@inheritDoc} */
     public Alarm[] getMatchingAlarms(AlarmCriteria criteria) {
         String sql = getSql("SELECT ALARMS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM ALARMS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) ", criteria);
         return getAlarms(sql, paramSetter(criteria));
@@ -229,36 +240,66 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
     }
 
     
+    /**
+     * <p>acknowledgeAlarms</p>
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     */
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
         acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
 
+    /** {@inheritDoc} */
     public void acknowledgeMatchingAlarms(String user, Date timestamp, AlarmCriteria criteria) {
         String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? ", criteria);
         jdbc().update(sql, paramSetter(criteria, user, new Timestamp(timestamp.getTime())));
     }
     
+    /**
+     * <p>acknowledgeAll</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     */
     public void acknowledgeAll(String user, Date timestamp) {
         m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=?, ALARMACKTIME=? WHERE ALARMACKUSER IS NULL ", user, new Timestamp(timestamp.getTime()));
     }
 
+    /** {@inheritDoc} */
     public void unacknowledgeAlarms(int[] alarmIds, String user) {
         unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)), user);
     }
 
+    /** {@inheritDoc} */
     public void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user) {
         String sql = getSql("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL ", criteria);
         jdbc().update(sql, paramSetter(criteria));
     }
     
+    /** {@inheritDoc} */
     public void unacknowledgeAll(String user) {
         m_simpleJdbcTemplate.update("UPDATE ALARMS SET ALARMACKUSER=NULL, ALARMACKTIME=NULL WHERE ALARMACKUSER IS NOT NULL ");
     }
     
+    /**
+     * <p>clearAlarms</p>
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     */
     public void clearAlarms(int[] alarmIds, String user){
         clearAlarms(alarmIds, user, new Date());
     }
     
+    /**
+     * <p>clearAlarms</p>
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     */
     public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
         if(alarmIds == null || user == null || timestamp == null){
             throw new IllegalArgumentException("Cannot take null parameters");
@@ -272,6 +313,13 @@ public class JdbcWebAlarmRepository implements WebAlarmRepository {
         
     }
     
+    /**
+     * <p>escalateAlarms</p>
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param timestamp a java$util$Date object.
+     */
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
         ConditionalFilter condFilter = new AndFilter(new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityFilter(OnmsSeverity.CLEARED));
         ConditionalFilter condFilter2 = new AndFilter(new AlarmTypeFilter(Alarm.PROBLEM_TYPE), new SeverityBetweenFilter(OnmsSeverity.CLEARED, OnmsSeverity.CRITICAL));

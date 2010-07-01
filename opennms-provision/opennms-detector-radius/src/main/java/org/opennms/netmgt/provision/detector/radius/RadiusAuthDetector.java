@@ -48,6 +48,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>RadiusAuthDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket>{
     
@@ -106,14 +112,15 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     protected RadiusAuthDetector(String serviceName, int port) {
         super(serviceName, port);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onInit() {
         send(request(getNasID(), getUser(), getPassword()), expectValidResponse(RadiusPacket.ACCESS_ACCEPT, RadiusPacket.ACCESS_CHALLENGE, RadiusPacket.ACCESS_REJECT));
@@ -159,6 +166,7 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
         };
     }
     
+    /** {@inheritDoc} */
     @Override
     protected Client<RadiusPacket, RadiusPacket> getClient() {
         RadiusDetectorClient rdc = new RadiusDetectorClient();
@@ -176,58 +184,128 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
         return chapPassword;
     }
     
+    /**
+     * <p>setAuthPort</p>
+     *
+     * @param authport a int.
+     */
     public void setAuthPort(int authport) {
         m_authport = authport;
     }
 
+    /**
+     * <p>getAuthPort</p>
+     *
+     * @return a int.
+     */
     public int getAuthPort() {
         return m_authport;
     }
 
+    /**
+     * <p>setAcctPort</p>
+     *
+     * @param acctport a int.
+     */
     public void setAcctPort(int acctport) {
         m_acctport = acctport;
     }
 
+    /**
+     * <p>getAcctPort</p>
+     *
+     * @return a int.
+     */
     public int getAcctPort() {
         return m_acctport;
     }
 
+    /**
+     * <p>setSecret</p>
+     *
+     * @param secret a {@link java.lang.String} object.
+     */
     public void setSecret(String secret) {
         m_secret = secret;
     }
 
+    /**
+     * <p>getSecret</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSecret() {
         return m_secret;
     }
 
+    /**
+     * <p>setAuthType</p>
+     *
+     * @param authType a {@link java.lang.String} object.
+     */
     public void setAuthType(String authType) {
         m_authType = authType;
     }
 
+    /**
+     * <p>getAuthType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAuthType() {
         return m_authType;
     }
 
+    /**
+     * <p>setNasID</p>
+     *
+     * @param nasid a {@link java.lang.String} object.
+     */
     public void setNasID(String nasid) {
         m_nasid = nasid;
     }
 
+    /**
+     * <p>getNasID</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNasID() {
         return m_nasid;
     }
 
+    /**
+     * <p>setUser</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public void setUser(String user) {
         m_user = user;
     }
 
+    /**
+     * <p>getUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUser() {
         return m_user;
     }
 
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPassword(String password) {
         m_password = password;
     }
 
+    /**
+     * <p>getPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPassword() {
         return m_password;
     }

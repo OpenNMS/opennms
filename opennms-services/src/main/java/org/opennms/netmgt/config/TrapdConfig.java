@@ -32,8 +32,24 @@
 
 package org.opennms.netmgt.config;
 
+/**
+ * <p>TrapdConfig interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface TrapdConfig {
+    /**
+     * <p>getSnmpTrapPort</p>
+     *
+     * @return a int.
+     */
     public abstract int getSnmpTrapPort();
 
+    /**
+     * <p>getNewSuspectOnTrap</p>
+     *
+     * @return a boolean.
+     */
     public abstract boolean getNewSuspectOnTrap();
 }

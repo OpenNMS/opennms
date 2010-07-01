@@ -43,23 +43,24 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This is a class to store and execute a console command
- * 
+ *
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class CommandExecutor implements ExecutorStrategy {
     /**
+     * {@inheritDoc}
+     *
      * This method executes the command using a Process. The method will decide
      * if an input stream needs to be used.
-     * 
-     * @param commandLine
-     *            the command to execute as a command line call
-     * @param arguments
-     *            a list of Argument objects that need to be passed to the
-     *            command line call
-     * @return int, the return code of the command
      */
     public int execute(String commandLine, List<Argument> arguments) {
         int returnCode = 0;

@@ -35,42 +35,89 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
 
+/**
+ * <p>IPAddress class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class IPAddress implements Comparable<IPAddress> {
 
     long m_ipAddr;
     
+    /**
+     * <p>Constructor for IPAddress.</p>
+     *
+     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     */
     public IPAddress(IPAddress addr) {
         m_ipAddr = addr.m_ipAddr;
     }
     
+    /**
+     * <p>Constructor for IPAddress.</p>
+     *
+     * @param dottedNotation a {@link java.lang.String} object.
+     */
     public IPAddress(String dottedNotation) {
         m_ipAddr = InetAddressUtils.toIpAddrLong(dottedNotation);
     }
     
+    /**
+     * <p>Constructor for IPAddress.</p>
+     *
+     * @param inetAddress a {@link java.net.InetAddress} object.
+     */
     public IPAddress(InetAddress inetAddress) {
         m_ipAddr = InetAddressUtils.toIpAddrLong(inetAddress);
     }
     
+    /**
+     * <p>Constructor for IPAddress.</p>
+     *
+     * @param ipAddrAs32bitNumber a long.
+     */
     public IPAddress(long ipAddrAs32bitNumber) {
         m_ipAddr = ipAddrAs32bitNumber;
     }
 
+    /**
+     * <p>Constructor for IPAddress.</p>
+     *
+     * @param ipAddrOctets an array of byte.
+     */
     public IPAddress(byte[] ipAddrOctets) {
         m_ipAddr = InetAddressUtils.toIpAddrLong(ipAddrOctets);
     }
     
+    /**
+     * <p>toInetAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress toInetAddress() {
         return InetAddressUtils.getInetAddress(m_ipAddr);
     }
     
+    /**
+     * <p>toOctets</p>
+     *
+     * @return an array of byte.
+     */
     public byte[] toOctets() {
         return InetAddressUtils.toIpAddrBytes(m_ipAddr);
     }
     
+    /**
+     * <p>toLong</p>
+     *
+     * @return a long.
+     */
     public long toLong() {
         return m_ipAddr;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof IPAddress) {
@@ -80,11 +127,18 @@ public class IPAddress implements Comparable<IPAddress> {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return (int)m_ipAddr;
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a int.
+     */
     public int compareTo(IPAddress o) {
         IPAddress other = (IPAddress)o;
         long result = m_ipAddr - other.m_ipAddr;
@@ -93,47 +147,108 @@ public class IPAddress implements Comparable<IPAddress> {
         return 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return InetAddressUtils.toIpAddrString(m_ipAddr);
     }
     
+    /**
+     * <p>incr</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     */
     public IPAddress incr() {
         return new IPAddress(m_ipAddr+1);
     }
     
+    /**
+     * <p>decr</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     */
     public IPAddress decr() {
         return new IPAddress(m_ipAddr-1);
     }
     
+    /**
+     * <p>isPredecessorOf</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a boolean.
+     */
     public boolean isPredecessorOf(IPAddress other) {
         return other.decr().equals(this);
     }
     
+    /**
+     * <p>isSuccessorOf</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a boolean.
+     */
     public boolean isSuccessorOf(IPAddress other) {
         return other.incr().equals(this);
     }
     
+    /**
+     * <p>isLessThan</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a boolean.
+     */
     public boolean isLessThan(IPAddress other) {
         return compareTo(other) < 0;
     }
     
+    /**
+     * <p>isLessThanOrEqualTo</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a boolean.
+     */
     public boolean isLessThanOrEqualTo(IPAddress other) {
         return compareTo(other) <= 0;
     }
     
+    /**
+     * <p>isGreaterThan</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a boolean.
+     */
     public boolean isGreaterThan(IPAddress other) {
         return compareTo(other) > 0;
     }
     
+    /**
+     * <p>isGreaterThanOrEqualTo</p>
+     *
+     * @param other a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a boolean.
+     */
     public boolean isGreaterThanOrEqualTo(IPAddress other) {
         return compareTo(other) >= 0;
     }
 
+    /**
+     * <p>min</p>
+     *
+     * @param a a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @param b a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     */
     public static IPAddress min(IPAddress a, IPAddress b) {
         return (a.isLessThan(b) ? a : b);
     }
 
+    /**
+     * <p>max</p>
+     *
+     * @param a a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @param b a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     */
     public static IPAddress max(IPAddress a, IPAddress b) {
         return (a.isGreaterThan(b) ? a : b);
     }

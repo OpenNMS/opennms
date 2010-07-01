@@ -7,6 +7,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
+/**
+ * <p>SnmpInfo class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @XmlRootElement(name="snmp-info")
 public class SnmpInfo {
 
@@ -16,12 +23,17 @@ public class SnmpInfo {
     private int m_retries;
     private int m_timeout;
     
+    /**
+     * <p>Constructor for SnmpInfo.</p>
+     */
     public SnmpInfo() {
         
     }
 
     /**
-     * @param config
+     * <p>Constructor for SnmpInfo.</p>
+     *
+     * @param config a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpInfo(SnmpAgentConfig config) {
         m_community = config.getReadCommunity();
@@ -32,6 +44,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>getCommunity</p>
+     *
      * @return the community
      */
     public String getCommunity() {
@@ -39,6 +53,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>setCommunity</p>
+     *
      * @param community the community to set
      */
     public void setCommunity(String community) {
@@ -46,6 +62,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>getVersion</p>
+     *
      * @return the version
      */
     public String getVersion() {
@@ -53,6 +71,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>setVersion</p>
+     *
      * @param version the version to set
      */
     public void setVersion(String version) {
@@ -60,6 +80,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>getPort</p>
+     *
      * @return the port
      */
     public int getPort() {
@@ -67,6 +89,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>setPort</p>
+     *
      * @param port the port to set
      */
     public void setPort(int port) {
@@ -74,6 +98,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>getRetries</p>
+     *
      * @return the retries
      */
     public int getRetries() {
@@ -81,6 +107,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>setRetries</p>
+     *
      * @param retries the retries to set
      */
     public void setRetries(int retries) {
@@ -88,6 +116,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>getTimeout</p>
+     *
      * @return the timeout
      */
     public int getTimeout() {
@@ -95,6 +125,8 @@ public class SnmpInfo {
     }
 
     /**
+     * <p>setTimeout</p>
+     *
      * @param timeout the timeout to set
      */
     public void setTimeout(int timeout) {
@@ -102,7 +134,11 @@ public class SnmpInfo {
     }
 
     /**
-     * @return
+     * <p>createEventInfo</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
+     * @throws java.net.UnknownHostException if any.
      */
     public SnmpEventInfo createEventInfo(String ipAddr) throws UnknownHostException {
         SnmpEventInfo eventInfo = new SnmpEventInfo();

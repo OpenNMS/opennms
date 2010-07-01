@@ -74,27 +74,27 @@ import org.openoss.ossj.jvt.fm.monitor.OOSSAlarmValue;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
-/** 
+/**
  * This class is a fiber scheduled by OpenNMS. It's purpose is to
  * collect OpenNMS alarms and transmit them to an OpenOSS QoS bean.
  *
  * The start() method loads the configuration for the QosD daemon and registers for events
- * Configuration is held in 4 files. 
+ * Configuration is held in 4 files.
  * <p>      QoSD-configuration.xml
  * <p>      qosd.properties
  * <p>      opennms.conf
  * <p>      rmi.policy
- *  
+ *
  * The Daemon starts in the following sequence;
- * <p>1. When the deamon starts it initialises the <CODE>AlarmListJ2eeConnectionManagerThread</CODE> and registers with the 
- * AlarmMonitor bean in the application server. 
- * 
- * <p>2. It then calls the AlarmListJ2eeConnectionManagerThread.Reset_List in order to cause the interface to send an 
- * AlarmListRebuiltEvent. 
- * <p>The JNDI naming factory, JMS queues and ejb's conected to by the daemon are specified in the 
+ * <p>1. When the deamon starts it initialises the <CODE>AlarmListJ2eeConnectionManagerThread</CODE> and registers with the
+ * AlarmMonitor bean in the application server.
+ *
+ * <p>2. It then calls the AlarmListJ2eeConnectionManagerThread.Reset_List in order to cause the interface to send an
+ * AlarmListRebuiltEvent.
+ * <p>The JNDI naming factory, JMS queues and ejb's conected to by the daemon are specified in the
  * qosd.properties file. The location of qosd.properties file is set by the JRE system variable
  * -DpropertiesFile which should be set when OpenNMS is started up. This is set in /etc/opennms.conf file
- * 
+ *
  * Contents of opennms.conf:
  * <CODE>
  * <p>ADDITIONAL_MANAGER_OPTIONS='-Djava.security.policy=/opt/OpenNMS/etc/rmi.policy \
@@ -104,33 +104,40 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * -Djava.naming.factory.initial=org.jnp.interfaces.NamingContextFactory \
  * -Djava.naming.factory.url.pkgs=org.jboss.naming '
  * </CODE>
- * 
+ *
  * rmi.policy sets the security settings to allow the JVM to connect externally
- * 
+ *
  * Contents of rmi.policy:
  * <CODE>grant{permission java.security.AllPermission;};</CODE>
- * 
- * <p>3. The daemon then sends out the full current alarm list to the AlarmMonitor bean and  registers 
+ *
+ * <p>3. The daemon then sends out the full current alarm list to the AlarmMonitor bean and  registers
  * with OpenNMS for events
- * 
+ *
  * <p>The events used to run the QosD bean are determined by the file /etc/QoSD-configuration.xml
  * By default only the 'uei.opennms.org/vacuumd/alarmListChanged' uei is included in this file. This event
- * is generated when the <code>notifyOSSJnewAlarm</code> automation running in the vacuumd deamon 
- * determines that the alarm list has changed. In normal operation there is a short delay between an alarm 
- * entering the alarm list and the notifyOSSJnewAlarm automation picking it up. This can be significantly 
+ * is generated when the <code>notifyOSSJnewAlarm</code> automation running in the vacuumd deamon
+ * determines that the alarm list has changed. In normal operation there is a short delay between an alarm
+ * entering the alarm list and the notifyOSSJnewAlarm automation picking it up. This can be significantly
  * shortend for high priority alarms if their raise uei's are also included in the QoSD-configuration.xml file.
- * However for most alarms this is not worth the effort. 
+ * However for most alarms this is not worth the effort.
  * <p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
-
 public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, EventListener, QoSD {
 
+	/**
+	 * <p>Constructor for QoSDimpl2.</p>
+	 */
 	public QoSDimpl2() {
 		super(NAME);
 	}
 
 	/**
 	 *  Method to get the QosD's logger from OpenNMS
+	 *
+	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
 	 */
 	public static ThreadCategory getLog() {
 		return ThreadCategory.getInstance(QoSDimpl2.class);	
@@ -141,8 +148,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private OssDao ossDao;
 
 	/**
-	 * provides an interface to OpenNMS which provides a unified api 
-	 * @param ossDao the ossDao to set
+	 * {@inheritDoc}
+	 *
+	 * provides an interface to OpenNMS which provides a unified api
 	 */
 	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
@@ -151,9 +159,10 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private OnmsAlarmOssjMapper onmsAlarmOssjMapper; 
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by Spring Application context to pass in OnmsAlarmOssjMapper
 	 * The OnmsAlarmOssjMapper class maps OpenNMS alarms to OSS/J alarms and events
-	 * @param onmsAlarmOssjMapper the onmsAlarmOssjMapper to set
 	 */
 	public void setOnmsAlarmOssjMapper(
 			OnmsAlarmOssjMapper _onmsAlarmOssjMapper) {
@@ -168,8 +177,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private AssetRecordDao assetRecordDao;
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by Spring Application context to pass in AssetRecordDao
-	 * @param ar 
 	 */
 	public void setAssetRecordDao(AssetRecordDao ar){
 		assetRecordDao = ar;
@@ -183,8 +193,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private NodeDao nodeDao;
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by Spring Application context to pass in NodeDaof
-	 * @param nodedao 
 	 */
 	public void setNodeDao( NodeDao nodedao){
 		nodeDao = nodedao;
@@ -197,8 +208,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private EventIpcManager eventIpcManager;
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by Spring Application context to pass in EventIpcManager
-	 * @param eventIpcManager
 	 */
 	public void setEventIpcManager( EventIpcManager evtIpcManager){
 		eventIpcManager = evtIpcManager;
@@ -212,8 +224,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private AlarmDao alarmDao;
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by Spring Application context to pass in alarmDao
-	 * @param alarmDao
 	 */
 	public void setAlarmDao( AlarmDao almDao){
 		alarmDao = almDao;
@@ -227,8 +240,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private AlarmListConnectionManager alarmListConnectionManager;
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by Spring Application context to pass in AlarmListConnectionManager
-	 * @param alcm
 	 */
 	public void setAlarmListConnectionManager( AlarmListConnectionManager alcm) {
 		alarmListConnectionManager =alcm;
@@ -240,8 +254,9 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private ClassPathXmlApplicationContext m_context=null; // used to passapplication context to OssBeans
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Used by jmx mbean QoSD to pass in Spring Application context
-	 * @param m_context - application conext for this bean to use
 	 */
 	public void setApplicationContext(ClassPathXmlApplicationContext m_context){
 		this.m_context = m_context;
@@ -261,6 +276,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	private Hashtable<String,String> triggerUeiList;
 
 
+	/** Constant <code>NAME="OpenOSS.QoSD"</code> */
 	public static final String NAME = "OpenOSS.QoSD";
 	private String m_stats=null;  //not used but needed for initialisation	
 
@@ -270,8 +286,10 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 
 	/*----------------START OF PUBLIC METHODS---------------*/
 
-	/** Method to set up the fiber
-	 *  Note - not used in Spring activation */
+	/**
+	 * Method to set up the fiber
+	 *  Note - not used in Spring activation
+	 */
 	protected void onInit(){
 		ThreadCategory log = getLog();	
 		log.info("Initialising QoSD");
@@ -443,8 +461,8 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 
 	/**
 	 * Stop method of fiber, called by OpenNMS when fiber execution is to
-	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or 
-	 * database connections, before the fiber's execution is ended. 
+	 * finish. Its purpose is to clean everything up, e.g. close any JNDI or
+	 * database connections, before the fiber's execution is ended.
 	 */
 	protected void onStop() {
 		ThreadCategory log = getLog();		//Get a reference to the QoSD logger
@@ -475,7 +493,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 
 
 	/**
-	 * Resume method of fiber, called by OpenNMS to start the fiber up from 
+	 * Resume method of fiber, called by OpenNMS to start the fiber up from
 	 * a paused state.
 	 */
 	protected void onResume() {
@@ -488,7 +506,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 
 
 	/**
-	 * Pause method of fiber, called by OpenNMS to put the fiber in a 
+	 * Pause method of fiber, called by OpenNMS to put the fiber in a
 	 * suspended state until it can be later resumed.
 	 */
 	protected void onPause() {
@@ -528,10 +546,12 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 	}
 
 	/**
-	 * The OpenNMS event listener runs this routine when a 
-	 * new event is detected. This can be run on any event but only needs to run on 
+	 * {@inheritDoc}
+	 *
+	 * The OpenNMS event listener runs this routine when a
+	 * new event is detected. This can be run on any event but only needs to run on
 	 * uei.opennms.org/vacuumd/alarmListChanged
-	 */ 
+	 */
 	public void onEvent(Event event) {
 
 		ThreadCategory log = getLog();
@@ -595,7 +615,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 
 
 	/**
-	 * A method to request an alarm list from the OpenNMS database using the ossDao, 
+	 * A method to request an alarm list from the OpenNMS database using the ossDao,
 	 * convert them to OSS/J alarms using the onmsAlarmOssjMapper and send the OSS/J alarms
 	 * using the alarm list connection manager (alcm) to  update the the AlarmMonitor bean.
 	 * This is called from ossDao every time there is an update to the database.
@@ -706,7 +726,8 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 
 	
 	/**
-	 * not used but needed for initialization 
+	 * not used but needed for initialization
+	 *
 	 * @return stats
 	 */
 	public String getStats() { 

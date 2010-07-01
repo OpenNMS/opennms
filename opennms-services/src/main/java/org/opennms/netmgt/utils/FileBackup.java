@@ -38,11 +38,21 @@ import java.io.IOException;
 
 /**
  * This class is used to make a quick backup of a file
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class FileBackup {
+    /**
+     * <p>makeBackup</p>
+     *
+     * @param originalFile a {@link java.lang.String} object.
+     * @param backupFile a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     public static void makeBackup(String originalFile, String backupFile) throws IOException {
         Runtime runtime = Runtime.getRuntime();
         runtime.exec("cp " + originalFile + " " + backupFile);

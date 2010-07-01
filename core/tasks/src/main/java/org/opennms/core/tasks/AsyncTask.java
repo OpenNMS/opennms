@@ -33,15 +33,37 @@ package org.opennms.core.tasks;
 
 import org.springframework.util.Assert;
 
+/**
+ * <p>AsyncTask class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AsyncTask<T> extends Task {
     
     private final Async<T> m_async;
     private final Callback<T> m_callback;
 
+    /**
+     * <p>Constructor for AsyncTask.</p>
+     *
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     * @param async a {@link org.opennms.core.tasks.Async} object.
+     * @param <T> a T object.
+     */
     public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Async<T> async) {
         this(coordinator, parent, async, null);
     }
     
+    /**
+     * <p>Constructor for AsyncTask.</p>
+     *
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     * @param async a {@link org.opennms.core.tasks.Async} object.
+     * @param callback a {@link org.opennms.core.tasks.Callback} object.
+     */
     public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Async<T> async, Callback<T> callback) {
         super(coordinator, parent);
         Assert.notNull(async, "async parameter must not be null");
@@ -49,11 +71,13 @@ public class AsyncTask<T> extends Task {
         m_callback = callback;
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return String.valueOf(m_async);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void doSubmit() {
         Callback<T> callback = callback();

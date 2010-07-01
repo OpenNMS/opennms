@@ -36,8 +36,19 @@ package org.opennms.netmgt.capsd.snmp;
 
 
 
+/**
+ * <p>Abstract SnmpTableEntry class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class SnmpTableEntry extends SnmpStore {
     
+    /**
+     * <p>Constructor for SnmpTableEntry.</p>
+     *
+     * @param list an array of {@link org.opennms.netmgt.capsd.snmp.NamedSnmpVar} objects.
+     */
     protected SnmpTableEntry(NamedSnmpVar[] list) {
         super(list);
     }

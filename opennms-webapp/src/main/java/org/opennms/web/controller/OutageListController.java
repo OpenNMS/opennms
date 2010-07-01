@@ -61,6 +61,13 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>OutageListController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OutageListController extends AbstractController implements InitializingBean {
     private static final int ROW_LIMIT = 25;
 
@@ -74,14 +81,25 @@ public class OutageListController extends AbstractController implements Initiali
 
     private OutagesFilteringView m_filterView;
 
+    /**
+     * <p>setOutageService</p>
+     *
+     * @param service a {@link org.opennms.web.svclayer.outage.OutageService} object.
+     */
     public void setOutageService(OutageService service) {
         m_outageService = service;
     }
     
+    /**
+     * <p>setFilterView</p>
+     *
+     * @param filterView a {@link org.opennms.web.svclayer.outage.OutagesFilteringView} object.
+     */
     public void setFilterView(OutagesFilteringView filterView) {
         m_filterView = filterView;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse reply) throws Exception {
         Context context = new HttpServletRequestContext(request);
@@ -138,27 +156,57 @@ public class OutageListController extends AbstractController implements Initiali
         return new ModelAndView(getSuccessView(), myModel);
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
     
+    /**
+     * <p>getSuccessView</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSuccessView() {
         return m_successView;
     }
 
+    /**
+     * <p>setDefaultRowsDisplayed</p>
+     *
+     * @param defaultRowsDisplayed a int.
+     */
     public void setDefaultRowsDisplayed(int defaultRowsDisplayed) {
         m_defaultRowsDisplayed = defaultRowsDisplayed;
     }
     
+    /**
+     * <p>getDefaultRowsDisplayed</p>
+     *
+     * @return a int.
+     */
     public int getDefaultRowsDisplayed() {
         return m_defaultRowsDisplayed;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_filterView, "filterView property must be set");
         Assert.notNull(m_outageListBuilder, "outageListBuilder property must be set");
     }
 
+    /**
+     * <p>setOutageListBuilder</p>
+     *
+     * @param outageListBuilder a {@link org.opennms.web.svclayer.outage.OutageListBuilder} object.
+     */
     public void setOutageListBuilder(OutageListBuilder outageListBuilder) {
         m_outageListBuilder = outageListBuilder;
     }

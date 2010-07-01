@@ -8,31 +8,46 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
 
+/**
+ * <p>UpdateEventVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class UpdateEventVisitor extends AbstractEntityVisitor {
     
     private static final String m_eventSource = "Provisiond";
     private EventForwarder m_eventForwarder;
 
+    /**
+     * <p>Constructor for UpdateEventVisitor.</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public UpdateEventVisitor(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
     
+    /** {@inheritDoc} */
     @Override
     public void visitNode(OnmsNode node) {
         LogUtils.infof(this, "Sending nodeAdded Event for %s\n", node);
         m_eventForwarder.sendNow(createNodeUpdatedEvent(node));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visitIpInterface(OnmsIpInterface iface) {
         //TODO decide what to do here and when to do it
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visitMonitoredService(OnmsMonitoredService monSvc) {
         //TODO decide what to do here and when to do it
     }
     
+    /** {@inheritDoc} */
     @Override
     public void visitSnmpInterface(org.opennms.netmgt.model.OnmsEntity snmpIface) {
         //TODO decide what to do here and when to do it

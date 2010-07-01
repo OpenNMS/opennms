@@ -37,15 +37,33 @@ package org.opennms.web.svclayer;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
+ * <p>TroubleTicketProxy interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Transactional
 public interface TroubleTicketProxy {
 
+    /**
+     * <p>createTicket</p>
+     *
+     * @param alarmId a {@link java.lang.Integer} object.
+     */
     public void createTicket(Integer alarmId);
     
+    /**
+     * <p>updateTicket</p>
+     *
+     * @param alarmId a {@link java.lang.Integer} object.
+     */
     public void updateTicket(Integer alarmId);
     
+    /**
+     * <p>closeTicket</p>
+     *
+     * @param alarmId a {@link java.lang.Integer} object.
+     */
     public void closeTicket(Integer alarmId);
 }

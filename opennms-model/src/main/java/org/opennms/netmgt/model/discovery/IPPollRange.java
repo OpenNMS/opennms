@@ -49,11 +49,17 @@ import java.util.Iterator;
  * can return either an {@link java.util.Enumeration enumeration}or an
  * {@link java.util.Iterator iterator}to traverse the range of addresses.
  * </p>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class IPPollRange implements Iterable<IPPollAddress> {
     /**
@@ -169,7 +175,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * values of timeout and retry are set in each generated IPPollAddress
      * object.
      * </P>
-     * 
+     *
      * @param fromIP
      *            The start of the address range to cycle over.
      * @param toIP
@@ -178,10 +184,9 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      *            The timeout for each generated IPPollAddress.
      * @param retries
      *            The number of retries for generated addresses.
-     * 
      * @see IPPollAddress
      * @see IPAddrRange
-     * 
+     * @throws java.net.UnknownHostException if any.
      */
     public IPPollRange(String fromIP, String toIP, long timeout, int retries) throws java.net.UnknownHostException {
         m_range = new IPAddrRange(fromIP, toIP);
@@ -245,6 +250,8 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * Returns the timeout set for the object. The timeout should be in 1/1000th
      * of a second increments.
      * </P>
+     *
+     * @return a long.
      */
     public long getTimeout() {
         return m_timeout;
@@ -254,6 +261,8 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * <P>
      * Returns the retry count for the object.
      * </P>
+     *
+     * @return a int.
      */
     public int getRetries() {
         return m_retries;
@@ -264,6 +273,8 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * Returns the configured address ranges that are encapsulated by this
      * object.
      * </P>
+     *
+     * @return a {@link org.opennms.netmgt.model.discovery.IPAddrRange} object.
      */
     public IPAddrRange getAddressRange() {
         return m_range;
@@ -274,6 +285,8 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * Returns an Enumeration that can be used to cycle over the range of
      * pollable addresses.
      * </P>
+     *
+     * @return a {@link java.util.Enumeration} object.
      */
     public Enumeration<IPPollAddress> elements() {
         return new IPPollRangeGenerator(m_range.elements());
@@ -284,6 +297,8 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * Returns an Iterator object that can be used to cycle over the range of
      * pollable address information.
      * </P>
+     *
+     * @return a {@link java.util.Iterator} object.
      */
     public Iterator<IPPollAddress> iterator() {
         return new IPPollRangeGenerator(m_range.elements());

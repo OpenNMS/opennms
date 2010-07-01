@@ -57,19 +57,19 @@ import org.opennms.netmgt.rtc.datablock.RTCCategory;
  * The RTCManager maintains data required so as to calculate availability for
  * the different categories configured in categories.xml
  * </P>
- * 
+ *
  * <P>
  * The RTC initializes its data from the database when it comes up. It then
  * subscribes to the Events subsystem to receive events of interest to keep the
  * data up-to-date
  * </P>
- * 
+ *
  * <P>
  * Availability data is sent out to listeners who indicate that they are
  * listening by sending an RTC 'subscribe' event. The subscribe event has an URL
  * and user/passwd info. so RTC can post data to the URL
  * </P>
- * 
+ *
  * <P>
  * The RTC has two timers(a low threshold and a high threshold) and a counter
  * that can run upto a configurable max number of events - these are used to
@@ -78,13 +78,15 @@ import org.opennms.netmgt.rtc.datablock.RTCCategory;
  * configured with a user configured time(defaulting to one minute) decides the
  * interval at which data is sent
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * @see org.opennms.netmgt.rtc.RTCConstants
  * @see org.opennms.netmgt.rtc.DataSender
  * @see org.opennms.netmgt.rtc.DataManager
+ * @version $Id: $
  */
 public final class RTCManager extends AbstractServiceDaemon {
 
@@ -315,7 +317,6 @@ public final class RTCManager extends AbstractServiceDaemon {
 
     /**
      * The constructor for the RTCManager
-     * 
      */
     public RTCManager() {
     	super("OpenNMS.RTCManager");
@@ -441,6 +442,9 @@ public final class RTCManager extends AbstractServiceDaemon {
 
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
 
         // load the rtc configuration
@@ -536,6 +540,9 @@ public final class RTCManager extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
 		//
         // Start all the threads
@@ -588,6 +595,9 @@ public final class RTCManager extends AbstractServiceDaemon {
         }
 	}
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
 		try {
             if (log().isDebugEnabled())
@@ -649,7 +659,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
     /**
      * Get the data sender.
-     * 
+     *
      * @return the data sender
      */
     public DataSender getDataSender() {
@@ -658,7 +668,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
     /**
      * Gets the categories.
-     * 
+     *
      * @return the categories
      */
     public static Map<String, RTCCategory> getCategories() {
@@ -667,7 +677,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
     /**
      * Gets the data manager.
-     * 
+     *
      * @return the data manager
      */
     public static DataManager getDataManager() {
@@ -676,6 +686,8 @@ public final class RTCManager extends AbstractServiceDaemon {
 
     /**
      * Sets the data manager.
+     *
+     * @param dataMgr a {@link org.opennms.netmgt.rtc.DataManager} object.
      */
     public static void setDataManager(DataManager dataMgr) {
         m_dataMgr = dataMgr;
@@ -683,7 +695,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
     /**
      * Gets the rolling window.
-     * 
+     *
      * @return the configured rolling window
      */
     public static long getRollingWindow() {
@@ -692,7 +704,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
     /**
      * Gets the instance of the RTCmanager.
-     * 
+     *
      * @return the RTCManager singleton.
      */
     public static RTCManager getInstance() {

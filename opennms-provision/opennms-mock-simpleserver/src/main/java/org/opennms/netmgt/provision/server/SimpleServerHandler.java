@@ -37,22 +37,31 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.server.exchange.LineConversation;
 
 /**
- * @author thedesloge
+ * <p>SimpleServerHandler class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class SimpleServerHandler extends IoHandlerAdapter {
     
     private LineConversation m_conversation;
     
+    /**
+     * <p>Constructor for SimpleServerHandler.</p>
+     *
+     * @param conversation a {@link org.opennms.netmgt.provision.server.exchange.LineConversation} object.
+     */
     public SimpleServerHandler(LineConversation conversation) {
         m_conversation = conversation;
     }
     
+    /** {@inheritDoc} */
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         cause.printStackTrace();
     }
     
+    /** {@inheritDoc} */
     @Override
     public void sessionOpened(IoSession session) throws Exception {
         LogUtils.infof(this, "Session opened");
@@ -62,6 +71,7 @@ public class SimpleServerHandler extends IoHandlerAdapter {
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public void messageReceived (IoSession session, Object message) throws Exception {
         LogUtils.infof(this, "Server received: %s\n", message.toString().trim());
@@ -76,6 +86,7 @@ public class SimpleServerHandler extends IoHandlerAdapter {
         
     }
     
+    /** {@inheritDoc} */
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         LogUtils.infof(this, "IDLE " + session.getIdleCount(status));
     }

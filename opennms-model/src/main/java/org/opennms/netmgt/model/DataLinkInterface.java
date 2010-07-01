@@ -30,8 +30,12 @@
 //     http://www.opennms.com/
 //
 /**
+ * <p>DataLinkInterface class.</p>
+ *
  * @author: joed
  * Date  : Jul 31, 2008
+ * @author ranger
+ * @version $Id: $
  */
 
 package org.opennms.netmgt.model;
@@ -74,10 +78,23 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
 	@Column(name="lastpolltime", nullable=false)
     private Date lastPollTime;
 
+    /**
+     * <p>Constructor for DataLinkInterface.</p>
+     */
     public DataLinkInterface() {
         // not sure what to do here, but Hibernate wants it.
     }
 
+    /**
+     * <p>Constructor for DataLinkInterface.</p>
+     *
+     * @param nodeId a int.
+     * @param ifIndex a int.
+     * @param nodeParentId a int.
+     * @param parentIfIndex a int.
+     * @param status a {@link java.lang.String} object.
+     * @param lastPollTime a {@link java.util.Date} object.
+     */
     public DataLinkInterface(int nodeId, int ifIndex, int nodeParentId, int parentIfIndex, String status, Date lastPollTime) {
         this.nodeId = nodeId;
         this.ifIndex = ifIndex;
@@ -93,7 +110,6 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
      *
      * @return the nodeId (type Integer) of this DataLinkInterface object.
      */
-
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")
@@ -101,14 +117,29 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         return id;
     }
 
+    /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
+     * @param id a int.
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * <p>Getter for the field <code>nodeId</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getNodeId() {
         return nodeId;
     }
 
+    /**
+     * <p>Setter for the field <code>nodeId</code>.</p>
+     *
+     * @param nodeId a int.
+     */
     public void setNodeId(int nodeId) {
         this.nodeId = nodeId;
     }
@@ -122,6 +153,11 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         return ifIndex;
     }
 
+    /**
+     * <p>Setter for the field <code>ifIndex</code>.</p>
+     *
+     * @param ifIndex a int.
+     */
     public void setIfIndex(int ifIndex) {
         this.ifIndex = ifIndex;
     }
@@ -135,6 +171,11 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         return nodeParentId;
     }
 
+    /**
+     * <p>Setter for the field <code>nodeParentId</code>.</p>
+     *
+     * @param nodeParentId a int.
+     */
     public void setNodeParentId(int nodeParentId) {
         this.nodeParentId = nodeParentId;
     }
@@ -148,6 +189,11 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         return parentIfIndex;
     }
 
+    /**
+     * <p>Setter for the field <code>parentIfIndex</code>.</p>
+     *
+     * @param parentIfIndex a int.
+     */
     public void setParentIfIndex(int parentIfIndex) {
         this.parentIfIndex = parentIfIndex;
     }
@@ -161,14 +207,29 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         return status;
     }
 
+    /**
+     * <p>Setter for the field <code>status</code>.</p>
+     *
+     * @param status a {@link java.lang.String} object.
+     */
     public void setStatus(String status) {
         this.status = status;
     }
 
+    /**
+     * <p>Getter for the field <code>linkTypeId</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getLinkTypeId() {
         return linkTypeId;
     }
 
+    /**
+     * <p>Setter for the field <code>linkTypeId</code>.</p>
+     *
+     * @param linkTypeId a {@link java.lang.Integer} object.
+     */
     public void setLinkTypeId(Integer linkTypeId) {
         this.linkTypeId = linkTypeId;
     }
@@ -182,10 +243,21 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
         return lastPollTime;
     }
 
+    /**
+     * <p>Setter for the field <code>lastPollTime</code>.</p>
+     *
+     * @param lastPollTime a {@link java.util.Date} object.
+     */
     public void setLastPollTime(Date lastPollTime) {
         this.lastPollTime = lastPollTime;
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.model.DataLinkInterface} object.
+     * @return a int.
+     */
     public int compareTo(DataLinkInterface o) {
         return new CompareToBuilder()
             .append(getId(), o.getId())
@@ -199,6 +271,11 @@ public class DataLinkInterface  implements Serializable, Comparable<DataLinkInte
             .toComparison();
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return new HashCodeBuilder()
             .append(getId())

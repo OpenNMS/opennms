@@ -33,8 +33,19 @@ package org.opennms.netmgt.model;
 
 import org.opennms.core.fiber.PausableFiber;
 
+/**
+ * <p>ServiceDaemon interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ServiceDaemon extends PausableFiber {
 	
+	 /**
+	  * <p>status</p>
+	  *
+	  * @return a {@link java.lang.String} object.
+	  */
 	 public String status();
 
 }

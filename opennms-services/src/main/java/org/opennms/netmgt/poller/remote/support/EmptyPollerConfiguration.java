@@ -46,10 +46,20 @@ import org.opennms.netmgt.poller.remote.PollerConfiguration;
  */
 class EmptyPollerConfiguration implements PollerConfiguration {
 
+    /**
+     * <p>getConfigurationTimestamp</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getConfigurationTimestamp() {
         return new Date(0);
     }
 
+    /**
+     * <p>getPolledServices</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.poller.remote.PolledService} objects.
+     */
     public PolledService[] getPolledServices() {
         return new PolledService[0];
     }

@@ -47,13 +47,18 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.util.Assert;
 /**
- * @author david
+ * <p>IpInterfaceDaoHibernate class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
     
     String m_findByServiceTypeQuery = null;
 
+    /**
+     * <p>Constructor for IpInterfaceDaoHibernate.</p>
+     */
     public IpInterfaceDaoHibernate() {
         super(OnmsIpInterface.class);
         
@@ -63,14 +68,17 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         
     }
 
+    /** {@inheritDoc} */
     public OnmsIpInterface get(OnmsNode node, String ipAddress) {
         return findUnique("from OnmsIpInterface as ipIf where ipIf.node = ? and ipIf.ipAddress = ?", node, ipAddress);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsIpInterface> findByIpAddress(String ipAddress) {
         return find("from OnmsIpInterface ipIf where ipIf.ipAddress = ?", ipAddress);
     }
     
+    /** {@inheritDoc} */
     public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
         return findUnique("select iface from OnmsIpInterface as iface where iface.node.id = ? and iface.ipAddress = ?", 
                           nodeId, 
@@ -78,6 +86,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         
     }
 
+    /** {@inheritDoc} */
     public OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress) {
         return findUnique("select iface from OnmsIpInterface as iface join iface.node as node where node.foreignSource = ? and node.foreignId = ? and iface.ipAddress = ?", 
                           foreignSource, 
@@ -86,11 +95,13 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsIpInterface> findByServiceType(String svcName) {
         
         return find(m_findByServiceTypeQuery, svcName);
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
         return find("select distinct ipIf " +
                     "from OnmsIpInterface as ipIf " +
@@ -102,6 +113,11 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
                     "where monSvc.serviceType.name = ?", svcName);
     }
 
+    /**
+     * <p>getInterfacesForNodes</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     @SuppressWarnings("unchecked")
     public Map<String, Integer> getInterfacesForNodes() {
         Map<String, Integer> map = new HashMap<String, Integer>();
@@ -117,6 +133,13 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         return map;
     }
 
+    /**
+     * <p>addressExistsWithForeignSource</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean addressExistsWithForeignSource(String ipAddress, String foreignSource) {
         Assert.notNull(ipAddress, "ipAddress cannot be null");
         if (foreignSource == null) {

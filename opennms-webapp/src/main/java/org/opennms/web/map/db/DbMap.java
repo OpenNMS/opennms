@@ -8,6 +8,13 @@ package org.opennms.web.map.db;
 
 import java.sql.Timestamp;
 
+/**
+ * <p>DbMap class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DbMap {
 
     private int id;
@@ -42,10 +49,20 @@ public class DbMap {
 
     private boolean isNew = false;
 
+    /**
+     * <p>Constructor for DbMap.</p>
+     */
     public DbMap() {
         this.isNew = true;
     }
     
+    /**
+     * <p>Constructor for DbMap.</p>
+     *
+     * @param id a int.
+     * @param name a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     */
     public DbMap(int id, String name, String owner) {
         this.id = id;
         this.name = name;
@@ -53,6 +70,22 @@ public class DbMap {
     }
   
     
+    /**
+     * <p>Constructor for DbMap.</p>
+     *
+     * @param id a int.
+     * @param name a {@link java.lang.String} object.
+     * @param background a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     * @param accessMode a {@link java.lang.String} object.
+     * @param userLastModifies a {@link java.lang.String} object.
+     * @param scale a float.
+     * @param offsetX a int.
+     * @param offsetY a int.
+     * @param type a {@link java.lang.String} object.
+     * @param width a int.
+     * @param height a int.
+     */
     public DbMap(int id, String name, String background, String owner,
             String accessMode, String userLastModifies, float scale,
             int offsetX, int offsetY, String type, int width, int height) {
@@ -70,6 +103,23 @@ public class DbMap {
         this.height=height;
     }
 
+    /**
+     * <p>Constructor for DbMap.</p>
+     *
+     * @param id a int.
+     * @param name a {@link java.lang.String} object.
+     * @param background a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     * @param group a {@link java.lang.String} object.
+     * @param accessMode a {@link java.lang.String} object.
+     * @param userLastModifies a {@link java.lang.String} object.
+     * @param scale a float.
+     * @param offsetX a int.
+     * @param offsetY a int.
+     * @param type a {@link java.lang.String} object.
+     * @param width a int.
+     * @param height a int.
+     */
     public DbMap(int id, String name, String background, String owner, String group,
             String accessMode, String userLastModifies, float scale,
             int offsetX, int offsetY, String type, int width, int height) {
@@ -90,6 +140,8 @@ public class DbMap {
 
 
     /**
+     * <p>Getter for the field <code>accessMode</code>.</p>
+     *
      * @return Returns the accessMode.
      */
     public String getAccessMode() {
@@ -97,6 +149,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>accessMode</code>.</p>
+     *
      * @param accessMode
      *            The accessMode to set.
      */
@@ -105,6 +159,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>background</code>.</p>
+     *
      * @return Returns the background.
      */
     public String getBackground() {
@@ -112,6 +168,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>background</code>.</p>
+     *
      * @param background
      *            The background to set.
      */
@@ -120,6 +178,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>createTime</code>.</p>
+     *
      * @return Returns the createTime.
      */
     public Timestamp getCreateTime() {
@@ -127,6 +187,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>createTime</code>.</p>
+     *
      * @param createTime
      *            The createTime to set.
      */
@@ -135,6 +197,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>lastModifiedTime</code>.</p>
+     *
      * @return Returns the lastModifiedTime.
      */
     public Timestamp getLastModifiedTime() {
@@ -142,6 +206,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>lastModifiedTime</code>.</p>
+     *
      * @param lastModifiedTime
      *            The lastModifiedTime to set.
      */
@@ -150,6 +216,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
      * @return Returns the name.
      */
     public String getName() {
@@ -157,6 +225,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
      * @param name
      *            The name to set.
      */
@@ -165,6 +235,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>offsetX</code>.</p>
+     *
      * @return Returns the offsetX.
      */
     public int getOffsetX() {
@@ -172,6 +244,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>offsetX</code>.</p>
+     *
      * @param offsetX
      *            The offsetX to set.
      */
@@ -180,6 +254,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>offsetY</code>.</p>
+     *
      * @return Returns the offsetY.
      */
     public int getOffsetY() {
@@ -187,6 +263,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>offsetY</code>.</p>
+     *
      * @param offsetY
      *            The offsetY to set.
      */
@@ -195,6 +273,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>owner</code>.</p>
+     *
      * @return Returns the owner.
      */
     public String getOwner() {
@@ -202,6 +282,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>owner</code>.</p>
+     *
      * @param owner
      *            The owner to set.
      */
@@ -210,6 +292,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>scale</code>.</p>
+     *
      * @return Returns the scale.
      */
     public float getScale() {
@@ -217,6 +301,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>scale</code>.</p>
+     *
      * @param scale
      *            The scale to set.
      */
@@ -225,6 +311,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>userLastModifies</code>.</p>
+     *
      * @return Returns the userLastModifies.
      */
     public String getUserLastModifies() {
@@ -232,6 +320,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>userLastModifies</code>.</p>
+     *
      * @param userLastModifies
      *            The userLastModifies to set.
      */
@@ -240,6 +330,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Getter for the field <code>type</code>.</p>
+     *
      * @return Returns the type.
      */
     public String getType() {
@@ -247,6 +339,8 @@ public class DbMap {
     }
 
     /**
+     * <p>Setter for the field <code>type</code>.</p>
+     *
      * @param type
      *            The type to set.
      */
@@ -254,38 +348,88 @@ public class DbMap {
         this.type = type;
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a int.
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
+     * @param id a int.
+     */
     public void setId(int id) {
             this.id=id;
     }
 
+    /**
+     * <p>isNew</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNew() {
         return this.isNew;
     }
 
+    /**
+     * <p>setAsNew</p>
+     *
+     * @param v a boolean.
+     */
     public void setAsNew(boolean v) {
         this.isNew = v;
     }
+	/**
+	 * <p>Getter for the field <code>height</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getHeight() {
 		return height;
 	}
+	/**
+	 * <p>Setter for the field <code>height</code>.</p>
+	 *
+	 * @param height a int.
+	 */
 	public void setHeight(int height) {
 		this.height = height;
 	}
+	/**
+	 * <p>Getter for the field <code>width</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getWidth() {
 		return width;
 	}
+	/**
+	 * <p>Setter for the field <code>width</code>.</p>
+	 *
+	 * @param width a int.
+	 */
 	public void setWidth(int width) {
 		this.width = width;
 	}
 
+    /**
+     * <p>Getter for the field <code>group</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGroup() {
         return group;
     }
 
+    /**
+     * <p>Setter for the field <code>group</code>.</p>
+     *
+     * @param group a {@link java.lang.String} object.
+     */
     public void setGroup(String group) {
         this.group = group;
     }

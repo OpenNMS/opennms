@@ -75,6 +75,13 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
  */
 public class UserDaoImpl implements UserDao, InitializingBean {
     private static final UpperCaseMd5PasswordEncoder PASSWORD_ENCODER = new UpperCaseMd5PasswordEncoder();
@@ -107,6 +114,9 @@ public class UserDaoImpl implements UserDao, InitializingBean {
 
     private boolean m_useGroups;
 
+    /**
+     * <p>Constructor for UserDaoImpl.</p>
+     */
     public UserDaoImpl() {
     }
     
@@ -293,6 +303,12 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         return authorities.toArray(new GrantedAuthority[authorities.size()]);
     }
 
+    /**
+     * <p>getAuthoritiesByUsername</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     * @return an array of {@link org.springframework.security.GrantedAuthority} objects.
+     */
     protected GrantedAuthority[] getAuthoritiesByUsername(String user) {
         if (m_roles.containsKey(user)) {
             return m_roles.get(user);
@@ -373,30 +389,61 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         return false;
     }
 
+    /**
+     * <p>setUsersConfigurationFile</p>
+     *
+     * @param usersConfigurationFile a {@link java.lang.String} object.
+     */
     public void setUsersConfigurationFile(String usersConfigurationFile) {
         m_usersConfigurationFile = usersConfigurationFile;
     }
     
+    /**
+     * <p>setGroupsConfigurationFile</p>
+     *
+     * @param groupsConfigurationFile a {@link java.lang.String} object.
+     */
     public void setGroupsConfigurationFile(String groupsConfigurationFile) {
         m_groupsConfigurationFile = groupsConfigurationFile;
     }
     
+    /**
+     * <p>setUseGroups</p>
+     *
+     * @param useGroups a boolean.
+     */
     public void setUseGroups(boolean useGroups){
         m_useGroups = useGroups;
     }
 
+    /**
+     * <p>getUsersConfigurationFile</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUsersConfigurationFile() {
         return m_usersConfigurationFile;
     }
 
+    /**
+     * <p>setMagicUsersConfigurationFile</p>
+     *
+     * @param magicUsersConfigurationFile a {@link java.lang.String} object.
+     */
     public void setMagicUsersConfigurationFile(String magicUsersConfigurationFile) {
         m_magicUsersConfigurationFile = magicUsersConfigurationFile;
     }
 
+    /**
+     * <p>getMagicUsersConfigurationFile</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMagicUsersConfigurationFile() {
         return m_magicUsersConfigurationFile;
     }
 
+    /** {@inheritDoc} */
     public org.opennms.web.springframework.security.User getByUsername(String username) {
         reloadIfNecessary();
 
@@ -433,22 +480,45 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getMagicUsersLastModified</p>
+     *
+     * @return a long.
+     */
     public long getMagicUsersLastModified() {
         return m_magicUsersLastModified;
     }
 
+    /**
+     * <p>getUsersLastModified</p>
+     *
+     * @return a long.
+     */
     public long getUsersLastModified() {
         return m_usersLastModified;
     }
     
+    /**
+     * <p>getGroupsLastModified</p>
+     *
+     * @return a long.
+     */
     public long getGroupsLastModified() {
         return m_groupsLastModified;
     }
     
+    /**
+     * <p>isUseGroups</p>
+     *
+     * @return a boolean.
+     */
     public boolean isUseGroups() {
         return m_useGroups;
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_usersConfigurationFile != null, "usersConfigurationFile parameter must be set to the location of the users.xml configuration file");
         Assert.state(!m_useGroups || m_groupsConfigurationFile != null, "groupsConfigurationFile parameter must be set to the location of the groups.xml configuration file");

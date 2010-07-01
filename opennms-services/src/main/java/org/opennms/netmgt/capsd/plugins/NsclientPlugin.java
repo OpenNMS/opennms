@@ -49,9 +49,12 @@ import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
  * whether a NSClient service is running on the remote server and if the given
  * command can be successfully executed against the service.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class NsclientPlugin extends AbstractPlugin {
 
@@ -73,7 +76,7 @@ public class NsclientPlugin extends AbstractPlugin {
     /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.
-     * 
+     *
      * @return The protocol name for this plugin.
      */
     public String getProtocolName() {
@@ -81,6 +84,8 @@ public class NsclientPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If
      * the protocol is not supported then a false value is returned to the
      * caller.
@@ -88,12 +93,6 @@ public class NsclientPlugin extends AbstractPlugin {
      * The NsclientPlugin does not support undirected checks, we must have a
      * map of parameters to determine how to issue a check to the target
      * server.
-     * 
-     * @param address
-     *            The address to check for support.
-     * @return True if the protocol is supported by the address.
-     * @throws java.lang.UnsupportedOperationException
-     *             This is always thrown by this plugin.
      */
     public boolean isProtocolSupported(InetAddress address) {
         throw new UnsupportedOperationException(
@@ -102,6 +101,8 @@ public class NsclientPlugin extends AbstractPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If
      * the protocol is not supported then a false value is returned to the
      * caller. The qualifier map passed to the method is used by the plugin to
@@ -126,12 +127,6 @@ public class NsclientPlugin extends AbstractPlugin {
      * Protocol will return as supported only if the result code is
      * <code>NsclientPacket.RES_STATE_OK</code> or
      * <code>NsclientPacket.RES_STATE_WARNING</code>.
-     * 
-     * @param address
-     *            The address to check for support.
-     * @param qualifiers
-     *            The map where qualification are set by the plugin.
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
         int retries = DEFAULT_RETRY;

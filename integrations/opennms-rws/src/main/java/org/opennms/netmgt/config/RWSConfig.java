@@ -41,24 +41,62 @@ import org.opennms.netmgt.config.rws.StandbyUrl;
 import org.opennms.rancid.ConnectionProperties;
 
 /**
+ * <p>RWSConfig interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public interface RWSConfig {
+    /**
+     * <p>getBase</p>
+     *
+     * @return a {@link org.opennms.rancid.ConnectionProperties} object.
+     */
     public ConnectionProperties getBase();
     
+    /**
+     * <p>getStandBy</p>
+     *
+     * @return an array of {@link org.opennms.rancid.ConnectionProperties} objects.
+     */
     public ConnectionProperties[] getStandBy();
     
+    /**
+     * <p>getNextStandBy</p>
+     *
+     * @return a {@link org.opennms.rancid.ConnectionProperties} object.
+     */
     public ConnectionProperties getNextStandBy();
     
+    /**
+     * <p>getBaseUrl</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.rws.BaseUrl} object.
+     */
     public BaseUrl getBaseUrl();
     
+    /**
+     * <p>getStanbyUrls</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.config.rws.StandbyUrl} objects.
+     */
     public StandbyUrl[] getStanbyUrls();
     
+    /**
+     * <p>getNextStandbyUrl</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.rws.StandbyUrl} object.
+     */
     public StandbyUrl getNextStandbyUrl();
     
+    /**
+     * <p>hasStandbyUrl</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasStandbyUrl();
 
     //public void update() throws IOException, MarshalException, ValidationException;

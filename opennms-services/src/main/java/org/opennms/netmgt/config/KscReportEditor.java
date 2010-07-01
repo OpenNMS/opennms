@@ -51,6 +51,12 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 
+/**
+ * <p>KscReportEditor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class KscReportEditor implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -76,7 +82,11 @@ public class KscReportEditor implements Serializable {
         return new_report;
     }
 
-    /** Returns the working report object */
+    /**
+     * Returns the working report object
+     *
+     * @return a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     */
     public Report getWorkingReport() {
         return m_workingReport;
     }
@@ -85,17 +95,29 @@ public class KscReportEditor implements Serializable {
         m_workingReport = report;
     }
 
-    /** Returns the working graph object */
+    /**
+     * Returns the working graph object
+     *
+     * @return a {@link org.opennms.netmgt.config.kscReports.Graph} object.
+     */
     public Graph getWorkingGraph() {
         return m_workingGraph;
     }
 
-    /** Returns the working graph index */
+    /**
+     * Returns the working graph index
+     *
+     * @return a int.
+     */
     public int getWorkingGraphIndex() {
         return m_workingGraphIndex;
     }
 
-    /** Create a new blank graph & initialize it */
+    /**
+     * Create a new blank graph & initialize it
+     *
+     * @return a {@link org.opennms.netmgt.config.kscReports.Graph} object.
+     */
     public static Graph getNewGraph() {
         Graph new_graph = new Graph();
         new_graph.setTitle("");
@@ -107,6 +129,10 @@ public class KscReportEditor implements Serializable {
     /**
      * Loads the indexed graph from the working report into the working graph
      * object or creates a new one if the object does not exist
+     *
+     * @param index a int.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void loadWorkingGraph(int index) throws MarshalException, ValidationException {
         int total_graphs = m_workingReport.getGraphCount();
@@ -125,6 +151,10 @@ public class KscReportEditor implements Serializable {
      * Unloads the working graph into the working report list at the requested
      * graph number. If the graph was modified from an existing graph, then the
      * old one is replaced. A new blank working graph is then created
+     *
+     * @param requested_graphnum a int.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void unloadWorkingGraph(int requested_graphnum) throws MarshalException, ValidationException {
         int total_graphs = m_workingReport.getGraphCount();
@@ -153,6 +183,10 @@ public class KscReportEditor implements Serializable {
 
     /**
      * Loads the source report into the working report object as a new report.
+     *
+     * @param report a {@link org.opennms.netmgt.config.kscReports.Report} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void loadWorkingReport(Report report) throws MarshalException, ValidationException {
         setWorkingReport(duplicateCastorObject(report, Report.class));
@@ -161,6 +195,11 @@ public class KscReportEditor implements Serializable {
 
     /**
      * Loads the indexed report into the working report object.
+     *
+     * @param factory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param index a int.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void loadWorkingReport(KSC_PerformanceReportFactory factory, int index) throws MarshalException, ValidationException {
         Report report = factory.getReportByIndex(index);
@@ -175,6 +214,11 @@ public class KscReportEditor implements Serializable {
      * Loads the indexed report into the working report object as a duplicate
      * report.  The ID in the loaded report will be removed so a new ID will
      * be created when the duplicated report is saved.
+     *
+     * @param factory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @param index a int.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void loadWorkingReportDuplicate(KSC_PerformanceReportFactory factory, int index) throws MarshalException, ValidationException {
         loadWorkingReport(factory, index);
@@ -194,6 +238,10 @@ public class KscReportEditor implements Serializable {
      * Unloads the working report into the indexed report list at the point
      * identified by working_index (this should have been set when the working
      * report was loaded), then create a new blank working report
+     *
+     * @param factory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void unloadWorkingReport(KSC_PerformanceReportFactory factory) throws MarshalException, ValidationException {
         if (getWorkingReport().hasId()) {
@@ -216,6 +264,13 @@ public class KscReportEditor implements Serializable {
         return (T) Unmarshaller.unmarshal(clazz, stringReader);
     }
     
+    /**
+     * <p>getFromSession</p>
+     *
+     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param required a boolean.
+     * @return a {@link org.opennms.netmgt.config.KscReportEditor} object.
+     */
     public static KscReportEditor getFromSession(HttpSession session, boolean required) {
         String attributeName = KscReportEditor.class.getName();
         

@@ -9,6 +9,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>MatchingIpInterfacePolicy class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 @Policy("Match IP Interface")
 public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> implements IpInterfacePolicy {
@@ -19,11 +25,21 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
     
     private Action m_action = Action.DO_NOT_PERSIST;
 
+    /**
+     * <p>getAction</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Require({"MANAGE", "UNMANAGE", "DO_NOT_PERSIST"})
     public String getAction() {
         return m_action.toString();
     }
     
+    /**
+     * <p>setAction</p>
+     *
+     * @param action a {@link java.lang.String} object.
+     */
     public void setAction(String action) {
         if (Action.MANAGE.toString().equalsIgnoreCase(action)) {
             m_action = Action.MANAGE;
@@ -34,6 +50,7 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public OnmsIpInterface act(OnmsIpInterface iface) {
         switch (m_action) {
@@ -53,15 +70,35 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
         }
     }
     
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipAddress) {
         putCriteria("ipAddress", ipAddress);
     }
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return getCriteria("ipAddress");
     }
+    /**
+     * <p>setHostName</p>
+     *
+     * @param hostName a {@link java.lang.String} object.
+     */
     public void setHostName(String hostName) {
         putCriteria("ipHostName", hostName);
     }
+    /**
+     * <p>getHostName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHostName() {
         return getCriteria("ipHostName");
     }

@@ -48,6 +48,12 @@ import org.opennms.netmgt.provision.service.ProvisionService;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+/**
+ * <p>Abstract SaveOrUpdateOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class SaveOrUpdateOperation extends ImportOperation {
 
     private final OnmsNode m_node;
@@ -55,10 +61,31 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     
     private ScanManager m_scanManager;
     
+    /**
+     * <p>Constructor for SaveOrUpdateOperation.</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     * @param city a {@link java.lang.String} object.
+     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     */
     public SaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
 		this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService);
 	}
 
+	/**
+	 * <p>Constructor for SaveOrUpdateOperation.</p>
+	 *
+	 * @param nodeId a {@link java.lang.Integer} object.
+	 * @param foreignSource a {@link java.lang.String} object.
+	 * @param foreignId a {@link java.lang.String} object.
+	 * @param nodeLabel a {@link java.lang.String} object.
+	 * @param building a {@link java.lang.String} object.
+	 * @param city a {@link java.lang.String} object.
+	 * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+	 */
 	public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
 	    super(provisionService);
 	    
@@ -73,10 +100,24 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.getAssetRecord().setCity(city);
 	}
 	
+	/**
+	 * <p>getScanManager</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.provision.service.operations.ScanManager} object.
+	 */
 	public ScanManager getScanManager() {
 	    return m_scanManager;
 	}
 
+	/**
+	 * <p>foundInterface</p>
+	 *
+	 * @param ipAddr a {@link java.lang.String} object.
+	 * @param descr a {@link java.lang.Object} object.
+	 * @param snmpPrimary a {@link java.lang.String} object.
+	 * @param managed a boolean.
+	 * @param status a int.
+	 */
 	public void foundInterface(String ipAddr, Object descr, String snmpPrimary, boolean managed, int status) {
 		
 		if (ipAddr == null || "".equals(ipAddr)) {
@@ -104,16 +145,27 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.addIpInterface(m_currentInterface);
     }
 	
+    /**
+     * <p>scan</p>
+     */
     public void scan() {
     	updateSnmpData();
 	}
 	
+    /**
+     * <p>updateSnmpData</p>
+     */
     protected void updateSnmpData() {
         if (m_scanManager != null) {
             m_scanManager.updateSnmpData(m_node);
         }
 	}
 
+    /**
+     * <p>foundMonitoredService</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     */
     public void foundMonitoredService(String serviceName) {
         // current interface may be null if it has no ipaddr
         if (m_currentInterface != null) {
@@ -125,15 +177,31 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     
     }
 
+    /**
+     * <p>foundCategory</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void foundCategory(String name) {
         OnmsCategory category = getProvisionService().createCategoryIfNecessary(name);
         m_node.getCategories().add(category);
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     protected OnmsNode getNode() {
         return m_node;
     }
 
+    /**
+     * <p>foundAsset</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public void foundAsset(String name, String value) {
         BeanWrapper w = new BeanWrapperImpl(m_node.getAssetRecord());
         w.setPropertyValue(name, value);

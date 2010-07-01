@@ -50,12 +50,27 @@ import javax.sql.DataSource;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
 
+/**
+ * <p>SimpleDataSource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SimpleDataSource implements DataSource {
     private String m_driver;
     private String m_url;
     private Properties m_properties = new Properties();
     private Integer m_timeout = null;
 
+    /**
+     * <p>Constructor for SimpleDataSource.</p>
+     *
+     * @param driver a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
+     * @throws java.lang.ClassNotFoundException if any.
+     */
     public SimpleDataSource(String driver, String url, String user, String password) throws ClassNotFoundException {
         m_driver = driver;
         m_url = url;
@@ -66,6 +81,12 @@ public class SimpleDataSource implements DataSource {
         Class.forName(m_driver);
     }
     
+    /**
+     * <p>Constructor for SimpleDataSource.</p>
+     *
+     * @param ds a {@link org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource} object.
+     * @throws java.lang.ClassNotFoundException if any.
+     */
     public SimpleDataSource(JdbcDataSource ds) throws ClassNotFoundException {
         this(ds.getClassName(), ds.getUrl(), ds.getUserName(), ds.getPassword());
         
@@ -74,6 +95,12 @@ public class SimpleDataSource implements DataSource {
         }
     }
 
+    /**
+     * <p>getConnection</p>
+     *
+     * @return a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public Connection getConnection() throws SQLException {
         if (m_timeout == null) {
             return DriverManager.getConnection(m_url, m_properties);
@@ -86,58 +113,123 @@ public class SimpleDataSource implements DataSource {
         }
     }
 
+    /** {@inheritDoc} */
     public Connection getConnection(String username, String password) throws SQLException {
         throw new UnsupportedOperationException("getConnection(String, String) not implemented");
     }
 
+    /**
+     * <p>getLogWriter</p>
+     *
+     * @return a {@link java.io.PrintWriter} object.
+     * @throws java.sql.SQLException if any.
+     */
     public PrintWriter getLogWriter() throws SQLException {
         throw new UnsupportedOperationException("getLogWriter() not implemented");
     }
 
+    /**
+     * <p>getLoginTimeout</p>
+     *
+     * @return a int.
+     * @throws java.sql.SQLException if any.
+     */
     public int getLoginTimeout() throws SQLException {
         return m_timeout == null ? -1 : m_timeout;
     }
 
+    /** {@inheritDoc} */
     public void setLogWriter(PrintWriter out) throws SQLException {
         throw new UnsupportedOperationException("setLogWriter(PrintWriter) not implemented");
     }
 
+    /** {@inheritDoc} */
     public void setLoginTimeout(int seconds) throws SQLException {
         m_timeout = seconds;
     }
 
+    /**
+     * <p>unwrap</p>
+     *
+     * @param iface a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws java.sql.SQLException if any.
+     */
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return null;  //TODO
     }
 
+    /**
+     * <p>isWrapperFor</p>
+     *
+     * @param iface a {@link java.lang.Class} object.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;  //TODO
     }
 
+    /**
+     * <p>getDriver</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDriver() {
         return m_driver;
     }
 
+    /**
+     * <p>getPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPassword() {
         return m_properties.getProperty("password");
     }
 
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getTimeout() {
         return m_timeout;
     }
 
+    /**
+     * <p>getUrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrl() {
         return m_url;
     }
 
+    /**
+     * <p>getUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUser() {
         return m_properties.getProperty("user");
     }
     
+    /**
+     * <p>getProperties</p>
+     *
+     * @return a {@link java.util.Properties} object.
+     */
     public Properties getProperties() {
         return m_properties;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer props = new StringBuffer();
         if (m_properties.isEmpty()) {

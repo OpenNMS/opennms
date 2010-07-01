@@ -37,27 +37,46 @@ import org.opennms.core.utils.LogUtils;
  * SyncTask
  *
  * @author brozow
+ * @version $Id: $
  */
 public class SyncTask extends Task {
     
+    /** Constant <code>DEFAULT_EXECUTOR="default"</code> */
     public static final String DEFAULT_EXECUTOR = "default";
+    /** Constant <code>ADMIN_EXECUTOR="admin"</code> */
     public static final String ADMIN_EXECUTOR = "admin";
     
     private final Runnable m_action;
 
     private String m_preferredExecutor = DEFAULT_EXECUTOR;
     
+    /**
+     * <p>Constructor for SyncTask.</p>
+     *
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     * @param action a {@link java.lang.Runnable} object.
+     */
     public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Runnable action) {
         this(coordinator, parent, action, DEFAULT_EXECUTOR);
     }
 
 
+    /**
+     * <p>Constructor for SyncTask.</p>
+     *
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     * @param action a {@link java.lang.Runnable} object.
+     * @param preferredExecutor a {@link java.lang.String} object.
+     */
     public SyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Runnable action, String preferredExecutor) {
         super(coordinator, parent);
         m_action = action;
         m_preferredExecutor = preferredExecutor;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void doSubmit() {
         submitRunnable(getRunnable(), getPreferredExecutor());
@@ -90,14 +109,29 @@ public class SyncTask extends Task {
         };
     }
 
+    /**
+     * <p>getPreferredExecutor</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPreferredExecutor() {
         return m_preferredExecutor;
     }
 
+    /**
+     * <p>setPreferredExecutor</p>
+     *
+     * @param preferredExecutor a {@link java.lang.String} object.
+     */
     public void setPreferredExecutor(String preferredExecutor) {
         m_preferredExecutor = preferredExecutor;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return m_action == null ? super.toString() : m_action.toString();
     }

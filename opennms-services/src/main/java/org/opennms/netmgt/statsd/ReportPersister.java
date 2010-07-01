@@ -36,9 +36,17 @@
 package org.opennms.netmgt.statsd;
 
 /**
+ * <p>ReportPersister interface.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public interface ReportPersister {
+    /**
+     * <p>persist</p>
+     *
+     * @param report a {@link org.opennms.netmgt.statsd.ReportInstance} object.
+     */
     public void persist(ReportInstance report);
 }
 

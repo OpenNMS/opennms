@@ -39,9 +39,10 @@ import org.opennms.netmgt.model.StatisticsReportData;
 
 /**
  * DAO for accessing StatisticsReportData objects.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see StatisticsReportData
+ * @version $Id: $
  */
 public interface StatisticsReportDataDao extends OnmsDao<StatisticsReportData, Integer> {
 

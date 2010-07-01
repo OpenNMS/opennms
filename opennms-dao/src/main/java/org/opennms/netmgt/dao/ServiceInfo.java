@@ -31,17 +31,39 @@
 //
 package org.opennms.netmgt.dao;
 
+/**
+ * <p>ServiceInfo class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ServiceInfo {
     private String serviceStatus;
     private String serviceName;
     
+    /**
+     * <p>Constructor for ServiceInfo.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param status a {@link java.lang.String} object.
+     */
     public ServiceInfo(String name, String status){
     	this.serviceStatus = status;
     	this.serviceName = name;
     }
+	/**
+	 * <p>Getter for the field <code>serviceName</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getServiceName(){
 		return serviceName;
 	}
+	/**
+	 * <p>Getter for the field <code>serviceStatus</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getServiceStatus(){
 		return serviceStatus;
 	}

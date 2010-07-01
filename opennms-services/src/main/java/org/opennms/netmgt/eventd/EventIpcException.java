@@ -39,9 +39,13 @@
 package org.opennms.netmgt.eventd;
 
 /**
- * 
+ * <p>EventIpcException class.</p>
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public final class EventIpcException extends Exception {
     private static final long serialVersionUID = 1L;
@@ -57,10 +61,9 @@ public final class EventIpcException extends Exception {
     /**
      * Constructs a new exception with the passed string as the message
      * encapsulated in the exception.
-     * 
+     *
      * @param s
      *            The exception's message.
-     * 
      */
     public EventIpcException(String s) {
         super(s);

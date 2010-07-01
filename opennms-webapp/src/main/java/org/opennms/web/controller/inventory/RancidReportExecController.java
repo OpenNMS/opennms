@@ -20,6 +20,13 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * <p>RancidReportExecController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class RancidReportExecController extends SimpleFormController {
     
 //    InventoryService m_inventoryService;
@@ -28,21 +35,42 @@ public class RancidReportExecController extends SimpleFormController {
     
     
     
+    /**
+     * <p>getConfigurationReportService</p>
+     *
+     * @return a {@link org.opennms.report.configuration.svclayer.ConfigurationReportService} object.
+     */
     public ConfigurationReportService getConfigurationReportService() {
         return m_configurationReportService;
     }
+    /**
+     * <p>setConfigurationReportService</p>
+     *
+     * @param configurationReportService a {@link org.opennms.report.configuration.svclayer.ConfigurationReportService} object.
+     */
     public void setConfigurationReportService(
             ConfigurationReportService configurationReportService) {
         m_configurationReportService = configurationReportService;
     }
+    /**
+     * <p>getInventoryReportService</p>
+     *
+     * @return a {@link org.opennms.report.inventory.svclayer.InventoryReportService} object.
+     */
     public InventoryReportService getInventoryReportService() {
         return m_inventoryReportService;
     }
+    /**
+     * <p>setInventoryReportService</p>
+     *
+     * @param inventoryReportService a {@link org.opennms.report.inventory.svclayer.InventoryReportService} object.
+     */
     public void setInventoryReportService(
             InventoryReportService inventoryReportService) {
         m_inventoryReportService = inventoryReportService;
     }
     
+    /** {@inheritDoc} */
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
             Object command, BindException errors) throws ServletException, IOException, Exception {
 
@@ -98,6 +126,7 @@ public class RancidReportExecController extends SimpleFormController {
 //        response.sendRedirect(redirectURL);
 //        return super.onSubmit(request, response, command, errors);
     }
+    /** {@inheritDoc} */
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
         log().debug("RancidReportExecController initBinder");
     }

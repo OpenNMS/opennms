@@ -38,14 +38,16 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
- * 
+ * <p>XmlrpcUtil class.</p>
+ *
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @version $Id: $
  */
 public final class XmlrpcUtil {
     /**
      * This method is responsible for generating an xmlrpcNotification event and
      * sending it to eventd..
-     * 
+     *
      * @param txNo
      *            the transaction no.
      * @param sourceUei
@@ -56,7 +58,6 @@ public final class XmlrpcUtil {
      *            flag to indicate the type of this notification.
      * @param generator
      *            openNMS daemon where this event is produced.
-     * 
      */
     public static void createAndSendXmlrpcNotificationEvent(final long txNo, final String sourceUei, final String message, final int status, final String generator) {
         ThreadCategory log = ThreadCategory.getInstance("XmlrpcUtil");

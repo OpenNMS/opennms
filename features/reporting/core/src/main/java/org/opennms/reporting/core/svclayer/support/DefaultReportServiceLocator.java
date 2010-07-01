@@ -43,11 +43,18 @@ import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+/**
+ * <p>DefaultReportServiceLocator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultReportServiceLocator implements ApplicationContextAware, ReportServiceLocator {
 
     private ApplicationContext m_applicationContext;
     private DatabaseReportConfigDao m_databaseReportConfigDao;
 
+    /** {@inheritDoc} */
     public ReportService getReportService(String reportServiceName) throws ReportServiceLocatorException {
         
         ReportService reportService = (ReportService) m_applicationContext.getBean(reportServiceName);
@@ -61,16 +68,23 @@ public class DefaultReportServiceLocator implements ApplicationContextAware, Rep
     }
     
 
+    /** {@inheritDoc} */
     public ReportService getReportServiceForId(String reportId)
             throws ReportServiceLocatorException {
         
         return getReportService(m_databaseReportConfigDao.getReportService(reportId));
     }
 
+    /** {@inheritDoc} */
     public void setApplicationContext(ApplicationContext applicationContext) {
             m_applicationContext = applicationContext;
     }
     
+    /**
+     * <p>setDatabaseReportConfigDao</p>
+     *
+     * @param databaseReportConfigDao a {@link org.opennms.netmgt.dao.DatabaseReportConfigDao} object.
+     */
     public void setDatabaseReportConfigDao(DatabaseReportConfigDao databaseReportConfigDao) {
         m_databaseReportConfigDao = databaseReportConfigDao;
     }

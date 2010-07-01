@@ -38,9 +38,15 @@ package org.opennms.netmgt.dao.support;
 import java.util.Comparator;
 
 /**
+ * <p>TopNAttributeStatisticVisitor class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class TopNAttributeStatisticVisitor extends BottomNAttributeStatisticVisitor {
+    /**
+     * <p>Constructor for TopNAttributeStatisticVisitor.</p>
+     */
     public TopNAttributeStatisticVisitor() {
         super();
         setComparator(new ReverseDoubleComparator());

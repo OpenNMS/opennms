@@ -38,11 +38,18 @@ import org.opennms.acl.domain.Authority;
 
 /**
  * Contract to retrieve Authority by identifier
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface AutorityFactory {
 
+    /**
+     * <p>getAuthority</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.acl.domain.Authority} object.
+     */
     public Authority getAuthority(Integer id);
 }

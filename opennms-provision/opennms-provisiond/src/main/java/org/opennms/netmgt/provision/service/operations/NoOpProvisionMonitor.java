@@ -30,7 +30,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>NoOpProvisionMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.provision.service.operations;
 
@@ -38,59 +41,94 @@ import java.util.List;
 
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
-
 public class NoOpProvisionMonitor implements ProvisionMonitor {
+	/** {@inheritDoc} */
 	public void beginProcessingOps(int deleteCount, int updateCount, int insertCount) {
 	}
 
+	/**
+	 * <p>finishProcessingOps</p>
+	 */
 	public void finishProcessingOps() {
 	}
 
+	/**
+	 * <p>beginPreprocessingOps</p>
+	 */
 	public void beginPreprocessingOps() {
 	}
 
+	/**
+	 * <p>finishPreprocessingOps</p>
+	 */
 	public void finishPreprocessingOps() {
 	}
 
+	/** {@inheritDoc} */
 	public void beginPreprocessing(ImportOperation oper) {
 	}
 
+	/** {@inheritDoc} */
 	public void finishPreprocessing(ImportOperation oper) {
 	}
 
+	/** {@inheritDoc} */
 	public void beginPersisting(ImportOperation oper) {
 	}
 
+	/** {@inheritDoc} */
 	public void finishPersisting(ImportOperation oper) {
 	}
 
+	/** {@inheritDoc} */
 	public void beginSendingEvents(ImportOperation oper, List<Event> events) {
 	}
 
+	/** {@inheritDoc} */
 	public void finishSendingEvents(ImportOperation oper, List<Event> events) {
 	}
 
+	/** {@inheritDoc} */
 	public void beginLoadingResource(Resource resource) {
 	}
 
+	/** {@inheritDoc} */
 	public void finishLoadingResource(Resource resource) {
 	}
 
+	/**
+	 * <p>beginImporting</p>
+	 */
 	public void beginImporting() {
 	}
 
+	/**
+	 * <p>finishImporting</p>
+	 */
 	public void finishImporting() {
 	}
 
+	/**
+	 * <p>beginAuditNodes</p>
+	 */
 	public void beginAuditNodes() {
 	}
 
+	/**
+	 * <p>finishAuditNodes</p>
+	 */
 	public void finishAuditNodes() {
 	}
 
+	/**
+	 * <p>beginRelateNodes</p>
+	 */
 	public void beginRelateNodes() {
 	}
 
+	/**
+	 * <p>finishRelateNodes</p>
+	 */
 	public void finishRelateNodes() {
 	}
 

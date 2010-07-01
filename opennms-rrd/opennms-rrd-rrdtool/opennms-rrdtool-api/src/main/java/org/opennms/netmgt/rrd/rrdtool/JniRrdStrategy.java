@@ -61,12 +61,15 @@ import org.springframework.util.FileCopyUtils;
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
  * JNI based single-threaded interface to write the rrdtool compatibile RRD
  * files.
- * 
+ *
  * The JNI interface takes command-like arguments and doesn't provide open files
  * so the the Objects used to represent open files are really partial command
  * strings
- * 
+ *
  * See the individual methods for more details
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
 	
@@ -75,10 +78,16 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
 
     private Properties m_configurationProperties;
 
+    /**
+     * <p>getConfigurationProperties</p>
+     *
+     * @return a {@link java.util.Properties} object.
+     */
     public Properties getConfigurationProperties() {
         return m_configurationProperties;
     }
 
+    /** {@inheritDoc} */
     public void setConfigurationProperties(Properties configurationParameters) {
         this.m_configurationProperties = configurationParameters;
     }
@@ -87,6 +96,9 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
      * The 'closes' the rrd file. This is where the actual work of writing the
      * RRD files takes place. The passed in rrd is actually an rrd command
      * string containing updates. This method executes this command.
+     *
+     * @param rrd a {@link java.lang.StringBuffer} object.
+     * @throws java.lang.Exception if any.
      */
     public void closeFile(StringBuffer rrd) throws Exception {
         String command = rrd.toString();
@@ -97,6 +109,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
         }
     }
 
+    /** {@inheritDoc} */
     public String createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
@@ -137,6 +150,9 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
     /**
      * Creates a the rrd file from the rrdDefinition. Since this definition is
      * really just the create command string it just executes it.
+     *
+     * @param rrdDef a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public void createFile(String rrdDef) throws Exception {
         if (rrdDef == null) return;
@@ -145,6 +161,8 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * The 'opens' the given rrd file. In actuality since the JNI interface does
      * not provide files that may be open, this constructs the beginning portion
      * of the rrd command to update the file.
@@ -154,6 +172,8 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This 'updates' the given rrd file by providing data. Since the JNI
      * interface does not provide files that can be open, this just appends the
      * data to the command string constructed so far. The data is not
@@ -168,12 +188,16 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
 
     /**
      * Initialized the JNI Interface
+     *
+     * @throws java.lang.Exception if any.
      */
     public JniRrdStrategy() throws Exception {
         Interface.init();
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Fetches the last value directly from the rrd file using the JNI
      * Interface.
      */
@@ -181,6 +205,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
         return fetchLastValue(rrdFile, ds, "AVERAGE", interval);
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValue(String rrdFile, String ds, String consolidationFunction, int interval) {
         /*
          * Generate rrd_fetch() command through jrrd JNI interface in order to
@@ -265,6 +290,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
         return dsValue;
     }
 
+    /** {@inheritDoc} */
     public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) throws NumberFormatException, RrdException {
         // Generate rrd_fetch() command through jrrd JNI interface in order to
         // retrieve
@@ -362,6 +388,8 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
     }
     
     /**
+     * {@inheritDoc}
+     *
      * Executes the given graph command as process with workDir as the current
      * directory. The output stream of the command (a PNG image) is copied to a
      * the InputStream returned from the method.
@@ -401,32 +429,60 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
 
     /**
      * No stats are kept for this implementation.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getStats() {
         return "";
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
     // These offsets work perfectly for ranger@ with rrdtool 1.2.23 and Firefox
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphLeftOffset() {
         return 65;
     }
     
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
     public int getGraphRightOffset() {
         return -30;
     }
 
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
     public int getGraphTopOffsetWithText() {
         return -75;
     }
 
+    /**
+     * <p>getDefaultFileExtension</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDefaultFileExtension() {
         return ".rrd";
     }
     
+    /** {@inheritDoc} */
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, org.opennms.netmgt.rrd.RrdException {
         // Creating Temp PNG File
         File pngFile = File.createTempFile("opennms.rrdtool.", ".png");
@@ -476,6 +532,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
         return details;
     }
 
+    /** {@inheritDoc} */
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         // no need to do anything since this strategy doesn't queue
     }

@@ -30,7 +30,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>DefaultImportStatistics class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.importer.operations;
 
@@ -38,70 +41,110 @@ import java.util.List;
 
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
-
 public class DefaultImportStatistics implements ImportStatistics {
+	/**
+	 * <p>beginProcessingOps</p>
+	 */
 	public void beginProcessingOps() {
 	}
 
+	/**
+	 * <p>finishProcessingOps</p>
+	 */
 	public void finishProcessingOps() {
 	}
 
+	/**
+	 * <p>beginPreprocessingOps</p>
+	 */
 	public void beginPreprocessingOps() {
 	}
 
+	/**
+	 * <p>finishPreprocessingOps</p>
+	 */
 	public void finishPreprocessingOps() {
 	}
 
+	/** {@inheritDoc} */
 	public void beginPreprocessing(ImportOperation oper) {
 	}
 
+	/** {@inheritDoc} */
 	public void finishPreprocessing(ImportOperation oper) {
 	}
 
+	/** {@inheritDoc} */
 	public void beginPersisting(ImportOperation oper) {
 	}
 
+	/** {@inheritDoc} */
 	public void finishPersisting(ImportOperation oper) {
 	}
 
+	/** {@inheritDoc} */
 	public void beginSendingEvents(ImportOperation oper, List<Event> events) {
 	}
 
+	/** {@inheritDoc} */
 	public void finishSendingEvents(ImportOperation oper, List<Event> events) {
 	}
 
+	/** {@inheritDoc} */
 	public void beginLoadingResource(Resource resource) {
 	}
 
+	/** {@inheritDoc} */
 	public void finishLoadingResource(Resource resource) {
 	}
 
+	/**
+	 * <p>beginImporting</p>
+	 */
 	public void beginImporting() {
 	}
 
+	/**
+	 * <p>finishImporting</p>
+	 */
 	public void finishImporting() {
 	}
 
+	/**
+	 * <p>beginAuditNodes</p>
+	 */
 	public void beginAuditNodes() {
 	}
 
+	/**
+	 * <p>finishAuditNodes</p>
+	 */
 	public void finishAuditNodes() {
 	}
 
+	/** {@inheritDoc} */
 	public void setDeleteCount(int deleteCount) {
 	}
 
+	/** {@inheritDoc} */
 	public void setInsertCount(int insertCount) {
 	}
 
+	/** {@inheritDoc} */
 	public void setUpdateCount(int updateCount) {
 	}
 
+	/**
+	 * <p>beginRelateNodes</p>
+	 */
 	public void beginRelateNodes() {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * <p>finishRelateNodes</p>
+	 */
 	public void finishRelateNodes() {
 		// TODO Auto-generated method stub
 		

@@ -41,7 +41,7 @@ import java.net.UnknownHostException;
  * Holds a DNS resource record which is a DNS response that gives the IP address
  * of a particular hostname. A resource record typically has:
  * </P>
- * 
+ *
  * <TABLE BORDER=0>
  * <TH>
  * <TD>Element</TD>
@@ -72,10 +72,12 @@ import java.net.UnknownHostException;
  * <TD>Actual data of this RR.</TD>
  * </TR>
  * </TABLE>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public final class DNSAddressRR {
     /**
@@ -136,7 +138,7 @@ public final class DNSAddressRR {
      * Constructs an new DNS Address Resource Record with the specified
      * information.
      * </P>
-     * 
+     *
      * @param name
      *            name of the RR
      * @param type
@@ -147,10 +149,10 @@ public final class DNSAddressRR {
      *            time for which this RR is valid
      * @param dnsIn
      *            inputstream for this RR
-     * 
      * @exception java.io.IOException
      *                Thrown if an error occurs decoding data from the passed
      *                DNSInputStream.
+     * @throws java.io.IOException if any.
      */
     public DNSAddressRR(String name, int type, int clas, long ttl, DNSInputStream dnsIn) throws IOException {
         m_name = name;
@@ -170,7 +172,7 @@ public final class DNSAddressRR {
      * <P>
      * Returns the address from the address record as a byte array.
      * </P>
-     * 
+     *
      * @return The address as a byte array.
      */
     public byte[] getAddress() {
@@ -184,11 +186,11 @@ public final class DNSAddressRR {
      * <P>
      * the InetAddress of the address contained for the record.
      * </P>
-     * 
+     *
      * @return The InetAddress of the address
-     * 
      * @exception java.net.UnknownHostException
      *                Thrown if the InetAddress object cannot be constructed.
+     * @throws java.net.UnknownHostException if any.
      */
     public InetAddress getInetAddress() throws UnknownHostException {
         return InetAddress.getByName(AddressToByteString());
@@ -199,7 +201,7 @@ public final class DNSAddressRR {
      * Converts the object to a textual string that describes the resource
      * record.
      * </P>
-     * 
+     *
      * @return The string describing the object.
      */
     public String toString() {
@@ -210,7 +212,7 @@ public final class DNSAddressRR {
      * <P>
      * Returns the name of this RR.
      * </P>
-     * 
+     *
      * @return The name of this RR.
      */
     public String getRRName() {
@@ -221,7 +223,7 @@ public final class DNSAddressRR {
      * <P>
      * Returns the type of this RR.
      * </P>
-     * 
+     *
      * @return The type of this RR.
      */
     public int getRRType() {
@@ -232,7 +234,7 @@ public final class DNSAddressRR {
      * <P>
      * Returns the class of this RR.
      * </P>
-     * 
+     *
      * @return The class of this RR.
      */
     public int getRRClass() {
@@ -243,7 +245,7 @@ public final class DNSAddressRR {
      * <P>
      * Returns the TTL of this RR.
      * </P>
-     * 
+     *
      * @return the TTL of this RR
      */
     public long getRRTTL() {
@@ -254,7 +256,7 @@ public final class DNSAddressRR {
      * <P>
      * Returns true if still valid i.e. TTL has not expired.
      * </P>
-     * 
+     *
      * @return True if valid, false if not.
      */
     public boolean isValid() {

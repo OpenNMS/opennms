@@ -49,9 +49,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * AclUtils
  *
  * @author brozow
+ * @version $Id: $
  */
 public class AclUtils {
     
+    /**
+     * <p>shouldFilter</p>
+     *
+     * @return a boolean.
+     */
     public static boolean shouldFilter() {
         return System.getProperty("org.opennms.web.aclsEnabled", "false").equalsIgnoreCase("true") 
             && !AuthorityUtils.userHasAuthority("ROLE_ADMIN");
@@ -61,6 +67,12 @@ public class AclUtils {
         public boolean isNodeAccessible(int nodeId);
     }
     
+    /**
+     * <p>getNodeAccessChecker</p>
+     *
+     * @param sc a {@link javax.servlet.ServletContext} object.
+     * @return a {@link org.opennms.web.AclUtils.NodeAccessChecker} object.
+     */
     public static NodeAccessChecker getNodeAccessChecker(ServletContext sc) {
         
         if (!shouldFilter()) return new NonFilteringNodeAccessChecker();

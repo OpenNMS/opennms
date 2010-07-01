@@ -45,9 +45,13 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 
 /**
+ * <p>XmpPeerFactory class.</p>
+ *
  * @author <A HREF="jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
  */
 public class XmpPeerFactory extends PeerFactory {
 
@@ -77,10 +81,11 @@ public class XmpPeerFactory extends PeerFactory {
     
     /**
      * Initialize this factory
-     * @throws IOException 
-     * @throws FileNotFoundException 
-     * @throws ValidationException 
-     * @throws MarshalException 
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
      */
     public static synchronized void init() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         if (m_loaded) {
@@ -94,6 +99,14 @@ public class XmpPeerFactory extends PeerFactory {
         m_loaded = true;
     }
     
+    /**
+     * <p>reload</p>
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     */
     public static synchronized void reload() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         m_singleton = null;
         m_loaded = false;
@@ -102,6 +115,11 @@ public class XmpPeerFactory extends PeerFactory {
         init();
     }
     
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.XmpPeerFactory} object.
+     */
     public static synchronized XmpPeerFactory getInstance() {
         if (! m_loaded) {
             throw new IllegalStateException("The factory has not been initialized");
@@ -110,11 +128,22 @@ public class XmpPeerFactory extends PeerFactory {
         return m_singleton;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.XmpPeerFactory} object.
+     */
     public static synchronized void setInstance(XmpPeerFactory instance) {
         m_singleton = instance;
         m_loaded = true;
     }
     
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @param agentInetAddress a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.config.XmpAgentConfig} object.
+     */
     public synchronized XmpAgentConfig getAgentConfig(InetAddress agentInetAddress) {
         
         XmpAgentConfig config = new XmpAgentConfig();

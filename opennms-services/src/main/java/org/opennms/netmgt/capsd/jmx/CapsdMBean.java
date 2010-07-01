@@ -36,5 +36,11 @@ package org.opennms.netmgt.capsd.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>CapsdMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface CapsdMBean extends BaseOnmsMBean {
 }

@@ -51,8 +51,9 @@ import org.opennms.core.utils.ThreadCategory;
  * This class is used to monitor if a particular Cisco IP-SLA is within a
  * configured threshold or has reached a timeout. The configured IP-SLA is
  * monitored by the specified "ip sla tag"
- * 
+ *
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
+ * @version $Id: $
  */
 public class CiscoIpSlaPlugin extends SnmpPlugin {
 
@@ -93,7 +94,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
     /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.
-     * 
+     *
      * @return The protocol name for this plugin.
      */
     public String getProtocolName() {
@@ -101,17 +102,13 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the protocol defined by this plugin is supported. If
      * the protocol is not supported then a false value is returned to the
      * caller. The qualifier map passed to the method is used by the plugin to
      * return additional information by key-name. These key-value pairs can be
      * added to service events if needed.
-     * 
-     * @param address
-     *            The address to check for support.
-     * @param qualifiers
-     *            The map where qualification are set by the plugin.
-     * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress ipaddr,
             Map<String, Object> parameters) {
@@ -256,6 +253,11 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
         return status;
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public static ThreadCategory log() {
         return ThreadCategory.getInstance(CiscoIpSlaPlugin.class);
     }

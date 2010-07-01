@@ -39,10 +39,20 @@ package org.opennms.netmgt.collectd.wmi;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class WmiCollectorException extends RuntimeException {
+        /** Constant <code>serialVersionUID=1L</code> */
         public static final long serialVersionUID = 1L;
 
+        /**
+         * <p>Constructor for WmiCollectorException.</p>
+         *
+         * @param message a {@link java.lang.String} object.
+         * @param cause a {@link java.lang.Throwable} object.
+         */
         public WmiCollectorException(String message, Throwable cause) {
             super(message, cause);
         }

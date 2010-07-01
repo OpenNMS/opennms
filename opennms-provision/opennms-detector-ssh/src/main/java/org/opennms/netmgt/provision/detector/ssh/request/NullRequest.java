@@ -31,8 +31,10 @@
 package org.opennms.netmgt.provision.detector.ssh.request;
 
 /**
- * @author thedesloge
+ * <p>NullRequest class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class NullRequest {
 

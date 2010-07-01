@@ -21,10 +21,14 @@ import org.springframework.test.context.TestExecutionListener;
 /**
  * This {@link TestExecutionListener} looks for the {@link JUnitHttpServer} annotation
  * and uses attributes on it to launch a temporary HTTP server for use during unit tests.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecutionListener {
     private Server m_server;
     
+    /** {@inheritDoc} */
     @Override
     public void beforeTestMethod(TestContext testContext) throws Exception {
         super.beforeTestMethod(testContext);
@@ -100,6 +104,7 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         m_server.start();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void afterTestMethod(TestContext testContext) throws Exception {
         super.afterTestMethod(testContext);

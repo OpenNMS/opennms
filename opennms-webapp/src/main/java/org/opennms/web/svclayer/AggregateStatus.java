@@ -45,10 +45,18 @@ import org.opennms.netmgt.model.OnmsNode;
 
 /**
  * Use this class to aggregate status to be presented in a view layer technology.
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AggregateStatus {
 
@@ -62,16 +70,29 @@ public class AggregateStatus {
 
     private String m_link;
 
+    /** Constant <code>NODES_ARE_DOWN="Critical"</code> */
     public static final String NODES_ARE_DOWN = "Critical";
 
+    /** Constant <code>ONE_SERVICE_DOWN="Warning"</code> */
     public static final String ONE_SERVICE_DOWN = "Warning";
 
+    /** Constant <code>ALL_NODES_UP="Normal"</code> */
     public static final String ALL_NODES_UP = "Normal";
 
+    /**
+     * <p>Constructor for AggregateStatus.</p>
+     *
+     * @param nodes a {@link java.util.Collection} object.
+     */
     public AggregateStatus(Collection<OnmsNode> nodes) {
         computeStatusValues(nodes);
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatus() {
         return m_status;
     }
@@ -80,10 +101,20 @@ public class AggregateStatus {
         m_status = color;
     }
 
+    /**
+     * <p>getDownEntityCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getDownEntityCount() {
         return m_downNodes.size();
     }
 
+    /**
+     * <p>getDownNodes</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<OnmsNode> getDownNodes() {
         return Collections.unmodifiableSet(m_downNodes);
     }
@@ -92,14 +123,29 @@ public class AggregateStatus {
         m_downNodes = downNodes;
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_label;
     }
 
+    /**
+     * <p>setLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
     public void setLabel(String label) {
         m_label = label;
     }
 
+    /**
+     * <p>getTotalEntityCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getTotalEntityCount() {
         return m_totalEntityCount;
     }
@@ -108,6 +154,7 @@ public class AggregateStatus {
         m_totalEntityCount = totalEntityCount;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(m_label == null ? "null" : m_label);
@@ -185,10 +232,20 @@ public class AggregateStatus {
         return this;
     }
 
+    /**
+     * <p>getLink</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLink() {
         return m_link;
     }
 
+    /**
+     * <p>setLink</p>
+     *
+     * @param link a {@link java.lang.String} object.
+     */
     public void setLink(String link) {
         m_link = link;
     }

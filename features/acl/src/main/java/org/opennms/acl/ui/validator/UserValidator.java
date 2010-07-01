@@ -43,17 +43,22 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
+ * <p>UserValidator class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Component("userValidator")
 public class UserValidator implements Validator {
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return UserDTO.class.isAssignableFrom(clazz);
     }
 
+    /** {@inheritDoc} */
     public void validate(Object command, Errors err) {
         UserDTO user = (UserDTO) command;
         ValidationUtils.rejectIfEmptyOrWhitespace(err, "username", "username.required.value", "username is required.");
@@ -67,6 +72,11 @@ public class UserValidator implements Validator {
         }
     }
 
+    /**
+     * <p>Setter for the field <code>userService</code>.</p>
+     *
+     * @param userService a {@link org.opennms.acl.service.UserService} object.
+     */
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;

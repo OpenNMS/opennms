@@ -35,24 +35,50 @@ import java.util.List;
 
 import org.opennms.core.utils.IpListFromUrl;
 
+/**
+ * <p>IncludeURL class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class IncludeURL {
 	
 	private String m_urlName;
 	private List<String> m_ipList;
 
+	/**
+	 * <p>Constructor for IncludeURL.</p>
+	 *
+	 * @param urlName a {@link java.lang.String} object.
+	 */
 	public IncludeURL(String urlName) {
 		m_urlName = urlName;
 		createIpList();
 	}
 	
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_urlName;
 	}
 
+	/**
+	 * <p>setIpList</p>
+	 *
+	 * @param ipList a {@link java.util.List} object.
+	 */
 	public void setIpList(List<String> ipList) {
 		m_ipList = ipList;
 	}
 	
+	/**
+	 * <p>getIpList</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<String> getIpList() {
 		return m_ipList;
 	}

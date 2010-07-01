@@ -51,9 +51,12 @@ import org.opennms.protocols.wmi.WmiResult;
  * a WMI service is running on the remote server and if the given class/object
  * can be successfully retrieved from the service.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class WmiPlugin extends AbstractPlugin {
 	/**
@@ -68,11 +71,11 @@ public class WmiPlugin extends AbstractPlugin {
 	private final static String DEFAULT_WMI_COMP_OP = "EQ";
     private final static String DEFAULT_WMI_WQL = "NOTSET";
 
-    /**
+	/**
+	 * {@inheritDoc}
+	 *
 	 * Returns the name of the protocol that this plugin checks on the target
 	 * system for support.
-	 * 
-	 * @return The protocol name for this plugin.
 	 */
 	@Override
 	public String getProtocolName() {
@@ -80,17 +83,13 @@ public class WmiPlugin extends AbstractPlugin {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Returns true if the protocol defined by this plugin is supported. If the
 	 * protocol is not supported then a false value is returned to the caller.
 	 * <P>
 	 * The WmiPlugin does not support undirected checks, we must have a map of
 	 * parameters to determine how to issue a check to the target server.
-	 * 
-	 * @param address
-	 *            The address to check for support.
-	 * @return True if the protocol is supported by the address.
-	 * @throws java.lang.UnsupportedOperationException
-	 *             This is always thrown by this plugin.
 	 */
 	@Override
 	public boolean isProtocolSupported(InetAddress address) {
@@ -99,6 +98,8 @@ public class WmiPlugin extends AbstractPlugin {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Returns true if the protocol defined by this plugin is supported. If the
 	 * protocol is not supported then a false value is returned to the caller.
 	 * The qualifier map passed to the method is used by the plugin to return
@@ -119,12 +120,6 @@ public class WmiPlugin extends AbstractPlugin {
 	 * Protocol will return as supported only if the result code is
 	 * <code>WmiResult.RES_STATE_OK</code> or
 	 * <code>WmiResult.RES_STATE_WARNING</code>.
-	 * 
-	 * @param address
-	 *            The address to check for support.
-	 * @param qualifiers
-	 *            The map where qualification are set by the plugin.
-	 * @return True if the protocol is supported by the address.
 	 */
 	@Override
 	public boolean isProtocolSupported(InetAddress address,

@@ -58,11 +58,23 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 @Controller
+/**
+ * <p>EditForeignSourceController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class EditForeignSourceController extends SimpleFormController {
 
     private ForeignSourceService m_foreignSourceService;
     private static final Map<String,Set<String>> m_pluginParameters = new HashMap<String,Set<String>>();
     
+    /**
+     * <p>setForeignSourceService</p>
+     *
+     * @param fss a {@link org.opennms.netmgt.provision.persist.ForeignSourceService} object.
+     */
     public void setForeignSourceService(ForeignSourceService fss) {
         m_foreignSourceService = fss;
     }
@@ -127,16 +139,19 @@ public class EditForeignSourceController extends SimpleFormController {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void initBinder(HttpServletRequest req, ServletRequestDataBinder binder) throws Exception {
         binder.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return super.handleRequestInternal(request, response);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         TreeCommand treeCmd = (TreeCommand)command;
@@ -226,6 +241,7 @@ public class EditForeignSourceController extends SimpleFormController {
         return showForm(request, response, errors);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         TreeCommand formCommand = new TreeCommand();
@@ -238,6 +254,7 @@ public class EditForeignSourceController extends SimpleFormController {
         return formCommand;
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {

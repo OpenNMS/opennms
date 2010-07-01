@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
  * RegistrationListenerBean
  *
  * @author brozow
+ * @version $Id: $
  */
 public class RegistrationListenerBean implements RegistrationListener<Object>, InitializingBean {
 
@@ -54,6 +55,8 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
 
 
     /**
+     * <p>getServiceInterface</p>
+     *
      * @return the serviceInterface
      */
     public Class<?> getServiceInterface() {
@@ -61,6 +64,8 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
     }
 
     /**
+     * <p>setServiceInterface</p>
+     *
      * @param serviceInterface the serviceInterface to set
      */
     public void setServiceInterface(Class<?> serviceInterface) {
@@ -68,6 +73,8 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
     }
 
     /**
+     * <p>getTarget</p>
+     *
      * @return the target
      */
     public Object getTarget() {
@@ -75,6 +82,8 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
     }
 
     /**
+     * <p>setTarget</p>
+     *
      * @param target the target to set
      */
     public void setTarget(Object target) {
@@ -82,6 +91,8 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
     }
 
     /**
+     * <p>getBindMethod</p>
+     *
      * @return the bindMethod
      */
     public String getBindMethod() {
@@ -89,6 +100,8 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
     }
 
     /**
+     * <p>setBindMethod</p>
+     *
      * @param bindMethod the bindMethod to set
      */
     public void setBindMethod(String bindMethod) {
@@ -96,6 +109,8 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
     }
 
     /**
+     * <p>getUnbindMethod</p>
+     *
      * @return the unbindMethod
      */
     public String getUnbindMethod() {
@@ -103,6 +118,8 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
     }
 
     /**
+     * <p>setUnbindMethod</p>
+     *
      * @param unbindMethod the unbindMethod to set
      */
     public void setUnbindMethod(String unbindMethod) {
@@ -110,6 +127,11 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
     }
     
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_serviceInterface, "serviceInterface must not be null");
         Assert.notNull(m_target, "target may not be null");
@@ -144,12 +166,14 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
         }
     }
 
+    /** {@inheritDoc} */
     public void providerRegistered(Registration registration, Object provider) {
         if (StringUtils.hasText(m_bindMethod)) {
             invokeMethod(m_bindMethod, registration);
         }
     }
     
+    /** {@inheritDoc} */
     public void providerUnregistered(Registration registration, Object provider) {
         if (StringUtils.hasText(m_unbindMethod)) {
             invokeMethod(m_unbindMethod, registration);

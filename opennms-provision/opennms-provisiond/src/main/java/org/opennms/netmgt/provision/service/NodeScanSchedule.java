@@ -35,6 +35,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
 
+/**
+ * <p>NodeScanSchedule class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NodeScanSchedule {
     private int m_nodeId;
     private String m_foreignSource;
@@ -42,6 +48,15 @@ public class NodeScanSchedule {
     private Duration m_initialDelay;
     private Duration m_scanInterval;
     
+    /**
+     * <p>Constructor for NodeScanSchedule.</p>
+     *
+     * @param nodeId a int.
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param initialDelay a {@link org.joda.time.Duration} object.
+     * @param scanInterval a {@link org.joda.time.Duration} object.
+     */
     public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, Duration initialDelay, Duration scanInterval) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
@@ -51,6 +66,8 @@ public class NodeScanSchedule {
     }
 
     /**
+     * <p>getForeignId</p>
+     *
      * @return the foreignId
      */
     public String getForeignId() {
@@ -58,6 +75,8 @@ public class NodeScanSchedule {
     }
 
     /**
+     * <p>getNodeId</p>
+     *
      * @return the nodeId
      */
     public int getNodeId() {
@@ -65,6 +84,8 @@ public class NodeScanSchedule {
     }
 
     /**
+     * <p>getForeignSource</p>
+     *
      * @return the foreignSource
      */
     public String getForeignSource() {
@@ -72,6 +93,8 @@ public class NodeScanSchedule {
     }
 
     /**
+     * <p>getInitialDelay</p>
+     *
      * @return the initialDelay
      */
     public Duration getInitialDelay() {
@@ -79,12 +102,19 @@ public class NodeScanSchedule {
     }
 
     /**
+     * <p>getScanInterval</p>
+     *
      * @return the scanInterval
      */
     public Duration getScanInterval() {
         return m_scanInterval;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringBuilder(this)
             .append("foreign source", m_foreignSource)
@@ -95,6 +125,11 @@ public class NodeScanSchedule {
             .toString();
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return new HashCodeBuilder()
             .append(m_foreignSource)

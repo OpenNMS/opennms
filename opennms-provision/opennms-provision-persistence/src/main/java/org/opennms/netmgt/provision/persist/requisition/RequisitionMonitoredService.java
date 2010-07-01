@@ -21,6 +21,12 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
+/**
+ * <p>RequisitionMonitoredService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="", propOrder = { "m_categories" })
 @XmlRootElement(name="monitored-service")
@@ -32,24 +38,47 @@ public class RequisitionMonitoredService {
     @XmlAttribute(name="service-name", required=true)
     protected String m_serviceName;
 
+    /**
+     * <p>Constructor for RequisitionMonitoredService.</p>
+     */
     public RequisitionMonitoredService() {
     }
     
+    /**
+     * <p>Constructor for RequisitionMonitoredService.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     */
     public RequisitionMonitoredService(String serviceName) {
         m_serviceName = serviceName;
     }
 
+    /**
+     * <p>getCategoryCount</p>
+     *
+     * @return a int.
+     */
     @XmlTransient
     public int getCategoryCount() {
         return (m_categories == null) ? 0 : m_categories.size();
     }
 
     /* backwards compatibility with ModelImport */
+    /**
+     * <p>getCategory</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} objects.
+     */
     @XmlTransient
     public RequisitionCategory[] getCategory() {
         return m_categories.toArray(new RequisitionCategory[] {});
     }
 
+    /**
+     * <p>getCategories</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<RequisitionCategory> getCategories() {
         if (m_categories == null) {
             m_categories = new ArrayList<RequisitionCategory>();
@@ -57,10 +86,20 @@ public class RequisitionMonitoredService {
         return m_categories;
     }
 
+    /**
+     * <p>setCategories</p>
+     *
+     * @param categories a {@link java.util.List} object.
+     */
     public void setCategories(List<RequisitionCategory> categories) {
         m_categories = categories;
     }
 
+    /**
+     * <p>deleteCategory</p>
+     *
+     * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
+     */
     public void deleteCategory(RequisitionCategory category) {
         if (m_categories != null) {
             Iterator<RequisitionCategory> i = m_categories.iterator();
@@ -74,6 +113,11 @@ public class RequisitionMonitoredService {
         }
     }
 
+    /**
+     * <p>deleteCategory</p>
+     *
+     * @param category a {@link java.lang.String} object.
+     */
     public void deleteCategory(String category) {
         if (m_categories != null) {
             Iterator<RequisitionCategory> i = m_categories.iterator();
@@ -87,6 +131,11 @@ public class RequisitionMonitoredService {
         }
     }
 
+    /**
+     * <p>insertCategory</p>
+     *
+     * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
+     */
     public void insertCategory(RequisitionCategory category) {
         Iterator<RequisitionCategory> iterator = m_categories.iterator();
         while (iterator.hasNext()) {
@@ -98,10 +147,20 @@ public class RequisitionMonitoredService {
         m_categories.add(0, category);
     }
 
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_serviceName;
     }
 
+    /**
+     * <p>setServiceName</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
     public void setServiceName(String value) {
         m_serviceName = value;
     }

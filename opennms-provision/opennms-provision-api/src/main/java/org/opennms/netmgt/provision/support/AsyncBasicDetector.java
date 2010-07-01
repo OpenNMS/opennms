@@ -60,8 +60,10 @@ import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseVali
 import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 
 /**
- * @author Donald Desloge
+ * <p>Abstract AsyncBasicDetector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstractDetector {
     
@@ -75,22 +77,36 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     private ConnectorFactory s_connectorFactory = new ConnectorFactory();
     private SocketConnector m_connector;
     
+    /**
+     * <p>Constructor for AsyncBasicDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     * @param <Request> a Request object.
+     * @param <Response> a Response object.
+     */
     public AsyncBasicDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
     /**
-     * @param serviceName
-     * @param port
-     * @param timeout
-     * @param retries
+     * <p>Constructor for AsyncBasicDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
      */
     public AsyncBasicDetector(String serviceName, int port, int timeout, int retries){
         super(serviceName, port, timeout, retries);
     }
     
+    /**
+     * <p>onInit</p>
+     */
     abstract protected void onInit();
     
+    /** {@inheritDoc} */
     @Override
     public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception {
         DetectFuture future = null;
@@ -121,6 +137,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         return future;
     }
     
+    /**
+     * <p>dispose</p>
+     */
     public void dispose(){
         info("calling dispose on detector %s", getServiceName());
         s_connectorFactory.dispose(m_connector);
@@ -174,8 +193,9 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     }
     
     /**
-     * 
-     * @param bannerValidator
+     * <p>expectBanner</p>
+     *
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
     protected void expectBanner(ResponseValidator<Response> bannerValidator) {
         getConversation().setHasBanner(true);
@@ -183,9 +203,10 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     }
     
     /**
-     * 
-     * @param request
-     * @param responseValidator
+     * <p>send</p>
+     *
+     * @param request a Request object.
+     * @param responseValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
     protected void send(Request request, ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(request, responseValidator));
@@ -193,17 +214,19 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     
     
     /**
-     * 
-     * @param detectorHandler
+     * <p>setDetectorHandler</p>
+     *
+     * @param detectorHandler a {@link org.opennms.netmgt.provision.support.BaseDetectorHandler} object.
      */
     protected void setDetectorHandler(BaseDetectorHandler<Request, Response> detectorHandler) {
         m_detectorHandler = detectorHandler;
     }
     
     /**
-     * 
-     * @param future
-     * @return
+     * <p>createDetectorHandler</p>
+     *
+     * @param future a {@link org.opennms.netmgt.provision.DetectFuture} object.
+     * @return a {@link org.apache.mina.core.service.IoHandler} object.
      */
     protected IoHandler createDetectorHandler(DetectFuture future) {
         ((BaseDetectorHandler<Request, Response>) m_detectorHandler).setConversation(getConversation());
@@ -211,46 +234,103 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         return m_detectorHandler;
     }
 
+    /**
+     * <p>setLoggingFilter</p>
+     *
+     * @param filterLogging a {@link org.apache.mina.core.filterchain.IoFilterAdapter} object.
+     */
     protected void setLoggingFilter(IoFilterAdapter filterLogging) {
         m_filterLogging = filterLogging;
     }
 
+    /**
+     * <p>getLoggingFilter</p>
+     *
+     * @return a {@link org.apache.mina.core.filterchain.IoFilterAdapter} object.
+     */
     protected IoFilterAdapter getLoggingFilter() {
         return m_filterLogging;
     }
 
+    /**
+     * <p>setProtocolCodecFilter</p>
+     *
+     * @param protocolCodecFilter a {@link org.apache.mina.filter.codec.ProtocolCodecFilter} object.
+     */
     protected void setProtocolCodecFilter(ProtocolCodecFilter protocolCodecFilter) {
         m_protocolCodecFilter = protocolCodecFilter;
     }
 
+    /**
+     * <p>getProtocolCodecFilter</p>
+     *
+     * @return a {@link org.apache.mina.filter.codec.ProtocolCodecFilter} object.
+     */
     protected ProtocolCodecFilter getProtocolCodecFilter() {
         return m_protocolCodecFilter;
     }
 
+    /**
+     * <p>setIdleTime</p>
+     *
+     * @param idleTime a int.
+     */
     public void setIdleTime(int idleTime) {
         m_idleTime = idleTime;
     }
 
+    /**
+     * <p>getIdleTime</p>
+     *
+     * @return a int.
+     */
     public int getIdleTime() {
         return m_idleTime;
     }
 
+    /**
+     * <p>getDetectorHandler</p>
+     *
+     * @return a {@link org.apache.mina.core.service.IoHandler} object.
+     */
     protected IoHandler getDetectorHandler() {
         return m_detectorHandler;
     }
 
+    /**
+     * <p>setConversation</p>
+     *
+     * @param conversation a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
+     */
     protected void setConversation(AsyncClientConversation<Request, Response> conversation) {
         m_conversation = conversation;
     }
 
+    /**
+     * <p>getConversation</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
+     */
     protected AsyncClientConversation<Request, Response> getConversation() {
         return m_conversation;
     }
     
+    /**
+     * <p>request</p>
+     *
+     * @param request a Request object.
+     * @return a Request object.
+     */
     protected Request request(Request request) {
         return request;
     }
     
+    /**
+     * <p>startsWith</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     */
     protected ResponseValidator<Response> startsWith(final String prefix) {
         return new ResponseValidator<Response>() {
 
@@ -262,6 +342,12 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         };
     }
     
+    /**
+     * <p>find</p>
+     *
+     * @param regex a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<Response> find(final String regex){
         return new ResponseValidator<Response>() {
 
@@ -274,10 +360,20 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         };
     }
 
+    /**
+     * <p>Setter for the field <code>useSSLFilter</code>.</p>
+     *
+     * @param useSSLFilter a boolean.
+     */
     public void setUseSSLFilter(boolean useSSLFilter) {
         this.useSSLFilter = useSSLFilter;
     }
 
+    /**
+     * <p>isUseSSLFilter</p>
+     *
+     * @return a boolean.
+     */
     public boolean isUseSSLFilter() {
         return useSSLFilter;
     }

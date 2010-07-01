@@ -33,49 +33,102 @@ package org.opennms.core.tasks;
  * TaskBuilder
  *
  * @author brozow
+ * @version $Id: $
  */
 public class TaskBuilder<T extends ContainerTask<?>> {
     
     private T m_task;
     
+    /**
+     * <p>Constructor for TaskBuilder.</p>
+     *
+     * @param task a T object.
+     * @param <T> a T object.
+     */
     public TaskBuilder(T task) {
         m_task = task;
     }
     
+    /**
+     * <p>createSequence</p>
+     *
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<SequenceTask> createSequence() {
         return m_task.getCoordinator().createSequence(m_task); 
     }
     
+    /**
+     * <p>createBatch</p>
+     *
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<BatchTask> createBatch() {
         return m_task.getCoordinator().createBatch(m_task); 
     }
     
+    /**
+     * <p>setParent</p>
+     *
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<T> setParent(ContainerTask<?> parent) {
         parent.add(m_task);
         return this;
     }
     
+    /**
+     * <p>addSequence</p>
+     *
+     * @param runnables a {@link java.lang.Runnable} object.
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<T> addSequence(Runnable... runnables) {
         createSequence().add(runnables).setParent(m_task);
         return this;
     }
     
+    /**
+     * <p>addSequence</p>
+     *
+     * @param runIns a {@link org.opennms.core.tasks.RunInBatch} object.
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<T> addSequence(RunInBatch... runIns) {
         createSequence().add(runIns).setParent(m_task);
         return this;
     }
     
+    /**
+     * <p>addBatch</p>
+     *
+     * @param runnables a {@link java.lang.Runnable} object.
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<T> addBatch(Runnable... runnables) {
         createBatch().add(runnables).setParent(m_task);
         return this;
     }
 
+    /**
+     * <p>addBatch</p>
+     *
+     * @param runIns a {@link org.opennms.core.tasks.RunInBatch} object.
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<T> addBatch(RunInBatch... runIns) {
         createBatch().add(runIns).setParent(m_task);
         return this;
     }
 
     
+    /**
+     * <p>add</p>
+     *
+     * @param runnables a {@link java.lang.Runnable} object.
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<T> add(Runnable... runnables) {
         for(Runnable r : runnables) {
             m_task.add(r);
@@ -83,6 +136,12 @@ public class TaskBuilder<T extends ContainerTask<?>> {
         return this;
     }
     
+    /**
+     * <p>add</p>
+     *
+     * @param runIns a {@link org.opennms.core.tasks.RunInBatch} object.
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<T> add(RunInBatch... runIns) {
         for(final RunInBatch runIn : runIns) {
             final TaskBuilder<BatchTask> bldr = createBatch();
@@ -95,6 +154,12 @@ public class TaskBuilder<T extends ContainerTask<?>> {
         return this;
     }
     
+    /**
+     * <p>add</p>
+     *
+     * @param needers a {@link org.opennms.core.tasks.NeedsContainer} object.
+     * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
+     */
     public TaskBuilder<T> add(NeedsContainer... needers) {
         for(final NeedsContainer needer : needers) {
             add(new Runnable() {
@@ -106,10 +171,21 @@ public class TaskBuilder<T extends ContainerTask<?>> {
         return this;
     }
     
+    /**
+     * <p>get</p>
+     *
+     * @return a T object.
+     */
     public T get() {
         return m_task;
     }
 
+    /**
+     * <p>get</p>
+     *
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     * @return a T object.
+     */
     public T get(ContainerTask<?> parent) {
         return setParent(parent).get();
     }

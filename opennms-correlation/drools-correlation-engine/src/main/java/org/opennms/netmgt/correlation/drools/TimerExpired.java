@@ -36,9 +36,10 @@
 package org.opennms.netmgt.correlation.drools;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>TimerExpired class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class TimerExpired {
     
@@ -48,6 +49,11 @@ public class TimerExpired {
         m_id = id;
     }
     
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getId() {
         return m_id;
     }

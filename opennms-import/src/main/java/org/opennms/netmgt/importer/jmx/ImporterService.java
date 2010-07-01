@@ -39,17 +39,30 @@ package org.opennms.netmgt.importer.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>ImporterService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ImporterService extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.importer.ImporterService> implements ImporterServiceMBean {
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return org.opennms.netmgt.importer.ImporterService.NAME;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "importerDaemonContext";
     }
 
+    /**
+     * <p>getStats</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStats() {
         return getDaemon().getStats();
     }

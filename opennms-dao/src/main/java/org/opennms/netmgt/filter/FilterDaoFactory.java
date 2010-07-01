@@ -42,8 +42,10 @@ import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
- * 
+ * <p>FilterDaoFactory class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class FilterDaoFactory {
     private static FilterDao m_filterDao;
@@ -52,6 +54,11 @@ public class FilterDaoFactory {
     private FilterDaoFactory() {
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.FilterDao} object.
+     */
     public static FilterDao getInstance() {
         if (m_filterDao == null) {
             init();
@@ -60,10 +67,18 @@ public class FilterDaoFactory {
         return m_filterDao;
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
+     */
     public static void setInstance(FilterDao filterDao) {
         m_filterDao = filterDao;
     }
 
+    /**
+     * <p>init</p>
+     */
     protected static synchronized void init() {
         if (m_filterDao != null) {
             return;

@@ -37,20 +37,32 @@ import org.springframework.util.Assert;
  * PingRequestId
  *
  * @author brozow
+ * @version $Id: $
  */
 public class PingRequestId {
     
     private String m_destination;
     
+    /**
+     * <p>Constructor for PingRequestId.</p>
+     *
+     * @param destination a {@link java.lang.String} object.
+     */
     public PingRequestId(String destination) {
         Assert.notNull(destination);
         m_destination = destination.startsWith("+") ? destination.substring(1) : destination;
     }
     
+    /**
+     * <p>getDestination</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDestination() {
         return m_destination;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof PingRequestId) {
@@ -60,11 +72,13 @@ public class PingRequestId {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return m_destination.hashCode();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return m_destination;

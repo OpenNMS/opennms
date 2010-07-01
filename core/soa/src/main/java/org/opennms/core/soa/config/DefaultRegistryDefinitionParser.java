@@ -41,19 +41,23 @@ import org.w3c.dom.Element;
  * DefaultRegistryDefinitionParser
  *
  * @author brozow
+ * @version $Id: $
  */
 public class DefaultRegistryDefinitionParser extends  AbstractSingleBeanDefinitionParser {
     
+    /** {@inheritDoc} */
     @Override
     protected Class<?> getBeanClass(Element element) {
         return FieldRetrievingFactoryBean.class;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void doParse(Element element, ParserContext context, BeanDefinitionBuilder builder) {
         builder.addPropertyValue("staticField", "org.opennms.core.soa.support.DefaultServiceRegistry.INSTANCE");
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String resolveId(Element element, AbstractBeanDefinition definition, ParserContext parserContext) throws BeanDefinitionStoreException {
         return Constants.SERVICE_REGISTRY_BEAN_NAME;

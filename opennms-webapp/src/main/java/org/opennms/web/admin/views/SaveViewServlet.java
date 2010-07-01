@@ -50,13 +50,18 @@ import org.opennms.netmgt.config.views.View;
 
 /**
  * A servlet that handles saving the views stored in the web users http session.
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SaveViewServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(false);
 

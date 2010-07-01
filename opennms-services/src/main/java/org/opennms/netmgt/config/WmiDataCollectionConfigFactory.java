@@ -57,6 +57,9 @@ import org.opennms.netmgt.model.RrdRepository;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class WmiDataCollectionConfigFactory {
 
@@ -73,6 +76,14 @@ public class WmiDataCollectionConfigFactory {
 
      private static WmiDatacollectionConfig m_config;
 
+     /**
+      * <p>Constructor for WmiDataCollectionConfigFactory.</p>
+      *
+      * @param configFile a {@link java.lang.String} object.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      * @throws java.io.IOException if any.
+      */
      public WmiDataCollectionConfigFactory(String configFile) throws MarshalException, ValidationException, IOException {
          InputStream is = null;
 
@@ -86,10 +97,24 @@ public class WmiDataCollectionConfigFactory {
          }
      }
 
+     /**
+      * <p>Constructor for WmiDataCollectionConfigFactory.</p>
+      *
+      * @param is a {@link java.io.InputStream} object.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      */
      public WmiDataCollectionConfigFactory(InputStream is) throws MarshalException, ValidationException {
          initialize(is);
      }
 
+     /**
+      * <p>Constructor for WmiDataCollectionConfigFactory.</p>
+      *
+      * @param rdr a {@link java.io.Reader} object.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      */
      @Deprecated
      public WmiDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
          initialize(rdr);
@@ -106,7 +131,14 @@ public class WmiDataCollectionConfigFactory {
          m_config = CastorUtils.unmarshal(WmiDatacollectionConfig.class, rdr);
      }
 
-     /** Be sure to call this method before calling getInstance(). */
+     /**
+      * Be sure to call this method before calling getInstance().
+      *
+      * @throws java.io.IOException if any.
+      * @throws java.io.FileNotFoundException if any.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      */
      public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
 
          if (m_instance == null) {
@@ -121,7 +153,7 @@ public class WmiDataCollectionConfigFactory {
       * Singleton static call to get the only instance that should exist
       *
       * @return the single factory instance
-      * @throws IllegalStateException
+      * @throws java.lang.IllegalStateException
       *             if init has not been called
       */
      public static synchronized WmiDataCollectionConfigFactory getInstance() {
@@ -132,11 +164,24 @@ public class WmiDataCollectionConfigFactory {
          return m_instance;
      }
 
+     /**
+      * <p>setInstance</p>
+      *
+      * @param instance a {@link org.opennms.netmgt.config.WmiDataCollectionConfigFactory} object.
+      */
      public static synchronized void setInstance(WmiDataCollectionConfigFactory instance) {
          m_instance = instance;
          m_loadedFromFile = false;
      }
 
+     /**
+      * <p>reload</p>
+      *
+      * @throws java.io.IOException if any.
+      * @throws java.io.FileNotFoundException if any.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
+      */
      public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
          m_instance = null;
          init();
@@ -146,6 +191,10 @@ public class WmiDataCollectionConfigFactory {
      /**
       * Reload the wmi-datacollection-config.xml file if it has been changed since we last
       * read it.
+      *
+      * @throws java.io.IOException if any.
+      * @throws org.exolab.castor.xml.MarshalException if any.
+      * @throws org.exolab.castor.xml.ValidationException if any.
       */
      protected void updateFromFile() throws IOException, MarshalException, ValidationException {
          if (m_loadedFromFile) {
@@ -156,10 +205,20 @@ public class WmiDataCollectionConfigFactory {
          }
      }
 
+     /**
+      * <p>getConfig</p>
+      *
+      * @return a {@link org.opennms.netmgt.config.wmi.WmiDatacollectionConfig} object.
+      */
      public synchronized static WmiDatacollectionConfig getConfig() {
          return m_config;
      }
 
+     /**
+      * <p>setConfig</p>
+      *
+      * @param m_config a {@link org.opennms.netmgt.config.wmi.WmiDatacollectionConfig} object.
+      */
      public synchronized static void setConfig(WmiDatacollectionConfig m_config) {
          WmiDataCollectionConfigFactory.m_config = m_config;
      }
@@ -168,6 +227,12 @@ public class WmiDataCollectionConfigFactory {
          return ThreadCategory.getInstance();
      }
 
+     /**
+      * <p>getWmiCollection</p>
+      *
+      * @param collectionName a {@link java.lang.String} object.
+      * @return a {@link org.opennms.netmgt.config.wmi.WmiCollection} object.
+      */
      public WmiCollection getWmiCollection(String collectionName) {
         WmiCollection[] collections = m_config.getWmiCollection();
          WmiCollection collection = null;
@@ -182,6 +247,12 @@ public class WmiDataCollectionConfigFactory {
          return collection;
      }
 
+     /**
+      * <p>getRrdRepository</p>
+      *
+      * @param collectionName a {@link java.lang.String} object.
+      * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+      */
      public RrdRepository getRrdRepository(String collectionName) {
          RrdRepository repo = new RrdRepository();
          repo.setRrdBaseDir(new File(getRrdPath()));
@@ -191,6 +262,12 @@ public class WmiDataCollectionConfigFactory {
          return repo;
      }
 
+     /**
+      * <p>getStep</p>
+      *
+      * @param cName a {@link java.lang.String} object.
+      * @return a int.
+      */
      public int getStep(String cName) {
          WmiCollection collection = getWmiCollection(cName);
          if (collection != null)
@@ -199,6 +276,12 @@ public class WmiDataCollectionConfigFactory {
              return -1;
      }
 
+     /**
+      * <p>getRRAList</p>
+      *
+      * @param cName a {@link java.lang.String} object.
+      * @return a {@link java.util.List} object.
+      */
      public List<String> getRRAList(String cName) {
          WmiCollection collection = getWmiCollection(cName);
          if (collection != null)
@@ -208,6 +291,11 @@ public class WmiDataCollectionConfigFactory {
 
      }
 
+     /**
+      * <p>getRrdPath</p>
+      *
+      * @return a {@link java.lang.String} object.
+      */
      public String getRrdPath() {
          String rrdPath = m_config.getRrdRepository();
          if (rrdPath == null) {

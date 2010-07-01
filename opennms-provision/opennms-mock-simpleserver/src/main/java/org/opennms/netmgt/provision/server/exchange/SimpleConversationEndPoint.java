@@ -39,6 +39,12 @@ import java.io.OutputStream;
 import org.opennms.core.utils.LogUtils;
 
 
+/**
+ * <p>SimpleConversationEndPoint class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SimpleConversationEndPoint {
     
     public static class SimpleExchange implements Exchange{
@@ -90,23 +96,42 @@ public class SimpleConversationEndPoint {
     protected Conversation m_conversation;
     private int m_timeout;
     
+    /**
+     * <p>init</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void init() throws Exception {
         m_conversation = new Conversation();
     };
     
+    /**
+     * <p>onInit</p>
+     */
     public void onInit() {};
     
+    /**
+     * <p>setTimeout</p>
+     *
+     * @param timeout a int.
+     */
     public void setTimeout(int timeout) {
         m_timeout = timeout;
     }
 
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a int.
+     */
     public int getTimeout() {
         return m_timeout;
     }
     
     /**
-     * 
-     * @param prefix
+     * <p>startsWith</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
      * @return ResponseHandler
      */
     protected ResponseHandler startsWith(final String prefix) {
@@ -120,8 +145,9 @@ public class SimpleConversationEndPoint {
     }
     
     /**
-     * 
-     * @param phrase
+     * <p>contains</p>
+     *
+     * @param phrase a {@link java.lang.String} object.
      * @return ResponseHandler
      */
     protected ResponseHandler contains(final String phrase) {
@@ -135,8 +161,9 @@ public class SimpleConversationEndPoint {
     }
     
     /**
-     * 
-     * @param regex
+     * <p>matches</p>
+     *
+     * @param regex a {@link java.lang.String} object.
      * @return ResponseHandler
      */
     protected ResponseHandler matches(final String regex) {
@@ -151,17 +178,26 @@ public class SimpleConversationEndPoint {
     
     /**
      * Add a ResponseHandler by calling one of the three utility methods:
-     * 
+     *
      * startsWith(String prefix);
      * contains(String phrase);
      * regexMatches(String regex);
-     * 
+     *
      * Within the extending class's overriding onInit method
+     *
+     * @param responseHandler a {@link org.opennms.netmgt.provision.server.exchange.ResponseHandler} object.
+     * @param requestHandler a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
      */
     protected void addResponseHandler(ResponseHandler responseHandler, RequestHandler requestHandler) {
         m_conversation.addExchange(new SimpleExchange(responseHandler, requestHandler));
     }
     
+    /**
+     * <p>singleLineRequest</p>
+     *
+     * @param request a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
+     */
     protected RequestHandler singleLineRequest(final String request) {
       return new RequestHandler() {
 
@@ -172,6 +208,12 @@ public class SimpleConversationEndPoint {
       };
     }
     
+    /**
+     * <p>multilineLineRequest</p>
+     *
+     * @param request an array of {@link java.lang.String} objects.
+     * @return a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
+     */
     protected RequestHandler multilineLineRequest(final String[] request) {
         return new RequestHandler() {
 

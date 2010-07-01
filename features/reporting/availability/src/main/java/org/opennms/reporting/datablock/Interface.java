@@ -40,10 +40,12 @@ import java.util.List;
 /**
  * This class holds the interface information and list of services that belong
  * to the interface.
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">oculan.com </A>
- * 
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">oculan.com </A>
+ * @version $Id: $
  */
 public class Interface extends StandardNamedObject {
     /**
@@ -90,7 +92,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Constructor that sets the name of interface and sets the services.
-     * 
+     *
      * @param name
      *            Name of the interface.
      * @param services
@@ -108,7 +110,7 @@ public class Interface extends StandardNamedObject {
      * Constructor that sets the name and adds service. If there is already an
      * interface with name, this method adds a service to this found service.
      * Otherwise adds a new interface with service.
-     * 
+     *
      * @param name
      *            Name of the interface.
      * @param service
@@ -129,7 +131,7 @@ public class Interface extends StandardNamedObject {
      * with lost time. If there is already an interface with name, adds a
      * service depending upon whether it exists or not. Otherwise adds a new
      * interface with service.
-     * 
+     *
      * @param name
      *            Name of the interface.
      * @param service
@@ -154,7 +156,7 @@ public class Interface extends StandardNamedObject {
      * with lost time and regained time. If there is already an interface with
      * name, adds a service depending upon whether it exists or not. Otherwise
      * adds a new interface with service.
-     * 
+     *
      * @param name
      *            Name of the interface.
      * @param service
@@ -182,7 +184,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Constructor that sets the name.
-     * 
+     *
      * @param name
      *            Name of the interface.
      */
@@ -193,7 +195,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Constructor that sets the services.
-     * 
+     *
      * @param services
      *            Services for this interface to be set.
      */
@@ -206,7 +208,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Return the services
-     * 
+     *
      * @return Services to be set.
      */
     public List<Service> getServices() {
@@ -215,7 +217,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Return the Service object given the service name
-     * 
+     *
      * @param svcname
      *            The service name to lookup.
      * @return Service with matching service name.
@@ -231,7 +233,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Adds a new service object to this interface
-     * 
+     *
      * @param service
      *            The service to be add.
      */
@@ -242,7 +244,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Adds a new service to this interface
-     * 
+     *
      * @param service
      *            The name of the service to add.
      */
@@ -260,7 +262,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Adds a new service to this interface.
-     * 
+     *
      * @param service
      *            Service name to be added
      * @param losttime
@@ -288,7 +290,7 @@ public class Interface extends StandardNamedObject {
     /**
      * Adds a service to this interface with outage having lost time and
      * regained time.
-     * 
+     *
      * @param service
      *            Service name
      * @param losttime
@@ -326,7 +328,7 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Returns the down time for this interface.
-     * 
+     *
      * @param currentTime
      *            End of rolling window
      * @param rollingWindow
@@ -348,6 +350,8 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Returns the number of services that this node/interface has.
+     *
+     * @return a int.
      */
     public int getServiceCount() {
         if (m_services != null && m_services.size() > 0)
@@ -357,6 +361,8 @@ public class Interface extends StandardNamedObject {
 
     /**
      * Returns the number of services affected.
+     *
+     * @return a int.
      */
     public int getServiceAffectCount() {
         int count = 0;
@@ -370,6 +376,7 @@ public class Interface extends StandardNamedObject {
         return count;
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         if (obj != null) {
             if (obj instanceof String)

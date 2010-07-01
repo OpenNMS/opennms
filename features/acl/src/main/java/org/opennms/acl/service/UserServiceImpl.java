@@ -47,66 +47,105 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
+ * <p>UserServiceImpl class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
+    /** {@inheritDoc} */
     public UserDTO getUserCredentials(String id) {
         return userRepository.getUserCredentials(id);
     }
 
+    /** {@inheritDoc} */
     public boolean save(UserDTO user) {
         return user.isNew() ? userRepository.insertUser(user) > 0 : updatePassword(user);
     }
 
+    /**
+     * <p>save</p>
+     *
+     * @param user a {@link org.opennms.acl.model.UserAuthoritiesDTO} object.
+     * @return a boolean.
+     */
     public boolean save(UserAuthoritiesDTO user) {
         return userRepository.save(user);
     }
 
+    /**
+     * <p>updatePassword</p>
+     *
+     * @param user a {@link org.opennms.acl.model.UserDTO} object.
+     * @return a boolean.
+     */
     public boolean updatePassword(UserDTO user) {
         user.setOldPassword(user.getPassword());
         user.setPassword(Cripto.stringToSHA(new StringBuilder(user.getOldPassword()).toString()));
         return userRepository.updatePassword(user) == 1;
     }
 
+    /** {@inheritDoc} */
     public UserAuthoritiesDTO getUserWithAuthorities(String username) {
         return userRepository.getUserWithAuthorities(username);
     }
 
+    /** {@inheritDoc} */
     public UserAuthoritiesDTO getUserWithAuthoritiesByID(Integer sid) {
         return userRepository.getUserWithAuthoritiesByID(sid);
     }
 
+    /** {@inheritDoc} */
     public UserView getUser(String id) {
         return userRepository.getUser(id);
     }
 
+    /** {@inheritDoc} */
     public Boolean disableUser(String id) {
         return userRepository.disableUser(id);
     }
 
+    /** {@inheritDoc} */
     public Object getIdUser(String username) {
         return userRepository.getIdUser(username);
     }
 
+    /**
+     * <p>getUsersNumber</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getUsersNumber() {
         return userRepository.getUsersNumber();
     }
 
+    /**
+     * <p>getTotalItemsNumber</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getTotalItemsNumber() {
         return userRepository.getUsersNumber();
     }
 
+    /** {@inheritDoc} */
     public List<UserDTOLight> getDisabledUsers(Pager pager) {
         return userRepository.getDisabledUsers(pager);
     }
 
+    /** {@inheritDoc} */
     public List<UserDTOLight> getEnabledUsers(Pager pager) {
         return userRepository.getEnabledUsers(pager);
     }
 
+    /**
+     * <p>Setter for the field <code>userRepository</code>.</p>
+     *
+     * @param userRepository a {@link org.opennms.acl.repository.UserRepository} object.
+     */
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;

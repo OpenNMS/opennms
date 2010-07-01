@@ -35,6 +35,12 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
+/**
+ * <p>AssetRecordDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface AssetRecordDao extends OnmsDao<OnmsAssetRecord, Integer> {
     
 

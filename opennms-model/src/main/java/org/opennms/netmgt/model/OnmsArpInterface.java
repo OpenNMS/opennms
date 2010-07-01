@@ -51,6 +51,12 @@ import org.springframework.core.style.ToStringCreator;
 
 
 @Entity
+/**
+ * <p>OnmsArpInterface class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name="atInterface")
 public class OnmsArpInterface implements Serializable {
 
@@ -154,10 +160,19 @@ public class OnmsArpInterface implements Serializable {
 
     private Date m_lastPoll;
 
+    /**
+     * <p>Constructor for OnmsArpInterface.</p>
+     */
     public OnmsArpInterface() {
     }
 
-    /** minimal constructor */
+    /**
+     * minimal constructor
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param physAddr a {@link java.lang.String} object.
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public OnmsArpInterface(String ipAddr, String physAddr, OnmsNode node) {
         m_ipAddress = ipAddr;
         m_physAddr = physAddr;
@@ -167,6 +182,8 @@ public class OnmsArpInterface implements Serializable {
 
     /**
      * Unique identifier for ipInterface.
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
@@ -175,77 +192,157 @@ public class OnmsArpInterface implements Serializable {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
 
+    /**
+     * <p>setNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void setNode(OnmsNode node) {
         m_node = node;
     }
     
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="ipAddr", length=16)
     public String getIpAddress() {
         return m_ipAddress;
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipaddr a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipaddr) {
         m_ipAddress = ipaddr;
     }
     
+    /**
+     * <p>getPhysAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="atPhysAddr", length=32)
     public String getPhysAddr() {
         return m_physAddr;
     }
 
+    /**
+     * <p>setPhysAddr</p>
+     *
+     * @param physAddr a {@link java.lang.String} object.
+     */
     public void setPhysAddr(String physAddr) {
         m_physAddr = physAddr;
     }
     
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsArpInterface.StatusType} object.
+     */
     @Column(name="status", length=1)
     public StatusType getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>setStatus</p>
+     *
+     * @param status a {@link org.opennms.netmgt.model.OnmsArpInterface.StatusType} object.
+     */
     public void setStatus(StatusType status) {
         m_status = status;
     }
 
+    /**
+     * <p>getSourceNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="sourceNodeId")
     public OnmsNode getSourceNode() {
         return m_sourceNode;
     }
 
+    /**
+     * <p>setSourceNode</p>
+     *
+     * @param sourceNode a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void setSourceNode(OnmsNode sourceNode) {
         m_sourceNode = sourceNode;
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name="ifIndex")
     public Integer getIfIndex() {
         return m_ifIndex;
     }
     
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param ifIndex a {@link java.lang.Integer} object.
+     */
     public void setIfIndex(Integer ifIndex) {
         m_ifIndex = ifIndex;
     }
 
 
+    /**
+     * <p>getLastPoll</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastPollTime")
     public Date getLastPoll() {
         return m_lastPoll;
     }
 
+    /**
+     * <p>setLastPoll</p>
+     *
+     * @param lastPoll a {@link java.util.Date} object.
+     */
     public void setLastPoll(Date lastPoll) {
         m_lastPoll = lastPoll;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
         .append("ipaddr", getIpAddress())

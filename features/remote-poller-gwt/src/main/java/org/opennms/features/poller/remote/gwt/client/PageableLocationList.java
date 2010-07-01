@@ -13,6 +13,13 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 
+/**
+ * <p>PageableLocationList class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class PageableLocationList extends PageableList {
     
     private ArrayList<? extends LocationInfo> m_locations;
@@ -66,6 +73,7 @@ public class PageableLocationList extends PageableList {
         
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Widget getListItemWidget(final int rowIndex) {
         return new LocationInfoDisplay(getLocations().get(rowIndex));
@@ -74,6 +82,8 @@ public class PageableLocationList extends PageableList {
     /**
      * TODO: Maybe enhance this so that it only adds/updates/deletes individual items
      * TODO: Don't skip to the front page on every update
+     *
+     * @param locations a {@link java.util.ArrayList} object.
      */
     public void updateList(final ArrayList<? extends LocationInfo> locations) {
         setLocations(locations);
@@ -89,12 +99,14 @@ public class PageableLocationList extends PageableList {
         m_locations = locations;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected int getListSize() {
         if (getLocations() == null) return 0;
         return getLocations().size();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onItemClickHandler(final ClickEvent event) {
       final Cell cell = getCellForEvent(event);
@@ -103,6 +115,9 @@ public class PageableLocationList extends PageableList {
       fireEvent(new LocationPanelSelectEvent(location.getName()));
     }
 
+    /**
+     * <p>refreshLocationListResize</p>
+     */
     public void refreshLocationListResize() {
         for(int i = 0; i < getDataList().getRowCount(); i++) {
             LocationInfoDisplay locInfo = (LocationInfoDisplay) getDataList().getWidget(i, 0);

@@ -40,26 +40,54 @@ import java.util.List;
  * TwoArgFilter
  *
  * @author brozow
+ * @version $Id: $
+ * @since 1.8.1
  */
 public abstract class MultiArgFilter<T> extends BaseFilter<T> {
 
     private T[] m_values;
     
+    /**
+     * <p>Constructor for MultiArgFilter.</p>
+     *
+     * @param filterType a {@link java.lang.String} object.
+     * @param sqlType a {@link org.opennms.web.filter.SQLType} object.
+     * @param fieldName a {@link java.lang.String} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @param values an array of T objects.
+     * @param <T> a T object.
+     */
     public MultiArgFilter(String filterType, SQLType<T> sqlType, String fieldName, String propertyName, T[] values) {
         super(filterType, sqlType, fieldName, propertyName);
         m_values = values;
     }
     
+    /**
+     * <p>getValues</p>
+     *
+     * @return an array of T objects.
+     */
     public T[] getValues() {
         return m_values;
     }
     
+    /**
+     * <p>getValuesAsList</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<T> getValuesAsList() {
         return Arrays.asList(m_values);
     }
     
+    /**
+     * <p>getSQLTemplate</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     abstract public String getSQLTemplate();
 
+    /** {@inheritDoc} */
     @Override
     final public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
         for(int i = 0; i < m_values.length; i++) {
@@ -68,6 +96,7 @@ public abstract class MultiArgFilter<T> extends BaseFilter<T> {
         return m_values.length;
     }
 
+    /** {@inheritDoc} */
     @Override
     final public String getValueString() {
         StringBuilder buf = new StringBuilder();
@@ -80,6 +109,7 @@ public abstract class MultiArgFilter<T> extends BaseFilter<T> {
         return buf.toString();
     }
     
+    /** {@inheritDoc} */
     @Override
     final public String getParamSql() {
         Object[] qmarks = new String[m_values.length];
@@ -89,6 +119,7 @@ public abstract class MultiArgFilter<T> extends BaseFilter<T> {
         return String.format(getSQLTemplate(), qmarks);
     }
 
+    /** {@inheritDoc} */
     @Override
     final public String getSql() {
         Object[] formattedVals = new String[m_values.length];

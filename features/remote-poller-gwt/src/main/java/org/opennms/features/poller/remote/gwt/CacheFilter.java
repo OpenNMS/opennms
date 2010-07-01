@@ -12,15 +12,27 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * <p>CacheFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class CacheFilter implements Filter {
 	private static final long ONE_DAY = 1000 * 60 * 60 * 24;
 
+	/** {@inheritDoc} */
 	public void init(final FilterConfig config) throws ServletException {
 	}
 
+	/**
+	 * <p>destroy</p>
+	 */
 	public void destroy() {
 	}
 
+	/** {@inheritDoc} */
 	public void doFilter(final ServletRequest req, final ServletResponse resp, final FilterChain chain) throws IOException, ServletException {
 		if (!(req instanceof HttpServletRequest)) {
 			chain.doFilter(req, resp);

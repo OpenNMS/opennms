@@ -52,8 +52,10 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * <p>Abstract ThresholdingSet class.</p>
  *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
 public abstract class ThresholdingSet {
     
@@ -75,6 +77,15 @@ public abstract class ThresholdingSet {
      */
     long m_interval;
 
+    /**
+     * <p>Constructor for ThresholdingSet.</p>
+     *
+     * @param nodeId a int.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param interval a long.
+     */
     public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
         m_nodeId = nodeId;
         m_hostAddress = hostAddress;
@@ -85,6 +96,9 @@ public abstract class ThresholdingSet {
         initialize();
     }
     
+    /**
+     * <p>initialize</p>
+     */
     protected void initialize() {
         List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
         m_thresholdGroups = new LinkedList<ThresholdGroup>();
@@ -105,6 +119,9 @@ public abstract class ThresholdingSet {
         m_hasThresholds = !m_thresholdGroups.isEmpty();
     }
 
+    /**
+     * <p>reinitialize</p>
+     */
     public void reinitialize() {
         m_initialized = false;
         ThresholdingEventProxyFactory.getFactory().getProxy().removeAllEvents();
@@ -118,6 +135,9 @@ public abstract class ThresholdingSet {
      * Used to reload merge new thresholds configuration with current.
      * 
      * Extract thresholdEvaluatorStates Map from each ThresholdEntity, then copy this to new thresholdEntity.
+     */
+    /**
+     * <p>mergeThresholdGroups</p>
      */
     protected void mergeThresholdGroups() {
         log().debug("mergeThresholdGroups: begin merging operation");
@@ -169,12 +189,24 @@ public abstract class ThresholdingSet {
     /*
      * Returns true if there are defined thresholds for this node/address/service
      */
+    /**
+     * <p>hasThresholds</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasThresholds() {
         return m_hasThresholds;
     }
 
     /*
      * Returns true if the specified attribute is involved in any of defined thresholds for node/address/service
+     */
+    /**
+     * <p>hasThresholds</p>
+     *
+     * @param resourceTypeName a {@link java.lang.String} object.
+     * @param attributeName a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean hasThresholds(String resourceTypeName, String attributeName) {
         boolean ok = false;
@@ -197,6 +229,13 @@ public abstract class ThresholdingSet {
     /*
      * Apply thresholds definitions for specified resource using attribuesMap as current values.
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
+     */
+    /**
+     * <p>applyThresholds</p>
+     *
+     * @param resourceWrapper a {@link org.opennms.netmgt.threshd.CollectionResourceWrapper} object.
+     * @param attributesMap a {@link java.util.Map} object.
+     * @return a {@link java.util.List} object.
      */
     protected List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap) {
         List<Event> eventsList = new LinkedList<Event>();
@@ -240,6 +279,13 @@ public abstract class ThresholdingSet {
         return eventsList;
     }
     
+    /**
+     * <p>passedThresholdFilters</p>
+     *
+     * @param resource a {@link org.opennms.netmgt.threshd.CollectionResourceWrapper} object.
+     * @param thresholdEntity a {@link org.opennms.netmgt.threshd.ThresholdEntity} object.
+     * @return a boolean.
+     */
     protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
         // Find the filters for threshold definition for selected group/dataSource
         ResourceFilter[] filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilter();
@@ -287,6 +333,9 @@ public abstract class ThresholdingSet {
         return false;
     }
     
+    /**
+     * <p>initThresholdsDao</p>
+     */
     protected void initThresholdsDao() {
         if (!m_initialized) {
             log().debug("initThresholdsDao: Initializing Factories and DAOs");
@@ -390,11 +439,17 @@ public abstract class ThresholdingSet {
         return entityMap;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return m_thresholdGroups.toString();
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

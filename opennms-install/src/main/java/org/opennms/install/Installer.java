@@ -96,6 +96,12 @@ import org.springframework.util.StringUtils;
  * - Javadoc
  */
 
+/**
+ * <p>Installer class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Installer {
     static final String s_version = "$Id$";
 
@@ -142,10 +148,19 @@ public class Installer {
 
     private static final String ADMIN_DATA_SOURCE_NAME = "opennms-admin";
 
+    /**
+     * <p>Constructor for Installer.</p>
+     */
     public Installer() {
         setOutputStream(System.out);
     }
 
+    /**
+     * <p>install</p>
+     *
+     * @param argv an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
+     */
     public void install(String[] argv) throws Exception {
         printHeader();
         loadProperties();
@@ -358,11 +373,19 @@ public class Installer {
         };
     }
 
+    /**
+     * <p>createConfiguredFile</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void createConfiguredFile() throws IOException {
         File f = new File(m_opennms_home + File.separator + "etc" + File.separator + "configured");
         f.createNewFile();
     }
 
+    /**
+     * <p>printHeader</p>
+     */
     public void printHeader() {
         m_out.println("==============================================================================");
         m_out.println("OpenNMS Installer Version " + s_version);
@@ -372,6 +395,11 @@ public class Installer {
         m_out.println("");
     }
 
+    /**
+     * <p>loadProperties</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void loadProperties() throws Exception {
         m_properties = new Properties();
         m_properties.load(Installer.class.getResourceAsStream("installer.properties"));
@@ -414,6 +442,13 @@ public class Installer {
         m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
     }
 
+    /**
+     * <p>fetchProperty</p>
+     *
+     * @param property a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String fetchProperty(String property) throws Exception {
         String value;
 
@@ -425,6 +460,12 @@ public class Installer {
         return value;
     }
 
+    /**
+     * <p>parseArguments</p>
+     *
+     * @param argv an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
+     */
     public void parseArguments(String[] argv) throws Exception {
 
         options.addOption("h", "help", false, "this help");
@@ -553,6 +594,11 @@ public class Installer {
         }
     }
 
+    /**
+     * <p>verifyFilesAndDirectories</p>
+     *
+     * @throws java.io.FileNotFoundException if any.
+     */
     public void verifyFilesAndDirectories() throws FileNotFoundException {
         if (m_update_database) {
             verifyFileExists(true,  m_installerDb.getStoredProcedureDirectory(),
@@ -574,6 +620,15 @@ public class Installer {
         }
     }
 
+    /**
+     * <p>verifyFileExists</p>
+     *
+     * @param isDir a boolean.
+     * @param file a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param option a {@link java.lang.String} object.
+     * @throws java.io.FileNotFoundException if any.
+     */
     public void verifyFileExists(boolean isDir, String file, String description, String option)
             throws FileNotFoundException {
         File f;
@@ -611,6 +666,11 @@ public class Installer {
         m_out.println(f.getAbsolutePath());
     }
 
+    /**
+     * <p>checkWebappOldOpennmsDir</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void checkWebappOldOpennmsDir() throws Exception {
         File f = new File(m_webappdir + File.separator + "opennms");
 
@@ -626,6 +686,11 @@ public class Installer {
         m_out.println("OK");
     }
 
+    /**
+     * <p>checkServerXmlOldOpennmsContext</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void checkServerXmlOldOpennmsContext() throws Exception {
         String search_regexp = "(?ms).*<Context\\s+path=\"/opennms\".*";
         StringBuffer b = new StringBuffer();
@@ -662,6 +727,11 @@ public class Installer {
         return;
     }
 
+    /**
+     * <p>installWebApp</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void installWebApp() throws Exception {
         m_out.println("- Install OpenNMS webapp... ");
 
@@ -673,6 +743,15 @@ public class Installer {
         m_out.println("- Installing OpenNMS webapp... DONE");
     }
 
+    /**
+     * <p>copyFile</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param destination a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param recursive a boolean.
+     * @throws java.lang.Exception if any.
+     */
     public void copyFile(String source, String destination,
             String description, boolean recursive) throws Exception {
         File sourceFile = new File(source);
@@ -728,6 +807,15 @@ public class Installer {
         m_out.println("DONE");
     }
 
+    /**
+     * <p>installLink</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param destination a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param recursive a boolean.
+     * @throws java.lang.Exception if any.
+     */
     public void installLink(String source, String destination,
             String description, boolean recursive) throws Exception {
 
@@ -757,6 +845,11 @@ public class Installer {
         m_out.println("DONE");
     }
 
+    /**
+     * <p>updateTomcatConf</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void updateTomcatConf() throws Exception {
         File f = new File(m_tomcat_conf);
 
@@ -795,6 +888,16 @@ public class Installer {
         m_out.println("DONE");
     }
 
+    /**
+     * <p>removeFile</p>
+     *
+     * @param destination a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param recursive a boolean.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.lang.Exception if any.
+     */
     public void removeFile(String destination, String description,
             boolean recursive) throws IOException, InterruptedException,
             Exception {
@@ -848,6 +951,12 @@ public class Installer {
         pw.close();
     }
 
+    /**
+     * <p>main</p>
+     *
+     * @param argv an array of {@link java.lang.String} objects.
+     * @throws java.lang.Exception if any.
+     */
     public static void main(String[] argv) throws Exception {
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.WARN);
@@ -855,6 +964,12 @@ public class Installer {
         new Installer().install(argv);
     }
 
+    /**
+     * <p>checkServerVersion</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     public String checkServerVersion() throws IOException {
         File catalinaHome = new File(m_webappdir).getParentFile();
         String readmeVersion = getTomcatVersion(new File(catalinaHome, "README.txt"));
@@ -871,6 +986,13 @@ public class Installer {
         }
     }
 
+    /**
+     * <p>getTomcatVersion</p>
+     *
+     * @param file a {@link java.io.File} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     public String getTomcatVersion(File file) throws IOException {
         if (file == null || !file.exists()) {
             return null;
@@ -894,6 +1016,15 @@ public class Installer {
         return null;
     }
 
+    /**
+     * <p>findLibrary</p>
+     *
+     * @param libname a {@link java.lang.String} object.
+     * @param path a {@link java.lang.String} object.
+     * @param isRequired a boolean.
+     * @return a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public String findLibrary(String libname, String path, boolean isRequired) throws Exception {
         String fullname = System.mapLibraryName(libname);
 
@@ -974,6 +1105,12 @@ public class Installer {
         return null;
     }
 
+    /**
+     * <p>loadLibrary</p>
+     *
+     * @param path a {@link java.lang.String} object.
+     * @return a boolean.
+     */
     public boolean loadLibrary(final String path) {
         try {
             m_out.print("  - trying to load " + path + ": ");
@@ -986,6 +1123,13 @@ public class Installer {
         return false;
     }
 
+    /**
+     * <p>writeLibraryConfig</p>
+     *
+     * @param jicmp_path a {@link java.lang.String} object.
+     * @param jrrd_path a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     public void writeLibraryConfig(final String jicmp_path, final String jrrd_path)
             throws IOException {
         Properties libraryProps = new Properties();
@@ -1010,6 +1154,11 @@ public class Installer {
         }
     }
 
+    /**
+     * <p>pingLocalhost</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void pingLocalhost() throws IOException {
         String host = "127.0.0.1";
 
@@ -1083,10 +1232,20 @@ public class Installer {
 
     }
 
+    /**
+     * <p>getInstallerDb</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.db.InstallerDb} object.
+     */
     public InstallerDb getInstallerDb() {
         return m_installerDb;
     }
 
+    /**
+     * <p>setOutputStream</p>
+     *
+     * @param out a {@link java.io.PrintStream} object.
+     */
     public void setOutputStream(PrintStream out) {
         m_out = out;
         m_installerDb.setOutputStream(m_out);

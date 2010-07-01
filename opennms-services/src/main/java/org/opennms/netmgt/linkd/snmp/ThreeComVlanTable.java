@@ -45,23 +45,36 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * is received/error occurs in the SnmpSession used to send requests /recieve
  * replies.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public class ThreeComVlanTable extends SnmpTable<ThreeComVlanTableEntry> {
 
+	/**
+	 * <p>Constructor for ThreeComVlanTable.</p>
+	 *
+	 * @param address a {@link java.net.InetAddress} object.
+	 */
 	public ThreeComVlanTable(InetAddress address) {
         super(address, "threeComVlanTable", ThreeComVlanTableEntry.threeComVlan_elemList);
     }
     
+    /** {@inheritDoc} */
     protected ThreeComVlanTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new ThreeComVlanTableEntry();
     }
 
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected final ThreadCategory log() {
         return ThreadCategory.getInstance(ThreeComVlanTable.class);
     }

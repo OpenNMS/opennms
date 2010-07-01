@@ -36,18 +36,19 @@ package org.opennms.acl.model;
 
 /**
  * Contains the logic to perform pagination
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class Pager {
 
     /**
      * Constructor
-     * 
+     *
      * @param page requested
      * @param max number of pages
-     * @param itemsNumberOnPage
+     * @param itemsNumberOnPage a {@link java.lang.Integer} object.
      */
     public Pager(Integer page, Integer max, Integer itemsNumberOnPage) {
         this.page = page;
@@ -56,6 +57,8 @@ public class Pager {
     }
 
     /**
+     * <p>Getter for the field <code>max</code>.</p>
+     *
      * @return The max count of pages
      */
     public Integer getMax() {
@@ -63,6 +66,8 @@ public class Pager {
     }
 
     /**
+     * <p>Getter for the field <code>page</code>.</p>
+     *
      * @return Current number page displayed
      */
     public Integer getPage() {
@@ -70,12 +75,19 @@ public class Pager {
     }
 
     /**
+     * <p>Getter for the field <code>itemsNumberOnPage</code>.</p>
+     *
      * @return The number of items to show on the page
      */
     public Integer getItemsNumberOnPage() {
         return itemsNumberOnPage;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("page:").append(page).append(" ");

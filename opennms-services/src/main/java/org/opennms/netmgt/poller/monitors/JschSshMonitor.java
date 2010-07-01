@@ -48,25 +48,32 @@ import org.opennms.netmgt.poller.MonitoredService;
  * <P>
  * This plugin is just an exact copy of the {@link SshMonitor} now.
  * </P>
- * 
+ *
  * @deprecated use {@link SshMonitor} instead
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * 
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @version $Id: $
  */
 
 @Distributable
 final public class JschSshMonitor extends IPv4Monitor {
     private SshMonitor m_monitor;
     
+    /**
+     * <p>Constructor for JschSshMonitor.</p>
+     */
     public JschSshMonitor() {
         m_monitor = new SshMonitor();
     }
     
+    /** {@inheritDoc} */
     public PollStatus poll(InetAddress address, Map<String, Object> parameters) {
         return m_monitor.poll(address, parameters);
     }
 
+    /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         return m_monitor.poll(svc, parameters);
     }

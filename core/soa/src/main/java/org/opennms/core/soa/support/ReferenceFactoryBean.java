@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  * ReferenceFactoryBean
  *
  * @author brozow
+ * @version $Id: $
  */
 public class ReferenceFactoryBean implements FactoryBean, InitializingBean {
     
@@ -47,14 +48,30 @@ public class ReferenceFactoryBean implements FactoryBean, InitializingBean {
     
     private Object m_provider;
 
+    /**
+     * <p>setServiceRegistry</p>
+     *
+     * @param serviceRegistry a {@link org.opennms.core.soa.ServiceRegistry} object.
+     */
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         m_serviceRegistry = serviceRegistry;
     }
     
+    /**
+     * <p>setServiceInterface</p>
+     *
+     * @param serviceInterface a {@link java.lang.Class} object.
+     */
     public void setServiceInterface(Class<?> serviceInterface) {
         m_serviceInterface = serviceInterface;
     }
     
+    /**
+     * <p>getObject</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     * @throws java.lang.Exception if any.
+     */
     public Object getObject() throws Exception {
         
         if (m_provider == null) {
@@ -63,14 +80,29 @@ public class ReferenceFactoryBean implements FactoryBean, InitializingBean {
         return m_provider;
     }
     
+    /**
+     * <p>getObjectType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<?> getObjectType() {
         return m_serviceInterface;
     }
 
+    /**
+     * <p>isSingleton</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSingleton() {
         return true;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_serviceRegistry, "The serviceRegistry must be set");
         Assert.notNull(m_serviceInterface, "The serviceInterface must be set");

@@ -61,6 +61,12 @@ import org.opennms.reporting.core.svclayer.ReportServiceLocator;
 import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 
+/**
+ * <p>DefaultReportWrapperService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultReportWrapperService implements ReportWrapperService {
 
     private ReportServiceLocator m_reportServiceLocator;
@@ -71,6 +77,9 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
+    /**
+     * <p>Constructor for DefaultReportWrapperService.</p>
+     */
     public DefaultReportWrapperService() {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -78,6 +87,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     }
 
+    /** {@inheritDoc} */
     public DeliveryOptions getDeliveryOptions(String reportId, String userId) {
         DeliveryOptions options = new DeliveryOptions();
 
@@ -110,14 +120,17 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         return options;
     }
 
+    /** {@inheritDoc} */
     public List<ReportFormat> getFormats(String reportId) {
         return getReportService(reportId).getFormats(reportId);
     }
 
+    /** {@inheritDoc} */
     public ReportParameters getParameters(String reportId) {
         return getReportService(reportId).getParameters(reportId);
     }
     
+    /** {@inheritDoc} */
     public Boolean hasParameters(String reportId) {
        
         Map<String, Object> reportParms = getParameters(reportId).getReportParms();
@@ -128,6 +141,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         }
     }
 
+    /** {@inheritDoc} */
     public void render(String reportId, String location, ReportFormat format,
             OutputStream outputStream) {
         try {
@@ -139,6 +153,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     }
 
+    /** {@inheritDoc} */
     public void run(ReportParameters parameters,
             DeliveryOptions deliveryOptions, String reportId) {
         if (!deliveryOptions.getPersist()) {
@@ -217,6 +232,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean validate(ReportParameters parameters, String reportId) {
         return getReportService(reportId).validate(
                                                    parameters.getReportParms(),
@@ -227,15 +243,26 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         return m_reportServiceLocator.getReportServiceForId(reportId);
     }
 
+    /**
+     * <p>setReportServiceLocator</p>
+     *
+     * @param reportServiceLocator a {@link org.opennms.reporting.core.svclayer.ReportServiceLocator} object.
+     */
     public void setReportServiceLocator(
             ReportServiceLocator reportServiceLocator) {
         m_reportServiceLocator = reportServiceLocator;
     }
 
+    /**
+     * <p>setReportStoreService</p>
+     *
+     * @param reportStoreService a {@link org.opennms.reporting.core.svclayer.ReportStoreService} object.
+     */
     public void setReportStoreService(ReportStoreService reportStoreService) {
         m_reportStoreService = reportStoreService;
     }
 
+    /** {@inheritDoc} */
     public void runAndRender(ReportParameters parameters,
             OutputStream outputStream) {
 

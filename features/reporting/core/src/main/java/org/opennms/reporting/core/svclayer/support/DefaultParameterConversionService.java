@@ -48,9 +48,16 @@ import org.opennms.netmgt.config.reporting.StringParm;
 import org.opennms.netmgt.config.reporting.Parameters;
 import org.opennms.reporting.core.svclayer.ParameterConversionService;
 
+/**
+ * <p>DefaultParameterConversionService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultParameterConversionService implements
         ParameterConversionService {
 
+    /** {@inheritDoc} */
     public ReportParameters convert(Parameters configParameters) {
 
         ReportParameters reportParameters = new ReportParameters();

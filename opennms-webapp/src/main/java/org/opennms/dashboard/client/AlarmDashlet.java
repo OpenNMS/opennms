@@ -38,9 +38,14 @@ package org.opennms.dashboard.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * 
+ * <p>AlarmDashlet class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AlarmDashlet extends Dashlet {
     
@@ -102,11 +107,17 @@ public class AlarmDashlet extends Dashlet {
         setView(m_view);
     }
     
+    /** {@inheritDoc} */
     public void setSurveillanceSet(SurveillanceSet set) {
         m_loader.load(set);
     }
 
     
+    /**
+     * <p>setSurveillanceService</p>
+     *
+     * @param svc a {@link org.opennms.dashboard.client.SurveillanceServiceAsync} object.
+     */
     public void setSurveillanceService(SurveillanceServiceAsync svc) {
         m_loader.setSurveillanceService(svc);
     }

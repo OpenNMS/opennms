@@ -35,18 +35,56 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 
+/**
+ * <p>SQLType interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public interface SQLType<T> {
     
+    /** Constant <code>INT</code> */
     public static final SQLType<Integer> INT = new IntegerSqlType();
+    /** Constant <code>STRING</code> */
     public static final SQLType<String> STRING = new StringSqlType();
+    /** Constant <code>DATE</code> */
     public static final SQLType<Date> DATE = new DateSqlType();
     
+    /**
+     * <p>getValueAsString</p>
+     *
+     * @param value a T object.
+     * @param <T> a T object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getValueAsString(T value);
     
+    /**
+     * <p>formatValue</p>
+     *
+     * @param value a T object.
+     * @return a {@link java.lang.String} object.
+     */
     public String formatValue(T value);
 
+    /**
+     * <p>bindParam</p>
+     *
+     * @param ps a {@link java.sql.PreparedStatement} object.
+     * @param parameterIndex a int.
+     * @param value a T object.
+     * @throws java.sql.SQLException if any.
+     */
     public void bindParam(PreparedStatement ps, int parameterIndex, T value) throws SQLException;
     
+    /**
+     * <p>createArray</p>
+     *
+     * @param value1 a T object.
+     * @param value2 a T object.
+     * @return an array of T objects.
+     */
     public T[] createArray(T value1, T value2);
     
 }

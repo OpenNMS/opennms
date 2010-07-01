@@ -39,17 +39,28 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
 
 /**
  * This class handles merging a new Definition into the current running SNMP Configuration.
- * 
+ *
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
+ * @version $Id: $
  */
 public class SnmpConfigManager {
 
     private SnmpConfig m_config;
     
+    /**
+     * <p>Constructor for SnmpConfigManager.</p>
+     *
+     * @param config a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
+     */
     public SnmpConfigManager(SnmpConfig config) {
         m_config = config;
     }
 
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
+     */
     public SnmpConfig getConfig() {
         return m_config;
     }
@@ -57,8 +68,8 @@ public class SnmpConfigManager {
     /**
      * This is the exposed method for moving the data from a configureSNMP event
      * into the SnmpConfig from SnmpPeerFactory.
-     * 
-     * @param config
+     *
+     * @param eventDef a {@link org.opennms.netmgt.config.snmp.Definition} object.
      */
     public void mergeIntoConfig(final Definition eventDef)  {
         
@@ -79,9 +90,9 @@ public class SnmpConfigManager {
     /**
      * This method is used to find a definition with then current config that matches the
      * attributes of a Definition.
-     * 
-     * @param eventDef
-     * @return
+     *
+     * @param eventDef a {@link org.opennms.netmgt.config.snmp.Definition} object.
+     * @return a {@link org.opennms.netmgt.config.MergeableDefinition} object.
      */
     protected MergeableDefinition findDefMatchingAttributes(final Definition eventDef) {
         
@@ -133,7 +144,6 @@ public class SnmpConfigManager {
     
     /**
      * Optimize all definitions in the current configuration.
-     *
      */
     public void optimizeAllDefs() {
         synchronized (m_config) {

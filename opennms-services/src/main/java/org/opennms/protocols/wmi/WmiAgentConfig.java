@@ -33,11 +33,22 @@ package org.opennms.protocols.wmi;
 
 import java.net.InetAddress;
 
+/**
+ * <p>WmiAgentConfig class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class WmiAgentConfig {
+    /** Constant <code>DEFAULT_TIMEOUT=3000</code> */
     public static final int DEFAULT_TIMEOUT = 3000;
+    /** Constant <code>DEFAULT_RETRIES=1</code> */
     public static final int DEFAULT_RETRIES = 1;
+    /** Constant <code>DEFAULT_PASSWORD=""</code> */
     public static final String DEFAULT_PASSWORD = "";
+    /** Constant <code>DEFAULT_USERNAME="Administrator"</code> */
     public static final String DEFAULT_USERNAME="Administrator";
+    /** Constant <code>DEFAULT_DOMAIN="WORKGROUP"</code> */
     public static final String DEFAULT_DOMAIN="WORKGROUP";
     
     private InetAddress m_Address;
@@ -56,10 +67,18 @@ public class WmiAgentConfig {
 	String compOp = "NOOP";
 	String wmiClass = "";
 	String wmiObject = "";
+    /**
+     * <p>Constructor for WmiAgentConfig.</p>
+     */
     public WmiAgentConfig() {
         setDefaults();
     }
     
+    /**
+     * <p>Constructor for WmiAgentConfig.</p>
+     *
+     * @param agentAddress a {@link java.net.InetAddress} object.
+     */
     public WmiAgentConfig(InetAddress agentAddress) {
         m_Address = agentAddress;
         setDefaults();
@@ -70,6 +89,11 @@ public class WmiAgentConfig {
         m_Retries = DEFAULT_RETRIES;
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer buff = new StringBuffer("AgentConfig[");
         buff.append("Address: "+m_Address);
@@ -81,51 +105,111 @@ public class WmiAgentConfig {
     }
 
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return m_Address;
     }
 
+    /**
+     * <p>setAddress</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     */
     public void setAddress(InetAddress address) {
         m_Address = address;
     }
 
+    /**
+     * <p>getTimeout</p>
+     *
+     * @return a int.
+     */
     public int getTimeout() {
         return m_Timeout;
     }
 
+    /**
+     * <p>setTimeout</p>
+     *
+     * @param timeout a int.
+     */
     public void setTimeout(int timeout) {
         m_Timeout = timeout;
     }
 
+    /**
+     * <p>getRetries</p>
+     *
+     * @return a int.
+     */
     public int getRetries() {
         return m_Retries;
     }
 
+    /**
+     * <p>setRetries</p>
+     *
+     * @param retries a int.
+     */
     public void setRetries(int retries) {
         m_Retries = retries;
     }
 
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPassword(String password) {
         m_Password = password;
     }
 
+    /**
+     * <p>getPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPassword() {
         return m_Password;
     }
 
 
+    /**
+     * <p>getUsername</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUsername() {
         return m_Username;
     }
     
+    /**
+     * <p>setUsername</p>
+     *
+     * @param username a {@link java.lang.String} object.
+     */
     public void setUsername(String username) {
     	m_Username = username;
     }
 
+    /**
+     * <p>Getter for the field <code>domain</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDomain() {
         return m_Domain;
     }
     
+    /**
+     * <p>Setter for the field <code>domain</code>.</p>
+     *
+     * @param domain a {@link java.lang.String} object.
+     */
     public void setDomain(String domain) {
     	m_Domain = domain;
     }

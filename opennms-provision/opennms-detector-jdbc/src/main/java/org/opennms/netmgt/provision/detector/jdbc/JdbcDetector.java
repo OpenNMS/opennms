@@ -34,6 +34,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>JdbcDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class JdbcDetector extends AbstractJdbcDetector{
     
@@ -46,6 +52,7 @@ public class JdbcDetector extends AbstractJdbcDetector{
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         expectBanner(resultSetNotNull());

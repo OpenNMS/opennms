@@ -39,12 +39,19 @@ import java.util.Collections;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.core.utils.TimeoutTracker;
 
+/**
+ * <p>Abstract AbstractPoll class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class AbstractPoll implements Poll {
     // default timeout of 3 seconds
     protected int m_timeout = 3000;
     
     /**
-     * Set the timeout in milliseconds. 
+     * Set the timeout in milliseconds.
+     *
      * @param milliseconds the timeout
      */
     public void setTimeout(int milliseconds) {
@@ -53,14 +60,28 @@ public abstract class AbstractPoll implements Poll {
 
     /**
      * Get the timeout in milliseconds.
+     *
      * @return the timeout
      */
     public int getTimeout() {
         return m_timeout;
     }
 
+    /**
+     * <p>poll</p>
+     *
+     * @param tracker a {@link org.opennms.core.utils.TimeoutTracker} object.
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @throws org.opennms.netmgt.provision.support.ssh.InsufficientParametersException if any.
+     */
     public abstract PollStatus poll(TimeoutTracker tracker) throws InsufficientParametersException;
     
+    /**
+     * <p>poll</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @throws org.opennms.netmgt.provision.support.ssh.InsufficientParametersException if any.
+     */
     public PollStatus poll() throws InsufficientParametersException {
         TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), 1, getTimeout());
         return poll(tracker);

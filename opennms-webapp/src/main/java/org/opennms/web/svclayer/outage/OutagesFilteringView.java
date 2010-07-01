@@ -57,10 +57,19 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.WebSecurityUtils;
 
 /**
- * 
+ * <p>OutagesFilteringView class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class OutagesFilteringView {
 
@@ -70,6 +79,12 @@ public class OutagesFilteringView {
 
     // Possible values returned to me
 
+    /**
+     * <p>filterQuery</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String filterQuery(HttpServletRequest request) {
 
         String queryResult = "";
@@ -141,6 +156,12 @@ public class OutagesFilteringView {
         return queryResult;
     }
 
+    /**
+     * <p>buildCriteria</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
+     */
     public OnmsCriteria buildCriteria(HttpServletRequest request) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsOutage.class);
 
@@ -222,10 +243,20 @@ public class OutagesFilteringView {
         return criteria;
     }
 
+    /**
+     * <p>getCategoryDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
 
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }

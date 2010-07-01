@@ -38,13 +38,21 @@ import java.util.Map;
 import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
 import org.opennms.netmgt.provision.support.jmx.connectors.JBossConnectionFactory;
 
+/**
+ * <p>JBossClient class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JBossClient extends JMXClient {
     
+    /** {@inheritDoc} */
     @Override
     protected ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
         return JBossConnectionFactory.getMBeanServerConnection(parameterMap, address);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Map<String, Object> generateMap(int port, int timeout) {
         Map<String, Object> map = new HashMap<String, Object>();

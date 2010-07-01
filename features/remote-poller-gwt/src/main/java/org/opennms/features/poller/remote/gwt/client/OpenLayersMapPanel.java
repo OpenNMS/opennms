@@ -41,6 +41,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * <p>OpenLayersMapPanel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OpenLayersMapPanel extends Composite implements MapPanel {
 
     private class DefaultMarkerClickHandler implements MarkerBrowserEventListener {
@@ -78,6 +85,11 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     private Map<String, Marker> m_markers = new HashMap<String, Marker>();
     private HandlerManager m_eventBus;
     
+    /**
+     * <p>Constructor for OpenLayersMapPanel.</p>
+     *
+     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     */
     public OpenLayersMapPanel(final HandlerManager eventBus) {
         m_eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
@@ -99,6 +111,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     
     
 
+    /** {@inheritDoc} */
     @Override
     protected void onLoad() {
         super.onLoad();
@@ -107,6 +120,9 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
 
 
+    /**
+     * <p>initializeMap</p>
+     */
     public void initializeMap() {
         final MapOptions mo = new MapOptions();
         mo.setProjection("EPSG:4326");
@@ -174,6 +190,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         };
     }-*/;
 
+    /** {@inheritDoc} */
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
     	final Marker marker = getMarker(name);
 
@@ -202,6 +219,11 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         return new Icon(marker.getImageURL(), new Size(32, 32), new Pixel(-16, -32));
     }
 
+    /**
+     * <p>getBounds</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
+     */
     public GWTBounds getBounds() {
         try {
             return toGWTBounds(m_map.getExtent());
@@ -210,6 +232,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         }
     }
 
+    /** {@inheritDoc} */
     public void setBounds(final GWTBounds b) {
         m_map.zoomToExtent(toBounds(b));
     }
@@ -238,6 +261,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         m_map.updateSize();
     }
 
+    /** {@inheritDoc} */
     public void placeMarker(final GWTMarkerState marker) {
         Marker m = getMarker(marker.getName());
 
@@ -269,6 +293,11 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         return $wnd.openlayersLayer;
     }-*/;
 
+    /**
+     * <p>getWidget</p>
+     *
+     * @return a {@link com.google.gwt.user.client.ui.Widget} object.
+     */
     public Widget getWidget() {
         return this;
     }

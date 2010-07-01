@@ -71,13 +71,44 @@ import org.springframework.util.Assert;
  * <p>
  * This class create an XMLRPC client and provide methods to notify the external
  * XMLRPC server if a failure occurs during processing an event.
- * 
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * @version $Id: $
  */
 public final class XmlRpcNotifier {
 
@@ -175,6 +206,12 @@ public final class XmlRpcNotifier {
 
     /**
      * The constructor
+     *
+     * @param rpcServers an array of {@link org.opennms.netmgt.config.xmlrpcd.XmlrpcServer} objects.
+     * @param retries a int.
+     * @param elapseTime a int.
+     * @param verifyServer a boolean.
+     * @param localServer a {@link java.lang.String} object.
      */
     public XmlRpcNotifier(XmlrpcServer[] rpcServers, int retries, int elapseTime, boolean verifyServer, String localServer) {
         m_rpcServers = rpcServers;
@@ -204,14 +241,14 @@ public final class XmlRpcNotifier {
     /**
      * <p>
      * Notify the external xmlrpc server the success of processing an event.
-     * 
+     *
      * @param txNo
      *            the external transaction number for an event.
      * @param uei
      *            the event uei.
      * @param message
      *            the text message to indicate the success.
-     * 
+     * @return a boolean.
      */
     public boolean notifySuccess(long txNo, String uei, String message) {
         Assert.notNull(uei, "uei must not be null");
@@ -233,7 +270,7 @@ public final class XmlRpcNotifier {
      * <p>
      * Notify the external xmlrpc server the occurance of failure during
      * processing an event.
-     * 
+     *
      * @param txNo
      *            the external transaction number for an event.
      * @param uei
@@ -241,6 +278,7 @@ public final class XmlRpcNotifier {
      * @param reason
      *            the text message to explain the reason of the failure to the
      *            external xmlrpc server.
+     * @return a boolean.
      */
     public boolean notifyFailure(long txNo, String uei, String reason) {
         Assert.notNull(uei, "uei must not be null");
@@ -261,13 +299,14 @@ public final class XmlRpcNotifier {
     /**
      * <p>
      * Notify the external xmlrpc server the request has been received.
-     * 
+     *
      * @param txNo
      *            the external transaction number for an event.
      * @param uei
      *            the event uei.
      * @param message
      *            text message to notify the external xmlrpc server.
+     * @return a boolean.
      */
     public boolean notifyReceivedEvent(long txNo, String uei, String message) {
         Assert.notNull(uei, "uei must not be null");
@@ -289,6 +328,9 @@ public final class XmlRpcNotifier {
      * <p>
      * Notify the external xmlrpc server the occurance of the 'nodeLostService'
      * event.
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
      */
     public boolean sendServiceDownEvent(Event event) {
         Assert.notNull(event, "event object must not be null");
@@ -316,6 +358,9 @@ public final class XmlRpcNotifier {
      * <p>
      * Notify the external xmlrpc server the occurance of the
      * 'nodeRegainedService' event.
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
      */
     public boolean sendServiceUpEvent(Event event) {
         Assert.notNull(event, "event object must not be null");
@@ -339,6 +384,9 @@ public final class XmlRpcNotifier {
      * <p>
      * Notify the external xmlrpc server the occurance of the 'interfaceDown'
      * event.
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
      */
     public boolean sendInterfaceDownEvent(Event event) {
         Assert.notNull(event, "event object must not be null");
@@ -360,6 +408,9 @@ public final class XmlRpcNotifier {
      * <p>
      * Notify the external xmlrpc server the occurance of the 'interfaceUp'
      * event.
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
      */
     public boolean sendInterfaceUpEvent(Event event) {
         Assert.notNull(event, "event object must not be null");
@@ -381,6 +432,9 @@ public final class XmlRpcNotifier {
     /**
      * <p>
      * Notify the external xmlrpc server the occurance of the 'nodeDown' event.
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
      */
     public boolean sendNodeDownEvent(Event event) {
         Assert.notNull(event, "event object must not be null");
@@ -400,6 +454,9 @@ public final class XmlRpcNotifier {
     /**
      * <p>
      * Notify the external xmlrpc server the occurance of the 'nodeUp' event.
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
      */
     public boolean sendNodeUpEvent(Event event) {
         Assert.notNull(event, "event object must not be null");
@@ -418,10 +475,13 @@ public final class XmlRpcNotifier {
 
     /**
      * <p>
-     * Notify the external event xmlrpc server of the occurrence of a generic 
-     * event -- ie. an event that's been configured for XMLRPC forwarding, but 
-     * which does not correspond to one of the specific event methods of this 
+     * Notify the external event xmlrpc server of the occurrence of a generic
+     * event -- ie. an event that's been configured for XMLRPC forwarding, but
+     * which does not correspond to one of the specific event methods of this
      * class
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
      */
     public boolean sendEvent(Event event) {
         Assert.notNull(event, "event object must not be null");
@@ -620,7 +680,7 @@ public final class XmlRpcNotifier {
      * This method try to find an external xmlrpc server which is alive and and
      * can communicate with.
      * </p>
-     * 
+     *
      * <p>
      * <b>Note: </b> If an xmlrpc server is found alive and could communicate
      * with, an xmlrpc client is created to communicate with this server. The

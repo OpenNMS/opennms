@@ -34,7 +34,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>AddEventVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.importer.operations;
 
@@ -46,7 +49,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
-
 public final class AddEventVisitor extends AbstractEntityVisitor {
 	private final List<Event> m_events;
 
@@ -54,14 +56,17 @@ public final class AddEventVisitor extends AbstractEntityVisitor {
 		m_events = events;
 	}
 
+	/** {@inheritDoc} */
 	public void visitNode(OnmsNode node) {
 		m_events.add(EventUtils.createNodeAddedEvent(node.getId().intValue(), node.getLabel(), node.getLabelSource()));
 	}
 
+	/** {@inheritDoc} */
 	public void visitIpInterface(OnmsIpInterface iface) {
 		m_events.add(EventUtils.createNodeGainedInterfaceEvent("ModelImporter", iface.getNode().getId().intValue(), iface.getInetAddress()));
 	}
 
+	/** {@inheritDoc} */
 	public void visitMonitoredService(OnmsMonitoredService monSvc) {
 		OnmsIpInterface iface = monSvc.getIpInterface();
 		OnmsNode node = iface.getNode();

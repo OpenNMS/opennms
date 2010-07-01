@@ -36,11 +36,12 @@ import java.io.Serializable;
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="vulnplugins"
- *     
-*/
+/**
+ * <p>OnmsVulnPlugin class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
 
     /**
@@ -83,7 +84,21 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
 
     private Integer m_id;
 
-    /** full constructor */
+    /**
+     * full constructor
+     *
+     * @param pluginId a {@link java.lang.Integer} object.
+     * @param pluginSubId a {@link java.lang.Integer} object.
+     * @param name a {@link java.lang.String} object.
+     * @param category a {@link java.lang.String} object.
+     * @param copyright a {@link java.lang.String} object.
+     * @param descr a {@link java.lang.String} object.
+     * @param summary a {@link java.lang.String} object.
+     * @param family a {@link java.lang.String} object.
+     * @param version a {@link java.lang.String} object.
+     * @param cveEntry a {@link java.lang.String} object.
+     * @param md5 a {@link java.lang.String} object.
+     */
     public OnmsVulnPlugin(Integer pluginId, Integer pluginSubId, String name, String category, String copyright, String descr, String summary, String family, String version, String cveEntry, String md5) {
         m_pluginId = pluginId;
         m_pluginSubId = pluginSubId;
@@ -98,181 +113,237 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
         m_md5 = md5;
     }
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsVulnPlugin() {
     }
     
     /**
      * Unique identifier for ipInterface.
-     * 
+     *
      * @hibernate.id generator-class="native" column="id"
      * @hibernate.generator-param name="sequence" value="vlnPlgnNxtId"
-     *         
+     * @return a {@link java.lang.Integer} object.
      */
     public Integer getId() {
         return m_id;
     }
     
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
     
 
-    /** 
-     *                @hibernate.property
-     *                 column="pluginId"
-     *                 length="4"
-     *             
+    /**
+     * <p>getPluginId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     public Integer getPluginId() {
         return m_pluginId;
     }
 
+    /**
+     * <p>setPluginId</p>
+     *
+     * @param pluginId a {@link java.lang.Integer} object.
+     */
     public void setPluginId(Integer pluginId) {
         m_pluginId = pluginId;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="pluginSubId"
-     *                 length="4"
-     *             
+    /**
+     * <p>getPluginSubId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     public Integer getPluginSubId() {
         return m_pluginSubId;
     }
 
+    /**
+     * <p>setPluginSubId</p>
+     *
+     * @param pluginSubId a {@link java.lang.Integer} object.
+     */
     public void setPluginSubId(Integer pluginSubId) {
         m_pluginSubId = pluginSubId;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="name"
-     *                 length="128"
-     *             
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="category"
-     *                 length="32"
-     *             
+    /**
+     * <p>getCategory</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getCategory() {
         return m_category;
     }
 
+    /**
+     * <p>setCategory</p>
+     *
+     * @param category a {@link java.lang.String} object.
+     */
     public void setCategory(String category) {
         m_category = category;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="copyright"
-     *                 length="128"
-     *             
+    /**
+     * <p>getCopyright</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getCopyright() {
         return m_copyright;
     }
 
+    /**
+     * <p>setCopyright</p>
+     *
+     * @param copyright a {@link java.lang.String} object.
+     */
     public void setCopyright(String copyright) {
         m_copyright = copyright;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="descr"
-     *                 length="1024"
-     *             
+    /**
+     * <p>getDescr</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getDescr() {
         return m_descr;
     }
 
+    /**
+     * <p>setDescr</p>
+     *
+     * @param descr a {@link java.lang.String} object.
+     */
     public void setDescr(String descr) {
         m_descr = descr;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="summary"
-     *                 length="256"
-     *             
+    /**
+     * <p>getSummary</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getSummary() {
         return m_summary;
     }
 
+    /**
+     * <p>setSummary</p>
+     *
+     * @param summary a {@link java.lang.String} object.
+     */
     public void setSummary(String summary) {
         m_summary = summary;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="family"
-     *                 length="32"
-     *             
+    /**
+     * <p>getFamily</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getFamily() {
         return m_family;
     }
 
+    /**
+     * <p>setFamily</p>
+     *
+     * @param family a {@link java.lang.String} object.
+     */
     public void setFamily(String family) {
         m_family = family;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="version"
-     *                 length="32"
-     *             
+    /**
+     * <p>getVersion</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getVersion() {
         return m_version;
     }
 
+    /**
+     * <p>setVersion</p>
+     *
+     * @param version a {@link java.lang.String} object.
+     */
     public void setVersion(String version) {
         m_version = version;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="cveEntry"
-     *                 length="14"
-     *             
+    /**
+     * <p>getCveEntry</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getCveEntry() {
         return m_cveEntry;
     }
 
+    /**
+     * <p>setCveEntry</p>
+     *
+     * @param cveEntry a {@link java.lang.String} object.
+     */
     public void setCveEntry(String cveEntry) {
         m_cveEntry = cveEntry;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="md5"
-     *                 length="32"
-     *             
+    /**
+     * <p>getMd5</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getMd5() {
         return m_md5;
     }
 
+    /**
+     * <p>setMd5</p>
+     *
+     * @param md5 a {@link java.lang.String} object.
+     */
     public void setMd5(String md5) {
         m_md5 = md5;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("pluginId", getPluginId())
@@ -289,6 +360,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
             .toString();
     }
 
+	/** {@inheritDoc} */
 	public void visit(EntityVisitor visitor) {
 		// TODO Auto-generated method stub
 		throw new RuntimeException("visitor method not implemented");

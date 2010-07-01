@@ -35,21 +35,46 @@
 //
 package org.opennms.netmgt.model.events;
 
+/**
+ * <p>EventProxyException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class EventProxyException extends Exception {
     private static final long serialVersionUID = 1L;
     
+    /**
+     * <p>Constructor for EventProxyException.</p>
+     */
     public EventProxyException() {
         super();
     }
     
+    /**
+     * <p>Constructor for EventProxyException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public EventProxyException(String message) {
         super(message);
     }
     
+    /**
+     * <p>Constructor for EventProxyException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public EventProxyException(String message, Throwable cause) {
         super(message, cause);
     }
     
+    /**
+     * <p>Constructor for EventProxyException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public EventProxyException(Throwable cause) {
         super(cause);
     }

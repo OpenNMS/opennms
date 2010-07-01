@@ -38,6 +38,7 @@ import org.opennms.core.utils.ThreadCategory;
  * SimplerQueuedProvisioningAdapter
  *
  * @author brozow
+ * @version $Id: $
  */
 public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
     
@@ -45,18 +46,34 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
     private long m_delay = 1;
     private TimeUnit m_timeUnit = TimeUnit.SECONDS;
     
+    /**
+     * <p>Constructor for SimplerQueuedProvisioningAdapter.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public SimplerQueuedProvisioningAdapter(String name) {
         m_name = name;
     }
     
+    /**
+     * <p>setTimeUnit</p>
+     *
+     * @param timeUnit a {@link java.util.concurrent.TimeUnit} object.
+     */
     public void setTimeUnit(TimeUnit timeUnit) {
         m_timeUnit = timeUnit;
     }
     
+    /**
+     * <p>setDelay</p>
+     *
+     * @param delay a long.
+     */
     public void setDelay(long delay) {
         m_delay = delay;
     }
     
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return m_name;
@@ -67,11 +84,13 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
         return new AdapterOperationSchedule(m_delay, 0, 1, m_timeUnit);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isNodeReady(AdapterOperation op) {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         log().info("processPendingOperationForNode: Handling Operation: "+op);
@@ -92,6 +111,7 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public void init() {
         assertNotNull(m_timeUnit, "timeUnit must be set");
@@ -105,12 +125,32 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
         if (!b) throw new IllegalStateException(m);
     }
 
+    /**
+     * <p>doAddNode</p>
+     *
+     * @param nodeid a int.
+     */
     public void doAddNode(int nodeid) {}
     
+    /**
+     * <p>doUpdateNode</p>
+     *
+     * @param nodeid a int.
+     */
     public void doUpdateNode(int nodeid) {}
     
+    /**
+     * <p>doDeleteNode</p>
+     *
+     * @param nodeid a int.
+     */
     public void doDeleteNode(int nodeid) {}
     
+    /**
+     * <p>doNotifyConfigChange</p>
+     *
+     * @param nodeid a int.
+     */
     public void doNotifyConfigChange(int nodeid) {}
     
     

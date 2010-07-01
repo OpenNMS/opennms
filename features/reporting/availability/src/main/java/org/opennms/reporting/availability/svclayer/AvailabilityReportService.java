@@ -66,6 +66,12 @@ import org.opennms.reporting.core.svclayer.ParameterConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
+/**
+ * <p>AvailabilityReportService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class AvailabilityReportService implements ReportService {
 
     private AvailabilityCalculator m_classicCalculator;
@@ -83,6 +89,9 @@ public class AvailabilityReportService implements ReportService {
     private static final String CAL_TYPE = "calendar";
 
 
+    /**
+     * <p>Constructor for AvailabilityReportService.</p>
+     */
     public AvailabilityReportService() {
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -90,6 +99,7 @@ public class AvailabilityReportService implements ReportService {
 
     }
 
+    /** {@inheritDoc} */
     public boolean validate(HashMap<String, Object> reportParms,
             String reportID) {
 
@@ -118,6 +128,7 @@ public class AvailabilityReportService implements ReportService {
     }
 
 
+    /** {@inheritDoc} */
     public void render(String id, String location, ReportFormat format,
             OutputStream outputStream) {
         
@@ -181,6 +192,7 @@ public class AvailabilityReportService implements ReportService {
 
     }
 
+    /** {@inheritDoc} */
     public List<ReportFormat> getFormats(String id) {
 
         List<ReportFormat> formats = new ArrayList<ReportFormat>();
@@ -197,6 +209,7 @@ public class AvailabilityReportService implements ReportService {
 
     // this new version needs the report wrapper to persist the entry
     
+    /** {@inheritDoc} */
     public String run(HashMap<String, Object> reportParms,
             String reportId) {
         
@@ -243,6 +256,7 @@ public class AvailabilityReportService implements ReportService {
 
     }
     
+    /** {@inheritDoc} */
     public void runAndRender(HashMap<String, Object> reportParms,
             String reportId, ReportFormat format, OutputStream outputStream) {
         
@@ -298,22 +312,43 @@ public class AvailabilityReportService implements ReportService {
     }
 
     
+    /** {@inheritDoc} */
     public ReportParameters getParameters(String ReportId) {
         return m_parameterConversionService.convert(m_configDao.getParameters(ReportId));
     }
     
+    /**
+     * <p>setCalendarCalculator</p>
+     *
+     * @param calculator a {@link org.opennms.reporting.availability.AvailabilityCalculator} object.
+     */
     public void setCalendarCalculator(AvailabilityCalculator calculator) {
         m_calendarCalculator = calculator;
     }
 
+    /**
+     * <p>setClassicCalculator</p>
+     *
+     * @param calulator a {@link org.opennms.reporting.availability.AvailabilityCalculator} object.
+     */
     public void setClassicCalculator(AvailabilityCalculator calulator) {
         m_classicCalculator = calulator;
     }
 
+    /**
+     * <p>setConfigDao</p>
+     *
+     * @param configDao a {@link org.opennms.netmgt.dao.OnmsReportConfigDao} object.
+     */
     public void setConfigDao(OnmsReportConfigDao configDao) {
         m_configDao = configDao;
     }
     
+    /**
+     * <p>setParameterConversionService</p>
+     *
+     * @param parameterConversionService a {@link org.opennms.reporting.core.svclayer.ParameterConversionService} object.
+     */
     public void setParameterConversionService(ParameterConversionService parameterConversionService) {
         m_parameterConversionService = parameterConversionService;
     }

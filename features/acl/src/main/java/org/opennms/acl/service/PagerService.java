@@ -36,11 +36,17 @@ package org.opennms.acl.service;
 
 /**
  * Interface to provide the number of items (of any type) for pagination
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface PagerService {
 
+    /**
+     * <p>getTotalItemsNumber</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getTotalItemsNumber();
 }

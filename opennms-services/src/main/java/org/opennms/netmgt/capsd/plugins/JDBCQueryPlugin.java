@@ -9,8 +9,15 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 
 
+/**
+ * <p>JDBCQueryPlugin class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JDBCQueryPlugin extends JDBCPlugin {
     
+    /** {@inheritDoc} */
     public boolean checkStatus(Connection con, Map<String, Object> qualifiers) {
         Statement st = null; 
         String query = ParameterMap.getKeyedString(qualifiers, "query", null);

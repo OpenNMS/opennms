@@ -43,11 +43,18 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+/**
+ * <p>ReferenceListBeanDefinitionParser class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
 	private static final String INTERFACE_ATTR = "interface";
 	private String m_serviceInterface = null;
 	
+    /** {@inheritDoc} */
     @Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 		BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ReferenceListFactoryBean.class);

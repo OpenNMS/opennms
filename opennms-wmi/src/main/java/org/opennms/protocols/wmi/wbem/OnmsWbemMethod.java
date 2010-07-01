@@ -36,13 +36,37 @@ import org.jinterop.dcom.core.JIVariant;
 import org.jinterop.dcom.common.JIException;
 import org.opennms.protocols.wmi.WmiException;
 
+/**
+ * <p>OnmsWbemMethod interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsWbemMethod {
 
+    /**
+     * <p>getWmiName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiName()throws WmiException;
 
+    /**
+     * <p>getWmiOrigin</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiOrigin()throws WmiException;
 
+    /**
+     * <p>getWmiOutParameters</p>
+     */
     public void getWmiOutParameters();
 
+    /**
+     * <p>getWmiInParameters</p>
+     */
     public void getWmiInParameters();
 }

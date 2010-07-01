@@ -50,12 +50,13 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * initially constructed no information is collected. The SNMP Session creating
  * and colletion occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
-
 public final class FdbTableGet {
 
 	private final static String FDB_PORT_OID = ".1.3.6.1.2.1.17.4.3.1.2";
@@ -72,12 +73,23 @@ public final class FdbTableGet {
 
 	private String m_mac;
 
+	/**
+	 * <p>Constructor for FdbTableGet.</p>
+	 *
+	 * @param config a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+	 * @param mac a {@link java.lang.String} object.
+	 */
 	public FdbTableGet(SnmpAgentConfig config, String mac) {
 		m_agentConfig = config;
 		m_mac = getInstanceString(mac);
 	}
 
 
+	/**
+	 * <p>getBridgePort</p>
+	 *
+	 * @return a int.
+	 */
 	public int getBridgePort() {
 		
 		ThreadCategory log = ThreadCategory.getInstance(getClass());
@@ -91,6 +103,11 @@ public final class FdbTableGet {
 		return -1;
 	}
 
+	/**
+	 * <p>getQBridgePort</p>
+	 *
+	 * @return a int.
+	 */
 	public int getQBridgePort() {
 		
 		ThreadCategory log = ThreadCategory.getInstance(getClass());
@@ -104,6 +121,11 @@ public final class FdbTableGet {
 		return -1;
 	}
 
+	/**
+	 * <p>getBridgePortStatus</p>
+	 *
+	 * @return a int.
+	 */
 	public int getBridgePortStatus() {
 		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(FDB_STATUS_OID));
@@ -116,6 +138,11 @@ public final class FdbTableGet {
 		
 	}
 
+	/**
+	 * <p>getQBridgePortStatus</p>
+	 *
+	 * @return a int.
+	 */
 	public int getQBridgePortStatus() {
 		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(QFDB_STATUS_OID));

@@ -45,14 +45,20 @@ import org.apache.commons.cli.PosixParser;
 /**
  * This is an example command-line tool to perform checks against WMI
  * services using <code>WmiClient</code>
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class CheckWmi {
 
 	/**
-	 * @param args
+	 * <p>main</p>
+	 *
+	 * @param args an array of {@link java.lang.String} objects.
+	 * @throws org.apache.commons.cli.ParseException if any.
 	 */
 	public static void main(String[] args) throws ParseException {
 		Options options = new Options();

@@ -76,13 +76,14 @@ import org.springframework.util.Assert;
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 @EventListener(name="Provisiond:EventListener")
 public class Provisioner implements SpringServiceDaemon {
     
+    /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
 
     private DefaultTaskCoordinator m_taskCoordinator;
@@ -101,27 +102,54 @@ public class Provisioner implements SpringServiceDaemon {
     
     private ImportScheduler m_importSchedule;
 
+    /**
+     * <p>setProvisionService</p>
+     *
+     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     */
     public void setProvisionService(ProvisionService provisionService) {
 	    m_provisionService = provisionService;
 	}
 	
+	/**
+	 * <p>getProvisionService</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+	 */
 	public ProvisionService getProvisionService() {
 	    return m_provisionService;
 	}
 	
+	/**
+	 * <p>setScheduledExecutor</p>
+	 *
+	 * @param scheduledExecutor a {@link java.util.concurrent.ScheduledExecutorService} object.
+	 */
 	public void setScheduledExecutor(ScheduledExecutorService scheduledExecutor) {
 	    m_scheduledExecutor = scheduledExecutor;
 	}
 
+    /**
+     * <p>setLifeCycleRepository</p>
+     *
+     * @param lifeCycleRepository a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository} object.
+     */
     public void setLifeCycleRepository(LifeCycleRepository lifeCycleRepository) {
 	    m_lifeCycleRepository = lifeCycleRepository;
 	}
 
+	/**
+	 * <p>setImportSchedule</p>
+	 *
+	 * @param schedule a {@link org.opennms.netmgt.provision.service.ImportScheduler} object.
+	 */
 	public void setImportSchedule(ImportScheduler schedule) {
         m_importSchedule = schedule;
     }
 
     /**
+     * <p>setImportActivities</p>
+     *
      * @param importActivities the importActivities to set
      */
     public void setImportActivities(CoreImportActivities importActivities) {
@@ -129,6 +157,8 @@ public class Provisioner implements SpringServiceDaemon {
     }
 
     /**
+     * <p>setTaskCoordinator</p>
+     *
      * @param taskCoordinator the taskCoordinator to set
      */
     public void setTaskCoordinator(DefaultTaskCoordinator taskCoordinator) {
@@ -138,24 +168,41 @@ public class Provisioner implements SpringServiceDaemon {
 
 
     /**
+     * <p>setAgentConfigFactory</p>
+     *
      * @param agentConfigFactory the agentConfigFactory to set
      */
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
         m_agentConfigFactory = agentConfigFactory;
     }
 
+    /**
+     * <p>getImportSchedule</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.service.ImportScheduler} object.
+     */
     public ImportScheduler getImportSchedule() {
         return m_importSchedule;
     }
 
 
 	
+    /**
+     * <p>start</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void start() throws Exception {
         m_manager.initializeAdapters();
         scheduleRescanForExistingNodes();
         m_importSchedule.start();
     }
 	
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(getProvisionService(), "provisionService property must be set");
         Assert.notNull(m_scheduledExecutor, "scheduledExecutor property must be set");
@@ -175,6 +222,9 @@ public class Provisioner implements SpringServiceDaemon {
             
     }
     
+    /**
+     * <p>scheduleRescanForExistingNodes</p>
+     */
     protected void scheduleRescanForExistingNodes() {        
         List<NodeScanSchedule> schedules = m_provisionService.getScheduleForNodes();
         
@@ -190,20 +240,46 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
     
+    /**
+     * <p>doNodeScan</p>
+     *
+     * @param nodeId a int.
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.util.concurrent.ExecutionException if any.
+     */
     public void doNodeScan(int nodeId) throws InterruptedException, ExecutionException {
     }
     
+    /**
+     * <p>createNodeScan</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.service.NodeScan} object.
+     */
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId) {
         log().info("createNodeScan called");
         return new NodeScan(nodeId, foreignSource, foreignId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
     }
 
+    /**
+     * <p>createNewSuspectScan</p>
+     *
+     * @param ipAddress a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.provision.service.NewSuspectScan} object.
+     */
     public NewSuspectScan createNewSuspectScan(InetAddress ipAddress) {
         log().info("createNewSuspectScan called");
         return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
     }
 
     //Helper functions for the schedule
+    /**
+     * <p>addToScheduleQueue</p>
+     *
+     * @param schedule a {@link org.opennms.netmgt.provision.service.NodeScanSchedule} object.
+     */
     protected void addToScheduleQueue(NodeScanSchedule schedule) {
         ScheduledFuture<?> future = scheduleNodeScan(schedule);
         log().warn("addToScheduleQueue future = " + future);
@@ -211,6 +287,11 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
 
+    /**
+     * <p>updateNodeScheduleInQueue</p>
+     *
+     * @param schedule a {@link org.opennms.netmgt.provision.service.NodeScanSchedule} object.
+     */
     protected void updateNodeScheduleInQueue(NodeScanSchedule schedule) {
         ScheduledFuture<?> scheduledFuture = getScheduledFutureForNode(schedule.getNodeId());
         
@@ -227,11 +308,22 @@ public class Provisioner implements SpringServiceDaemon {
         return nodeScan.schedule(m_scheduledExecutor, schedule);
     }
 
+    /**
+     * <p>getScheduledFutureForNode</p>
+     *
+     * @param nodeId a int.
+     * @return a {@link java.util.concurrent.ScheduledFuture} object.
+     */
     public ScheduledFuture<?> getScheduledFutureForNode(int nodeId) {
         ScheduledFuture<?> scheduledFuture = m_scheduledNodes.get(nodeId);
         return scheduledFuture;
     }
     
+    /**
+     * <p>removeNodeFromScheduleQueue</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     */
     protected void removeNodeFromScheduleQueue(Integer nodeId) {
         ScheduledFuture<?> scheduledFuture = m_scheduledNodes.remove(nodeId);
         
@@ -241,6 +333,11 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
     
+    /**
+     * <p>removeFromScheduleQueue</p>
+     *
+     * @param nodeIds a {@link java.util.List} object.
+     */
     protected void removeFromScheduleQueue(List<Integer> nodeIds) {
         for(Integer nodeId : nodeIds) {
             removeNodeFromScheduleQueue(nodeId);
@@ -248,7 +345,9 @@ public class Provisioner implements SpringServiceDaemon {
     }
     
     /**
-     * @param schedules
+     * <p>checkNodeListForRemovals</p>
+     *
+     * @param schedules a {@link java.util.List} object.
      */
     protected void checkNodeListForRemovals(List<NodeScanSchedule> schedules) {
         Set<Integer> keySet = m_scheduledNodes.keySet();
@@ -272,15 +371,33 @@ public class Provisioner implements SpringServiceDaemon {
     }
    
 
+    /**
+     * <p>getScheduleLength</p>
+     *
+     * @return a int.
+     */
     public int getScheduleLength() {
         return m_scheduledNodes.size();
     }
     //^ Helper functions for the schedule
     
+    /**
+     * <p>importModelFromResource</p>
+     *
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @throws java.lang.Exception if any.
+     */
     protected void importModelFromResource(Resource resource) throws Exception {
     	importModelFromResource(resource, new NoOpProvisionMonitor());
     }
 
+    /**
+     * <p>importModelFromResource</p>
+     *
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
+     * @throws java.lang.Exception if any.
+     */
     protected void importModelFromResource(Resource resource, ProvisionMonitor monitor)
             throws Exception {
         doImport(resource, monitor, new ImportManager());
@@ -298,18 +415,36 @@ public class Provisioner implements SpringServiceDaemon {
         doImport.waitFor();
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
+    /**
+     * <p>doImport</p>
+     */
     public void doImport() {
         Event e = null;
         doImport(e);
@@ -317,10 +452,11 @@ public class Provisioner implements SpringServiceDaemon {
     
     /**
      * Begins importing from resource specified in model-importer.properties file or
-     * in event parameter: url.  Import Resources are managed with a "key" called 
-     * "foreignSource" specified in the XML retrieved by the resource and can be overridden 
+     * in event parameter: url.  Import Resources are managed with a "key" called
+     * "foreignSource" specified in the XML retrieved by the resource and can be overridden
      * as a parameter of an event.
-     * @param event
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei = EventConstants.RELOAD_IMPORT_UEI)
     public void doImport(Event event) {
@@ -336,6 +472,11 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
 
+    /**
+     * <p>doImport</p>
+     *
+     * @param url a {@link java.lang.String} object.
+     */
     public void doImport(String url) {
         
         try {
@@ -363,7 +504,9 @@ public class Provisioner implements SpringServiceDaemon {
 
 
     /**
-     * @param e
+     * <p>handleNodeAddedEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei = EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAddedEvent(Event e) {
@@ -384,6 +527,11 @@ public class Provisioner implements SpringServiceDaemon {
 
     }
     
+    /**
+     * <p>handleForceRescan</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(Event e) {
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
@@ -394,6 +542,11 @@ public class Provisioner implements SpringServiceDaemon {
 
     }
     
+    /**
+     * <p>handleNewSuspectEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
     public void handleNewSuspectEvent(Event e) {
         
@@ -431,6 +584,11 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
     
+    /**
+     * <p>handleNodeUpdated</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdated(Event e) {
         // scan now since a reimport has occurred
@@ -442,12 +600,22 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
 
+    /**
+     * <p>handleNodeDeletedEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeletedEvent(Event e) {
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         
     }
     
+    /**
+     * <p>handleReloadConfigEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event e) {
         
@@ -498,6 +666,11 @@ public class Provisioner implements SpringServiceDaemon {
         return isTarget;
     }
     
+    /**
+     * <p>handleAddInterface</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
     public void handleAddInterface(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -514,6 +687,11 @@ public class Provisioner implements SpringServiceDaemon {
         throw new UnsupportedOperationException("Provisioner.doAddInterface is not yet implemented");
     }
 
+    /**
+     * <p>handleAddNode</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
     public void handleAddNode(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -538,6 +716,11 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
 
+    /**
+     * <p>handleChangeService</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
     public void handleChangeService(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -554,6 +737,11 @@ public class Provisioner implements SpringServiceDaemon {
         throw new UnsupportedOperationException("Provisioner.doChangeService is not yet implemented");
     }
 
+    /**
+     * <p>handleDeleteInterface</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DELETE_INTERFACE_EVENT_UEI)
     public void handleDeleteInterface(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -569,6 +757,11 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.deleteInterface((int)nodeId, ipAddr);
     }
 
+    /**
+     * <p>handleDeleteNode</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DELETE_NODE_EVENT_UEI)
     public void handleDeleteNode(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -584,6 +777,11 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.deleteNode((int)nodeId);
     }
 
+    /**
+     * <p>handleDeleteService</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.DELETE_SERVICE_EVENT_UEI)
     public void handleDeleteService(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -599,6 +797,11 @@ public class Provisioner implements SpringServiceDaemon {
         m_provisionService.deleteService((int)nodeId, ipAddr, service);
     }
 
+    /**
+     * <p>handleUpdateServer</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)
     public void handleUpdateServer(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -617,6 +820,11 @@ public class Provisioner implements SpringServiceDaemon {
         throw new UnsupportedOperationException("Provisioner.doUpdateServer is not yet implemented");
     }
 
+    /**
+     * <p>handleUpdateService</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei=EventConstants.UPDATE_SERVICE_EVENT_UEI)
     public void handleUpdateService(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
@@ -640,6 +848,11 @@ public class Provisioner implements SpringServiceDaemon {
         return EventUtils.getParm(event, EventConstants.PARM_URL);
     }
 
+    /**
+     * <p>getStats</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
 
     private Event importSuccessEvent(TimeTrackingMonitor stats, String url) {
@@ -669,6 +882,12 @@ public class Provisioner implements SpringServiceDaemon {
             .getEvent();
     }
 
+    /**
+     * <p>getEventForeignSource</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String getEventForeignSource(Event event) {
         return EventUtils.getParm(event, EventConstants.PARM_FOREIGN_SOURCE);
     }

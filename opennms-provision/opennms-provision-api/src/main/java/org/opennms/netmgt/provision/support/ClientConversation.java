@@ -38,8 +38,10 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.support.Client;
 
 /**
- * @author Donald Desloge
+ * <p>ClientConversation class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class ClientConversation<Request, Response> {
     
@@ -76,10 +78,21 @@ public class ClientConversation<Request, Response> {
     private ResponseValidator<Response> m_bannerValidator;
     private List<ClientExchange<Request, Response>> m_conversation = new ArrayList<ClientExchange<Request, Response>>();
     
+    /**
+     * <p>expectBanner</p>
+     *
+     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public void expectBanner(ResponseValidator<Response> bannerValidator) {
         m_bannerValidator = bannerValidator;
     }
     
+    /**
+     * <p>addExchange</p>
+     *
+     * @param request a Request object.
+     * @param validator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public void addExchange(final Request request, ResponseValidator<Response> validator) {
         RequestBuilder<Request> builder = new RequestBuilder<Request>() {
             public Request getRequest() {
@@ -89,14 +102,33 @@ public class ClientConversation<Request, Response> {
         addExchange(builder, validator);
     }
     
+    /**
+     * <p>addExchange</p>
+     *
+     * @param requestBuilder a {@link org.opennms.netmgt.provision.support.ClientConversation.RequestBuilder} object.
+     * @param validator a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public void addExchange(RequestBuilder<Request> requestBuilder, ResponseValidator<Response> validator) {
         addExchange(new SimpleClientExchange<Request, Response>(requestBuilder, validator));
     }
     
+    /**
+     * <p>addExchange</p>
+     *
+     * @param exchange a {@link org.opennms.netmgt.provision.support.ClientConversation.ClientExchange} object.
+     */
     public void addExchange(ClientExchange<Request, Response> exchange) {
         m_conversation.add(exchange); 
     }
     
+    /**
+     * <p>attemptConversation</p>
+     *
+     * @param client a {@link org.opennms.netmgt.provision.support.Client} object.
+     * @return a boolean.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public boolean attemptConversation(Client<Request, Response> client) throws IOException, Exception { 
         
         if (m_bannerValidator != null) {

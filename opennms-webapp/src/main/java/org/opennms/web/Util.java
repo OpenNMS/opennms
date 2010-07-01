@@ -62,16 +62,20 @@ import org.opennms.web.element.NetworkElementFactory;
 
 /**
  * Provides convenience functions for web-based interfaces.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public abstract class Util {
 
     /**
      * Return a string that represents the fully qualified URL for our servlet
      * context, suitable for use in the HTML <em>base</em> tag.
-     * 
+     *
      * <p>
      * As an example, suppose your host was www.mycompany.com, you are serving
      * from port 80, and your web application name was "opennms," then this
@@ -83,15 +87,21 @@ public abstract class Util {
      * <code>opennms.web.base-url</code> in opennms.properties
      * (for embedded Jetty) or WEB-INF/configuration.properties (for Tomcat).
      * </p>
-     * 
+     *
      * @param request
      *            the servlet request you are servicing
+     * @return a {@link java.lang.String} object.
      */
     public static String calculateUrlBase(HttpServletRequest request) {
         return org.opennms.web.api.Util.calculateUrlBase(request);
     }
 
-    /** Obtains the host and port used by the end user. */
+    /**
+     * Obtains the host and port used by the end user.
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getHostHeader(HttpServletRequest request) {
         return org.opennms.web.api.Util.getHostHeader(request);
     }
@@ -100,11 +110,12 @@ public abstract class Util {
      * Convenience method for resolving the human-readable hostname for an IP
      * address, if at all possible. If the hostname cannot be found, this method
      * returns the IP address parameter.
-     * 
+     *
      * @param ipAddress
      *            the IP address for which you want the hostname
      * @deprecated Please use {@link NetworkElementFactory#getHostname
      *             NetworkElementFactory.getHostname} instead.
+     * @return a {@link java.lang.String} object.
      */
     public static String getHostname(String ipAddress) {
         String hostname = ipAddress;
@@ -120,7 +131,7 @@ public abstract class Util {
 
     /**
      * Encapsulate the deprecated encode method to fix it in one place.
-     * 
+     *
      * @param string
      *            string to be encoded
      * @return encoded string
@@ -131,7 +142,7 @@ public abstract class Util {
 
     /**
      * Encapsulate the deprecated decode method to fix it in one place.
-     * 
+     *
      * @param string
      *            string to be decoded
      * @return decoded string
@@ -145,11 +156,12 @@ public abstract class Util {
      * address, if at all possible. If the hostname cannot be found, from the
      * table, this method returns the IP address parameter. This method doesnt
      * throw any exception.
-     * 
+     *
      * @param ipAddress
      *            the IP address for which you want the hostname
      * @deprecated Please use {@link NetworkElementFactory#getHostname
      *             NetworkElementFactory.getHostname} instead.
+     * @return a {@link java.lang.String} object.
      */
     public static String resolveIpAddress(String ipAddress) {
         String hostname = ipAddress;
@@ -166,7 +178,7 @@ public abstract class Util {
 
     /**
      * Creates hidden tags for all the parameters given in the request.
-     * 
+     *
      * @param request
      *            the <code>HttpServletRequest</code> to read the parameters
      *            from
@@ -180,7 +192,7 @@ public abstract class Util {
 
     /**
      * Creates hidden tags for all the parameters given in the request.
-     * 
+     *
      * @param request
      *            the <code>HttpServletRequest</code> to read the parameters
      *            from
@@ -196,7 +208,7 @@ public abstract class Util {
 
     /**
      * Creates hidden tags for all the parameters given in the request.
-     * 
+     *
      * @param request
      *            the <code>HttpServletRequest</code> to read the parameters
      *            from
@@ -214,7 +226,7 @@ public abstract class Util {
      * Creates hidden tags for all the parameters given in the request plus the
      * additions, except for the parameters and additions listed in the ignore
      * list.
-     * 
+     *
      * @param request
      *            the <code>HttpServletRequest</code> to read the parameters
      *            from
@@ -233,7 +245,7 @@ public abstract class Util {
     /**
      * Creates hidden tags for all the parameters given in the request plus the
      * additions, except for the parmeters listed in the ignore list.
-     * 
+     *
      * @param request
      *            the <code>HttpServletRequest</code> to read the parameters
      *            from
@@ -255,8 +267,10 @@ public abstract class Util {
     /**
      * Creates a query string of the format "key1=value1&amp;key2=value2" for
      * each parameter in the given <code>HttpServletRequest</code>.
-     * 
+     *
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String makeQueryString(HttpServletRequest request) {
         return (org.opennms.web.api.Util.makeQueryString(request, new HashMap(), new String[0]));
@@ -266,8 +280,11 @@ public abstract class Util {
      * Creates a query string of the format "key1=value1&amp;key2=value2" for
      * each parameter in the given <code>HttpServletRequest</code> and key in
      * given <code>Map</code>.
-     * 
+     *
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param additions a {@link java.util.Map} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String makeQueryString(HttpServletRequest request, Map additions) {
         return (org.opennms.web.api.Util.makeQueryString(request, additions, new String[0]));
@@ -277,8 +294,11 @@ public abstract class Util {
      * Creates a query string of the format "key1=value1&amp;key2=value2" for
      * each parameter in the given <code>HttpServletRequest</code> that is not
      * listed in the ignore list.
-     * 
+     *
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param ignores an array of {@link java.lang.String} objects.
+     * @return a {@link java.lang.String} object.
      */
     public static String makeQueryString(HttpServletRequest request, String[] ignores) {
         return (org.opennms.web.api.Util.makeQueryString(request, new HashMap(), ignores));
@@ -288,7 +308,7 @@ public abstract class Util {
      * Creates a query string of the format "key1=value1&amp;key2=value2" for
      * each parameter in the given <code>HttpServletRequest</code> and key in
      * given <code>Map</code> that is not listed in the ignore list.
-     * 
+     *
      * @param request
      *            the <code>HttpServletRequest</code> to read the parameters
      *            from
@@ -308,7 +328,7 @@ public abstract class Util {
      * Creates a query string of the format "key1=value1&amp;key2=value2" for
      * each parameter in the given <code>HttpServletRequest</code> and key in
      * given <code>Map</code> that is not listed in the ignore list.
-     * 
+     *
      * @param request
      *            the <code>HttpServletRequest</code> to read the parameters
      *            from
@@ -319,19 +339,37 @@ public abstract class Util {
      *            the list of parameters and map entries not to include
      * @return A string in the <em>x-www-form-urlencoded</em> format that is
      *         suitable for adding to a URL as a query string.
+     * @param ignoreType a {@link org.opennms.web.api.Util.IgnoreType} object.
      */
     public static String makeQueryString(HttpServletRequest request, Map additions, String[] ignores, org.opennms.web.api.Util.IgnoreType ignoreType) {
         return org.opennms.web.api.Util.makeQueryString(request, additions, ignores, ignoreType);
     }
 
+    /**
+     * <p>getOrderedMap</p>
+     *
+     * @param names an array of {@link java.lang.String} objects.
+     * @return a {@link java.util.Map} object.
+     */
     public static Map<String, String> getOrderedMap(String names[][]) {
         return org.opennms.web.api.Util.getOrderedMap(names);
     }
 
+    /**
+     * <p>htmlify</p>
+     *
+     * @param input a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String htmlify(String input) {
         return org.opennms.web.api.Util.htmlify(input);
     }
     
+    /**
+     * <p>createEventProxy</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     */
     public static EventProxy createEventProxy() {
         return org.opennms.web.api.Util.createEventProxy();
     }
@@ -340,13 +378,21 @@ public abstract class Util {
      * An utility method to format a 'Date' into a string in the local specific
      * DEFALUT DateFormat style for both the date and time. This is used by the
      * webui and a change here should get all time display in the webui changed.
-     * 
+     *
      * @see java.text.DateFormat
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link java.lang.String} object.
      */
     public static final String formatDateToUIString(Date date) {
         return org.opennms.web.api.Util.formatDateToUIString(date);
     }
     
+    /**
+     * <p>convertToJsSafeString</p>
+     *
+     * @param str a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String convertToJsSafeString(String str){
         return org.opennms.web.api.Util.convertToJsSafeString(str);
     }

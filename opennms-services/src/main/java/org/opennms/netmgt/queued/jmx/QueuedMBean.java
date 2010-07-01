@@ -38,22 +38,89 @@ package org.opennms.netmgt.queued.jmx;
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
 /**
- * 
+ * <p>QueuedMBean interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface QueuedMBean extends BaseOnmsMBean {
+	/**
+	 * <p>getElapsedTime</p>
+	 *
+	 * @return a long.
+	 */
 	public long getElapsedTime();
+	/**
+	 * <p>getTotalOperationsPending</p>
+	 *
+	 * @return a long.
+	 */
 	public long getTotalOperationsPending();
+	/**
+	 * <p>getSignificantOpsCompleted</p>
+	 *
+	 * @return a long.
+	 */
 	public long getSignificantOpsCompleted();
+	/**
+	 * <p>getCreatesCompleted</p>
+	 *
+	 * @return a long.
+	 */
 	public long getCreatesCompleted();
+	/**
+	 * <p>getUpdatesCompleted</p>
+	 *
+	 * @return a long.
+	 */
 	public long getUpdatesCompleted();
+	/**
+	 * <p>getErrors</p>
+	 *
+	 * @return a long.
+	 */
 	public long getErrors();
+	/**
+	 * <p>getPromotionCount</p>
+	 *
+	 * @return a long.
+	 */
 	public long getPromotionCount();
+	/**
+	 * <p>getSignificantOpsEnqueued</p>
+	 *
+	 * @return a long.
+	 */
 	public long getSignificantOpsEnqueued();
+	/**
+	 * <p>getSignificantOpsDequeued</p>
+	 *
+	 * @return a long.
+	 */
 	public long getSignificantOpsDequeued();
+	/**
+	 * <p>getEnqueuedOperations</p>
+	 *
+	 * @return a long.
+	 */
 	public long getEnqueuedOperations();
+	/**
+	 * <p>getDequeuedOperations</p>
+	 *
+	 * @return a long.
+	 */
 	public long getDequeuedOperations();
+	/**
+	 * <p>getDequeuedItems</p>
+	 *
+	 * @return a long.
+	 */
 	public long getDequeuedItems();
+	/**
+	 * <p>getStartTime</p>
+	 *
+	 * @return a long.
+	 */
 	public long getStartTime();
 
 }

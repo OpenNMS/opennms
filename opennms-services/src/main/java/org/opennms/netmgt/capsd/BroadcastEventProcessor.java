@@ -69,8 +69,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
+ * <p>BroadcastEventProcessor class.</p>
+ *
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 @EventListener(name="Capsd:BroadcastEventProcessor")
 public class BroadcastEventProcessor implements InitializingBean {
@@ -146,7 +151,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     /**
      * Determines if deletePropagation is enabled in the Outage Manager.
-     * 
+     *
      * @return true if deletePropagation is enable, false otherwise
      */
     public static boolean isPropagationEnabled() {
@@ -155,7 +160,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     /**
      * Convenience method checking Capsd's config for status of XmlRpc API
-     * 
+     *
      * @return Returns the xmlrpc.
      */
     public static boolean isXmlRpcEnabled() {
@@ -1146,6 +1151,8 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     /**
      * Return an id for this event listener
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "Capsd:BroadcastEventProcessor";
@@ -1155,13 +1162,12 @@ public class BroadcastEventProcessor implements InitializingBean {
      * Process the event, add the specified interface into database. If the
      * associated node does not exist in the database yet, add a node into the
      * database.
-     * 
+     *
      * @param event
      *            The event to process.
-     * @return void.
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if the event is missing essential information
-     * @throws FailedOperationException
+     * @throws org.opennms.netmgt.capsd.FailedOperationException
      *             if the operation fails (because of database error for
      *             example)
      */
@@ -1222,12 +1228,12 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     /**
      * Process an addNode event.
-     * 
+     *
      * @param event
      *            The event to process.
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if the event is missing information
-     * @throws FailedOperationException
+     * @throws org.opennms.netmgt.capsd.FailedOperationException
      *             if an error occurs during processing
      */
     @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
@@ -1282,11 +1288,11 @@ public class BroadcastEventProcessor implements InitializingBean {
      * Process the event, add or remove a specified service from an interface.
      * An 'action' parameter wraped in the event will tell which action to take
      * to the service.
-     * 
+     *
      * @param event
      *            The event to process.
-     * @throws FailedOperationException
-     * @return void
+     * @throws org.opennms.netmgt.capsd.FailedOperationException if any.
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException if any.
      */
     @EventHandler(uei=EventConstants.CHANGE_SERVICE_EVENT_UEI)
     public void handleChangeService(Event event) throws InsufficientInformationException, FailedOperationException {
@@ -1341,11 +1347,12 @@ public class BroadcastEventProcessor implements InitializingBean {
     /**
      * Handle a deleteInterface Event. Here we process the event by marking all
      * the appropriate data rows as deleted.
-     * 
+     *
      * @param event
      *            The event indicating what interface to delete
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if the required information is not part of the event
+     * @throws org.opennms.netmgt.capsd.FailedOperationException if any.
      */
     @EventHandler(uei=EventConstants.DELETE_INTERFACE_EVENT_UEI)
     public void handleDeleteInterface(Event event) throws InsufficientInformationException, FailedOperationException {
@@ -1414,11 +1421,12 @@ public class BroadcastEventProcessor implements InitializingBean {
     /**
      * Handle a deleteNode Event. Here we process the event by marking all the
      * appropriate data rows as deleted.
-     * 
+     *
      * @param event
      *            The event indicating what node to delete
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if the required information is not part of the event
+     * @throws org.opennms.netmgt.capsd.FailedOperationException if any.
      */
     @EventHandler(uei=EventConstants.DELETE_NODE_EVENT_UEI)
     public void handleDeleteNode(Event event) throws InsufficientInformationException, FailedOperationException {
@@ -1478,11 +1486,12 @@ public class BroadcastEventProcessor implements InitializingBean {
     /**
      * Handle a deleteService Event. Here we process the event by marking all
      * the appropriate data rows as deleted.
-     * 
+     *
      * @param event
      *            The event indicating what service to delete
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if the required information is not part of the event
+     * @throws org.opennms.netmgt.capsd.FailedOperationException if any.
      */
     @EventHandler(uei=EventConstants.DELETE_SERVICE_EVENT_UEI)
     public void handleDeleteService(Event event) throws InsufficientInformationException, FailedOperationException {
@@ -1539,8 +1548,9 @@ public class BroadcastEventProcessor implements InitializingBean {
     /**
      * This helper method removes a deleted node from Capsd's re-scan schedule.  Doesn't remove it
      * from the new suspect scan schedule.
-     * 
-     * @param event
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException if any.
      */
     @EventHandler(uei=EventConstants.DUP_NODE_DELETED_EVENT_UEI)
     public void handleDupNodeDeleted(Event event) throws InsufficientInformationException {
@@ -1555,8 +1565,9 @@ public class BroadcastEventProcessor implements InitializingBean {
      * Helper method that takes IP address from the force rescan event,
      * retrieves the nodeid (JDBC) and adds it to the rescan schedule for immediate
      * processing when the next thread is available.
-     * 
-     * @param event
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException if any.
      */
     @EventHandler(uei=EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(Event event) throws InsufficientInformationException {
@@ -1619,10 +1630,10 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     /**
      * Helper method to add a node from the new suspect event Event to the suspect scan schedule.
-     * 
-     * @param event
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException if any.
      */
-    
     @EventHandler(uei=EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
     public void handleNewSuspect(Event event) throws InsufficientInformationException {
         // ensure the event has an interface
@@ -1645,8 +1656,9 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     /**
      * Adds the node from the event to the rescan schedule.
-     * 
-     * @param event
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException if any.
      */
     @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAdded(Event event) throws InsufficientInformationException {
@@ -1662,8 +1674,9 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     /**
      * Handles the process of removing a deleted node from the rescan schedule.
-     * 
-     * @param event
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException if any.
      */
     @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeleted(Event event) throws InsufficientInformationException {
@@ -1679,8 +1692,10 @@ public class BroadcastEventProcessor implements InitializingBean {
      * TODO: Change the name of this to something that makes more sense.  This impacts the UEI of the named event
      * for consistency and clearity, however, being called "Server" is unclear to itself.  Change the event from
      * "Server" to "Node" and all related methods.
-     * 
-     * @param event
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException if any.
+     * @throws org.opennms.netmgt.capsd.FailedOperationException if any.
      */
     @EventHandler(uei=EventConstants.UPDATE_SERVER_EVENT_UEI)
     public void handleUpdateServer(Event event) throws InsufficientInformationException, FailedOperationException {
@@ -1745,12 +1760,12 @@ public class BroadcastEventProcessor implements InitializingBean {
      * which action to take to the service on the specified interface. The
      * ipaddress of the interface, the service name must be included in the
      * event.
-     * 
+     *
      * @param event
      *            The event to process.
-     * @throws InsufficientInformationException
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
      *             if there is missing information in the event
-     * @throws FailedOperationException
+     * @throws org.opennms.netmgt.capsd.FailedOperationException
      *             if the operation fails for some reason
      */
     @EventHandler(uei=EventConstants.UPDATE_SERVICE_EVENT_UEI)
@@ -2247,22 +2262,47 @@ public class BroadcastEventProcessor implements InitializingBean {
             throw new FailedOperationException("Interface "+ipaddr+" does not exist on a node with nodeLabel "+nodeLabel);
     }
 
+    /**
+     * <p>setSuspectEventProcessorFactory</p>
+     *
+     * @param suspectEventProcessorFactory a {@link org.opennms.netmgt.capsd.SuspectEventProcessorFactory} object.
+     */
     public void setSuspectEventProcessorFactory(SuspectEventProcessorFactory suspectEventProcessorFactory) {
         m_suspectEventProcessorFactory = suspectEventProcessorFactory;
     }
 
+    /**
+     * <p>setScheduler</p>
+     *
+     * @param scheduler a {@link org.opennms.netmgt.capsd.Scheduler} object.
+     */
     public void setScheduler(Scheduler scheduler) {
         m_scheduler = scheduler;
     }
 
+    /**
+     * <p>setSuspectQueue</p>
+     *
+     * @param suspectQ a {@link org.opennms.core.queue.FifoQueue} object.
+     */
     public void setSuspectQueue(FifoQueue<Runnable> suspectQ) {
         m_suspectQ = suspectQ;
     }
 
+    /**
+     * <p>setLocalServer</p>
+     *
+     * @param localServer a {@link java.lang.String} object.
+     */
     public void setLocalServer(String localServer) {
         m_localServer = localServer;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_suspectEventProcessorFactory != null, "The suspectEventProcessor must be set");
         Assert.state(m_scheduler != null, "The schedule must be set");

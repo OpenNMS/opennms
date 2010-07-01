@@ -8,29 +8,58 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * <p>OnmsNotificationCollection class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlRootElement(name="notifications")
 public class OnmsNotificationCollection extends LinkedList<OnmsNotification> {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * <p>Constructor for OnmsNotificationCollection.</p>
+	 */
 	public OnmsNotificationCollection() {
         super();
     }
 
+    /**
+     * <p>Constructor for OnmsNotificationCollection.</p>
+     *
+     * @param c a {@link java.util.Collection} object.
+     */
     public OnmsNotificationCollection(Collection<? extends OnmsNotification> c) {
         super(c);
     }
 
+    /**
+     * <p>getNotifications</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @XmlElement(name="notification")
     public List<OnmsNotification> getNotifications() {
         return this;
     }
 
+    /**
+     * <p>setEvents</p>
+     *
+     * @param events a {@link java.util.List} object.
+     */
     public void setEvents(List<OnmsNotification> events) {
         clear();
         addAll(events);
     }
     
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @XmlAttribute(name="count")
     public Integer getCount() {
     	return this.size();

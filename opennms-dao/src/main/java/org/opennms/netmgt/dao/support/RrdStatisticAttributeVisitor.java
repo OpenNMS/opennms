@@ -44,7 +44,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
+ * <p>RrdStatisticAttributeVisitor class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class RrdStatisticAttributeVisitor implements AttributeVisitor, InitializingBean {
     private RrdDao m_rrdDao;
@@ -53,9 +56,7 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
     private Long m_endTime;
     private AttributeStatisticVisitor m_statisticVisitor;
     
-    /**
-     * @see org.opennms.netmgt.model.AttributeVisitor#visit(org.opennms.netmgt.model.OnmsAttribute)
-     */
+    /** {@inheritDoc} */
     public void visit(OnmsAttribute attribute) {
         if (!RrdGraphAttribute.class.isAssignableFrom(attribute.getClass())) {
             // Nothing to do if we can't cast to an RrdGraphAttribute
@@ -80,6 +81,8 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
     }
 
     /**
+     * <p>afterPropertiesSet</p>
+     *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet() {
@@ -90,42 +93,92 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
         Assert.state(m_statisticVisitor != null, "property statisticVisitor must be set to a non-null value");
     }
 
+    /**
+     * <p>getRrdDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public RrdDao getRrdDao() {
         return m_rrdDao;
     }
 
+    /**
+     * <p>setRrdDao</p>
+     *
+     * @param rrdDao a {@link org.opennms.netmgt.dao.RrdDao} object.
+     */
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
     }
 
+    /**
+     * <p>getStatisticVisitor</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.AttributeStatisticVisitor} object.
+     */
     public AttributeStatisticVisitor getStatisticVisitor() {
         return m_statisticVisitor;
     }
 
+    /**
+     * <p>setStatisticVisitor</p>
+     *
+     * @param statisticVisitor a {@link org.opennms.netmgt.model.AttributeStatisticVisitor} object.
+     */
     public void setStatisticVisitor(AttributeStatisticVisitor statisticVisitor) {
         m_statisticVisitor = statisticVisitor;
     }
 
+    /**
+     * <p>getConsolidationFunction</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getConsolidationFunction() {
         return m_consolidationFunction;
     }
 
+    /**
+     * <p>setConsolidationFunction</p>
+     *
+     * @param consolidationFunction a {@link java.lang.String} object.
+     */
     public void setConsolidationFunction(String consolidationFunction) {
         m_consolidationFunction = consolidationFunction;
     }
 
+    /**
+     * <p>getEndTime</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getEndTime() {
         return m_endTime;
     }
 
+    /**
+     * <p>setEndTime</p>
+     *
+     * @param endTime a {@link java.lang.Long} object.
+     */
     public void setEndTime(Long endTime) {
         m_endTime = endTime;
     }
 
+    /**
+     * <p>getStartTime</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getStartTime() {
         return m_startTime;
     }
 
+    /**
+     * <p>setStartTime</p>
+     *
+     * @param startTime a {@link java.lang.Long} object.
+     */
     public void setStartTime(Long startTime) {
         m_startTime = startTime;
     }

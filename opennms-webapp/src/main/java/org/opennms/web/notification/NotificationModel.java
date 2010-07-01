@@ -51,6 +51,13 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.opennms.core.resource.Vault;
 
+/**
+ * <p>NotificationModel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NotificationModel extends Object {
     private final String USERID = "userID";
 
@@ -100,6 +107,13 @@ public class NotificationModel extends Object {
         return Logger.getLogger(getClass());
     }
 
+    /**
+     * <p>getNoticeInfo</p>
+     *
+     * @param id a int.
+     * @return a {@link org.opennms.web.notification.Notification} object.
+     * @throws java.sql.SQLException if any.
+     */
     public Notification getNoticeInfo(int id) throws SQLException {
         Notification nbean = null;
         PreparedStatement pstmt = null;
@@ -168,12 +182,22 @@ public class NotificationModel extends Object {
         return nbean;
     }
 
+    /**
+     * <p>allNotifications</p>
+     *
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public Notification[] allNotifications() throws SQLException {
     	return this.allNotifications(null);
     }
     
     /**
      * Return all notifications, both outstanding and acknowledged.
+     *
+     * @param order a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public Notification[] allNotifications(String order) throws SQLException {
         Notification[] notices = null;
@@ -253,6 +277,11 @@ public class NotificationModel extends Object {
      * the first result before calling this method (this is the case right
      * after calling java.sql.Connection#createStatement and friends or
      * after calling java.sql.ResultSet#beforeFirst).
+     *
+     * @param conn a {@link java.sql.Connection} object.
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected Notification[] rs2NotifyBean(Connection conn, ResultSet rs) throws SQLException {
         Notification[] notices = null;
@@ -297,6 +326,9 @@ public class NotificationModel extends Object {
 
     /**
      * This method returns the count of all outstanding notices.
+     *
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public Notification[] getOutstandingNotices() throws SQLException {
         Notification[] notices = null;
@@ -322,6 +354,9 @@ public class NotificationModel extends Object {
 
     /**
      * This method returns notices not yet acknowledged.
+     *
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public int getOutstandingNoticeCount() throws SQLException {
         int count = 0;
@@ -350,6 +385,10 @@ public class NotificationModel extends Object {
 
     /**
      * This method returns notices not yet acknowledged.
+     *
+     * @param username a {@link java.lang.String} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public int getOutstandingNoticeCount(String username) throws SQLException {
         if (username == null) {
@@ -383,6 +422,10 @@ public class NotificationModel extends Object {
 
     /**
      * This method returns notices not yet acknowledged.
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.notification.Notification} objects.
+     * @throws java.sql.SQLException if any.
      */
     public Notification[] getOutstandingNotices(String name) throws SQLException {
         Notification[] notices = null;
@@ -411,6 +454,10 @@ public class NotificationModel extends Object {
     /**
      * This method updates the table when the user acknowledges the pager
      * information.
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param noticeId a int.
+     * @throws java.sql.SQLException if any.
      */
     public void acknowledged(String name, int noticeId) throws SQLException {
         if (name == null) {
@@ -437,6 +484,9 @@ public class NotificationModel extends Object {
 
     /**
      * This method helps insert into the database.
+     *
+     * @param nbean a {@link org.opennms.web.notification.Notification} object.
+     * @throws java.sql.SQLException if any.
      */
     public void insert(Notification nbean) throws SQLException {
         if (nbean == null || nbean.m_txtMsg == null) {

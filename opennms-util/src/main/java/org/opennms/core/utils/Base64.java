@@ -39,10 +39,11 @@ package org.opennms.core.utils;
 
 /**
  * Performs base 64 encoding and decoding on byte arrays.
- * 
+ *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version CVS 1.1.1.1
  */
 public final class Base64 extends Object {
@@ -76,16 +77,14 @@ public final class Base64 extends Object {
      * schema is performed by grouping the bytes in to 6-bit quantities and then
      * encoding them.
      * </P>
-     * 
+     *
      * <P>
      * For more information see RFC1341 for the format used for base64 encoding.
      * </P>
-     * 
+     *
      * @param data
      *            The input byte array
-     * 
      * @return The converted data in a character stream.
-     * 
      */
     public static char[] encodeBase64(byte[] data) {
         int destlen = ((data.length + 2) / 3) * 4;
@@ -133,17 +132,13 @@ public final class Base64 extends Object {
      * zero or an exception will be thrown. Likewise, if there is an invalid
      * character in the input array then an exception will be thrown.
      * </P>
-     * 
-     * 
+     *
      * @param data
      *            The data stream to be filtered.
-     * 
      * @return The coverted array of bytes.
-     * 
      * @exception java.lang.IllegalArgumentException
      *                Thrown if an invalid buffer that cannot be decoded is
      *                passed.
-     * 
      */
     public static byte[] decodeBase64(char[] data) {
         //. If the data is zero length just return a zero length byte array

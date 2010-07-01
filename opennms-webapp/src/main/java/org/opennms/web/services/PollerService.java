@@ -33,8 +33,21 @@ package org.opennms.web.services;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
+/**
+ * <p>PollerService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public interface PollerService {
 
+	/**
+	 * <p>poll</p>
+	 *
+	 * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+	 * @param demandPollId a int.
+	 */
 	void poll(OnmsMonitoredService monSvc, int demandPollId);
 
 }

@@ -43,10 +43,12 @@ import org.opennms.netmgt.ackd.readers.ReaderSchedule;
 
 /**
  * Acknowledgment reader API
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
  */
 public interface AckReader {
 
@@ -81,17 +83,60 @@ public interface AckReader {
         
     };
     
+    /**
+     * <p>start</p>
+     *
+     * @param executor a {@link java.util.concurrent.ScheduledThreadPoolExecutor} object.
+     * @param schedule a {@link org.opennms.netmgt.ackd.readers.ReaderSchedule} object.
+     * @param reloadConfig a boolean.
+     */
     void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule, boolean reloadConfig);
+    /**
+     * <p>pause</p>
+     */
     void pause();
+    /**
+     * <p>resume</p>
+     *
+     * @param executor a {@link java.util.concurrent.ScheduledThreadPoolExecutor} object.
+     */
     void resume(final ScheduledThreadPoolExecutor executor);
+    /**
+     * <p>stop</p>
+     */
     void stop();
     //void setSchedule(final ScheduledThreadPoolExecutor executor, ReaderSchedule schedule, boolean reschedule);
     
+    /**
+     * <p>setAckProcessor</p>
+     *
+     * @param ackProcessor a {@link org.opennms.netmgt.ackd.readers.AckProcessor} object.
+     */
     void setAckProcessor(AckProcessor ackProcessor);
+    /**
+     * <p>getAckProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.ackd.readers.AckProcessor} object.
+     */
     AckProcessor getAckProcessor();
     
+    /**
+     * <p>getState</p>
+     *
+     * @return a {@link org.opennms.netmgt.ackd.AckReader.AckReaderState} object.
+     */
     AckReaderState getState();
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     String getName();
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     void setName(String name);
 }

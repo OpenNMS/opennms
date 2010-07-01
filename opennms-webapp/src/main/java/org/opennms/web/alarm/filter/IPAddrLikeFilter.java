@@ -34,26 +34,54 @@ package org.opennms.web.alarm.filter;
 
 import org.opennms.web.filter.IPLikeFilter;
 
-/** Encapsulates all interface filtering functionality. */
+/**
+ * Encapsulates all interface filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class IPAddrLikeFilter extends IPLikeFilter {
+    /** Constant <code>TYPE="iplike"</code> */
     public static final String TYPE = "iplike";
 
+    /**
+     * <p>Constructor for IPAddrLikeFilter.</p>
+     *
+     * @param ipLikePattern a {@link java.lang.String} object.
+     */
     public IPAddrLikeFilter(String ipLikePattern) {
         super(TYPE, "IPADDR", "ipAddr", ipLikePattern);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("IP Address like \"" + getValue() + "\"");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<IPLikeFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getIpLikePattern</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpLikePattern() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

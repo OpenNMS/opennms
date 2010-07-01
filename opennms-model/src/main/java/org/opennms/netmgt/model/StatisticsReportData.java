@@ -50,9 +50,10 @@ import javax.persistence.Transient;
 
 /**
  * Model class for a piece of statistics report data.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see StatisticsReport
+ * @version $Id: $
  */
 @Entity
 @Table(name="statisticsReportData")
@@ -66,7 +67,8 @@ public class StatisticsReportData implements Serializable {
     
     /**
      * Unique identifier for data.
-     * 
+     *
+     * @return a {@link java.lang.Integer} object.
      */
     @Id
     @Column(name="id")
@@ -75,37 +77,77 @@ public class StatisticsReportData implements Serializable {
     public Integer getId() {
         return m_id;
     }
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
     
+    /**
+     * <p>getReport</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.StatisticsReport} object.
+     */
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="reportId") //, nullable=false)
     public StatisticsReport getReport() {
         return m_report;
     }
+    /**
+     * <p>setReport</p>
+     *
+     * @param report a {@link org.opennms.netmgt.model.StatisticsReport} object.
+     */
     public void setReport(StatisticsReport report) {
         m_report = report;
     }
     
+    /**
+     * <p>getResource</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.ResourceReference} object.
+     */
     @ManyToOne(optional=false)
     @JoinColumn(name="resourceId")
     public ResourceReference getResource() {
         return m_resource;
     }
+    /**
+     * <p>setResource</p>
+     *
+     * @param resource a {@link org.opennms.netmgt.model.ResourceReference} object.
+     */
     public void setResource(ResourceReference resource) {
         m_resource = resource;
     }
     
+    /**
+     * <p>getResourceId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Transient
     public String getResourceId() {
         return m_resource.getResourceId();
     }
     
+    /**
+     * <p>getValue</p>
+     *
+     * @return a {@link java.lang.Double} object.
+     */
     @Column(name="value", nullable=false)
     public Double getValue() {
         return m_value;
     }
+    /**
+     * <p>setValue</p>
+     *
+     * @param value a {@link java.lang.Double} object.
+     */
     public void setValue(Double value) {
         m_value = value;
     }

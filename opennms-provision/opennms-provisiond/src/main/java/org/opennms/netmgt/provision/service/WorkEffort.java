@@ -32,6 +32,12 @@
 package org.opennms.netmgt.provision.service;
 
 
+/**
+ * <p>WorkEffort class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class WorkEffort {
 	
 	private String m_name;
@@ -39,26 +45,47 @@ public class WorkEffort {
 	private long m_sectionCount;
 	private ThreadLocal<WorkDuration> m_pendingSection = new ThreadLocal<WorkDuration>();
 	
+	/**
+	 * <p>Constructor for WorkEffort.</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public WorkEffort(String name) {
 		m_name = name;
 	}
 
+	/**
+	 * <p>begin</p>
+	 */
 	public void begin() {
 		WorkDuration pending = new WorkDuration();
 		pending.start();
 		m_pendingSection.set(pending);
 	}
 
+	/**
+	 * <p>end</p>
+	 */
 	public void end() {
 		WorkDuration pending = m_pendingSection.get();
 		m_sectionCount++;
 		m_totalTime += pending.getLength();
 	}
 	
+	/**
+	 * <p>getTotalTime</p>
+	 *
+	 * @return a long.
+	 */
 	public long getTotalTime() {
 		return m_totalTime;
 	}
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("Total ").append(m_name).append(": ");

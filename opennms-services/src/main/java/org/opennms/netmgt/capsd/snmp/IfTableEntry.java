@@ -50,7 +50,7 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  * and passing in a variable list from an SNMP PDU. The actual data can be
  * recovered via the base class map interface.
  * </P>
- * 
+ *
  * <P>
  * Once an instance is created and its data set either via the constructor or
  * from the update method, the actual elements can be retreived using the
@@ -58,67 +58,99 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  * <EM>ifSpeed</EM>,<EM>etc al</EM>. The information can also be accessed
  * by using the complete object identifer for the entry.
  * </P>
- * 
+ *
  * <P>
  * For more information on the individual fields, and to find out their
  * respective object identifiers see RFC1213 from the IETF.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A>Jon Whetzel </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A>Jon Whetzel </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public final class IfTableEntry extends SnmpTableEntry {
     //
     // Lookup strings for specific table entries
     //
+    /** Constant <code>IF_INDEX="AbstractSnmpStore.IFINDEX"</code> */
     public final static String IF_INDEX = AbstractSnmpStore.IFINDEX;
 
+    /** Constant <code>IF_DESCR="ifDescr"</code> */
     public final static String IF_DESCR = "ifDescr";
 
+    /** Constant <code>IF_TYPE="ifType"</code> */
     public final static String IF_TYPE = "ifType";
 
+    /** Constant <code>IF_MTU="ifMtu"</code> */
     public final static String IF_MTU = "ifMtu";
 
+    /** Constant <code>IF_SPEED="ifSpeed"</code> */
     public final static String IF_SPEED = "ifSpeed";
 
+    /** Constant <code>IF_PHYS_ADDR="ifPhysAddr"</code> */
     public final static String IF_PHYS_ADDR = "ifPhysAddr";
 
+    /** Constant <code>IF_ADMIN_STATUS="ifAdminStatus"</code> */
     public final static String IF_ADMIN_STATUS = "ifAdminStatus";
 
+    /** Constant <code>IF_OPER_STATUS="ifOperStatus"</code> */
     public final static String IF_OPER_STATUS = "ifOperStatus";
 
+    /** Constant <code>IF_LAST_CHANGE="ifLastChange"</code> */
     public final static String IF_LAST_CHANGE = "ifLastChange";
 
+    /** Constant <code>IF_IN_OCTETS="ifInOctets"</code> */
     public final static String IF_IN_OCTETS = "ifInOctets";
 
+    /** Constant <code>IF_IN_UCAST="ifInUcastPkts"</code> */
     public final static String IF_IN_UCAST = "ifInUcastPkts";
 
+    /** Constant <code>IF_IN_NUCAST="ifInNUcastPkts"</code> */
     public final static String IF_IN_NUCAST = "ifInNUcastPkts";
 
+    /** Constant <code>IF_IN_DISCARDS="ifInDiscards"</code> */
     public final static String IF_IN_DISCARDS = "ifInDiscards";
 
+    /** Constant <code>IF_IN_ERRORS="ifInErrors"</code> */
     public final static String IF_IN_ERRORS = "ifInErrors";
 
+    /** Constant <code>IF_IN_UKNOWN_PROTOS="ifInUnknownProtos"</code> */
     public final static String IF_IN_UKNOWN_PROTOS = "ifInUnknownProtos";
 
+    /** Constant <code>IF_OUT_OCTETS="ifOutOctets"</code> */
     public final static String IF_OUT_OCTETS = "ifOutOctets";
 
+    /** Constant <code>IF_OUT_UCAST="ifOutUcastPkts"</code> */
     public final static String IF_OUT_UCAST = "ifOutUcastPkts";
 
+    /** Constant <code>IF_OUT_NUCAST="ifOutNUcastPkts"</code> */
     public final static String IF_OUT_NUCAST = "ifOutNUcastPkts";
 
+    /** Constant <code>IF_OUT_DISCARDS="ifOutDiscards"</code> */
     public final static String IF_OUT_DISCARDS = "ifOutDiscards";
 
+    /** Constant <code>IF_OUT_ERRORS="ifOutErrors"</code> */
     public final static String IF_OUT_ERRORS = "ifOutErrors";
 
+    /** Constant <code>IF_OUT_QLEN="ifOutQLen"</code> */
     public final static String IF_OUT_QLEN = "ifOutQLen";
 
+    /** Constant <code>IF_SPECIFIC="ifSpecific"</code> */
     public final static String IF_SPECIFIC = "ifSpecific";
     
+    /** Constant <code>ms_elemList</code> */
     public static NamedSnmpVar[] ms_elemList = null;
 
     /**
@@ -186,35 +218,61 @@ public final class IfTableEntry extends SnmpTableEntry {
      * named varbind in the passed array. This array should have been collected
      * from an SnmpPduRequest that was received from a remote host.
      * </P>
-     * 
-     * @param vars
-     *            The array of variable bindings.
-     * 
      */
     public IfTableEntry() {
         super(ms_elemList);
     }
 
+    /**
+     * <p>getIfType</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getIfType() {
         return getInt32(IfTableEntry.IF_TYPE);
     }
     
+    /**
+     * <p>getIfAdminStatus</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getIfAdminStatus() {
         return getInt32(IfTableEntry.IF_ADMIN_STATUS);
     }
 
+    /**
+     * <p>getIfDescr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfDescr() {
         return getDisplayString(IfTableEntry.IF_DESCR);
     }
 
+    /**
+     * <p>getPhysAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPhysAddr() {
         return getHexString(IfTableEntry.IF_PHYS_ADDR);
     }
 
+    /**
+     * <p>getIfOperStatus</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getIfOperStatus() {
         return getInt32(IfTableEntry.IF_OPER_STATUS);
     }
 
+    /**
+     * <p>getIfSpeed</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getIfSpeed() {
         return getUInt32(IfTableEntry.IF_SPEED);
     }

@@ -59,13 +59,24 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * Plugin interface that allows it to be used along with other plugins by the
  * daemon.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * 
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class FtpPlugin extends AbstractTcpPlugin {
     /**
@@ -89,23 +100,13 @@ public final class FtpPlugin extends AbstractTcpPlugin {
     private static final String PROTOCOL_NAME = "FTP";
 
     /**
-     * @param protocol
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetries
+     * <p>Constructor for FtpPlugin.</p>
      */
     public FtpPlugin() {
         super(PROTOCOL_NAME, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
     }
 
-    /**
-     * @param socket
-     * @param config
-     * @param log
-     * @param isAServer
-     * @return
-     * @throws IOException
-     */
+    /** {@inheritDoc} */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
   

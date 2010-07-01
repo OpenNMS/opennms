@@ -44,10 +44,17 @@ import org.quartz.JobExecutionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
+/**
+ * <p>BatchReportJob class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class BatchReportJob extends QuartzJobBean {
     
     private ApplicationContext m_context;
 
+    /** {@inheritDoc} */
     @Override
     protected void executeInternal(JobExecutionContext jobContext)
             throws JobExecutionException {
@@ -75,6 +82,11 @@ public class BatchReportJob extends QuartzJobBean {
         
     }
     
+    /**
+     * <p>setApplicationContext</p>
+     *
+     * @param applicationContext a {@link org.springframework.context.ApplicationContext} object.
+     */
     public void setApplicationContext(ApplicationContext applicationContext) {
         m_context = applicationContext;
     }

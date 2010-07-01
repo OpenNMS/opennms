@@ -62,6 +62,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
+/**
+ * <p>EventRestService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Path("events")
@@ -79,6 +86,12 @@ public class EventRestService extends OnmsRestService {
 	@Context
 	SecurityContext m_securityContext;
 
+	/**
+	 * <p>getEvent</p>
+	 *
+	 * @param eventId a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
+	 */
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("{eventId}")
@@ -91,7 +104,8 @@ public class EventRestService extends OnmsRestService {
 
 	/**
 	 * returns a plaintext string being the number of events
-	 * @return
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -103,9 +117,9 @@ public class EventRestService extends OnmsRestService {
 
 	/**
 	 * Returns all the events which match the filter/query in the query parameters
-	 * 
+	 *
 	 * @return Collection of OnmsEvents (ready to be XML-ified)
-	 * @throws ParseException
+	 * @throws java.text.ParseException if any.
 	 */
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -129,8 +143,11 @@ public class EventRestService extends OnmsRestService {
 	}
 
 	/**
-	 * Updates the event with id "eventid" 
+	 * Updates the event with id "eventid"
 	 * If the "ack" parameter is "true", then acks the events as the current logged in user, otherwise unacks the events
+	 *
+	 * @param eventId a {@link java.lang.String} object.
+	 * @param ack a {@link java.lang.Boolean} object.
 	 */
 	@PUT
 	@Path("{eventId}")
@@ -148,9 +165,9 @@ public class EventRestService extends OnmsRestService {
 	}
 
 	/**
-	 * Updates all the events that match any filter/query supplied in the form. 
+	 * Updates all the events that match any filter/query supplied in the form.
 	 * If the "ack" parameter is "true", then acks the events as the current logged in user, otherwise unacks the events
-	 * 
+	 *
 	 * @param formProperties Map of the parameters passed in by form encoding
 	 */
 	@PUT

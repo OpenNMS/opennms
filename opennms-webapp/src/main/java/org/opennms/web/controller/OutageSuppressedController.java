@@ -56,6 +56,13 @@ import org.opennms.web.svclayer.outage.SuppressOutages;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>OutageSuppressedController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OutageSuppressedController extends AbstractController {
 
 	OutageService m_outageService;
@@ -72,11 +79,17 @@ public class OutageSuppressedController extends AbstractController {
 
 	private static final int ROW_LIMIT = 25;
 
+	/**
+	 * <p>setOutageService</p>
+	 *
+	 * @param service a {@link org.opennms.web.svclayer.outage.OutageService} object.
+	 */
 	public void setOutageService(OutageService service) {
 		m_outageService = service;
 	}
 
 	// public Map referenceData(HttpServletRequest request) throws Exception {
+	/** {@inheritDoc} */
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse reply) throws Exception {
@@ -148,10 +161,20 @@ public class OutageSuppressedController extends AbstractController {
 		return new ModelAndView(getSuccessView(), myModel);
 	}
 
+        /**
+         * <p>setSuccessView</p>
+         *
+         * @param successView a {@link java.lang.String} object.
+         */
         public void setSuccessView(String successView) {
                 m_successView = successView;
         }
         
+        /**
+         * <p>getSuccessView</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
         public String getSuccessView() {
                 return m_successView;
         }

@@ -55,14 +55,37 @@ import org.opennms.netmgt.dao.EventDao;
  * processing of traps
  * </p>
  */
-/**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- */public class Syslogd extends AbstractServiceDaemon {
+ /**
+  * <p>Syslogd class.</p>
+  *
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+  * @version $Id: $
+  */
+ public class Syslogd extends AbstractServiceDaemon {
     /**
      * The name of the logging category for Syslogd.
      */
@@ -76,6 +99,11 @@ import org.opennms.netmgt.dao.EventDao;
     /*
    * @return Syslogd
     */
+    /**
+     * <p>getSingleton</p>
+     *
+     * @return a {@link org.opennms.netmgt.syslogd.Syslogd} object.
+     */
     public synchronized static Syslogd getSingleton() {
         return m_singleton;
     }
@@ -84,10 +112,16 @@ import org.opennms.netmgt.dao.EventDao;
 
     private EventDao m_eventDao;
 
+    /**
+     * <p>Constructor for Syslogd.</p>
+     */
     public Syslogd() {
         super("OpenNMS.Syslogd");
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
 
         try {
@@ -119,6 +153,9 @@ import org.opennms.netmgt.dao.EventDao;
 
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         m_udpEventReceiver.start();
 
@@ -135,6 +172,9 @@ import org.opennms.netmgt.dao.EventDao;
         }
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         // shutdown and wait on the background processing thread to exit.
         log().debug("exit: closing communication paths.");
@@ -166,10 +206,20 @@ import org.opennms.netmgt.dao.EventDao;
     /*
     * @return EventDao
      */
+    /**
+     * <p>getEventDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.EventDao} object.
+     */
     public EventDao getEventDao() {
         return m_eventDao;
     }
 
+    /**
+     * <p>setEventDao</p>
+     *
+     * @param eventDao a {@link org.opennms.netmgt.dao.EventDao} object.
+     */
     public void setEventDao(EventDao eventDao) {
         m_eventDao = eventDao;
     }

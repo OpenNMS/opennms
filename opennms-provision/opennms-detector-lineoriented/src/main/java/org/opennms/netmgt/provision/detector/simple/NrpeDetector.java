@@ -40,8 +40,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Donald Desloge
+ * <p>NrpeDetector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 @Component
 @Scope("prototype")
@@ -68,14 +70,15 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public NrpeDetector(String serviceName, int port) {
         super(serviceName, port);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         send(request(NrpePacket.HELLO_COMMAND), resultCodeEquals(0));
@@ -103,6 +106,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
         return new NrpeRequest(b);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Client<NrpeRequest, NrpePacket> getClient() {
         NrpeClient client = new NrpeClient();
@@ -112,18 +116,38 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     }
 
 
+    /**
+     * <p>setUseSsl</p>
+     *
+     * @param useSsl a boolean.
+     */
     public void setUseSsl(boolean useSsl) {
         m_useSsl = useSsl;
     }
 
+    /**
+     * <p>isUseSsl</p>
+     *
+     * @return a boolean.
+     */
     public boolean isUseSsl() {
         return m_useSsl;
     }
 
+    /**
+     * <p>setPadding</p>
+     *
+     * @param padding a int.
+     */
     public void setPadding(int padding) {
         m_padding = padding;
     }
 
+    /**
+     * <p>getPadding</p>
+     *
+     * @return a int.
+     */
     public int getPadding() {
         return m_padding;
     }

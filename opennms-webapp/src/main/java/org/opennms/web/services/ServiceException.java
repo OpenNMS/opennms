@@ -32,9 +32,22 @@
 package org.opennms.web.services;
 
 
+/**
+ * <p>ServiceException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @SuppressWarnings("serial")
 public class ServiceException extends RuntimeException {
 
+	/**
+	 * <p>Constructor for ServiceException.</p>
+	 *
+	 * @param msg a {@link java.lang.String} object.
+	 * @param e a {@link java.lang.Exception} object.
+	 */
 	public ServiceException(String msg, Exception e) {
 		super(msg, e);
 	}

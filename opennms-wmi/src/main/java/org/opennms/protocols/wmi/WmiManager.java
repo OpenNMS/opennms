@@ -53,6 +53,9 @@ import org.opennms.core.utils.ThreadCategory;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public class WmiManager {
 	/**
@@ -90,10 +93,10 @@ public class WmiManager {
         return ThreadCategory.getInstance(getClass());
     }
 
-    /**
+	/**
 	 * This method is used for setting the password used to perform service
 	 * checks.
-	 * 
+	 *
 	 * @param pass
 	 *            the password to use when performing service checks.
 	 */
@@ -105,7 +108,7 @@ public class WmiManager {
 	 * This method is used to set the host name to connect to for performing
 	 * remote service checks. This method must be called before calling the
 	 * init() method or it will have no effect.
-	 * 
+	 *
 	 * @param host
 	 *            the host name to connect to.
 	 * @see init
@@ -116,7 +119,7 @@ public class WmiManager {
 
 	/**
 	 * Returns the host name being used to connect to the remote service.
-	 * 
+	 *
 	 * @return the host name being used to connect to the remote service.
 	 */
 	public String getHostName() {
@@ -127,7 +130,7 @@ public class WmiManager {
 	 * This method is used to set the TCP socket timeout to be used when
 	 * connecting to the remote service. This must be called before calling
 	 * <code>init</code> or it will have no effect.
-	 * 
+	 *
 	 * @param timeout
 	 *            the TCP socket timeout.
 	 */
@@ -138,7 +141,7 @@ public class WmiManager {
 	/**
 	 * Returns the TCP socket timeout used when connecting to the remote
 	 * service.
-	 * 
+	 *
 	 * @return the tcp socket timeout.
 	 */
 	public int getTimeout() {
@@ -147,9 +150,9 @@ public class WmiManager {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param host
-	 *            sets the host name to connect to. 
+	 *            sets the host name to connect to.
 	 * @param user
 	 *            sets the username to connect with
 	 * @param pass
@@ -165,9 +168,9 @@ public class WmiManager {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param host
-	 *            sets the host name to connect to. 
+	 *            sets the host name to connect to.
 	 * @param user
 	 *            sets the username to connect with
 	 * @param pass
@@ -189,9 +192,9 @@ public class WmiManager {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param host
-	 *            sets the host name to connect to. 
+	 *            sets the host name to connect to.
 	 * @param user
 	 *            sets the username to connect with
 	 * @param pass
@@ -225,6 +228,12 @@ public class WmiManager {
 		// nothing to do, don't allow it.
 	}
 
+	/**
+	 * <p>isValidMatchType</p>
+	 *
+	 * @param matchType a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public static boolean isValidMatchType(String matchType) {
 		if (matchType.equals("all") || matchType.equals("none")
 				|| matchType.equals("some") || matchType.equals("one")) {
@@ -234,6 +243,12 @@ public class WmiManager {
 		return false;
 	}
 	
+	/**
+	 * <p>isValidOpType</p>
+	 *
+	 * @param opType a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public static boolean isValidOpType(String opType) {
 		try {
 			WmiMgrOperation op = WmiMgrOperation.valueOf(opType);
@@ -245,8 +260,8 @@ public class WmiManager {
 
 	/**
 	 * This creates a new WmiClient and creates a connection to the host.
-	 * 
-	 * @throws WmiException
+	 *
+	 * @throws org.opennms.protocols.wmi.WmiException
 	 *             An exception will be thrown if the system is unable to look
 	 *             up the host and if J-Interop throws an exception this will
 	 *             re-throw that exception so that implementors need not know
@@ -260,14 +275,19 @@ public class WmiManager {
 	/**
 	 * This is for tests to harness and create a mock client. Do not use!
 	 *
-     * @param client allows a IWmiClient to be pre-instantiated. Used for mock testing.
-	 * @throws WmiException is thrown if there are any problems connecting.
+	 * @param client allows a IWmiClient to be pre-instantiated. Used for mock testing.
+	 * @throws org.opennms.protocols.wmi.WmiException is thrown if there are any problems connecting.
 	 */
 	public void init(IWmiClient client) throws WmiException {
 		m_WmiClient = client;
 		m_WmiClient.connect(m_Domain, m_Username, m_Password);
 	}
 	
+	/**
+	 * <p>close</p>
+	 *
+	 * @throws org.opennms.protocols.wmi.WmiException if any.
+	 */
 	public void close() throws WmiException {
 		if(m_WmiClient == null)
 		{
@@ -276,6 +296,13 @@ public class WmiManager {
 		m_WmiClient.disconnect();
 	}
 
+	/**
+	 * <p>performOp</p>
+	 *
+	 * @param params a {@link org.opennms.protocols.wmi.WmiParams} object.
+	 * @return a {@link org.opennms.protocols.wmi.WmiResult} object.
+	 * @throws org.opennms.protocols.wmi.WmiException if any.
+	 */
 	public WmiResult performOp(WmiParams params) throws WmiException {
         // If we defined a WQL query string, exec the query.
         if( params.getWmiOperation().equals(WmiParams.WMI_OPERATION_WQL)) {
@@ -286,6 +313,13 @@ public class WmiManager {
         }
     }
 
+    /**
+     * <p>performExecQuery</p>
+     *
+     * @param params a {@link org.opennms.protocols.wmi.WmiParams} object.
+     * @return a {@link org.opennms.protocols.wmi.WmiResult} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public WmiResult performExecQuery(WmiParams params) throws WmiException {
         ArrayList<Object> wmiObjects = new ArrayList<Object>();
 
@@ -311,6 +345,13 @@ public class WmiManager {
 		return result;
     }
 
+    /**
+     * <p>performInstanceOf</p>
+     *
+     * @param params a {@link org.opennms.protocols.wmi.WmiParams} object.
+     * @return a {@link org.opennms.protocols.wmi.WmiResult} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public WmiResult performInstanceOf(WmiParams params) throws WmiException {
         ArrayList<Object> wmiObjects = new ArrayList<Object>();
 
@@ -377,6 +418,8 @@ public class WmiManager {
 	}
 
 	/**
+	 * <p>getMatchType</p>
+	 *
 	 * @return the m_MatchType
 	 */
 	public String getMatchType() {
@@ -384,6 +427,8 @@ public class WmiManager {
 	}
 
 	/**
+	 * <p>setMatchType</p>
+	 *
 	 * @param matchType the m_MatchType to set
 	 */
 	public void setMatchType(String matchType) {

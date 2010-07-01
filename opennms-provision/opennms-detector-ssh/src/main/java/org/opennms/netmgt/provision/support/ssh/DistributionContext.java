@@ -31,6 +31,12 @@
 //
 package org.opennms.netmgt.provision.support.ssh;
 
+/**
+ * <p>DistributionContext class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public enum DistributionContext {
     ALL,
     DAEMON,

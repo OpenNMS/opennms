@@ -46,23 +46,31 @@ import org.springframework.util.Assert;
 
 /**
  * Acl user factory, retrieve users by id or username
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Service("aclUserFactory")
 public class AclUserFactoryImpl implements AclUserFactory, InitializingBean {
 
+    /** {@inheritDoc} */
     public GenericUser getAclUserByUsername(String username) {
         UserAuthoritiesDTO userAuthoritiesDTO = userService.getUserWithAuthorities(username);
         return new GenericUser(userAuthoritiesDTO, userService, groupService);
     }
 
+    /** {@inheritDoc} */
     public GenericUser getAclUser(Integer sid) {
         UserAuthoritiesDTO userAuthoritiesDTO = userService.getUserWithAuthoritiesByID(sid);
         return new GenericUser(userAuthoritiesDTO, userService, groupService);
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(authorityService != null, "authorityService property must be set and cannot be null");
         Assert.state(userService != null, "userService property must be set and cannot be null");

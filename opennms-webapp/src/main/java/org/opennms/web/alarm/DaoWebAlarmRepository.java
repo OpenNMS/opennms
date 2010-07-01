@@ -53,6 +53,13 @@ import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * <p>DaoWebAlarmRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DaoWebAlarmRepository implements WebAlarmRepository {
     
     @Autowired
@@ -188,6 +195,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         return alarm;
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void acknowledgeAll(String user, Date timestamp) {
         acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria());
@@ -198,6 +206,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void acknowledgeMatchingAlarms(String user, Date timestamp, AlarmCriteria criteria) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
@@ -212,6 +221,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         }
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void clearAlarms(int[] alarmIds, String user, Date timestamp) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
@@ -227,11 +237,13 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         }
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public int countMatchingAlarms(AlarmCriteria criteria) {
         return queryForInt(getOnmsCriteria(criteria));
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public int[] countMatchingAlarmsBySeverity(AlarmCriteria criteria) {
         OnmsCriteria crit = getOnmsCriteria(criteria).setProjection(Projections.groupProperty("severityId"));
@@ -248,6 +260,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         return alarmCounts;
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void escalateAlarms(int[] alarmIds, String user, Date timestamp) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(new AlarmCriteria(new AlarmIdListFilter(alarmIds))));
@@ -263,11 +276,13 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
 
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public Alarm getAlarm(int alarmId) {
         return mapOnmsAlarmToAlarm(m_alarmDao.get(alarmId));
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public Alarm[] getMatchingAlarms(AlarmCriteria criteria) {
         List<Alarm> alarms = new ArrayList<Alarm>();
@@ -280,11 +295,13 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         return alarms.toArray(new Alarm[0]);
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void unacknowledgeAll(String user) {
         unacknowledgeMatchingAlarms(new AlarmCriteria(), user);
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void unacknowledgeMatchingAlarms(AlarmCriteria criteria, String user) {
         List<OnmsAlarm> alarms = m_alarmDao.findMatching(getOnmsCriteria(criteria));
@@ -301,11 +318,13 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
         return m_alarmDao.countMatching(onmsCriteria);
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public void acknowledgeAlarms(int[] alarmIds, String user, Date timestamp) {
         acknowledgeMatchingAlarms(user, timestamp, new AlarmCriteria(new AlarmIdListFilter(alarmIds)));
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public void unacknowledgeAlarms(int[] alarmIds, String user) {
         unacknowledgeMatchingAlarms(new AlarmCriteria(new AlarmIdListFilter(alarmIds)), user);

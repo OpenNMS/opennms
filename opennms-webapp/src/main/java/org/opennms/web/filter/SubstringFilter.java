@@ -35,27 +35,46 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
+/**
+ * <p>Abstract SubstringFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public abstract class SubstringFilter extends OneArgFilter<String> {
 
+    /**
+     * <p>Constructor for SubstringFilter.</p>
+     *
+     * @param filterType a {@link java.lang.String} object.
+     * @param fieldName a {@link java.lang.String} object.
+     * @param propertyName a {@link java.lang.String} object.
+     * @param value a {@link java.lang.String} object.
+     */
     public SubstringFilter(String filterType, String fieldName, String propertyName, String value) {
         super(filterType, SQLType.STRING, fieldName, propertyName, value);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Criterion getCriterion() {
         return Restrictions.ilike(getPropertyName(), getValue(), MatchMode.ANYWHERE);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
         return " " + getSQLFieldName() + " ILIKE %s ";
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getBoundValue(String value) {
         return '%' + value + '%';
     }
 
+    /** {@inheritDoc} */
     @Override
     public String formatValue(String value) {
         return super.formatValue('%'+value+'%');

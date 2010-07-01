@@ -59,8 +59,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * This nodes job is to tracks nodes that need to be deleted, added, or changed
- * @author david
  *
+ * @author david
+ * @version $Id: $
  */
 public class ImportOperationsManager {
     
@@ -76,11 +77,26 @@ public class ImportOperationsManager {
 	private int m_writeThreads = 4;
     private String m_foreignSource;
     
+    /**
+     * <p>Constructor for ImportOperationsManager.</p>
+     *
+     * @param foreignIdToNodeMap a {@link java.util.Map} object.
+     * @param operationFactory a {@link org.opennms.netmgt.importer.operations.ImportOperationFactory} object.
+     */
     public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ImportOperationFactory operationFactory) {
         m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
         m_operationFactory = operationFactory;
     }
 
+    /**
+     * <p>foundNode</p>
+     *
+     * @param foreignId a {@link java.lang.String} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     * @param city a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.importer.operations.SaveOrUpdateOperation} object.
+     */
     public SaveOrUpdateOperation foundNode(String foreignId, String nodeLabel, String building, String city) {
         
         if (nodeExists(foreignId)) {
@@ -117,18 +133,38 @@ public class ImportOperationsManager {
         return m_foreignIdToNodeMap.remove(foreignId);
     }
     
+    /**
+     * <p>getOperationCount</p>
+     *
+     * @return a int.
+     */
     public int getOperationCount() {
         return m_inserts.size() + m_updates.size() + m_foreignIdToNodeMap.size();
     }
     
+    /**
+     * <p>getInsertCount</p>
+     *
+     * @return a int.
+     */
     public int getInsertCount() {
     	return m_inserts.size();
     }
 
+    /**
+     * <p>getUpdateCount</p>
+     *
+     * @return a int.
+     */
     public int  getUpdateCount() {
         return m_updates.size();
     }
 
+    /**
+     * <p>getDeleteCount</p>
+     *
+     * @return a int.
+     */
     public int getDeleteCount() {
     	return m_foreignIdToNodeMap.size();
     }
@@ -188,6 +224,12 @@ public class ImportOperationsManager {
     	
     }
     
+    /**
+     * <p>shutdownAndWaitForCompletion</p>
+     *
+     * @param executorService a {@link java.util.concurrent.ExecutorService} object.
+     * @param msg a {@link java.lang.String} object.
+     */
     public void shutdownAndWaitForCompletion(ExecutorService executorService, String msg) {
         executorService.shutdown();
         try {
@@ -199,6 +241,12 @@ public class ImportOperationsManager {
         }
     }
  
+    /**
+     * <p>persistOperations</p>
+     *
+     * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     * @param dao a {@link org.opennms.netmgt.dao.OnmsDao} object.
+     */
     public void persistOperations(TransactionTemplate template, OnmsDao<?, ?> dao) {
     	m_stats.beginProcessingOps();
     	m_stats.setDeleteCount(getDeleteCount());
@@ -235,6 +283,14 @@ public class ImportOperationsManager {
 		m_stats.finishPreprocessingOps();
 	}
 
+	/**
+	 * <p>preprocessOperation</p>
+	 *
+	 * @param oper a {@link org.opennms.netmgt.importer.operations.ImportOperation} object.
+	 * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
+	 * @param dao a {@link org.opennms.netmgt.dao.OnmsDao} object.
+	 * @param dbPool a {@link java.util.concurrent.ExecutorService} object.
+	 */
 	protected void preprocessOperation(final ImportOperation oper, final TransactionTemplate template, final OnmsDao<?, ?> dao, final ExecutorService dbPool) {
 		m_stats.beginPreprocessing(oper);
 		log().info("Preprocess: "+oper);
@@ -250,6 +306,13 @@ public class ImportOperationsManager {
 		m_stats.finishPreprocessing(oper);
 	}
 
+	/**
+	 * <p>persistOperation</p>
+	 *
+	 * @param oper a {@link org.opennms.netmgt.importer.operations.ImportOperation} object.
+	 * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
+	 * @param dao a {@link org.opennms.netmgt.dao.OnmsDao} object.
+	 */
 	protected void persistOperation(final ImportOperation oper, TransactionTemplate template, final OnmsDao<?, ?> dao) {
 		m_stats.beginPersisting(oper);
 		log().info("Persist: "+oper);
@@ -296,38 +359,78 @@ public class ImportOperationsManager {
 		return ThreadCategory.getInstance(getClass());
 	}
 
+	/**
+	 * <p>setScanThreads</p>
+	 *
+	 * @param scanThreads a int.
+	 */
 	public void setScanThreads(int scanThreads) {
 		m_scanThreads = scanThreads;
 	}
 	
+	/**
+	 * <p>setWriteThreads</p>
+	 *
+	 * @param writeThreads a int.
+	 */
 	public void setWriteThreads(int writeThreads) {
 		m_writeThreads = writeThreads;
 	}
 
 
 
+	/**
+	 * <p>getEventMgr</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 */
 	public EventIpcManager getEventMgr() {
 		return m_eventMgr;
 	}
 
 
 
+	/**
+	 * <p>setEventMgr</p>
+	 *
+	 * @param eventMgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 */
 	public void setEventMgr(EventIpcManager eventMgr) {
 		m_eventMgr = eventMgr;
 	}
 
+	/**
+	 * <p>getStats</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.importer.operations.ImportStatistics} object.
+	 */
 	public ImportStatistics getStats() {
 		return m_stats;
 	}
 
+	/**
+	 * <p>setStats</p>
+	 *
+	 * @param stats a {@link org.opennms.netmgt.importer.operations.ImportStatistics} object.
+	 */
 	public void setStats(ImportStatistics stats) {
 		m_stats = stats;
 	}
 
+    /**
+     * <p>setForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     */
     public void setForeignSource(String foreignSource) {
         m_foreignSource = foreignSource;
     }
 
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignSource() {
         return m_foreignSource;
     }

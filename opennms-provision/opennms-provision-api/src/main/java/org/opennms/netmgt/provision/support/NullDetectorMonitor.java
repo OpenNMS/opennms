@@ -34,32 +34,90 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 
+/**
+ * <p>NullDetectorMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NullDetectorMonitor implements DetectorMonitor{
 
+    /**
+     * <p>attempt</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.ServiceDetector} object.
+     * @param attempt a int.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public void attempt(ServiceDetector detector, int attempt, String format, Object... args) {
         info(format, args);
     }
 
+    /**
+     * <p>error</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.ServiceDetector} object.
+     * @param t a {@link java.lang.Throwable} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public void error(ServiceDetector detector, Throwable t, String format, Object... args) {
         info(t, format, args);
     }
 
+    /**
+     * <p>failure</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.ServiceDetector} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public void failure(ServiceDetector detector, String format, Object... args) {
         info(format, args);
     }
 
+    /**
+     * <p>info</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.ServiceDetector} object.
+     * @param e a {@link java.lang.Exception} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public void info(ServiceDetector detector, Exception e, String format, Object... args) {
         info(format, args);
     }
 
+    /**
+     * <p>start</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.ServiceDetector} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public void start(ServiceDetector detector, String format, Object... args) {
         info(format, args);
     }
 
+    /**
+     * <p>stopped</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.ServiceDetector} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public void stopped(ServiceDetector detector, String format, Object... args) {
         info(format, args);
     }
 
+    /**
+     * <p>success</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.ServiceDetector} object.
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public void success(ServiceDetector detector, String format, Object... args) {
         info(format, args);
     }

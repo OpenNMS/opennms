@@ -57,7 +57,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * at once. The number of SNMP packets should not exceed the number of interface +
  * 1, assuming no lost packets or error conditions occur.
  * </P>
- * 
+ *
  * <p>
  * <em>Addition by Jon Whetzel</em>
  * </p>
@@ -67,12 +67,18 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * necessary data. Otherwise, the method will resort to its previous
  * implementation with GETNEXT commands.
  * </p>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public final class IfTable extends SnmpTable<IfTableEntry> {
     
@@ -84,6 +90,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
+     *
      * @param address TODO
      * @see IfTableEntry
      */
@@ -91,51 +98,106 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         this(address, null);
     }
     
+    /**
+     * <p>Constructor for IfTable.</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param ifIndices a {@link java.util.Set} object.
+     */
     public IfTable(InetAddress address, Set<SnmpInstId> ifIndices) {
         super(address, "ifTable", IfTableEntry.ms_elemList, ifIndices);
     }
 
+    /** {@inheritDoc} */
     protected IfTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IfTableEntry();
     }
 
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IfTable.class);
     }
     
+    /**
+     * <p>getOperStatus</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getOperStatus(int ifIndex) {
         return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfOperStatus());
     }
         
+    /**
+     * <p>getAdminStatus</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getAdminStatus(int ifIndex) {
         return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfAdminStatus());
     }
 
+    /**
+     * <p>getIfType</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getIfType(int ifIndex) {
         return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfType());
     }
 
+    /**
+     * <p>getIfDescr</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfDescr(final int ifIndex) {
         return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfDescr());
     }
 
+    /**
+     * <p>getIfSpeed</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getIfSpeed(final int ifIndex) {
         return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getIfSpeed());
     }
     
+    /**
+     * <p>getPhysAddr</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
+     */
     public String getPhysAddr(final int ifIndex) {
         return (getEntry(ifIndex) == null ? null : getEntry(ifIndex).getPhysAddr());
     }
 
+    /**
+     * <p>updateSnmpInterfaceData</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void updateSnmpInterfaceData(OnmsNode node) {
         for(IfTableEntry entry : getEntries()) {
             updateSnmpInterfaceData(node, entry.getIfIndex());
         }
     }
     /**
-     * @param node
-     * @param ifIndex
+     * <p>updateSnmpInterfaceData</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param ifIndex a {@link java.lang.Integer} object.
      */
     public void updateSnmpInterfaceData(OnmsNode node, Integer ifIndex) {
         // first look to see if an snmpIf was created already
@@ -160,7 +222,9 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
     }
 
     /**
-     * @return
+     * <p>getIfIndices</p>
+     *
+     * @return a {@link java.util.Set} object.
      */
     public Set<Integer> getIfIndices() {
         Set<Integer> ifIndices = new LinkedHashSet<Integer>();

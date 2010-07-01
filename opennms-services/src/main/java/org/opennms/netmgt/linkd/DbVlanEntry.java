@@ -50,8 +50,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
- * 
+ * <p>DbVlanEntry class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 public class DbVlanEntry
 {
@@ -457,22 +459,28 @@ public class DbVlanEntry
         static DbVlanEntry create(int nodeId,int vlanid) {
         	return new DbVlanEntry(nodeId,vlanid, false);
         }
-        /**
-		 * @return
+		/**
+		 * <p>get_nodeId</p>
+		 *
+		 * @return a int.
 		 */
 		public int get_nodeId() {
 			return m_nodeId;
 		}
 
 		/**
-		 * @return
+		 * <p>getVlanId</p>
+		 *
+		 * @return a int.
 		 */
 		public int getVlanId() {
 			return m_vlanId;
 		}
 
 		/**
-		 * @return
+		 * <p>getVlanName</p>
+		 *
+		 * @return a {@link java.lang.String} object.
 		 */
 		public String getVlanName() {
 			return m_vlanname;
@@ -499,7 +507,9 @@ public class DbVlanEntry
 		}
 
 		/**
-		 * @return
+		 * <p>getVlanType</p>
+		 *
+		 * @return a int.
 		 */
 		public int getVlanType() {
 			return m_vlantype;
@@ -526,7 +536,9 @@ public class DbVlanEntry
 		}
 
 		/**
-		 * @return
+		 * <p>getVlanStatus</p>
+		 *
+		 * @return a int.
 		 */
 		public int getVlanStatus() {
 			return m_vlanstatus;
@@ -729,6 +741,11 @@ public class DbVlanEntry
 			return entry;
 		}
 
+		/**
+		 * <p>toString</p>
+		 *
+		 * @return a {@link java.lang.String} object.
+		 */
 		public String toString() {
 			String sep = System.getProperty("line.separator");
 			StringBuffer buf = new StringBuffer();

@@ -45,6 +45,13 @@ import com.googlecode.gwtmapquest.transaction.event.MoveEndHandler;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndEvent;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
 
+/**
+ * <p>MapQuestMapPanel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleClickHandlers, HasClickHandlers {
 
     public GWTLatLng m_currentInfoWindowLatLng = null;
@@ -117,6 +124,11 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     interface MapQuestMapPanelUiBinder extends UiBinder<Widget, MapQuestMapPanel> {
     }
 
+    /**
+     * <p>Constructor for MapQuestMapPanel.</p>
+     *
+     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     */
     public MapQuestMapPanel(final HandlerManager eventBus) {
         m_eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
@@ -152,12 +164,16 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     }
     
     
+    /** {@inheritDoc} */
     @Override
     protected void onLoad() {
         super.onLoad();
         syncMapSizeWithParent();
     }
 
+    /**
+     * <p>initializeMap</p>
+     */
     public void initializeMap() {
         getMapHolder().setSize("100%", "100%");
         m_map.addControl(MQALargeZoomControl.newInstance());
@@ -171,6 +187,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         });
     }
 
+    /** {@inheritDoc} */
     public void showLocationDetails(final String name, final String htmlTitle, final String htmlContent) {
         final MQAPoi point = getMarker(name);
         if (point != null) {
@@ -209,10 +226,16 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         return MQAIcon.newInstance(marker.getImageURL(), 32, 32);
     }
 
+    /**
+     * <p>getBounds</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
+     */
     public GWTBounds getBounds() {
         return toGWTBounds(m_map.getBounds());
     }
 
+    /** {@inheritDoc} */
     public void setBounds(final GWTBounds b) {
         m_map.zoomToRect(toMQARectLL(b));
     }
@@ -243,6 +266,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         m_map.setSize();
     }
 
+    /** {@inheritDoc} */
     public void placeMarker(final GWTMarkerState marker) {
         MQAPoi m = getMarker(marker.getName());
 
@@ -269,14 +293,21 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         return m_markers.get(name);
     }
 
+    /**
+     * <p>getWidget</p>
+     *
+     * @return a {@link com.google.gwt.user.client.ui.Widget} object.
+     */
     public Widget getWidget() {
         return this;
     }
 
+    /** {@inheritDoc} */
     public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
         return addDomHandler(handler, DoubleClickEvent.getType());
     }
 
+    /** {@inheritDoc} */
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addDomHandler(handler, ClickEvent.getType());
     }

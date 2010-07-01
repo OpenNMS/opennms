@@ -7,6 +7,12 @@ import java.util.List;
 
 import org.opennms.rancid.InventoryElement2;
 
+/**
+ * <p>NodeBaseInventory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NodeBaseInventory {
 
     String devicename;
@@ -19,74 +25,162 @@ public class NodeBaseInventory {
 
     List<InventoryElement2> ie;
     
+    /**
+     * <p>Constructor for NodeBaseInventory.</p>
+     */
     public NodeBaseInventory(){
         ie = new ArrayList<InventoryElement2>();
     }
 
+    /**
+     * <p>Getter for the field <code>devicename</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getDevicename() {
         return devicename;
     }
 
+    /**
+     * <p>Setter for the field <code>devicename</code>.</p>
+     *
+     * @param devicename a {@link java.lang.String} object.
+     */
     public void setDevicename(String devicename) {
         this.devicename = devicename;
     }
 
+    /**
+     * <p>Getter for the field <code>groupname</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getGroupname() {
         return groupname;
     }
 
+    /**
+     * <p>Setter for the field <code>groupname</code>.</p>
+     *
+     * @param groupname a {@link java.lang.String} object.
+     */
     public void setGroupname(String groupname) {
         this.groupname = groupname;
     }
 
+    /**
+     * <p>Getter for the field <code>version</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     * <p>Setter for the field <code>version</code>.</p>
+     *
+     * @param version a {@link java.lang.String} object.
+     */
     public void setVersion(String version) {
         this.version = version;
     }
 
+    /**
+     * <p>Getter for the field <code>status</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatus() {
         return status;
     }
 
+    /**
+     * <p>Setter for the field <code>status</code>.</p>
+     *
+     * @param status a {@link java.lang.String} object.
+     */
     public void setStatus(String status) {
         this.status = status;
     }
 
+    /**
+     * <p>Getter for the field <code>creationdate</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getCreationdate() {
         return creationdate;
     }
 
+    /**
+     * <p>Setter for the field <code>creationdate</code>.</p>
+     *
+     * @param creationdate a {@link java.util.Date} object.
+     */
     public void setCreationdate(Date creationdate) {
         this.creationdate = creationdate;
     }
 
+    /**
+     * <p>Getter for the field <code>swconfigurationurl</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSwconfigurationurl() {
         return swconfigurationurl;
     }
 
+    /**
+     * <p>Setter for the field <code>swconfigurationurl</code>.</p>
+     *
+     * @param swconfigurationurl a {@link java.lang.String} object.
+     */
     public void setSwconfigurationurl(String swconfigurationurl) {
         this.swconfigurationurl = swconfigurationurl;
     }
 
+    /**
+     * <p>Getter for the field <code>configurationurl</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getConfigurationurl() {
         return configurationurl;
     }
 
+    /**
+     * <p>Setter for the field <code>configurationurl</code>.</p>
+     *
+     * @param configurationurl a {@link java.lang.String} object.
+     */
     public void setConfigurationurl(String configurationurl) {
         this.configurationurl = configurationurl;
     }
 
+    /**
+     * <p>Getter for the field <code>ie</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<InventoryElement2> getIe() {
         return ie;
     }
 
+    /**
+     * <p>Setter for the field <code>ie</code>.</p>
+     *
+     * @param ie a {@link java.util.List} object.
+     */
     public void setIe(List<InventoryElement2> ie) {
         this.ie = ie;
     }
     
+    /**
+     * <p>expand</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String expand () {
         
         Iterator<InventoryElement2> iter1 = ie.iterator();

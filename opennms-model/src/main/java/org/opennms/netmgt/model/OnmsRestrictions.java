@@ -37,15 +37,16 @@ import org.hibernate.type.StringType;
 
 /**
  * Provide OpenNMS-specific Hibernate Restrictions.
- *  
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class OnmsRestrictions {
     private static final StringType STRING_TYPE = new StringType();
     
     /**
      * Performs an iplike match on the ipAddr column of the current table.
-     * 
+     *
      * @param value iplike match
      * @return SQL restriction for this iplike match
      */

@@ -38,9 +38,10 @@ package org.opennms.netmgt.correlation.drools;
 import java.util.Date;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>Flap class.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class Flap {
     Long m_nodeid;
@@ -52,6 +53,15 @@ public class Flap {
     boolean m_counted;
     Integer m_timerId;
     
+    /**
+     * <p>Constructor for Flap.</p>
+     *
+     * @param nodeid a {@link java.lang.Long} object.
+     * @param ipAddr a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @param locationMonitor a {@link java.lang.Integer} object.
+     * @param timerId a {@link java.lang.Integer} object.
+     */
     public Flap(Long nodeid, String ipAddr, String svcName, Integer locationMonitor, Integer timerId) {
         m_nodeid = nodeid;
         m_ipAddr = ipAddr;
@@ -62,55 +72,135 @@ public class Flap {
         m_counted = false;
     }
     
+    /**
+     * <p>getEndTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getEndTime() {
         return m_endTime;
     }
+    /**
+     * <p>setEndTime</p>
+     *
+     * @param end a {@link java.util.Date} object.
+     */
     public void setEndTime(Date end) {
         m_endTime = end;
     }
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddr() {
         return m_ipAddr;
     }
+    /**
+     * <p>setIpAddr</p>
+     *
+     * @param ipAddr a {@link java.lang.String} object.
+     */
     public void setIpAddr(String ipAddr) {
         m_ipAddr = ipAddr;
     }
+    /**
+     * <p>getLocationMonitor</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getLocationMonitor() {
         return m_locationMonitor;
     }
+    /**
+     * <p>setLocationMonitor</p>
+     *
+     * @param locationMonitor a {@link java.lang.Integer} object.
+     */
     public void setLocationMonitor(Integer locationMonitor) {
         m_locationMonitor = locationMonitor;
     }
+    /**
+     * <p>getNodeid</p>
+     *
+     * @return a {@link java.lang.Long} object.
+     */
     public Long getNodeid() {
         return m_nodeid;
     }
+    /**
+     * <p>setNodeid</p>
+     *
+     * @param nodeid a {@link java.lang.Long} object.
+     */
     public void setNodeid(Long nodeid) {
         m_nodeid = nodeid;
     }
+    /**
+     * <p>getStartTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getStartTime() {
         return m_startTime;
     }
+    /**
+     * <p>setStartTime</p>
+     *
+     * @param start a {@link java.util.Date} object.
+     */
     public void setStartTime(Date start) {
         m_startTime = start;
     }
+    /**
+     * <p>getSvcName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSvcName() {
         return m_svcName;
     }
+    /**
+     * <p>setSvcName</p>
+     *
+     * @param svcName a {@link java.lang.String} object.
+     */
     public void setSvcName(String svcName) {
         m_svcName = svcName;
     }
 
+    /**
+     * <p>isCounted</p>
+     *
+     * @return a boolean.
+     */
     public boolean isCounted() {
         return m_counted;
     }
 
+    /**
+     * <p>setCounted</p>
+     *
+     * @param counted a boolean.
+     */
     public void setCounted(boolean counted) {
         m_counted = counted;
     }
 
+    /**
+     * <p>getTimerId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getTimerId() {
         return m_timerId;
     }
 
+    /**
+     * <p>setTimerId</p>
+     *
+     * @param timerId a {@link java.lang.Integer} object.
+     */
     public void setTimerId(Integer timerId) {
         m_timerId = timerId;
     }

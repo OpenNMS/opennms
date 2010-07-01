@@ -39,12 +39,13 @@ import java.util.List;
 
 /**
  * This is a data class to store the group information from the groups.xml file
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
+ * @since 1.8.1
  */
 public class Group implements Cloneable {
     /**
@@ -88,6 +89,9 @@ public class Group implements Cloneable {
     }
 
     /**
+     * <p>clone</p>
+     *
+     * @return a {@link org.opennms.web.admin.groups.parsers.Group} object.
      */
     public Group clone() {
         try {
@@ -109,12 +113,18 @@ public class Group implements Cloneable {
     }
 
     /**
+     * <p>addPropertyChangeListener</p>
+     *
+     * @param listener a {@link java.beans.PropertyChangeListener} object.
      */
     public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
         m_propChange.addPropertyChangeListener(listener);
     }
 
     /**
+     * <p>removePropertyChangeListener</p>
+     *
+     * @param listener a {@link java.beans.PropertyChangeListener} object.
      */
     public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
         m_propChange.removePropertyChangeListener(listener);
@@ -122,7 +132,7 @@ public class Group implements Cloneable {
 
     /**
      * Returns the group information for this group
-     * 
+     *
      * @return the group info
      */
     public GroupInfo getGroupInfo() {
@@ -131,7 +141,7 @@ public class Group implements Cloneable {
 
     /**
      * Sets the group information for this group
-     * 
+     *
      * @param someInfo the group info
      */
     public void setGroupInfo(GroupInfo someInfo) {
@@ -140,7 +150,7 @@ public class Group implements Cloneable {
 
     /**
      * Sets the group name
-     * 
+     *
      * @param aName
      *            the name of the group
      */
@@ -152,7 +162,7 @@ public class Group implements Cloneable {
 
     /**
      * Returns the group name
-     * 
+     *
      * @return the name of the group
      */
     public String getGroupName() {
@@ -161,7 +171,7 @@ public class Group implements Cloneable {
 
     /**
      * Sets the comments for the group
-     * 
+     *
      * @param someComments
      *            the comments for the group
      */
@@ -171,7 +181,7 @@ public class Group implements Cloneable {
 
     /**
      * Returns the comments for the group
-     * 
+     *
      * @return the comments for the group
      */
     public String getGroupComments() {
@@ -180,8 +190,9 @@ public class Group implements Cloneable {
 
     /**
      * Returns whether the group has this user in its users list
-     * 
+     *
      * @return true if user is in list, false if not
+     * @param aUser a {@link java.lang.String} object.
      */
     public boolean hasUser(String aUser) {
         return m_users.contains(aUser);
@@ -189,7 +200,7 @@ public class Group implements Cloneable {
 
     /**
      * Adds a username to the list of users
-     * 
+     *
      * @param aUser
      *            a new username
      */
@@ -199,7 +210,7 @@ public class Group implements Cloneable {
 
     /**
      * Removes a username from the list of users
-     * 
+     *
      * @param aUser
      *            the user to remove
      */
@@ -216,7 +227,7 @@ public class Group implements Cloneable {
 
     /**
      * Returns the list of users
-     * 
+     *
      * @return the list of users
      */
     public List<String> getUsers() {
@@ -225,7 +236,7 @@ public class Group implements Cloneable {
 
     /**
      * Returns a count of the users in the list
-     * 
+     *
      * @return how many users in this group
      */
     public int getUserCount() {
@@ -235,7 +246,7 @@ public class Group implements Cloneable {
     /**
      * Returns a String representation of the group, used primarily for
      * debugging.
-     * 
+     *
      * @return a string representation
      */
     public String toString() {

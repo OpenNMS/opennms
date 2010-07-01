@@ -51,8 +51,9 @@ import org.opennms.netmgt.config.tl1d.Tl1Element;
 
 /**
  * Default Implementation of the Tl1Client API.
- * 
+ *
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
+ * @version $Id: $
  */
 public class Tl1ClientImpl implements Tl1Client {
 
@@ -71,9 +72,22 @@ public class Tl1ClientImpl implements Tl1Client {
     private long m_reconnectionDelay;  //see configuration xsd for default and set by Tl1d after instantiation
     private int m_reconnectAttempts = 0;
     
+    /**
+     * <p>Constructor for Tl1ClientImpl.</p>
+     */
     public Tl1ClientImpl() {
     }
     
+    /**
+     * <p>Constructor for Tl1ClientImpl.</p>
+     *
+     * @param queue a {@link java.util.concurrent.BlockingQueue} object.
+     * @param element a {@link org.opennms.netmgt.config.tl1d.Tl1Element} object.
+     * @param log a {@link org.opennms.core.utils.ThreadCategory} object.
+     * @throws java.lang.InstantiationException if any.
+     * @throws java.lang.IllegalAccessException if any.
+     * @throws java.lang.ClassNotFoundException if any.
+     */
     public Tl1ClientImpl(BlockingQueue<Tl1AutonomousMessage> queue, Tl1Element element, ThreadCategory log) 
         throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         
@@ -88,6 +102,9 @@ public class Tl1ClientImpl implements Tl1Client {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#start()
+     */
+    /**
+     * <p>start</p>
      */
     public void start() {
         log().info("start: TL1 client: "+m_host+":"+String.valueOf(m_port));
@@ -108,6 +125,9 @@ public class Tl1ClientImpl implements Tl1Client {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#stop()
+     */
+    /**
+     * <p>stop</p>
      */
     public void stop() {
         log().info("Stopping TL1 client: "+m_host+":"+String.valueOf(m_port));
@@ -292,6 +312,11 @@ public class Tl1ClientImpl implements Tl1Client {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#getHost()
      */
+    /**
+     * <p>getHost</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHost() {
         return m_host;
     }
@@ -299,12 +324,18 @@ public class Tl1ClientImpl implements Tl1Client {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#setHost(java.lang.String)
      */
+    /** {@inheritDoc} */
     public void setHost(String host) {
         m_host = host;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#getPort()
+     */
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
      */
     public int getPort() {
         return m_port;
@@ -313,6 +344,7 @@ public class Tl1ClientImpl implements Tl1Client {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#setPort(int)
      */
+    /** {@inheritDoc} */
     public void setPort(int port) {
         m_port = port;
     }
@@ -320,6 +352,11 @@ public class Tl1ClientImpl implements Tl1Client {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#getReconnectionDelay()
      */
+     /**
+      * <p>getReconnectionDelay</p>
+      *
+      * @return a long.
+      */
      public long getReconnectionDelay() {
         return m_reconnectionDelay;
     }
@@ -327,34 +364,58 @@ public class Tl1ClientImpl implements Tl1Client {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.tl1d.Tl1Client#setReconnectionDelay(long)
      */
+    /** {@inheritDoc} */
     public void setReconnectionDelay(long reconnectionDelay) {
         m_reconnectionDelay = reconnectionDelay;
     }
 
+    /**
+     * <p>getTl1Queue</p>
+     *
+     * @return a {@link java.util.concurrent.BlockingQueue} object.
+     */
     public BlockingQueue<Tl1AutonomousMessage> getTl1Queue() {
         return m_tl1Queue;
     }
 
+    /** {@inheritDoc} */
     public void setTl1Queue(BlockingQueue<Tl1AutonomousMessage> tl1Queue) {
         m_tl1Queue = tl1Queue;
     }
 
+    /**
+     * <p>getMessageProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor} object.
+     */
     public Tl1AutonomousMessageProcessor getMessageProcessor() {
         return m_messageProcessor;
     }
 
+    /** {@inheritDoc} */
     public void setMessageProcessor(Tl1AutonomousMessageProcessor messageProcessor) {
         m_messageProcessor = messageProcessor;
     }
 
+    /**
+     * <p>setStarted</p>
+     *
+     * @param started a boolean.
+     */
     public void setStarted(boolean started) {
         m_started = started;
     }
 
+    /**
+     * <p>isStarted</p>
+     *
+     * @return a boolean.
+     */
     public boolean isStarted() {
         return m_started;
     }
 
+    /** {@inheritDoc} */
     public void setLog(ThreadCategory log) {
         m_log = log;
     }
@@ -370,6 +431,7 @@ public class Tl1ClientImpl implements Tl1Client {
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "Tl1Client: class: "+getClass()+"; host: "+m_host+"; port: "+m_port;
