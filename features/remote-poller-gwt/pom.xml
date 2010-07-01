@@ -131,24 +131,12 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.google.gwt.google-apis</groupId>
-      <artifactId>gwt-ajaxloader</artifactId>
-      <version>1.0.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-user</artifactId>
-        </exclusion>
-      </exclusions>
-      <scope>provided</scope>
-    </dependency>
 
     <!-- map APIs -->
     <dependency>
       <groupId>com.google.gwt.google-apis</groupId>
       <artifactId>gwt-maps</artifactId>
-      <version>1.0.4</version>
+      <version>1.1.0</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.gwt</groupId>

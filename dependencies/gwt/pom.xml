@@ -14,7 +14,7 @@
     can depend on to use Google Web Toolkit
   </description>
   <properties>
-    <gwtVersion>2.0.3</gwtVersion>
+    <gwtVersion>2.0.4</gwtVersion>
   </properties>
 
   <dependencies>
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>com.google.gwt.google-apis</groupId>
       <artifactId>gwt-ajaxloader</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.gwt</groupId>
