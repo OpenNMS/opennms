@@ -207,12 +207,6 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return m_monitorsDisconnected.size();
 	}
 
-	private Collection<String> getServiceNames() {
-		final List<String> serviceNames = Collections.list(Collections.enumeration(m_serviceNames));
-		Collections.sort(serviceNames);
-		return serviceNames;
-	}
-
 	/**
 	 * <p>getServices</p>
 	 *
@@ -259,16 +253,34 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return monitors;
 	}
 
+	public boolean noMonitorsExist() {
+	    return (
+	        m_monitorsStopped.size() == 0 &&
+	        m_monitorsDisconnected.size() == 0 &&
+	        m_monitorsStarted.size() == 0
+	    );
+	}
+
 	private StatusDetails getStatusDetailsUncached() {
-		// blue/unknown: If no monitors are started for a location
-		if (noMonitorsStarted()) {
-			return StatusDetails.unknown("No monitors are started for this location.");
+        // white/uninitialized: If no monitors exist for a location
+	    if (noMonitorsExist()) {
+	        return StatusDetails.unknown("No monitors exist for this location.");
+	    }
+	    
+	    // white/uninitialized: if no monitors have reported in
+		if (m_locationStatuses == null || m_locationStatuses.size() == 0) {
+			return StatusDetails.unknown("No monitors have reported in for this location.");
 		}
 
-		// blue/unknown: If no monitors have reported for a location
-		if (m_locationStatuses == null || m_locationStatuses.size() == 0) {
-			return StatusDetails.unknown("No monitors have reported for this location.");
+		// orange/disconnected: all monitors are disconnected
+		if (allMonitorsDisconnected()) {
+		    return StatusDetails.disconnected("All monitors have disconnected.");
 		}
+
+        // grey/stopped: If no monitors are started for a location
+		if (noMonitorsStarted()) {
+            return StatusDetails.stopped("No monitors are started for this location.");
+        }
 
 		// yellow/marginal: If all but 1 non-stopped monitors are disconnected
 		if (allButOneMonitorsDisconnected()) {

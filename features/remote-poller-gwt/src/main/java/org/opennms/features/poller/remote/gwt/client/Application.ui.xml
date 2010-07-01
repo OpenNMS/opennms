@@ -13,6 +13,12 @@
 			filter:literal("alpha(opacity=30)");
 			text-align: right;
 		}
+		.statuses {
+			margin-left: 20px;
+			margin-right: auto;
+			padding-left: 10px;
+			padding-right: 10px;
+		}
 		.linkBar {
 			background: #D5DDF3;
 		}
@@ -49,6 +55,14 @@
 					<g:Hyperlink addStyleNames="{style.label}" ui:field='locationLink' text="Locations" />
 					<g:Label addStyleNames="{style.linkBarDivider}">|</g:Label>
 					<g:Hyperlink addStyleNames="{style.label}" ui:field='applicationLink' text="Applications" />
+				</g:HorizontalPanel>
+				<g:HorizontalPanel ui:field="statusesPanel" addStyleNames="{style.label} {style.statuses}">
+					<g:CheckBox ui:field="statusDown"         formValue="DOWN"         checked="true"><img src="images/selected-DOWN.png" width="16" height="16" alt="DOWN" /></g:CheckBox>
+					<g:CheckBox ui:field="statusDisconnected" formValue="DISCONNECTED" checked="true"><img src="images/selected-DISCONNECTED.png" width="16" height="16" alt="DISCONNECTED" /></g:CheckBox>
+					<g:CheckBox ui:field="statusMarginal"     formValue="MARGINAL"     checked="true"><img src="images/selected-MARGINAL.png" width="16" height="16" alt="MARGINAL" /></g:CheckBox>
+					<g:CheckBox ui:field="statusUp"           formValue="UP"           checked="true"><img src="images/selected-UP.png" width="16" height="16" alt="UP" /></g:CheckBox>
+					<g:CheckBox ui:field="statusStopped"      formValue="STOPPED"      checked="true"><img src="images/selected-STOPPED.png" width="16" height="16" alt="STOPPED" /></g:CheckBox>
+					<g:CheckBox ui:field="statusUnknown"      formValue="UNKNOWN"      checked="false"><img src="images/selected-UNKNOWN.png" width="16" height="16" alt="UNKNOWN" /></g:CheckBox>
 				</g:HorizontalPanel>
 				<g:Label ui:field='updateTimestamp' addStyleNames="{style.label} {style.fullWidth} {style.updateTimestamp}"><!-- Last update: 6/26/2010 10:45 AM EDT --></g:Label>
 				<!-- The layout doesn't seem to look right without this extra Label -->

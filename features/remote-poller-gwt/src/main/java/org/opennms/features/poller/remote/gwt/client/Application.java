@@ -2,6 +2,7 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.Date;
 
+import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
@@ -19,11 +20,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -61,6 +65,20 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
     protected Label updateTimestamp;
     @UiField
     protected LinkStyles linkStyles;
+    @UiField
+    protected HorizontalPanel statusesPanel;
+    @UiField
+    protected CheckBox statusDown;
+    @UiField
+    protected CheckBox statusDisconnected;
+    @UiField
+    protected CheckBox statusMarginal;
+    @UiField
+    protected CheckBox statusUp;
+    @UiField
+    protected CheckBox statusStopped;
+    @UiField
+    protected CheckBox statusUnknown;
 
     /**
      * This is the entry point method.
@@ -82,7 +100,8 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
         // Register for all relevant events thrown by the UI components
         m_eventBus.addHandler(LocationsUpdatedEvent.TYPE, this);
 
-        m_locationManager = new DefaultLocationManager(m_eventBus, splitPanel, locationPanel, createMapPanel());
+        final DefaultLocationManager dlm = new DefaultLocationManager(m_eventBus, splitPanel, locationPanel, createMapPanel());
+        m_locationManager = dlm;
 
         m_locationManager.addLocationManagerInitializationCompleteEventHandler(new LocationManagerInitializationCompleteEventHander() {
 
@@ -98,6 +117,14 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
                 });
         locationPanel.setEventBus(m_eventBus);
         locationPanel.filterPanel.setLocationManager(m_locationManager);
+
+        for (final Widget w : statusesPanel) {
+            if (w instanceof CheckBox) {
+                final CheckBox cb = (CheckBox)w;
+                final Status s = Status.valueOf(cb.getFormValue());
+                dlm.onStatusSelectionChanged(s, cb.getValue());
+            }
+        }
 
         m_locationManager.initialize();
         
@@ -181,5 +208,35 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
      */
     public void updateTimestamp() {
         updateTimestamp.setText("Last update: " + UPDATE_TIMESTAMP_FORMAT.format(new Date()));
+    }
+
+    @UiHandler("statusDown")
+    public void onDownClicked(final ClickEvent event) {
+        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.DOWN, statusDown.getValue()));
+    }
+
+    @UiHandler("statusDisconnected")
+    public void onDisconnectedClicked(final ClickEvent event) {
+        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.DISCONNECTED, statusDisconnected.getValue()));
+    }
+
+    @UiHandler("statusMarginal")
+    public void onMarginalClicked(final ClickEvent event) {
+        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.MARGINAL, statusMarginal.getValue()));
+    }
+
+    @UiHandler("statusUp")
+    public void onUpClicked(final ClickEvent event) {
+        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.UP, statusUp.getValue()));
+    }
+
+    @UiHandler("statusStopped")
+    public void onStoppedClicked(final ClickEvent event) {
+        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.STOPPED, statusStopped.getValue()));
+    }
+
+    @UiHandler("statusUnknown")
+    public void onUnknownClicked(final ClickEvent event) {
+        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.UNKNOWN, statusUnknown.getValue()));
     }
 }
