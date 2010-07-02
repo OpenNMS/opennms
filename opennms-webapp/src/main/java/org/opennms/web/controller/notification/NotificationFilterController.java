@@ -53,6 +53,7 @@ import org.opennms.web.event.filter.EventIdListFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.AcknowledgeType;
 import org.opennms.web.notification.NoticeQueryParms;
+import org.opennms.web.notification.NoticeUtil;
 import org.opennms.web.notification.Notification;
 import org.opennms.web.notification.SortStyle;
 import org.opennms.web.notification.WebNotificationRepository;
@@ -120,7 +121,7 @@ public class NotificationFilterController extends AbstractController implements 
         List<Filter> filterList = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
-                Filter filter = EventUtil.getFilter(filterString);
+                Filter filter = NoticeUtil.getFilter(filterString);
                 if (filter != null) {
                     filterList.add(filter);
                 }
