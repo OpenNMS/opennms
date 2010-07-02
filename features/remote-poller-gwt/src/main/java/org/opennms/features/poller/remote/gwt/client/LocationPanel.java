@@ -2,6 +2,8 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -138,6 +140,12 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
      * @param visibleLocations a {@link java.util.ArrayList} object.
      */
     public void updateLocationList(final ArrayList<LocationInfo> visibleLocations) {
+        Collections.sort(visibleLocations, new Comparator<LocationInfo>() {
+            public int compare(LocationInfo o1, LocationInfo o2) {
+                return -1 * o1.compareTo(o2);
+            }
+            
+        });
         locationList.updateList(visibleLocations);
     }
 

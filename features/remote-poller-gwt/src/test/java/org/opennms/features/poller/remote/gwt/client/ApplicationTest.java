@@ -119,8 +119,8 @@ public class ApplicationTest {
     public void testSet() {
         final Set<ApplicationInfo> applicationSet = new HashSet<ApplicationInfo>();
 
-        final ApplicationInfo ai1u = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), StatusDetails.uninitialized());
-        final ApplicationInfo ai2u = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), StatusDetails.uninitialized());
+        final ApplicationInfo ai1u = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), StatusDetails.unknown());
+        final ApplicationInfo ai2u = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), StatusDetails.unknown());
         final ApplicationInfo ai1d = new ApplicationInfo(1, "test1", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), StatusDetails.down("busted"));
         final ApplicationInfo ai2d = new ApplicationInfo(2, "test2", new TreeSet<GWTMonitoredService>(), new TreeSet<String>(), StatusDetails.down("busted"));
         applicationSet.add(ai1u);

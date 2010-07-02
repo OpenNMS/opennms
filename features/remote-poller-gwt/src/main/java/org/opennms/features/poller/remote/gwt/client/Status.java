@@ -12,11 +12,12 @@ import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 public enum Status implements Serializable, IsSerializable {
+    DOWN,
+    DISCONNECTED,
+    MARGINAL,
 	UP,
-	MARGINAL,
-	DOWN,
-	UNKNOWN,
-	UNINITIALIZED;
+	STOPPED,
+	UNKNOWN;
 
 	/**
 	 * <p>getColor</p>
@@ -31,8 +32,10 @@ public enum Status implements Serializable, IsSerializable {
 			color = "#ffff00";
 		} else if (this.equals(Status.DOWN)) {
 			color = "#ff0000";
-		} else if (this.equals(Status.UNKNOWN)) {
-			color = "#0000ff";
+		} else if (this.equals(Status.DISCONNECTED)) {
+			color = "#ff8800";
+        } else if (this.equals(Status.STOPPED)) {
+            color = "#aaaaaa";
 		} else {
 			color = "#dddddd";
 		}
@@ -52,8 +55,10 @@ public enum Status implements Serializable, IsSerializable {
 			cssClass = "statusMarginal";
 		} else if (this.equals(Status.DOWN)) {
 			cssClass = "statusDown";
-		} else if (this.equals(Status.UNKNOWN)){
-			cssClass = "statusUnknown";
+		} else if (this.equals(Status.DISCONNECTED)){
+			cssClass = "statusDisconnected";
+        } else if (this.equals(Status.STOPPED)){
+            cssClass = "statusStopped";
 		} else {
 			cssClass = "statusUninitialized";
 		}
