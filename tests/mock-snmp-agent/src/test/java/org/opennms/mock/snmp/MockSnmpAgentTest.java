@@ -171,7 +171,8 @@ public class MockSnmpAgentTest extends TestCase {
         assertNotNull(vals);
         assertEquals(1, vals.length);
 
-        m_agent.getUsm().setLocalEngine(m_agent.getUsm().getLocalEngineID(), 15, 200);
+        // This statement breaks the internal state of the SNMP4J agent
+        // m_agent.getUsm().setLocalEngine(m_agent.getUsm().getLocalEngineID(), 15, 200);
         m_agent.getUsm().removeEngineTime(m_usm.getLocalEngineID());
         m_usm.removeEngineTime(m_agent.getUsm().getLocalEngineID());
 
@@ -321,7 +322,7 @@ public class MockSnmpAgentTest extends TestCase {
             PDU response = e.getResponse();
             assertNotNull("request timed out", response);
             MockUtil.println("Response is: "+response);
-            assertTrue("unexpected report pdu", response.getType() != PDU.REPORT);
+            assertTrue("unexpected report pdu: " + ((VariableBinding)response.getVariableBindings().get(0)).getOid(), response.getType() != PDU.REPORT);
             
             VariableBinding vb = response.get(0);
             assertNotNull("variable binding should not be null", vb);
