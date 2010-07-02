@@ -78,6 +78,7 @@ public class DistributedStatusSummaryController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
+        // Calculate a date that equals midnight of the current day (00:00:00 AM)
         GregorianCalendar calendar = new GregorianCalendar();
         Date endDate = new Date(calendar.getTimeInMillis());
         
@@ -88,7 +89,7 @@ public class DistributedStatusSummaryController extends AbstractController {
         Date startDate = new Date(calendar.getTimeInMillis());
         
         if (m_distributedStatusService.getApplicationCount() <= 0) {
-            return new ModelAndView("distributedStatusSummaryError", "error", createError("No Applications Defined", "No have applications have been defined for this system so a summary of application status is impossbile to display."));
+            return new ModelAndView("distributedStatusSummaryError", "error", createError("No Applications Defined", "No applications have been defined for this system so a summary of application status is impossible to display."));
         }
         
         SimpleWebTable table = m_distributedStatusService.createFacilityStatusTable(startDate, endDate);

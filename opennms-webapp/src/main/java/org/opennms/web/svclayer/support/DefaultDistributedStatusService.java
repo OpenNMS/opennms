@@ -220,6 +220,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         table.addColumn("Service", "");
         table.addColumn("Status", "");
         table.addColumn("Response", "");
+        table.addColumn("Last Status Change", "");
         table.addColumn("Last Update", "");
         
         SortedSet<OnmsLocationSpecificStatus> sortedStatus = new TreeSet<OnmsLocationSpecificStatus>(LOCATION_STATUS_COMPARATOR);
@@ -240,6 +241,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                           "bright");
             table.addCell(getResponseText(s.getPollResult()), "");
             table.addCell(reDateify(s.getPollResult().getTimestamp()), "");
+            table.addCell(reDateify(s.getLocationMonitor().getLastCheckInTime()), "");
         }
         
         return table;

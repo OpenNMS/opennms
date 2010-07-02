@@ -15,7 +15,7 @@
   </description>
   <properties>
     <opennmsJoesnmpVersion>2.0.1</opennmsJoesnmpVersion>
-    <opennmsSnmpApiVersion>2.0.3</opennmsSnmpApiVersion>
+    <opennmsSnmpApiVersion>2.0.4</opennmsSnmpApiVersion>
   </properties>
 
 
