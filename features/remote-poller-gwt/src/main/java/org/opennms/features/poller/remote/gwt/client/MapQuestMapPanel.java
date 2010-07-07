@@ -124,18 +124,43 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     interface MapQuestMapPanelUiBinder extends UiBinder<Widget, MapQuestMapPanel> {
     }
 
+    public MapQuestMapPanel(final HandlerManager eventBus) {
+        m_eventBus = eventBus;
+        m_map = MQATileMap.newInstance(m_mapHolder.getElement());
+        
+        initWidget(uiBinder.createAndBindUi(this));
+        initializeMap();
+    }
     /**
      * <p>Constructor for MapQuestMapPanel.</p>
      *
      * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
      */
-    public MapQuestMapPanel(final HandlerManager eventBus) {
+    public MapQuestMapPanel(final HandlerManager eventBus, MQATileMap map) {
         m_eventBus = eventBus;
-        initWidget(uiBinder.createAndBindUi(this));
-        m_map = MQATileMap.newInstance(getMapHolder().getElement());
+        m_map = map;
 
+        initWidget(uiBinder.createAndBindUi(this));
         initializeMap();
-        
+    }
+    
+    
+    /** {@inheritDoc} */
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        syncMapSizeWithParent();
+    }
+
+    /**
+     * <p>initializeMap</p>
+     */
+    private void initializeMap() {
+        m_mapHolder.setSize("100%", "100%");
+        m_map.addControl(MQALargeZoomControl.newInstance());
+        m_map.setZoomLevel(1);
+        m_map.setCenter(MQALatLng.newInstance("0,0"));
+
         m_map.addMoveEndHandler(new MoveEndHandler() {
             public void onMoveEnd(final MoveEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
@@ -161,24 +186,6 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
         });
-    }
-    
-    
-    /** {@inheritDoc} */
-    @Override
-    protected void onLoad() {
-        super.onLoad();
-        syncMapSizeWithParent();
-    }
-
-    /**
-     * <p>initializeMap</p>
-     */
-    public void initializeMap() {
-        getMapHolder().setSize("100%", "100%");
-        m_map.addControl(MQALargeZoomControl.newInstance());
-        m_map.setZoomLevel(1);
-        m_map.setCenter(MQALatLng.newInstance("0,0"));
 
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
@@ -212,6 +219,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     private MQAPoi createMarker(final GWTMarkerState marker) {
         final MQALatLng latLng = toMQALatLng(marker.getLatLng());
         final MQAPoi point = (MQAPoi)MQAPoi.newInstance(latLng);
+        point.setVisible(marker.isVisible());
 
         final MQAIcon icon = createIcon(marker);
         point.setIcon(icon);
@@ -259,10 +267,6 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         final MQALatLng sw = toMQALatLng(bounds.getSouthWestCorner());
         final MQARectLL mqBounds = MQARectLL.newInstance(ne, sw);
         return mqBounds;
-    }
-
-    private SimplePanel getMapHolder() {
-        return m_mapHolder;
     }
 
     private void syncMapSizeWithParent() {
