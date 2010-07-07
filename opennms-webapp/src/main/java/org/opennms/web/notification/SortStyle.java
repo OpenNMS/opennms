@@ -45,7 +45,6 @@ import org.springframework.util.Assert;
  * @since 1.8.1
  */
 public enum SortStyle {
-    USER("user"),
     RESPONDER("responder"),
     PAGETIME("pagetime"),
     RESPONDTIME("respondtime"),
@@ -53,7 +52,6 @@ public enum SortStyle {
     INTERFACE("interface"),
     SERVICE("service"),
     ID("id"),
-    REVERSE_USER("rev_user"),
     REVERSE_RESPONDER("rev_responder"),
     REVERSE_PAGETIME("rev_pagetime"),
     REVERSE_RESPONDTIME("rev_respondtime"),
@@ -130,14 +128,6 @@ public enum SortStyle {
         String clause = null;
 
         switch (this) {
-        case USER:
-            clause = " ORDER BY USERID DESC";
-            break;
-
-        case REVERSE_USER:
-            clause = " ORDER BY USERID ASC";
-            break;
-
         case RESPONDER:
             clause = " ORDER BY ANSWEREDBY DESC";
             break;

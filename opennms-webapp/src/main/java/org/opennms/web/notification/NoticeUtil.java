@@ -43,6 +43,7 @@ import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.InterfaceFilter;
+import org.opennms.web.notification.filter.NegativeNodeFilter;
 import org.opennms.web.notification.filter.NodeFilter;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.ResponderFilter;
@@ -77,6 +78,8 @@ public abstract class NoticeUtil extends Object {
             filter = new InterfaceFilter(value);
         } else if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value));
+        } else if(type.equals(NegativeNodeFilter.TYPE)) {
+        	filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NotificationIdFilter.TYPE)) {
             filter = new NotificationIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(ResponderFilter.TYPE)) {

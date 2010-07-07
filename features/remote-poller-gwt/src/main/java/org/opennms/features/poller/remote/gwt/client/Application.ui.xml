@@ -19,6 +19,10 @@
 			padding-left: 10px;
 			padding-right: 10px;
 		}
+		.statusCheckBox {
+			padding-left: 8px;
+			padding-right: 8px;
+		}
 		.linkBar {
 			background: #D5DDF3;
 		}
@@ -57,12 +61,24 @@
 					<g:Hyperlink addStyleNames="{style.label}" ui:field='applicationLink' text="Applications" />
 				</g:HorizontalPanel>
 				<g:HorizontalPanel ui:field="statusesPanel" addStyleNames="{style.label} {style.statuses}">
-					<g:CheckBox ui:field="statusDown"         formValue="DOWN"         checked="true"><img src="images/selected-DOWN.png" width="16" height="16" alt="DOWN" /></g:CheckBox>
-					<g:CheckBox ui:field="statusDisconnected" formValue="DISCONNECTED" checked="true"><img src="images/selected-DISCONNECTED.png" width="16" height="16" alt="DISCONNECTED" /></g:CheckBox>
-					<g:CheckBox ui:field="statusMarginal"     formValue="MARGINAL"     checked="true"><img src="images/selected-MARGINAL.png" width="16" height="16" alt="MARGINAL" /></g:CheckBox>
-					<g:CheckBox ui:field="statusUp"           formValue="UP"           checked="true"><img src="images/selected-UP.png" width="16" height="16" alt="UP" /></g:CheckBox>
-					<g:CheckBox ui:field="statusStopped"      formValue="STOPPED"      checked="true"><img src="images/selected-STOPPED.png" width="16" height="16" alt="STOPPED" /></g:CheckBox>
-					<g:CheckBox ui:field="statusUnknown"      formValue="UNKNOWN"      checked="false"><img src="images/selected-UNKNOWN.png" width="16" height="16" alt="UNKNOWN" /></g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusDown" formValue="DOWN" checked="true" title="Down">
+						<img src="images/selected-DOWN.png" width="16" height="16" alt="Down" title="Down" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusDisconnected" formValue="DISCONNECTED" checked="true" title="Disconnected">
+						<img src="images/selected-DISCONNECTED.png" width="16" height="16" alt="Disconnected" title="Disconnected" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusMarginal" formValue="MARGINAL" checked="true" title="Marginal">
+						<img src="images/selected-MARGINAL.png" width="16" height="16" alt="Marginal" title="Marginal" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusUp" formValue="UP" checked="true" title="Up">
+						<img src="images/selected-UP.png" width="16" height="16" alt="Up" title="Up" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusStopped" formValue="STOPPED" checked="true" title="Stopped">
+						<img src="images/selected-STOPPED.png" width="16" height="16" alt="Stopped" title="Stopped" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusUnknown" formValue="UNKNOWN" checked="false" title="Unknown">
+						<img src="images/selected-UNKNOWN.png" width="16" height="16" alt="Unknown" title="Unknown" />
+					</g:CheckBox>
 				</g:HorizontalPanel>
 				<g:Label ui:field='updateTimestamp' addStyleNames="{style.label} {style.fullWidth} {style.updateTimestamp}"><!-- Last update: 6/26/2010 10:45 AM EDT --></g:Label>
 				<!-- The layout doesn't seem to look right without this extra Label -->

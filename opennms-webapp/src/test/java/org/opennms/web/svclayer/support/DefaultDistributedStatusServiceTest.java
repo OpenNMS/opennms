@@ -324,6 +324,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addColumn("Service", "");
         expectedTable.addColumn("Status", "");
         expectedTable.addColumn("Response", "");
+        expectedTable.addColumn("Last Status Change", "");
         expectedTable.addColumn("Last Update", "");
         
         expectedTable.newRow();
@@ -333,6 +334,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
         expectedTable.addCell(IGNORE_MATCH, "");
+        expectedTable.addCell(IGNORE_MATCH, "");
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Indeterminate", "element/node.jsp?node=1");
@@ -340,6 +342,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("No status recorded for this service from this location", "");
+        expectedTable.addCell(IGNORE_MATCH, "");
         expectedTable.addCell(IGNORE_MATCH, "");
         
         assertTableEquals(expectedTable, table);
@@ -378,6 +381,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addColumn("Service", "");
         expectedTable.addColumn("Status", "");
         expectedTable.addColumn("Response", "");
+        expectedTable.addColumn("Last Status Change", "");
         expectedTable.addColumn("Last Update", "");
         
         expectedTable.newRow();
@@ -387,6 +391,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
         expectedTable.addCell(IGNORE_MATCH, "");
+        expectedTable.addCell(IGNORE_MATCH, "");
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Indeterminate", "element/node.jsp?node=1");
@@ -394,6 +399,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("No status recorded for this service from this location", "");
+        expectedTable.addCell(IGNORE_MATCH, "");
         expectedTable.addCell(IGNORE_MATCH, "");
         
         assertTableEquals(expectedTable, table);
