@@ -28,9 +28,14 @@ import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChange
 import org.opennms.features.poller.remote.gwt.client.utils.BoundsBuilder;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
@@ -123,7 +128,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     /**
      * <p>initializeMap</p>
      */
-    public void initializeMap() {
+    private void initializeMap() {
         final MapOptions mo = new MapOptions();
         mo.setProjection("EPSG:4326");
         m_mapWidget = new MapWidget("100%", "100%", mo);
@@ -268,17 +273,17 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         if(m == null) {
         	m = createMarker(marker);
         	m_markers.put(marker.getName(), m);
-        	m_markersLayer.addMarker(m);
-        }else {
-            updateMarker(m, marker);
         }
-        
+        updateMarker(m, marker);
     }
 
     private void updateMarker(final Marker m, final GWTMarkerState marker) {
-        m.setImageUrl(marker.getImageURL());
-        // FIXME: can we do this?
-        // m.setVisible(marker.isVisible());
+        if (marker.isVisible()) {
+            m.setImageUrl(marker.getImageURL());
+            m_markersLayer.addMarker(m);
+        } else {
+            m_markersLayer.removeMarker(m);
+        }
     }
 
     private Marker getMarker(final String name) {
@@ -302,4 +307,13 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         return this;
     }
 
+    /** {@inheritDoc} */
+    public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
+        return addDomHandler(handler, DoubleClickEvent.getType());
+    }
+
+    /** {@inheritDoc} */
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addDomHandler(handler, ClickEvent.getType());
+    }
 }
