@@ -78,6 +78,7 @@ OpenNMS.ux.IPInterfaceGrid = Ext.extend(OpenNMS.ux.PageableGrid, {
 			    {name:'ifIndex', mapping:'@ifIndex'},
 			    {name:'isManaged', mapping:'@isManaged'},
 			    {name:'isDown', mapping:'@isDown'},
+                {name:'monitoredServiceCount', mapping:'@monitoredServiceCount'},
 			    {name:'ipLastCapsdPoll', mapping:'lastCapsdPoll'},
 			    {name:'snmpInterface', mapping:'snmpInterface'}
 	],

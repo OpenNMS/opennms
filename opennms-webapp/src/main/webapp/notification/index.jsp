@@ -54,9 +54,9 @@
   <div class="TwoColLeft">
       <h3>Notification queries</h3>
       <div class="boxWrapper">
-        <form method="get" action="notification/list.jsp" >
+        <form method="get" action="notification/browse" onsubmit="return checkNotices();">
           <p align="right">User:
-          <input type="text" name="username" />
+          <input type="text" name="filter" />
           <input type="submit" value="Check notices" /></p>
         </form>
         <form method="get" action="notification/detail.jsp" >
