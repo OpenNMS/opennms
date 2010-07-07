@@ -55,7 +55,6 @@ public class EventFormatReader {
             contents.append(thisLine).append("\n");
         }
         
-        LogUtils.debugf(this, "Got contents for %s:\n%s", eventCode, contents.toString());
         ef.setContents(contents.toString());
         return ef;
     }    

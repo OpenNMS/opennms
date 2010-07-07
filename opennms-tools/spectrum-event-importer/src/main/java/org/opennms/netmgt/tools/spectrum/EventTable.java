@@ -10,7 +10,7 @@ public class EventTable extends HashMap<Integer,String> {
         super();
         
         if (name == null) {
-            throw new IllegalArgumentException("The name parameter must not be null");
+            throw new IllegalArgumentException("The name must not be null");
         }
         m_tableName = name;
     }

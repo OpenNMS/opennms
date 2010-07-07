@@ -1,13 +1,17 @@
 package org.opennms.netmgt.tools.spectrum;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.UrlResource;
 
 
 public class IntegrationTest {
@@ -16,6 +20,7 @@ public class IntegrationTest {
     
     @Before
     public void setUp() throws IOException {
+        MockLogAppender.setupLogging();
         AlertMapReader amReader = new AlertMapReader(new FileSystemResource("src/test/resources/sonus-traps/AlertMap"));
         EventDispositionReader edReader = new EventDispositionReader(new FileSystemResource("src/test/resources/sonus-traps/EventDisp"));
         m_alertMappings = amReader.getAlertMappings();
@@ -23,6 +28,7 @@ public class IntegrationTest {
     }
     
     @Test
+    @Ignore
     public void integrateIpUnityInterfaceHighError() throws IOException {
         AlertMapping mapping = null;
         EventDisposition disposition = null;
@@ -50,7 +56,13 @@ public class IntegrationTest {
         EventFormatReader efReader = new EventFormatReader(new FileSystemResource("src/test/resources/sonus-traps/CsEvFormat/Eventfff002af"));
         format = efReader.getEventFormat();
         Assert.assertNotNull(format);
-        
-        
+    }
+    
+    @Test
+    public void initializeImporter() throws Exception {
+        SpectrumTrapImporter importer = new SpectrumTrapImporter();
+        importer.setBaseUei("uei.opennms.org/import/Spectrum");
+        importer.setCustomEventsDir(new UrlResource("file:src/test/resources/sonus-traps"));
+        importer.afterPropertiesSet();
     }
 }

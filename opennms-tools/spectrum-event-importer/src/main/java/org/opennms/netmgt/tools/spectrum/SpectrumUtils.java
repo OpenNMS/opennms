@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,15 +17,22 @@ import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 public class SpectrumUtils {
+    private String m_modelTypeAssetField = "manufacturer";
+    private Map<String,EventTable> m_eventTableCache;
+    
+    public SpectrumUtils() {
+        m_eventTableCache = new HashMap<String,EventTable>();
+    }
     
     /**
      * 
      * @param inToken the substitution token from the Spectrum event format
      * @return the OpenNMS event XML equivalent for the inToken
      */
-    public static String translateFormatSubstToken(String inToken) {
+    public String translateFormatSubstToken(String inToken) {
         if (inToken == null) {
             throw new IllegalArgumentException("The input token must be non-null");
         }
@@ -32,7 +41,7 @@ public class SpectrumUtils {
         if (inToken.startsWith("{d")) {
             outToken = "%eventtime%";
         } else if (inToken.equals("{t}")) {
-            outToken = "%asset[manufacturer]%";
+            outToken = "%asset[" + m_modelTypeAssetField + "]%";
         } else if (inToken.equals("{m}")) {
             outToken = "%nodelabel%";
         } else if (inToken.equals("{e}")) {
@@ -47,30 +56,27 @@ public class SpectrumUtils {
         return outToken;
     }
     
-    public static List<Varbindsdecode> translateAllEventTables(EventFormat ef, String eventTablePath) throws IOException {
+    public List<Varbindsdecode> translateAllEventTables(EventFormat ef, String eventTablePath) throws IOException {
         List<Varbindsdecode> vbds = new ArrayList<Varbindsdecode>();
         Pattern pat = Pattern.compile("^\\{\\s*T\\s+(\\w+)\\s+(\\d+)\\s*\\}");
         for (String token : ef.getSubstTokens()) {
             Matcher mat = pat.matcher(token);
             if (mat.matches()) {
-                LogUtils.debugf(SpectrumUtils.class, "Token [%s] looks like an event-table, processing it", token);
-                Resource tableFile = new FileSystemResource(eventTablePath + File.pathSeparator + mat.group(1));
-                EventTableReader etr = new EventTableReader(tableFile);
-                LogUtils.debugf(SpectrumUtils.class, "Attempting to load event-table [%s] from [%s]", mat.group(1), tableFile);
-                EventTable et = etr.getEventTable();
+                LogUtils.debugf(this, "Token [%s] looks like an event-table, processing it", token);
+                EventTable et = loadEventTable(eventTablePath, mat.group(1));
                 String parmId = "parm[#" + mat.group(2) + "]";
                 Varbindsdecode vbd = translateEventTable(et, parmId);
-                LogUtils.debugf(SpectrumUtils.class, "Loaded event-table [%s] with parm-ID [%s], with %d mappings", et.getTableName(), parmId, vbd.getDecodeCount());
+                LogUtils.debugf(this, "Loaded event-table [%s] with parm-ID [%s], with %d mappings", et.getTableName(), parmId, vbd.getDecodeCount());
                 vbds.add(translateEventTable(et, parmId));
             } else {
-                LogUtils.debugf(SpectrumUtils.class, "Token [%s] does not look like an event-table, skipping it", token);
+                LogUtils.debugf(this, "Token [%s] does not look like an event-table, skipping it", token);
             }
         }
-        LogUtils.debugf(SpectrumUtils.class, "Translated %d event-tables for event-code [%s]", vbds.size(), ef.getEventCode());
+        LogUtils.debugf(this, "Translated %d event-tables for event-code [%s]", vbds.size(), ef.getEventCode());
         return vbds;
     }
     
-    public static Varbindsdecode translateEventTable(EventTable et, String parmId) {
+    public Varbindsdecode translateEventTable(EventTable et, String parmId) {
         Varbindsdecode vbd = new Varbindsdecode();
         vbd.setParmid(parmId);
         for (Integer key : et.keySet()) {
@@ -82,4 +88,40 @@ public class SpectrumUtils {
         return vbd;
     }
     
+    public String translateSeverity(int spectrumSeverity) {
+        if (spectrumSeverity == 0)
+            return "Normal";
+        else if (spectrumSeverity == 1)
+            return "Warning";
+        else if (spectrumSeverity == 2)
+            return "Minor";
+        else if (spectrumSeverity == 3)
+            return "Major";
+        else if (spectrumSeverity == 4)
+            return "Critical";
+        else
+            return "Indeterminate";
+    }
+    
+    private EventTable loadEventTable(String eventTablePath, String tableName) throws IOException {
+        if (m_eventTableCache.containsKey(tableName)) {
+            LogUtils.debugf(this, "Retrieving event-table [%s] from cache", tableName);
+            return m_eventTableCache.get(tableName);
+        }
+        
+        Resource tableFile = new UrlResource(eventTablePath + "/" + tableName);
+        EventTableReader etr = new EventTableReader(tableFile);
+        LogUtils.debugf(this, "Attempting to load event-table [%s] from [%s]", tableName, tableFile);
+        EventTable et = etr.getEventTable();
+        LogUtils.debugf(this, "Storing event-table [%s] in cache", tableName);
+        return et;
+    }
+    
+    public void setModelTypeAssetField(String fieldName) {
+        m_modelTypeAssetField = fieldName;
+    }
+    
+    public String getModelTypeAssetField() {
+        return m_modelTypeAssetField;
+    }
 }
