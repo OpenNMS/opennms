@@ -14,7 +14,7 @@ function initPageView(elementId, nodeId){
 			forceFit: true,
 			scrollOffset: 5,
 			getRowClass : function(record, rowIndex, p, store) {
-				return getIpStatusColor(record.data.isDown, record.data.isManaged);
+				return getIpStatusColor(record.data.monitoredServiceCount, record.data.isDown, record.data.isManaged);
 			}
 		},
 		nodeId: nodeId,
@@ -66,10 +66,12 @@ function initPageView(elementId, nodeId){
 		]
 	});
 	
-	function getIpStatusColor(isDown, isManaged) {
+	function getIpStatusColor(monitoredServiceCount, isDown, isManaged) {
 		var bgStyle;
 		if (isManaged == 'U' || isManaged == 'F' || isManaged == 'N') {
 			bgStyle = 'grid-status-blue';
+        }else if(monitoredServiceCount < 1) {
+            bgStyle = 'grid-status-999000';
 		} else {
 			bgStyle = 'grid-status-green';
 			if (isDown == 'true') {

@@ -570,6 +570,13 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return down;
     }
 
+    
+    @Transient 
+    @XmlAttribute
+    public int getMonitoredServiceCount () {
+    	return m_monitoredServices.size();
+    }
+    
     /**
      * <p>getMonitoredServiceByServiceType</p>
      *
