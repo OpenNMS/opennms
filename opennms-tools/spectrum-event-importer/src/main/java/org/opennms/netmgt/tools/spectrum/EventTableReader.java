@@ -65,7 +65,7 @@ public class EventTableReader {
         
         while (m_tokenizer.nextToken() != StreamTokenizer.TT_EOF) {
             if (justHitEol && m_tokenizer.ttype == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches(keyExpr)) {
-                LogUtils.debugf(this, "Found a key [%s] on line %d, creating a new event-table entry", m_tokenizer.sval, m_tokenizer.lineno());
+                LogUtils.tracef(this, "Found a key [%s] on line %d, creating a new event-table entry", m_tokenizer.sval, m_tokenizer.lineno());
                 thisKey = m_tokenizer.sval;
                 justHitEol = false;
                 gotKey = true;
@@ -74,15 +74,15 @@ public class EventTableReader {
             }
 
             if (m_tokenizer.ttype == StreamTokenizer.TT_EOL) {
-                LogUtils.debugf(this, "Hit EOL on line %d", m_tokenizer.lineno());
+                LogUtils.tracef(this, "Hit EOL on line %d", m_tokenizer.lineno());
                 if (gotKey) {
-                    LogUtils.debugf(this, "At EOL for key [%s]", thisKey);
+                    LogUtils.tracef(this, "At EOL for key [%s]", thisKey);
                 }
                 if (! gotValue) {
-                    LogUtils.debugf(this, "No value for key [%s]; setting it to literal string [null]", thisKey);
+                    LogUtils.warnf(this, "No value for key [%s] in table [%s] read from [%s]; setting it to literal string [null]", thisKey, tableName, m_resource);
                     thisValueBuilder = new StringBuilder("[null]");
                 }
-                LogUtils.debugf(this, "Setting key [%s] to value [%s]", thisKey, thisValueBuilder.toString());
+                LogUtils.tracef(this, "Setting key [%s] to value [%s]", thisKey, thisValueBuilder.toString());
                 eventTable.put(thisKey, thisValueBuilder.toString());
                 justHitEol = true;
                 gotKey = false;
@@ -91,16 +91,17 @@ public class EventTableReader {
             
             if (gotKey && m_tokenizer.ttype == StreamTokenizer.TT_WORD) {
                 if (!gotValue) {
-                    LogUtils.debugf(this, "Found first post-key token [%s] on line %d; initializing string builder with it", m_tokenizer.sval, m_tokenizer.lineno());
+                    LogUtils.tracef(this, "Found first post-key token [%s] on line %d; initializing string builder with it", m_tokenizer.sval, m_tokenizer.lineno());
                     thisValueBuilder = new StringBuilder(m_tokenizer.sval);
                     gotValue = true;
                 } else {
-                    LogUtils.debugf(this, "Found subsequent value token [%s] on line %d; appending it to the string builder", m_tokenizer.sval, m_tokenizer.lineno());
+                    LogUtils.tracef(this, "Found subsequent value token [%s] on line %d; appending it to the string builder", m_tokenizer.sval, m_tokenizer.lineno());
                     thisValueBuilder.append(" ").append(m_tokenizer.sval);
                 }
             }
         }
         
+        LogUtils.infof(this, "Loaded %d entries for table [%s] from [%s]", eventTable.keySet().size(), tableName, m_resource);
         return eventTable;
     }
     

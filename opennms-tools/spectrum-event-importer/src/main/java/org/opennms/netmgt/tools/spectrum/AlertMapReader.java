@@ -54,23 +54,23 @@ public class AlertMapReader {
             
             if (m_tokenizer.ttype == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches(oidExpr)) {
                 String observedOid = m_tokenizer.sval;
-                LogUtils.debugf(this, "Found an OID: %s on line %d; what to do with it...", observedOid, m_tokenizer.lineno());
+                LogUtils.tracef(this, "Found an OID: %s on line %d; what to do with it...", observedOid, m_tokenizer.lineno());
                 if (m_tokenizer.nextToken() == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches(eventCodeExpr)) {
                     thisAlertMapping = new AlertMapping(observedOid);
                     thisAlertMapping.setEventCode(m_tokenizer.sval);
                     lastEventCodeLine = m_tokenizer.lineno();
-                    LogUtils.infof(this, "Created a new alert mapping with alert code %s and event code %s (on line %d)", thisAlertMapping.getAlertCode(), thisAlertMapping.getEventCode(), m_tokenizer.lineno());
+                    LogUtils.debugf(this, "Created a new alert mapping with alert code %s and event code %s (on line %d)", thisAlertMapping.getAlertCode(), thisAlertMapping.getEventCode(), m_tokenizer.lineno());
                     if (m_tokenizer.nextToken() != '(' && m_tokenizer.lineno() > lastEventCodeLine && lastEventCodeLine > -1) {
                         LogUtils.debugf(this, "Alert mapping for alert code %s to event code %s on line %d looks to have no OID mappings, putting it on the completed pile", thisAlertMapping.getAlertCode(), thisAlertMapping.getEventCode(), m_tokenizer.lineno());
                         alertMappings.add(thisAlertMapping);
                     }
                     m_tokenizer.pushBack();
                 } else if (m_tokenizer.ttype == '(') {
-                    LogUtils.debugf(this, "Peeking ahead I see an open-parenthesis on line %d, opening a new OID mapping for OID %s and pushing back the open-paren", m_tokenizer.lineno(), observedOid);
+                    LogUtils.tracef(this, "Peeking ahead I see an open-parenthesis on line %d, opening a new OID mapping for OID %s and pushing back the open-paren", m_tokenizer.lineno(), observedOid);
                     thisOidMapping = new OidMapping(observedOid);
                     m_tokenizer.pushBack();
                 } else if (lastEventCodeLine < m_tokenizer.lineno()) {
-                    LogUtils.debugf(this, "Found an OID %s on line %d not followed by an open-paren, and last set an event code on line %d, so adding alert mapping for event code %s to the completed pile", observedOid, m_tokenizer.lineno(), lastEventCodeLine, thisAlertMapping.getEventCode());
+                    LogUtils.tracef(this, "Found an OID %s on line %d not followed by an open-paren, and last set an event code on line %d, so adding alert mapping for event code %s to the completed pile", observedOid, m_tokenizer.lineno(), lastEventCodeLine, thisAlertMapping.getEventCode());
                     m_tokenizer.pushBack();
                 } else {
                     LogUtils.errorf(this, "Uhh, what do I do with token with type %d, string [%s], numeric [%d] on line %d?", m_tokenizer.ttype, m_tokenizer.nval, m_tokenizer.sval);
@@ -80,7 +80,7 @@ public class AlertMapReader {
             
             else if (m_tokenizer.ttype == '(') {
                 if (m_tokenizer.nextToken() == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches("^\\d+$")) {
-                    LogUtils.debugf(this, "Encountered an open-paren on line %d; next token is a word %s that looks like a whole number so using it as the event variable number", m_tokenizer.lineno(), m_tokenizer.sval);
+                    LogUtils.tracef(this, "Encountered an open-paren on line %d; next token is a word %s that looks like a whole number so using it as the event variable number", m_tokenizer.lineno(), m_tokenizer.sval);
                     thisOidMapping.setEventVarNum(Integer.valueOf(m_tokenizer.sval));
                 } else {
                     LogUtils.errorf(this, "Encountered what appears to be a malformed OID mapping on line %d of %s while expecting an event variable number", m_tokenizer.lineno(), m_resource);
@@ -90,10 +90,10 @@ public class AlertMapReader {
             
             else if (m_tokenizer.ttype == ',') {
                 if (m_tokenizer.nextToken() == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches("^\\d+$")) {
-                    LogUtils.debugf(this, "Encountered a comma on line %d; next token is a word %s that looks like a whole number so using it as the index length", m_tokenizer.lineno(), m_tokenizer.sval);
+                    LogUtils.tracef(this, "Encountered a comma on line %d; next token is a word %s that looks like a whole number so using it as the index length", m_tokenizer.lineno(), m_tokenizer.sval);
                     thisOidMapping.setIndexLength(Integer.valueOf(m_tokenizer.sval));
                     thisAlertMapping.addOidMapping(thisOidMapping);
-                    LogUtils.debugf(this, "Alert-mapping for alert code %s to event code %s now has %d OID-mapping(s)", thisAlertMapping.getAlertCode(), thisAlertMapping.getEventCode(), thisAlertMapping.getOidMappings().size());
+                    LogUtils.tracef(this, "Alert-mapping for alert code %s to event code %s now has %d OID-mapping(s)", thisAlertMapping.getAlertCode(), thisAlertMapping.getEventCode(), thisAlertMapping.getOidMappings().size());
                 } else {
                     LogUtils.errorf(this, "Encountered what appears to be a malformed OID mapping on line %d of %s while expecting an index length", m_tokenizer.lineno(), m_resource);
                     throw new IllegalArgumentException("An apparent OID mapping went wrong while expecting index length on line " + m_tokenizer.lineno() + " of " + m_resource);
@@ -102,7 +102,7 @@ public class AlertMapReader {
             
             else if (m_tokenizer.ttype == ')') {
                 if (m_tokenizer.nextToken() == '\\') {
-                    LogUtils.debugf(this, "Found a close-paren followed by a backslash; continuing to process OID mappings for event code %s (on line %d)", thisAlertMapping.getEventCode(), m_tokenizer.lineno());
+                    LogUtils.tracef(this, "Found a close-paren followed by a backslash; continuing to process OID mappings for event code %s (on line %d)", thisAlertMapping.getEventCode(), m_tokenizer.lineno());
                 } else {
                     LogUtils.debugf(this, "Found a close-paren NOT followed by a backslash; adding alert mapping for event code %s to the completed pile (on line %d)", thisAlertMapping.getEventCode(), m_tokenizer.lineno());
                     alertMappings.add(thisAlertMapping);
@@ -110,6 +110,7 @@ public class AlertMapReader {
                 }
             }
         }
+        LogUtils.infof(this, "Loaded %d alert-mappings from [%s]", alertMappings.size(), m_resource);
         return alertMappings;
     }
     

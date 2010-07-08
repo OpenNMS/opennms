@@ -27,6 +27,15 @@ public class SpectrumUtils {
         m_eventTableCache = new HashMap<String,EventTable>();
     }
     
+    public String translateAllSubstTokens(EventFormat format) {
+        String translated = format.getContents();
+        Matcher m = Pattern.compile("(?s)\\{(.*?)\\}").matcher(translated);
+        while (m.find()) {
+            translated.replace(m.group(1), translateFormatSubstToken(m.group(1)));
+        }
+        return translated;
+    }
+    
     /**
      * 
      * @param inToken the substitution token from the Spectrum event format

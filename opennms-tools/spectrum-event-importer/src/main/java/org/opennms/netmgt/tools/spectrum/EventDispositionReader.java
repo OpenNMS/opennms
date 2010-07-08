@@ -121,13 +121,13 @@ public class EventDispositionReader {
             }
 
             if (m_tokenizer.ttype == StreamTokenizer.TT_EOL) {
-                LogUtils.debugf(this, "Hit EOL on line %d", m_tokenizer.lineno());
+                LogUtils.tracef(this, "Hit EOL on line %d", m_tokenizer.lineno());
                 if (thisEventDisposition != null) {
-                    LogUtils.debugf(this, "At EOL on line %d, and the working event-disposition is non-null, adding it to the completed pile", m_tokenizer.lineno());
-                    LogUtils.debugf(this, "%s", thisEventDisposition.toString());
+                    LogUtils.tracef(this, "At EOL on line %d, and the working event-disposition is non-null, adding it to the completed pile", m_tokenizer.lineno());
+                    LogUtils.tracef(this, "%s", thisEventDisposition.toString());
                     eventDispositions.add(thisEventDisposition);
                 } else {
-                    LogUtils.debugf(this, "At EOL on line %d, but the working event-disposition is null so not adding it", m_tokenizer.lineno());
+                    LogUtils.tracef(this, "At EOL on line %d, but the working event-disposition is null so not adding it", m_tokenizer.lineno());
                 }
                 justHitEol = true;
             }
@@ -144,7 +144,7 @@ public class EventDispositionReader {
             
             if (lastToken == TokenType.logEvent) {
                 if (m_tokenizer.nextToken() == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches("^\\d+$")) {
-                    LogUtils.debugf(this, "Found event severity %s for event-code %s on line %d", m_tokenizer.sval, thisEventDisposition.getEventCode(), m_tokenizer.lineno());
+                    LogUtils.tracef(this, "Found event severity %s for event-code %s on line %d", m_tokenizer.sval, thisEventDisposition.getEventCode(), m_tokenizer.lineno());
                     thisEventDisposition.setEventSeverity(Integer.valueOf(m_tokenizer.sval));
                     lastToken = TokenType.eventSeverity;
                 } else {
@@ -154,7 +154,7 @@ public class EventDispositionReader {
             }
             
             if (m_tokenizer.ttype == StreamTokenizer.TT_WORD && (m_tokenizer.sval.equals(createAlarmToken) || m_tokenizer.sval.equals(clearAlarmToken))) {
-                LogUtils.debugf(this, "Found a create-alarm or clear-alarm token [%s] on line %d, checking that it's not out of order", m_tokenizer.sval, m_tokenizer.lineno());
+                LogUtils.tracef(this, "Found a create-alarm or clear-alarm token [%s] on line %d, checking that it's not out of order", m_tokenizer.sval, m_tokenizer.lineno());
                 if (lastToken != TokenType.eventCode && lastToken != TokenType.eventSeverity) {
                     LogUtils.errorf(this, "Found a token [%s] NOT following an event-code [0xNNN...] or event-severity [e.g. 20] token on line %d of %s that does not appear to be an event severity", m_tokenizer.sval, m_tokenizer.lineno(), m_resource);
                     throw new IllegalArgumentException("Found an out-of-place token [" + m_tokenizer.sval + "] on line "+ m_tokenizer.lineno());
@@ -162,7 +162,8 @@ public class EventDispositionReader {
             }
             
             if (m_tokenizer.ttype == StreamTokenizer.TT_WORD && m_tokenizer.sval.equals(createAlarmToken)) {
-                LogUtils.debugf(this, "Found a create-alarm token [%s] on line %d, peeking ahead for the alarm severity", m_tokenizer.sval, m_tokenizer.lineno());
+                LogUtils.debugf(this, "Found a create-alarm token [%s] on line %d", m_tokenizer.sval, m_tokenizer.lineno());
+                LogUtils.tracef(this, "Found a create-alarm token [%s] on line %d, peeking ahead for the alarm severity", m_tokenizer.sval, m_tokenizer.lineno());
                 if (m_tokenizer.nextToken() != StreamTokenizer.TT_WORD || ! m_tokenizer.sval.matches("^[01234]$")) {
                     LogUtils.errorf(this, "Found a create-alarm token [%s] on line %d of %s that's followed by an unexpected token [%s] instead of an alarm severity in range 0-4", createAlarmToken, m_tokenizer.lineno(), m_resource, m_tokenizer.sval);
                     throw new IllegalArgumentException("Found a create-alarm token [" + createAlarmToken + "] on line [" + m_tokenizer.lineno() + "] followed by unexpected token [" + m_tokenizer.sval + "] instead of an alarm severity in range 0-4");
@@ -209,7 +210,7 @@ public class EventDispositionReader {
             }
             
             if (pastAlarmCause && m_tokenizer.ttype == ',') {
-                LogUtils.debugf(this, "Ignoring a comma in post-(clear)-alarm-cause section of disposition for event-code %s on line %d", thisEventDisposition.getEventCode(), m_tokenizer.lineno());
+                LogUtils.tracef(this, "Ignoring a comma in post-(clear)-alarm-cause section of disposition for event-code %s on line %d", thisEventDisposition.getEventCode(), m_tokenizer.lineno());
             }
             
             if (pastAlarmCause && m_tokenizer.ttype == StreamTokenizer.TT_WORD && m_tokenizer.sval.matches("^\\d+$")) {
@@ -234,6 +235,7 @@ public class EventDispositionReader {
 
         }
         
+        LogUtils.infof(this, "Loaded %d event-dispositions from [%s]", eventDispositions.size(), m_resource);
         return eventDispositions;
     }
     

@@ -1,7 +1,6 @@
 package org.opennms.netmgt.tools.spectrum;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -59,10 +58,13 @@ public class IntegrationTest {
     }
     
     @Test
-    public void initializeImporter() throws Exception {
+    public void initializeImporterSonusTraps() throws Exception {
         SpectrumTrapImporter importer = new SpectrumTrapImporter();
         importer.setBaseUei("uei.opennms.org/import/Spectrum");
         importer.setCustomEventsDir(new UrlResource("file:src/test/resources/sonus-traps"));
         importer.afterPropertiesSet();
+        Assert.assertEquals("751 alert-mappings", 751, importer.getAlertMappings().size());
+        Assert.assertEquals("757 event-dispositions", 757, importer.getEventDispositions().size());
+        Assert.assertEquals("677 event-formats", 677, importer.getEventFormats().keySet().size());
     }
 }
