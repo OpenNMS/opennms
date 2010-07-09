@@ -34,6 +34,7 @@ package org.opennms.web.controller.distributed;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.LocationMonitorListModel;
 import org.springframework.beans.factory.InitializingBean;
@@ -54,7 +55,13 @@ public class LocationMonitorListController extends AbstractController implements
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         LocationMonitorListModel model = m_distributedPollerService.getLocationMonitorList();
-        return new ModelAndView("distributed/locationMonitorList", "model", model);
+        ModelAndView modelAndView = new ModelAndView("distributed/locationMonitorList", "model", model);
+        
+        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+            modelAndView.addObject("isAdmin", "true");
+        }
+        
+        return modelAndView;
     }
 
     /**

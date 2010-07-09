@@ -54,13 +54,14 @@
 
 <h3><spring:message code="distributed.pollerStatus.title"/></h3>
   
-  <form action="admin/distributed/locationMonitorPauseAll.htm" method="post">
-    <p><input type="submit" value="Pause All"/></p>
-  </form>
-
-  <form action="admin/distributed/locationMonitorResumeAll.htm" method="post">
-    <p><input type="submit" value="Resume All"/></p>
-  </form>
+  <c:if test="${isAdmin}">
+    <form action="admin/distributed/locationMonitorPauseAll.htm" method="post">
+      <input type="submit" value="Pause All"/>
+    </form>
+    <form action="admin/distributed/locationMonitorResumeAll.htm" method="post">
+      <input type="submit" value="Resume All"/><
+    </form>
+  </c:if>
 
 <table>
   <tr>
