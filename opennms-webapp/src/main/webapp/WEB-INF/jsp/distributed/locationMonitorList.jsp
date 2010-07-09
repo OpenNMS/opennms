@@ -58,7 +58,7 @@
     <input type="submit" value="Pause All"/>
   </form>
   <form action="admin/distributed/locationMonitorResumeAll.htm" method="post">
-    <input type="submit" value="Resume All"/><
+    <input type="submit" value="Resume All"/>
   </form>
 </c:if>
 
