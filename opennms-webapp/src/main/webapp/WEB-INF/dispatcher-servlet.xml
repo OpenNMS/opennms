@@ -324,6 +324,16 @@
     <property name="distributedPollerService" ref="distributedPollerService" />
   </bean>
   
+  <bean name="/admin/distributed/locationMonitorPauseAll.htm" class="org.opennms.web.controller.distributed.LocationMonitorPauseAllController">
+    <property name="distributedPollerService" ref="distributedPollerService" />
+    <property name="successView" value="redirect:/distributed/locationMonitorList.htm"/>
+  </bean>
+  
+  <bean name="/admin/distributed/locationMonitorResumeAll.htm" class="org.opennms.web.controller.distributed.LocationMonitorResumeAllController">
+    <property name="distributedPollerService" ref="distributedPollerService" />
+    <property name="successView" value="redirect:/distributed/locationMonitorList.htm"/>
+  </bean>
+  
   <bean name="/admin/distributed/locationMonitorDelete.htm" class="org.opennms.web.controller.distributed.LocationMonitorDeleteController">
     <property name="commandName"><value>command</value></property>
     <property name="commandClass"><value>org.opennms.web.command.LocationMonitorIdCommand</value></property>
