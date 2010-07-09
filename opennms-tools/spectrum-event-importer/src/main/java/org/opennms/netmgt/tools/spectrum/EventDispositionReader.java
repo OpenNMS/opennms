@@ -193,8 +193,13 @@ public class EventDispositionReader {
                     LogUtils.errorf(this, "Expecting an alarm-cause token [e.g. 0xNNN...] after a %s on line %d of %s but got a non-word token of type %d instead", lastToken.name(), m_tokenizer.lineno(), m_resource, m_tokenizer.ttype);
                     throw new IllegalArgumentException("Expected an alarm-cause [e.g. 0xNNN...] after the " + lastToken.name() + " on line " + m_tokenizer.lineno() + " but got a non-word token instead");                    
                 } else if (m_tokenizer.sval.matches(eventCodeExpr)) {
-                    LogUtils.debugf(this, "Found alarm-cause or clear-alarm-cause of [%s] on line %d, setting accordingly", m_tokenizer.sval, m_tokenizer.lineno());
-                    thisEventDisposition.setAlarmCause(m_tokenizer.sval);
+                    if (lastToken == TokenType.alarmSeverityComma) { 
+                        LogUtils.debugf(this, "Found alarm-cause of [%s] on line %d, setting accordingly", m_tokenizer.sval, m_tokenizer.lineno());
+                        thisEventDisposition.setAlarmCause(m_tokenizer.sval);
+                    } else if (lastToken == TokenType.clearAlarm) {
+                        LogUtils.debugf(this, "Found clear-alarm-cause of [%s] on line %d, setting accordingly", m_tokenizer.sval, m_tokenizer.lineno());
+                        thisEventDisposition.setClearAlarmCause(m_tokenizer.sval);
+                    }
                     lastToken = TokenType.alarmCause;
                 }
             }

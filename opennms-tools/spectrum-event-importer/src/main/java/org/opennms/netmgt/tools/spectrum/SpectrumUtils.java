@@ -2,7 +2,6 @@ package org.opennms.netmgt.tools.spectrum;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,14 +9,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 
 public class SpectrumUtils {
     private String m_modelTypeAssetField = "manufacturer";
@@ -28,10 +24,13 @@ public class SpectrumUtils {
     }
     
     public String translateAllSubstTokens(EventFormat format) {
-        String translated = format.getContents();
-        Matcher m = Pattern.compile("(?s)\\{(.*?)\\}").matcher(translated);
+        String untranslated = format.getContents();
+        String translated = untranslated;
+        Matcher m = Pattern.compile("(?s)(\\{.*?\\})").matcher(untranslated);
         while (m.find()) {
-            translated.replace(m.group(1), translateFormatSubstToken(m.group(1)));
+            LogUtils.debugf(this, "Found a token [%s], replacing it with token [%s]", m.group(1), translateFormatSubstToken(m.group(1)));
+            translated = translated.replace(m.group(1), translateFormatSubstToken(m.group(1)));
+            LogUtils.debugf(this, "New translated string: %s", translated);
         }
         return translated;
     }
@@ -48,7 +47,7 @@ public class SpectrumUtils {
         String outToken = inToken;
         
         if (inToken.startsWith("{d")) {
-            outToken = "%eventtime%";
+            outToken = "%time%";
         } else if (inToken.equals("{t}")) {
             outToken = "%asset[" + m_modelTypeAssetField + "]%";
         } else if (inToken.equals("{m}")) {
@@ -118,7 +117,7 @@ public class SpectrumUtils {
             return m_eventTableCache.get(tableName);
         }
         
-        Resource tableFile = new UrlResource(eventTablePath + "/" + tableName);
+        Resource tableFile = new FileSystemResource(eventTablePath + File.separator + tableName);
         EventTableReader etr = new EventTableReader(tableFile);
         LogUtils.debugf(this, "Attempting to load event-table [%s] from [%s]", tableName, tableFile);
         EventTable et = etr.getEventTable();

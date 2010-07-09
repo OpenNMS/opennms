@@ -53,5 +53,22 @@ public class EventDispositionReaderTest {
         Assert.assertEquals("321 event-dispositions should neither create nor clear an alarm", 321, alarmFreeDispositions);
         Assert.assertEquals("379 event-dispositions should create an alarm", 379, alarmCreateDispositions);
         Assert.assertEquals("57 event-dispositions should clear an alarm", 57, alarmClearDispositions);
+        
+        Assert.assertEquals("First event-disposition is for event-code 0xfff00000", "0xfff00000", dispositions.get(0).getEventCode());
+        Assert.assertEquals("First event-disposition specifies event logging", true, dispositions.get(0).isLogEvent());
+        Assert.assertEquals("First event-disposition specifies creating an alarm", true, dispositions.get(0).isCreateAlarm());
+        Assert.assertEquals("First event-disposition specifies an alarm-severity of 3", 3, dispositions.get(0).getAlarmSeverity());
+        Assert.assertEquals("First event-disposition specifies an alarm-cause of 0xfff00000", "0xfff00000", dispositions.get(0).getAlarmCause());
+        
+        Assert.assertEquals("Second event-disposition is for event-code 0xfff00000", "0xfff00000", dispositions.get(1).getEventCode());
+        Assert.assertEquals("Second event-disposition specifies event logging", true, dispositions.get(1).isLogEvent());
+        Assert.assertEquals("Second event-disposition specifies clearing an alarm", true, dispositions.get(1).isClearAlarm());
+        Assert.assertEquals("Second event-disposition specifies a clear-alarm-cause of 0xfff00001", "0xfff00001", dispositions.get(1).getClearAlarmCause());
+        
+        Assert.assertEquals("Fifth event-disposition is for event-code 0xfff00002", "0xfff00002", dispositions.get(4).getEventCode());
+        Assert.assertEquals("Fifth event-disposition specifies event logging", true, dispositions.get(4).isLogEvent());
+        Assert.assertEquals("Fifth event-disposition specifies clearing an alarm", true, dispositions.get(4).isClearAlarm());
+        Assert.assertEquals("Fifth event-disposition specifies a clear-alarm-cause of 0xfff00000", "0xfff00000", dispositions.get(4).getClearAlarmCause());
+
     }
 }

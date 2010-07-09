@@ -42,6 +42,29 @@ public class SpectrumUtilsTest {
     }
     
     @Test
+    public void translateAllVarbindTokensInMessage() {
+        String input =  "{d \"%w- %d %m-, %Y - %T\"} - A \"empSIP4xxErrorsBelowEvent\" event has occurred, from {t} device, named {m}.\n\n" +
+                        "\"Event generated when one of the SIP 400s error\n" +
+                        "values goes below the range specified for\n" +
+                        "that particular object\"\n\n" +
+                        "empSIP4xxStatEventInfo = {S 1}\n" +
+                        "(event [{e}])\n";
+        EventFormat format = new EventFormat("0xdeadbeef");
+        format.setContents(input);
+        String output = m_utils.translateAllSubstTokens(format);
+        Assert.assertTrue("Date token got removed", !output.contains("{d"));
+        Assert.assertTrue("Date token got replaced correctly", output.contains("%eventtime%"));
+        Assert.assertTrue("Model-type token got removed", !output.contains("{t}"));
+        Assert.assertTrue("Model-type token got replaced correctly", output.contains("%asset[manufacturer]%"));
+        Assert.assertTrue("Model-name token got removed", !output.contains("{m}"));
+        Assert.assertTrue("Model-name token got replaced correctly", output.contains("%nodelabel%"));
+        Assert.assertTrue("Varbind 1 token got removed", !output.contains("{S 1}"));
+        Assert.assertTrue("Varbind 1 token got replaced correctly", output.contains("%parm[#1]%"));
+        Assert.assertTrue("Event-ID token got removed", !output.contains("{e}"));
+        Assert.assertTrue("Event-ID token got replaced correctly", output.contains("%uei%"));
+    }
+    
+    @Test
     public void translateSimpleEventTable() {
         EventTable et = new EventTable("foobar");
         et.put(1, "foo");

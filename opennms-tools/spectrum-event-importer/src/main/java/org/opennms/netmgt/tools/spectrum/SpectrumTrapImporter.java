@@ -4,18 +4,19 @@
 
 package org.opennms.netmgt.tools.spectrum;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,7 +40,6 @@ import org.opennms.netmgt.xml.eventconf.Maskelement;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -53,7 +53,6 @@ public class SpectrumTrapImporter {
     private List<EventDisposition> m_eventDispositions;
     private Map<String,EventFormat> m_eventFormats;
     private String m_modelTypeAssetField;
-    private SpectrumUtils m_utils;
     
     /**
      * Something like uei.opennms.org/import/Spectrum/
@@ -62,6 +61,23 @@ public class SpectrumTrapImporter {
     private Resource m_customEventsDir = null;
     private PrintWriter m_outputWriter = null;
     private String m_reductionKeyBody = null;
+    
+    private SpectrumUtils m_utils;
+    private Map<String,String> m_alarmCreators;
+    
+    private static final String COMMAND_HELP =
+        "Reads a set of Spectrum event definitions, as described by a directory tree\n" +
+        "with the following general layout:\n\n" +
+        " ./AlertMap\n" +
+        " ./EventDisp\n" + 
+        " ./CsEvFormat/EventNNNNNNNN...\n" +
+        " ./CsEvFormat/EventTables/enumFoo...\n\n" +
+        "Produces XML describing a corresponding set of OpenNMS event definitions.\n\n" +
+        "Syntax: java -jar spectrum-trap-importer.jar [--dir <input directory>] \\\n" +
+        "                  --model-type-asset-field    OpenNMS asset field containing model type\n" +
+        "                  --base-uei                  Directory containing Spectrum event definitions\n" +
+        "                  --output-file               Filename for output (defaults to stdout)\n" +
+        "                  --key                       Body of clear- / reduction-key (advanced)\n";
     
     public static void main(String[] argv) {
         SpectrumTrapImporter importer = new SpectrumTrapImporter();
@@ -92,8 +108,8 @@ public class SpectrumTrapImporter {
     }
     
     private void initialize() throws Exception {
-        Resource alertMapResource = new UrlResource(m_customEventsDir.getURI() + "/AlertMap");
-        Resource eventDispResource = new UrlResource(m_customEventsDir.getURI() + "/EventDisp");
+        Resource alertMapResource = new FileSystemResource(m_customEventsDir.getFile().getPath() + File.separator + "AlertMap");
+        Resource eventDispResource = new FileSystemResource(m_customEventsDir.getFile().getPath() + File.separator + "EventDisp");
         
         m_alertMappings = new AlertMapReader(alertMapResource).getAlertMappings();
         m_eventDispositions = new EventDispositionReader(eventDispResource).getEventDispositions();
@@ -101,10 +117,11 @@ public class SpectrumTrapImporter {
         
         m_utils = new SpectrumUtils();
         m_utils.setModelTypeAssetField(m_modelTypeAssetField);
+        m_alarmCreators = new HashMap<String,String>();
     }
     
     private void loadEventFormats() throws Exception {
-        String csEvFormatDirName = m_customEventsDir.getURI() + "/CsEvFormat";
+        String csEvFormatDirName = m_customEventsDir.getFile().getPath() + File.separator + "CsEvFormat";
         Map<String,EventFormat> formats = new HashMap<String,EventFormat>();
         for (AlertMapping mapping : m_alertMappings) {
             if (formats.containsKey(mapping.getEventCode())) {
@@ -113,7 +130,7 @@ public class SpectrumTrapImporter {
             }
             String formatFileName = csEvFormatDirName + "/Event" + (mapping.getEventCode().substring(2));
             try {
-                EventFormatReader reader = new EventFormatReader(new UrlResource(formatFileName));
+                EventFormatReader reader = new EventFormatReader(new FileSystemResource(formatFileName));
                 formats.put(mapping.getEventCode(), reader.getEventFormat());
             } catch (FileNotFoundException fnfe) {
                 LogUtils.infof(this, "Unable to load an event-format for event-code [%s] from [%s]; continuing without it", mapping.getEventCode(), formatFileName);
@@ -155,17 +172,13 @@ public class SpectrumTrapImporter {
         try {
             CommandLine cmd = parser.parse(opts, argv);
             if (cmd.hasOption('d')) {
-                if (cmd.getOptionValue('d').contains(":/")) {
-                    m_customEventsDir = new UrlResource(cmd.getOptionValue('d'));
-                } else {
-                    m_customEventsDir = new FileSystemResource(cmd.getOptionValue('d'));
-                }
+                m_customEventsDir = new FileSystemResource(cmd.getOptionValue('d'));
             }
             
             if (cmd.hasOption('t')) {
-                m_modelTypeAssetField = "%asset[" + cmd.getOptionValue('t') + "]%";
+                m_modelTypeAssetField = cmd.getOptionValue('t');
             } else {
-                m_modelTypeAssetField = "%asset[manufacturer]%";
+                m_modelTypeAssetField = "manufacturer";
             }
             
             if (cmd.hasOption('u')) {
@@ -190,8 +203,6 @@ public class SpectrumTrapImporter {
             System.exit(1);
         } catch (FileNotFoundException fnfe) {
             printHelp("Custom events input directory does not seem to exist");
-        } catch (MalformedURLException mue) {
-            printHelp("Custom events input URL is malformed");
         }
     }
     
@@ -200,10 +211,15 @@ public class SpectrumTrapImporter {
         for (AlertMapping mapping : m_alertMappings) {
             for (EventDisposition dispo : m_eventDispositions) {
                 if (dispo.getEventCode().equals(mapping.getEventCode())) {
-                    events.addEvent(makeEventConf(mapping, dispo));
+                    Event evt = makeEventConf(mapping, dispo);
+                    if (evt == null) {
+                        continue;
+                    }
+                    events.addEvent(evt);
                 }
             }
         }
+        LogUtils.debugf(this, "Made %d events", events.getEventCollection().size());
         return events;
     }
     
@@ -219,6 +235,10 @@ public class SpectrumTrapImporter {
             evt.setAlarmData(makeAlarmData(mapping, dispo));
         }
         evt.setVarbindsdecode(makeVarbindsDecodes(mapping));
+        
+        if (shouldDiscardEvent(dispo)) {
+            return null;
+        }
         return evt;
     }
     
@@ -257,7 +277,7 @@ public class SpectrumTrapImporter {
         String shortName = mapping.getEventCode();
         if (m_eventFormats.containsKey(mapping.getEventCode())) {
             Matcher m = Pattern.compile("(?s).*An? \"(.*?)\" event has occurred.*").matcher(m_eventFormats.get(mapping.getEventCode()).getContents());
-            if (m.matches()) {
+            if (m.find()) {
                 shortName = m.group(1);
             }
         }
@@ -266,11 +286,13 @@ public class SpectrumTrapImporter {
     }
     
     public String makeDescr(AlertMapping mapping) {
-        StringBuilder descrBuilder = new StringBuilder("<pre>\n");
+        StringBuilder descrBuilder = new StringBuilder("<p>");
         if (m_eventFormats.containsKey(mapping.getEventCode())) {
-            descrBuilder.append(m_utils.translateAllSubstTokens(m_eventFormats.get(mapping.getEventCode())));
+            String theDescr = m_utils.translateAllSubstTokens(m_eventFormats.get(mapping.getEventCode()));
+            theDescr = theDescr.replaceAll("\n", "<br/>\n");
+            descrBuilder.append(theDescr);
         }
-        descrBuilder.append("</pre>\n");
+        descrBuilder.append("</p>\n");
         return descrBuilder.toString();
     }
     
@@ -283,7 +305,7 @@ public class SpectrumTrapImporter {
         } else {
             msg.setDest("logndisplay");
         }
-        msg.setContent("<pre>" + makeEventLabel(mapping) + "</pre>");
+        msg.setContent("<p>" + makeEventLabel(mapping) + "</p>");
         return msg;
     }
     
@@ -296,7 +318,7 @@ public class SpectrumTrapImporter {
     }
     
     public AlarmData makeAlarmData(AlertMapping mapping, EventDisposition dispo) {
-        if (! dispo.isCreateAlarm()) {
+        if (!dispo.isCreateAlarm() && !dispo.isClearAlarm()) {
             return null;
         }
         AlarmData alarmData = new AlarmData();
@@ -304,10 +326,8 @@ public class SpectrumTrapImporter {
         // Set the alarm-type according to clues in the disposition
         if (dispo.isClearAlarm()) {
             alarmData.setAlarmType(2);
-        } else if (! dispo.isUserClearable()) {
-            alarmData.setAlarmType(1);
         } else {
-            alarmData.setAlarmType(3);
+            alarmData.setAlarmType(1);
         }
         
         // Set the reduction key to include standard node stuff plus any discriminators
@@ -338,10 +358,32 @@ public class SpectrumTrapImporter {
     public List<Varbindsdecode> makeVarbindsDecodes(AlertMapping mapping) throws IOException {
         if (m_eventFormats.containsKey(mapping.getEventCode())) {
             EventFormat fmt = m_eventFormats.get(mapping.getEventCode());
-            return m_utils.translateAllEventTables(fmt, m_customEventsDir + "/CsEvFormat/EventTables");
+            return m_utils.translateAllEventTables(fmt, m_customEventsDir.getFile().getPath() + File.separator + "CsEvFormat" + File.separator + "EventTables");
         } else {
             return new ArrayList<Varbindsdecode>();
         }
+    }
+    
+    public boolean shouldDiscardEvent(EventDisposition dispo) {
+        boolean discard = false;
+        StringBuilder eventKeyBldr = new StringBuilder(dispo.getEventCode());
+        for (int d : dispo.getDiscriminators()) {
+            eventKeyBldr.append(",").append(d);
+        }
+        String eventKey = eventKeyBldr.toString();
+        
+        // If not yet recorded, note this one
+        if (dispo.isCreateAlarm()) {
+            m_alarmCreators.put(eventKey, eventKey);
+        }
+        
+        // If this is a clear-alarm, but a create-alarm already exists with
+        // the same event-code and discriminators, then we should discard
+        // this one
+        if (dispo.isClearAlarm() && m_alarmCreators.containsKey(eventKey)) {
+            discard = true;
+        }
+        return discard;
     }
     
     private static void prettyPrintXML(InputStream docStream, OutputStream out) throws IOException, SAXException, ParserConfigurationException {
@@ -367,7 +409,7 @@ public class SpectrumTrapImporter {
         return m_baseUei;
     }
     
-    public void setCustomEventsDir(Resource customEventsDir) throws IOException {
+    public void setCustomEventsDir(FileSystemResource customEventsDir) throws IOException {
         if (! customEventsDir.getFile().isDirectory()) {
             throw new IllegalArgumentException("The customEventsDir property must refer to a directory");
         }
@@ -415,7 +457,8 @@ public class SpectrumTrapImporter {
     }
     
     private void printHelp(String msg) {
-        System.out.println("Error: " + msg + "\n\n");
+        System.err.println("Error: " + msg + "\n\n");
+        System.err.println(COMMAND_HELP);
     }
     
 }
