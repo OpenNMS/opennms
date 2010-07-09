@@ -251,12 +251,15 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
             return new GWTBounds(-180, -90, 180, 90);
         }
         BoundsBuilder bldr = new BoundsBuilder();
-        bldr.extend(bounds.getLowerLeftX(), bounds.getLowerLeftY());
-        bldr.extend(bounds.getUpperRightX(), bounds.getUpperRightY());
+        bldr.extend(Math.max(-90, bounds.getLowerLeftY()), Math.max(-180, bounds.getLowerLeftX()));
+        bldr.extend(Math.min(90, bounds.getUpperRightY()), Math.min(180, bounds.getUpperRightX()));
         return bldr.getBounds();
     }
 
     private static Bounds toBounds(final GWTBounds bounds) {
+        if (bounds == null) {
+            return new Bounds(-180, -90, 180, 90);
+        }
         final GWTLatLng nec = bounds.getNorthEastCorner();
         final GWTLatLng swc = bounds.getSouthWestCorner();
         return new Bounds(swc.getLongitude(), swc.getLatitude(), nec.getLongitude(), nec.getLatitude());
