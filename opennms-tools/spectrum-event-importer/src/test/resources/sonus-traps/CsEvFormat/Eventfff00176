@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtH323InitFailTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if H.323 stack has failed to
+		initialize properly and has been terminated."
+
+apSysMgmtH323InitFail = {S 1}
+(event [{e}])

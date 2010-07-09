@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityIpError" event has occurred, from {t} device, named {m}.
+
+" IP_ERROR in the SCC."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityDirection = {T ipUnityDirection 3}
+ipUnityTrapInfoString = {S 4}
+ipUnitySequenceNumber = {I 5}
+(event [{e}])

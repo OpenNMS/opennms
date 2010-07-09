@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtSystemStateTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated when the SD is instructed
+              to change system-state or the transition from
+              becoming_offline to offline occurs."
+
+apSysMgmtSystemState = {T apSysMgmtSystemState 1}
+(event [{e}])

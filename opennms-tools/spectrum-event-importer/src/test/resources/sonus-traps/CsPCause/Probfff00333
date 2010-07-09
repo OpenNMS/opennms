@@ -1,0 +1,10 @@
+CERT MISSING
+
+SYMPTOMS:
+
+"tls: Indicates that a certificate file specified in a TLS certificate configuration entry cannot be found or opened"
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

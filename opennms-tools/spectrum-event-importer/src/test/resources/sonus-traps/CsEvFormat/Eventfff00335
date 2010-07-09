@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "certNotYetValid" event has occurred, from {t} device, named {m}.
+
+"tls: Indicates that a certificate file specified in a certificate configuration is not yet valid, as specified in the certificate's 'notBefore' extension"
+
+certNotYetValidEntryName = {S 1}
+certNotYetValidFileName = {S 2}
+certNotYetValidStartTime = {I 3}
+(event [{e}])

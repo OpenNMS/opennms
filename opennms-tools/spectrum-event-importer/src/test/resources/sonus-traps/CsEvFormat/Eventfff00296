@@ -1,0 +1,11 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityModuleSoftwareError" event has occurred, from {t} device, named {m}.
+
+" a software error occurs in a bank."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityBankIndex = {I 3}
+ipUnityModuleIndex = {I 4}
+ipUnityTrapInfoString = {S 5}
+ipUnitySequenceNumber = {I 6}
+(event [{e}])

@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtMediaBandwidthTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if bandwidth allocation fails at
+		a percentage rage higher or equal to the system's default
+		threshold rate."
+
+apSysMgmtMediaBandwidth = {I 1}
+(event [{e}])

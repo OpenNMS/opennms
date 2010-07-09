@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySccInterhostCommunicationFailure" event has occurred, from {t} device, named {m}.
+
+" the SCC fails to communicate with another card in the Media Server."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

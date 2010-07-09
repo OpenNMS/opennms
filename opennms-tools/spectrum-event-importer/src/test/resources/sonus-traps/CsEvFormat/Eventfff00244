@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "rsCfgStartupConfigChange" event has occurred, from {t} device, named {m}.
+
+"This notification is generated when there is a change in the
+         StartupConfig."
+
+rsCfgStartupLastChange = {S 1}
+(event [{e}])

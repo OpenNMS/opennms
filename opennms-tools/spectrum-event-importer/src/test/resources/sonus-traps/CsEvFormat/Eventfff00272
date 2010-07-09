@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityLongDurationCall" event has occurred, from {t} device, named {m}.
+
+" a long duration call is detected in the SCC."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

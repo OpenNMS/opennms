@@ -1,0 +1,13 @@
+{d "%w- %d %m-, %Y - %T"} - A "mediaSessionDroppedPackets" event has occurred, from {t} device, named {m}.
+
+"sip: Indicates the dropped media packets for a session exceeded the threshold specified"
+
+mediaSessionDroppedPacketsSessionId = {L 1}
+mediaSessionDroppedPacketsDropVerify = {L 2}
+mediaSessionDroppedPacketsDropRoute = {L 3}
+mediaSessionDroppedPacketsDropCryptoMisc = {I 4}
+mediaSessionDroppedPacketsDropCryptoAuth = {I 5}
+mediaSessionDroppedPacketsDropCryptoReplay = {I 6}
+mediaSessionDroppedPacketsDropInternal = {L 7}
+mediaSessionDroppedPacketsThreshold = {I 8}
+(event [{e}])

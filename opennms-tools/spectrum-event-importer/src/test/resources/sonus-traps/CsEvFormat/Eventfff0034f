@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "webServiceAvailablityChange" event has occurred, from {t} device, named {m}.
+
+"system: A remote web service has changed availability"
+
+webServiceAvailablityChangeServer = {S 1}
+webServiceAvailablityChangeNewState = {T webServiceAvailablityChangeNewState 2}
+webServiceAvailablityChangeOldState = {T webServiceAvailablityChangeOldState 3}
+(event [{e}])

@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "empSIP6xxErrorsCorrectedEvent" event has occurred, from {t} device, named {m}.
+
+"Event generated when one of the SIP 600s error values
+            (which was outside of the range) goes back into the
+            range specified for that particular object. "
+
+empSIP6xxStatEventInfo = {S 1}
+(event [{e}])

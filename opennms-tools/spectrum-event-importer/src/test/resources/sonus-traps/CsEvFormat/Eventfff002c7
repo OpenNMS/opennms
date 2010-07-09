@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySccAnnInstNotFoundError" event has occurred, from {t} device, named {m}.
+
+" a SCC Announcement Inst not found Error."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

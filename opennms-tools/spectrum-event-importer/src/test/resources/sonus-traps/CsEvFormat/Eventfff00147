@@ -1,0 +1,14 @@
+{d "%w- %d %m-, %Y - %T"} - A "alertClearNotification" event has occurred, from {t} device, named {m}.
+
+"The NMS-Agent sends an alertClearNotification to the manager indicating that one
+				or more previously reported alerts have been cleared"
+
+sequenceNum = {I 1}
+alertentity = {S 2}
+alertownerName = {S 3}
+alertDescription = {I 4}
+alertTimeStamp = {S 5}
+alertcategory = {S 6}
+alertNotificationId = {I 7}
+alertExtraProperties = {S 8}
+(event [{e}])

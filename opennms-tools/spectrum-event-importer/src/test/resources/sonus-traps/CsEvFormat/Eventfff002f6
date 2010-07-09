@@ -1,0 +1,12 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySpmG4ModuleTaskSuspendFailure" event has occurred, from {t} device, named {m}.
+
+" a SPMG4 Task Suspend Failure."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityBankIndex = {I 3}
+ipUnityModuleIndex = {I 4}
+ipUnityTaskName = {S 5}
+ipUnityTrapInfoString = {S 6}
+ipUnitySequenceNumber = {I 7}
+(event [{e}])

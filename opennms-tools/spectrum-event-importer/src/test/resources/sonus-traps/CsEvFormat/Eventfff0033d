@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "headEndUndersubscribed" event has occurred, from {t} device, named {m}.
+
+"lb: A head-end interface is undersubscribed, and therefore SIP messages are being dropped"
+
+headEndUndersubscribedHeadEndAddress = {O 1}
+headEndUndersubscribedConfiguredInterfaceCount = {I 2}
+headEndUndersubscribedActiveInterfaceCount = {I 3}
+(event [{e}])
