@@ -1,17 +1,54 @@
-/**
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
  * 
+ * Created: July 9, 2010
+ *
+ * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  */
-
 package org.opennms.netmgt.tools.spectrum;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -41,6 +78,7 @@ import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -85,7 +123,6 @@ public class SpectrumTrapImporter {
         
         try {
             importer.afterPropertiesSet();
-            importer.initialize();
         } catch (Exception e) {
             importer.printHelp("Fatal exception caught at startup: " + e.getMessage());
             System.exit(1);
@@ -99,15 +136,25 @@ public class SpectrumTrapImporter {
         }
         
         try {
-            events.marshal(importer.getOutputWriter());
+            //events.marshal(importer.getOutputWriter());
+            StringWriter sw = new StringWriter();
+            events.marshal(sw);
+            importer.prettyPrintXML(sw.toString());
         } catch (MarshalException e) {
             importer.printHelp("Fatal exception while marshaling output: " + e.getMessage());
         } catch (ValidationException e) {
             importer.printHelp("Fatal exception while validating output: " + e.getMessage());
+        } catch (IOException e) {
+            importer.printHelp("Fatal I/O exception: " + e.getMessage(), e);
+        } catch (SAXException e) {
+            importer.printHelp("Fatal SAX exception: " + e.getMessage());
+        } catch (ParserConfigurationException e) {
+            importer.printHelp("Fatal parser configuration exception: " + e.getMessage());
         }
     }
     
     private void initialize() throws Exception {
+        LogUtils.logToConsole();
         Resource alertMapResource = new FileSystemResource(m_customEventsDir.getFile().getPath() + File.separator + "AlertMap");
         Resource eventDispResource = new FileSystemResource(m_customEventsDir.getFile().getPath() + File.separator + "EventDisp");
         
@@ -123,6 +170,7 @@ public class SpectrumTrapImporter {
     private void loadEventFormats() throws Exception {
         String csEvFormatDirName = m_customEventsDir.getFile().getPath() + File.separator + "CsEvFormat";
         Map<String,EventFormat> formats = new HashMap<String,EventFormat>();
+        Map<String,String> unformattedEvents = new LinkedHashMap<String,String>();
         for (AlertMapping mapping : m_alertMappings) {
             if (formats.containsKey(mapping.getEventCode())) {
                 LogUtils.debugf(this, "Already have read an event-format for event-code [%s], not loading again", mapping.getEventCode());
@@ -133,9 +181,20 @@ public class SpectrumTrapImporter {
                 EventFormatReader reader = new EventFormatReader(new FileSystemResource(formatFileName));
                 formats.put(mapping.getEventCode(), reader.getEventFormat());
             } catch (FileNotFoundException fnfe) {
-                LogUtils.infof(this, "Unable to load an event-format for event-code [%s] from [%s]; continuing without it", mapping.getEventCode(), formatFileName);
+                unformattedEvents.put(mapping.getEventCode(), mapping.getEventCode());
                 continue;
             }
+        }
+        LogUtils.infof(this, "Loaded %d event-formats from files in [%s]", formats.size(), csEvFormatDirName);
+        if (unformattedEvents.keySet().size() > 0) {
+            StringBuilder uelBuilder = new StringBuilder("");
+            for (String ec : unformattedEvents.keySet()) {
+                if (uelBuilder.length() > 0) {
+                    uelBuilder.append(" ");
+                }
+                uelBuilder.append(ec);
+            }
+            LogUtils.infof(this, "Unable to load an event-format for %d event-codes [%s].  Continuing without them.", unformattedEvents.keySet().size(), uelBuilder.toString());
         }
         m_eventFormats = formats;
     }
@@ -237,6 +296,7 @@ public class SpectrumTrapImporter {
         evt.setVarbindsdecode(makeVarbindsDecodes(mapping));
         
         if (shouldDiscardEvent(dispo)) {
+            LogUtils.warnf(this, "Not creating an OpenNMS event definition corresponding to the following Spectrum event-disposition, because doing so would cause a conflict with an existing alarm-creating event for the same event-code and discriminators: %s. Hand-tweaking the output may be needed to compensate for this omission.", dispo);
             return null;
         }
         return evt;
@@ -386,16 +446,17 @@ public class SpectrumTrapImporter {
         return discard;
     }
     
-    private static void prettyPrintXML(InputStream docStream, OutputStream out) throws IOException, SAXException, ParserConfigurationException {
+    private void prettyPrintXML(String inDoc) throws IOException, SAXException, ParserConfigurationException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document doc = builder.parse(docStream);
+        InputSource inSrc = new InputSource(new StringReader(inDoc));
+        Document outDoc = builder.parse(inSrc);
         
-        OutputFormat fmt = new OutputFormat(doc);
+        OutputFormat fmt = new OutputFormat(outDoc);
         fmt.setLineWidth(72);
         fmt.setIndenting(true);
         fmt.setIndent(2);
-        XMLSerializer ser = new XMLSerializer(out, fmt);
-        ser.serialize(doc);
+        XMLSerializer ser = new XMLSerializer(m_outputWriter, fmt);
+        ser.serialize(outDoc);
     }
     
     public void setBaseUei(String baseUei) {
@@ -460,5 +521,10 @@ public class SpectrumTrapImporter {
         System.err.println("Error: " + msg + "\n\n");
         System.err.println(COMMAND_HELP);
     }
-    
+    private void printHelp(String msg, Throwable t) {
+        System.err.println("Error: " + msg + "\n\n");
+        t.printStackTrace();
+        System.err.println(COMMAND_HELP);
+    }
+
 }

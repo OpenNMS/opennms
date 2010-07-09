@@ -1,3 +1,38 @@
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * Created: July 9, 2010
+ *
+ * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.tools.spectrum;
 
 import java.util.ArrayList;
@@ -32,20 +67,23 @@ public class EventDisposition {
         m_alarmSeverity = -1;
         m_alarmCause = null;
         m_clearAlarm = false;
+        m_clearAlarmCause = null;
         m_uniqueAlarm = false;
         m_userClearable = true;
-        m_persistent = true;        
+        m_persistent = true;
         m_discriminators = new ArrayList<Integer>();
     }
     
     public String toString() {
         StringBuilder bldr = new StringBuilder("EventDisposition [");
+        bldr.append("eventCode: ").append(m_eventCode).append("; ");
         bldr.append("logEvent: ").append(m_logEvent).append("; ");
         bldr.append("eventSeverity: ").append(m_eventSeverity).append("; ");
         bldr.append("createAlarm: ").append(m_createAlarm).append("; ");
         bldr.append("alarmSeverity: ").append(m_alarmSeverity).append("; ");
         bldr.append("alarmCause: ").append(m_alarmCause).append("; ");
         bldr.append("clearAlarm: ").append(m_clearAlarm).append("; ");
+        bldr.append("clearAlarmCause: ").append(m_clearAlarmCause).append("; ");
         bldr.append("uniqueAlarm: ").append(m_uniqueAlarm).append("; ");
         bldr.append("userClearable: ").append(m_userClearable).append("; ");
         bldr.append("persistent: ").append(m_persistent).append("; ");
