@@ -178,4 +178,14 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
      */
     Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId);
 
+    /**
+     * Mark all location monitors as paused except those that are already stopped
+     */
+    void pauseAll();
+
+    /**
+     * Mark all paused location monitors as started
+     */
+    void resumeAll();
+
 }
