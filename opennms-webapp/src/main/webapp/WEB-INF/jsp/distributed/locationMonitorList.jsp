@@ -52,16 +52,17 @@
   <jsp:param name="breadcrumb" value="Distributed Poller Status" />
 </jsp:include>
 
-<h3><spring:message code="distributed.pollerStatus.title"/></h3>
   
-  <c:if test="${isAdmin}">
-    <form action="admin/distributed/locationMonitorPauseAll.htm" method="post">
-      <input type="submit" value="Pause All"/>
-    </form>
-    <form action="admin/distributed/locationMonitorResumeAll.htm" method="post">
-      <input type="submit" value="Resume All"/><
-    </form>
-  </c:if>
+<c:if test="${isAdmin}">
+  <form action="admin/distributed/locationMonitorPauseAll.htm" method="post">
+    <input type="submit" value="Pause All"/>
+  </form>
+  <form action="admin/distributed/locationMonitorResumeAll.htm" method="post">
+    <input type="submit" value="Resume All"/><
+  </form>
+</c:if>
+
+<h3><spring:message code="distributed.pollerStatus.title"/></h3>
 
 <table>
   <tr>
