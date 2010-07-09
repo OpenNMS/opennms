@@ -54,8 +54,6 @@ import org.springframework.validation.ObjectError;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  * @since 1.8.1
  */
@@ -229,6 +227,14 @@ public class DefaultDistributedPollerService implements
         
         OnmsLocationMonitor monitor = m_locationMonitorDao.load(command.getMonitorId());
         m_locationMonitorDao.delete(monitor);
+    }
+
+    public void pauseAllLocationMonitors() {
+        m_locationMonitorDao.pauseAll();
+    }
+
+    public void resumeAllLocationMonitors() {
+        m_locationMonitorDao.resumeAll();
     }
 
 }

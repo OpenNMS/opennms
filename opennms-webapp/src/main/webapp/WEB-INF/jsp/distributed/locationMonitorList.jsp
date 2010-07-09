@@ -53,6 +53,15 @@
 </jsp:include>
 
 <h3><spring:message code="distributed.pollerStatus.title"/></h3>
+  
+  <form action="admin/distributed/locationMonitorPause.htm" method="post">
+    <p><input type="submit" value="Pause All"/></p>
+  </form>
+
+  <form action="admin/distributed/locationMonitorResume.htm" method="post">
+    <p><input type="submit" value="Resume All"/></p>
+  </form>
+
 <table>
   <tr>
     <th><spring:message code="distributed.area"/></th>
@@ -63,6 +72,7 @@
     <th><spring:message code="distributed.status"/></th>
     <th><spring:message code="distributed.lastCheckInTime"/></th>
   </tr>
+  
 
   <c:forEach items="${model.locationMonitors}" var="monitor">
     <spring:message var="statusClass" code="distributed.status.style.${monitor.status}" text="distributed.status.style._DEFAULT"/>

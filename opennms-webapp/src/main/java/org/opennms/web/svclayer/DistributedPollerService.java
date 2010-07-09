@@ -89,4 +89,16 @@ public interface DistributedPollerService {
      */
     @Transactional(readOnly = false)
     public void deleteLocationMonitor(LocationMonitorIdCommand command, BindException errors);
+
+    /**
+     * Pause all the locations monitors
+     */
+    @Transactional(readOnly = false)
+    public void pauseAllLocationMonitors();
+
+    /**
+     * Resume all the locations monitors (those that have been stopped are not resumed)
+     */
+    @Transactional(readOnly = false)
+    public void resumeAllLocationMonitors();
 }

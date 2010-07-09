@@ -35,26 +35,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.svclayer.DistributedPollerService;
-import org.opennms.web.svclayer.LocationMonitorListModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
- * <p>LocationMonitorListController class.</p>
+ * <p>LocationMonitorResumeAllController class.</p>
  *
- * @author ranger
+ * @author brozow
  * @version $Id: $
  * @since 1.8.1
  */
-public class LocationMonitorListController extends AbstractController implements InitializingBean {
+public class LocationMonitorResumeAllController extends AbstractController implements InitializingBean {
     private DistributedPollerService m_distributedPollerService;
+    private String m_successView;
 
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        LocationMonitorListModel model = m_distributedPollerService.getLocationMonitorList();
-        return new ModelAndView("distributed/locationMonitorList", "model", model);
+        m_distributedPollerService.resumeAllLocationMonitors();
+        return new ModelAndView("redirect:/distributed/locationMonitorList.htm");
     }
 
     /**
@@ -71,8 +71,23 @@ public class LocationMonitorListController extends AbstractController implements
      *
      * @param distributedPollerService a {@link org.opennms.web.svclayer.DistributedPollerService} object.
      */
-    public void setDistributedPollerService(DistributedPollerService distributedPollerService) {
+    public void setDistributedPollerService(
+            DistributedPollerService distributedPollerService) {
         m_distributedPollerService = distributedPollerService;
+    }
+
+    /**
+     * @param successView the successView to set
+     */
+    public void setSuccessView(String successView) {
+        m_successView = successView;
+    }
+
+    /**
+     * @return the successView
+     */
+    public String getSuccessView() {
+        return m_successView;
     }
 
     /**
@@ -82,6 +97,9 @@ public class LocationMonitorListController extends AbstractController implements
      */
     public void afterPropertiesSet() throws Exception {
         if (m_distributedPollerService == null) {
+            throw new IllegalStateException("distributedPollerService property has not been set");
+        }
+        if (m_successView == null) {
             throw new IllegalStateException("distributedPollerService property has not been set");
         }
     }
