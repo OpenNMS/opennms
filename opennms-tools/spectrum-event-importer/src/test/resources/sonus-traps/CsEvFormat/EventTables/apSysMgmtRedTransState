@@ -1,0 +1,4 @@
+0x00000000 out-of-service
+0x00000001 active
+0x00000002 standby
+0x00000003 no-peer

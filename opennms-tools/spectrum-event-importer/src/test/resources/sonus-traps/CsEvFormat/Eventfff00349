@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "sIPCallFail" event has occurred, from {t} device, named {m}.
+
+"sip: "
+
+sIPCallFailSessionID = {L 1}
+sIPCallFailFrom = {S 2}
+sIPCallFailTo = {S 3}
+sIPCallFailReason = {S 4}
+sIPCallFailAction = {S 5}
+(event [{e}])

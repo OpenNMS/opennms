@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "certMissing" event has occurred, from {t} device, named {m}.
+
+"tls: Indicates that a certificate file specified in a TLS certificate configuration entry cannot be found or opened"
+
+certMissingEntryName = {S 1}
+certMissingFileName = {S 2}
+(event [{e}])

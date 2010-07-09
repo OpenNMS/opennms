@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "rsEnvirFanRecovered" event has occurred, from {t} device, named {m}.
+
+"A Fan tray on the sending device has recovered
+	  after failure. The entPhysicalDescr object identifies
+	  the recovered Fan tray."
+
+entPhysicalDescr = {S 1}
+(event [{e}])

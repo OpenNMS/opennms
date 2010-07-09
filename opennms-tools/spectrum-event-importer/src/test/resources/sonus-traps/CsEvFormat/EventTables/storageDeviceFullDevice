@@ -1,0 +1,11 @@
+0x00000000 cdrom
+0x00000001 usb
+0x00000002 common
+0x00000003 partition-1
+0x00000004 partition-2
+0x00000005 partition-3
+0x00000006 boot
+0x00000007 releases
+0x00000008 hard-drive-1
+0x00000009 hard-drive-2
+0x0000000a hard-drive-3

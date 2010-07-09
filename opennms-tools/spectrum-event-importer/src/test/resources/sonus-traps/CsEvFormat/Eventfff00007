@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "empSIP6xxErrorsAboveEvent" event has occurred, from {t} device, named {m}.
+
+"Event generated when one of the SIP 600s error
+            values goes above the range specified for
+            that particular object"
+
+empSIP6xxStatEventInfo = {S 1}
+(event [{e}])

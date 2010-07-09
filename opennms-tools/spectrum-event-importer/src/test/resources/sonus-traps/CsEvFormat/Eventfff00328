@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "accessRequest" event has occurred, from {t} device, named {m}.
+
+"system: report the results of an access request"
+
+accessRequestUsername = {S 1}
+accessRequestType = {T accessRequestType 2}
+accessRequestResult = {T accessRequestResult 3}
+(event [{e}])

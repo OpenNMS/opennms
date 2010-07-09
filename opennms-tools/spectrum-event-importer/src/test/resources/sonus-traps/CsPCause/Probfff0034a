@@ -1,0 +1,10 @@
+SIP PARSE ERRORS TRAP
+
+SYMPTOMS:
+
+"system: The number of parse errors in received SIP messages has exceeded the configured threshold."
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

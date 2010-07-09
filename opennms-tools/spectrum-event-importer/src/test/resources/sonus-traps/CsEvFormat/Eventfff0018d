@@ -1,0 +1,6 @@
+{d "%w- %d %m-, %Y - %T"} - A "apLicenseNotApproachingCapacityNotification" event has occurred, from {t} device, named {m}.
+
+"This trap is sent if the total sessions is no longer
+		approaching the license capacity allowed. (less than 90%)"
+
+(event [{e}])

@@ -1,0 +1,12 @@
+{d "%w- %d %m-, %Y - %T"} - A "moDeenrolNotification" event has occurred, from {t} device, named {m}.
+
+"The NMSAgent sends a moDeenrolNotification to the manager when an MO has been
+				deenrolled/deleted from the management domain"
+
+sequenceNum = {I 1}
+moName = {S 2}
+moownerName = {S 3}
+moType = {S 4}
+moDeEnrolTime = {I 5}
+moExtraProperties = {S 6}
+(event [{e}])

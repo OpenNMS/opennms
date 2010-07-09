@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "rsEnvirPowerSupplyFailed" event has occurred, from {t} device, named {m}.
+
+"A power supply on the sending device has failed. The 
+	 entPhysicalDescr object identifies the failed supply."
+
+entPhysicalDescr = {S 1}
+(event [{e}])

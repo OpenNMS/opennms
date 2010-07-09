@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtMediaPortsTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if port allocation fails at
+		a percentage rate higher or equal to the system's default
+		threshold rate."
+
+apSysMgmtMediaPorts = {I 1}
+(event [{e}])

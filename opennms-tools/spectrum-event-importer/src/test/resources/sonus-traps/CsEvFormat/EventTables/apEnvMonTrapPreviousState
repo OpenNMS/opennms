@@ -1,0 +1,9 @@
+0x00000001 initial
+0x00000002 normal
+0x00000003 minor
+0x00000004 major
+0x00000005 critical
+0x00000006 shutdown
+0x00000007 notPresent
+0x00000008 notFunctioning
+0x00000009 unknown

@@ -1,0 +1,6 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtMediaOutOfMemory" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if media procees cannot allocate
+		memory."
+
+(event [{e}])

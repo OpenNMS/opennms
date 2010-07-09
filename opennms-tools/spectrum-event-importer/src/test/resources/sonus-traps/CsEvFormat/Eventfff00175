@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtRadiusDownTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if all or some configured
+		radius accounting servers haved timed out from a
+		RADIUS Server."
+
+apSysMgmtRadiusDown = {T apSysMgmtRadiusDown 1}
+(event [{e}])

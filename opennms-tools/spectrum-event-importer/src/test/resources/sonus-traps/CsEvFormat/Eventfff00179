@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtSAStatusChangeTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated when the status of a Session 
+              Agent changes."
+
+apSysMgmtSAHostname = {S 1}
+apSysMgmtSAIP = {S 2}
+apSysMgmtSAStatus = {T apSysMgmtSAStatus 3}
+apSysMgmtSAStatusReason = {T apSysMgmtSAStatusReason 4}
+(event [{e}])

@@ -1,0 +1,12 @@
+{d "%w- %d %m-, %Y - %T"} - A "ttDaemonOutOfMemoryTrap" event has occurred, from {t} device, named {m}.
+
+"Call to malloc failed in TimesTen daemon."
+
+ttTimeStamp = {S 1}
+ttPid = {I 2}
+ttUid = {S 3}
+ttVersion = {S 4}
+ttMesg = {S 5}
+ttDaeName = {S 6}
+ttDaeInst = {I 7}
+(event [{e}])

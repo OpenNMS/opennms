@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtPushServerUnreachableClearTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if server specified becomes
+	        unreachable by the system collector."
+
+apSysMgmtCollectPushServerUnreachable = {S 1}
+(event [{e}])

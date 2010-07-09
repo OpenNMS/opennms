@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSwCfgActivateNotification" event has occurred, from {t} device, named {m}.
+
+"This trap is sent if <activate-config> is 
+		issued and configration has been changed at runnign time"
+
+apSwCfgTrapPreviousVersion = {I 1}
+apSwCfgTrapCurrentVersion = {I 2}
+(event [{e}])

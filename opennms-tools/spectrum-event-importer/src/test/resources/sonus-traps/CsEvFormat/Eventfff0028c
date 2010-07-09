@@ -1,0 +1,11 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityOdspImageSyncFailure" event has occurred, from {t} device, named {m}.
+
+" the synchronization of the image fails between the active ODSP 
+			and the standby ODSP."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityBankIndex = {I 3}
+ipUnityTrapInfoString = {S 4}
+ipUnitySequenceNumber = {I 5}
+(event [{e}])

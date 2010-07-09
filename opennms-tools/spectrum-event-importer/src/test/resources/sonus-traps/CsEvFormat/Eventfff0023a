@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "rsEnvirFanFailed" event has occurred, from {t} device, named {m}.
+
+"A Fan tray on the sending device has failed. The
+	  entPhysicalDescr object identifies the failed fan tray."
+
+entPhysicalDescr = {S 1}
+(event [{e}])

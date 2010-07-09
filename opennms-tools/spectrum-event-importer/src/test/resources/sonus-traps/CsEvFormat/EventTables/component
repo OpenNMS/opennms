@@ -1,0 +1,9 @@
+0x00000000 applicationserver
+0x00000001 mediaserver
+0x00000002 networkserver
+0x00000003 relayserver
+0x00000004 servicecontrolproxy
+0x00000005 elementmanagementsystem
+0x00000006 webserver
+0x00000007 calldetailserver
+0x00000008 clientmanagementprofileserver
