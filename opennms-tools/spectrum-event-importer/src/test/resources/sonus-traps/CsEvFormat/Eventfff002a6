@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySystemTemperatureHigh" event has occurred, from {t} device, named {m}.
+
+" the system temperature has exceeded the desired range."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnitySystemTemperature = {I 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityLoginFailure" event has occurred, from {t} device, named {m}.
+
+"This information alarm is generated when user failed to login after max number of retries."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityLoginName = {S 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

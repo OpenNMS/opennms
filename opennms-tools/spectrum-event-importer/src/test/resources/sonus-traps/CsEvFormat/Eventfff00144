@@ -1,0 +1,12 @@
+{d "%w- %d %m-, %Y - %T"} - A "moEnrolNotification" event has occurred, from {t} device, named {m}.
+
+"The NMS-Agent sends a moEnrolNotification to the manager when an MO has been
+				enrolled/added into management domain."
+
+sequenceNum = {I 1}
+moName = {S 2}
+moownerName = {S 3}
+moType = {S 4}
+moEnrolTime = {I 5}
+moExtraProperties = {S 6}
+(event [{e}])

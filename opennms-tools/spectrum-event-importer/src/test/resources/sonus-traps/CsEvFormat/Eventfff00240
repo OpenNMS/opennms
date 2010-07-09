@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "rsEnvirBackupControlModuleOnline" event has occurred, from {t} device, named {m}.
+
+"A backup control module that was in standby mode has taken over 
+	  for a failed primary control module. The objec entPhysicalDescr 
+	  identifies the now active control module."
+
+entPhysicalDescr = {S 1}
+(event [{e}])

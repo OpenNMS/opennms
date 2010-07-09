@@ -1,0 +1,7 @@
+0x00000000 administrative
+0x00000001 oosbyproxyerror
+0x00000002 standby
+0x00000003 inservice
+0x00000004 constraintsexceeded
+0x00000005 unresponsive
+0x00000006 oosprovisionedresponse

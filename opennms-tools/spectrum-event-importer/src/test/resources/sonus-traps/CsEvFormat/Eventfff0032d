@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "callTerminated" event has occurred, from {t} device, named {m}.
+
+"csta: A CSTA call leg has been terminated"
+
+callTerminatedRequestId = {S 1}
+callTerminatedHandle = {I 2}
+callTerminatedCallDuration = {G 3}
+(event [{e}])

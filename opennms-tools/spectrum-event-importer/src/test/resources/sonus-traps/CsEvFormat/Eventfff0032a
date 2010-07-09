@@ -1,0 +1,11 @@
+{d "%w- %d %m-, %Y - %T"} - A "callCreated" event has occurred, from {t} device, named {m}.
+
+"csta: A CSTA call leg has been created"
+
+callCreatedRequestId = {S 1}
+callCreatedHandle = {I 2}
+callCreatedSessionId = {L 3}
+callCreatedCallId = {S 4}
+callCreatedTo = {S 5}
+callCreatedFrom = {S 6}
+(event [{e}])

@@ -1,0 +1,9 @@
+0x00000001 powerSupply48VoltA
+0x00000002 powerSupply48VoltB
+0x00000003 powerSupply5VoltA
+0x00000004 powerSupply5VoltB
+0x00000005 powerSupplyHot5VoltA
+0x00000006 powerSupplyHot5VoltB
+0x00000007 bankLowVoltage
+0x00000008 powerSupply2point5Volt
+0x00000009 powerSupply3Volt

@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtGroupClearTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will generated if value of the monitoring object
+	      returns to within a certain threshold.  This signifies that
+	      an alarm caused by that monitoring object has been cleared. "
+
+apSysMgmtTrapType = {o 1}
+(event [{e}])

@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityIvrHighUsage" event has occurred, from {t} device, named {m}.
+
+" the usage of IVR resources in the Media
+			Server exceeds the threshold for IVR usage."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityTrapInfoString = {S 2}
+ipUnitySequenceNumber = {I 3}
+(event [{e}])

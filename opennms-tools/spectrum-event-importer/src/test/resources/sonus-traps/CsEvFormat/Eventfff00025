@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "empMEGACO4xxErrorsAboveEvent" event has occurred, from {t} device, named {m}.
+
+"Event generated when one of the MEGACO 400s error
+            values goes above the range specified for
+            that particular object"
+
+empMEGACO4xxStatEventInfo = {S 1}
+(event [{e}])

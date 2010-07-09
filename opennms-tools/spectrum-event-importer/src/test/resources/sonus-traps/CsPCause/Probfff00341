@@ -1,0 +1,10 @@
+MEDIA SESSION DROPPED PACKETS
+
+SYMPTOMS:
+
+"sip: Indicates the dropped media packets for a session exceeded the threshold specified"
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

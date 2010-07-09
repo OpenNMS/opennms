@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityHttpHighUsage" event has occurred, from {t} device, named {m}.
+
+" the HTTP usage, as detected on the SCC, exceeds the desired threshold."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityTrapInfoString = {S 2}
+ipUnitySequenceNumber = {I 3}
+(event [{e}])

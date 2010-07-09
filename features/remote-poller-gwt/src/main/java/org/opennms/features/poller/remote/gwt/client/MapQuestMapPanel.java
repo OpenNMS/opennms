@@ -126,25 +126,12 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
 
     public MapQuestMapPanel(final HandlerManager eventBus) {
         m_eventBus = eventBus;
-        m_map = MQATileMap.newInstance(m_mapHolder.getElement());
         
         initWidget(uiBinder.createAndBindUi(this));
-        initializeMap();
-    }
-    /**
-     * <p>Constructor for MapQuestMapPanel.</p>
-     *
-     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
-     */
-    public MapQuestMapPanel(final HandlerManager eventBus, MQATileMap map) {
-        m_eventBus = eventBus;
-        m_map = map;
 
-        initWidget(uiBinder.createAndBindUi(this));
         initializeMap();
     }
-    
-    
+
     /** {@inheritDoc} */
     @Override
     protected void onLoad() {
@@ -156,7 +143,10 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
      * <p>initializeMap</p>
      */
     private void initializeMap() {
+
         m_mapHolder.setSize("100%", "100%");
+
+        m_map = MQATileMap.newInstance(m_mapHolder.getElement());
         m_map.addControl(MQALargeZoomControl.newInstance());
         m_map.setZoomLevel(1);
         m_map.setCenter(MQALatLng.newInstance("0,0"));
