@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "cAMissing" event has occurred, from {t} device, named {m}.
+
+"tls: Indicates that a CA file specified in a TLS certificate configuration entry cannot be found"
+
+cAMissingEntryName = {S 1}
+cAMissingFileName = {S 2}
+(event [{e}])

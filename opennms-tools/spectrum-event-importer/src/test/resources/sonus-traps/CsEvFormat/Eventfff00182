@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtAlgdCPULoadTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if the CPU utilization percentage of
+		 application tasks has exceeded the threshold algd-load-limit."
+
+apSysMgmtAlgdCPULoad = {I 1}
+(event [{e}])

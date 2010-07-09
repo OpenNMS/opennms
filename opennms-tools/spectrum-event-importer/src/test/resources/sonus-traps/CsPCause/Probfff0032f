@@ -1,0 +1,10 @@
+CERT DECRYPT ERROR
+
+SYMPTOMS:
+
+"tls: Indicates that a certificate file specified in a certificate configuration could not be decrypted, probably due to an incorrect or missing passphrase"
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

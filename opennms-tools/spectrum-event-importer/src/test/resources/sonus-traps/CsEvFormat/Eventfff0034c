@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "storageDeviceFull" event has occurred, from {t} device, named {m}.
+
+"system: The CXC attempted to record media but the free space is less than the configured threshold"
+
+storageDeviceFullDevice = {T storageDeviceFullDevice 1}
+storageDeviceFullSeverity = {T storageDeviceFullSeverity 2}
+storageDeviceFullMountPoint = {S 3}
+storageDeviceFullDiskSize = {I 4}
+storageDeviceFullDiskFree = {I 5}
+(event [{e}])

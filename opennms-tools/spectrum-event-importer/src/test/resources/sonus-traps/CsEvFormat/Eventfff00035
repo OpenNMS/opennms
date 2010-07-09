@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "empDiameter3GPPErrorsBelowEvent" event has occurred, from {t} device, named {m}.
+
+"Event generated when one of the diameter 3GPP error values
+            (which was outside of the range) goes
+            back into the range specified for that particular object. "
+
+empDiameter3GPPErrorEventInfo = {S 1}
+(event [{e}])

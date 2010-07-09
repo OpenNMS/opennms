@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtCfgSaveFailTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if an error occurs while the
+		system is trying to save the configuration to memory."
+
+apSysMgmtCfgSaveFail = {S 1}
+(event [{e}])

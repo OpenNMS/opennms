@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "iMContentScanTrap" event has occurred, from {t} device, named {m}.
+
+"sip: Indicates that the IM content scan found an expression that should be flagged"
+
+iMContentScanTrapFrom = {S 1}
+iMContentScanTrapTo = {S 2}
+iMContentScanTrapMatchedWordList = {S 3}
+iMContentScanTrapAction = {S 4}
+(event [{e}])

@@ -1,0 +1,11 @@
+0x00000001 cpu-usage
+0x00000002 memory-usage
+0x00000003 kernel-memory-usage
+0x00000004 memory-failures
+0x00000005 tls-connections
+0x00000006 tls-failures
+0x00000007 storage-devices
+0x00000008 mos-failures
+0x00000009 syn-cookies
+0x0000000a dropped-media-packets
+0x0000000b sip-parse-errors

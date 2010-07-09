@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityI2CPowerSupplyAlarm" event has occurred, from {t} device, named {m}.
+
+" an I2C power supply failure occurs in the Media Server."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityPowerSupplyType = {T ipUnityPowerSupplyType 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

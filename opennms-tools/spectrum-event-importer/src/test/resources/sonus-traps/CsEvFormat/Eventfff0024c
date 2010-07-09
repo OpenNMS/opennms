@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySccCompactFlashCheckDisk" event has occurred, from {t} device, named {m}.
+
+" Check disk error in the the Compact flash."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnitySccFileSystemName = {S 3}
+ipUnityTrapInfoString = {S 4}
+ipUnitySequenceNumber = {I 5}
+(event [{e}])

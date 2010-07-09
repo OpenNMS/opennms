@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtInterfaceStatusChangeTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated when there is a change
+		in the status of the sip interface."
+
+apSysMgmtSipInterfaceRealmName = {S 1}
+apSysMgmtSipInterfaceIP = {S 2}
+apSysMgmtSipInterfaceStatus = {T apSysMgmtSipInterfaceStatus 3}
+apSysMgmtSipInterfaceStatusReason = {T apSysMgmtSipInterfaceStatusReason 4}
+(event [{e}])

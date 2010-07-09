@@ -1,0 +1,16 @@
+{d "%w- %d %m-, %Y - %T"} - A "ttPartitionSpaceStateTrap" event has occurred, from {t} device, named {m}.
+
+"Data store partition (permanent or temporary) space is
+                                transitioning from OK to Low, or vice versa."
+
+ttTimeStamp = {S 1}
+ttPid = {I 2}
+ttUid = {S 3}
+ttVersion = {S 4}
+ttMesg = {S 5}
+ttDSName = {S 6}
+ttDSMaxSize = {I 7}
+ttDSCurSize = {I 8}
+ttDSReqSize = {I 9}
+ttDSPartition = {S 10}
+(event [{e}])

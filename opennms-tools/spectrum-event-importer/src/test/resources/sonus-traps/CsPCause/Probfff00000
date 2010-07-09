@@ -1,0 +1,12 @@
+EMP S I P4XX ERRORS BELOW EVENT
+
+SYMPTOMS:
+
+"Event generated when one of the SIP 400s error
+            values goes below the range specified for
+            that particular object"
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "sipServerEvent" event has occurred, from {t} device, named {m}.
+
+"sip: "
+
+sipServerEventPeer = {S 1}
+sipServerEventServer = {S 2}
+sipServerEventState = {T sipServerEventState 3}
+(event [{e}])

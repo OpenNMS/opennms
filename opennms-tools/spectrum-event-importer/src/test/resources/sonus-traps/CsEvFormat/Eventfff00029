@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "empMEGACO5xxErrorsCorrectedEvent" event has occurred, from {t} device, named {m}.
+
+"Event generated when one of the MEGACO 500s error values
+            (which was outside of the range) goes back into the
+            range specified for that particular object. "
+
+empMEGACO5xxStatEventInfo = {S 1}
+(event [{e}])

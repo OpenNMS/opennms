@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtENUMStatusChangeTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if the reachability status of an ENUM 
+	server changes."
+
+apENUMConfigName = {S 1}
+apENUMServerIpAddress = {O 2}
+apENUMServerStatus = {T apENUMServerStatus 3}
+(event [{e}])

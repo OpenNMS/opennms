@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySccTaskResumeFailed" event has occurred, from {t} device, named {m}.
+
+" a task resumption fails in the SCC."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnitySccTaskName = {S 3}
+ipUnityTrapInfoString = {S 4}
+ipUnitySequenceNumber = {I 5}
+(event [{e}])

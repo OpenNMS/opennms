@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "certExpired" event has occurred, from {t} device, named {m}.
+
+"tls: Indicates that a certificate file specified in a certificate configuration is no longer valid, as specified in the certificate's 'notAfter' extension"
+
+certExpiredEntryName = {S 1}
+certExpiredFileName = {S 2}
+certExpiredExpiredTime = {I 3}
+(event [{e}])
