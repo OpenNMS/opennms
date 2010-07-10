@@ -1,0 +1,10 @@
+CERT EXPIRED
+
+SYMPTOMS:
+
+"tls: Indicates that a certificate file specified in a certificate configuration is no longer valid, as specified in the certificate's 'notAfter' extension"
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

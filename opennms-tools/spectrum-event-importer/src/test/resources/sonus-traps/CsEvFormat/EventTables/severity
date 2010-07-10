@@ -1,0 +1,5 @@
+0x00000000 informational
+0x00000001 low
+0x00000002 medium
+0x00000003 high
+0x00000004 critical

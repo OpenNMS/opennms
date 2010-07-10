@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "empH323DRQStringReasonsAboveEvent" event has occurred, from {t} device, named {m}.
+
+"Event generated when one of the H.323 DRQ (Disengage Request)
+            string reason values goes above the range specified for
+            that particular object"
+
+empH323DRQStringReasonsEventInfo = {S 1}
+(event [{e}])

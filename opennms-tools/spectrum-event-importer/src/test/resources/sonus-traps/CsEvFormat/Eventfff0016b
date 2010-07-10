@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtPowerTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if a power supply is powered down,
+	      powered up, inserted/present or removed/not present. "
+
+apSysMgmtPowerLocation = {T apSysMgmtPowerLocation 1}
+apSysMgmtPowerPresence = {T apSysMgmtPowerPresence 2}
+(event [{e}])

@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "monitorAlert" event has occurred, from {t} device, named {m}.
+
+"system: report that a monitor parameter has crossed the configured threshold"
+
+monitorAlertParameter = {T monitorAlertParameter 1}
+monitorAlertProcess = {T monitorAlertProcess 2}
+monitorAlertThreshold = {I 3}
+monitorAlertValue = {I 4}
+(event [{e}])

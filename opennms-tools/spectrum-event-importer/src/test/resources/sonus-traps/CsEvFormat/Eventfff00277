@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityNoRoute" event has occurred, from {t} device, named {m}.
+
+""
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ifIndex = {I 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

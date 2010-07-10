@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtGroupTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will generated if value of the monitoring object
+	      exceeds a certain threshold. "
+
+apSysMgmtTrapType = {o 1}
+apSysMgmtTrapValue = {I 2}
+(event [{e}])

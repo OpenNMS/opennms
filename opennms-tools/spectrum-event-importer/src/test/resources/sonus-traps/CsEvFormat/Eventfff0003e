@@ -1,0 +1,15 @@
+{d "%w- %d %m-, %Y - %T"} - A "bwSystemHealthReport" event has occurred, from {t} device, named {m}.
+
+"A notification indicates detection of an abnormal
+        condition in the system."
+
+identifier = {I 1}
+timeStamp = {S 2}
+alarmName = {S 3}
+systemName = {S 4}
+severity = {T severity 5}
+component = {T component 6}
+subcomponent = {T subcomponent 7}
+problemText = {S 8}
+recommendedActionsText = {S 9}
+(event [{e}])

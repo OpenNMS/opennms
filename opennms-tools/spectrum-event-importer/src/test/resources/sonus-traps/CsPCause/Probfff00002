@@ -1,0 +1,12 @@
+EMP S I P4XX ERRORS CORRECTED EVENT
+
+SYMPTOMS:
+
+"Event generated when one of the SIP 400s error values
+            (which was outside of the range) goes back into the
+            range specified for that particular object. "
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "callHeld" event has occurred, from {t} device, named {m}.
+
+"csta: A CSTA call leg has been held"
+
+callHeldRequestId = {S 1}
+callHeldHandle = {I 2}
+callHeldHeldByRemote = {T callHeldHeldByRemote 3}
+(event [{e}])

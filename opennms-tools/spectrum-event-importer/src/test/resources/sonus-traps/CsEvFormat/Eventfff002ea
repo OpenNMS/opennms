@@ -1,0 +1,12 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityDspModuleChannelPayloadMismatch" event has occurred, from {t} device, named {m}.
+
+" a payload mismatch is detected in a channel belonging to a DSP."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityBankIndex = {I 3}
+ipUnityModuleIndex = {I 4}
+ipUnityChannelIndex = {I 5}
+ipUnityTrapInfoString = {S 6}
+ipUnitySequenceNumber = {I 7}
+(event [{e}])

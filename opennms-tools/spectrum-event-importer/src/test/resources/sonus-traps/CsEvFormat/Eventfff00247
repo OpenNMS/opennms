@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySccNoMateAlarm" event has occurred, from {t} device, named {m}.
+
+" the SCC does not have a mate card."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityCardType = {T ipUnityCardType 3}
+ipUnityTrapInfoString = {S 4}
+ipUnitySequenceNumber = {I 5}
+(event [{e}])

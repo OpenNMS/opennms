@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityFanFailure" event has occurred, from {t} device, named {m}.
+
+" the failure of a fan is detected in the media server."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityFanNumber = {I 2}
+ipUnityTrapInfoString = {S 3}
+ipUnitySequenceNumber = {I 4}
+(event [{e}])

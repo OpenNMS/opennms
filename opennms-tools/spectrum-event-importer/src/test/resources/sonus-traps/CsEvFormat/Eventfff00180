@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtRadiusDownClearTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated when all configured radius
+	        accounting servers have resumed communication after any or
+		all have previously timed out."
+
+(event [{e}])

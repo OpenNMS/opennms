@@ -1,0 +1,12 @@
+RS ENVIR TEMP EXCEEDED
+
+SYMPTOMS:
+
+"A temperature inside the chassis on the sending device has exceeded
+	  normal operating temperature. The entPhysicalDescr object
+	  identifies the chassis."
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

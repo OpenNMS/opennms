@@ -1,0 +1,10 @@
+SYN COOKIES TRAP
+
+SYMPTOMS:
+
+"system: An increase in the TcpSynCookiesSent counter indicates a possible TCP SYN flood attack."
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

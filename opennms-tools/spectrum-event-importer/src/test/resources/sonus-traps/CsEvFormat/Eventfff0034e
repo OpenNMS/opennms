@@ -1,0 +1,5 @@
+{d "%w- %d %m-, %Y - %T"} - A "systemHalt" event has occurred, from {t} device, named {m}.
+
+"system: report that a system halt has been initiated"
+
+(event [{e}])
