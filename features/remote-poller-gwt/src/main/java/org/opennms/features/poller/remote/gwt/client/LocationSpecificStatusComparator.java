@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.Comparator;

@@ -988,12 +988,7 @@ public class InstallerDb {
      * <p>getXFromSQL</p>
      *
      * @param item a {@link java.lang.String} object.
-     * @param itemGroup a int.
-     * @param itemGroup a int.
-     * @param itemGroup a int.
-     * @param itemGroup a int.
      * @param regex a {@link java.lang.String} object.
-     * @param itemGroup a int.
      * @param itemGroup a int.
      * @param returnGroup a int.
      * @param description a {@link java.lang.String} object.
@@ -1020,11 +1015,6 @@ public class InstallerDb {
     /**
      * <p>findColumn</p>
      *
-     * @param columns a {@link java.util.List} object.
-     * @param columns a {@link java.util.List} object.
-     * @param columns a {@link java.util.List} object.
-     * @param columns a {@link java.util.List} object.
-     * @param columns a {@link java.util.List} object.
      * @param columns a {@link java.util.List} object.
      * @param column a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.dao.db.Column} object.

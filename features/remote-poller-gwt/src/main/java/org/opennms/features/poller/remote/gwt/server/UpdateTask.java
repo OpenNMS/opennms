@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package org.opennms.features.poller.remote.gwt.server;
 
 import java.util.Date;

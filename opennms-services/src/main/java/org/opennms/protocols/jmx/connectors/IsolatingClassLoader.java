@@ -176,7 +176,7 @@ public class IsolatingClassLoader extends URLClassLoader {
          * 
          */
         private static final long serialVersionUID = -82741827583768184L;
-        
+
         public InvalidContextClassLoaderException(String message) {
             
             super(message);

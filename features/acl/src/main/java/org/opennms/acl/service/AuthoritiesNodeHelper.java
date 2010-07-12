@@ -50,12 +50,6 @@ import org.opennms.acl.model.AuthorityView;
  */
 /* This class retrieve the nodes that an authority can view */
 /* This class retrieve the nodes that an authority can view */
-/* This class retrieve the nodes that an authority can view */
-/* This class retrieve the nodes that an authority can view */
-/* This class retrieve the nodes that an authority can view */
-/* This class retrieve the nodes that an authority can view */
-/* This class retrieve the nodes that an authority can view */
-/* This class retrieve the nodes that an authority can view */
 class AuthoritiesNodeHelper {
 
 	/**

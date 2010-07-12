@@ -204,19 +204,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param ipaddr a {@link java.lang.String} object.
 	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 * @param eventsnmphost a {@link java.lang.String} object.
-	 * @param eventsnmphost a {@link java.lang.String} object.
 	 * @param service a {@link org.opennms.netmgt.model.OnmsServiceType} object.
-	 * @param eventsnmphost a {@link java.lang.String} object.
-	 * @param eventsnmphost a {@link java.lang.String} object.
-	 * @param eventsnmphost a {@link java.lang.String} object.
-	 * @param eventsnmphost a {@link java.lang.String} object.
 	 * @param eventsnmp a {@link java.lang.String} object.
 	 * @param eventparms a {@link java.lang.String} object.
 	 * @param eventcreatetime a {@link java.util.Date} object.
 	 * @param eventdescr a {@link java.lang.String} object.
 	 * @param eventloggroup a {@link java.lang.String} object.
-	 * @param eventloggroup a {@link java.lang.String} object.
-	 * @param eventlogmsg a {@link java.lang.String} object.
 	 * @param eventlogmsg a {@link java.lang.String} object.
 	 * @param eventseverity a {@link java.lang.Integer} object.
 	 * @param eventpathoutage a {@link java.lang.String} object.
@@ -226,29 +219,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventautoaction a {@link java.lang.String} object.
 	 * @param eventoperaction a {@link java.lang.String} object.
 	 * @param eventoperactionmenutext a {@link java.lang.String} object.
-	 * @param eventoperactionmenutext a {@link java.lang.String} object.
-	 * @param eventoperactionmenutext a {@link java.lang.String} object.
-	 * @param eventoperactionmenutext a {@link java.lang.String} object.
-	 * @param eventoperactionmenutext a {@link java.lang.String} object.
-	 * @param eventoperactionmenutext a {@link java.lang.String} object.
 	 * @param eventnotification a {@link java.lang.String} object.
 	 * @param eventtticket a {@link java.lang.String} object.
 	 * @param eventtticketstate a {@link java.lang.Integer} object.
-	 * @param eventtticketstate a {@link java.lang.Integer} object.
-	 * @param eventtticketstate a {@link java.lang.Integer} object.
-	 * @param eventtticketstate a {@link java.lang.Integer} object.
-	 * @param eventtticketstate a {@link java.lang.Integer} object.
-	 * @param eventtticketstate a {@link java.lang.Integer} object.
 	 * @param eventforward a {@link java.lang.String} object.
 	 * @param eventmouseovertext a {@link java.lang.String} object.
-	 * @param eventloggroup a {@link java.lang.String} object.
-	 * @param eventloggroup a {@link java.lang.String} object.
-	 * @param eventlogmsg a {@link java.lang.String} object.
-	 * @param eventlogmsg a {@link java.lang.String} object.
-	 * @param eventloggroup a {@link java.lang.String} object.
-	 * @param eventlogmsg a {@link java.lang.String} object.
-	 * @param eventloggroup a {@link java.lang.String} object.
-	 * @param eventlogmsg a {@link java.lang.String} object.
 	 * @param eventlog a {@link java.lang.String} object.
 	 * @param eventdisplay a {@link java.lang.String} object.
 	 * @param eventackuser a {@link java.lang.String} object.

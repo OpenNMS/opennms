@@ -57,8 +57,6 @@ public interface RrdStrategy<D,F> {
      * <p>setConfigurationProperties</p>
      *
      * @param props a {@link java.util.Properties} object.
-     * @param <D> a D object.
-     * @param <F> a F object.
      */
     public void setConfigurationProperties(Properties props);
 

@@ -55,12 +55,7 @@ public class Group {
      * <p>Constructor for Group.</p>
      *
      * @param group a {@link org.opennms.acl.model.GroupDTO} object.
-     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
-     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
-     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
-     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
      * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param groupService a {@link org.opennms.acl.service.GroupService} object.
      * @param groupService a {@link org.opennms.acl.service.GroupService} object.
      */
     public Group(GroupDTO group, AuthorityService authorityService, GroupService groupService) {

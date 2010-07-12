@@ -134,11 +134,12 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
     }
     
     public static class MsgPreservingXmlRpcException extends XmlRpcException {
+
         /**
          * 
          */
         private static final long serialVersionUID = -4693127622262382452L;
-        
+
         public MsgPreservingXmlRpcException(int code, String message) {
             super(code, message);
         }
