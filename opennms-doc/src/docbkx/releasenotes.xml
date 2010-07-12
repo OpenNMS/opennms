@@ -43,7 +43,7 @@
 	<xi:include href="common/preface.xml" />
 	<xi:include href="releasenotes/chap1.xml" />
 	<xi:include href="releasenotes/chap2.xml" />
-	<xi:include href="releasenotes/chap3.xml" />
+	<!-- <xi:include href="releasenotes/chap3.xml" /> -->
 	<xi:include href="releasenotes/chap4.xml" />
 
 </book>
