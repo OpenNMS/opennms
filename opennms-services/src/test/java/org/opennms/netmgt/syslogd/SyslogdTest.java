@@ -40,7 +40,12 @@
 package org.opennms.netmgt.syslogd;
 
 import java.io.InputStream;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.BindException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
@@ -48,6 +53,8 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Ignore;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -107,9 +114,61 @@ public class SyslogdTest extends OpenNMSTestCase {
         MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
     }
 
-    public void testSyslogdStart() {
-        assertEquals("START_PENDING", m_syslogd.getStatusText());
-        m_syslogd.start();
+    /**
+     * Send a raw syslog message and expect a given event as a result
+     * 
+     * @param testPDU The raw syslog message as it would appear on the wire (just the UDP payload)
+     * @param expectedHost The host from which the event should be resolved as originating
+     * @param expectedUEI The expected UEI of the resulting event
+     * @param expectedLogMsg The expected contents of the logmsg for the resulting event 
+     * 
+     * @throws UnknownHostException 
+     * @throws InterruptedException 
+     */
+    private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException {
+        startSyslogdGracefully();
+        
+        Event expectedEvent = new Event();
+        expectedEvent.setUei(expectedUEI);
+        expectedEvent.setSource("syslogd");
+        expectedEvent.setInterface(expectedHost);
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent(expectedLogMsg);
+        expectedEvent.setLogmsg(logmsg);
+    
+        EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
+        ea.anticipateEvent(expectedEvent);
+        
+        SyslogClient sc = null;
+        sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        
+        assertEquals(0, ea.waitForAnticipated(2000).size());
+        Thread.sleep(2000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+        
+        Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
+        assertEquals("Log messages do not match", expectedLogMsg, receivedEvent.getLogmsg().getContent());
+        
+        return ea.getAnticipatedEventsRecieved();
+    }
+    
+    private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg, Map<String,String> expectedParams) throws UnknownHostException, InterruptedException {
+        List<Event> receivedEvents = doMessageTest(testPDU, expectedHost, expectedUEI, expectedLogMsg);
+        
+        Map<String,String> actualParms = new HashMap<String,String>();
+        for (Parm actualParm : receivedEvents.get(0).getParms().getParmCollection()) {
+            actualParms.put(actualParm.getParmName(), actualParm.getValue().getContent());
+        }
+        
+        for (String expectedKey : expectedParams.keySet()) {
+            String expectedValue = expectedParams.get(expectedKey);
+            assertTrue("Actual event does not have a parameter called " + expectedKey, actualParms.containsKey(expectedKey));
+            assertEquals("Actual event has a parameter called " + expectedKey + " but its value does not match", expectedValue, actualParms.get(expectedKey));
+        }
+        return receivedEvents;
     }
 
     public void testMessaging() {
@@ -154,350 +213,95 @@ public class SyslogdTest extends OpenNMSTestCase {
             //Failures are for weenies
         }
     }
-
-    public void testSubstrUEIRewrite() throws InterruptedException {
-    	String localhost = myLocalHost();
-    	final String testPDU = "2007-01-01 www.opennms.org A CISCO message";
-    	final String testUEI = "uei.opennms.org/tests/syslogd/substrUeiRewriteTest";
-    	final String testMsg = "A CISCO message";
-    	
-        Event e = new Event();
-        e.setUei(testUEI);
-        e.setSource("syslogd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(testMsg);
-        e.setLogmsg(logmsg);
-
-        EventAnticipator ea = new EventAnticipator();
-        ea.anticipateEvent(e);
-        
-        SyslogClient s = null;
+    
+    private void startSyslogdGracefully() {
         try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
+            m_syslogd.start();
+        } catch (UndeclaredThrowableException ute) {
+            if (ute.getCause() instanceof BindException) {
+                // continue, this was expected
+            } else {
+                throw ute;
+            }
         }
-        
-        assertEquals(1, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
-        
-        assertFalse(ea.getAnticipatedEvents().isEmpty());
-        
-        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
-        assertEquals(testUEI, ne.getUei());
-        assertEquals("syslogd", ne.getSource());
-        assertEquals(testMsg, ne.getLogmsg().getContent());
-    }
-
-    public void testRegexUEIRewrite() throws InterruptedException {
-    	String localhost = myLocalHost();
-    	final String testPDU = "2007-01-01 www.opennms.org foo: 100 out of 666 tests failed for bar";
-    	final String testUEI = "uei.opennms.org/tests/syslogd/regexUeiRewriteTest";
-    	final String testMsg = "foo: 100 out of 666 tests failed for bar";
-    	
-        Event e = new Event();
-        e.setUei(testUEI);
-        e.setSource("syslogd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(testMsg);
-        e.setLogmsg(logmsg);
-
-        EventAnticipator ea = new EventAnticipator();
-        ea.anticipateEvent(e);
-        
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
-        
-        assertEquals(1, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
-        
-        assertFalse(ea.getAnticipatedEvents().isEmpty());
-        
-        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
-        assertEquals(testUEI, ne.getUei());
-        assertEquals("syslogd", ne.getSource());
-        assertEquals(testMsg, ne.getLogmsg().getContent());    
     }
     
-    public void testSubstrTESTTestThatRemovesATESTString() throws InterruptedException {
-    	String localhost = myLocalHost();
-    	final String testPDU = "2007-01-01 www.opennms.org A CISCO message that is also a TEST message -- hide me!";
-    	final String testUEI = "uei.opennms.org/tests/syslogd/substrUeiRewriteTest";
-    	final String testMsg = ConvertToEvent.HIDDEN_MESSAGE;
-    	
-        Event e = new Event();
-        e.setUei("uei.opennms.org/tests/syslogd/substrUeiRewriteTest");
-        e.setSource("syslogd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(testMsg);
-        e.setLogmsg(logmsg);
+    public void testSubstrUEIRewrite() throws Exception {
+        doMessageTest("2007-01-01 localhost A CRISCO message",
+                      myLocalHost(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
+                      "A CRISCO message");
 
-        EventAnticipator ea = new EventAnticipator();
-        ea.anticipateEvent(e);
-        
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
-        
-        assertEquals(1, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
-        
-        assertFalse(ea.getAnticipatedEvents().isEmpty());
-        
-        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
-        assertEquals(testUEI, ne.getUei());
-        assertEquals("syslogd", ne.getSource());
-        assertEquals(testMsg, ne.getLogmsg().getContent());    
+    }
+    public void testRegexUEIRewrite() throws Exception {
+        doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for bar",
+                      myLocalHost(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
+                      "100 out of 666 tests failed for bar");
     }
     
-    public void testRegexTESTTestThatRemovesADoubleSecretString() throws InterruptedException {
-    	String localhost = myLocalHost();
-    	final String testPDU = "2007-01-01 www.opennms.org foo: 100 out of 666 tests failed for bar";
-    	final String testUEI = "uei.opennms.org/tests/syslogd/regexUeiRewriteTest";
-    	final String testMsg = ConvertToEvent.HIDDEN_MESSAGE;
-    	final String[] testGroups = { "100", "666", "bar" };
-    	
-        Event e = new Event();
-        e.setUei("uei.opennms.org/tests/syslogd/regexUeiRewriteTest");
-        e.setSource("syslogd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(testMsg);
-        e.setLogmsg(logmsg);
-        
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-        
-        eventParm = new Parm();
-        eventParm.setParmName("group1");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[0]);
-        eventParm.setValue(parmValue);
-        
-        eventParm = new Parm();
-        eventParm.setParmName("group2");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[1]);
-        eventParm.setValue(parmValue);
-        
-        eventParm = new Parm();
-        eventParm.setParmName("group3");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[2]);
-        eventParm.setValue(parmValue);
-        
-        e.setParms(eventParms);
-
-        EventAnticipator ea = new EventAnticipator();
-        ea.anticipateEvent(e);
-        
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
-
-        assertEquals(1, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
-        
-        assertFalse(ea.getAnticipatedEvents().isEmpty());
-        
-        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
-        assertEquals(testUEI, ne.getUei());
-        assertEquals("syslogd", ne.getSource());
-        assertEquals(testMsg, ne.getLogmsg().getContent());      
+    public void testSubstrTESTTestThatRemovesATESTString() throws Exception {
+        doMessageTest("2007-01-01 localhost A CRISCO message that is also a TESTHIDING message -- hide me!",
+                      myLocalHost(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
+                      ConvertToEvent.HIDDEN_MESSAGE);
     }
-
-    public void testSubstrDiscard() throws InterruptedException {
-        String localhost = myLocalHost();
-        final String testPDU = "2007-01-01 www.opennms.org A JUNK message";
-        final String testUEI = "DISCARD-MATCHING-MESSAGES";
-        final String testMsg = "A JUNK message";
-        
-        Event e = new Event();
-        e.setUei(testUEI);
-        e.setSource("syslogd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(testMsg);
-        e.setLogmsg(logmsg);
-
-        EventAnticipator ea = new EventAnticipator();
-        ea.anticipateEvent(e);
-        
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
-        
-        assertEquals(1, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
-        
-        assertFalse(ea.getAnticipatedEvents().isEmpty());
-        
-        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
-        assertEquals(testUEI, ne.getUei());
-        assertEquals("syslogd", ne.getSource());
-        assertEquals(testMsg, ne.getLogmsg().getContent());
-    }
-
-    public void testRegexDiscard() throws InterruptedException {
-        String localhost = myLocalHost();
-        final String testPDU = "2007-01-01 www.opennms.org A TrAsH message";
-        final String testUEI = "DISCARD-MATCHING-MESSAGES";
-        final String testMsg = "A TrAsH message";
-        
-        Event e = new Event();
-        e.setUei(testUEI);
-        e.setSource("syslogd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(testMsg);
-        e.setLogmsg(logmsg);
-
-        EventAnticipator ea = new EventAnticipator();
-        ea.anticipateEvent(e);
-        
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
-        
-        assertEquals(1, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
-        
-        assertFalse(ea.getAnticipatedEvents().isEmpty());
-        
-        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
-        assertEquals(testUEI, ne.getUei());
-        assertEquals("syslogd", ne.getSource());
-        assertEquals(testMsg, ne.getLogmsg().getContent());    
-    }
-
-    public void testRegexUEIWithBothKindsOfParameterAssignments() throws InterruptedException {
-    	String localhost = myLocalHost();
-    	final String testPDU = "2007-01-01 www.opennms.org coffee: Secretly replaced rangerrick's coffee with 42 wombats";
-    	final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/bothKinds";
-    	final String testMsg = "Secretly replaced rangerrick's coffee with 42 wombats";
-    	final String[] testGroups = { "rangerrick's", "42", "wombats" };
-    	
-        Event e = new Event();
-        e.setUei(testUEI);
-        e.setSource("syslogd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(testMsg);
-        e.setLogmsg(logmsg);
-        
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-        
-        eventParm = new Parm();
-        eventParm.setParmName("group1");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[0]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-        
-        eventParm = new Parm();
-        eventParm.setParmName("group2");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[1]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-        
-        eventParm = new Parm();
-        eventParm.setParmName("group3");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[2]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName("whoseBeverage");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[0]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-        
-        eventParm = new Parm();
-        eventParm.setParmName("count");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[1]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-        
-        eventParm = new Parm();
-        eventParm.setParmName("replacementItem");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[2]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        e.setParms(eventParms);
     
-        EventAnticipator ea = new EventAnticipator();
-        ea.anticipateEvent(e);
-        
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
+    public void testRegexTESTTestThatRemovesADoubleSecretString() throws Exception {
+        doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for doubleSecret",
+                      myLocalHost(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
+                      ConvertToEvent.HIDDEN_MESSAGE);
+    }
     
-        assertEquals(1, ea.waitForAnticipated(1000).size());
-        Thread.sleep(2000);
+    public void testSubstrDiscard() throws Exception {
+        startSyslogdGracefully();
+        final String testPDU = "2007-01-01 127.0.0.1 A JUNK message";
+        
+        EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
+        
+        SyslogClient sc = null;
+        sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        
+        Thread.sleep(3000);
         assertEquals(0, ea.unanticipatedEvents().size());
+    }
+
+    public void testRegexDiscard() throws Exception {
+        startSyslogdGracefully();
+        final String testPDU = "2007-01-01 127.0.0.1 A TrAsH message";
         
-        assertFalse(ea.getAnticipatedEvents().isEmpty());
+        EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
         
-        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
-        assertEquals(testUEI, ne.getUei());
-        assertEquals("syslogd", ne.getSource());
-        assertEquals(testMsg, ne.getLogmsg().getContent());      
+        SyslogClient sc = null;
+        sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
+        
+        Thread.sleep(3000);
+        assertEquals(0, ea.unanticipatedEvents().size());
+    }
+    
+    public void testRegexUEIWithBothKindsOfParameterAssignments() throws Exception {
+        final String testPDU = "2007-01-01 127.0.0.1 coffee: Secretly replaced rangerrick's coffee with 42 wombats";
+        final String expectedUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/bothKinds";
+        final String expectedLogMsg = "Secretly replaced rangerrick's coffee with 42 wombats";
+        final String[] testGroups = { "rangerrick's", "42", "wombats" };
+        
+        Map<String,String> expectedParms = new HashMap<String,String>();
+        expectedParms.put("group1", testGroups[0]);
+        expectedParms.put("whoseBeverage", testGroups[0]);
+        expectedParms.put("group2", testGroups[1]);
+        expectedParms.put("count", testGroups[1]);
+        expectedParms.put("group3", testGroups[2]);
+        expectedParms.put("replacementItem", testGroups[2]);
+        
+        doMessageTest(testPDU, myLocalHost(), expectedUEI, expectedLogMsg, expectedParms);
     }
 
     public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException {
+        startSyslogdGracefully();
+        
         String localhost = myLocalHost();
-        final String testPDU = "2007-01-01 www.opennms.org tea: Secretly replaced cmiskell's tea with 666 ferrets";
+        final String testPDU = "2007-01-01 127.0.0.1 tea: Secretly replaced cmiskell's tea with 666 ferrets";
         final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly";
         final String testMsg = "Secretly replaced cmiskell's tea with 666 ferrets";
         final String[] testGroups = { "cmiskell's", "666", "ferrets" };
@@ -539,6 +343,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         e.setParms(eventParms);
     
         EventAnticipator ea = new EventAnticipator();
+        getEventIpcManager().addEventListener(ea);
         ea.anticipateEvent(e);
         
         SyslogClient s = null;
@@ -549,16 +354,9 @@ public class SyslogdTest extends OpenNMSTestCase {
             //Failures are for weenies
         }
     
-        assertEquals(1, ea.waitForAnticipated(1000).size());
+        assertEquals(0, ea.waitForAnticipated(1000).size());
         Thread.sleep(2000);
         assertEquals(0, ea.unanticipatedEvents().size());
-        
-        assertFalse(ea.getAnticipatedEvents().isEmpty());
-        
-        Event ne = (Event) ea.getAnticipatedEvents().iterator().next();
-        assertEquals(testUEI, ne.getUei());
-        assertEquals("syslogd", ne.getSource());
-        assertEquals(testMsg, ne.getLogmsg().getContent());      
     }
 
 }

@@ -163,9 +163,14 @@ final class ConvertToEvent {
 
         final ConvertToEvent e = new ConvertToEvent();
 
+        String deZeroedData = new String(data, 0, len, "US-ASCII");
+        if (deZeroedData.endsWith("\0")) {
+            deZeroedData = deZeroedData.substring(0, deZeroedData.length() - 1);
+        }
+        
         e.m_sender = addr;
         e.m_port = port;
-        e.m_eventXML = new String(data, 0, len, "US-ASCII");
+        e.m_eventXML = deZeroedData;
         e.m_ackEvents = new ArrayList<Event>(16);
         e.m_log = null;
 
@@ -199,7 +204,7 @@ final class ConvertToEvent {
         final Logmsg logmsg = new Logmsg();
         logmsg.setDest("logndisplay");
 
-        String message = new String(data, 0, len, "US-ASCII");
+        String message = deZeroedData;
 
         int lbIdx = message.indexOf('<');
         int rbIdx = message.indexOf('>');
@@ -360,10 +365,10 @@ final class ConvertToEvent {
                     }
                 	if (message.contains(uei.getMatch().getExpression())) {
                 	    if (discardUei.equals(uei.getUei())) {
-                	        if (traceEnabled) {
+                	        if (log.isDebugEnabled()) {
                 	            log.trace("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
-                	            throw new MessageDiscardedException();
                 	        }
+                	        throw new MessageDiscardedException();
                 	    }
                         //We can pass a new UEI on this
                 	    if (traceEnabled) {
@@ -385,7 +390,7 @@ final class ConvertToEvent {
                 		log.warn("Failed to compile regex pattern '"+uei.getMatch().getExpression()+"'", pse);
                 		msgMat = null;
                 	}
-                	if ((msgMat != null) && (msgMat.matches())) {
+                	if ((msgMat != null) && (msgMat.find())) {
                         if (discardUei.equals(uei.getUei())) {
                             if (log.isDebugEnabled()) {
                                 log.debug("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
@@ -457,7 +462,7 @@ final class ConvertToEvent {
                 		log.warn("Failed to compile regex pattern '"+hide.getMatch().getExpression()+"'", pse);
                 		msgMat = null;
                 	}
-                	if ((msgMat != null) && (msgMat.matches())) {
+                	if ((msgMat != null) && (msgMat.find())) {
                         // We should hide the message based on this match
                 		doHide = true;
                 	}
