@@ -33,8 +33,8 @@ public class OpenNMSAbstractTestExecutionListener extends AbstractTestExecutionL
      *
      * @param clazz a {@link java.lang.Class} object.
      * @param testContext a {@link org.springframework.test.context.TestContext} object.
-     * @return a T object.
      * @param <T> a T object.
+     * @return a T object.
      */
     protected <T extends Annotation> T findTestAnnotation(Class<T> clazz, TestContext testContext) {
         Method testMethod = testContext.getTestMethod();

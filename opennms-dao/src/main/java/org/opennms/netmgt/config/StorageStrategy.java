@@ -46,11 +46,6 @@ public interface StorageStrategy {
      * <p>getRelativePathForAttribute</p>
      *
      * @param resourceParent a {@link java.lang.String} object.
-     * @param resourceParent a {@link java.lang.String} object.
-     * @param resourceParent a {@link java.lang.String} object.
-     * @param resourceParent a {@link java.lang.String} object.
-     * @param resourceParent a {@link java.lang.String} object.
-     * @param resourceParent a {@link java.lang.String} object.
      * @param resource a {@link java.lang.String} object.
      * @param attribute a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.

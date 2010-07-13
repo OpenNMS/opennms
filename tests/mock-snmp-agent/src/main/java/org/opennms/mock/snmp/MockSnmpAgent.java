@@ -274,11 +274,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         System.exit(1);
     }
     
-    /**
-     * <p>shutDownAndWait</p>
-     *
-     * @throws java.lang.InterruptedException if any.
-     */
+    
+    
+    /** {@inheritDoc} */
     @Override
     protected void initMessageDispatcher() {
         dispatcher = new MessageDispatcherImpl();
@@ -296,7 +294,11 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         initSnmpSession();
     }
 
-
+    /**
+     * <p>shutDownAndWait</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public void shutDownAndWait() throws InterruptedException {
         if (!isRunning()) {
             return;

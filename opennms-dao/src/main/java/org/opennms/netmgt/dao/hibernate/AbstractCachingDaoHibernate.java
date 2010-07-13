@@ -57,8 +57,8 @@ public abstract class AbstractCachingDaoHibernate<T, DbKey extends Serializable,
      * @param entityClass a {@link java.lang.Class} object.
      * @param dbKeyMatchesCacheKey a boolean.
      * @param <T> a T object.
-     * @param <CacheKey> a CacheKey object.
      * @param <DbKey> a DbKey object.
+     * @param <CacheKey> a CacheKey object.
      */
     public AbstractCachingDaoHibernate(Class<T> entityClass, boolean dbKeyMatchesCacheKey) {
         super(entityClass);

@@ -557,9 +557,12 @@ for LIBNAME in jicmp jrrd; do
 done
 
 echo ""
-echo " *** Installation complete.  You must still run the installer and"
-echo " *** make a few other changes before you start OpenNMS.  See the"
-echo " *** install guide and release notes for details."
+echo " *** Installation complete.  You must still run the installer at"
+echo " *** \$OPENNMS_HOME/etc/install to be sure your database is up"
+echo " *** to date before you start OpenNMS.  See the install guide at"
+echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
+echo " *** release notes for details."
+echo ""
 
 %postun core
 

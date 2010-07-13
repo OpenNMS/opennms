@@ -201,15 +201,10 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param alarmid a {@link java.lang.Integer} object.
      * @param eventuei a {@link java.lang.String} object.
-     * @param eventuei a {@link java.lang.String} object.
      * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      * @param counter a {@link java.lang.Integer} object.
      * @param severity a {@link java.lang.Integer} object.
      * @param firsteventtime a {@link java.util.Date} object.
-     * @param eventuei a {@link java.lang.String} object.
-     * @param eventuei a {@link java.lang.String} object.
-     * @param eventuei a {@link java.lang.String} object.
-     * @param eventuei a {@link java.lang.String} object.
      * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
      */
     public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime, OnmsEvent event) {

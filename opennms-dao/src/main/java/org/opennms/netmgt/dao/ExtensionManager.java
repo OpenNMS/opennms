@@ -50,11 +50,6 @@ public interface ExtensionManager {
      *
      * @param extension a {@link java.lang.Object} object.
      * @param extensionPoints a {@link java.lang.Class} object.
-     * @param extensionPoints a {@link java.lang.Class} object.
-     * @param extensionPoints a {@link java.lang.Class} object.
-     * @param extensionPoints a {@link java.lang.Class} object.
-     * @param extensionPoints a {@link java.lang.Class} object.
-     * @param extensionPoints a {@link java.lang.Class} object.
      */
     public void registerExtension(Object extension, Class<?>... extensionPoints);
     

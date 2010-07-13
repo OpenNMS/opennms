@@ -4,8 +4,157 @@
 
 	<subtitle>Changes in This OpenNMS</subtitle>
 
+	<section id="opennms-1.8.1">
+		<title>Changes in OpenNMS 1.8.1</title>
+
+		<section id="opennms-1.8.1-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Back by popular demand, it is again possible to show the number of events
+					in the event listing.  To enable it, edit opennms.properties.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3675">#3675</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The quick search box was moved to be below the current outages box on
+					the front page.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3849">#3849</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Events for Net-SNMP diskTable DISMAN traps were added.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3850">#3850</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Query-by-example now lets you filter by node in the notification list.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3899">#3899</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The remote poller map's Mapquest implementation now supports click and
+					double-click to mimic Mapquest's behaviour.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3901">#3901</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Next and previous links are now at the bottom of event, notification, and outage
+					list pages, as well as the top.  (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3910">#3910</ulink> and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3932">#3932</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>You can now use %shorttime% in notifications for a more compact date.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3917">#3917</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A vacuumd automation has been added to automatically clean out old remote poller
+					database entries.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3923">#3923</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Errors at startup relating to sockets (address already in use, etc.) will now
+					appear in the manager.log alongside other startup errors to ease debugging.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3940">#3940</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.1-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Fix problems on system with incorrect IPv6 configuration. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1959">#1959</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Fixed incorrect "The database server's error messages are not in English"
+					errors on installation. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3296">#3296</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The "Add Node" UI is now smarter about what it writes to disk. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3443">#3443</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Sorting was fixed on the advanced alarm search results. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3589">#3589</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The opennms-contrib debian package now properly depends on libxml-twig-perl. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3722">#3722</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Solaris packages play better with system boot now. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3802">#3802</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Debian and RPM packages are more explicit about what needs to be done
+					on post-installation. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3848">#3848</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The data collection failed event tells you what failed again.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3869">#3869</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of null pointer issues that could cause linkd to not create links
+					between nodes were fixed.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3871">#3871</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Spring security settings were fixed so dashboard-only users can properly connect
+					to the dashboard again.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3900">#3900</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Inline thresholding is enabled by default again, as it was late in the 1.6.x series.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3912">#3912</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of regex pattern validation bugs in our config handling have been fixed.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3915">#3915</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The notification browser now properly shows only a given user's notifications when a
+					filter has been applied.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3939">#3939</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The jar installer now handles errors a little more gracefully on Windows.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3953">#3953</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+	</section>
+
 	<section id="opennms-1.8">
-		<title>Changes in OpenNMS 1.8</title>
+		<title>Changes in OpenNMS 1.8 Since 1.6</title>
 
 		<para>
 			OpenNMS 1.8.x is the latest stable OpenNMS series.  Here is a high-level overview of

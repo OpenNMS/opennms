@@ -48,6 +48,7 @@ public class NoManagedInterfacesException extends RuntimeException {
 	 * 
 	 */
 	private static final long serialVersionUID = -1302515550652984154L;
+	
 	private String m_nodeListUri;
 	
 	/**

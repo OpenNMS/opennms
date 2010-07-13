@@ -58,11 +58,6 @@ public class GenericUser implements Serializable {
      *
      * @param user a {@link org.opennms.acl.model.UserAuthoritiesDTO} object.
      * @param userService a {@link org.opennms.acl.service.UserService} object.
-     * @param userService a {@link org.opennms.acl.service.UserService} object.
-     * @param userService a {@link org.opennms.acl.service.UserService} object.
-     * @param userService a {@link org.opennms.acl.service.UserService} object.
-     * @param userService a {@link org.opennms.acl.service.UserService} object.
-     * @param userService a {@link org.opennms.acl.service.UserService} object.
      * @param groupService a {@link org.opennms.acl.service.GroupService} object.
      */
     public GenericUser(UserAuthoritiesDTO user, UserService userService, GroupService groupService) {

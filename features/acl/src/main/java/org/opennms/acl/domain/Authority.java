@@ -58,46 +58,6 @@ public class Authority implements Serializable {
      * @param authority
      * @param authorityService
      * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
-     * @param authorityService
-     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
      * @param aclItemService a {@link org.opennms.acl.service.AclItemService} object.
      */
     public Authority(AuthorityDTO authority, AuthorityService authorityService, AclItemService aclItemService) {

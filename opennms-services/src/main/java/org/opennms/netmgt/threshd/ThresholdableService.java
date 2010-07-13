@@ -53,8 +53,8 @@ import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
-import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -72,7 +72,6 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 	 * 
 	 */
 	private static final long serialVersionUID = 2477161545461824755L;
-
 
     /**
      * Interface's parent node identifier

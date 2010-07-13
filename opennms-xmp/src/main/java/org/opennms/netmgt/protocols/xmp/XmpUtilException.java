@@ -7,11 +7,11 @@ package org.opennms.netmgt.protocols.xmp;
  * @version $Id: $
  */
 public class XmpUtilException extends Exception {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7653583871376609217L;
-    
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7653583871376609217L;
+
     String m_message;
     
     /**

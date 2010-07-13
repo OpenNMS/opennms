@@ -183,12 +183,7 @@ public class OnmsAcknowledgment {
      * <p>Constructor for OnmsAcknowledgment.</p>
      *
      * @param a a {@link org.opennms.netmgt.model.Acknowledgeable} object.
-     * @param ackTime a {@link java.util.Date} object.
-     * @param ackTime a {@link java.util.Date} object.
-     * @param ackTime a {@link java.util.Date} object.
-     * @param ackTime a {@link java.util.Date} object.
      * @param user a {@link java.lang.String} object.
-     * @param ackTime a {@link java.util.Date} object.
      * @param ackTime a {@link java.util.Date} object.
      */
     public OnmsAcknowledgment(final Acknowledgeable a, String user, Date ackTime) {

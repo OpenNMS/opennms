@@ -420,11 +420,6 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * <p>addExecutor</p>
      *
      * @param executorName a {@link java.lang.String} object.
-     * @param executorName a {@link java.lang.String} object.
-     * @param executorName a {@link java.lang.String} object.
-     * @param executorName a {@link java.lang.String} object.
-     * @param executorName a {@link java.lang.String} object.
-     * @param executorName a {@link java.lang.String} object.
      * @param executor a {@link java.util.concurrent.Executor} object.
      */
     public void addExecutor(String executorName, Executor executor) {

@@ -942,6 +942,8 @@ public class EventConstants {
 
     /** Constant <code>PARM_LOCATION_MONITOR_ID="locationMonitorId"</code> */
     public final static String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
+    /** Constant <code>PARM_LOCATION="location"</code> */
+    public final static String PARM_LOCATION = "location";
     
     /**
      * Parm use for promoteEnqueuedData event
