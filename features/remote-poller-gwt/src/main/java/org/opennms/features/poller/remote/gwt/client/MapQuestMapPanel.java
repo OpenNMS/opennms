@@ -143,10 +143,11 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
      * <p>initializeMap</p>
      */
     private void initializeMap() {
+    	
+    	m_map = MQATileMap.newInstance(m_mapHolder.getElement()); //NOTE: do not switch this line and the next line. It will cause problems. 
+            	
+    	m_mapHolder.setSize("100%", "100%"); //See above note
 
-        m_mapHolder.setSize("100%", "100%");
-
-        m_map = MQATileMap.newInstance(m_mapHolder.getElement());
         m_map.addControl(MQALargeZoomControl.newInstance());
         m_map.setZoomLevel(1);
         m_map.setCenter(MQALatLng.newInstance("0,0"));
