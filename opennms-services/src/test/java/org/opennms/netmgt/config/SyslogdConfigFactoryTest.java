@@ -103,7 +103,7 @@ public class SyslogdConfigFactoryTest extends TestCase {
         
         uei = ueiList.get(1);
         assertEquals("regex", uei.getMatch().getType());
-        assertEquals(".*?foo: (\\d+) out of (\\d+) tests failed for (\\S+)$", uei.getMatch().getExpression());
+        assertEquals("foo: (\\d+) out of (\\d+) tests failed for (\\S+)$", uei.getMatch().getExpression());
         assertEquals("uei.opennms.org/tests/syslogd/regexUeiRewriteTest", uei.getUei());
     }
 
@@ -112,9 +112,9 @@ public class SyslogdConfigFactoryTest extends TestCase {
             boolean typeOk = ( hide.getMatch().getType().equals("substr") || hide.getMatch().getType().equals("regex") );
             assertTrue(typeOk);
             if (hide.getMatch().getType().equals("substr")) {
-                assertEquals("TEST", hide.getMatch().getExpression());
+                assertEquals("TESTHIDING", hide.getMatch().getExpression());
             } else if (hide.getMatch().getType().equals("regex")) {
-                assertEquals("[Dd]ouble secret", hide.getMatch().getExpression());
+                assertEquals("[Dd]ouble[Ss]ecret", hide.getMatch().getExpression());
             }
         }
     }
