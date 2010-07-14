@@ -8,8 +8,17 @@
     <jsp:param name="breadcrumb" value="Distributed Status" />
 </jsp:include>
 
-<jsp:include page="/includes/key.jsp" flush="false" />
+<jsp:include page="/includes/key.jsp" flush="false" >
 
+   <jsp:param name="clearedCaption" value="CLEARED" />
+   <jsp:param name="normalCaption" value="NORMAL" />
+   <jsp:param name="indetermCaption" value="INDETERMINATE" />
+   <jsp:param name="warnCaption" value="WARNING" />
+   <jsp:param name="minorCaption" value="MINOR" />
+   <jsp:param name="majorCaption" value="MAJOR" />
+   <jsp:param name="criticalCaption" value="CRITICAL" />
+
+ </jsp:include>
 <h3><c:out value="${webTable.title}" /></h3>
 
 <table>
