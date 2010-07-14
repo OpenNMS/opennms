@@ -156,7 +156,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 	        LogUtils.debugf(this, "Found %d monitors", monitors.size());
 	
 	        for (final OnmsLocationMonitor monitor : monitors) {
-	            if (monitor.getStatus() == MonitorStatus.STARTED && monitor.getLastCheckInTime().before(earliestAcceptable)) {
+	            if (monitor.getStatus() == MonitorStatus.STARTED 
+	                    && monitor.getLastCheckInTime() != null 
+	                    && monitor.getLastCheckInTime().before(earliestAcceptable))
+	            {
 	                LogUtils.debugf(this, "Monitor %s has stopped responding", monitor.getName());
 	                monitor.setStatus(MonitorStatus.DISCONNECTED);
 	                m_locMonDao.update(monitor);
