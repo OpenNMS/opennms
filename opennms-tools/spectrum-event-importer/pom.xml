@@ -2,14 +2,14 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.1-SNAPSHOT</version>
+    <version>1.8.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.netmgt.mib2events</groupId>
   <artifactId>spectrum-event-importer</artifactId>
   <packaging>jar</packaging>
   <name>spectrum-event-importer</name>
-  <version>1.8.1-SNAPSHOT</version>
+  <version>1.8.2-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -26,7 +26,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
-      <version>1.8.1-SNAPSHOT</version>
+      <version>1.8.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
