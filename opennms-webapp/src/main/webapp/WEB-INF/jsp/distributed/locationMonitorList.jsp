@@ -54,10 +54,10 @@
 
   
 <c:if test="${isAdmin}">
-  <form action="admin/distributed/locationMonitorPauseAll.htm" method="post">
+  <form action="admin/distributed/locationMonitorPauseAll.htm" method="post" style="display:inline;">
     <input type="submit" value="Pause All"/>
   </form>
-  <form action="admin/distributed/locationMonitorResumeAll.htm" method="post">
+  <form action="admin/distributed/locationMonitorResumeAll.htm" method="post" style="display:inline;">
     <input type="submit" value="Resume All"/>
   </form>
 </c:if>
