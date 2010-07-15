@@ -12,11 +12,12 @@ X -Read log messages from a file
 X-Adding more than one log resets start time
 X -End log messages should not set start time
 X -Start log messages should not set end time
-X-Should the count of collections count errors
+X-Should the count of collections count errors - yes
 X-Separate errors from successful in collection attempts 
- -Output Global stats
- -Output service stats heading
- -Output stats for a single service
+ X-Output Global stats
+ X-Output service stats heading
+ X-Output stats for a single service
+ -Output entire report
  -Sort service stats
  -output sorted service stats
  -Close log file in finally

@@ -1,5 +1,7 @@
 package edu.ncsu.pdgrenon;
 
+import java.io.PrintWriter;
+
 public class Main {
 
 	/**
@@ -7,7 +9,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 	Collector c = new Collector();
-	c.sortAndPrintServiceCount();
+	c.sortAndPrintServiceCount(new PrintWriter(System.out,true));
 
 	}
 

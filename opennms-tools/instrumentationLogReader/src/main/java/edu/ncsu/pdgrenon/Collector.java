@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -15,6 +18,7 @@ import java.util.Set;
 
 public class Collector {
 
+	public static final String SERVICE_FORMAT_STRING = "%-28s%20s%15s%25s\n";
 	private List<LogMessage> m_messages = new ArrayList<LogMessage>();
 
 	public void addLog(String logMessage) {
@@ -50,13 +54,17 @@ public class Collector {
 		return this.getEndTime().getTime()-this.getStartTime().getTime();
 	}
 	public int getServiceCount() {
+		Set<String> services = getServices();
+		return services.size();
+	}
+	public Set<String> getServices() {
 		Set<String> services = new HashSet<String>();
 		for(LogMessage logMessage : m_messages) {
 			services.add(logMessage.getServiceID());
 		}
-		return services.size();
+		return services;
 	}
-	public String sortAndPrintServiceCount() {
+	public void sortAndPrintServiceCount(PrintWriter out) {
 		int errorCount = 0;
 		int beginCount = 0;
 		int endCount = 0;
@@ -75,10 +83,8 @@ public class Collector {
 				failure +=1;
 			}
 		}
-		System.out.println("Beginning collecting messages during collection: " + beginCount + " Ending collecting messages during collection:  " + endCount +
+		out.println("Beginning collecting messages during collection: " + beginCount + " Ending collecting messages during collection:  " + endCount +
 				" Persisting messages during collection: " + persistCount + " Error messages during collection: " + errorCount+ " failures: " + failure);
-		return "Beginning collecting messages during collection: " + beginCount + " Ending collecting messages during collection:  " + endCount +
-				" Persisting messages during collection: " + persistCount + " Error messages during collection: " + errorCount + " failures: " + failure;
 	}
 	public int getThreadCount() {
 		Set<String> threads = new HashSet<String>();
@@ -124,7 +130,7 @@ public class Collector {
 		}
 		return average;
 	}
-	public long testTotalCollectionTimePerService(String serviceID) {
+	public long totalCollectionTimePerService(String serviceID) {
 		long [] begin = new long [this.collectionsPerService(serviceID)];
 		long [] end = new long [this.collectionsPerService(serviceID)];
 		int i = 0;
@@ -143,7 +149,7 @@ public class Collector {
 			added += elapsed [i];
 		}
 		if(added<0){
-			added = -1;
+			added = 0;
 		}
 		return added;
 	}
@@ -157,7 +163,68 @@ public class Collector {
 		}
 		r.close();
 	}
-	public int [] printGlobalStats() {
-		return null;
+	public void printGlobalStats(PrintWriter out) {
+		SimpleDateFormat f = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss,S");
+		out.println("Start Time: " + f.format(this.getStartTime()));
+		out.println("End Time: " + f.format(this.getEndTime()));
+		out.println("Duration: "+ Collector.formatDuration(this.getDuration()));
+		out.println("Total Services: "+this.getServiceCount());
+		out.println("Threads Used: " + this.getThreadCount());
+	}
+	public static String formatDuration(long millis) {
+		if (millis==0) {
+			return "0s";
+		}
+		boolean force = false;
+		StringBuilder buf = new StringBuilder();
+		if (force || millis >= (1000*3600*24)) {
+			long d = millis/(1000*3600*24);
+			buf.append(d);
+			buf.append("d");
+			millis%=(1000*3600*24);
+			force = millis!=0;
+		}
+		if (force || millis >= (1000*3600)) {
+			long h = millis/(1000*3600);
+			buf.append(h);
+			buf.append("h");
+			millis%=(1000*3600);
+			force = millis!=0;
+		}
+		if (force || millis >= 60000) {
+			long m = millis/60000;
+			buf.append(m);
+			buf.append("m");
+			millis %= 60000;
+			force=millis!=0;
+		}
+		if (millis!=0) {
+			long s = millis/1000;
+			buf.append(s);
+			if(millis%1000 !=0) {
+				buf.append(".");
+				buf.append(String.format("%03d", millis%1000));
+			}
+			buf.append("s");
+		}
+		return buf.toString();
+		
+	}
+	public void printServiceStats(String serviceID, PrintWriter out) {
+		out.printf(SERVICE_FORMAT_STRING, serviceID, Collector.formatDuration(this.averageCollectionTimePerService(serviceID)), this.collectionsPerService(serviceID), Collector.formatDuration(this.totalCollectionTimePerService(serviceID)));
+	}
+//	Service               Avg Collect Time  Avg Persist Time  Avg Time between Collects # Collections Total Collection Time Total Persist Time
+//	19/172.10.1.21/SNMP       13.458s             .002s              5m27s                    3                 45.98s           .010s
+	public void printServiceHeader(PrintWriter out) {
+		out.printf(SERVICE_FORMAT_STRING, "Service", "Avg Collect Time", "# Collections", "Total Collection Time");
+		
+	}
+	public void printReport(PrintWriter out) {
+		this.printGlobalStats(out);
+		out.println();
+		this.printServiceHeader(out);
+		for(String serviceID : this.getServices()){
+			this.printServiceStats(serviceID, out);
+		}
 	}
 }
