@@ -1,0 +1,22 @@
+To do:
+
+X -Start time
+X -End time
+X -Total time
+X -Total number of services
+X-Total number of threads
+X -Average time of collection per service
+X -Number of collections per service
+X -Total collection time per service
+X -Read log messages from a file
+X-Adding more than one log resets start time
+X -End log messages should not set start time
+X -Start log messages should not set end time
+X-Should the count of collections count errors
+X-Separate errors from successful in collection attempts 
+ -Output Global stats
+ -Output service stats heading
+ -Output stats for a single service
+ -Sort service stats
+ -output sorted service stats
+ -Close log file in finally
