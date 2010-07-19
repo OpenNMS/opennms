@@ -247,6 +247,9 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
      * 
+     * TODO: Factor this method out so that it can be reused? Or use an existing
+     * utility method if one exists?
+     * 
      * @param iface
      *            The interface to test against the package.
      * @param pkg

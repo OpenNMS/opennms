@@ -76,11 +76,11 @@ public class GenericIndexResourceType implements OnmsResourceType {
     private static final Pattern HEX_PATTERN = Pattern.compile("^hex\\((.*)\\)$");
     private static final Pattern STRING_PATTERN = Pattern.compile("^string\\((.*)\\)$");
 
-    private String m_name;
-    private String m_label;
-    private String m_resourceLabelExpression;
-    private ResourceDao m_resourceDao;
-    private StorageStrategy m_storageStrategy;
+    private final String m_name;
+    private final String m_label;
+    private final String m_resourceLabelExpression;
+    private final ResourceDao m_resourceDao;
+    private final StorageStrategy m_storageStrategy;
 
     /**
      * <p>Constructor for GenericIndexResourceType.</p>

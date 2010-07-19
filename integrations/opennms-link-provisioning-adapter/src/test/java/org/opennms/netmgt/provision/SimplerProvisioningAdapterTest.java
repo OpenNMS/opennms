@@ -35,13 +35,25 @@
  */
 package org.opennms.netmgt.provision;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Test the user stories/use cases associated with the Link Adapter.
@@ -67,11 +79,16 @@ public class SimplerProvisioningAdapterTest {
     CountDownLatch deleteLatch = new CountDownLatch(1);
     CountDownLatch updateLatch = new CountDownLatch(1);
     CountDownLatch configChangeLatch = new CountDownLatch(1);
-    
+
+    // From applicationContext-dao.xml
+    @Autowired
+    private TransactionTemplate m_txTemplate;
+
     class MyProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
         
         public MyProvisioningAdapter() {
             super(NAME);
+            setTemplate(m_txTemplate);
         }
 
         @Override
@@ -95,11 +112,13 @@ public class SimplerProvisioningAdapterTest {
         }
         
     }
-    
-    MyProvisioningAdapter m_adapter = new MyProvisioningAdapter();
-    
+
+    private MyProvisioningAdapter m_adapter;
+
     @Before
     public void setUp() {
+        assertNotNull(m_txTemplate);
+        m_adapter = new MyProvisioningAdapter();
         m_adapter.init();
     }
     
@@ -139,6 +158,4 @@ public class SimplerProvisioningAdapterTest {
         assertTrue(configChangeLatch.await(2, TimeUnit.SECONDS));
 
     }
-
-
 }

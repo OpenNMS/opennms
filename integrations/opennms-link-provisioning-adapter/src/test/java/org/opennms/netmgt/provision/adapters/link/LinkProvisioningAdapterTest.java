@@ -44,13 +44,20 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.provision.adapters.link.LinkMatchResolver;
-import org.opennms.netmgt.provision.adapters.link.LinkProvisioningAdapter;
-import org.opennms.netmgt.provision.adapters.link.NodeLinkService;
 import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 /**
  * Test the user stories/use cases associated with the Link Adapter.
@@ -58,15 +65,31 @@ import org.opennms.test.mock.EasyMockUtils;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class
+})
+@ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath*:/META-INF/opennms/provisiond-extensions.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:testConfigContext.xml"
+})
+@JUnitTemporaryDatabase()
 public class LinkProvisioningAdapterTest {
     
     public static final String END_POINT_1 = "nc-ral0001-to-ral0002-dwave";
     public static final String END_POINT_2 = "nc-ral0002-to-ral0001-dwave";
     public static final String UP_STATUS = "G";
     public static final String FAILED_STATUS = "B";
-    
+
+    @Autowired
     LinkProvisioningAdapter m_adapter;
-    
+
     EasyMockUtils m_easyMock = new EasyMockUtils();
 
     private LinkMatchResolver m_matchResolver;
@@ -117,7 +140,6 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         
@@ -141,7 +163,6 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         
@@ -160,7 +181,6 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         
@@ -183,7 +203,6 @@ public class LinkProvisioningAdapterTest {
         eventBuilder.setParam("endPoint1", END_POINT_1);
         eventBuilder.setParam("endPoint2", END_POINT_2);
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         m_adapter.dataLinkFailed(eventBuilder.getEvent());
@@ -207,7 +226,6 @@ public class LinkProvisioningAdapterTest {
         eventBuilder.setCreationTime(new Date());
         eventBuilder.setDescription("nodeLinkFailed");
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         m_adapter.dataLinkFailed(eventBuilder.getEvent());
@@ -231,7 +249,6 @@ public class LinkProvisioningAdapterTest {
         eventBuilder.setCreationTime(new Date());
         eventBuilder.setDescription("nodeLinkFailed");
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         m_adapter.dataLinkRestored(eventBuilder.getEvent());
@@ -255,7 +272,6 @@ public class LinkProvisioningAdapterTest {
         eventBuilder.setCreationTime(new Date());
         eventBuilder.setDescription("nodeLinkFailed");
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         m_adapter.dataLinkRestored(eventBuilder.getEvent());
@@ -274,7 +290,6 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         
@@ -298,7 +313,6 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         
@@ -317,7 +331,6 @@ public class LinkProvisioningAdapterTest {
         
         replay();
         
-        m_adapter = new LinkProvisioningAdapter();
         m_adapter.setLinkMatchResolver(m_matchResolver);
         m_adapter.setNodeLinkService(m_nodeLinkService);
         
@@ -336,5 +349,42 @@ public class LinkProvisioningAdapterTest {
     
     public void replay(){
         m_easyMock.replayAll();
+    }
+
+
+    /**
+     * Test invocation of the addNode() operation to verify that the Spring context
+     * is injecting all of the necessary dependencies.
+     */
+    @Test
+    public void dwoAddNodeCallsDoAddNode() throws InterruptedException {
+        m_adapter.addNode(1);
+        Assert.assertEquals(1, m_adapter.getOperationQueue().getOperationQueueForNode(1).size());
+        Thread.sleep(3000);
+        Assert.assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(1).size());
+    }
+
+    @Test
+    public void dwoDeleteNodeCallsDoDeleteNode() throws InterruptedException {
+        m_adapter.deleteNode(1);
+        Assert.assertEquals(1, m_adapter.getOperationQueue().getOperationQueueForNode(1).size());
+        Thread.sleep(3000);
+        Assert.assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(1).size());
+    }
+
+    @Test
+    public void dwoUpdateNodeCallsDoUpdateNode() throws InterruptedException {
+        m_adapter.updateNode(1);
+        Assert.assertEquals(1, m_adapter.getOperationQueue().getOperationQueueForNode(1).size());
+        Thread.sleep(3000);
+        Assert.assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(1).size());
+    }
+
+    @Test
+    public void dwoNotifyConfigChangeCallsDoNotifyConfigChange() throws InterruptedException {
+        m_adapter.nodeConfigChanged(1);
+        Assert.assertEquals(1, m_adapter.getOperationQueue().getOperationQueueForNode(1).size());
+        Thread.sleep(3000);
+        Assert.assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(1).size());
     }
 }
