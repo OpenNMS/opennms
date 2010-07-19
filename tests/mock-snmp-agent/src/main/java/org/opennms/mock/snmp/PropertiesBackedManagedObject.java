@@ -78,7 +78,14 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
         for(Entry<Object, Object> e : props.entrySet()) {
             String key = (String)e.getKey();
             Object value = e.getValue();
-            m_vars.put(new OID(key), value);
+            try {
+                m_vars.put(new OID(key), value);
+            } catch (Throwable ex) {
+                // Catch any malformed OIDs and create a more descriptive error message
+                IllegalArgumentException nfe = new IllegalArgumentException("Could not load OID value: [" + key + "] [" + value + "]");
+                nfe.initCause(ex);
+                throw nfe;
+            }
         }
 
 
