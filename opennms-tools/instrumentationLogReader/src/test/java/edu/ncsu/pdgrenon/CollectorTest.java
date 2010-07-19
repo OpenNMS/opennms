@@ -153,7 +153,7 @@ public class CollectorTest {
 		c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
 		c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: collectData: begin: 58/172.20.1.201/SNMP");
 		StringWriter out = new StringWriter();
-		c.sortAndPrintServiceCount(new PrintWriter(out, true));
+		c.printMessageTypeCounts(new PrintWriter(out, true));
 		String actualOutput = out.toString(); 
 		String expectedOutput = String.format("Beginning collecting messages during collection: %d Ending collecting messages during collection:  %d" +
 				" Persisting messages during collection: %d Error messages during collection: %d failures: %d\n" ,4,2,4,0,0);
