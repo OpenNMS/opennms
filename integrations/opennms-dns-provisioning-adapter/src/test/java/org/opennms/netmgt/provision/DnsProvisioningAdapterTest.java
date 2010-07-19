@@ -60,7 +60,7 @@ public class DnsProvisioningAdapterTest {
         m_adapterOperation = m_adapter.new AdapterOperation(
             m_nodeDao.findByForeignId("dns", "1").getId(),
             AdapterOperationType.ADD,
-            m_adapter.new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
+            new SimpleQueuedProvisioningAdapter.AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
         );
         
         System.setProperty("importer.adapter.dns.server", "127.0.0.1");

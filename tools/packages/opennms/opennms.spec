@@ -178,6 +178,7 @@ Requires:	opennms-plugin-provisioning-dns
 Requires:	opennms-plugin-provisioning-link
 Requires:	opennms-plugin-provisioning-map
 Requires:	opennms-plugin-provisioning-rancid
+Requires:   opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-ticketer-centric
 
 %description plugins
@@ -231,6 +232,18 @@ Requires:	opennms-core = %{version}-%{release}
 %description plugin-provisioning-rancid
 The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
 RANCID's device database when OpenNMS provisions nodes.
+
+%{extrainfo}
+%{extrainfo2}
+
+%package plugin-provisioning-snmp-asset
+Summary:    SNMP Asset Provisioning Adapter for OpenNMS
+Group:      Applications/System
+Requires:   opennms-core = %{version}-%{release}
+
+%description plugin-provisioning-snmp-asset
+The SNMP asset provisioning adapter responds to provisioning events by updating asset
+fields with data fetched from SNMP GET requests.
 
 %{extrainfo}
 %{extrainfo2}
@@ -381,10 +394,11 @@ popd
 
 # provisioning adapters
 
-cp integrations/opennms-dns-provisioning-adapter/target/*.jar  $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-link-provisioning-adapter/target/*.jar $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-map-provisioning-adapter/target/*.jar  $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-rancid/target/*.jar                    $RPM_BUILD_ROOT%{instprefix}/lib/
+cp integrations/opennms-dns-provisioning-adapter/target/*.jar        $RPM_BUILD_ROOT%{instprefix}/lib/
+cp integrations/opennms-link-provisioning-adapter/target/*.jar       $RPM_BUILD_ROOT%{instprefix}/lib/
+cp integrations/opennms-map-provisioning-adapter/target/*.jar        $RPM_BUILD_ROOT%{instprefix}/lib/
+cp integrations/opennms-rancid/target/*.jar                          $RPM_BUILD_ROOT%{instprefix}/lib/
+cp integrations/opennms-snmp-asset-provisioning-adapter/target/*.jar $RPM_BUILD_ROOT%{instprefix}/lib/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-sources.jar
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-tests.jar
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-xsds.jar
@@ -457,6 +471,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-provisioning-rancid
 %attr(664,root,root) %{instprefix}/lib/opennms-rancid*.jar
+
+%files plugin-provisioning-snmp-asset
+%attr(664,root,root) %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
+%attr(664,root,root) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 
 %post docs
 printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
@@ -575,6 +593,9 @@ if [ "$1" = 0 ]; then
 fi
 
 %changelog
+* Mon Jul 19 2010 Seth Leger <seth@opennms.org>
+- Added SNMP asset provisioning adapter.
+
 * Tue Sep 29 2009 Benjamin Reed <ranger@opennms.org>
 - Add provisioning adapters as optional packages.
 

@@ -63,7 +63,7 @@ public class RancidProvisioningAdapterTest {
         m_adapterOperation = m_adapter.new AdapterOperation(
             m_nodeDao.findByForeignId("rancid", "1").getId(),
             AdapterOperationType.ADD,
-            m_adapter.new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
+            new SimpleQueuedProvisioningAdapter.AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
         );        
     }
 
