@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="snmpAssetAdapterConfigFactory" class="org.opennms.netmgt.config.SnmpAssetAdapterConfigFactory">
+		<!-- <constructor-arg type="org.opennms.netmgt.config.OpennmsServerConfigFactory" ref="onmsServerConfig"/> -->
+	</bean>
+
+	<bean id="snmpAssetAdapterConfig" factory-bean="snmpAssetAdapterConfigFactory" factory-method="getInstance"/>
+
+	<bean name="snmpAssetProvisioningAdapter" class="org.opennms.netmgt.provision.SnmpAssetProvisioningAdapter">
+		<property name="eventForwarder" ref="eventForwarder" />
+		<property name="nodeDao" ref="nodeDao" />
+		<!-- <property name="assetRecordDao" ref="assetRecordDao" /> -->
+		<property name="snmpPeerFactory" ref="snmpPeerFactory" />
+		<property name="snmpAssetAdapterConfig" ref="snmpAssetAdapterConfig" />
+		<property name="template" ref="transactionTemplate" />
+	</bean>
+
+	<bean id="snmpAssetEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+		<property name="annotatedListener" ref="snmpAssetProvisioningAdapter" />
+		<property name="eventSubscriptionService" ref="eventSubscriptionService" />
+	</bean>
+
+</beans>

@@ -47,7 +47,7 @@ import java.util.Properties;
  * @author ranger
  * @version $Id: $
  */
-public class PropertiesUtils {
+public abstract class PropertiesUtils {
 	
 	private static final String PLACEHOLDER_SUFFIX = "}";
     private static final String PLACEHOLDER_PREFIX = "${";

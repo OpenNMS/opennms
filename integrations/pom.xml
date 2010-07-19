@@ -17,5 +17,6 @@
     <module>opennms-puppet-provisioning-adapter</module>
     <module>opennms-rancid</module>
     <module>opennms-rws</module>
+    <module>opennms-snmp-asset-provisioning-adapter</module>
   </modules>
 </project>
