@@ -64,7 +64,7 @@ public class Collector {
 		}
 		return services;
 	}
-	public void sortAndPrintServiceCount(PrintWriter out) {
+	public void printMessageTypeCounts(PrintWriter out) {
 		int errorCount = 0;
 		int beginCount = 0;
 		int endCount = 0;
