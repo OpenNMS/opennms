@@ -9,7 +9,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 	Collector c = new Collector();
-	c.sortAndPrintServiceCount(new PrintWriter(System.out,true));
+	c.printMessageTypeCounts(new PrintWriter(System.out,true));
 
 	}
 
