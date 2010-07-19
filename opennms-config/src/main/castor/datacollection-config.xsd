@@ -317,8 +317,8 @@
 
           <element maxOccurs="1" minOccurs="1" name="sysoidMask" type="string">
             <annotation>
-              <documentation>sysoid mask which can be used to match multiple
-              systems</documentation>
+              <documentation>Sysoid mask which can be used to match multiple
+              systems if their sysoid begins with the mask</documentation>
             </annotation>
           </element>
         </choice>
