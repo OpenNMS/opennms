@@ -187,6 +187,24 @@ public class Migrator {
     }
 
     /**
+     * Get the expected extension for this platform.
+     * @return
+     */
+    private String getExtension(final boolean jni) {
+        final String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.startsWith("windows")) {
+            return "dll";
+        } else if (osName.startsWith("mac")) {
+            if (jni) {
+                return "jnilib";
+            } else {
+                return "so";
+            }
+        }
+        return "so";
+    }
+    
+    /**
      * <p>createLangPlPgsql</p>
      *
      * @throws org.opennms.core.schema.MigrationException if any.
@@ -197,11 +215,14 @@ public class Migrator {
         ResultSet rs = null;
         Connection c = null;
         try {
-            c = m_adminDataSource.getConnection();
+            c = m_dataSource.getConnection();
             st = c.createStatement();
             rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
-            if (!rs.next()) {
-                st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql' LANGUAGE 'c'");
+            if (rs.next()) {
+                log().info("PL/PgSQL call handler exists");
+            } else {
+                log().info("adding PL/PgSQL call handler");
+                st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql." + getExtension(false) + "' LANGUAGE 'c'");
             }
 
             rs = st.executeQuery("SELECT pg_language.oid "
@@ -210,7 +231,10 @@ public class Migrator {
                 + "pg_proc.proargtypes = '' AND "
                 + "pg_proc.oid = pg_language.lanplcallfoid AND "
                 + "pg_language.lanname = 'plpgsql'");
-            if (!rs.next()) {
+            if (rs.next()) {
+                log().info("PL/PgSQL language exists");
+            } else {
+                log().info("adding PL/PgSQL language");
                 st.execute("CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' "
                     + "HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
             }
@@ -347,9 +371,9 @@ public class Migrator {
      */
     public void prepareDatabase(Migration migration) throws MigrationException {
         validateDatabaseVersion();
-        createLangPlPgsql();
         createUser(migration);
         createDatabase(migration);
+        createLangPlPgsql();
     }
 
     /**
