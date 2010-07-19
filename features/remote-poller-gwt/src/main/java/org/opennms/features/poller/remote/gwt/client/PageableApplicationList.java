@@ -16,10 +16,10 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
  * <p>PageableApplicationList class.</p>
@@ -169,7 +169,7 @@ public class PageableApplicationList extends PageableList implements Application
     public void onItemClickHandler(final ClickEvent event) {
         final Cell cell = getCellForEvent(event);
 
-        final ApplicationInfo appInfo = getApplications().get(cell.getRowIndex());
+        final ApplicationInfo appInfo = getApplications().get(cell.getRowIndex() + (getCurrentPageIndex() * getTotalListItemsPerPage()));
         m_eventBus.fireEvent(new ApplicationSelectedEvent(appInfo.getName()));
     }
 
