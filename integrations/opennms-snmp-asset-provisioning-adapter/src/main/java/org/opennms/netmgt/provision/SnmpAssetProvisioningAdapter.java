@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingFormatArgumentException;
 import java.util.Properties;
 import java.util.Set;
@@ -207,6 +208,17 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			Properties substitutions = new Properties();
 			for (int i = 0; i < values.length; i++) {
 				substitutions.setProperty(aliases.get(i), values[i].toString());
+			}
+			if (objs.size() != substitutions.size()) {
+				StringBuffer propertyValues = new StringBuffer();
+				for (Map.Entry<Object, Object> entry : substitutions.entrySet()) {
+					propertyValues.append("  ");
+					propertyValues.append(entry.getKey().toString());
+					propertyValues.append(" => ");
+					propertyValues.append(entry.getValue().toString());
+					propertyValues.append("\n");
+				}
+				log().warn("fetchSnmpAssetString: Unexpected number of properties returned from SNMP GET: \n" + propertyValues.toString());
 			}
 
 			try {
