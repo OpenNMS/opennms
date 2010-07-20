@@ -41,8 +41,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
+import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -58,6 +61,7 @@ import org.opennms.netmgt.model.ServiceSelector;
  */
 public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
     @Override
+    @SuppressWarnings("deprecation")
     protected void onSetUpBeforeTransaction() throws Exception {
         super.onSetUpBeforeTransaction();
     }
@@ -98,7 +102,7 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     public void testGetMatchingOutages() {
-        insertEntitiesAndOutage();
+        insertEntitiesAndOutage("172.16.1.1", "ICMP");
         
         /*
          * We need to flush and finish the transaction because JdbcFilterDao
@@ -114,7 +118,7 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     public void testGetMatchingOutagesWithEmptyServiceList() {
-        insertEntitiesAndOutage();
+        insertEntitiesAndOutage("172.16.1.1", "ICMP");
         
         /*
          * We need to flush and finish the transaction because JdbcFilterDao
@@ -132,19 +136,31 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
         return getDistPollerDao().load("localhost");
     }
     
-    private OnmsOutage insertEntitiesAndOutage() {
+    private OnmsOutage insertEntitiesAndOutage(final String ipAddr, final String serviceName) {
         OnmsNode node = new OnmsNode(getLocalHostDistPoller());
         getNodeDao().save(node);
 
-        OnmsIpInterface ipInterface = new OnmsIpInterface("172.16.1.1", node);
-        getIpInterfaceDao().save(ipInterface);
+        OnmsIpInterface ipInterface = getIpInterface(ipAddr, node);
+        OnmsServiceType serviceType = getServiceType(serviceName);
+        OnmsMonitoredService monitoredService = getMonitoredService(ipInterface, serviceType);
+        
+        OnmsEvent event = getEvent();
 
-        OnmsServiceType serviceType = getServiceTypeDao().findByName("ICMP");
-        assertNotNull(serviceType);
+        OnmsOutage outage = getOutage(monitoredService, event);
         
-        OnmsMonitoredService monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
-        getMonitoredServiceDao().save(monitoredService);
-        
+        return outage;
+    }
+
+    private OnmsOutage getOutage(OnmsMonitoredService monitoredService, OnmsEvent event) {
+        OnmsOutage outage = new OnmsOutage();
+        outage.setMonitoredService(monitoredService);
+        outage.setServiceLostEvent(event);
+        outage.setIfLostService(new Date());
+        getOutageDao().save(outage);
+        return outage;
+    }
+
+    private OnmsEvent getEvent() {
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(getLocalHostDistPoller());
         event.setEventUei("foo!");
@@ -155,16 +171,40 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         getEventDao().save(event);
-
-        OnmsOutage outage = new OnmsOutage();
-        outage.setMonitoredService(monitoredService);
-        outage.setServiceLostEvent(event);
-        outage.setIfLostService(new Date());
-        getOutageDao().save(outage);
-        
-        return outage;
+        return event;
     }
 
+    private OnmsMonitoredService getMonitoredService(OnmsIpInterface ipInterface, OnmsServiceType serviceType) {
+        final OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class)
+            .add(Restrictions.eq("ipInterface", ipInterface))
+            .add(Restrictions.eq("serviceType", serviceType));
+        final List<OnmsMonitoredService> services = getMonitoredServiceDao().findMatching(criteria);
+        OnmsMonitoredService monitoredService;
+        if (services.size() > 0) {
+            monitoredService = services.get(0);
+        } else {
+            monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
+        }
+        getMonitoredServiceDao().save(monitoredService);
+        return monitoredService;
+    }
+
+    private OnmsServiceType getServiceType(final String serviceName) {
+        OnmsServiceType serviceType = getServiceTypeDao().findByName(serviceName);
+        assertNotNull(serviceType);
+        return serviceType;
+    }
+
+    private OnmsIpInterface getIpInterface(String ipAddr, OnmsNode node) {
+        OnmsIpInterface ipInterface = getIpInterfaceDao().findByNodeIdAndIpAddress(node.getId(), ipAddr);
+        if (ipInterface == null) {
+            ipInterface = new OnmsIpInterface(ipAddr, node);
+            getIpInterfaceDao().save(ipInterface);
+        }
+        return ipInterface;
+    }
+
+    @SuppressWarnings("deprecation")
     private void flushOutageDaoAndStartNewTransaction() {
         getOutageDao().flush();
         setComplete();
