@@ -48,6 +48,7 @@ import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;

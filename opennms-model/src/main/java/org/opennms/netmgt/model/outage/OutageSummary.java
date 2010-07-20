@@ -30,10 +30,11 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.outage;
+package org.opennms.netmgt.model.outage;
 
 import java.util.Date;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.FuzzyDateFormatter;
 
 /**
@@ -46,7 +47,7 @@ import org.opennms.core.utils.FuzzyDateFormatter;
  * @version $Id: $
  * @since 1.8.1
  */
-public class OutageSummary extends Object {
+public class OutageSummary implements Comparable<OutageSummary> {
     protected final int nodeId;
     protected final String nodeLabel;
     protected final Date timeDown;
@@ -62,13 +63,18 @@ public class OutageSummary extends Object {
      * @param timeUp a {@link java.util.Date} object.
      * @param timeNow a {@link java.util.Date} object.
      */
-    public OutageSummary(int nodeId, String nodeLabel, Date timeDown, Date timeUp, Date timeNow) {
-        if (nodeLabel == null || timeDown == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
+    public OutageSummary(final int nodeId, final String nodeLabel, final Date timeDown, final Date timeUp, final Date timeNow) {
+        if (timeDown == null) {
+            throw new IllegalArgumentException(String.format("timeDown cannot be null.  nodeId=%d, nodeLabel=%s, timeDown=%s, timeUp=%s, timeNow=%s", nodeId, nodeLabel, timeDown, timeUp, timeNow));
+        }
+
+        if (nodeLabel == null) {
+            this.nodeLabel = String.valueOf(nodeId);
+        } else {
+            this.nodeLabel = nodeLabel;
         }
 
         this.nodeId = nodeId;
-        this.nodeLabel = nodeLabel;
         this.timeDown = timeDown;
         this.timeUp = timeUp;
         this.timeNow = timeNow;
@@ -82,7 +88,7 @@ public class OutageSummary extends Object {
      * @param timeDown a {@link java.util.Date} object.
      * @param timeUp a {@link java.util.Date} object.
      */
-    public OutageSummary(int nodeId, String nodeLabel, Date timeDown, Date timeUp) {
+    public OutageSummary(final int nodeId, final String nodeLabel, final Date timeDown, final Date timeUp) {
         this(nodeId, nodeLabel, timeDown, timeUp, new Date());
     }
     
@@ -93,7 +99,7 @@ public class OutageSummary extends Object {
      * @param nodeLabel a {@link java.lang.String} object.
      * @param timeDown a {@link java.util.Date} object.
      */
-    public OutageSummary(int nodeId, String nodeLabel, Date timeDown) {
+    public OutageSummary(final int nodeId, final String nodeLabel, final Date timeDown) {
         this(nodeId, nodeLabel, timeDown, null, new Date());
     }
 
@@ -158,7 +164,7 @@ public class OutageSummary extends Object {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuffer buffer = new StringBuffer();
         buffer.append("<OutageSummary: ");
         buffer.append(this.nodeId);
         buffer.append(":");
@@ -170,6 +176,15 @@ public class OutageSummary extends Object {
             buffer.append(this.timeUp);
         }
         return (buffer.toString());
+    }
+
+    public int compareTo(final OutageSummary that) {
+        return new CompareToBuilder()
+            .append(this.getTimeDown(), that.getTimeDown())
+            .append(this.getTimeUp(), that.getTimeUp())
+            .append(this.getHostname(), that.getHostname())
+            .append(this.getNodeLabel(), that.getNodeLabel())
+            .toComparison();
     }
 
 };

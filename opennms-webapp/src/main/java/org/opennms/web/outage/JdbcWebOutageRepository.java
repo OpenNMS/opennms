@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageIdFilter;
@@ -34,6 +35,17 @@ public class JdbcWebOutageRepository implements WebOutageRepository {
     @Autowired
     SimpleJdbcTemplate m_simpleJdbcTemplate;
     
+
+    /** {@inheritDoc} */
+    public int countCurrentOutages() {
+        return getCurrentOutages(0).length;
+    }
+
+    /** {@inheritDoc} */
+    public OutageSummary[] getCurrentOutages(final int rows) {
+        return getMatchingOutageSummaries(new OutageCriteria(new Filter[]{}, SortStyle.IFLOSTSERVICE, OutageType.CURRENT, rows, 0));
+    }
+
     /** {@inheritDoc} */
     public int countMatchingOutages(OutageCriteria criteria) {
         String sql = getSql("SELECT COUNT(OUTAGEID) as OUTAGECOUNT "
