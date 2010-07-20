@@ -8,17 +8,11 @@
     <jsp:param name="breadcrumb" value="Distributed Status" />
 </jsp:include>
 
-<jsp:include page="/includes/key.jsp" flush="false">
-
-   <jsp:param name="clearedCaption" value="Not applicable for this page." />
+<jsp:include page="/includes/distStatusLegend.jsp" flush="false">
 
    <jsp:param name="normalCaption" value="A Green status Cell (Application Up) indicates that *all* of the Application's services 
    are available from at least 1 Started remote poller in that Location." />
-   
-   <jsp:param name="minorCaption" value="Not applicable for this page." />
-   
-   <jsp:param name="majorCaption" value="Not applicable for this page." />
-   
+
    <jsp:param name="indetermCaption" value="A Puke colored cell (Indeterminate (no current data)) indicates that there is no
     current data which means there are no Started remote pollers.  If the percentage in this colored cell is > 0, then this means 
     there has been data reported since midnight but there is just no current data being reported." />
@@ -30,6 +24,8 @@
     are currently unavailable from from *all* Started remote pollers in that location." />
 
  </jsp:include>
+ 
+ 
 <h3><c:out value="${webTable.title}" /></h3>
 
 <table>
