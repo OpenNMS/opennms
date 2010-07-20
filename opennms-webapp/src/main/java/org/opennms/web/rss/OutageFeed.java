@@ -38,8 +38,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.outage.OutageModel;
-import org.opennms.web.outage.OutageSummary;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;

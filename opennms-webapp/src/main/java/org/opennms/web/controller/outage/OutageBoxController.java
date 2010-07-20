@@ -3,12 +3,8 @@ package org.opennms.web.controller.outage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.filter.Filter;
-import org.opennms.web.outage.OutageSummary;
-import org.opennms.web.outage.OutageType;
-import org.opennms.web.outage.SortStyle;
+import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.outage.WebOutageRepository;
-import org.opennms.web.outage.filter.OutageCriteria;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,10 +22,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class OutageBoxController extends AbstractController implements InitializingBean {
-    /** Constant <code>ROWS=12</code> */
     public static final int ROWS = 12;
-    private static final OutageType OUTAGE_TYPE = OutageType.CURRENT;
-    private static final SortStyle SORT_STYLE = SortStyle.IFLOSTSERVICE;
 
     private WebOutageRepository m_webOutageRepository;
     private String m_successView;
@@ -37,12 +30,17 @@ public class OutageBoxController extends AbstractController implements Initializ
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        OutageCriteria queryCriteria = new OutageCriteria(new Filter[]{}, SORT_STYLE, OUTAGE_TYPE, ROWS, 0);
-        OutageSummary[] summaries = m_webOutageRepository.getMatchingOutageSummaries(queryCriteria);
-
-        OutageCriteria countCriteria = new OutageCriteria(OUTAGE_TYPE, new Filter[]{});
-        int outagesRemaining = (m_webOutageRepository.countMatchingOutageSummaries(countCriteria) - summaries.length);
+        int rows = Integer.getInteger("opennms.nodesWithOutagesCount", ROWS);
+        final String parm = request.getParameter("outageCount");
+        if (parm != null) {
+            try {
+                rows = Integer.valueOf(parm);
+            } catch (NumberFormatException e) {
+                // ignore, and let it fall back to the defaults
+            }
+        }
+        OutageSummary[] summaries = m_webOutageRepository.getCurrentOutages(rows);
+        int outagesRemaining = (m_webOutageRepository.countCurrentOutages() - summaries.length);
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("summaries", summaries);

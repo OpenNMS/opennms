@@ -1,5 +1,6 @@
 package org.opennms.web.outage;
 
+import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.outage.filter.OutageCriteria;
 
 /**
@@ -47,8 +48,19 @@ public interface WebOutageRepository {
      * <p>getMatchingOutageSummaries</p>
      *
      * @param criteria a {@link org.opennms.web.outage.filter.OutageCriteria} object.
-     * @return an array of {@link org.opennms.web.outage.OutageSummary} objects.
+     * @return an array of {@link org.opennms.netmgt.model.outage.OutageSummary} objects.
      */
     public abstract OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria);
-    
+
+    /**
+     * Count the current number of nodes with outages.
+     */
+    public abstract int countCurrentOutages();
+
+    /**
+     * Get the current list of outages by node.
+     * @param rows the number of outages to return.
+     * @return
+     */
+    public abstract OutageSummary[] getCurrentOutages(int rows);
 }

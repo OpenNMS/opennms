@@ -36,9 +36,12 @@
 package org.opennms.web.outage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -46,6 +49,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageCriteria.OutageCriteriaVisitor;
@@ -179,13 +183,14 @@ public class DaoWebOutageRepository implements WebOutageRepository {
         }
     }
     
-    private OutageSummary mapOnmsOutageToOutageSummary(OnmsOutage onmsOutage) {
-        int nodeId = onmsOutage.getNodeId();
-        String nodeLabel = m_nodeDao.get(onmsOutage.getNodeId()).getLabel();
-        Date timeDown = onmsOutage.getIfLostService();
-        Date timeUp = onmsOutage.getIfRegainedService();
-        Date timeNow = new Date();
-        return new OutageSummary(nodeId, nodeLabel, timeDown, timeUp, timeNow);
+    private OutageSummary mapOnmsOutageToOutageSummary(final OnmsOutage onmsOutage) {
+        return new OutageSummary(
+            onmsOutage.getNodeId(),
+            onmsOutage.getMonitoredService().getIpInterface().getNode().getLabel(),
+            onmsOutage.getIfLostService(),
+            onmsOutage.getIfRegainedService(),
+            new Date()
+        );
     }
 
     /* (non-Javadoc)
@@ -193,7 +198,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
      */
     /** {@inheritDoc} */
     @Transactional
-    public int countMatchingOutageSummaries(OutageCriteria criteria) {
+    public int countMatchingOutageSummaries(final OutageCriteria criteria) {
         return getMatchingOutageSummaries(criteria).length;
     }
 
@@ -211,7 +216,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
      */
     /** {@inheritDoc} */
     @Transactional
-    public OutageSummary[] getMatchingOutageSummaries(OutageCriteria criteria) {
+    public OutageSummary[] getMatchingOutageSummaries(final OutageCriteria criteria) {
         
         
         List<OnmsOutage> onmsOutages = m_outageDao.findMatching(getOnmsCriteria(criteria));
@@ -237,36 +242,18 @@ public class DaoWebOutageRepository implements WebOutageRepository {
         }
     }
 
-    private List<OutageSummary> elimenateDuplicates(List<OutageSummary> outagesSummaries) {
-        List<OutageSummary> uniqueList = new ArrayList<OutageSummary>();
-        
+    private List<OutageSummary> elimenateDuplicates(final List<OutageSummary> outagesSummaries) {
+        final Map<Integer,OutageSummary> uniqueSummaries = new HashMap<Integer,OutageSummary>();
 
-        for(int i = 0; i < outagesSummaries.size(); i++){
-            OutageSummary outageSum = outagesSummaries.get(i);
-            
-            if(uniqueList.size() > 0){
-                int currentUniqueListSize = uniqueList.size();
-                boolean isDirty = false;
-                
-                for(int k = 0; k < currentUniqueListSize; k++){
-                    OutageSummary uniqueSum = uniqueList.get(k);
-                    if(outageSum.nodeId == uniqueSum.nodeId && uniqueSum.nodeLabel.equals(outageSum.nodeLabel)){
-                        isDirty = true; 
-                    }
-                }
-                
-                if(!isDirty){
-                    uniqueList.add(outageSum);
-                }
-                
-            }else{
-                uniqueList.add(outageSum);
+        for (final OutageSummary outageSum : outagesSummaries) {
+            if (!uniqueSummaries.containsKey(outageSum.getNodeId())) {
+                uniqueSummaries.put(outageSum.getNodeId(), outageSum);
             }
         }
-        
-        
+
+        List<OutageSummary> uniqueList = new ArrayList<OutageSummary>(uniqueSummaries.values());
+        Collections.sort(uniqueList);
         return uniqueList;
-        
     }
 
     /* (non-Javadoc)
@@ -274,15 +261,12 @@ public class DaoWebOutageRepository implements WebOutageRepository {
      */
     /** {@inheritDoc} */
     @Transactional
-    public Outage[] getMatchingOutages(OutageCriteria criteria) {
-        List<Outage> outages = new ArrayList<Outage>();
-        List<OnmsOutage> onmsOutages = m_outageDao.findMatching(getOnmsCriteria(criteria));
+    public Outage[] getMatchingOutages(final OutageCriteria criteria) {
+        final List<Outage> outages = new ArrayList<Outage>();
+        final List<OnmsOutage> onmsOutages = m_outageDao.findMatching(getOnmsCriteria(criteria));
         
-        if(onmsOutages.size() > 0){
-            Iterator<OnmsOutage> outageIt = onmsOutages.iterator();
-            while(outageIt.hasNext()){
-                outages.add(mapOnmsOutageToOutage(outageIt.next()));
-            }
+        for (final OnmsOutage outage : onmsOutages) {
+            outages.add(mapOnmsOutageToOutage(outage));
         }
         
         return outages.toArray(new Outage[0]);
@@ -295,9 +279,18 @@ public class DaoWebOutageRepository implements WebOutageRepository {
      */
     /** {@inheritDoc} */
     @Transactional
-    public Outage getOutage(int OutageId) {
+    public Outage getOutage(final int OutageId) {
         return mapOnmsOutageToOutage(m_outageDao.get(OutageId));
+    }
 
+    @Transactional
+    public int countCurrentOutages() {
+        return m_outageDao.countOutagesByNode();
+    }
+
+    @Transactional
+    public OutageSummary[] getCurrentOutages(final int rows) {
+        return m_outageDao.getNodeOutageSummaries(rows).toArray(new OutageSummary[0]);
     }
 
 }

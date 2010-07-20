@@ -54,6 +54,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.outage.OutageSummary;
 
 /**
  * @author mhuot
@@ -102,7 +103,9 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     public void testGetMatchingOutages() {
-        insertEntitiesAndOutage("172.16.1.1", "ICMP");
+        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
+        getNodeDao().save(node);
+        insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         
         /*
          * We need to flush and finish the transaction because JdbcFilterDao
@@ -118,7 +121,9 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     public void testGetMatchingOutagesWithEmptyServiceList() {
-        insertEntitiesAndOutage("172.16.1.1", "ICMP");
+        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
+        getNodeDao().save(node);
+        insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         
         /*
          * We need to flush and finish the transaction because JdbcFilterDao
@@ -132,14 +137,65 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
     	assertEquals(1, outages.size());
     }
 
+    public void testDuplicateOutages() {
+        for (final OnmsNode node : getNodeDao().findAll()) {
+            getNodeDao().delete(node);
+        }
+        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
+        node.setLabel("shoes");
+        getNodeDao().save(node);
+        insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
+        insertEntitiesAndOutage("172.20.1.1", "ICMP", node);
+        
+        node = new OnmsNode(getLocalHostDistPoller());
+        node.setLabel("megaphone");
+        getNodeDao().save(node);
+        insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
+        insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
+        insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
+
+        node = new OnmsNode(getLocalHostDistPoller());
+        node.setLabel("grunties");
+        getNodeDao().save(node);
+        insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
+
+        List<OutageSummary> outages = getOutageDao().getNodeOutageSummaries(0);
+        System.err.println(outages);
+        assertEquals(3, outages.size());
+    }
+
+    public void testLimitDuplicateOutages() {
+        for (final OnmsNode node : getNodeDao().findAll()) {
+            getNodeDao().delete(node);
+        }
+        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
+        node.setLabel("shoes");
+        getNodeDao().save(node);
+        insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
+        insertEntitiesAndOutage("172.20.1.1", "ICMP", node);
+        
+        node = new OnmsNode(getLocalHostDistPoller());
+        node.setLabel("megaphone");
+        getNodeDao().save(node);
+        insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
+        insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
+        insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
+
+        node = new OnmsNode(getLocalHostDistPoller());
+        node.setLabel("grunties");
+        getNodeDao().save(node);
+        insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
+
+        List<OutageSummary> outages = getOutageDao().getNodeOutageSummaries(2);
+        System.err.println(outages);
+        assertEquals(2, outages.size());
+    }
+
     private OnmsDistPoller getLocalHostDistPoller() {
         return getDistPollerDao().load("localhost");
     }
     
-    private OnmsOutage insertEntitiesAndOutage(final String ipAddr, final String serviceName) {
-        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-        getNodeDao().save(node);
-
+    private OnmsOutage insertEntitiesAndOutage(final String ipAddr, final String serviceName, OnmsNode node) {
         OnmsIpInterface ipInterface = getIpInterface(ipAddr, node);
         OnmsServiceType serviceType = getServiceType(serviceName);
         OnmsMonitoredService monitoredService = getMonitoredService(ipInterface, serviceType);

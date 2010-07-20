@@ -32,9 +32,11 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.outage.OutageSummary;
 
 
 /**
@@ -76,5 +78,18 @@ public interface OutageDao extends OnmsDao<OnmsOutage, Integer> {
      */
     Collection<OnmsOutage> findAll(Integer offset, Integer limit);
 
+    /**
+     * Get the number of nodes with outages.
+     * @return the number of nodes with outages.
+     */
+    int countOutagesByNode();
+
+    /**
+     * Get the list of current outages, one per node.  If a node has more than one outage, the
+     * oldest outstanding outage is returned.
+     * @param rows The maximum number of outages to return.
+     * @return A list of outages.
+     */
+    List<OutageSummary> getNodeOutageSummaries(int rows);
 
 }
