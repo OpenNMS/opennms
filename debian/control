@@ -264,3 +264,18 @@ Description: Enterprise-grade Open-source Network Management Platform (RANCID Pr
  .
  The RANCID provisioning adapter coordinates with the RANCID Web Service by
  updating RANCID's device database when OpenNMS provisions nodes.
+
+Package: opennms-plugin-provisioning-snmp-asset
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (SNMP Asset Provisioning Adapter)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ The SNMP asset provisioning adapter responds to provisioning events by updating asset
+ fields with data fetched from SNMP GET requests.

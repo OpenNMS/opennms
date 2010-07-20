@@ -68,8 +68,7 @@ import org.springframework.transaction.support.TransactionTemplate;
     DependencyInjectionTestExecutionListener.class
 })
 @ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/provisiond-extensions.xml"
+        "classpath:/META-INF/opennms/applicationContext-dao.xml"
 })
 @JUnitTemporaryDatabase()
 public class SimplerProvisioningAdapterTest {
