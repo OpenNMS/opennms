@@ -49,6 +49,16 @@ import org.junit.Test;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class
+})
+@ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-dao.xml"
+})
+@JUnitTemporaryDatabase()
 public class SimplerProvisioningAdapterTest {
     
     public static String NAME = "MyProvisioningAdapter";
