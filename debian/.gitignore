@@ -14,6 +14,7 @@ opennms-plugin-provisioning-dns
 opennms-plugin-provisioning-link
 opennms-plugin-provisioning-map
 opennms-plugin-provisioning-rancid
+opennms-plugin-provisioning-snmp-asset
 opennms-plugins
 opennms-remote-poller
 opennms-server
