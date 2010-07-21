@@ -189,6 +189,18 @@ public class OutageDaoTest extends AbstractTransactionalDaoTestCase {
         List<OutageSummary> outages = getOutageDao().getNodeOutageSummaries(2);
         System.err.println(outages);
         assertEquals(2, outages.size());
+
+        outages = getOutageDao().getNodeOutageSummaries(3);
+        System.err.println(outages);
+        assertEquals(3, outages.size());
+
+        outages = getOutageDao().getNodeOutageSummaries(4);
+        System.err.println(outages);
+        assertEquals(3, outages.size());
+
+        outages = getOutageDao().getNodeOutageSummaries(5);
+        System.err.println(outages);
+        assertEquals(3, outages.size());
     }
 
     private OnmsDistPoller getLocalHostDistPoller() {
