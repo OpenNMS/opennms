@@ -467,6 +467,11 @@ public final class ConfigFileConstants {
      */
     public static final int RANCID_CONFIG_FILE_NAME;
 
+    /**
+     * The SNMP Asset Provisioning Adapter configuration file
+     */
+    public static final int SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME;
+
 
     /**
      * The WMI collection configuration file
@@ -617,9 +622,12 @@ public final class ConfigFileConstants {
         
         MICROBLOG_CONFIG_FILE_NAME = 78;
         
+        SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME = 79;
+        
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[79];
+        FILE_ID_TO_NAME = new String[80];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -715,6 +723,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
         FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.xml";
+        FILE_ID_TO_NAME[SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME] = "snmp-asset-adapter-configuration.xml";
     }
 
     /**

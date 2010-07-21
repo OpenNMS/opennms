@@ -7,7 +7,9 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd" >
   
-  <bean name="lpa" class="org.opennms.netmgt.provision.adapters.link.LinkProvisioningAdapter" />
+  <bean name="lpa" class="org.opennms.netmgt.provision.adapters.link.LinkProvisioningAdapter">
+    <property name="template" ref="transactionTemplate"/>
+  </bean>
   
   <bean name="linkEventCorrelator" class="org.opennms.netmgt.provision.adapters.link.LinkEventCorrelator">
     <property name="eventForwarder" ref="eventForwarder"/>

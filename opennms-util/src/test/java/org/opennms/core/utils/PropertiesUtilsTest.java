@@ -67,24 +67,29 @@ public class PropertiesUtilsTest extends TestCase {
     public void testNull() {
         assertNull(PropertiesUtils.substitute(null, m_propsOne));
     }
-
+    
     public void testNoSubstitution() {
         assertEquals("nosubst", PropertiesUtils.substitute("nosubst", m_propsOne));
         assertEquals("no${subst", PropertiesUtils.substitute("no${subst", m_propsOne));
         assertEquals("no}subst", PropertiesUtils.substitute("no}subst", m_propsOne));
         assertEquals("no${no.such.property}subst", PropertiesUtils.substitute("no${no.such.property}subst", m_propsOne));
+        assertEquals("no\nsubst", PropertiesUtils.substitute("no" + (char)0x0A + "subst", m_propsOne));
     }
     
     public void testSingleSubstitution() {
         assertEquals("xonex", PropertiesUtils.substitute("x${prop.one}x", m_propsOne));
         assertEquals("onebegin", PropertiesUtils.substitute("${prop.one}begin", m_propsOne));
         assertEquals("endone", PropertiesUtils.substitute("end${prop.one}", m_propsOne));
+        assertEquals("one\nsubst", PropertiesUtils.substitute("${prop.one}" + (char)0x0A + "subst", m_propsOne));
+        assertEquals("subst\none", PropertiesUtils.substitute("subst" + (char)0x0A + "${prop.one}", m_propsOne));
     }
     
     public void testMultiSubstition() {
         assertEquals("xoneytwoz", PropertiesUtils.substitute("x${prop.one}y${prop.two}z", m_propsOne));
         assertEquals("wonextwoy3z", PropertiesUtils.substitute("w${prop.one}x${prop.two}y${prop.three}z", m_propsOne));
         assertEquals("onetwo3", PropertiesUtils.substitute("${prop.one}${prop.two}${prop.three}", m_propsOne));
+        assertEquals("one\ntwo", PropertiesUtils.substitute("${prop.one}" + (char)0x0A + "${prop.two}", m_propsOne));
+        assertEquals("two\none", PropertiesUtils.substitute("${prop.two}" + (char)0x0A + "${prop.one}", m_propsOne));
     }
     
     public void testRecursiveSubstitution() {

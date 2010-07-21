@@ -332,11 +332,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             finishInit();
             super.run();
             m_running = true;
-        } catch (BindException be) {
-            be.printStackTrace();
+        } catch (BindException e) {
+            e.printStackTrace();
             System.err.println("You probably specified an invalid address or a port < 1024 and are not running as root");
-        } catch (IOException ie) {
-            ie.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
 
         while (m_running) {
