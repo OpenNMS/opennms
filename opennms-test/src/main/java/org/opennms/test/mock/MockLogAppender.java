@@ -53,7 +53,9 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
- * <p>MockLogAppender class.</p>
+ * <p>MockLogAppender class. If you do not specify the log level specifically, the level
+ * will default to DEBUG and you can control the level by setting the <code>mock.logLevel</code>
+ * system property.</p>
  *
  * @author brozow
  * @version $Id: $
