@@ -137,7 +137,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
             "GROUP BY node.id, node.label " +
             "ORDER BY max(outage.ifLostService) DESC, node.label ASC, node.id ASC"
         );
-        if (rows == 0) {
+        if (rows == 0 || outages.size() < rows) {
             return outages;
         } else {
             return outages.subList(0, rows);
