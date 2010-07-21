@@ -170,15 +170,16 @@ install: build
 	## Setup the provision adapter packages
 	##
 	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-provisioning-{link,map}/etc/opennms
-	mv debian/temp/integrations/opennms-dns-provisioning-adapter*.jar        debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-link-provisioning-adapter*.jar       debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-map-provisioning-adapter*.jar        debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-rancid*.jar                          debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-snmp-asset-provisioning-adapter*.jar debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
-	mv debian/temp/integrations/link-adapter-configuration.xml               debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/integrations/endpoint-configuration.xml                   debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/integrations/mapsadapter-configuration.xml                debian/opennms-plugin-provisioning-map/etc/opennms/
+	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset}/etc/opennms
+	mv debian/temp/integrations/opennms-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
+	mv debian/temp/integrations/opennms-link-provisioning-adapter*.jar        debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
+	mv debian/temp/integrations/opennms-map-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
+	mv debian/temp/integrations/opennms-rancid*.jar                           debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
+	mv debian/temp/integrations/opennms-snmp-asset-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
+	mv debian/temp/integrations/link-adapter-configuration.xml                debian/opennms-plugin-provisioning-link/etc/opennms/
+	mv debian/temp/integrations/endpoint-configuration.xml                    debian/opennms-plugin-provisioning-link/etc/opennms/
+	mv debian/temp/integrations/mapsadapter-configuration.xml                 debian/opennms-plugin-provisioning-map/etc/opennms/
+	mv debian/opennms-common/etc/opennms/snmp-asset-adapter-configuration.xml debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
 
 # Build architecture-independent files here.
 binary-indep: build install

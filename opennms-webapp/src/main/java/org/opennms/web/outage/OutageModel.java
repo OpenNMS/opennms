@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.element.Node;
 import org.springframework.util.StringUtils;
 
@@ -515,7 +516,7 @@ public class OutageModel extends Object {
      * address. The list will be sorted in ascending order from the service down
      * longest to the service down shortest.
      *
-     * @return an array of {@link org.opennms.web.outage.OutageSummary} objects.
+     * @return an array of {@link org.opennms.netmgt.model.outage.OutageSummary} objects.
      * @throws java.sql.SQLException if any.
      */
     public OutageSummary[] getCurrentOutageSummaries() throws SQLException {
@@ -556,7 +557,7 @@ public class OutageModel extends Object {
      * address. The list will be sorted by the amount of time it has been down.
      *
      * @param date the starting date for the query
-     * @return an array of {@link org.opennms.web.outage.OutageSummary} objects.
+     * @return an array of {@link org.opennms.netmgt.model.outage.OutageSummary} objects.
      * @throws java.sql.SQLException if any.
      */
     public OutageSummary[] getAllOutageSummaries(Date date) throws SQLException {
@@ -616,7 +617,7 @@ public class OutageModel extends Object {
      * longest to the service down shortest. This is a clone of
      * getCurrentOutageSummaries for Harrah's (special consideration).
      *
-     * @return an array of {@link org.opennms.web.outage.OutageSummary} objects.
+     * @return an array of {@link org.opennms.netmgt.model.outage.OutageSummary} objects.
      * @throws java.sql.SQLException if any.
      */
     public OutageSummary[] getCurrentSDSOutageSummaries() throws SQLException {

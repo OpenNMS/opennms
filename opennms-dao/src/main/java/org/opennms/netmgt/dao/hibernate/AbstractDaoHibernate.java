@@ -141,7 +141,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @SuppressWarnings("unchecked")
     public <S> List<S> findObjects(Class<S> clazz, String query, Object... values) {
-    	final List notifs = getHibernateTemplate().find(query, values);
+    	final List<S> notifs = getHibernateTemplate().find(query, values);
         return notifs;
     }
 
@@ -289,9 +289,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public <S> List<S> findMatchingObjects(final Class<S> type, final OnmsCriteria onmsCrit ) {
         onmsCrit.resultsOfType(type);
         
-        HibernateCallback callback = new HibernateCallback() {
+        HibernateCallback<S> callback = new HibernateCallback<S>() {
 
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public S doInHibernate(Session session) throws HibernateException, SQLException {
                 Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session);
                 if (onmsCrit.getFirstResult() != null) {
                     attachedCrit.setFirstResult(onmsCrit.getFirstResult());
@@ -301,7 +301,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                     attachedCrit.setMaxResults(onmsCrit.getMaxResults());
                 }
                 
-                return attachedCrit.list();
+                return (S)attachedCrit.list();
             }
             
         };
@@ -314,9 +314,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public List<T> findMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
         onmsCrit.resultsOfType(m_entityClass); //FIXME: why is this here?
         
-        HibernateCallback callback = new HibernateCallback() {
+        HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
 
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
                 Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session);
                 if (onmsCrit.getFirstResult() != null) {
                     attachedCrit.setFirstResult(onmsCrit.getFirstResult());
@@ -326,7 +326,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                     attachedCrit.setMaxResults(onmsCrit.getMaxResults());
                 }
                 
-                return attachedCrit.list();
+                return (List<T>)attachedCrit.list();
                 
             }
             
