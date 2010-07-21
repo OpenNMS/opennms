@@ -16,6 +16,7 @@ import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -54,6 +55,9 @@ public class SnmpAssetProvisioningAdapterTest {
 
 	@Before
 	public void setUp() throws Exception {
+		// Use the mock.logLevel system property to control the log level
+		MockLogAppender.setupLogging(true);
+
 		NetworkBuilder nb = new NetworkBuilder();
 		nb.addNode("test.example.com").setForeignSource("rancid").setForeignId("1");
 		nb.addInterface("192.168.0.1");
