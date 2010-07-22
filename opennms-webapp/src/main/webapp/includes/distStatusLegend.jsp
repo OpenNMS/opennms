@@ -24,10 +24,19 @@ border:1px solid #666666
 <!--
 <img src="images/key.png" alt="openNMS status colour key" usemap="#keymap" />
 -->
+
 <table style="width:100%">
 <td class="notstyle" style="text-align:right;width:100%;vertical-align:middle;height:15px">
+
+<a href="#" onClick="MyWindow=window.open('includes/legendInfo-box.jsp','MyWindow','toolbar=no,location=yes,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,width=700,height=250,left=550'); return false;">Legend</a>
+
+</td>
+<!--
+<table style="width:100%">
+<td class="notstyle" style="text-align:right;width:100%;vertical-align:middle;height:15px" title="This mouseover window works">
 Legend
 </td>
+-->
 <td class="notstyle" style="vertical-align:middle">
 <table class="keytable">
 <tbody>
@@ -41,7 +50,9 @@ Legend
 </tbody>
 </table>
 </td>
+
 </table>
+
 <!--
 <map id="keymap" name="keymap">
 	<area shape="rect" coords="16,0,31,15" title="${params.normalCaption == null ? 'NORMAL :  Informational message. No action required.' : params.normalParam}" />
