@@ -1,6 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -204,13 +205,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     /** {@inheritDoc} */
-    public void createOrUpdateLocation(final LocationInfo locationInfo) {
-        m_dataManager.createOrUpdateLocation(locationInfo);
-      //TODO: Move this to some kind of event handler
-        m_locationPanel.updateApplicationNames(m_dataManager.getAllApplicationNames());
-    }
-
-    /** {@inheritDoc} */
     public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
         m_dataManager.createOrUpdateApplication(applicationInfo);
       //TODO: Move this to some kind of event handler
@@ -351,25 +345,25 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * {@link LocationsUpdatedRemoteEvent} events.
      */
     public void updateLocation(final LocationInfo info) {
-        if (info == null)
-            return;
-
-        // Update the location information in the model
-        createOrUpdateLocation(info);
-        GWTMarkerState state = updateMarkerState(info);
-         
-        m_mapPanel.placeMarker(state);
-
-        if (!m_updated) {
-            return;
+        if (info != null) {
+            // Update the location information in the model
+            m_dataManager.updateLocation(info);
+            
+            m_locationPanel.updateApplicationNames(m_dataManager.getAllApplicationNames());
+            GWTMarkerState state = updateMarkerState(info);
+             
+            m_mapPanel.placeMarker(state);
+        
+            if (m_updated) {
+                updateAllMarkerStates();
+                
+                // Update the icon/caption in the LHN
+                m_locationPanel.updateLocationList(getLocationsForLocationPanel());
+            
+                m_eventBus.fireEvent(new LocationsUpdatedEvent());
+            }
+            
         }
-
-        updateAllMarkerStates();
-
-        // Update the icon/caption in the LHN
-        m_locationPanel.updateLocationList(getLocationsForLocationPanel());
-
-        m_eventBus.fireEvent(new LocationsUpdatedEvent());
     }
 
     /**
@@ -618,5 +612,24 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         return sb.toString();
     }
 
-    
+    public void updateLocations(Collection<LocationInfo> locations) {
+        m_dataManager.updateLocations(locations);
+        
+        for(LocationInfo location : locations) {
+            GWTMarkerState state = updateMarkerState(location);
+            m_mapPanel.placeMarker(state);
+        }
+        
+        
+        if (m_updated) {
+            
+            // Update the icon/caption in the LHN
+            m_locationPanel.updateApplicationNames(m_dataManager.getAllApplicationNames());
+            updateAllMarkerStates();
+            m_locationPanel.updateLocationList(getLocationsForLocationPanel());
+            m_eventBus.fireEvent(new LocationsUpdatedEvent());
+        }
+       
+    }
+        
 }

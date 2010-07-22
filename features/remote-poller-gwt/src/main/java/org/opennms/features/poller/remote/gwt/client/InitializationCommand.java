@@ -12,12 +12,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-
 import com.google.gwt.maps.utility.client.DefaultPackage;
 import com.google.gwt.maps.utility.client.GoogleMapsUtility;
 import com.google.gwt.user.client.IncrementalCommand;
 public class InitializationCommand implements IncrementalCommand {
-	
+    //TODO: Refactor this away.
     
     public abstract static class DataLoader{
         boolean m_loaded = false;
@@ -84,7 +83,7 @@ public class InitializationCommand implements IncrementalCommand {
      *
      * @return a {@link org.opennms.features.poller.remote.gwt.client.LocationManager} object.
      */
-    public LocationManager getLocationManager() {
+    public DefaultLocationManager getLocationManager() {
         return m_abstractLocationManager;
     }
     

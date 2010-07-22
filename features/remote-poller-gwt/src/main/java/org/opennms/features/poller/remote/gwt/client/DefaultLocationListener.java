@@ -1,6 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
 
 import com.google.gwt.core.client.GWT;
 
@@ -15,7 +16,7 @@ import de.novanic.eventservice.client.event.Event;
  */
 public class DefaultLocationListener implements LocationListener {
 
-	private final RemotePollerPresenter m_locationManager;
+	private final MapRemoteEventHandler m_locationManager;
 
 	/** {@inheritDoc} */
 	public void apply(final Event event) {
@@ -32,7 +33,7 @@ public class DefaultLocationListener implements LocationListener {
 	 *
 	 * @param manager a {@link org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter} object.
 	 */
-	public DefaultLocationListener(final RemotePollerPresenter manager) {
+	public DefaultLocationListener(final MapRemoteEventHandler manager) {
 		m_locationManager = manager;
 	}
 

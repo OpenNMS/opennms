@@ -41,7 +41,7 @@ public class DataManager {
         getApplicationsMap().put(applicationInfo.getName(), applicationInfo);
     }
 
-    public void createOrUpdateLocation(final LocationInfo locationInfo) {
+    public void updateLocation(final LocationInfo locationInfo) {
         getLocationsMap().put(locationInfo.getName(), locationInfo);
     }
 
@@ -117,5 +117,12 @@ public class DataManager {
             }
         }
         return locations;
+    }
+
+    public void updateLocations(Collection<LocationInfo> locations) {
+        for(LocationInfo location : locations) {
+            // Update the location information in the model
+            updateLocation(location);
+        }
     }
 }

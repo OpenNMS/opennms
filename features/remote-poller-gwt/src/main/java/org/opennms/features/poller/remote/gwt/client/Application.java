@@ -116,7 +116,6 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
                     }
                 });
         locationPanel.setEventBus(m_eventBus);
-        locationPanel.filterPanel.setLocationManager(m_locationManager);
 
         for (final Widget w : statusesPanel) {
             if (w instanceof CheckBox) {

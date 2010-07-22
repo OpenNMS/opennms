@@ -5,6 +5,8 @@ package org.opennms.features.poller.remote.gwt.client;
 
 
 // import com.allen_sauer.gwt.log.client.Log;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -29,7 +31,7 @@ final class EventServiceInitializer extends InitializationCommand.DataLoader {
     public void load() {
         LocationListener locationListener = new DefaultLocationListener(m_locationManager);
         final RemoteEventService eventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
-        eventService.addListener(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, locationListener);
+        eventService.addListener(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, locationListener);
         eventService.addListener(null, locationListener);
         
         m_locationManager.getRemoteService().start(new AsyncCallback<Void>() {
