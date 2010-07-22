@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
@@ -22,7 +23,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
@@ -38,13 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/provisiond-extensions.xml"
+        "classpath*:/META-INF/opennms/provisiond-extensions.xml"
         })
 @JUnitTemporaryDatabase()
 public class RancidProvisioningAdapterTest {
-    /* this was autowired, but the test was breaking; they're all ignored anyways, so for now, ignore :)
-     * @Autowired
-     */
+    @Autowired
     private RancidProvisioningAdapter m_adapter;
     
     @Autowired
@@ -64,26 +62,34 @@ public class RancidProvisioningAdapterTest {
             m_nodeDao.findByForeignId("rancid", "1").getId(),
             AdapterOperationType.ADD,
             new SimpleQueuedProvisioningAdapter.AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
-        );        
+        );
     }
 
+    /**
+     * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
+     * for simulated RANCID REST operations.
+     */
     @Test
-    @Transactional
+    @JUnitHttpServer(port=7081,basicAuth=true)
     @Ignore
     public void testAdd() throws Exception {
         OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
         m_adapter.addNode(n.getId());
         m_adapter.processPendingOperationForNode(m_adapterOperation);
-        Thread.sleep(3);
+        Thread.sleep(3000);
     }
     
+    /**
+     * TODO: This test needs to be updated so that it properly connects to the JUnitHttpServer
+     * for simulated RANCID REST operations.
+     */
     @Test
-    @Transactional
+    @JUnitHttpServer(port=7081,basicAuth=true)
     @Ignore
     public void testDelete() throws Exception {
         OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
         m_adapter.deleteNode(n.getId());
         m_adapter.processPendingOperationForNode(m_adapterOperation);
-        Thread.sleep(3);
+        Thread.sleep(3000);
     }
 }
