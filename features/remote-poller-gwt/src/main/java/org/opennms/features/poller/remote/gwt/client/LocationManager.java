@@ -57,7 +57,7 @@ public interface LocationManager {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
-	public List<LocationInfo> getVisibleLocations();
+	public List<LocationInfo> getLocationsForLocationPanel();
 	/**
 	 * <p>getApplicationInfo</p>
 	 *
@@ -71,12 +71,6 @@ public interface LocationManager {
 	 * @return a {@link java.util.Set} object.
 	 */
 	public Set<String> getAllApplicationNames();
-	/**
-	 * <p>getTagsOnVisibleLocations</p>
-	 *
-	 * @return a {@link java.util.List} object.
-	 */
-	public List<String> getTagsOnVisibleLocations();
 	/**
 	 * <p>addLocationManagerInitializationCompleteEventHandler</p>
 	 *

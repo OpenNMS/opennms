@@ -65,7 +65,7 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
 		setGeolocation(geolocation);
 		setCoordinates(coordinates);
 		setPriority(priority);
-		setMarkerState(marker);
+		setMarkerState(marker == null ? new GWTMarkerState(name, getLatLng(), statusDetails.getStatus()) : marker);
 		setStatusDetails(statusDetails);
         setTags(tags);
 	}
