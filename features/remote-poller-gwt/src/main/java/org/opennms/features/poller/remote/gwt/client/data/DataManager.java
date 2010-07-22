@@ -106,4 +106,16 @@ public class DataManager {
         }
         return info;
     }
+
+    public List<LocationInfo> getMatchingLocations(LocationFilter filter) {
+        final ArrayList<LocationInfo> locations = new ArrayList<LocationInfo>();
+        
+        for (final LocationInfo location : getLocations()) {
+            
+            if (filter.matches(location)) {
+                locations.add(location);
+            }
+        }
+        return locations;
+    }
 }

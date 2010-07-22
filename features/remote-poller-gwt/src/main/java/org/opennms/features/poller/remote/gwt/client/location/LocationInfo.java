@@ -6,6 +6,7 @@ import java.util.Set;
 import org.opennms.features.poller.remote.gwt.client.GWTBounds;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.opennms.features.poller.remote.gwt.client.GWTMarkerState;
+import org.opennms.features.poller.remote.gwt.client.Status;
 import org.opennms.features.poller.remote.gwt.client.StatusDetails;
 import org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder;
 import org.opennms.features.poller.remote.gwt.client.utils.EqualsUtil;
@@ -296,5 +297,13 @@ public class LocationInfo implements IsSerializable, Serializable, Comparable<Lo
      */
     public String getMarkerImageURL() {
     	return m_markerState.getImageURL();
+    }
+
+    public boolean hasTag(String selectedTag) {
+        return getTags() != null && getTags().contains(selectedTag);
+    }
+
+    public Status getStatus() {
+        return getStatusDetails().getStatus();
     }
 }
