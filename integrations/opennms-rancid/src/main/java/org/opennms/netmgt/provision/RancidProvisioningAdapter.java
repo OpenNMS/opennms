@@ -73,7 +73,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
- * A Rancid provisioning adapter for integration with OpenNMS Provisoning daemon API.
+ * A Rancid provisioning adapter for integration with OpenNMS Provisioning daemon API.
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $

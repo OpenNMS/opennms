@@ -70,18 +70,6 @@ import org.opennms.netmgt.ConfigFileConstants;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
 public final class RWSConfigFactory extends RWSConfigManager {
