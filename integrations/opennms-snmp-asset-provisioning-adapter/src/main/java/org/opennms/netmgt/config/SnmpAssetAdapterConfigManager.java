@@ -145,6 +145,7 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 		if (sysoid == null) {
 			// If the sysoid is null, we won't be able to fetch any SNMP attributes;
 			// return an empty list.
+			log().debug("getAssetFieldsForAddress: SNMP sysoid was null for address " + address.getHostAddress() + ", returning empty list");
 			return new AssetField[0];
 		}
 
@@ -161,12 +162,12 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 					retval.addAll(pkg.getAssetFieldCollection());
 				}
 			} else {
-				log().warn("Unexpected condition: both sysoid and sysoidMask are null on package " + pkg.getName());
+				log().warn("getAssetFieldsForAddress: Unexpected condition: both sysoid and sysoidMask are null on package " + pkg.getName());
 			}
 		}
 		if (log().isDebugEnabled()) {
 			if (retval.size() == 0) {
-				log().debug("Zero AssetField matches returned for " + address.getHostAddress() + " with sysoid: " + sysoid);
+				log().debug("getAssetFieldsForAddress: Zero AssetField matches returned for " + address.getHostAddress() + " with sysoid: " + sysoid);
 			}
 		}
 		return retval.toArray(new AssetField[0]);

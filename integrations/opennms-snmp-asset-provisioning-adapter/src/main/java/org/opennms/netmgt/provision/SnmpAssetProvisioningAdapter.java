@@ -209,16 +209,12 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			for (int i = 0; i < values.length; i++) {
 				substitutions.setProperty(aliases.get(i), values[i].toString());
 			}
+			if (log().isDebugEnabled()) {
+				log().debug("fetchSnmpAssetString: Fetched asset properties from SNMP agent:\n" + formatPropertiesAsString(substitutions));
+			}
 			if (objs.size() != substitutions.size()) {
-				StringBuffer propertyValues = new StringBuffer();
-				for (Map.Entry<Object, Object> entry : substitutions.entrySet()) {
-					propertyValues.append("  ");
-					propertyValues.append(entry.getKey().toString());
-					propertyValues.append(" => ");
-					propertyValues.append(entry.getValue().toString());
-					propertyValues.append("\n");
-				}
-				log().warn("fetchSnmpAssetString: Unexpected number of properties returned from SNMP GET: \n" + propertyValues.toString());
+				String props = formatPropertiesAsString(substitutions);
+				log().warn("fetchSnmpAssetString: Unexpected number of properties returned from SNMP GET:\n" + props);
 			}
 
 			try {
@@ -231,6 +227,18 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			log().warn("fetchSnmpAssetString: Invalid number of SNMP parameters returned: " + values.length + " != " + aliases.size());
 			return formatString;
 		}
+	}
+
+	protected static String formatPropertiesAsString(Properties props) {
+		StringBuffer propertyValues = new StringBuffer();
+		for (Map.Entry<Object, Object> entry : props.entrySet()) {
+			propertyValues.append("  ");
+			propertyValues.append(entry.getKey().toString());
+			propertyValues.append(" => ");
+			propertyValues.append(entry.getValue().toString());
+			propertyValues.append("\n");
+		}
+		return propertyValues.toString();
 	}
 
 	/**
