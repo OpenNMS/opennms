@@ -58,8 +58,20 @@ public class JUnitSnmpAgentExecutionListener extends
         
         String host = config.host();
         if (host == null || "".equals(host)) {
+            /*
+             * NOTE: This call produces different results on different platforms so make
+             * sure your client code is aware of this. If you use the {@link ProxySnmpAgentConfigFactory}
+             * by including the <code>classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml</code>
+             * Spring context, you probably won't need to deal with this. It will override the
+             * SnmpPeerFactory with the correct values.
+             * 
+             * Linux: 127.0.0.1
+             * Mac OS: primary external interface
+             */
             host = InetAddress.getLocalHost().getHostAddress();
         }
+        
+        // NOTE: The default value for config.port is specified inside {@link JUnitSnmpAgent}
         
         ResourceLoader loader = new DefaultResourceLoader();
         Resource resource = loader.getResource(config.resource());
