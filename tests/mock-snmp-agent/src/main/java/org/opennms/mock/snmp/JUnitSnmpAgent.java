@@ -54,5 +54,9 @@ public @interface JUnitSnmpAgent {
     
     String resource() default "classpath:snmpwalk.properties";
     String host() default "";
+    /**
+     * This value should match the port value configured in the unit test spring context object 
+     * {@link ProxySnmpAgentConfigFactory}
+     */
     int port() default 9161;
 }

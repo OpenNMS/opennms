@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -10,9 +10,9 @@
  *
  * Modifications:
  * 
- * Created: December 16, 2008
+ * Created: July 16, 2010
  *
- * Copyright (C) 2008 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,14 +38,11 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingFormatArgumentException;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.LogUtils;
@@ -61,7 +58,6 @@ import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
@@ -85,63 +81,42 @@ import org.springframework.util.Assert;
 public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
 
 	private NodeDao m_nodeDao;
-	// private AssetRecordDao m_assetRecordDao;
 	private EventForwarder m_eventForwarder;
 	private SnmpAssetAdapterConfig m_config;
 	private SnmpAgentConfigFactory m_snmpConfigDao;
-
-	private static final String MESSAGE_PREFIX = "SNMP asset provisioning failed: ";
 
 	/** 
 	 * Constant <code>NAME="SnmpAssetProvisioningAdapter"</code> 
 	 */
 	public static final String NAME = "SnmpAssetProvisioningAdapter";
-	private final ConcurrentMap<Integer, InetAddress> m_onmsNodeIpMap = new ConcurrentHashMap<Integer, InetAddress>();
 
 	public SnmpAssetProvisioningAdapter() {
 		super(NAME);
 	}
-
-	@Override
-	AdapterOperationSchedule createScheduleForNode(final int nodeId, AdapterOperationType adapterOperationType) {
-		log().debug("Scheduling: " + adapterOperationType + " for nodeid: " + nodeId);
-		if (adapterOperationType.equals(AdapterOperationType.CONFIG_CHANGE)) {
-			if (log().isDebugEnabled()) {
-				InetAddress ipaddress = m_onmsNodeIpMap.get(nodeId);
-				log().debug("Found suitable IP address: " + ipaddress);
-			}
-			return new AdapterOperationSchedule(10, 5, 3, TimeUnit.SECONDS);
-		} else {
-			return new AdapterOperationSchedule(0, 5, 3, TimeUnit.SECONDS);
-		}
-	}
-
+	
 	/**
-	 * <p>afterPropertiesSet</p>
-	 *
-	 * @throws java.lang.Exception if any.
+	 * Creating a custom schedule for this adapter.  We need to make sure that the node has a system object ID set
+	 * and that it has had enough time for that to have happened.
+	 * @param nodeId
+	 * @param adapterOperationType
+	 * @return
 	 */
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(m_config, "SNMP Asset Provisioning Adapter requires config property to be set.");
-		Assert.notNull(m_nodeDao, "SNMP Asset Provisioning Adapter requires nodeDao property to be set.");
-		Assert.notNull(m_eventForwarder, "SNMP Asset Provisioning Adapter requires eventForwarder property to be set.");
-		Assert.notNull(m_template, "SNMP Asset Provisioning Adapter requires template property to be set.");
-		m_template.execute(new TransactionCallback<Object>() {
-			public Object doInTransaction(TransactionStatus arg0) {
-				buildNodeIpMap();
-				return null;
-			}
-		});
+	@Override
+	AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType adapterOperationType) {
+		AdapterOperationSchedule aos = new AdapterOperationSchedule(300, 60, 3, TimeUnit.SECONDS);
+		log().info("createScheduleForNode: Scheduling "+adapterOperationType+" with schedule: "+aos);
+		return aos;
 	}
-
-	private void buildNodeIpMap() {
-		List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
-		for (OnmsNode onmsNode : nodes) {
-			InetAddress ipaddr = getIpForNode(onmsNode);
-			if (ipaddr != null) {
-				m_onmsNodeIpMap.putIfAbsent(onmsNode.getId(), ipaddr);
-			}
+	
+	@Override
+	public boolean isNodeReady(AdapterOperation op) {
+		boolean readyState = false;
+		OnmsNode node = m_nodeDao.get(op.getNodeId());
+		
+		if (node != null && node.getSysObjectId() != null) {
+			readyState = true;
 		}
+		return readyState;
 	}
 
 	/**
@@ -163,14 +138,6 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 				return getIpForNode(node);
 			}
 		});
-
-		try {
-			m_onmsNodeIpMap.putIfAbsent(nodeId, ipaddress);
-		} catch (ProvisioningAdapterException ae) {
-			sendAndThrow(nodeId, ae);
-		} catch (Throwable e) {
-			sendAndThrow(nodeId, e);
-		}
 
 		SnmpAgentConfig agentConfig = null;
 		agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
@@ -261,10 +228,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			}
 		});
 
-		m_onmsNodeIpMap.put(nodeId, ipaddress);
-
-		SnmpAgentConfig agentConfig = null;
-		agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
+		SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
 
 		OnmsAssetRecord asset = node.getAssetRecord();
 		AssetField[] fields = m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId());
@@ -286,29 +250,6 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	}
 
 	/**
-	 * <p>doDelete</p>
-	 *
-	 * @param nodeId a int.
-	 * @param retry a boolean.
-	 * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
-	 */
-	@Override
-	public void doDeleteNode(int nodeId) throws ProvisioningAdapterException {
-
-		log().debug("doDelete: deleting nodeid: " + nodeId);
-
-		/*
-		 * The work to maintain the hashmap boils down to needing to do deletes, so
-		 * here we go.
-		 */
-		try {
-			m_onmsNodeIpMap.remove(Integer.valueOf(nodeId));
-		} catch (Throwable e) {
-			sendAndThrow(nodeId, e);
-		}
-	}
-
-	/**
 	 * <p>doNodeConfigChanged</p>
 	 *
 	 * @param nodeId a int.
@@ -318,20 +259,6 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	@Override
 	public void doNotifyConfigChange(int nodeId) throws ProvisioningAdapterException {
 		log().debug("doNodeConfigChanged: nodeid: " + nodeId);
-	}
-
-	private void sendAndThrow(int nodeId, Throwable e) {
-		log().debug("sendAndThrow: error working on Dao nodeid: " + nodeId);
-		log().debug("sendAndThrow: Exception: " + e.getMessage());
-		Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
-		m_eventForwarder.sendNow(event);
-		throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
-	}
-
-	private EventBuilder buildEvent(String uei, int nodeId) {
-		EventBuilder builder = new EventBuilder(uei, "Provisioner", new Date());
-		builder.setNodeid(nodeId);
-		return builder;
 	}
 
 	/**
@@ -459,14 +386,6 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		return ipaddr;
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public boolean isNodeReady(final AdapterOperation op) {
-		boolean ready = true;
-		log().debug("isNodeReady: " + ready + " For Operation " + op.getType() + " for node: " + op.getNodeId());
-		return ready;
-	}
-
 	/**
 	 * <p>handleReloadConfigEvent</p>
 	 *
@@ -478,12 +397,6 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			LogUtils.debugf(this, "Reloading the snmp asset adapter configuration");
 			try {
 				m_config.update();
-				m_template.execute(new TransactionCallback<Object>() {
-					public Object doInTransaction(TransactionStatus arg0) {
-						buildNodeIpMap();
-						return null;
-					}
-				});
 			} catch (Throwable e) {
 				LogUtils.infof(this, e, "Unable to reload snmp asset adapter configuration");
 			}
@@ -504,5 +417,10 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 
 		log().debug("isReloadConfigEventTarget: Provisiond." + NAME + " was target of reload event: " + isTarget);
 		return isTarget;
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 }
