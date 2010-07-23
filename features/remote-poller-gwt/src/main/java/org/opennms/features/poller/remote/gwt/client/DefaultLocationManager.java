@@ -10,7 +10,6 @@ import java.util.Set;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.Filters;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEvent;
-import org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagClearedEvent;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.data.AndFilter;
@@ -122,8 +121,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     /**
      * <p>initialize</p>
      */
-    public void initialize() {
-        InitializationCommand cmd = new InitializationCommand(this, new MapPanelAdder(this), new EventServiceInitializer(this));
+    public void initialize(Application application) {
+        InitializationCommand cmd = new InitializationCommand(application, this, new MapPanelAdder(this), new EventServiceInitializer(this));
         cmd.doCommand();
     }
 

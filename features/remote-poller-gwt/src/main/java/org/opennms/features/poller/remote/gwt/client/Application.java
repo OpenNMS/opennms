@@ -100,7 +100,6 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
         final DefaultLocationManager dlm = new DefaultLocationManager(m_eventBus, splitPanel, locationPanel, createMapPanel());
         m_locationManager = dlm;
 
-        m_locationManager.addLocationManagerInitializationCompleteEventHandler(new MapPanelInitializer(this));
         locationPanel.setEventBus(m_eventBus);
 
         for (final Widget w : statusesPanel) {
@@ -111,7 +110,7 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
             }
         }
 
-        m_locationManager.initialize();
+        m_locationManager.initialize(this);
         
     }
 
