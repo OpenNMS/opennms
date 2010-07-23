@@ -3,7 +3,6 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -23,7 +22,6 @@ import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
@@ -81,14 +79,12 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     private MockEventIpcManager m_eventSubscriber;
 
     @Autowired
-    private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
+    private SnmpPeerFactory m_snmpPeerFactory;
 
     private MockSnmpAgent m_snmpAgent;
 
     @BeforeClass
     public static void setUpSnmpConfig() {
-        SnmpPeerFactory.setFile(new File("src/test/proxy-snmp-config.xml"));
-        
         Properties props = new Properties();
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
@@ -98,7 +94,10 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
 
     @Before
     public void setUp() throws Exception {
-        assertTrue(m_snmpAgentConfigFactory instanceof ProxySnmpAgentConfigFactory);
+        // Override the SnmpPeerFactory with an instance that directs all requests to
+        // the temporary JUnit SNMP agent
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+        assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
         m_provisioner.start();
     }
 
@@ -160,7 +159,7 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     }
 
     private SnmpValue getSnmpValue(String host, String oid) throws UnknownHostException {
-        return SnmpUtils.get(m_snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(host)), SnmpObjId.get(oid));
+        return SnmpUtils.get(m_snmpPeerFactory.getAgentConfig(InetAddress.getByName(host)), SnmpObjId.get(oid));
     }
 
     @Test
