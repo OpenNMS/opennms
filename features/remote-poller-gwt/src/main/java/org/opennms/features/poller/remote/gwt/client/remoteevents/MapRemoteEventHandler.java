@@ -11,8 +11,7 @@ import de.novanic.eventservice.client.event.domain.DomainFactory;
 public interface MapRemoteEventHandler {
 
     /** Constant <code>LOCATION_EVENT_DOMAIN</code> */
-    public static final Domain LOCATION_EVENT_DOMAIN = DomainFactory
-            .getDomain("location_event");
+    public static final Domain LOCATION_EVENT_DOMAIN = DomainFactory.getDomain("location_event");
 
     /**
      * This action is used to respond to server-side events when a location is updated.

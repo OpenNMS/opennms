@@ -38,7 +38,6 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
@@ -81,7 +80,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     private final LocationStatusServiceAsync m_remoteService = GWT.create(LocationStatusService.class);
 
-    private final MapPanel m_mapPanel;
+    final MapPanel m_mapPanel;
 
     private LocationPanel m_locationPanel;
 
@@ -124,30 +123,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * <p>initialize</p>
      */
     public void initialize() {
-        DeferredCommand.addCommand(new InitializationCommand(this, createFinisher(), createDataLoaders()));
-    }
-
-    private Runnable createFinisher() {
-        return new Runnable() {
-            public void run() {
-                initializationComplete();
-            }
-        };
-    }
-
-    /**
-     * <p>createDataLoaders</p>
-     *
-     * @return an array of {@link org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader} objects.
-     */
-    protected DataLoader[] createDataLoaders() {
-        return new DataLoader[] { new DataLoader() {
-            @Override
-            public void onLoaded() {
-                // Append the map panel to the main SplitPanel
-                getPanel().add(m_mapPanel.getWidget());
-            }
-        }, new EventServiceInitializer(this) };
+        InitializationCommand cmd = new InitializationCommand(this, new MapPanelAdder(this), new EventServiceInitializer(this));
+        cmd.doCommand();
     }
 
     /**
@@ -202,13 +179,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      */
     public Set<String> getAllLocationNames() {
         return m_dataManager.getAllLocationNames();
-    }
-
-    /** {@inheritDoc} */
-    public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
-        m_dataManager.createOrUpdateApplication(applicationInfo);
-      //TODO: Move this to some kind of event handler
-        m_locationPanel.updateApplicationNames(m_dataManager.getAllApplicationNames());
     }
 
     /** {@inheritDoc} */
@@ -377,7 +347,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             return;
 
         // Update the application information in the model
-        createOrUpdateApplication(applicationInfo);
+        m_dataManager.updateApplication(applicationInfo);
+        m_locationPanel.updateApplicationNames(m_dataManager.getAllApplicationNames());
 
         /*
          * Update the icon/caption in the LHN Use an ArrayList so that it has
@@ -387,7 +358,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
          * not equals, and thus duplicates them.
          */
 
-        updateApplicationList();
+        m_locationPanel.updateApplicationList(m_dataManager.getApplications());
 
         if (!m_updated) {
             return;
@@ -398,18 +369,13 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_eventBus.fireEvent(new LocationsUpdatedEvent());
     }
 
-    private void updateApplicationList() {
-        ArrayList<ApplicationInfo> applicationList = m_dataManager.getApplications();
-        m_locationPanel.updateApplicationList(applicationList);
-    }
-
     /** {@inheritDoc} */
     public void removeApplication(final String applicationName) {
-        final ApplicationInfo info = m_dataManager.removeApplication(applicationName);
-        
+        final ApplicationInfo info = m_dataManager.getApplicationInfo(applicationName);
+        m_dataManager.removeApplication(applicationName);
         if (info != null) {
             m_applicationFilter.removeApplication(info);
-            updateApplicationList();
+            m_locationPanel.updateApplicationList(m_dataManager.getApplications());
         }
 
         m_eventBus.fireEvent(new LocationsUpdatedEvent());
@@ -419,6 +385,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Invoked by the {@link UpdateCompleteRemoteEvent} event.
      */
     public void updateComplete() {
+        m_dataManager.updateComplete();
         if (!m_updated) {
             updateAllMarkerStates();
             fitMapToLocations();

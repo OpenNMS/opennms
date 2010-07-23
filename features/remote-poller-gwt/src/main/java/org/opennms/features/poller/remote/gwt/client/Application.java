@@ -3,8 +3,6 @@ package org.opennms.features.poller.remote.gwt.client;
 import java.util.Date;
 
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEvent;
-import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEvent;
-import org.opennms.features.poller.remote.gwt.client.events.LocationManagerInitializationCompleteEventHander;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
 
@@ -25,7 +23,6 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -103,18 +100,7 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
         final DefaultLocationManager dlm = new DefaultLocationManager(m_eventBus, splitPanel, locationPanel, createMapPanel());
         m_locationManager = dlm;
 
-        m_locationManager.addLocationManagerInitializationCompleteEventHandler(new LocationManagerInitializationCompleteEventHander() {
-
-                    public void onInitializationComplete(LocationManagerInitializationCompleteEvent event) {
-                        updateTimestamp();
-                        splitPanel.setWidgetMinSize(locationPanel, 255);
-                        mainPanel.setSize("100%", "100%");
-                        RootPanel.get("remotePollerMap").add(mainPanel);
-                        mainPanel.setSize("100%", getAppHeight().toString());
-                        mainPanel.forceLayout();
-                        onLocationClick(null);
-                    }
-                });
+        m_locationManager.addLocationManagerInitializationCompleteEventHandler(new MapPanelInitializer(this));
         locationPanel.setEventBus(m_eventBus);
 
         for (final Widget w : statusesPanel) {
@@ -129,7 +115,7 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
         
     }
 
-    private Integer getAppHeight() {
+    Integer getAppHeight() {
     	final com.google.gwt.user.client.Element e = mainPanel.getElement();
 		int extraHeight = e.getAbsoluteTop();
 		return Window.getClientHeight() - extraHeight;

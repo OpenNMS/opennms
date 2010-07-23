@@ -11,9 +11,10 @@ import java.util.TreeSet;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.GWTBounds;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
 import org.opennms.features.poller.remote.gwt.client.utils.BoundsBuilder;
 
-public class DataManager {
+public class DataManager implements MapRemoteEventHandler {
 
     private final Map<String, LocationInfo> m_locations = new HashMap<String, LocationInfo>();
     private final Map<String,ApplicationInfo> m_applications = new HashMap<String,ApplicationInfo>();
@@ -26,7 +27,7 @@ public class DataManager {
         return m_applications;
     }
 
-    public void createOrUpdateApplication(final ApplicationInfo applicationInfo) {
+    public void updateApplication(final ApplicationInfo applicationInfo) {
         if (applicationInfo.getLocations().size() == 0) {
             applicationInfo.setPriority(Long.MAX_VALUE);
         } else {
@@ -99,12 +100,8 @@ public class DataManager {
         return applicationList;
     }
 
-    public ApplicationInfo removeApplication(final String applicationName) {
-        final ApplicationInfo info = getApplicationInfo(applicationName);
-        if (info != null) {
-            getApplicationsMap().remove(applicationName);
-        }
-        return info;
+    public void removeApplication(final String applicationName) {
+        getApplicationsMap().remove(applicationName);
     }
 
     public List<LocationInfo> getMatchingLocations(LocationFilter filter) {
@@ -124,5 +121,10 @@ public class DataManager {
             // Update the location information in the model
             updateLocation(location);
         }
+    }
+
+    public void updateComplete() {
+        // TODO Auto-generated method stub
+        
     }
 }
