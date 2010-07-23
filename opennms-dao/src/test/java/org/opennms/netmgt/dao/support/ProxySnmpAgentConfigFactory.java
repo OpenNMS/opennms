@@ -31,19 +31,28 @@
  */
 package org.opennms.netmgt.dao.support;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
-import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.test.ConfigurationTestUtils;
 
 /**
  * ProxySnmpAgentConfigFactory
  *
  * @author brozow
  */
-public class ProxySnmpAgentConfigFactory implements SnmpAgentConfigFactory {
+public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
+
+    public ProxySnmpAgentConfigFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        super(ConfigurationTestUtils.getReaderForConfigFile("snmp-config.xml"));
+    }
 
     public SnmpAgentConfig getAgentConfig(InetAddress address) {
         SnmpAgentConfig config = new SnmpAgentConfig(getLocalHost());
@@ -59,7 +68,8 @@ public class ProxySnmpAgentConfigFactory implements SnmpAgentConfigFactory {
      */
     private InetAddress getLocalHost() {
         try {
-            return InetAddress.getByName("127.0.0.1");
+            return InetAddress.getLocalHost();
+            //return InetAddress.getByName("127.0.0.1");
         } catch (UnknownHostException e) {
             throw new IllegalStateException("Unable to resolve local host address");
         }
