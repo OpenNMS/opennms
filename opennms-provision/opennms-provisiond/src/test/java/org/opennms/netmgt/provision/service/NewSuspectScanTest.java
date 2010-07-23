@@ -246,7 +246,7 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
 
     @Test(timeout=300000)
     @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
     public void testScanNewSuspect() throws Exception {
         
         //Verify empty database

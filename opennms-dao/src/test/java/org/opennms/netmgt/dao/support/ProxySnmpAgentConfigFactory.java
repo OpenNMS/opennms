@@ -34,6 +34,7 @@ package org.opennms.netmgt.dao.support;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
@@ -47,15 +48,20 @@ public class ProxySnmpAgentConfigFactory implements SnmpAgentConfigFactory {
     public SnmpAgentConfig getAgentConfig(InetAddress address) {
         SnmpAgentConfig config = new SnmpAgentConfig(getLocalHost());
         config.setProxyFor(address);
+        // This port should match the default port inside {@link JUnitSnmpAgent}
         config.setPort(9161);
         return config;
     }
 
+    /**
+     * This value should match the default value of the <code>host</code> parameter inside
+     * {@link JUnitSnmpAgentExecutionListener}.
+     */
     private InetAddress getLocalHost() {
         try {
-            return InetAddress.getByName("127.0.0.1");
+            return InetAddress.getLocalHost();
         } catch (UnknownHostException e) {
-            throw new IllegalStateException("Unable to resolve 127.0.0.1");
+            throw new IllegalStateException("Unable to resolve local host address");
         }
     }
 
