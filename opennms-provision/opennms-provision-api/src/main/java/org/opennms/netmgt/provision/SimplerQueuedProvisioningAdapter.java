@@ -46,8 +46,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
     
     private String m_name;
-    private long m_delay = 1;
-    private TimeUnit m_timeUnit = TimeUnit.SECONDS;
+    protected long m_delay = 1;
+    protected TimeUnit m_timeUnit = TimeUnit.SECONDS;
 
     protected TransactionTemplate m_template;
 

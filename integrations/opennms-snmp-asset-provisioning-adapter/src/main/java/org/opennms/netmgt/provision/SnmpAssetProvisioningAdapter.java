@@ -100,20 +100,17 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 
 	public SnmpAssetProvisioningAdapter() {
 		super(NAME);
+
+		// Set the default time delay to 300 seconds
+		this.setDelay(300);
+		this.setTimeUnit(TimeUnit.SECONDS);
 	}
 
 	@Override
-	AdapterOperationSchedule createScheduleForNode(final int nodeId, AdapterOperationType adapterOperationType) {
-		log().debug("Scheduling: " + adapterOperationType + " for nodeid: " + nodeId);
-		if (adapterOperationType.equals(AdapterOperationType.CONFIG_CHANGE)) {
-			if (log().isDebugEnabled()) {
-				InetAddress ipaddress = m_onmsNodeIpMap.get(nodeId);
-				log().debug("Found suitable IP address: " + ipaddress);
-			}
-			return new AdapterOperationSchedule(10, 5, 3, TimeUnit.SECONDS);
-		} else {
-			return new AdapterOperationSchedule(0, 5, 3, TimeUnit.SECONDS);
-		}
+	AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType adapterOperationType) {
+		AdapterOperationSchedule aos = new AdapterOperationSchedule(m_delay, 60, 3, m_timeUnit);
+		log().info("createScheduleForNode: Scheduling " + adapterOperationType + " for nodeid " + nodeId + " with schedule: " + aos);
+		return aos;
 	}
 
 	/**
@@ -350,24 +347,6 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	public void setNodeDao(NodeDao dao) {
 		m_nodeDao = dao;
 	}
-
-	/**
-	 * @return the assetRecordDao
-	 */
-	/*
-	public AssetRecordDao getAssetRecordDao() {
-		return m_assetRecordDao;
-	}
-	 */
-
-	/**
-	 * @param assetRecordDao the assetRecordDao to set
-	 */
-	/*
-	public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
-		this.m_assetRecordDao = assetRecordDao;
-	}
-	 */
 
 	/**
 	 * <p>getEventForwarder</p>
