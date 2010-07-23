@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
@@ -58,8 +59,12 @@ public class SnmpAssetProvisioningAdapterTest {
 		// Use the mock.logLevel system property to control the log level
 		MockLogAppender.setupLogging(true);
 
+		// Set the operation delay to 1 second so that queued operations execute immediately
+		m_adapter.setDelay(1);
+		m_adapter.setTimeUnit(TimeUnit.SECONDS);
+
 		NetworkBuilder nb = new NetworkBuilder();
-		nb.addNode("test.example.com").setForeignSource("rancid").setForeignId("1");
+		nb.addNode("test.example.com").setForeignSource("rancid").setForeignId("1").setSysObjectId(".1.3");
 		nb.addInterface("192.168.0.1");
 		m_nodeDao.save(nb.getCurrentNode());
 		m_nodeDao.flush();
@@ -70,12 +75,12 @@ public class SnmpAssetProvisioningAdapterTest {
 	}
 
 	@Test
-	@Transactional
 	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testAdd() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
 		OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
+		assertNotNull(n);
 		m_adapter.addNode(n.getId());
 
 		assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
@@ -87,12 +92,12 @@ public class SnmpAssetProvisioningAdapterTest {
 	}
 
 	@Test
-	@Transactional
 	@JUnitSnmpAgent(resource = "snmpAssetTestData.properties")
 	public void testDelete() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
 		OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
+		assertNotNull(n);
 		m_adapter.deleteNode(n.getId());
 
 		assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));

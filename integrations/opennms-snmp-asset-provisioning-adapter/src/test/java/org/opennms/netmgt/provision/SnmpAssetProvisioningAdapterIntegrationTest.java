@@ -78,6 +78,10 @@ public class SnmpAssetProvisioningAdapterIntegrationTest {
 		// Use the mock.logLevel system property to control the log level
 		MockLogAppender.setupLogging(true);
 
+		// Set the operation delay to 1 second so that queued operations execute immediately
+		m_adapter.setDelay(1);
+		m_adapter.setTimeUnit(TimeUnit.SECONDS);
+
 		Assert.notNull(m_nodeDao, "Autowiring failed, NodeDao is null");
 		Assert.notNull(m_mockEventIpcManager, "Autowiring failed, IPC manager is null");
 		Assert.notNull(m_populator, "Autowiring failed, DB populator is null");

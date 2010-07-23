@@ -11,7 +11,6 @@
 	<bean name="snmpAssetProvisioningAdapter" class="org.opennms.netmgt.provision.SnmpAssetProvisioningAdapter">
 		<property name="eventForwarder" ref="eventForwarder" />
 		<property name="nodeDao" ref="nodeDao" />
-		<!-- <property name="assetRecordDao" ref="assetRecordDao" /> -->
 		<property name="snmpPeerFactory" ref="snmpPeerFactory" />
 		<property name="snmpAssetAdapterConfig" ref="snmpAssetAdapterConfig" />
 		<property name="template" ref="transactionTemplate" />
