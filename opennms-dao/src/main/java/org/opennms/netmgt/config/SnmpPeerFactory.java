@@ -84,18 +84,6 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
 public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFactory {
