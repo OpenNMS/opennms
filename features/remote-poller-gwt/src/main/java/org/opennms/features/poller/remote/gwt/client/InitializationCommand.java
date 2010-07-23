@@ -90,51 +90,37 @@ public class InitializationCommand implements IncrementalCommand {
 	 * @return a boolean.
 	 */
 	public boolean execute() {
-	    if(m_currentLoader == null || m_currentLoader.isLoaded()) {
-            
-	        if(m_currentLoader == null) {
-	            m_currentLoader =  m_mapPanelAdder;
-            }else if(m_currentLoader == m_mapPanelAdder) {
-                m_currentLoader =  m_eventInitializer;
-            }else {
-                m_currentLoader =  null;
-                finished();
-                return false;
-            }
-            
-            m_currentLoader.load();
-            
+	    switch(m_state) {
+	        
+	    case 0:
+	        m_mapPanelAdder.load();
+	        m_state++;
+	        return true;
+	        
+	    case 1:
+	        if(m_mapPanelAdder.isLoaded()) {
+	            m_state++;
+	        }
+	        return true;
+	        
+	    case 2:    
+	        m_eventInitializer.load();
+	        m_state++;
+	        return true;
+	        
+	    case 3:
+	        if(m_eventInitializer.isLoaded()) {
+	            m_state++;
+	            
+	        }
+	        return true;
+	        
+	    case 4:
+	        finished();
+	        return false;
 	    }
 	    
-	    return true;
-//	    switch(m_state) {
-//	        
-//	    case 0:
-//	        m_mapPanelAdder.load();
-//	        m_state++;
-//	        return true;
-//	        
-//	    case 1:
-//	        if(m_mapPanelAdder.isLoaded()) {
-//	            m_state++;
-//	        }
-//	        return true;
-//	        
-//	    case 2:    
-//	        m_eventInitializer.load();
-//	        m_state++;
-//	        return true;
-//	        
-//	    case 3:
-//	        if(m_eventInitializer.isLoaded()) {
-//	            m_state++;
-//	            return true;
-//	        }
-//	        
-//	    case 4:
-//	        finished();
-//	        return false;
-//	    }
+	    return false;
 	}
 
     /**
