@@ -68,7 +68,8 @@ public class JUnitSnmpAgentExecutionListener extends
              * Linux: 127.0.0.1
              * Mac OS: primary external interface
              */
-            host = InetAddress.getLocalHost().getHostAddress();
+            //host = InetAddress.getLocalHost().getHostAddress();
+            host = "127.0.0.1";
         }
         
         // NOTE: The default value for config.port is specified inside {@link JUnitSnmpAgent}

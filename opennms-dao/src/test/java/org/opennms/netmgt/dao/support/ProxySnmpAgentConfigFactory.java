@@ -59,7 +59,7 @@ public class ProxySnmpAgentConfigFactory implements SnmpAgentConfigFactory {
      */
     private InetAddress getLocalHost() {
         try {
-            return InetAddress.getLocalHost();
+            return InetAddress.getByName("127.0.0.1");
         } catch (UnknownHostException e) {
             throw new IllegalStateException("Unable to resolve local host address");
         }
