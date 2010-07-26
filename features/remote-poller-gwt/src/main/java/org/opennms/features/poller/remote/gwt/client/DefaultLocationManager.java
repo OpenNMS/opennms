@@ -32,15 +32,21 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+
+import de.novanic.eventservice.client.event.RemoteEventService;
+import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 
 /**
  * <p>
@@ -121,9 +127,31 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     /**
      * <p>initialize</p>
      */
-    public void initialize(Application application) {
-        InitializationCommand cmd = new InitializationCommand(application, this, new MapPanelAdder(this), new EventServiceInitializer(this));
-        cmd.doCommand();
+    public void initialize(final Application application) {
+        getPanel().add(m_mapPanel.getWidget());
+        application.updateTimestamp();
+        application.onLocationClick(null);
+        
+        LocationListener locationListener = new DefaultLocationListener(this);
+        final RemoteEventService eventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
+        eventService.addListener(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, locationListener);
+        eventService.addListener(null, locationListener);
+        
+        getRemoteService().start(new AsyncCallback<Void>() {
+            public void onFailure(Throwable throwable) {
+                // Log.debug("unable to start location even service backend", throwable);
+                Window.alert("unable to start location event service backend: " + throwable.getMessage());
+                throw new InitializationException("remote service start failed", throwable);
+            }
+        
+            public void onSuccess(Void voidArg) {
+               application.splitPanel.setWidgetMinSize(application.locationPanel, 255);
+               application.mainPanel.setSize("100%", "100%");
+               RootPanel.get("remotePollerMap").add(application.mainPanel);
+               application.mainPanel.setSize("100%", application.getAppHeight().toString());
+               application.mainPanel.forceLayout();
+            }
+        });
     }
 
     /**
