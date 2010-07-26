@@ -75,6 +75,7 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -176,6 +177,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     @Autowired
     private ImportScheduler m_importSchedule;
     
+    @Autowired
+    private SnmpPeerFactory m_snmpPeerFactory;
+    
     private EventAnticipator m_eventAnticipator;
 
     private ForeignSourceRepository m_foreignSourceRepository;
@@ -196,8 +200,6 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     @BeforeClass
     public static void setUpSnmpConfig() {
-        SnmpPeerFactory.setFile(new File("src/test/proxy-snmp-config.xml"));
-
         Properties props = new Properties();
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
@@ -210,7 +212,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     @Before
     public void setUp() throws Exception {
-        
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+        assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
+
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
         
         m_provisioner.start();
@@ -333,7 +337,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     @Test(timeout=300000)
     @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData1.properties")
+    @JUnitSnmpAgent(resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
         
         importFromResource("classpath:/tec_dump.xml");
@@ -360,7 +364,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml");
 
@@ -420,7 +424,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
     public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml");
 
@@ -479,7 +483,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @Transactional
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData3.properties")
+    @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
     public void testImportAddrThenChangeAddr() throws Exception {
         
         importFromResource("classpath:/requisition_then_scan2.xml");

@@ -110,6 +110,7 @@ import org.opennms.netmgt.config.server.LocalServer;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration;
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
@@ -590,6 +591,10 @@ public class WillItUnmarshalTest {
     }
     @Test public void testMicroblogConfiguration() throws Exception {
         unmarshal("microblog-configuration.xml", MicroblogConfiguration.class);
+    }
+    
+    @Test public void testSnmpAssetAdapterConfiguration() throws Exception {
+        unmarshal("snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class);
     }
     
     @Test

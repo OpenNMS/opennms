@@ -151,6 +151,28 @@ public class ProvisioningAdapterManager implements InitializingBean {
     }
     
     /**
+     * <p>handleNodeScanCompletedEvent</p>
+     * 
+     * Note: If the operations are properly scheduled and handled using the SimpleQueuedProvisioningAdapter, even though
+     * this event is sent following a nodeUpdated event, the update operation task should be reduced to 1 operation on the queue.
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    @EventHandler(uei = EventConstants.PROVISION_SCAN_COMPLETE_UEI)
+    public void handleNodeScanCompletedEvent(Event e) {
+        for (ProvisioningAdapter adapter : m_adapters) {
+            log().info("handleScanCompletedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
+            try {
+                adapter.updateNode((int) e.getNodeid());
+            } catch (ProvisioningAdapterException pae) {
+                log().error("handleNodeScanCompletedEvent: Adapter threw known exception: "+adapter.getName(), pae);
+            } catch (Throwable t) {
+                log().error("handleNodeScanCompletedEvent: Unanticpated exception when calling adapter: "+adapter.getName(), t);
+            }
+        }
+    }
+    
+    /**
      * <p>handleNodeChangedEvent</p>
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.

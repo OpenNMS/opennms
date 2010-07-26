@@ -441,7 +441,10 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
      * @author <a href="mailto:david@opennms.org">David Hustace</a>
      */
     static class AdapterOperationSchedule {
-        long m_initialDelay;
+        private static final int DEFAULT_ATTEMPTS = 1;
+		private static final int DEFAULT_INTERVAL = 60;
+		private static final int DEFAULT_INITIAL_DELAY = 300;
+		long m_initialDelay;
         long m_interval;
         int m_attemptsRemaining;  //never set this to 0, it will never schedule
         TimeUnit m_unit;
@@ -459,17 +462,18 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
         }
         
         public AdapterOperationSchedule() {
-            this(60, 60, 1, TimeUnit.SECONDS);
+            this(DEFAULT_INITIAL_DELAY, DEFAULT_INTERVAL, DEFAULT_ATTEMPTS, TimeUnit.SECONDS);
         }
         
         /**
-         * This constructor changes the initial delay for config change events to 1 hour
+         * This constructor changes the initial delay for configuration change events to 1 hour
          * @param type
          */
         public AdapterOperationSchedule(AdapterOperationType type) {
-            this(60, 60, 1, TimeUnit.SECONDS);
+            this(DEFAULT_INITIAL_DELAY, DEFAULT_INTERVAL, DEFAULT_ATTEMPTS, TimeUnit.SECONDS);
             if (type == AdapterOperationType.CONFIG_CHANGE) {
                 m_initialDelay = 3600;
+                m_interval = 600;
             }
         }
         
@@ -492,6 +496,16 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
         public int getAttemptsRemainingAndDecrement() {
             int currentAttemptsRemaining = m_attemptsRemaining--;
             return currentAttemptsRemaining;
+        }
+        
+        @Override
+        public String toString() {
+        	StringBuilder sb = new StringBuilder();
+        	sb.append("AdapterOperationSchedule; Initial delay: ") ;sb.append(m_initialDelay);
+        	sb.append(", Interval: "); sb.append(m_interval);
+        	sb.append(", Attempts: "); sb.append(m_attemptsRemaining);
+        	sb.append(", Units: "); sb.append(m_unit);
+        	return sb.toString();
         }
     }
 
