@@ -24,7 +24,6 @@
   <element name="package">
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" ref="sa:assetField"/>
         <choice>
           <element maxOccurs="1" minOccurs="1" ref="sa:sysoid">
             <annotation>
@@ -40,6 +39,7 @@
             </annotation>
           </element>
         </choice>
+        <element maxOccurs="unbounded" minOccurs="1" ref="sa:assetField"/>
       </sequence>
       <attribute name="name" type="string" use="required"/>
     </complexType>

@@ -152,7 +152,8 @@ public class JUnitSnmpAgentExecutionListenerTest implements MockSnmpAgentAware {
      * @throws UnknownHostException 
      */
     private InetAddress localhost() throws UnknownHostException {
-        return InetAddress.getByName("127.0.0.1");
+        return InetAddress.getLocalHost();
+        // return InetAddress.getByName("127.0.0.1");
     }
 
 }

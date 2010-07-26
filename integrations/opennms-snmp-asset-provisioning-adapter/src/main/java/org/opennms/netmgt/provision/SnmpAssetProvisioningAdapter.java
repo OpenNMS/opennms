@@ -92,6 +92,10 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 
 	public SnmpAssetProvisioningAdapter() {
 		super(NAME);
+
+		// Set the default time delay to 300 seconds
+		this.setDelay(300);
+		this.setTimeUnit(TimeUnit.SECONDS);
 	}
 	
 	/**
@@ -103,7 +107,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 */
 	@Override
 	AdapterOperationSchedule createScheduleForNode(int nodeId, AdapterOperationType adapterOperationType) {
-		AdapterOperationSchedule aos = new AdapterOperationSchedule(300, 60, 3, TimeUnit.SECONDS);
+		AdapterOperationSchedule aos = new AdapterOperationSchedule(m_delay, 60, 3, m_timeUnit);
 		log().info("createScheduleForNode: Scheduling "+adapterOperationType+" with schedule: "+aos);
 		return aos;
 	}
@@ -277,24 +281,6 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	public void setNodeDao(NodeDao dao) {
 		m_nodeDao = dao;
 	}
-
-	/**
-	 * @return the assetRecordDao
-	 */
-	/*
-	public AssetRecordDao getAssetRecordDao() {
-		return m_assetRecordDao;
-	}
-	 */
-
-	/**
-	 * @param assetRecordDao the assetRecordDao to set
-	 */
-	/*
-	public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
-		this.m_assetRecordDao = assetRecordDao;
-	}
-	 */
 
 	/**
 	 * <p>getEventForwarder</p>

@@ -86,7 +86,7 @@ import org.springframework.core.io.Resource;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
-public final class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFactory {
+public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFactory {
     /**
      * The singleton instance of this factory
      */
